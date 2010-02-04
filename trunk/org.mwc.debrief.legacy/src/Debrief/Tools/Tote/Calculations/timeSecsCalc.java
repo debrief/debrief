@@ -114,12 +114,12 @@ public final class timeSecsCalc extends plainCalc
   public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
   {
     double res = 0.0;
-    if (secondary != null)
+    if (primary != null)
     {
-      res = secondary.getTime().getMicros();
+      res = primary.getTime().getMicros();
     }
     else
-      res = primary.getTime().getMicros();
+      res = secondary.getTime().getMicros();
 
     return res;
   }
@@ -128,10 +128,10 @@ public final class timeSecsCalc extends plainCalc
   {
     String res = NOT_APPLICABLE;
     long val = 0;
-    if (secondary != null)
+    if (primary != null)
     {
       // HI-RES NOT DONE - should be able to plot times in micros
-      HiResDate theDTG = secondary.getTime();
+      HiResDate theDTG = primary.getTime();
 
       // is it a valid time?
       if (theDTG != null)

@@ -81,7 +81,7 @@ public final class timeCalc extends plainCalc
   public final String update(Watchable primary, Watchable secondary, HiResDate time)
   {
 		// check we have data
-		if(secondary == null)
+		if(primary == null)
 			return NOT_APPLICABLE;
 		
 		if(time == null)

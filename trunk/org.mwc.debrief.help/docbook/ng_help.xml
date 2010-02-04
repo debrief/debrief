@@ -2367,11 +2367,15 @@ and so on....</programlisting></para>
                             for more detail).</para>
                     </note>
                     <para id="primary_track">One <glossterm linkend="g_track">track</glossterm>
-                        currently loaded is assigned as the Primary track (the blue track in this
+                        currently loaded is assigned as the Primary track (the red track in this
                         instance), and then one or more tracks are assigned as Secondary tracks. The
-                        primary track always displays absolute data such as current course, speed
-                        and depth, as illustrated above. The secondary tracks display this data
-                        together with relative data such as Range and Bearing to the Primary track. </para>
+                        primary track always shows absolute data such as current course, speed and
+                        depth. With just a single secondary track specified, it also shows relative
+                        (calculated) data - as illustrated above. The secondary tracks always
+                        display both absolute data (course, speed, depth), plus the relative data
+                        respective to the primary.  Thus, remember that if you want to see the
+                        primary track's relative bearing to the secondary, make sure there's just
+                        the one secondary track selected. </para>
                     <para>Not only tracks can be placed on the Tote. Buoyfields and most annotations
                         (labels, circles, etc) can also be set as primary or secondary track. If no
                         time is available for an annotation it is deemed to always be valid, and
@@ -2413,12 +2417,12 @@ and so on....</programlisting></para>
                                 </listitem>
                             </varlistentry>
                             <varlistentry id="RelBearingDescription">
-                                <term>Rel Bearing</term>
+                                <term>Rel Bearing / ATB</term>
                                 <listitem>
-                                    <para>The relative bearing between the heading of the secondary
-                                        track, and the bearing to the primary track. There are two
-                                        formats used for relative bearing, depending on the setting
-                                        of <emphasis>Relative bearing format</emphasis> in the
+                                    <para>The relative bearing and Angle on The Bow from the
+                                        perspective of that column's track.. There are two formats
+                                        used for relative bearing, depending on the setting of
+                                            <emphasis>Relative bearing format</emphasis> in the
                                             <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>
                                         dialog. If the format is specified as UK, the R and G
                                         characters at the start of the result are short for Red and
@@ -2456,7 +2460,7 @@ and so on....</programlisting></para>
                             <varlistentry>
                                 <term>Brg Rate</term>
                                 <listitem>
-                                    <para>The instantaneous bearing rate of the primary track as
+                                    <para>The instantaneous bearing rate of the secondary track as
                                         observed from the secondary track. This value is explained
                                         in the Glossary.</para>
                                 </listitem>
@@ -2485,7 +2489,25 @@ and so on....</programlisting></para>
                 <sect2 id="more_assigning_tracks">
                     <title>Assigning Tracks</title>
                     <para>Assigning primary and secondary tracks is covered in the respective
-                            <glossterm linkend="g_cheat">Cheat Sheet</glossterm>. </para>
+                            <glossterm linkend="g_cheat">Cheat Sheet</glossterm>.  Icons are
+                        provided in the layer manager toolbar to specify if the selected track
+                        should be:<orderedlist>
+                            <listitem>
+                                <para>Made primary</para>
+                            </listitem>
+                            <listitem>
+                                <para>Made secondary</para>
+                            </listitem>
+                            <listitem>
+                                <para>Added to the list of secondaries</para>
+                            </listitem>
+                        </orderedlist><screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/LayerManagerView.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                     <tip>
                         <para>If you have more than two tracks, it can be quicker to assign the
                             primary track manually and then press <guibutton>Auto
@@ -6674,9 +6696,9 @@ course, speed, depth (m), label string
                         </blockquote>
                     </para>
                     <para>Whilst it has miliary roots, the KML dialect of XML has received wide
-                        adoption for the recording and distribution of positional information.  KML
-                        extends the GML standard.  KML and GML provide a number of ways of recording
-                        positional data.  This section will record the KML dialects that Debrief
+                        adoption for the recording and distribution of positional information. KML
+                        extends the GML standard. KML and GML provide a number of ways of recording
+                        positional data. This section will record the KML dialects that Debrief
                         understands.</para>
                 </sect2>
                 <sect2 id="KML_LineString">
@@ -6711,7 +6733,7 @@ course, speed, depth (m), label string
                         refined, time-stamped format - using series of <command>Placemark</command>
                         entries - each containing a <command>MultiGeometry</command> record.
                         Additionally, these more complex files are able to represent data for a
-                        number of different vehicles.  Debrief makes the following assumptions
+                        number of different vehicles. Debrief makes the following assumptions
                         regarding this file format:<orderedlist>
                             <listitem>
                                 <para>Only <command>Placemark</command> elements that contain a
@@ -6720,7 +6742,7 @@ course, speed, depth (m), label string
                             </listitem>
                             <listitem>
                                 <para>The <command>Placemark</command> name element is used to
-                                    determine the track id:  any digits/letters appearing before a
+                                    determine the track id: any digits/letters appearing before a
                                     "-" hyphen are treated as a track id, this multiple positions
                                     are attributed to their relevant track</para>
                             </listitem>
@@ -6741,7 +6763,7 @@ course, speed, depth (m), label string
                                         <command>Placemark</command></para>
                             </listitem>
                             <listitem>
-                                <para>Course and speed data is  taken from the
+                                <para>Course and speed data is taken from the
                                         <command>description</command> element, based on a
                                     presumption that the element contains a string formatted like:
                                         <code>&lt;br>Course: 345.2&lt;br>Speed: 9.6

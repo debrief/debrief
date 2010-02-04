@@ -94,7 +94,7 @@ public final class colorCalc extends plainCalc
   public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
   {
     // get the colour
-    java.awt.Color theCol = secondary.getColor();
+    java.awt.Color theCol = primary.getColor();
     return theCol.getRGB();
   }
 
@@ -102,7 +102,7 @@ public final class colorCalc extends plainCalc
   public final String update(Watchable primary, Watchable secondary, HiResDate time)
   {
 		// check we have data
-		if(secondary == null)
+		if(primary == null)
 			return NOT_APPLICABLE;
 
     // check we have our colour editor
@@ -112,7 +112,7 @@ public final class colorCalc extends plainCalc
     }
 
     // get the colour
-    java.awt.Color theCol = secondary.getColor();
+    java.awt.Color theCol = primary.getColor();
 
     colEditor.setValue(theCol);
 

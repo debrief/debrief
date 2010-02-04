@@ -117,7 +117,7 @@ public final class bearingCalc extends plainCalc
     double brg = 0.0;
     if((primary != null) && (secondary != null) && (primary != secondary))
     {
-			brg = primary.getLocation().bearingFrom(secondary.getLocation());
+			brg = secondary.getLocation().bearingFrom(primary.getLocation());
       brg = Conversions.clipRadians(brg);
       brg = Conversions.Rads2Degs(brg);
     }

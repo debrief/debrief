@@ -84,13 +84,13 @@ public final class courseCalc extends plainCalc
 
   public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
   {
-    return Conversions.Rads2Degs(secondary.getCourse());
+    return Conversions.Rads2Degs(primary.getCourse());
   }
   
   public final String update(Watchable primary, Watchable secondary, HiResDate time)
   {
 		// check we have data
-		if(secondary == null)
+		if(primary == null)
 			return NOT_APPLICABLE;
 		
     return _myPattern.format(

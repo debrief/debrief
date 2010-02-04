@@ -83,9 +83,9 @@ public final class speedCalc extends plainCalc
   public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
   {
     double res = 0.0;
-    if(secondary != null)
+    if(primary != null)
     {
-      res = secondary.getSpeed();
+      res = primary.getSpeed();
     }
     return res;
   }
@@ -93,7 +93,7 @@ public final class speedCalc extends plainCalc
   public final String update(Watchable primary, Watchable secondary, HiResDate time)
   {
 		// check we have data
-		if(secondary == null)
+		if(primary == null)
 			return NOT_APPLICABLE;
 		
     return _myPattern.format(calculate(primary, secondary, time));

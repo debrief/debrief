@@ -512,6 +512,13 @@ public class ImportReplay extends PlainImporterBase
 				{
 					// ok, see if we're importing it as DR or ATG (or ask the audience)
 					String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+					
+					// catch a missing import mode
+					if(importMode == null)
+					{
+						// belt & braces it is then...
+						importMode = ImportReplay.ASK_THE_AUDIENCE;
+					}
 
 					if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE))
 					{
