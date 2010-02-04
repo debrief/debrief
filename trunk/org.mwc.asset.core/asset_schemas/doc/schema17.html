@@ -3,19 +3,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component PredictedRangeDatumType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id69');
+
+        
+        var usedByBoxes= new Array('usedBy_id68', 
+				'usedBy_id69');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id68', 
+				'annotations_id69');
 
-        
+        var attributesBoxes= new Array('attributes_id68');
+
         
         var button_prefix = 'button_';
         
@@ -255,8 +259,18 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
                      </tr>
                   </table>
                   <div align="right"><span><input type="button"
@@ -271,7 +285,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id68"></a><div class="componentTitle">Complex Type <span class="qname">PredictedRangeDatumType</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +300,27 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id68" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id68');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id68" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">Maintenance object</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: Nil Editable: nil</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -306,25 +329,181 @@
                      </tr>
                      <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id68" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id68');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="usedBy_id68" style="display:block">
+                              <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="schema16.html#id67" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component PredictedRangeSetType/PredictedRangeDatum')">PredictedRangeSetType/PredictedRangeDatum</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id68" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id68');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id68" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema17.html#id69" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component PredictedRange')">PredictedRange</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Predicted range (in metres) at which MAD hit will</span><span class="tokenIndent">
+</span><span class="tokenText">fire</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
                                     </td>
-                                    <td><b>unqualified</b></td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
+                                    <td class="firstColumn"><b><a href="schema7.html#id15" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Type')">Type</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Vehicle categorisation</span></pre></td>
+                                             </tr>
+                                          </table>
+                                          <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Visible: Type Editable:</span><span class="tokenIndent">
+</span><span class="tokenText">Type</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id69"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="schema17.html#id68" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component PredictedRangeDatumType')">PredictedRangeDatumType</a></b> / @PredictedRange</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id69" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id69');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id69" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Predicted range (in metres) at which MAD hit will</span><span class="tokenIndent">
+</span><span class="tokenText">fire</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:float</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id69" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id69');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id69" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
                                        
                                     </td>
-                                    <td><b>qualified</b></td>
+                                    <td><b>required</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id69" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id69');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id69" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema17.html#id68" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component PredictedRangeDatumType')">PredictedRangeDatumType</a></b></td>
                                  </tr>
                               </table>
                            </div>

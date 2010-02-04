@@ -3,19 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component FixedWing</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id590');
 
         
         
         
         
         
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id590');
 
-        
+        var attributesBoxes= new Array('attributes_id590');
+
         
         var button_prefix = 'button_';
         
@@ -255,6 +256,11 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
                      </tr>
@@ -271,7 +277,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id590"></a><div class="componentTitle">Element <span class="qname">FixedWing</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +292,19 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id590" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id590');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id590" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">instance of subject, declared to allow standalone</span><span class="tokenIndent">
+</span><span class="tokenText">instance of this object to be defined in file</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -305,26 +312,150 @@
                         </td>
                      </tr>
                      <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema99.html#id419" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component FixedWingType')">FixedWingType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b><ul>
+                                    <li><b><a href="schema99.html#id419" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component FixedWingType')">FixedWingType</a></b></li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatRight"><input id="button_properties_id590" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id590');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
+                           <div id="properties_id590" style="display:block">
                               <table class="propertiesTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
+                                    <td class="firstColumn">content:
                                        
                                     </td>
-                                    <td><b>unqualified</b></td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema20.html#id81" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Category')">Category</a></b> , <b><a href="schema20.html#id85" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SensorFit')">SensorFit</a></b> , <b><a href="schema20.html#id144" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Status')">Status</a></b> , <b><a href="schema20.html#id174" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DemandedStatus{0,1}')">DemandedStatus{0,1}</a></b> , (<b><a href="schema20.html#id181" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall{0,1}')">Waterfall{0,1}</a></b> | <b><a href="schema20.html#id361" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence{0,1}')">Sequence{0,1}</a></b> | <b><a href="schema20.html#id362" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch{0,1}')">Switch{0,1}</a></b>) , <b><a href="schema20.html#id363" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadiatedCharacteristics*')">RadiatedCharacteristics*</a></b> , <b><a href="schema20.html#id377" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SelfNoiseCharacteristics{0,1}')">SelfNoiseCharacteristics{0,1}</a></b> , <b><a href="schema20.html#id382" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Movement{0,1}')">Movement{0,1}</a></b> , <b><a href="schema99.html#id420" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component FixedWingMovementCharacteristics')">FixedWingMovementCharacteristics</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema20.html#id81" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Category')">Category</a></b>, <b><a href="schema20.html#id174" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DemandedStatus')">DemandedStatus</a></b>, <b><a href="schema99.html#id420" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component FixedWingMovementCharacteristics')">FixedWingMovementCharacteristics</a></b>, <b><a href="schema20.html#id382" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Movement')">Movement</a></b>, <b><a href="schema20.html#id363" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadiatedCharacteristics')">RadiatedCharacteristics</a></b>, <b><a href="schema20.html#id377" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SelfNoiseCharacteristics')">SelfNoiseCharacteristics</a></b>, <b><a href="schema20.html#id85" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SensorFit')">SensorFit</a></b>, <b><a href="schema20.html#id361" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence')">Sequence</a></b>, <b><a href="schema20.html#id144" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Status')">Status</a></b>, <b><a href="schema20.html#id362" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch')">Switch</a></b>, <b><a href="schema20.html#id181" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id590" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id590');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id590" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema20.html#id386" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component MonteCarloTarget')">MonteCarloTarget</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Flag to indicate that this participant should be</span><span class="tokenIndent">
+</span><span class="tokenText">handled with</span><span class="tokenIndent">
+</span><span class="tokenText">special Monte Carlo processing</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
-                                       
+                                    <td class="firstColumn"><b><a href="schema20.html#id384" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:token</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The unique name for this participant</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
                                     </td>
-                                    <td><b>qualified</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema20.html#id385" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component id')">id</a></b></td>
+                                    <td><b>xs:int</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The unique id for this participant</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
                                  </tr>
                               </table>
                            </div>

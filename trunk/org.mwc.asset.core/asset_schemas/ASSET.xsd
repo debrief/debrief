@@ -3113,9 +3113,8 @@
 	</xs:complexType>
 	<xs:simpleType name="DetectionLevelType">
 		<xs:annotation>
-			<xs:documentation>The level of identification/classification
-				required to
-				count as detected</xs:documentation>
+			<xs:documentation>An increasing series of categories for the level
+				of knowledge about the subject participant.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:NMTOKEN">
 			<xs:enumeration value="Undetected" />

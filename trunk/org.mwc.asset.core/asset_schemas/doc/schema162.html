@@ -3,19 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component Switch</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id597');
 
         
         
         
         
         
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id597');
 
-        
+        var attributesBoxes= new Array('attributes_id597');
+
         
         var button_prefix = 'button_';
         
@@ -255,6 +256,11 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
                      </tr>
@@ -271,7 +277,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id597"></a><div class="componentTitle">Element <span class="qname">Switch</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +292,29 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id597" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id597');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id597" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">Standalone instance of a Switch behaviour</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: inherited, index.</span><span class="tokenIndent">
+</span><span class="tokenText">Editable: inherited,</span><span class="tokenIndent">
+</span><span class="tokenText">index</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -305,26 +322,151 @@
                         </td>
                      </tr>
                      <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema83.html#id354" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SwitchType')">SwitchType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema47.html#id183" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component DecisionModelType')">DecisionModelType</a></b><ul>
+                                    <li><b><a href="schema83.html#id354" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SwitchType')">SwitchType</a></b></li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatRight"><input id="button_properties_id597" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id597');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
+                           <div id="properties_id597" style="display:block">
                               <table class="propertiesTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
+                                    <td class="firstColumn">content:
                                        
                                     </td>
-                                    <td><b>unqualified</b></td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema83.html#id355" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema83.html#id355" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id597" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id597');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id597" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema83.html#id359" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Index')">Index</a></b></td>
+                                    <td><b>xs:integer</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The index number of the active behaviour</span><span class="tokenIndent">
+</span><span class="tokenText">(starting with</span><span class="tokenIndent">
+</span><span class="tokenText">1)</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
-                                       
+                                    <td class="firstColumn"><b><a href="schema47.html#id184" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component IsActive')">IsActive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model model is active</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
                                     </td>
-                                    <td><b>qualified</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema47.html#id186" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The name of this particular instance of this</span><span class="tokenIndent">
+</span><span class="tokenText">decision</span><span class="tokenIndent">
+</span><span class="tokenText">model</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema47.html#id185" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component StayAlive')">StayAlive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model stays alive on</span><span class="tokenIndent">
+</span><span class="tokenText">completion</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
                                  </tr>
                               </table>
                            </div>

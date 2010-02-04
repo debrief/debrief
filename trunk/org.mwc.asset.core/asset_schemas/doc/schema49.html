@@ -3,17 +3,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component WorldPathType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id191');
+
+        
+        var usedByBoxes= new Array('usedBy_id190');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id191', 
+				'annotations_id190');
 
         
         
@@ -258,6 +260,11 @@
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
                      </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
+                     </tr>
                   </table>
                   <div align="right"><span><input type="button"
                                onclick="getElementObject('global_controls').style.display = 'none';"
@@ -271,7 +278,8 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id191"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema49.html#id190" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component WorldPathType')">WorldPathType</a></b> / Point</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +294,118 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id191" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id191');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id191" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">A location which is part of the Path of points</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema41.html#id147" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LocationType')">LocationType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id191" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id191');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id191" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">maxOccurs:
+                                       
+                                    </td>
+                                    <td><b>unbounded</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema41.html#id148" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component shortLocation')">shortLocation</a></b> | <b><a href="schema41.html#id153" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component longLocation')">longLocation</a></b> | <b><a href="schema41.html#id164" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component relativeLocation')">relativeLocation</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema41.html#id153" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component longLocation')">longLocation</a></b>, <b><a href="schema41.html#id164" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component relativeLocation')">relativeLocation</a></b>, <b><a href="schema41.html#id148" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component shortLocation')">shortLocation</a></b></td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id190"></a><div class="componentTitle">Complex Type <span class="qname">WorldPathType</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id190" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id190');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id190" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Series of locations</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: inherited, # of</span><span class="tokenIndent">
+</span><span class="tokenText">locations Editable:</span><span class="tokenIndent">
+</span><span class="tokenText">inherited</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -306,29 +414,32 @@
                      </tr>
                      <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id190" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id190');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="usedBy_id190" style="display:block">
+                              <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
-                                    </td>
-                                    <td><b>unqualified</b></td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn">element form default:
-                                       
-                                    </td>
-                                    <td><b>qualified</b></td>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="schema48.html#id189" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component TransitType/WorldPath')">TransitType/WorldPath</a></b></td>
                                  </tr>
                               </table>
                            </div>
                         </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema49.html#id191" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Point+')">Point+</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema49.html#id191" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Point')">Point</a></b></td>
                      </tr>
                   </tbody>
                </table>

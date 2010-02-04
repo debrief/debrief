@@ -3,19 +3,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component SSKBroadbandType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id375', 
+				'properties_id376');
+
+        
+        var usedByBoxes= new Array('usedBy_id374', 
+				'usedBy_id375', 
+				'usedBy_id376');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id374');
 
-        
+        var attributesBoxes= new Array('attributes_id374');
+
         
         var button_prefix = 'button_';
         
@@ -255,8 +260,18 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
                      </tr>
                   </table>
                   <div align="right"><span><input type="button"
@@ -271,7 +286,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id374"></a><div class="componentTitle">Complex Type <span class="qname">SSKBroadbandType</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +301,30 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id374" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id374');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id374" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">Radiated noise for SSK, includes dived and snorting</span><span class="tokenIndent">
+</span><span class="tokenText">noise</span><span class="tokenIndent">
+</span><span class="tokenText">levels</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible:base, snort</span><span class="tokenIndent">
+</span><span class="tokenText">Editable: base, snort</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -306,25 +333,200 @@
                      </tr>
                      <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id374" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id374');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="usedBy_id374" style="display:block">
+                              <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
+                                    <td class="firstColumn">Elements </td>
+                                    <td><b><a href="schema85.html#id373" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component RadiatedCharacteristicsType/SSKBroadband')">RadiatedCharacteristicsType/SSKBroadband</a></b>, <b><a href="schema89.html#id381" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SelfNoiseCharacteristicsType/SSKBroadband')">SelfNoiseCharacteristicsType/SSKBroadband</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id374" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id374');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id374" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema88.html#id375" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component BaseNoiseLevel')">BaseNoiseLevel</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
                                     </td>
-                                    <td><b>unqualified</b></td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
+                                    <td class="firstColumn"><b><a href="schema88.html#id376" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SnortNoiseLevel')">SnortNoiseLevel</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id375"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="schema88.html#id374" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component SSKBroadbandType')">SSKBroadbandType</a></b> / @BaseNoiseLevel</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:float</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id375" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id375');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id375" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
                                        
                                     </td>
-                                    <td><b>qualified</b></td>
+                                    <td><b>required</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id375" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id375');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id375" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema88.html#id374" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SSKBroadbandType')">SSKBroadbandType</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id376"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="schema88.html#id374" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component SSKBroadbandType')">SSKBroadbandType</a></b> / @SnortNoiseLevel</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:float</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id376" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id376');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id376" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>required</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id376" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id376');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id376" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema88.html#id374" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SSKBroadbandType')">SSKBroadbandType</a></b></td>
                                  </tr>
                               </table>
                            </div>

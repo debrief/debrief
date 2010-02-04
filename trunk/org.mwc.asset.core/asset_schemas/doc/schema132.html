@@ -3,19 +3,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component VarianceListType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id524');
+
+        
+        var usedByBoxes= new Array('usedBy_id523');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id524', 
+				'annotations_id523');
 
-        
+        var attributesBoxes= new Array('attributes_id524');
+
         
         var button_prefix = 'button_';
         
@@ -255,8 +258,18 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
                      </tr>
                   </table>
                   <div align="right"><span><input type="button"
@@ -271,7 +284,8 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id524"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema132.html#id523" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component VarianceListType')">VarianceListType</a></b> / Variance</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +300,195 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id524" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id524');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id524" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">A specific variance to be applied</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema133.html#id525" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component VarianceType')">VarianceType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id524" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id524');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id524" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">maxOccurs:
+                                       
+                                    </td>
+                                    <td><b>unbounded</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema133.html#id526" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LocationArea')">LocationArea</a></b> | <b><a href="schema133.html#id531" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LocationOffset')">LocationOffset</a></b> | <b><a href="schema133.html#id535" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Node')">Node</a></b> | <b><a href="schema133.html#id542" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Attribute')">Attribute</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema133.html#id542" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Attribute')">Attribute</a></b>, <b><a href="schema133.html#id526" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LocationArea')">LocationArea</a></b>, <b><a href="schema133.html#id531" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LocationOffset')">LocationOffset</a></b>, <b><a href="schema133.html#id535" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Node')">Node</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id524" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id524');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id524" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema133.html#id559" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component id')">id</a></b></td>
+                                    <td><b><a href="schema129.html#id551" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component validString')">validString</a></b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">XPath identifier for the node to be changed. Note</span><span class="tokenIndent">
+</span><span class="tokenText">that for</span><span class="tokenIndent">
+</span><span class="tokenText">participant variances, this id will be prepended by the</span><span class="tokenIndent">
+</span><span class="tokenText">participant identifier</span><span class="tokenIndent">
+</span><span class="tokenText">(plus trailing slash) - so they're not needed</span><span class="tokenIndent">
+</span><span class="tokenText">in here, just an id like</span><span class="tokenIndent">
+</span><span class="tokenText">"Status/Speed"</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema133.html#id558" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component name')">name</a></b></td>
+                                    <td><b><a href="schema129.html#id551" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component validString')">validString</a></b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">user description of the node we are going to</span><span class="tokenIndent">
+</span><span class="tokenText">change</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id523"></a><div class="componentTitle">Complex Type <span class="qname">VarianceListType</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id523" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id523');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id523" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">A list of variances to be applied.</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: # of variances.</span><span class="tokenIndent">
+</span><span class="tokenText">Editable: None</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -306,29 +497,37 @@
                      </tr>
                      <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id523" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id523');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="usedBy_id523" style="display:block">
+                              <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
-                                    </td>
-                                    <td><b>unqualified</b></td>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="schema131.html#id522" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component MultiScenarioGeneratorType/VarianceList')">MultiScenarioGeneratorType/VarianceList</a></b></td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
-                                       
-                                    </td>
-                                    <td><b>qualified</b></td>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema144.html#id566" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ParticipantVariancesType')">ParticipantVariancesType</a></b></td>
                                  </tr>
                               </table>
                            </div>
                         </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema132.html#id524" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Variance*')">Variance*</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema132.html#id524" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Variance')">Variance</a></b></td>
                      </tr>
                   </tbody>
                </table>

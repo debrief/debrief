@@ -3,17 +3,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component DetectionLevelType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        
+        var facetsBoxes= new Array('facets_id136');
+
+        var usedByBoxes= new Array('usedBy_id136');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id136');
 
         
         
@@ -255,8 +256,13 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
-                                     onclick="switchStateForAll(this, propertiesBoxes);"
-                                     class="control" /></span><span class="globalControlName">Properties </span></td>
+                                     onclick="switchStateForAll(this, facetsBoxes);"
+                                     class="control" /></span><span class="globalControlName">Facets </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
                      </tr>
                   </table>
                   <div align="right"><span><input type="button"
@@ -271,7 +277,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id136"></a><div class="componentTitle">Simple Type <span class="qname">DetectionLevelType</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +292,19 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id136" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id136');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id136" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">An increasing series of categories for the level</span><span class="tokenIndent">
+</span><span class="tokenText">of knowledge about the subject participant.</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -305,26 +312,67 @@
                         </td>
                      </tr>
                      <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td>restriction of <b>xs:NMTOKEN</b></td>
+                     </tr>
+                     <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Facets</b></div>
+                           <div class="floatRight"><input id="button_facets_id136" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('facets_id136');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="facets_id136" style="display:block">
+                              <table class="facetsTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
+                                    <td class="firstColumn">enumeration</td>
+                                    <td width="30%"><b>Undetected</b></td>
+                                    <td>
+                                       <div class="annotation"></div>
                                     </td>
-                                    <td><b>unqualified</b></td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
-                                       
+                                    <td class="firstColumn">enumeration</td>
+                                    <td width="30%"><b>Detected</b></td>
+                                    <td>
+                                       <div class="annotation"></div>
                                     </td>
-                                    <td><b>qualified</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">enumeration</td>
+                                    <td width="30%"><b>Classified</b></td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">enumeration</td>
+                                    <td width="30%"><b>Identified</b></td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id136" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id136');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id136" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Attributes </td>
+                                    <td><b><a href="schema121.html#id500" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetectionObserverType/@DetectionLevel')">DetectionObserverType/@DetectionLevel</a></b>, <b><a href="schema57.html#id226" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component InvestigateType/@DetectionLevel')">InvestigateType/@DetectionLevel</a></b>, <b><a href="schema33.html#id135" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component TypedCookieSensorType/@DetectionLevel')">TypedCookieSensorType/@DetectionLevel</a></b></td>
                                  </tr>
                               </table>
                            </div>

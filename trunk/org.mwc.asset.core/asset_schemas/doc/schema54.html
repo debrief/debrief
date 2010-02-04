@@ -3,19 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component TargetTypeType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        var propertiesBoxes= new Array('properties_id208');
+
+        
+        var usedByBoxes= new Array('usedBy_id207');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id207');
 
-        
+        var attributesBoxes= new Array('attributes_id208');
+
         
         var button_prefix = 'button_';
         
@@ -255,8 +257,18 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
                                      onclick="switchStateForAll(this, propertiesBoxes);"
                                      class="control" /></span><span class="globalControlName">Properties </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
                      </tr>
                   </table>
                   <div align="right"><span><input type="button"
@@ -271,7 +283,104 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id208"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema54.html#id207" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component TargetTypeType')">TargetTypeType</a></b> / Type</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema36.html#id132" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component TypeType')">TypeType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id208" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id208');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id208" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>1</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">maxOccurs:
+                                       
+                                    </td>
+                                    <td><b>unbounded</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id208" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id208');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id208" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema36.html#id133" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id207"></a><div class="componentTitle">Complex Type <span class="qname">TargetTypeType</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +395,28 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id207" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id207');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id207" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">Collection of subject types</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: list of types</span><span class="tokenIndent">
+</span><span class="tokenText">Editable: nil</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -306,29 +425,45 @@
                      </tr>
                      <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id207" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id207');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="usedBy_id207" style="display:block">
+                              <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
-                                    </td>
-                                    <td><b>unqualified</b></td>
-                                 </tr>
-                                 <tr>
-                                    <td class="firstColumn">element form default:
-                                       
-                                    </td>
-                                    <td><b>qualified</b></td>
+                                    <td class="firstColumn">Elements </td>
+                                    <td><b><a href="schema58.html#id231" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component AvoidType/TargetType')">AvoidType/TargetType</a></b>, <b><a href="schema77.html#id321" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component CircularDatumSearchType/TargetType')">CircularDatumSearchType/TargetType</a></b>, <b><a href="schema106.html#id448" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DebriefReplayObserverType/SubjectToTrack')">DebriefReplayObserverType/SubjectToTrack</a></b>, <b><a href="schema71.html#id290" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetectionForPeriodType/TargetType')">DetectionForPeriodType/TargetType</a></b>, <b><a href="schema70.html#id286" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetectionType/TargetType')">DetectionType/TargetType</a></b>, <b><a href="schema65.html#id263" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetonateType/TargetType')">DetonateType/TargetType</a></b>, <b><a href="schema64.html#id259" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component EvadeType/TargetType')">EvadeType/TargetType</a></b>, <b><a href="schema59.html#id235" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component InterceptType/TargetType')">InterceptType/TargetType</a></b>, <b><a href="schema57.html#id224" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component InvestigateType/TargetType')">InvestigateType/TargetType</a></b>, <b><a href="schema66.html#id269" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component LaunchWeaponType/TargetType')">LaunchWeaponType/TargetType</a></b>, <b><a href="schema56.html#id218" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SSKRechargeType/EvadeThese')">SSKRechargeType/EvadeThese</a></b>, <b><a href="schema117.html#id483" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component TargetType/TargetType')">TargetType/TargetType</a></b>, <b><a href="schema53.html#id206" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component TrailType/TargetType')">TrailType/TargetType</a></b>, <b><a href="schema118.html#id486" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component WatchType/TargetType')">WatchType/TargetType</a></b></td>
                                  </tr>
                               </table>
                            </div>
                         </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema54.html#id208" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Type+')">Type+</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema54.html#id208" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Type')">Type</a></b></td>
                      </tr>
                   </tbody>
                </table>

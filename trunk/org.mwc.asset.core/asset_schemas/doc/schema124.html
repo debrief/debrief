@@ -3,19 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
    <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <title>Schema documentation for component ASSET.xsd</title>
+      <title>Schema documentation for component StopOnDetectionObserverType</title>
       <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
          <!--
-        var propertiesBoxes= new Array('properties_id0');
+        
+        
+        var usedByBoxes= new Array('usedBy_id508');
 
         
         
         
-        
-        
-        var annotationBoxes= new Array('annotations_id0');
+        var annotationBoxes= new Array('annotations_id508');
 
-        
+        var attributesBoxes= new Array('attributes_id508');
+
         
         var button_prefix = 'button_';
         
@@ -255,8 +256,13 @@
                      </tr>
                      <tr>
                         <td><span><input type="checkbox" value="-" checked="checked"
-                                     onclick="switchStateForAll(this, propertiesBoxes);"
-                                     class="control" /></span><span class="globalControlName">Properties </span></td>
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
                      </tr>
                   </table>
                   <div align="right"><span><input type="button"
@@ -271,7 +277,7 @@
                <td class="rt_cornerBottomRight"></td>
             </tr>
          </table>
-      </div><a id="id0"></a><div class="componentTitle">Main schema <span class="qname">ASSET.xsd</span></div>
+      </div><a id="id508"></a><div class="componentTitle">Complex Type <span class="qname">StopOnDetectionObserverType</span></div>
       <table class="rt">
          <tr>
             <td class="rt_cornerTopLeft"></td>
@@ -286,18 +292,27 @@
                      <tr>
                         <td class="firstColumn">
                            <div class="floatLeft"><b>Annotations</b></div>
-                           <div class="floatRight"><input id="button_annotations_id0" type="image" src="images/button_minus.gif"
+                           <div class="floatRight"><input id="button_annotations_id508" type="image" src="images/button_minus.gif"
                                      value="-"
-                                     onclick="switchState('annotations_id0');"
+                                     onclick="switchState('annotations_id508');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="annotations_id0" style="display:block">
+                           <div id="annotations_id508" style="display:block">
                               <div class="annotation">
                                  <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
                                         class="preWrapContainer">
                                     <tr>
-                                       <td width="100%"><pre><span class="tokenText">And now the low level generic ones</span></pre></td>
+                                       <td width="100%"><pre><span class="tokenText">Stop if our watched participant detects a target</span><span class="tokenIndent">
+</span><span class="tokenText">participant.</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: Inherited. Editable: inherited.</span></pre></td>
                                     </tr>
                                  </table>
                               </div>
@@ -305,26 +320,119 @@
                         </td>
                      </tr>
                      <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td>extension of <b><a href="schema121.html#id496" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DetectionObserverType')">DetectionObserverType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema107.html#id443" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component CoreObserverType')">CoreObserverType</a></b><ul>
+                                    <li><b><a href="schema121.html#id496" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetectionObserverType')">DetectionObserverType</a></b><ul>
+                                          <li><b><a href="schema124.html#id508" target="mainFrame" title="No namespace"
+                                                   onclick="updatePageTitle('Schema documentation for component StopOnDetectionObserverType')">StopOnDetectionObserverType</a></b></li>
+                                       </ul>
+                                    </li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
                         <td class="firstColumn">
-                           <div class="floatLeft"><b>Properties</b></div>
-                           <div class="floatRight"><input id="button_properties_id0" type="image" src="images/button_minus.gif" value="-"
-                                     onclick="switchState('properties_id0');"
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id508" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id508');"
                                      class="control" /></div>
                         </td>
                         <td>
-                           <div id="properties_id0" style="display:block">
-                              <table class="propertiesTable">
+                           <div id="usedBy_id508" style="display:block">
+                              <table class="usedByTable">
                                  <tr>
-                                    <td class="firstColumn">attribute form default:
-                                       
-                                    </td>
-                                    <td><b>unqualified</b></td>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="schema105.html#id507" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ObserverListType/StopOnDetectionObserver')">ObserverListType/StopOnDetectionObserver</a></b></td>
                                  </tr>
                                  <tr>
-                                    <td class="firstColumn">element form default:
-                                       
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema125.html#id510" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component StopOnProximityDetectionObserverType')">StopOnProximityDetectionObserverType</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema121.html#id497" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Target')">Target</a></b> , <b><a href="schema121.html#id498" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Watch')">Watch</a></b> , <b><a href="schema121.html#id499" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BatchCollator{0,1}')">BatchCollator{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema121.html#id499" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BatchCollator')">BatchCollator</a></b>, <b><a href="schema121.html#id497" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Target')">Target</a></b>, <b><a href="schema121.html#id498" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Watch')">Watch</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id508" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id508');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id508" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema107.html#id445" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Active')">Active</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
                                     </td>
-                                    <td><b>qualified</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema121.html#id500" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetectionLevel')">DetectionLevel</a></b></td>
+                                    <td><b><a href="schema34.html#id136" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component DetectionLevelType')">DetectionLevelType</a></b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema107.html#id444" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:token</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
                                  </tr>
                               </table>
                            </div>
