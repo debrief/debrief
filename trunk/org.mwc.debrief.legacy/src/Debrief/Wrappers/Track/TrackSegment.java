@@ -22,6 +22,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Layers.NeedsWrappingInLayerManager;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
@@ -42,7 +43,7 @@ import flanagan.interpolation.CubicSpline;
  * 
  */
 public class TrackSegment extends BaseItemLayer implements DraggableItem,
-		GriddableSeriesMarker
+		GriddableSeriesMarker, NeedsWrappingInLayerManager
 {
 
 	/**
@@ -961,6 +962,18 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			result.setColor(col);
 
 		return result;
+	}
+
+	@Override
+	public Layer wrapMe()
+	{
+		// right, put the segment into a TrackWrapper
+		TrackWrapper newTrack = new TrackWrapper();
+		newTrack.setName(this.getName());
+		newTrack.setColor(Color.red);
+		newTrack.add(this);
+		
+		return newTrack;
 	}
 
 }

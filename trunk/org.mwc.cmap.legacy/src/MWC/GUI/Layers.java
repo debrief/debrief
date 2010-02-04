@@ -334,8 +334,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	public static final WorldArea getDebriefOrigin()
 	{
 		// no, return the origin of Debrief (Fort Blockhouse, HMS Dolphin)
-		return new WorldArea(new WorldLocation(51, 12, 8.27, 'N', 001, 58, 7.62, 'W', 0),
-				new WorldLocation(50, 30, 26.99, 'N', 0, 42, 56.58, 'W', 0));
+		return new WorldArea(new WorldLocation(51, 12, 8.27, 'N', 001, 58, 7.62,
+				'W', 0), new WorldLocation(50, 30, 26.99, 'N', 0, 42, 56.58, 'W', 0));
 	}
 
 	/**
@@ -354,13 +354,18 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			// see if we are storing this layer already
 			Layer current = findLayer(thisL.getName());
 			if (current == null)
+			{
+				// ok, now we can add it
 				_theLayers.addElement(thisL);
+			}
 			else
+			{
 				current.append(thisL);
+			}
 		}
 
 	}
-
+//
 	/**
 	 * get the current number of layers
 	 * 
@@ -375,9 +380,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		return _theLayers.elements();
 	}
-	
-	/** retrieve the layers.
-	 * Right, we do some SPECIAL PROCESSING HERE.
+
+	/**
+	 * retrieve the layers. Right, we do some SPECIAL PROCESSING HERE.
 	 * 
 	 * We want to ensure that we return
 	 * 
@@ -414,7 +419,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			if (!inserted)
 				_nonBuffered.add(thisLayer);
 		}
-		
+
 		res.addAll(_backgrounds);
 		res.addAll(_buffered);
 		res.addAll(_nonBuffered);
@@ -477,8 +482,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			}
 			else
 			{
-				// no, just stick it on the end
-				_theLayers.addElement(theLayer);
+				_theLayers.add(theLayer);
 			}
 		}
 		else
@@ -496,6 +500,23 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public void addThisLayer(Layer theLayer)
 	{
+		// right, see if it's one to be wrapped
+		if (theLayer instanceof NeedsWrappingInLayerManager)
+		{
+			// right, does it already exist at the top level
+			Layer exists = this.findLayer(theLayer.getName());
+			if (exists != null)
+			{
+				// better rename it then
+				theLayer.setName(theLayer.getName() + "_"
+						+ (int) (Math.random() * 1000));
+			}
+
+			// now wrap it
+			NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) theLayer;
+			theLayer = nl.wrapMe();
+		}
+
 		addThisLayerDoNotResize(theLayer);
 
 		// and fire the extended event
@@ -508,11 +529,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 * @param theLayer
 	 *          the layer to add
 	 */
-	public void addThisLayerAllowDuplication(Layer theLayer)
+	public void addThisLayerAllowDuplication(final Layer theLayer)
 	{
 
-		// no, we know nothing about it, create a fresh one
-		_theLayers.addElement(theLayer);
+		_theLayers.add(theLayer);
 
 		// and fire the extended event
 		fireExtended();
@@ -788,15 +808,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		Plottable other = (Plottable) arg0;
 		int myCode = hashCode();
 		int otherCode = other.hashCode();
-		if(myCode < otherCode)
+		if (myCode < otherCode)
 			res = -1;
-		else if(myCode > otherCode)
+		else if (myCode > otherCode)
 			res = 1;
-		else 
+		else
 			res = 0;
 		return res;
-	}	
-	
+	}
+
 	/**
 	 * finalise function, removes all references to layers
 	 */
@@ -827,6 +847,18 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	// ////////////////////////////////////////////////////////////////
 	// interface definition
 	// ////////////////////////////////////////////////////////////////
+
+	/**
+	 * marker for objects that must be wrapped before they are pasted into the
+	 * layer manager
+	 * 
+	 */
+	public static interface NeedsWrappingInLayerManager
+	{
+
+		public Layer wrapMe();
+	}
+
 	/**
 	 * interface to be implemented by classes intending to watch the full set of
 	 * data for this scenarion
@@ -926,7 +958,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		{
 			try
 			{
-				PropertyDescriptor[] res = { prop("Name", "the name for these layers"), };
+				PropertyDescriptor[] res =
+				{ prop("Name", "the name for these layers"), };
 
 				return res;
 			}
