@@ -3016,15 +3016,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// getting the
 					// fix immediately before the requested time
 					final HiResDate thisDTG = new HiResDate(0, start_time);
-					System.out.println(" this time is:" + thisDTG);
 					final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
 					// check we found some
 					if (list.length > 0)
 					{
 						final FixWrapper fw = (FixWrapper) list[0];
 						setter.execute(fw, true);
-						
-						System.out.println("setting true for fix at:" + fw.getLabel());
 					}
 					// produce the next time step
 					start_time += freq;
