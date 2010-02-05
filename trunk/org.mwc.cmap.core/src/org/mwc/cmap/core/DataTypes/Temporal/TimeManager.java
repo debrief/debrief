@@ -141,13 +141,8 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 */
 	public void setPeriod(Object origin, TimePeriod period)
 	{
-		TimePeriod oldTime = null;
-
-		// ok. remember the old period
-		// right, do we have an old period?
-		if (_timePeriod != null)
-			oldTime = new TimePeriod.BaseTimePeriod(_timePeriod.getStartDTG(), _timePeriod
-					.getEndDTG());
+		// remember the old period
+		TimePeriod oldPeriod = _timePeriod;
 
 		// store the new time
 		_timePeriod = period;
@@ -155,7 +150,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 		// do we have any listeners?
 		if (_pSupport != null)
 		{
-			_pSupport.firePropertyChange(PERIOD_CHANGED_PROPERTY_NAME, oldTime, _currentTime);
+			_pSupport.firePropertyChange(PERIOD_CHANGED_PROPERTY_NAME, oldPeriod, _timePeriod);
 		}
 
 	}

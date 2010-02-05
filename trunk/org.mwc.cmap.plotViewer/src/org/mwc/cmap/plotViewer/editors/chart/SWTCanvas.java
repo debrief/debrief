@@ -471,7 +471,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 							if (!_myCanvas.isDisposed())
 							{
 								_myCanvas.redraw();
-								System.err.println("redraw!");
 							}
 						}
 					});

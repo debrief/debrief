@@ -271,31 +271,57 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// created during initialisation may need to use/reset it
 		_slideManager = new SliderRangeManagement()
 		{
-			public void setMinVal(int min)
-			{
-				if (!_tNowSlider.isDisposed())
-					_tNowSlider.setMinimum(min);
-			}
-
-			public void setMaxVal(int max)
-			{
-				if (!_tNowSlider.isDisposed())
-					_tNowSlider.setMaximum(max);
-			}
-
-			public void setTickSize(int small, int large, int drag)
+			public void setMinVal(final int min)
 			{
 				if (!_tNowSlider.isDisposed())
 				{
-					_tNowSlider.setIncrement(small);
-					_tNowSlider.setPageIncrement(large);
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							_tNowSlider.setMinimum(min);
+						}
+					});
 				}
 			}
 
-			public void setEnabled(boolean val)
+			public void setMaxVal(final int max)
 			{
 				if (!_tNowSlider.isDisposed())
-					_tNowSlider.setEnabled(val);
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							_tNowSlider.setMaximum(max);
+						}
+					});
+			}
+
+			public void setTickSize(final int small, final int large, int drag)
+			{
+				if (!_tNowSlider.isDisposed())
+				{
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							_tNowSlider.setIncrement(small);
+							_tNowSlider.setPageIncrement(large);
+						}
+					});
+				}
+			}
+
+			public void setEnabled(final boolean val)
+			{
+				if (!_tNowSlider.isDisposed())
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							_tNowSlider.setEnabled(val);
+						}
+					});
 			}
 		};
 
@@ -724,9 +750,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			else if (event.getPropertyName().equals(
 					TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 			{
-				TimePeriod newPeriod = (TimePeriod) event.getNewValue();
+				final TimePeriod newPeriod = (TimePeriod) event.getNewValue();
 				_slideManager
 						.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+
+				Display.getDefault().asyncExec(new Runnable()
+				{
+					public void run()
+					{
+						// and our range selector - first the outer
+						// ranges
+						_dtgRangeSlider.updateOuterRanges(newPeriod);
+
+						// ok, now the user ranges...
+						_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
+								newPeriod.getEndDTG());
+					}
+				});
 			}
 
 			// also double-check if it's time to enable our interface
@@ -953,6 +993,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								// stop listening to that dataset
 								_myTemporalDataset.removeListener(_temporalListener,
 										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+								_myTemporalDataset.removeListener(_temporalListener,
+										TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
 							}
 
 							// implementation here.
@@ -961,6 +1003,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							// and start listening to the new one
 							_myTemporalDataset.addListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							_myTemporalDataset.addListener(_temporalListener,
+									TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
 
 							// also configure for the current time
 							HiResDate newDTG = _myTemporalDataset.getTime();
@@ -1010,6 +1054,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							// anyway).
 							_myTemporalDataset.removeListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
 
 							_myTemporalDataset = null;
 						}
