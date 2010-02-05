@@ -1,7 +1,6 @@
 package org.mwc.cmap.grideditor;
 
 import java.beans.PropertyChangeListener;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -10,7 +9,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
@@ -26,6 +24,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptorExtension;
@@ -303,107 +302,6 @@ public class GridEditorView extends ViewPart
 						.getEditable();
 				pw.removePropertyChangeListener(listener);
 			}
-		}
-
-		private static class EventStack
-		{
-
-			public EventStack(int delay)
-			{
-				this.delay = delay;
-				if (delay <= 0)
-				{
-					throw new RuntimeException("Delay has to be positive");
-				}
-			}
-
-			public void addEvent(Runnable event)
-			{
-				if (event == null)
-				{
-					throw new RuntimeException("Event cannot be null");
-				}
-				getEventRunner().setNextEvent(event);
-			}
-
-			// implementation details
-
-			private final int delay;
-
-			private DelayedEventRunner eventRunner = null;
-
-			private DelayedEventRunner getEventRunner()
-			{
-				if (eventRunner == null)
-				{
-					eventRunner = new DelayedEventRunner(delay);
-					eventRunner.start();
-				}
-				return eventRunner;
-			}
-
-		}
-
-		static private class DelayedEventRunner extends Thread
-		{
-
-			private final int delay;
-			private Runnable nextEvent = null;
-			private Long eventReceivedTime = null;
-
-			public DelayedEventRunner(int delay)
-			{
-				this.delay = delay;
-				setDaemon(true);
-			}
-
-			synchronized public void setNextEvent(Runnable runnable)
-			{
-				// store the time we received this
-				eventReceivedTime = new Date().getTime();
-
-				// remember this event (over-writing any previous events)
-				nextEvent = runnable;
-			}
-
-			public void run()
-			{
-				while (true)
-				{
-					synchronized (this)
-					{
-						if (nextEvent != null)
-						{
-							boolean isDelayUp = false;
-
-							final long currentTime = new Date().getTime();
-
-							// how long since we last received an event?
-							long elapsedTime = currentTime - eventReceivedTime;
-
-							// have we passed the required waiting time?
-							isDelayUp = elapsedTime > delay;
-
-							if (isDelayUp)
-							{
-								Display.getDefault().asyncExec(nextEvent);
-								// and clear the queue
-								nextEvent = null;
-							}
-						}
-					}
-
-					try
-					{
-						Thread.sleep(10);
-					}
-					catch (InterruptedException e)
-					{
-						// we can not do anything about it, let's ignore
-					}
-				}
-			}
-
 		}
 
 	}

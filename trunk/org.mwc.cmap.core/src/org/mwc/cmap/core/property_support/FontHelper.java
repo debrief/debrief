@@ -18,9 +18,21 @@ import org.eclipse.swt.widgets.*;
 public class FontHelper extends EditorHelper
 {
 
+	/** a store of java fonts cross-referenced against swt ones
+	 * 
+	 */
 	private static HashMap<java.awt.Font, Font> _myFontList;
 
+	/** a font registry - to reduce usage/creation of SWT fonts
+	 * 
+	 */
 	private static FontRegistry _fontRegistry;
+	
+	/** a store of java fonts, cross-referenced against the font description
+	 * 
+	 */
+	protected static HashMap<FontData, java.awt.Font> _awtFonts;
+
 
 	public static class FontDataDialogCellEditor extends DialogCellEditor
 	{
@@ -28,17 +40,6 @@ public class FontHelper extends EditorHelper
 		public FontDataDialogCellEditor(Composite parent)
 		{
 			super(parent);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.jface.viewers.DialogCellEditor#getDefaultLabel()
-		 */
-		protected Label getDefaultLabel()
-		{
-			// TODO Auto-generated method stub
-			return super.getDefaultLabel();
 		}
 
 		protected Object openDialogBox(Control cellEditorWindow)
@@ -87,16 +88,35 @@ public class FontHelper extends EditorHelper
 		Font font = (Font) value;
 		return convertFont(font);
 	}
-
+	
 	public static java.awt.Font convertFont(org.eclipse.swt.graphics.Font swtFont)
 	{
 		// ok, convert the AWT color to SWT
 		java.awt.Font res = null;
 		FontData fd = swtFont.getFontData()[0];
-		res = new java.awt.Font(fd.getName(), fd.getStyle(), fd.getHeight());
+
+		if(_awtFonts == null)
+			_awtFonts = new HashMap<FontData, java.awt.Font>();
+		
+		// do we already hold this font?
+		res = _awtFonts.get(fd);
+		if(res == null)
+		{
+			// nope, better create it
+			res =  new java.awt.Font(fd.getName(), fd.getStyle(), fd.getHeight());
+			
+			// and remember it
+			_awtFonts.put(fd, res);
+		}
+		
 		return res;
 	}
 
+	/** create an swt font that looks like this java awt one
+	 * 
+	 * @param javaFont
+	 * @return
+	 */
 	public static org.eclipse.swt.graphics.Font convertFont(java.awt.Font javaFont)
 	{
 	

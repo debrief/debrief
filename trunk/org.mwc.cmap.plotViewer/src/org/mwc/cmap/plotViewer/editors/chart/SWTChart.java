@@ -420,9 +420,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			// just delete that layer
 			_myLayers.remove(changedLayer);
 
-			// chuck in a GC, to clear the old image allocation
-			System.gc();
+			// NO, don't GC.  If we change lots of items, we do lots of garbage collections, and each
+			// one takes a finite time. Leave the app to do it on it's own
+			// --- chuck in a GC, to clear the old image allocation
+  	  //---  System.gc();
 
+			
 			// and trigger update
 			_theCanvas.updateMe();
 		}

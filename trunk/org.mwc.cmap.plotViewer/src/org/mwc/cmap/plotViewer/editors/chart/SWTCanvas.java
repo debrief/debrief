@@ -129,6 +129,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.ui_support.EventStack;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
@@ -149,6 +150,12 @@ public class SWTCanvas extends SWTCanvasAdapter
 	private static final long serialVersionUID = 1L;
 
 	org.eclipse.swt.widgets.Canvas _myCanvas = null;
+
+	/** an event queue - where we place screen update events, to trim down
+	 * lots of consecutive screen updates
+	 */
+	private EventStack _eventQue = new EventStack(50);
+
 
 	/**
 	 * our double-buffering safe copy.
@@ -434,6 +441,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	// graphics plotting related
 	// //////////////////////////////////////////////////////////
 
+
 	/**
 	 * first repaint the plot, then trigger a screen update
 	 */
@@ -450,18 +458,29 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 		if (!_myCanvas.isDisposed())
 		{
-			// called deferred redraw method
-			Display.getDefault().asyncExec(new Runnable()
+			// create the runnable to place in the que
+			Runnable runme = new Runnable()
 			{
 				public void run()
 				{
-					if (!_myCanvas.isDisposed())
+					// called deferred redraw method
+					Display.getDefault().asyncExec(new Runnable()
 					{
-						_myCanvas.redraw();
-					}
+						public void run()
+						{
+							if (!_myCanvas.isDisposed())
+							{
+								_myCanvas.redraw();
+							}
+						}
+					});
 				}
+			};
 
-			});
+			// add it to the cache
+			_eventQue.addEvent(runme);
+
+			
 		}
 	}
 
