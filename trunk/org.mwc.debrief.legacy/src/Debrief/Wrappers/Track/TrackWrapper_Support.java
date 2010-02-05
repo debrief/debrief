@@ -28,7 +28,8 @@ public class TrackWrapper_Support
 			Layer, SupportsPropertyListeners
 	{
 
-		/** property support
+		/**
+		 * property support
 		 * 
 		 */
 		private PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
@@ -45,9 +46,6 @@ public class TrackWrapper_Support
 		{
 			_pSupport.addPropertyChangeListener(property, listener);
 		}
-		
-		
-		
 
 		@Override
 		public void firePropertyChange(String propertyChanged, Object oldValue,
@@ -68,7 +66,7 @@ public class TrackWrapper_Support
 		{
 			_pSupport.removePropertyChangeListener(property, listener);
 		}
-		
+
 		/**
 		 * class containing editable details of a track
 		 */
@@ -150,7 +148,7 @@ public class TrackWrapper_Support
 		{
 			return _myTrack;
 		}
-		
+
 	}
 
 	/**
@@ -313,7 +311,22 @@ public class TrackWrapper_Support
 				TrackSegment segment = (TrackSegment) iterator.next();
 
 				if (first == null)
-					first = segment;
+				{
+					// aaah, now, if this is a TMA segment we've got to replace it with
+					// a normal track segment. You can't join new track sections onto the
+					// end
+					// of a tma segment
+					if (segment instanceof CoreTMASegment)
+					{
+						CoreTMASegment tma = (CoreTMASegment) segment;
+						first = new TrackSegment(tma);
+					}
+					else
+					{
+						// cool, just go ahead
+						first = segment;
+					}
+				}
 				else
 				{
 					first.append((Layer) segment);

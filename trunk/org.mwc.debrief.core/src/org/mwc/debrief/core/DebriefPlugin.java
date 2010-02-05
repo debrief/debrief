@@ -13,7 +13,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
-import org.mwc.debrief.core.ContextOperations.GenerateJoiningSegment;
+import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
@@ -152,7 +152,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		// also provide someps extra functionality to the right-click editor
 		RightClickSupport.addRightClickGenerator(new GenerateTrack());
 		RightClickSupport.addRightClickGenerator(new MergeTracks());
-		RightClickSupport.addRightClickGenerator(new GenerateJoiningSegment());
+		RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
 		RightClickSupport.addRightClickGenerator(new GroupTracks());
 		RightClickSupport.addRightClickGenerator(new GenerateTMASegment());
 

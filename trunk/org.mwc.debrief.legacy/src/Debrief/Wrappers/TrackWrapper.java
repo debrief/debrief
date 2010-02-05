@@ -961,18 +961,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (target instanceof CoreTMASegment)
 		{
 			CoreTMASegment tma = (CoreTMASegment) target;
-			TrackSegment newSegment = new TrackSegment();
-			newSegment.setName(tma.getName());
-			newSegment.setVisible(tma.getVisible());
-			newSegment.setWrapper(tma.getWrapper());
-
-			// add the elements from the target
-			Enumeration<Editable> points = tma.elements();
-			while (points.hasMoreElements())
-			{
-				Editable next = points.nextElement();
-				newSegment.add(next);
-			}
+			TrackSegment newSegment = new TrackSegment(tma);
 
 			// now do some fancy footwork to remove the target from the wrapper, and
 			// replace it with our new segment
@@ -2312,7 +2301,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			else
 			{
 				res.extend(seg.startDTG());
-				res.extend(seg.startDTG());
+				res.extend(seg.endDTG());
 			}
 		}
 		return res;
@@ -2523,7 +2512,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			Enumeration<Editable> segments = _thePositions.elements();
 			while (segments.hasMoreElements())
 			{
-				TrackSegment seg = (TrackSegment) segments.nextElement();
+				TrackSegment seg = (TrackSegment) segments.nextElement();				
 				lineStyle = seg.getLineStyle();
 
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
@@ -2539,6 +2528,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				if (!getVisible() && !isRelative)
 					continue;
 
+				// is this segment visible?
+				if(!seg.getVisible())
+					continue;
+				
 				final Enumeration<Editable> fixWrappers = seg.elements();
 				while (fixWrappers.hasMoreElements())
 				{
@@ -2770,6 +2763,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						while (posis.hasMoreElements())
 						{
 							TrackSegment thisE = (TrackSegment) posis.nextElement();
+							
+							// is this segment visible?
+							if(!thisE.getVisible())
+								continue;
 
 							// is the first track a DR track?
 							if (thisE.getPlotRelative())
@@ -3019,12 +3016,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// getting the
 					// fix immediately before the requested time
 					final HiResDate thisDTG = new HiResDate(0, start_time);
+					System.out.println(" this time is:" + thisDTG);
 					final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
 					// check we found some
 					if (list.length > 0)
 					{
 						final FixWrapper fw = (FixWrapper) list[0];
 						setter.execute(fw, true);
+						
+						System.out.println("setting true for fix at:" + fw.getLabel());
 					}
 					// produce the next time step
 					start_time += freq;

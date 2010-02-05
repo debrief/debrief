@@ -278,6 +278,25 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.setLineStyle(CanvasType.DOTTED);
 	}
 
+	/** constructor that builds a plain track segment from a tma segment
+	 *  - an operation we must do when we try to merge track segments
+	 * @param tma
+	 */
+	public TrackSegment(CoreTMASegment tma)
+	{
+		setName(tma.getName());
+		setVisible(tma.getVisible());
+		setWrapper(tma.getWrapper());
+
+		// add the elements from the target
+		Enumeration<Editable> points = tma.elements();
+		while (points.hasMoreElements())
+		{
+			Editable next = points.nextElement();
+			add(next);
+		}
+	}
+
 	/**
 	 * get the first 'n' elements from this segment
 	 * 
