@@ -154,7 +154,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	/** an event queue - where we place screen update events, to trim down
 	 * lots of consecutive screen updates
 	 */
-	private EventStack _eventQue = new EventStack(50);
+	private EventStack _eventQue = new EventStack(15);
 
 
 	/**
@@ -471,6 +471,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 							if (!_myCanvas.isDisposed())
 							{
 								_myCanvas.redraw();
+								System.err.println("redraw!");
 							}
 						}
 					});
