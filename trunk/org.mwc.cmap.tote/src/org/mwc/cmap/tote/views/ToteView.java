@@ -46,7 +46,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.ToteCalculationProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.property_support.ColorHelper;
@@ -1063,8 +1062,12 @@ public class ToteView extends ViewPart
 								}
 								else
 								{
-									// get the data for the first secondary column
-									wList = secLists[0];
+									// aah, do we have at least one target track?
+									if (secLists.length > 0)
+									{
+										// get the data for the first secondary column
+										wList = secLists[0];
+									}
 								}
 							}
 							else
@@ -1078,10 +1081,10 @@ public class ToteView extends ViewPart
 								nearestSecondaries = wList.getNearestTo(_theDTG);
 								if (nearestSecondaries != null)
 								{
-									if(nearestSecondaries.length > 0)
- 									  secondaryFix = nearestSecondaries[0];
+									if (nearestSecondaries.length > 0)
+										secondaryFix = nearestSecondaries[0];
 								}
-								
+
 								// yup, in that case let's switch the perspective, if we have to
 								if (columnIndex > 1)
 								{
