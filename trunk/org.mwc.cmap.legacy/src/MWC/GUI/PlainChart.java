@@ -243,7 +243,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * let people listen out for reformatting changes
 	 */
-	private DataListenerAdaptor _dataReformattedListener;
+	private transient DataListenerAdaptor _dataReformattedListener;
 
 	// ////////////////////////////////////////////////////////
 	// constructor

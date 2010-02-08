@@ -171,7 +171,7 @@ public class BaseLayer extends Plottables implements Layer
   /**
    * property change support for the base layer
    */
-  private java.beans.PropertyChangeSupport _pSupport;
+  private transient java.beans.PropertyChangeSupport _pSupport;
 
   /** whether my children have their own order
    * 
