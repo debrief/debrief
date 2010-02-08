@@ -123,7 +123,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * the editor the user is currently working with (assigned alongside the
 	 * time-provider object)
 	 */
-	protected IEditorPart _currentEditor;
+	protected transient IEditorPart _currentEditor;
 
 	/**
 	 * listen out for new times
