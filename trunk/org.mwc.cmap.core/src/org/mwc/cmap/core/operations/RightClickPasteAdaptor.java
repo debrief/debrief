@@ -198,7 +198,10 @@ public class RightClickPasteAdaptor
 			if (_data.length > 1)
 				res += _data.length + " items from Clipboard";
 			else
-				res += _data[0].getName();
+			{
+				if(_data[0] != null)
+		  		res += _data[0].getName();
+			}
 			return res;
 		}
 
