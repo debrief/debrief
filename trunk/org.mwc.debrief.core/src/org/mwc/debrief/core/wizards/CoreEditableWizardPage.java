@@ -391,7 +391,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 						}
 						else
 						{
-							newEditor.setData(currentVal);
+							newEditor.setData(thisD.getDisplayName());
 						}
 						
 						newEditor.redraw();
