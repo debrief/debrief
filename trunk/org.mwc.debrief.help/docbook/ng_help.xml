@@ -2373,7 +2373,7 @@ and so on....</programlisting></para>
                         depth. With just a single secondary track specified, it also shows relative
                         (calculated) data - as illustrated above. The secondary tracks always
                         display both absolute data (course, speed, depth), plus the relative data
-                        respective to the primary.  Thus, remember that if you want to see the
+                        respective to the primary. Thus, remember that if you want to see the
                         primary track's relative bearing to the secondary, make sure there's just
                         the one secondary track selected. </para>
                     <para>Not only tracks can be placed on the Tote. Buoyfields and most annotations
@@ -2489,9 +2489,8 @@ and so on....</programlisting></para>
                 <sect2 id="more_assigning_tracks">
                     <title>Assigning Tracks</title>
                     <para>Assigning primary and secondary tracks is covered in the respective
-                            <glossterm linkend="g_cheat">Cheat Sheet</glossterm>.  Icons are
-                        provided in the layer manager toolbar to specify if the selected track
-                        should be:<orderedlist>
+                            <glossterm linkend="g_cheat">Cheat Sheet</glossterm>. Icons are provided
+                        in the layer manager toolbar to specify if the selected track should be:<orderedlist>
                             <listitem>
                                 <para>Made primary</para>
                             </listitem>
@@ -2612,16 +2611,16 @@ and so on....</programlisting></para>
                                 </listitem>
                             </varlistentry>
                             <varlistentry>
-                                <term>Highlight Mode</term>
+                                <term>Plotting mode</term>
                                 <listitem>
-                                    <para>How the current position is displayed</para>
+                                    <para>Whether the data dynamically adjusts to follow the
+                                        location/orientation of the primary track</para>
                                 </listitem>
                             </varlistentry>
                             <varlistentry>
-                                <term>Absolute/Relative mode</term>
+                                <term>Highlight Mode</term>
                                 <listitem>
-                                    <para>Whether the data is plotted North-oriented, or using the
-                                        current heading of the primary track</para>
+                                    <para>How the current position is displayed</para>
                                 </listitem>
                             </varlistentry>
                         </variablelist></para>
@@ -2637,10 +2636,11 @@ and so on....</programlisting></para>
                                     </imageobject>
                                 </mediaobject>
                             </screenshot>
-                        </figure>As you can see, the first two items on the menu allow you to select
-                        the current Display/Highlight modes. In each sub-menu is a command to edit
-                        the currently mode. Later menu options allow you to format how information
-                        is displayed on the menu, and perform other time-related activities.</para>
+                        </figure>As you can see, the first three items on the menu allow you to
+                        select the current Display/Plotting/Highlight modes. In each sub-menu is a
+                        command to edit the currently mode. Later menu options allow you to format
+                        how information is displayed on the menu, and perform other time-related
+                        activities.</para>
                     <sect3 id="display_modes">
                         <title>Display modes</title>
                         <para>The first three icons on the Time Controller toolbar allow you to
@@ -2744,6 +2744,39 @@ and so on....</programlisting></para>
                                 </varlistentry>
                             </variablelist></para>
                     </sect3>
+                    <sect3 id="relative_mode">
+                        <title>Plotting Modes</title>
+                        <para/>
+                        <para>The plotting mode affects the origin and orientation of the plot.  In
+                                <emphasis>Normal</emphasis> mode the plot viewport stays static as
+                            the time changes, but if the is a primary track assigned, the viewport
+                            moves to track the primary participant. Beyond that, the
+                                <emphasis>Primary Oriented</emphasis> mode orients the plot to match
+                            the heading of the primary track. This mode is particularly useful for
+                            presenting a scenario from the perspective of the primary participant,
+                            but the quickly changing orientation can be off-putting. </para>
+                        <tip>
+                            <para> Relative Display Mode is particularly useful for analysing one
+                                vessel trailing another. Make the trailing vessel the primary track,
+                                and the vessel being trailed the secondary track. As you step
+                                forward through the serial you will clearly be able to see the
+                                relative bearing of the contact as held by the trailing vessel. </para>
+                            <para>The sample shown below gives a demonstration of the use of this
+                                relative mode. You can quickly see that the blue vessel is directly
+                                ahead of the red trailing vessel, and your use of the Range Ring
+                                Highlighter gives us a quick indication of range. <figure
+                                    id="relative_display_demo" float="0">
+                                    <title>Sample of relative display mode</title>
+                                    <screenshot>
+                                        <mediaobject>
+                                            <imageobject>
+                                                <imagedata fileref="figures/relative_demo.gif"/>
+                                            </imageobject>
+                                        </mediaobject>
+                                    </screenshot>
+                                </figure></para>
+                        </tip>
+                    </sect3>
                     <sect3 id="highlight_modes">
                         <title>Highlight Modes</title>
                         <para>Three highlight modes are provided:<variablelist>
@@ -2811,34 +2844,6 @@ and so on....</programlisting></para>
                                     </listitem>
                                 </varlistentry>
                             </variablelist></para>
-                    </sect3>
-                    <sect3 id="relative_mode">
-                        <title>Relative/Absolute Modes</title>
-                        <para/>
-                        <para>Relative Mode affects the orientation of the plot. The plot is always
-                            oriented along the heading of the primary track, with the current
-                            primary track location placed at the centre of the plot. </para>
-                        <tip>
-                            <para> Relative Display Mode is particularly useful for analysing one
-                                vessel trailing another. Make the trailing vessel the primary track,
-                                and the vessel being trailed the secondary track. As you step
-                                forward through the serial you will clearly be able to see the
-                                relative bearing of the contact as held by the trailing vessel. </para>
-                            <para>The sample shown below gives a demonstration of the use of this
-                                relative mode. You can quickly see that the blue vessel is directly
-                                ahead of the red trailing vessel, and your use of the Range Ring
-                                Highlighter gives us a quick indication of range. <figure
-                                    id="relative_display_demo" float="0">
-                                    <title>Sample of relative display mode</title>
-                                    <screenshot>
-                                        <mediaobject>
-                                            <imageobject>
-                                                <imagedata fileref="figures/relative_demo.gif"/>
-                                            </imageobject>
-                                        </mediaobject>
-                                    </screenshot>
-                                </figure></para>
-                        </tip>
                     </sect3>
                     <sect3 id="time_display">
                         <title>Time display</title>
