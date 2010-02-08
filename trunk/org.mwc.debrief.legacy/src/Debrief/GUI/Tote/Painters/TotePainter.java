@@ -625,7 +625,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 			// see if we are trying to plot in relative mode - in which
 			// case we need a full repaint
-			if (proj.getRelativePlot()) {
+			if (proj.getNonStandardPlotting()) {
 				_theChart.update();
 			} else {
 

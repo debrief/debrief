@@ -812,7 +812,7 @@ public class SnailPainter extends TotePainter
 
 				// see if we are trying to plot in relative mode - in which
 				// case we need a full repaint
-				if (canvas.getProjection().getRelativePlot())
+				if (canvas.getProjection().getNonStandardPlotting())
 				{
 					_theChart.update();
 				}

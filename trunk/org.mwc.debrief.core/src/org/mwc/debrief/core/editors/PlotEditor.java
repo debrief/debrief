@@ -180,12 +180,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				fireDirty();
 			}
 		});
-		
+
 		// sort out the time controlleroperations
 		_timeControllerOperations = new org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore();
 		_timeControllerOperations.add(new ExportTimeDataToClipboard());
 		_timeControllerOperations.add(new ExportToFlatFile());
-		
 
 		_layerPainterManager = new LayerPainterManager(_trackDataProvider);
 		_layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
@@ -711,37 +710,58 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				_myRelativeWrapper = new RelativeProjectionParent()
 				{
+
 					public double getHeading()
 					{
 						double res1 = 0.0;
-						// do we have a primary?
-						Watchable[] thePositions = _trackDataProvider.getPrimaryTrack()
-								.getNearestTo(_timeManager.getTime());
-						if (thePositions != null)
+						Watchable thePos = getFirstPosition(_trackDataProvider,
+								_timeManager);
+
+						if (thePos != null)
 						{
 							// yup, get the centre point
-							res1 = thePositions[0].getCourse();
+							res1 = thePos.getCourse();
 						}
+
 						return res1;
 					}
 
 					public WorldLocation getLocation()
 					{
 						MWC.GenericData.WorldLocation res1 = null;
-						// do we have a primary?
-						Watchable[] thePositions = _trackDataProvider.getPrimaryTrack()
-								.getNearestTo(_timeManager.getTime());
-						if (thePositions != null)
+						Watchable thePos = getFirstPosition(_trackDataProvider,
+								_timeManager);
+
+						if (thePos != null)
 						{
-							if (thePositions.length > 0)
-							{
-								// yup, get the centre point
-								res1 = thePositions[0].getBounds().getCentre();
-							}
+							// yup, get the centre point
+							res1 = thePos.getBounds().getCentre();
 						}
 						return res1;
 					}
 
+					private Watchable getFirstPosition(TrackDataProvider provider,
+							TimeManager manager)
+					{
+						Watchable res = null;
+
+						// do we have a primary?
+						WatchableList priTrack = provider.getPrimaryTrack();
+						if (priTrack == null)
+						{
+							CorePlugin.logError(Status.ERROR,
+									"Can't do relative projection without primary track", null);
+						}
+						else
+						{
+							Watchable[] list = priTrack.getNearestTo(manager.getTime());
+							if (list != null)
+								if (list.length > 0)
+									res = list[0];
+						}
+
+						return res;
+					}
 				};
 			}
 			res = _myRelativeWrapper;
@@ -758,9 +778,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return res;
 	}
 
-	
-	
-	
 	private org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore getTimeControllerOperations()
 	{
 		return _timeControllerOperations;

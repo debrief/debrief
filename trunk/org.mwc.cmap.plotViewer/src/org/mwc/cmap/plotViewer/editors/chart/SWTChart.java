@@ -472,7 +472,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					}
 
 					// we also clear the layers if we're in relative projection mode
-					if (_theCanvas.getProjection().getRelativePlot())
+					if (_theCanvas.getProjection().getNonStandardPlotting())
 					{
 						clearImages();
 					}

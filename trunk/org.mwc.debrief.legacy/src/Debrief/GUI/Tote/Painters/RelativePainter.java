@@ -188,12 +188,12 @@ public final class RelativePainter extends SnailPainter
     if(on)
     {
       // we have been switched on, set to relative
-      super._theChart.getCanvas().getProjection().setRelativePlot(true);
+      super._theChart.getCanvas().getProjection().setPrimaryOriented(true);
     }
     else
     {
       // no, we have been switched off, reset the relative projection
-      super._theChart.getCanvas().getProjection().setRelativePlot(false);
+      super._theChart.getCanvas().getProjection().setPrimaryOriented(false);
     }
 
   }

@@ -874,8 +874,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private Integer _defaultSliderResolution;
 
-	Action _relPlotToggle;
-
 	/**
 	 * keep track of what tracks are open - we may want to use them for our
 	 * exporting calc data to clipboard
@@ -893,6 +891,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	protected TimeControllerOperation.TimeControllerOperationStore _timeOperations;
 
 	private Vector<Action> _legacyTimeOperations;
+
+	/**
+	 * the first of the relative plotting modes - absolute north oriented plt
+	 */
+	private Action _normalPlottingMode;
+
+	/**
+	 * first custom plotting mode: - always centre the plot on ownship, and orient
+	 * the plot along ownship heading
+	 */
+	private Action _primaryCentredPrimaryOrientedPlottingMode;
+
+	/**
+	 * second custom plotting mode: always centre the plot on ownship, but keep
+	 * north-oriented.
+	 */
+	private Action _primaryCentredNorthOrientedPlottingMode;
 
 	void fireNewTime(HiResDate dtg)
 	{
@@ -1541,8 +1556,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_targetProjection.setRelativeProjectionParent(this);
 
 		// and reflect it's current status
-		if (_relPlotToggle != null)
-			_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
+		if (_targetProjection.getNonStandardPlotting())
+		{
+			if (_targetProjection.getPrimaryOriented())
+			{
+				_primaryCentredPrimaryOrientedPlottingMode.setChecked(true);
+			}
+			else
+			{
+				_primaryCentredNorthOrientedPlottingMode.setChecked(true);
+			}
+
+		}
+		else
+			_normalPlottingMode.setChecked(true);
 	}
 
 	/**
@@ -2031,46 +2058,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// and another separator
 		menuManager.add(new Separator());
 
-		// start off with the relative painter setting, if we have to
-		if (_relPlotToggle == null)
-		{
-			_relPlotToggle = new Action("Relative plotting mode", SWT.TOGGLE)
-			{
-				public void run()
-				{
-					// right, change the projection stuff...
-					if (_targetProjection != null)
-					{
-						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
-
-						// and trigger redraw
-						IWorkbench wb = PlatformUI.getWorkbench();
-						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-						IWorkbenchPage page = win.getActivePage();
-						IEditorPart editor = page.getActiveEditor();
-						if (editor instanceof CorePlotEditor)
-						{
-							CorePlotEditor plot = (CorePlotEditor) editor;
-							plot.update();
-						}
-					}
-				}
-			};
-			_relPlotToggle
-					.setToolTipText("Orient the plot on the primary track  projection to always be centred on primary track");
-			_relPlotToggle
-					.setImageDescriptor(org.mwc.cmap.TimeController.TimeControllerPlugin
-							.getImageDescriptor("icons/lock_view.png"));
-
-			// initialise it, if we have a plot
-			if (_targetProjection != null)
-				_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
-		}
-
-		// hey, store it anyway.
-		toolManager.add(_relPlotToggle);
-		menuManager.add(_relPlotToggle);
-
 		// and another separator
 		toolManager.add(new Separator());
 
@@ -2251,7 +2238,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			final TemporalLayerPainter painter = painterList[i];
 
 			// create an action for it
-			Action thisOne = new Action(painter.toString(), Action.AS_RADIO_BUTTON)
+			Action changePainter = new Action(painter.toString(),
+					Action.AS_RADIO_BUTTON)
 			{
 				public void runWithEvent(Event event)
 				{
@@ -2269,19 +2257,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 			};
 			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
-			thisOne.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+			changePainter.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 					.getImageDescriptor(descPath));
 
 			// hmm, and see if this is our current painter
 			if (painter.getName().equals(
 					myLayerPainterManager.getCurrentPainter().getName()))
 			{
-				thisOne.setChecked(true);
+				changePainter.setChecked(true);
 			}
 
 			// and store it on both menus
-			displayMenu.add(thisOne);
-			toolManager.add(thisOne);
+			displayMenu.add(changePainter);
+			toolManager.add(changePainter);
 		}
 
 		// put the display painter property editor into this one
@@ -2309,6 +2297,72 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		// and store it on both menus
 		displayMenu.add(currentPainterProperties);
+
+		// lastly, sort out the relative projection mode
+		// right, first the drop-down for the display-er
+		// ok, second menu for the DTG formats
+		displayMenu = new MenuManager("Plotting mode");
+
+		// and store it
+		menuManager.add(displayMenu);
+
+		_normalPlottingMode = new Action("Normal", Action.AS_RADIO_BUTTON)
+		{
+			@Override
+			public void run()
+			{
+				setRelativeMode(false, false);
+			}
+		};
+		_normalPlottingMode.setImageDescriptor(TimeControllerPlugin
+				.getImageDescriptor("icons/lock_view.png"));
+		displayMenu.add(_normalPlottingMode);
+
+		_primaryCentredNorthOrientedPlottingMode = new Action(
+				"Primary centred/North oriented", Action.AS_RADIO_BUTTON)
+		{
+			@Override
+			public void run()
+			{
+				setRelativeMode(true, false);
+			}
+		};
+		_primaryCentredNorthOrientedPlottingMode
+				.setImageDescriptor(TimeControllerPlugin
+						.getImageDescriptor("icons/lock_view1.png"));
+		displayMenu.add(_primaryCentredNorthOrientedPlottingMode);
+
+		_primaryCentredPrimaryOrientedPlottingMode = new Action(
+				"Primary centred/Primary oriented", Action.AS_RADIO_BUTTON)
+		{
+			@Override
+			public void run()
+			{
+				setRelativeMode(true, true);
+			}
+
+		};
+		_primaryCentredPrimaryOrientedPlottingMode
+				.setImageDescriptor(TimeControllerPlugin
+						.getImageDescriptor("icons/lock_view2.png"));
+		displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
+
+	}
+
+	private void setRelativeMode(boolean primaryCentred, boolean primaryOriented)
+	{
+		_targetProjection.setRelativeMode(primaryCentred, primaryOriented);
+		// and trigger redraw
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = win.getActivePage();
+		IEditorPart editor = page.getActiveEditor();
+		if (editor instanceof CorePlotEditor)
+		{
+			CorePlotEditor plot = (CorePlotEditor) editor;
+			plot.update();
+		}
+
 	}
 
 	/**

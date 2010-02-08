@@ -92,7 +92,7 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
       newProj = new MWC.Algorithms.Projections.FlatProjection();
       newProj.setDataBorder(_border);
       newProj.setDataArea(new MWC.GenericData.WorldArea(_tl, _br));
-      newProj.setRelativePlot(_relative);
+      newProj.setPrimaryOriented(_relative);
       if(_theTote != null)
         newProj.setRelativeProjectionParent(_theTote);
     }
@@ -140,7 +140,7 @@ final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLRead
       // first the attributes for the projection
       proj.setAttribute("Type", "Flat");
       proj.setAttribute("Border", writeThis(flat.getDataBorder()));
-      proj.setAttribute("Relative", writeThis(flat.getRelativePlot()));
+      proj.setAttribute("Relative", writeThis(flat.getPrimaryOriented()));
 
       // and now the corners
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(flat.getDataArea().getTopLeft(), "tl", proj, doc);

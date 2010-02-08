@@ -68,7 +68,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    * whether we are in relative or absolute view
    */
-  private boolean _relativePlot = false;
+  private boolean _primaryOriented = false;
 
   /**
    * the border to apply to the current data
@@ -90,6 +90,11 @@ abstract public class PlainProjection implements Serializable,
    * support for property listeners
    */
   protected java.beans.PropertyChangeSupport _pSupport = null;
+
+  /** whether to centre the plot on the primary track's position
+   * 
+   */
+	private boolean _primaryCentred;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -290,17 +295,42 @@ abstract public class PlainProjection implements Serializable,
   	_dataBorder = theBorder;
   }
 
+  public void setRelativeMode(boolean primaryCentred, boolean primaryOriented)
+  {
+  	_primaryOriented = primaryOriented;
+  	_primaryCentred = primaryCentred;
+  }
+  
   /**
    * produce a relative plot
    */
-  public void setRelativePlot(boolean val)
+  public void setPrimaryOriented(boolean val)
   {
-    _relativePlot = val;
+    _primaryOriented = val;
+  }
+  
+  /** indicate if there's anything strange going on
+   * 
+   * @return yes/no
+   */
+  public boolean getNonStandardPlotting()
+  {
+  	return _primaryOriented || _primaryCentred;
   }
 
-  public boolean getRelativePlot()
+  public boolean getPrimaryOriented()
   {
-    return _relativePlot;
+    return _primaryOriented;
+  }
+  
+  public boolean getPrimaryCentred()
+  {
+  	return _primaryCentred;
+  }
+  
+  public void setPrimaryCentred(boolean val)
+  {
+  	_primaryCentred = val;
   }
 
   public Editable.EditorType getInfo()

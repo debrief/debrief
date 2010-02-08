@@ -116,7 +116,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 				/**
 				 * @return
 				 */
-				public boolean getRelativePlot()
+				public boolean getPrimaryOriented()
 				{
 					return false;
 				}

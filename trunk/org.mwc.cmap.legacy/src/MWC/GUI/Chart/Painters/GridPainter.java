@@ -300,7 +300,7 @@ public class GridPainter implements Plottable, Serializable
       return;
     
     // we can't do a grid when it's being plotted relative plotting
-      if(g.getProjection().getRelativePlot())
+      if(g.getProjection().getNonStandardPlotting())
        	return;
 
     float oldLineWidth = g.getLineWidth();

@@ -116,17 +116,24 @@ public class DoubleProjection extends FlatProjection{
     double bearingOffset = 0.0;
 
     // see if we are in relative mode
-    if(super.getRelativePlot())
+    if(super.getPrimaryOriented())
+    {
+      // check if we have a parent defined
+      if(super._relativePlotter != null)
+      {
+        // and the bearing offset
+        bearingOffset = _relativePlotter.getHeading();
+
+      }
+    }
+    
+    if(super.getPrimaryCentred())
     {
       // check if we have a parent defined
       if(super._relativePlotter != null)
       {
         // try to get the origin
         myOrigin = _relativePlotter.getLocation();
-
-        // and the bearing offset
-        bearingOffset = _relativePlotter.getHeading();
-
       }
     }
 
@@ -196,7 +203,7 @@ public class DoubleProjection extends FlatProjection{
     double bearingOffset = 0.0;
 
     // see if we are in relative mode
-    if(super.getRelativePlot())
+    if(super.getPrimaryOriented())
     {
       // check if we have a parent defined
       if(super._relativePlotter != null)

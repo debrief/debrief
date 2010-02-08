@@ -18,11 +18,15 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  MWC.GenericData.WorldLocation _tl;
+  private static final String PRIMARY_ORIENTED = "PrimaryOriented";
+	private static final String RELATIVE_MODE = "Relative";
+	private static final String PRIMARY_CENTRED = "PrimaryOrigin";
+	MWC.GenericData.WorldLocation _tl;
   MWC.GenericData.WorldLocation _br;
   String _type;
   double _border;
-  boolean _relative;
+  boolean _primaryOriented;
+  boolean _primaryCentred;
 
   public ProjectionHandler()
   {
@@ -61,10 +65,20 @@ abstract class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLR
         }
       }
     });
-    addAttributeHandler(new HandleBooleanAttribute("Relative"){
+    addAttributeHandler(new HandleBooleanAttribute(RELATIVE_MODE){
       public void setValue(String name, boolean value)
       {
-        _relative = value;
+        _primaryOriented = value;
+      }});
+    addAttributeHandler(new HandleBooleanAttribute(PRIMARY_ORIENTED){
+      public void setValue(String name, boolean value)
+      {
+        _primaryOriented = value;
+      }});
+    addAttributeHandler(new HandleBooleanAttribute(PRIMARY_CENTRED){
+      public void setValue(String name, boolean value)
+      {
+        _primaryCentred = value;
       }});
 
 
@@ -80,14 +94,14 @@ abstract class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLR
       newProj = new MWC.Algorithms.Projections.FlatProjection();
       newProj.setDataBorder(_border);
       newProj.setDataArea(new MWC.GenericData.WorldArea(_tl, _br));
-      newProj.setRelativePlot(_relative);
+      newProj.setPrimaryOriented(_primaryOriented);
+      newProj.setPrimaryCentred(_primaryCentred);
     }
 
     if(newProj != null)
     {
+    	// store the new projection details
 			setProjection(newProj);
-      // assign the new projection
-//      av.getChart().getCanvas().setProjection(newProj);
     }
 
   }
@@ -116,7 +130,8 @@ abstract class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLR
       // first the attributes for the projection
       proj.setAttribute("Type", "Flat");
       proj.setAttribute("Border", writeThis(flat.getDataBorder()));
-      proj.setAttribute("Relative", writeThis(flat.getRelativePlot()));
+      proj.setAttribute(PRIMARY_CENTRED, writeThis(flat.getPrimaryCentred()));
+      proj.setAttribute(PRIMARY_ORIENTED, writeThis(flat.getPrimaryOriented()));
 
       // and now the corners
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(flat.getDataArea().getTopLeft(), "tl", proj, doc);
