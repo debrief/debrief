@@ -172,18 +172,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private SWTCanvas _theCanvas;
+	private transient SWTCanvas _theCanvas;
 
 	/**
 	 * our list of layered images.
 	 */
-	protected HashMap<Layer, Image> _myLayers = new HashMap<Layer, Image>();
+	protected transient HashMap<Layer, Image> _myLayers = new HashMap<Layer, Image>();
 
 	/**
 	 * the data area we last plotted (so that we know when a full layered repaint
 	 * is needed).
 	 */
-	protected WorldArea _lastDataArea = null;
+	protected transient WorldArea _lastDataArea = null;
 
 	/**
 	 * how far the mouse has to be dragged before it's registered as a drag
@@ -194,19 +194,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	/**
 	 * track drag operations
 	 */
-	private Point _startPoint = null;
+	private transient Point _startPoint = null;
 
 	/**
 	 * the last point dragged over
 	 */
-	private Point _draggedPoint = null;
+	private transient Point _draggedPoint = null;
 
-	private PlotMouseDragger _myDragMode;
+	private transient PlotMouseDragger _myDragMode;
 
 	/**
 	 * keep a cached copy of the image - to reduce replotting time
 	 */
-	protected ImageData _myImageTemplate = null;
+	protected transient ImageData _myImageTemplate = null;
 
 	/**
 	 * keep track of if we're repainting, don't stack them up
