@@ -2605,7 +2605,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// ok, we only do this writing to screen if the actual
 					// position is
 					// visible
-					if (getVisible())
+					if (fw.getVisible())
 					{
 
 						final java.awt.Point thisP = dest.toScreen(lastLocation);
