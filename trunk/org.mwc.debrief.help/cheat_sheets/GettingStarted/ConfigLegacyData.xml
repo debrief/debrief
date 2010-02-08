@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Configuring legacy data">
+   <intro>
+      <description>
+         In addition to plotting your recorded vehicle data, Debrief is able to show a number of datasets in backdrop form.
+<br/>
+These range from Vectored datasets such as VPF through to gridded datasets such as ETOPO-2
+      </description>
+   </intro>
+   <item
+         title="How to configure library datasets">
+      <description>
+         The steps to configure VPF and Etopo are covered in Debrief&apos;s user manual.  If you wish to learn this at this stage, use the help link below, else search for <b>VPF</b> in Debrief&apos;s online help at some future stage.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/external_datasets.html#getting_vpf)"/>
+   </item>
+</cheatsheet>

@@ -37,6 +37,16 @@
             <param name="path" value="FindingYourData.xml">
             </param>
          </task>
+         <task kind="cheatsheet" name="Configuring library data" skip="false">
+            <intro>
+               Debrief can plot information from library datasets to add context to the current view.  Because of their typical size, these datasets are not distributed with Debrief, but should be obtained separately.
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="ConfigLegacyData.xml">
+            </param>
+         </task>
       </taskGroup>
       <taskGroup kind="sequence" name="Viewing some data" skip="false">
          <intro>
