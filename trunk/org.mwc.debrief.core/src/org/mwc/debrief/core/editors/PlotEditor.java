@@ -967,6 +967,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 					tmpOS.close();
 					tmpOS = null;
+					
+					// sort out the file size
+					CorePlugin.logError(Status.INFO, "Saved file size is:" + tmpFile.length()/1024 + " Kb", null);
 
 					// 4. Check there's something in the temp file
 					if (tmpFile.exists())
@@ -986,6 +989,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							// sort out where we're saving to
 							if (input instanceof IFileEditorInput)
 							{
+								CorePlugin.logError(Status.INFO,"Performing IFileEditorInput save", null);
+
 								IFile file = ((IFileEditorInput) getEditorInput()).getFile();
 
 								// get the current path (since we're going to be moving the temp
@@ -1029,6 +1034,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							}
 							else if (input instanceof FileStoreEditorInput)
 							{
+								
+								CorePlugin.logError(Status.INFO,"Performing FileStoreEditorInput save", null);
+
 								// get the data-file
 								FileStoreEditorInput fi = (FileStoreEditorInput) input;
 								URI _uri = fi.getURI();
