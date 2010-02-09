@@ -18,36 +18,43 @@ public class FlatFileExporter
 		return res.toString();
 	}
 
-	
-	private final String BRK = "" + (char)13 + (char)10;
+	private final String BRK = "" + (char) 13 + (char) 10;
 
-	public String exportThis()
+	public String testExport()
 	{
+		return exportThis("Vessel", "OS track 0100-0330", "GapsFatBowBTH_5-4-04",
+				"tla", "01:45:00	22/12/2002", "02:40:00	22/12/2002", "5", "-1.23E+04", "-654321");
+	}
+
+	public String exportThis(final String OWNSHIP, String OS_TRACK_NAME,
+			String SENSOR_NAME, String TGT_NAME, String START_TIME, String END_TIME, String NUM_RECORDS, String X_ORIGIN, String Y_ORIGIN)
+	{
+
 		String header = "STRAND Scenario Report 1.00"
 				+ createTabs(33)
 				+ BRK
 				+ "MISSION_NAME"
 				+ createTabs(33)
 				+ BRK
-				+ "Vessel"
+				+ OWNSHIP
 				+ createTabs(33)
 				+ BRK
-				+ "OS track 0100-0330"
+				+ OS_TRACK_NAME
 				+ createTabs(33)
 				+ BRK
-				+ "GapsFatBowBTH_5-4-04"
+				+ SENSOR_NAME
 				+ createTabs(33)
 				+ BRK
-				+ "tla"
+				+ TGT_NAME
 				+ createTabs(33)
 				+ BRK
-				+ "tla"
+				+ TGT_NAME
 				+ createTabs(33)
 				+ BRK
-				+ "01:45:00	22/12/2002"
+				+ START_TIME
 				+ createTabs(32)
 				+ BRK
-				+ "02:40:00	22/12/2002"
+				+ END_TIME
 				+ createTabs(32)
 				+ BRK
 				+ "0"
@@ -59,19 +66,26 @@ public class FlatFileExporter
 				+ "0"
 				+ createTabs(33)
 				+ BRK
-				+ "5"
+				+ NUM_RECORDS
 				+ createTabs(33)
 				+ BRK
-				+ "-1.23E+04	-654321"
+				+ X_ORIGIN+"	"+
+				Y_ORIGIN
 				+ createTabs(32)
 				+ BRK
-				+ "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc" + BRK;
+				+ "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc"
+				+ BRK;
 		;
-		String body = "0	7	6.32332	-5555.55	2.7	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"+ BRK
-				+ "1	7	6.32332	-5555.551	2.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"+ BRK
-				+ "2	7	6.32332	-5555.55	2.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"+ BRK
-				+ "3	7	6.32332	-5521.2	4.6	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"+ BRK
-				+ "4	7	6.32332	-5555.32	4.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"+ BRK
+		String body = "0	7	6.32332	-5555.55	2.7	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"
+				+ BRK
+				+ "1	7	6.32332	-5555.551	2.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"
+				+ BRK
+				+ "2	7	6.32332	-5555.55	2.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"
+				+ BRK
+				+ "3	7	6.32332	-5521.2	4.6	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"
+				+ BRK
+				+ "4	7	6.32332	-5555.32	4.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"
+				+ BRK
 				+ "5	7	6.32332	-5543.73	4.8	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
 
 		return header + body;
@@ -124,7 +138,7 @@ public class FlatFileExporter
 			assertEquals("has data", 2157, TARGET_STR.length());
 
 			FlatFileExporter fa = new FlatFileExporter();
-			String res = fa.exportThis();			
+			String res = fa.testExport();
 			assertEquals("correct string", TARGET_STR, res);
 
 		}
