@@ -2,14 +2,11 @@ package MWC.GUI.Coast;
 
 import java.util.Vector;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /** Represents a single section of coastline.*/
-public class CoastSegment extends Vector<WorldLocation> implements Plottable
+public final class CoastSegment extends Vector<WorldLocation>
 {
   /**
 	 * 
@@ -17,9 +14,9 @@ public class CoastSegment extends Vector<WorldLocation> implements Plottable
 	private static final long serialVersionUID = 1L;
 	WorldArea myArea;
 
-  public CoastSegment(){
-    super(0,1);
-  }
+//  public CoastSegment(){
+//    super(0,1);
+//  }
 
   public void addPoint(WorldLocation pt){
     this.addElement(pt);
@@ -31,86 +28,64 @@ public class CoastSegment extends Vector<WorldLocation> implements Plottable
 
   }
 
-	public int compareTo(Plottable arg0)
-	{
-		Plottable other = (Plottable) arg0;
-		return this.getName().compareTo(other.getName());
-	}
-  public WorldLocation getFirst(){
-    WorldLocation res = null;
-    if(this.size()>0){
-      res = (WorldLocation) this.elementAt(0);
-    }
-    return res;
-  }
+//	public int compareTo(Plottable arg0)
+//	{
+//		Plottable other = (Plottable) arg0;
+//		return this.getName().compareTo(other.getName());
+//	}
+	
+//	protected WorldLocation getFirst(){
+//    WorldLocation res = null;
+//    if(this.size()>0){
+//      res = (WorldLocation) this.elementAt(0);
+//    }
+//    return res;
+//  }
+//
+//  protected WorldLocation getLast(){
+//    WorldLocation res = null;
+//    if(this.size()>0){
+//      res = (WorldLocation) this.elementAt(this.size()-1);
+//    }
+//    return res;
+//  }
+//
+//  private void append(CoastSegment other){
+//    for(int i=0; i<other.size();i++){
+//      this.addPoint((WorldLocation)other.elementAt(i));
+//    }
+//    other.removeAllElements();
+//  }
+//
+//  private void appendBackwards(CoastSegment other){
+//    for(int i=other.size()-1; i>=0;i--){
+//      this.addPoint((WorldLocation)other.elementAt(i));
+//    }
+//    other.removeAllElements();
+//  }
+//
+//  private void prependBackwards(CoastSegment other){
+//    for(int i=0; i<other.size();i++){
+//      this.insertElementAt(other.elementAt(i),0);
+//    }
+//    other.removeAllElements();
+//  }
 
-  public WorldLocation getLast(){
-    WorldLocation res = null;
-    if(this.size()>0){
-      res = (WorldLocation) this.elementAt(this.size()-1);
-    }
-    return res;
-  }
-
-  public void append(CoastSegment other){
-    for(int i=0; i<other.size();i++){
-      this.addPoint((WorldLocation)other.elementAt(i));
-    }
-    other.removeAllElements();
-  }
-
-  public void appendBackwards(CoastSegment other){
-    for(int i=other.size()-1; i>=0;i--){
-      this.addPoint((WorldLocation)other.elementAt(i));
-    }
-    other.removeAllElements();
-  }
-
-  public void prependBackwards(CoastSegment other){
-    for(int i=0; i<other.size();i++){
-      this.insertElementAt(other.elementAt(i),0);
-    }
-    other.removeAllElements();
-  }
-
-  public void paint(CanvasType dest)
-  {
-  }
+//  public void paint(CanvasType dest)
+//  {
+//  }
 
   public WorldArea getBounds()
   {
     return myArea;
   }
 
-  public boolean getVisible()
-  {
-    return true;
-  }
+//  public boolean getVisible()
+//  {
+//    return true;
+//  }
 
-  /** set the visibility of this item (dummy implementation)
-   *
-   */
-  public void setVisible(boolean val){}
-
-  public double rangeFrom(WorldLocation other)
-  {
-    return INVALID_RANGE;
-  }
-
-  public String getName()
-  {
-    return null;
-  }
-
-  public boolean hasEditor()
-  {
-    return false;
-  }
-
-  public Editable.EditorType getInfo()
-  {
-    return null;
-  }
+ 
 }
 
 

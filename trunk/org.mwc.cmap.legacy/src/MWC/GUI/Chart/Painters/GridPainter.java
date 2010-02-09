@@ -143,6 +143,7 @@ package MWC.GUI.Chart.Painters;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -167,6 +168,12 @@ public class GridPainter implements Plottable, Serializable
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * the font to use
+	 */
+	private Font _theFont = new Font("Sans Serif", Font.PLAIN, 8);
+
 
 	/**
    * the colour for this grid
@@ -266,6 +273,16 @@ public class GridPainter implements Plottable, Serializable
     return _myDelta;
   }
 
+
+	public Font getFont()
+	{
+		return _theFont;
+	}
+
+	public void setFont(Font theFont)
+	{
+		_theFont = theFont;
+	}
 
   /**
    * whether to plot the labels or not
@@ -425,7 +442,7 @@ public class GridPainter implements Plottable, Serializable
               _myDelta.getUnitsLabel();
           }
           // and output it
-          g.drawText(val, 0, p3.y - 2);
+          g.drawText(_theFont, val, 0, p3.y - 2);
         }
       }
     }
@@ -651,6 +668,7 @@ public class GridPainter implements Plottable, Serializable
           prop("Color", "the Color to draw the grid", FORMAT),
           prop("Visible", "whether this grid is visible", VISIBILITY),
           prop("PlotLabels", "whether to plot grid labels", VISIBILITY),
+					prop("Font", "font to use for labels", FORMAT),
           prop("Name", "name of this grid", FORMAT),
           prop("Delta", "the step size for the grid", VISIBILITY)
         };

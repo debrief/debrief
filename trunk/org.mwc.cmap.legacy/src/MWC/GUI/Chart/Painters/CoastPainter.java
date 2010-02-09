@@ -138,6 +138,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Iterator;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
@@ -316,7 +317,8 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		{
 			if (_myParent != null)
 				_myParent.logError(ToolParent.ERROR,
-						"World file not found, coastlines not available:" + e.getMessage(), null);
+						"World file not found, coastlines not available:" + e.getMessage(),
+						null);
 			else
 				Trace.trace("World file not found, coastlines not available:"
 						+ e.getLocalizedMessage(), false);
@@ -381,7 +383,8 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		return _myEditor;
 	}
 
-	final public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
+	final public void resizedEvent(PlainProjection theProj,
+			Dimension newScreenArea)
 	{
 		// not really interested, although we could use this
 		// to keep an internal (threaded) eye on what sections are visible
@@ -408,9 +411,11 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 
 					dest.setColor(_myColor);
 
-					for (int i = 0; i < _myCoast.size(); i++)
+					// get ready to loop through
+					Iterator<CoastSegment> iterator = _myCoast.iterator();
+					while (iterator.hasNext())
 					{
-						cs = (CoastSegment) _myCoast.elementAt(i);
+						cs = iterator.next();
 						boolean firstPoint = true;
 						Point lastP = new Point();
 
@@ -458,7 +463,8 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	// ///////////////////////////////////////////////////////////
 	// info class
 	// //////////////////////////////////////////////////////////
-	final public class CoastPainterInfo extends Editable.EditorType implements Serializable
+	final public class CoastPainterInfo extends Editable.EditorType implements
+			Serializable
 	{
 
 		/**
@@ -475,7 +481,8 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		{
 			try
 			{
-				PropertyDescriptor[] res = { prop("Color", "the Color to draw the coast"),
+				PropertyDescriptor[] res =
+				{ prop("Color", "the Color to draw the coast"),
 						prop("Visible", "whether the coast is visible"), };
 
 				return res;

@@ -5,33 +5,31 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
  * Represents a single section of coastline.
  */
-public class Coastline implements Plottable, Serializable
+public class Coastline implements Serializable
 {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected Vector<CoastSegment> _data;
+	protected final Vector<CoastSegment> _data;
 	protected WorldArea _myArea;
 
 	public Coastline(InputStream str)
 	{
+		_data = new Vector<CoastSegment>(0, 1);
 		CoastSegment cs = null;
 		String thisLine = null;
-		_data = new Vector<CoastSegment>(0, 1);
 		int count = 0;
 
 		try
@@ -44,7 +42,7 @@ public class Coastline implements Plottable, Serializable
 			while (((thisLine = dis.readLine()) != null) & (count < 10000))
 			{
 
-				if(thisLine == null)
+				if (thisLine == null)
 					return;
 
 				// so we've got a line.
@@ -103,7 +101,7 @@ public class Coastline implements Plottable, Serializable
 		resetArea();
 	}
 
-	protected void resetArea()
+	private void resetArea()
 	{
 		Enumeration<CoastSegment> enumer = _data.elements();
 		WorldArea res = null;
@@ -125,12 +123,13 @@ public class Coastline implements Plottable, Serializable
 	{
 		if (_myArea == null)
 			resetArea();
-		else
-		{
-		}
 
 		return _myArea;
+	}
 
+	public Iterator<CoastSegment> iterator()
+	{
+		return _data.iterator();
 	}
 
 	/*
@@ -163,66 +162,66 @@ public class Coastline implements Plottable, Serializable
 	 * } } } } } }
 	 */
 
-	public int compareTo(Plottable arg0)
-	{
-		Plottable other = (Plottable) arg0;
-		return this.getName().compareTo(other.getName());
-	}
+	// public int compareTo(Plottable arg0)
+	// {
+	// Plottable other = (Plottable) arg0;
+	// return this.getName().compareTo(other.getName());
+	// }
 
-	public int size()
-	{
-		return _data.size();
-	}
+	// public int size()
+	// {
+	// return _data.size();
+	// }
 
-	public Object elementAt(int i)
-	{
-		return _data.elementAt(i);
-	}
+	// public Object elementAt(int i)
+	// {
+	// return _data.elementAt(i);
+	// }
+	//
+	// public void paint(CanvasType dest)
+	// {
+	// }
 
-	public void paint(CanvasType dest)
-	{
-	}
+	// /**
+	// * set the visibility of this item (dummy implementation)
+	// */
+	// public void setVisible(boolean val)
+	// {
+	// }
+	//
+	// public boolean getVisible()
+	// {
+	//
+	// return false;
+	// }
 
-	/**
-	 * set the visibility of this item (dummy implementation)
-	 */
-	public void setVisible(boolean val)
-	{
-	}
-
-	public boolean getVisible()
-	{
-
-		return false;
-	}
-
-	public double rangeFrom(WorldLocation other)
-	{
-		return INVALID_RANGE;
-	}
-
-	/**
-	 * return this item as a string
-	 */
-	public String toString()
-	{
-		return getName();
-	}
-
-	public String getName()
-	{
-		return "Coastline";
-	}
-
-	public boolean hasEditor()
-	{
-		return false;
-	}
-
-	public Editable.EditorType getInfo()
-	{
-		return null;
-	}
+	// public double rangeFrom(WorldLocation other)
+	// {
+	// return INVALID_RANGE;
+	// }
+	//
+	// /**
+	// * return this item as a string
+	// */
+	// public String toString()
+	// {
+	// return getName();
+	// }
+	//
+	// public String getName()
+	// {
+	// return "Coastline";
+	// }
+	//
+	// public boolean hasEditor()
+	// {
+	// return false;
+	// }
+	//
+	// public Editable.EditorType getInfo()
+	// {
+	// return null;
+	// }
 
 }
 
