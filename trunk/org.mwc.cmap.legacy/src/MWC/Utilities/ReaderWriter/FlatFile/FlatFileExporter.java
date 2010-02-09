@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class FlatFileExporter
 {
@@ -20,14 +25,24 @@ public class FlatFileExporter
 
 	private final String BRK = "" + (char) 13 + (char) 10;
 
+	static protected String formatThis(Date val)
+	{
+		DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return df.format(val);
+	}
+
 	public String testExport()
 	{
+		final String StartTime = "01:45:00	22/12/2002";
+		final String endTime = "02:40:00	22/12/2002";
 		return exportThis("Vessel", "OS track 0100-0330", "GapsFatBowBTH_5-4-04",
-				"tla", "01:45:00	22/12/2002", "02:40:00	22/12/2002", "5", "-1.23E+04", "-654321");
+				"tla", StartTime, endTime, "5", "-1.23E+04", "-654321");
 	}
 
 	public String exportThis(final String OWNSHIP, String OS_TRACK_NAME,
-			String SENSOR_NAME, String TGT_NAME, String START_TIME, String END_TIME, String NUM_RECORDS, String X_ORIGIN, String Y_ORIGIN)
+			String SENSOR_NAME, String TGT_NAME, String START_TIME, String END_TIME,
+			String NUM_RECORDS, String X_ORIGIN, String Y_ORIGIN)
 	{
 
 		String header = "STRAND Scenario Report 1.00"
@@ -69,8 +84,9 @@ public class FlatFileExporter
 				+ NUM_RECORDS
 				+ createTabs(33)
 				+ BRK
-				+ X_ORIGIN+"	"+
-				Y_ORIGIN
+				+ X_ORIGIN
+				+ "	"
+				+ Y_ORIGIN
 				+ createTabs(32)
 				+ BRK
 				+ "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc"
@@ -141,6 +157,20 @@ public class FlatFileExporter
 			String res = fa.testExport();
 			assertEquals("correct string", TARGET_STR, res);
 
+		}
+
+		public void testDateFormat() throws ParseException
+		{
+			DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+			df.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+			System.err.println(df.format(new Date()));
+
+			Date theDate = df.parse("01:45:00	22/12/2002");
+
+			// Date theDate = new Date(2002,12,22,1,45,00);
+			String val = df.format(theDate);
+			assertEquals("correct start date", "01:45:00	22/12/2002", val);
 		}
 	}
 
