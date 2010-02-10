@@ -92,19 +92,26 @@ public class FlatFileExporter
 				+ HEADER_LINE
 				+ BRK;
 		;
-		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9, 1.1, 11.12) + BRK
-		+  collateLine(1, 7, 6.32332,-5555.551 , 2.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9, 1.1, 11.12) + BRK
-		+  collateLine(2, 7, 6.32332, -5555.55, 2.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9, 1.1, 11.12) + BRK
-		+  collateLine(3, 7, 6.32332, -5521.2, 4.6, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9, 1.1, 11.12) + BRK
-		+  collateLine(4, 7, 6.32332, -5555.32, 4.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9, 1.1, 11.12) + BRK
-		+  collateLine(5, 7, 6.32332, -5543.73, 4.8, 200.1, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9, 1.1, 11.12);
+		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9,
+				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
+		+  collateLine(1, 7, 6.32332,-5555.551 , 2.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
+				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
+		+  collateLine(2, 7, 6.32332, -5555.55, 2.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
+				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
+		+  collateLine(3, 7, 6.32332, -5521.2, 4.6, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9,
+				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
+		+  collateLine(4, 7, 6.32332, -5555.32, 4.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
+				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
+		+  collateLine(5, 7, 6.32332, -5543.73, 4.8, 200.1, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
+				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9);
 		
 		return header + body;
 	}
 
 	private String collateLine(int secs, int osStat, double osX, double osY, double spdKts, double headDegs, int sensorStat, int sensorX, int sensorY,
 			double sensorBrg, double sensorBacc, double sensorFreq, double sensorFacc, double sensorSpd, double sensorHdg, String sensorType, int msdStat,
-			double msdX, double msdY, double msdSpd, double msdHdg)
+			double msdX, double msdY, double msdSpd, double msdHdg, int prdStat, double prdX, double prdY, double prdBrg, double prdBrgAcc, int prdRange, int prdRangeAcc,
+			double prdCourse, double prdCourseAcc, double prdSpd, double prdSpdAcc, double prdFreq, double prdFreqAcc)
 	{
 		final String tab = "\t";
 		String res = null;
@@ -114,7 +121,9 @@ public class FlatFileExporter
 			res = secs + tab + osStat + tab + osX + tab + osY + tab + spdKts + tab + headDegs + tab + 
 					sensorStat + tab + sensorX + tab + sensorY + tab + sensorBrg + tab + sensorBacc + tab + 
 					sensorFreq + tab + sensorFacc + tab + sensorSpd + tab + sensorHdg + tab + 
-					sensorType + tab + msdStat + tab + msdX + tab + msdY + tab + msdSpd + tab + msdHdg + tab + "0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
+					sensorType + tab + msdStat + tab + msdX + tab + msdY + tab + msdSpd + tab + msdHdg + tab + prdStat + tab + 
+					prdX + tab + prdY + tab + prdBrg + tab + prdBrgAcc + tab + prdRange + tab + prdRangeAcc + tab + prdCourse + tab + prdCourseAcc + tab + 
+					prdSpd + tab + prdSpdAcc + tab + prdFreq + tab + prdFreqAcc;
 			break;
 		case 1:
 			res = secs + "	7	6.32332	-5555.551	2.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
