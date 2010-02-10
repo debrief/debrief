@@ -92,24 +92,24 @@ public class FlatFileExporter
 				+ HEADER_LINE
 				+ BRK;
 		;
-		String body = collateLine(0) + BRK
-		+  collateLine(1) + BRK
-		+  collateLine(2) + BRK
-		+  collateLine(3) + BRK
-		+  collateLine(4) + BRK
-		+  collateLine(5);
+		String body = collateLine(0, 7, 6.32332, -5555.55) + BRK
+		+  collateLine(1, 7, 6.32332,-5555.551 ) + BRK
+		+  collateLine(2, 7, 6.32332, -5555.55) + BRK
+		+  collateLine(3, 7, 6.32332, -5521.2) + BRK
+		+  collateLine(4, 7, 6.32332, -5555.32) + BRK
+		+  collateLine(5, 7, 6.32332, -5543.73);
 		
 		return header + body;
 	}
 
-	private String collateLine(int secs)
+	private String collateLine(int secs, int osStat, double osX, double osY)
 	{
-		final char tab = '\t';
+		final String tab = "\t";
 		String res = null;
 		switch(secs)
 		{
 		case 0:
-			res = secs +  "	7	6.32332	-5555.55	2.7	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
+			res = secs + tab + osStat + tab + osX + tab + osY + tab +"2.7	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
 			break;
 		case 1:
 			res = secs + "	7	6.32332	-5555.551	2.7	200	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
