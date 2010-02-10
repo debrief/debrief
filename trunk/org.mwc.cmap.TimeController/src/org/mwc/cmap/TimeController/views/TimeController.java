@@ -777,7 +777,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	void processClick(Boolean large, boolean fwd)
 	{
 
-		CorePlugin.logError(Status.INFO, "Starting step", null);
+	 //	CorePlugin.logError(Status.INFO, "Starting step", null);
 
 		// check that we have a current time (on initialisation some plots may
 		// not
@@ -862,7 +862,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		}
 
-		CorePlugin.logError(Status.INFO, "Step complete", null);
+	//	CorePlugin.logError(Status.INFO, "Step complete", null);
 
 	}
 
