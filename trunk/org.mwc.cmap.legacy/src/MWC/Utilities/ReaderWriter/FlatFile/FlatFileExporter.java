@@ -36,8 +36,8 @@ public class FlatFileExporter
 
 	public String testExport()
 	{
-		final String StartTime = "01:45:00	22/12/2002";
-		final String endTime = "02:40:00	22/12/2002";
+		final String StartTime = "04:45:00	20/04/2009";
+		final String endTime = "04:45:05	20/04/2009";
 		return exportThis("Vessel", "OS track 0100-0330", "GapsFatBowBTH_5-4-04",
 				"tla", StartTime, endTime, "5", "-1.23E+04", "-654321");
 	}
