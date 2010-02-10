@@ -1,7 +1,9 @@
 package MWC.Utilities.ReaderWriter.FlatFile;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -45,82 +47,68 @@ public class FlatFileExporter
 			String NUM_RECORDS, String X_ORIGIN, String Y_ORIGIN)
 	{
 
-		String header = "STRAND Scenario Report 1.00"
-				+ createTabs(33)
-				+ BRK
-				+ "MISSION_NAME"
-				+ createTabs(33)
-				+ BRK
-				+ OWNSHIP
-				+ createTabs(33)
-				+ BRK
-				+ OS_TRACK_NAME
-				+ createTabs(33)
-				+ BRK
-				+ SENSOR_NAME
-				+ createTabs(33)
-				+ BRK
-				+ TGT_NAME
-				+ createTabs(33)
-				+ BRK
-				+ TGT_NAME
-				+ createTabs(33)
-				+ BRK
-				+ START_TIME
-				+ createTabs(32)
-				+ BRK
-				+ END_TIME
-				+ createTabs(32)
-				+ BRK
-				+ "0"
-				+ createTabs(33)
-				+ BRK
-				+ "0"
-				+ createTabs(33)
-				+ BRK
-				+ "0"
-				+ createTabs(33)
-				+ BRK
-				+ NUM_RECORDS
-				+ createTabs(33)
-				+ BRK
-				+ X_ORIGIN
-				+ "	"
-				+ Y_ORIGIN
-				+ createTabs(32)
-				+ BRK
-				+ HEADER_LINE
-				+ BRK;
+		String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
+				+ "MISSION_NAME" + createTabs(33) + BRK + OWNSHIP + createTabs(33)
+				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
+				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
+				+ createTabs(33) + BRK + START_TIME + createTabs(32) + BRK + END_TIME
+				+ createTabs(32) + BRK + "0" + createTabs(33) + BRK + "0"
+				+ createTabs(33) + BRK + "0" + createTabs(33) + BRK + NUM_RECORDS
+				+ createTabs(33) + BRK + X_ORIGIN + "	" + Y_ORIGIN + createTabs(32)
+				+ BRK + HEADER_LINE + BRK;
 		;
-		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9,
-				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
-		+  collateLine(1, 7, 6.32332,-5555.551 , 2.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
-				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
-		+  collateLine(2, 7, 6.32332, -5555.55, 2.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
-				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
-		+  collateLine(3, 7, 6.32332, -5521.2, 4.6, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9,
-				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
-		+  collateLine(4, 7, 6.32332, -5555.32, 4.7, 200, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
-				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9) + BRK
-		+  collateLine(5, 7, 6.32332, -5543.73, 4.8, 200.1, 0, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, 
-				"-999", 6, -999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9);
-		
+		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999,
+				-999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6,
+				-999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999,
+				-999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9)
+				+ BRK
+				+ collateLine(1, 7, 6.32332, -5555.551, 2.7, 200, 0, -999, -999,
+						-999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9,
+						-999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999,
+						-999.9, -999.9, -999.9, -999.9, -999.9, -999.9)
+				+ BRK
+				+ collateLine(2, 7, 6.32332, -5555.55, 2.7, 200, 0, -999, -999, -999.9,
+						-999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9,
+						1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9,
+						-999.9, -999.9, -999.9, -999.9, -999.9)
+				+ BRK
+				+ collateLine(3, 7, 6.32332, -5521.2, 4.6, 200, 0, -999, -999, -999.9,
+						-999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9,
+						1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9,
+						-999.9, -999.9, -999.9, -999.9, -999.9)
+				+ BRK
+				+ collateLine(4, 7, 6.32332, -5555.32, 4.7, 200, 0, -999, -999, -999.9,
+						-999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9, -999.9,
+						1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999, -999.9,
+						-999.9, -999.9, -999.9, -999.9, -999.9)
+				+ BRK
+				+ collateLine(5, 7, 6.32332, -5543.73, 4.8, 200.1, 0, -999, -999,
+						-999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6, -999.9,
+						-999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999, -999,
+						-999.9, -999.9, -999.9, -999.9, -999.9, -999.9);
+
 		return header + body;
 	}
 
-	private String collateLine(int secs, int osStat, double osX, double osY, double spdKts, double headDegs, int sensorStat, int sensorX, int sensorY,
-			double sensorBrg, double sensorBacc, double sensorFreq, double sensorFacc, double sensorSpd, double sensorHdg, String sensorType, int msdStat,
-			double msdX, double msdY, double msdSpd, double msdHdg, int prdStat, double prdX, double prdY, double prdBrg, double prdBrgAcc, int prdRange, int prdRangeAcc,
-			double prdCourse, double prdCourseAcc, double prdSpd, double prdSpdAcc, double prdFreq, double prdFreqAcc)
+	private String collateLine(int secs, int osStat, double osX, double osY,
+			double spdKts, double headDegs, int sensorStat, int sensorX, int sensorY,
+			double sensorBrg, double sensorBacc, double sensorFreq,
+			double sensorFacc, double sensorSpd, double sensorHdg, String sensorType,
+			int msdStat, double msdX, double msdY, double msdSpd, double msdHdg,
+			int prdStat, double prdX, double prdY, double prdBrg, double prdBrgAcc,
+			int prdRange, int prdRangeAcc, double prdCourse, double prdCourseAcc,
+			double prdSpd, double prdSpdAcc, double prdFreq, double prdFreqAcc)
 	{
 		final String tab = "\t";
 		String res = null;
-			res = secs + tab + osStat + tab + osX + tab + osY + tab + spdKts + tab + headDegs + tab + 
-					sensorStat + tab + sensorX + tab + sensorY + tab + sensorBrg + tab + sensorBacc + tab + 
-					sensorFreq + tab + sensorFacc + tab + sensorSpd + tab + sensorHdg + tab + 
-					sensorType + tab + msdStat + tab + msdX + tab + msdY + tab + msdSpd + tab + msdHdg + tab + prdStat + tab + 
-					prdX + tab + prdY + tab + prdBrg + tab + prdBrgAcc + tab + prdRange + tab + prdRangeAcc + tab + prdCourse + tab + prdCourseAcc + tab + 
-					prdSpd + tab + prdSpdAcc + tab + prdFreq + tab + prdFreqAcc;
+		res = secs + tab + osStat + tab + osX + tab + osY + tab + spdKts + tab
+				+ headDegs + tab + sensorStat + tab + sensorX + tab + sensorY + tab
+				+ sensorBrg + tab + sensorBacc + tab + sensorFreq + tab + sensorFacc
+				+ tab + sensorSpd + tab + sensorHdg + tab + sensorType + tab + msdStat
+				+ tab + msdX + tab + msdY + tab + msdSpd + tab + msdHdg + tab + prdStat
+				+ tab + prdX + tab + prdY + tab + prdBrg + tab + prdBrgAcc + tab
+				+ prdRange + tab + prdRangeAcc + tab + prdCourse + tab + prdCourseAcc
+				+ tab + prdSpd + tab + prdSpdAcc + tab + prdFreq + tab + prdFreqAcc;
 
 		return res;
 	}
@@ -151,6 +139,22 @@ public class FlatFileExporter
 			return fileData.toString();
 		}
 
+		private void dumpToFile(String str, String filename)
+		{
+			File outFile = new File(filename);
+			FileWriter out;
+			try
+			{
+				out = new FileWriter(outFile);
+				out.write(str);
+				out.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
 		private String getTestData()
 		{
 			String res = null;
@@ -169,11 +173,13 @@ public class FlatFileExporter
 		{
 			final String TARGET_STR = getTestData();
 			assertNotNull("test data found", TARGET_STR);
-		//	assertEquals("has data", 2157, TARGET_STR.length());
+			// assertEquals("has data", 2157, TARGET_STR.length());
 
 			FlatFileExporter fa = new FlatFileExporter();
 			String res = fa.testExport();
 			assertEquals("correct string", TARGET_STR, res);
+
+			dumpToFile(res, "src/MWC/Utilities/ReaderWriter/FlatFile/data_out.txt");
 
 		}
 
