@@ -1,9 +1,7 @@
 package MWC.Utilities.ReaderWriter.FlatFile;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,8 +11,6 @@ import java.util.TimeZone;
 
 public class FlatFileExporter
 {
-	private static final String HEADER_LINE = "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc";
-
 	private String createTabs(int num)
 	{
 		StringBuffer res = new StringBuffer();
@@ -36,8 +32,8 @@ public class FlatFileExporter
 
 	public String testExport()
 	{
-		final String StartTime = "04:10:00	20/04/2009";
-		final String endTime = "04:10:05	20/04/2009";
+		final String StartTime = "04:45:00	20/04/2009";
+		final String endTime = "04:45:05	20/04/2009";
 		return exportThis("Vessel", "OS track 0100-0330", "GapsFatBowBTH_5-4-04",
 				"tla", StartTime, endTime, "5", "-1.23E+04", "-654321");
 	}
@@ -91,7 +87,7 @@ public class FlatFileExporter
 				+ Y_ORIGIN
 				+ createTabs(32)
 				+ BRK
-				+ HEADER_LINE
+				+ "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc"
 				+ BRK;
 		;
 		String body = "0	7	6.32332	-5555.55	2.7	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9"
