@@ -88,6 +88,10 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		final Status stat = new Status(severity, "org.mwc.debrief.core",
 				IStatus.OK, message, exception);
 		getDefault().getLog().log(stat);
+		
+		// also throw it to the console
+		if(exception != null)
+			exception.printStackTrace();
 	}
 
 	// Resource bundle.

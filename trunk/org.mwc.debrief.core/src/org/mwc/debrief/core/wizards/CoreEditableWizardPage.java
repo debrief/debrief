@@ -28,6 +28,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import MWC.GUI.Editable;
 
@@ -84,7 +85,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 		}
 		catch (final IntrospectionException e)
 		{
-			e.printStackTrace();
+			DebriefPlugin.logError(Status.ERROR, "Problem creating descriptor for:"
+					+ name, e);
 		}
 		return res;
 	}
@@ -207,9 +209,9 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
 		// finally, just clear the error message, we're not ready for it yet
 		setErrorMessage(null);
-		
+
 		// put the focus in our first control
-		if(_myEditors.size() > 0)
+		if (_myEditors.size() > 0)
 			_myEditors.get(0).setFocus();
 
 	}
@@ -245,7 +247,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 					final int sel = combo.getSelectionIndex();
 					if (sel == -1)
 					{
-						updateStatus("Please select a value for:" + combo.getData());
+						updateStatus("Please select a value for:" + combo.getToolTipText());
 						return;
 					}
 				}
@@ -254,7 +256,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 					final Text txt = (Text) thisC;
 					if (txt.getText().length() == 0)
 					{
-						updateStatus("Please enter a value for:" + txt.getData());
+						updateStatus("Please enter a value for:" + txt.getToolTipText());
 						return;
 					}
 				}
@@ -263,7 +265,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 					final ValueWithUnitsControl value = (ValueWithUnitsControl) thisC;
 					if (value.getData() == null)
 					{
-						updateStatus("Please enter a value for:" + value.getData());
+						updateStatus("Please enter a value for:" + value.getToolTipText());
 						return;
 					}
 				}
@@ -382,29 +384,33 @@ abstract public class CoreEditableWizardPage extends WizardPage
 						Object currentVal = thisD.getReadMethod().invoke(myItem);
 						// ok, put the property name in the editor, so we can
 						// easily get it when we're doing validation
-						
+
 						// do we need to convert the value to text?
-						if(newEditor instanceof Text)
+						if (newEditor instanceof Text)
 						{
 							Text txtEditor = (Text) newEditor;
 							txtEditor.setText(currentVal.toString());
 						}
 						else
 						{
-							newEditor.setData(thisD.getDisplayName());
+							newEditor.setData(currentVal);
 						}
-						
+
+						// store the data type name in the tooltip (for when we do error
+						// handling)
+						newEditor.setToolTipText(thisProp.getDisplayName());
+
 						newEditor.redraw();
-						
+
 					}
 					catch (Exception e)
 					{
-						CorePlugin.logError(Status.ERROR, "Whilst reading existing value of object:" + myItem,e);
-					}					
-					
+						CorePlugin.logError(Status.ERROR,
+								"Whilst reading existing value of object:" + myItem, e);
+					}
+
 					// ok, remember the editor, so we can handle enable/disable later on
 					_myEditors.add(newEditor);
-										
 
 					// listen out for changes on this control,
 					newEditor.addListener(SWT.Selection, new Listener()

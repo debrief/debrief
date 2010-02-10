@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.dnd.DND;
@@ -20,6 +21,7 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.TreeItem;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -390,11 +392,13 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 					}
 					catch (FileNotFoundException e)
 					{
-						e.printStackTrace();
+						CorePlugin.logError(Status.ERROR,
+								"File not found for drag/drop:" + fileName, e);
 					}
 					catch (IOException e)
 					{
-						e.printStackTrace();
+						CorePlugin.logError(Status.ERROR,
+								"IOException handling drag/drop:" + fileName, e);
 					}
 				}
 				else

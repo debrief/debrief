@@ -99,7 +99,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 							}
 							catch (RuntimeException e)
 							{
-								e.printStackTrace();
 								DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
 										+ fileName, e);
 							}
@@ -121,18 +120,18 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			}
 			catch (InvocationTargetException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+						+ fileName, e);
 			}
 			catch (InterruptedException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+						+ fileName, e);
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+						+ fileName, e);
 			}
 			finally
 			{

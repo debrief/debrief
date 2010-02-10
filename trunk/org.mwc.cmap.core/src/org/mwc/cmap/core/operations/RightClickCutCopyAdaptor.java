@@ -132,7 +132,8 @@ public class RightClickCutCopyAdaptor
 				}
 				catch (ClassNotFoundException e)
 				{
-					e.printStackTrace();
+					CorePlugin.logError(Status.ERROR,
+							"Whilst converting from native to java", e);
 				}
 				return myData;
 			}
@@ -622,7 +623,8 @@ public class RightClickCutCopyAdaptor
 			}
 			catch (ExecutionException e)
 			{
-				e.printStackTrace();
+				CorePlugin.logError(Status.ERROR,
+						"Problem with undo for test", e);
 				assertTrue("threw assertion", e == null);
 			}
 		}

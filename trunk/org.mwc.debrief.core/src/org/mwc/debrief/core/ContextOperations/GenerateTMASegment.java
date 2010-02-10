@@ -85,8 +85,6 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 			_courseDegs = courseDegs;
 			_speed = speed;
 			_offset = offset;
-			
-			System.err.println("Course:" + _courseDegs + " speed:" + _speed + " offset:" + _offset);
 		}
 
 		@Override
@@ -104,7 +102,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				+ FormatRNDateTime.toString(_newTrack.getStartDTG().getDate().getTime());
 			_newTrack.setName(tNow);
 
-			_layers.addThisLayer(_newTrack);
+			_layers.addThisLayerAllowDuplication(_newTrack);
 
 			// sorted, do the update
 			_layers.fireExtended();

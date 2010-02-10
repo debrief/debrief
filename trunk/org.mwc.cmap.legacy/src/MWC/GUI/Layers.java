@@ -531,7 +531,19 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public void addThisLayerAllowDuplication(final Layer theLayer)
 	{
-
+		// right, does this layer name already exist?
+		Iterator<Editable> iter = _theLayers.iterator();
+		while (iter.hasNext())
+		{
+			Layer thisLayer = (Layer) iter.next();
+			if(thisLayer.getName().equals(theLayer.getName()))
+			{
+				// right, we've got to subtlely change the new layer name
+				theLayer.setName(theLayer.getName() + "_1");
+			}
+		}
+		
+		// ok, now we can add it - we've changed the name if that's necessary.
 		_theLayers.add(theLayer);
 
 		// and fire the extended event

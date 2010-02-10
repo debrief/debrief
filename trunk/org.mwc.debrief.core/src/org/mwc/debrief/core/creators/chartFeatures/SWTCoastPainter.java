@@ -2,8 +2,10 @@ package org.mwc.debrief.core.creators.chartFeatures;
 
 import java.io.*;
 
+import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.preferences.CoastlineSourcePrefsPage;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
@@ -35,7 +37,7 @@ public class SWTCoastPainter extends CoastPainter
 		}
 		catch (FileNotFoundException e)
 		{
-			e.printStackTrace();
+			DebriefPlugin.logError(Status.ERROR, "Whilst loading coastline", e);
 		}
 		
 		return res;

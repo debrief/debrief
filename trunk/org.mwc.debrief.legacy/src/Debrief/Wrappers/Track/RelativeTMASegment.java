@@ -559,6 +559,11 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	public WatchableList getReferenceTrack()
 	{
+		// do we know it?
+		if(_referenceTrack == null)
+			identifyReferenceTrack();
+		
+		// fingers crossed it's sorted.
 		return _referenceTrack;
 	}
 

@@ -300,7 +300,8 @@ public class CorePlugin extends AbstractUIPlugin
 					}
 					catch (InterruptedException e)
 					{
-						e.printStackTrace();
+						CorePlugin.logError(Status.ERROR,
+								"Property edit interruption", e);
 					}
 
 					// now update the selection
@@ -409,6 +410,10 @@ public class CorePlugin extends AbstractUIPlugin
 		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message,
 				exception);
 		getDefault().getLog().log(stat);
+		
+		// also throw it to the console
+		if(exception != null)
+			exception.printStackTrace();
 	}
 
 	private static ImageRegistry getRegistry()
@@ -515,7 +520,6 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 		catch (PartInitException e)
 		{
-			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open " + viewName + "view", e);
 		}
 		return res;
@@ -576,7 +580,6 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 		catch (PartInitException e)
 		{
-			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
 		}
 		return res;

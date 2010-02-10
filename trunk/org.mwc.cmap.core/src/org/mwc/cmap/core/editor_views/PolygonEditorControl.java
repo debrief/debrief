@@ -1,4 +1,6 @@
 package org.mwc.cmap.core.editor_views;
+
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -6,7 +8,9 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
 
-public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Composite implements SelectionListener {
+public abstract class PolygonEditorControl extends
+		org.eclipse.swt.widgets.Composite implements SelectionListener
+{
 	private Composite topHolder;
 	private Composite btnHolder;
 	public ListViewer pointList2;
@@ -17,40 +21,42 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 	public Button upBtn;
 	public Label helpLbl;
 
-//	/**
-//	* Auto-generated main method to display this 
-//	* org.eclipse.swt.widgets.Composite inside a new Shell.
-//	*/
-//	public static void main(String[] args) {
-//		showGUI();
-//	}
-		
-//	/**
-//	* Auto-generated method to display this 
-//	* org.eclipse.swt.widgets.Composite inside a new Shell.
-//	*/
-//	public static void showGUI() {
-//		Display display = Display.getDefault();
-//		Shell shell = new Shell(display);
-//		PolygonEditorControl inst = new PolygonEditorControl(shell, SWT.NULL);
-//		Point size = inst.getSize();
-//		shell.setLayout(new FillLayout());
-//		shell.layout();
-//		if(size.x == 0 && size.y == 0) {
-//			inst.pack();
-//			shell.pack();
-//		} else {
-//			Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
-//			shell.setSize(shellBounds.width, shellBounds.height);
-//		}
-//		shell.open();
-//		while (!shell.isDisposed()) {
-//			if (!display.readAndDispatch())
-//				display.sleep();
-//		}
-//	}
+	// /**
+	// * Auto-generated main method to display this
+	// * org.eclipse.swt.widgets.Composite inside a new Shell.
+	// */
+	// public static void main(String[] args) {
+	// showGUI();
+	// }
 
-	public PolygonEditorControl(org.eclipse.swt.widgets.Composite parent, int style) {
+	// /**
+	// * Auto-generated method to display this
+	// * org.eclipse.swt.widgets.Composite inside a new Shell.
+	// */
+	// public static void showGUI() {
+	// Display display = Display.getDefault();
+	// Shell shell = new Shell(display);
+	// PolygonEditorControl inst = new PolygonEditorControl(shell, SWT.NULL);
+	// Point size = inst.getSize();
+	// shell.setLayout(new FillLayout());
+	// shell.layout();
+	// if(size.x == 0 && size.y == 0) {
+	// inst.pack();
+	// shell.pack();
+	// } else {
+	// Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
+	// shell.setSize(shellBounds.width, shellBounds.height);
+	// }
+	// shell.open();
+	// while (!shell.isDisposed()) {
+	// if (!display.readAndDispatch())
+	// display.sleep();
+	// }
+	// }
+
+	public PolygonEditorControl(org.eclipse.swt.widgets.Composite parent,
+			int style)
+	{
 		super(parent, style);
 		initGUI();
 		{
@@ -61,15 +67,18 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 			upBtn.setImage(CorePlugin.getImageFromRegistry("Up.gif"));
 			newBtn.setImage(CorePlugin.getImageFromRegistry("NewPin.gif"));
 			delBtn.setImage(CorePlugin.getImageFromRegistry("DeletePin.gif"));
-			}
+		}
 	}
 
-	private void initGUI() {
-		try {
+	private void initGUI()
+	{
+		try
+		{
 			this.setLayout(new GridLayout());
 			{
 				topHolder = new Composite(this, SWT.NONE);
-				FillLayout topHolderLayout = new FillLayout(org.eclipse.swt.SWT.HORIZONTAL);
+				FillLayout topHolderLayout = new FillLayout(
+						org.eclipse.swt.SWT.HORIZONTAL);
 				GridData topHolderLData = new GridData();
 				topHolderLData.horizontalAlignment = GridData.FILL;
 				topHolderLData.grabExcessHorizontalSpace = true;
@@ -126,7 +135,8 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						delBtn.setToolTipText("Delete current point");
 						delBtn.addSelectionListener(this);
 					}
-				}			}
+				}
+			}
 			{
 				GridData pointList2LData = new GridData();
 				pointList2LData.grabExcessHorizontalSpace = true;
@@ -146,8 +156,12 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 				editorPanel.setText("here goes the point editor details");
 			}
 			this.layout();
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception e)
+		{
+			CorePlugin.logError(Status.ERROR,
+					"Problem layout out Polygon editor gui", e);
+
 		}
 	}
 

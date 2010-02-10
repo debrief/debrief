@@ -199,7 +199,6 @@ public class RightClickSupport
 					// and log the error
 					CorePlugin.logError(Status.ERROR,
 							"failed whilst creating context menu", e);
-					e.printStackTrace();
 				}
 			}
 		}
@@ -1096,7 +1095,8 @@ public class RightClickSupport
 			}
 			catch (IntrospectionException e)
 			{
-				e.printStackTrace();
+				CorePlugin.logError(Status.ERROR,
+						"Whilst doing tests", e);
 				assertTrue("threw some error", false);
 			}
 		}

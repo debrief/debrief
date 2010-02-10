@@ -3,10 +3,12 @@
  */
 package org.mwc.cmap.core.property_support;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.editor_views.PolygonEditorView;
 
 import MWC.GenericData.WorldPath;
@@ -111,7 +113,8 @@ public class WorldPathHelper extends EditorHelper
 			}
 			catch (PartInitException e)
 			{
-				e.printStackTrace();
+				CorePlugin.logError(Status.ERROR,
+						"Whilst creating WorldPathHelper", e);
 			}
 
 			return output;

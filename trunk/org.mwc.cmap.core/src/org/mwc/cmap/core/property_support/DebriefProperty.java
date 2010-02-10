@@ -7,10 +7,12 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
 import java.util.*;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
@@ -57,7 +59,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				CorePlugin.logError(Status.ERROR, "whilst finding helper", e);
 			}
 
 			if (theEditor instanceof java.beans.PropertyEditor)
@@ -348,15 +350,18 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 		catch (IllegalArgumentException e)
 		{
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR,
+					"Whilst setting property value for:" + value, e);
 		}
 		catch (IllegalAccessException e)
 		{
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR,
+					"Whilst setting property value for:" + value, e);
 		}
 		catch (InvocationTargetException e)
 		{
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR,
+					"Whilst setting property value for:" + value, e);
 		}
 
 	}

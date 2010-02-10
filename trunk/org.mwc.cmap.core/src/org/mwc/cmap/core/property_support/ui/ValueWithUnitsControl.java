@@ -104,8 +104,8 @@ final public class ValueWithUnitsControl extends Composite implements
 		// get the best units
 		final int units = _myModel.getUnitsValue();
 		final String txt = "" + _myModel.getDoubleValue();
-		_myCombo.select(units);
 		_myText.setText(txt);
+		_myCombo.select(units);
 	}
 
 	/**
@@ -123,10 +123,6 @@ final public class ValueWithUnitsControl extends Composite implements
 			final int units = _myCombo.getSelectionIndex();
 			if(units != -1)
 				res = _myModel.createResultsObject(dist, units);
-		}
-		else
-		{
-			System.err.println("DUFF DOUBLE VALUE");
 		}
 		return res;
 	}

@@ -83,8 +83,8 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 		}
 		catch (ExecutionException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR,
+					"Executing newly added action", e);
 		}
 
 	}

@@ -70,20 +70,6 @@ final class SnailDrawSWTTrack
                                          HiResDate dtg,
                                          Color backColor)
   {
-
-    // set the width
-//    if(dest instanceof CanvasType)
-//    {
-//      CanvasType ct = (CanvasType)dest;
-//      ct.setLineWidth(_pointSize / 3);
-//    }
-//    if(dest instanceof Graphics2D)
-//    {
-//      Graphics2D g2 = (Graphics2D)dest;
-//      BasicStroke bs = new BasicStroke(_pointSize/3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-//      g2.setStroke(bs);
-//    }
-
     // represent this area as a rectangle
     java.awt.Rectangle thisR  = null;
 
@@ -244,6 +230,12 @@ final class SnailDrawSWTTrack
           // see if we are plotting the DTG
           if(gw.getLabelShowing())
           {
+          	// note, normally the fix-wrapper receives it's location in the
+          	// paint operation, but it doesn't when we try to plot it by hand (like this),
+          	// and if it's a DR track it doesn't actually know where it is, so make sure it
+          	// knows by setting it here.
+          	gw.setFixLocationSilent(gw.getLocation());
+          	
             // get the text itself, again for the metrics
             String msg = gw.getName();
             

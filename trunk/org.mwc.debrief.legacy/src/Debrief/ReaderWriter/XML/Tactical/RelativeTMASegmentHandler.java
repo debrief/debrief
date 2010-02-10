@@ -14,26 +14,27 @@ import org.w3c.dom.Element;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 
 abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 {
 	private static final String TMA_SEGMENT = "RelativeTMASegment";
-	public static final String HOST="HostTrack";
-	public static final String OFFSET="Offset";	
+	public static final String HOST = "HostTrack";
+	public static final String OFFSET = "Offset";
 
 	protected String _host = null;
 	protected WorldVector _offset = null;
 	private final Layers _theLayers;
-	
+
 	public RelativeTMASegmentHandler(Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(theLayers, TMA_SEGMENT);
 
 		_theLayers = theLayers;
-		
+
 		addAttributeHandler(new HandleAttribute(HOST)
 		{
 			@Override
@@ -42,50 +43,53 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 				_host = val;
 			}
 		});
-		
-		addHandler(new WorldVectorHandler(OFFSET){
-		
+
+		addHandler(new WorldVectorHandler(OFFSET)
+		{
+
 			@Override
 			public void setWorldVector(WorldVector res)
 			{
 				_offset = res;
 			}
 		});
-		
 
 	}
-	
-	
 
 	@Override
 	protected TrackSegment createTrack()
 	{
-		RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed, _offset, _theLayers);
+		RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed,
+				_offset, _theLayers);
 		res.setBaseFrequency(_baseFrequency);
 		res.setHostName(_host);
 		return res;
 	}
 
-
-	public static void exportThisTMASegment(org.w3c.dom.Document doc, Element trk,
-			RelativeTMASegment seg)
+	public static void exportThisTMASegment(org.w3c.dom.Document doc,
+			Element trk, RelativeTMASegment seg)
 	{
-		
-		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, TMA_SEGMENT);
-	
+
+		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg,
+				TMA_SEGMENT);
+
 		// export the start bits
 		CoreTMASegmentHandler.exportThisTMASegment(doc, seg, segE);
 
 		// sort out the remaining attributes
-		segE.setAttribute(HOST, seg.getReferenceTrack().getName());		
-		
+		WatchableList refTrack = seg.getReferenceTrack();
+		if (refTrack != null)
+		{
+			segE.setAttribute(HOST, refTrack.getName());
+		}
+
 		// and the offset vector
 		WorldVector theOffset = seg.getOffset();
-		if(theOffset != null)
-  		WorldVectorHandler.exportVector(OFFSET, theOffset,segE, doc);
-	
+		if (theOffset != null)
+			WorldVectorHandler.exportVector(OFFSET, theOffset, segE, doc);
+
 		trk.appendChild(segE);
-		
+
 	}
 
 }

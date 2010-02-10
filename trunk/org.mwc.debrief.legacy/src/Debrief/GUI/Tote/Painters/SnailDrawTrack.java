@@ -72,20 +72,6 @@ final class SnailDrawTrack
     //dest.setPaintMode();
     dest.setXORMode(backColor);
 
-
-    // set the width
-//    if(dest instanceof CanvasType)
-//    {
-//      CanvasType ct = (CanvasType)dest;
-//      ct.setLineWidth(_pointSize / 3);
-//    }
-//    if(dest instanceof Graphics2D)
-//    {
-//      Graphics2D g2 = (Graphics2D)dest;
-//      BasicStroke bs = new BasicStroke(_pointSize/3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-//      g2.setStroke(bs);
-//    }
-
     // represent this area as a rectangle
     java.awt.Rectangle thisR  = null;
 

@@ -69,7 +69,6 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 				{
 					DebriefPlugin.logError(Status.ERROR,
 							"Failed to open stream for counting lines:" + fName, null);
-					e.printStackTrace();
 				}
 				return lines;
 			}
@@ -124,7 +123,6 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 					}
 					catch (RuntimeException e)
 					{
-						e.printStackTrace();
 						DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
 								+ fileName, e);
 					}
@@ -143,7 +141,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 							}
 							catch (IOException e)
 							{
-								e.printStackTrace();
+								DebriefPlugin.logError(Status.ERROR, "whilst closing input stream", e);
 							}
 						}
 
@@ -155,13 +153,11 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 		}
 		catch (InvocationTargetException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DebriefPlugin.logError(Status.ERROR, "whilst loading replay file", e);
 		}
 		catch (InterruptedException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DebriefPlugin.logError(Status.ERROR, "whilst loading replay file", e);
 		}
 		finally
 		{

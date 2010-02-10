@@ -379,7 +379,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		catch (CoreException e)
 		{
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR,
+					"Problem loading data file", e);
 		}
 	}
 
@@ -396,8 +397,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR,
+					"Problem loading data file:" + filePath, e);
 		}
 	}
 
@@ -423,7 +424,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 			catch (RuntimeException e)
 			{
-				e.printStackTrace();
+				CorePlugin.logError(Status.ERROR,
+						"Problem loading data file:" + fileName, e);
 			}
 		}
 	}
@@ -1088,7 +1090,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				{
 					CorePlugin.logError(Status.ERROR, "Unknown file-save error occurred",
 							e);
-
 				}
 				finally
 				{
@@ -1123,12 +1124,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			Bundle bund = prod.getDefiningBundle();
 			String version = "" + new Date(bund.getLastModified());
 
-			// ok, now write to the file
-			DebriefEclipseXMLReaderWriter.exportThis(this, os, version);
+			try
+			{
+				// ok, now write to the file
+				DebriefEclipseXMLReaderWriter.exportThis(this, os, version);
 
-			// ok, lastly indicate that the save worked (if it did!)
-			_plotIsDirty = false;
-			firePropertyChange(PROP_DIRTY);
+				// ok, lastly indicate that the save worked (if it did!)
+				_plotIsDirty = false;
+				firePropertyChange(PROP_DIRTY);
+			}
+			catch (Exception e)
+			{
+				DebriefPlugin.logError(Status.ERROR,
+						"Error exporting plot file", e);
+			}
+
 		}
 		else
 		{
