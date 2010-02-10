@@ -115,37 +115,12 @@ public class FlatFileExporter
 	{
 		final String tab = "\t";
 		String res = null;
-		switch(secs)
-		{
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
 			res = secs + tab + osStat + tab + osX + tab + osY + tab + spdKts + tab + headDegs + tab + 
 					sensorStat + tab + sensorX + tab + sensorY + tab + sensorBrg + tab + sensorBacc + tab + 
 					sensorFreq + tab + sensorFacc + tab + sensorSpd + tab + sensorHdg + tab + 
 					sensorType + tab + msdStat + tab + msdX + tab + msdY + tab + msdSpd + tab + msdHdg + tab + prdStat + tab + 
 					prdX + tab + prdY + tab + prdBrg + tab + prdBrgAcc + tab + prdRange + tab + prdRangeAcc + tab + prdCourse + tab + prdCourseAcc + tab + 
 					prdSpd + tab + prdSpdAcc + tab + prdFreq + tab + prdFreqAcc;
-			break;
-		case 11:
-			res = secs + "	7	6.32332	-5555.551	2.7	200.0	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
-			break;
-		case 21:
-			res = secs + "	7	6.32332	-5555.55	2.7	200.0	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
-			break;
-		case 31:
-			res = secs + "	7	6.32332	-5521.2	4.6	200.0	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
-			break;
-		case 41:
-			res = secs + "	7	6.32332	-5555.32	4.7	200.0	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
-			break;
-		case 51: 
-			res = secs + "	7	6.32332	-5543.73	4.8	200.1	0	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9	-999	6	-999.9	-999.9	1.1	11.12	0	-999.9	-999.9	-999.9	-999.9	-999	-999	-999.9	-999.9	-999.9	-999.9	-999.9	-999.9";
-			break;
-		}
 
 		return res;
 	}
