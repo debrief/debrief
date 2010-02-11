@@ -49,6 +49,21 @@ public class FlatFileExporter
 		}
 		return res.toString();
 	}
+	
+	/** extract a date from the supplied string, expecting date 
+	 * in the following format:  HH:mm:ss	dd/MM/yyyy
+	 * @param dateStr date to convert
+	 * @return string as java date
+	 * @throws ParseException if the string doesn't match
+	 */
+	public static Date dateFrom(String dateStr) throws ParseException
+	{
+		DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Date res = null;
+		res = df.parse(dateStr);
+		return res;
+	}
 
 	/** format this date in the prescribed format
 	 * 
@@ -57,7 +72,7 @@ public class FlatFileExporter
 	 */
 	static protected String formatThis(Date val)
 	{
-		DateFormat df = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+		DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return df.format(val);
 	}
@@ -232,15 +247,10 @@ public class FlatFileExporter
 
 		public void testDateFormat() throws ParseException
 		{
-			DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
-			df.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-			System.err.println(df.format(new Date()));
-
-			Date theDate = df.parse("01:45:00	22/12/2002");
+			Date theDate = dateFrom("01:45:00	22/12/2002");
 
 			// Date theDate = new Date(2002,12,22,1,45,00);
-			String val = df.format(theDate);
+			String val = formatThis(theDate);
 			assertEquals("correct start date", "01:45:00	22/12/2002", val);
 		}
 	}
