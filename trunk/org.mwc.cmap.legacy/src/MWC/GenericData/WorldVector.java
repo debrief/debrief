@@ -136,6 +136,15 @@ public final class WorldVector implements Serializable, Cloneable
     _rng = rngDegs;
     _depth = dpthMetres;
   }
+  
+  /** copy constructor
+   * 
+   * @param other world vector to copy
+   */
+  public WorldVector(WorldVector other)
+  {
+  	this(other.getBearing(), other.getRange(), other.getDepth());
+  }
 
   /**
    * convenience constructor, taking higher level constructrs
