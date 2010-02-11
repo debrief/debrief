@@ -104,6 +104,7 @@ Export-Package:
    Debrief.GUI.Frames.Swing,
    MWC.GUI,
    MWC.GUI.Tools",
+ Debrief.ReaderWriter.FlatFile,
  Debrief.ReaderWriter.PCArgos;
   uses:="MWC.Utilities.ReaderWriter,
    javax.swing,
@@ -135,7 +136,7 @@ Export-Package:
    Debrief.ReaderWriter.XML,
    MWC.GUI,
    org.w3c.dom",
- Debrief.ReaderWriter.XML.KML,
+ Debrief.ReaderWriter.XML.KML;uses:="MWC.GUI",
  Debrief.ReaderWriter.XML.Shapes;
   uses:="MWC.GUI.Shapes,
    junit.framework,

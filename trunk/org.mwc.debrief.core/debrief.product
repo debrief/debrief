@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.57" useFeatures="true" includeLaunchers="false">
+<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.58" useFeatures="true" includeLaunchers="false">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/DebriefNGlogo.gif"/>
@@ -215,8 +215,8 @@ Library.
    <features>
       <feature id="org.eclipse.rcp" version="3.5.1.R35x_v20090811-9SA0FxVFqE70OL1ARMrfcO6e7BA6"/>
       <feature id="org.eclipse.platform" version="3.5.1.R35x_v20090910-9gEeG1_FthkNDSP2odXdThaOu9GFDPn83DGB7"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.49"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.63"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.50"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.64"/>
    </features>
 
 
