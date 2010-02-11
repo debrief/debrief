@@ -28,6 +28,7 @@ import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.DetectionObserver;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -72,12 +73,13 @@ public class PlotSensorObserver extends DetectionObserver implements
 	 * @param isActive
 	 *          whether this is observer is active
 	 * @param showNames
-	 * @param shadeCircle 
+	 * @param shadeCircle
 	 */
 
 	public PlotSensorObserver(final TargetType watchVessel,
 			final TargetType targetVessel, final String name,
-			final Integer detectionLevel, final boolean isActive, boolean showNames, boolean shadeCircle)
+			final Integer detectionLevel, final boolean isActive, boolean showNames,
+			boolean shadeCircle)
 	{
 		super(watchVessel, targetVessel, name, detectionLevel, isActive);
 
@@ -178,9 +180,9 @@ public class PlotSensorObserver extends DetectionObserver implements
 	 */
 	public void paint(CanvasType dest)
 	{
-		if(!this.getVisible())
+		if (!this.getVisible())
 			return;
-		
+
 		// cool, here we go.
 
 		// loop through our selected vessels
@@ -243,8 +245,9 @@ public class PlotSensorObserver extends DetectionObserver implements
 						}
 
 						// sort out the color
-						dest.setColor(ScenarioParticipantWrapper.getColorFor(thisP.getCategory().getForce()));
-						
+						dest.setColor(ScenarioParticipantWrapper.getColorFor(thisP
+								.getCategory().getForce()));
+
 						if (doSolid)
 							dest.setLineStyle(CanvasType.SOLID);
 						else
@@ -252,7 +255,13 @@ public class PlotSensorObserver extends DetectionObserver implements
 
 						if (_shadeCircle)
 						{
-							dest.fillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+							if (dest instanceof ExtendedCanvasType)
+							{
+								ExtendedCanvasType et = (ExtendedCanvasType) dest;
+								et.semiFillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+							}
+							else
+								dest.fillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
 						}
 						dest.drawOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
 

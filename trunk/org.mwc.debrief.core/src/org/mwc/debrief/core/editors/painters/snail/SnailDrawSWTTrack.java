@@ -54,7 +54,7 @@ final class SnailDrawSWTTrack
     setJoinPositions(true);
     setFadePoints(true);
     setTrailLength(new Long(15 * 1000 * 1000* 60 )); // 15 minutes
-    setPointSize(5);
+    setPointSize(6);
 
     _fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
   }

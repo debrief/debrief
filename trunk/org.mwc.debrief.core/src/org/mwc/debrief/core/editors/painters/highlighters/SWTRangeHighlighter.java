@@ -57,6 +57,12 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	private boolean _plainRectangle = false;
 
 	/**
+	 * whether to shade in the arcs
+	 * 
+	 */
+	private boolean _fillArcs = false;
+
+	/**
 	 * Creates new RangeHighlighter
 	 */
 	public SWTRangeHighlighter()
@@ -81,9 +87,9 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			MWC.GenericData.Watchable watch, boolean isPrimary)
 	{
 		boolean doPlot = true;
-		if(isJustPlotPrimary())
+		if (isJustPlotPrimary())
 			doPlot = isPrimary;
-		
+
 		// are we concerend about primary track?
 		if (doPlot)
 		{
@@ -275,9 +281,22 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			// shift the centre point to the TL corner of the area
 			origin.translate(-thisRadius, -thisRadius);
 
-			// draw in the arc itself
-			dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
-					startAngle, angle);
+			if (_fillArcs)
+			{
+				// draw in the arc itself
+				if (dest instanceof ExtendedCanvasType)
+				{
+					ExtendedCanvasType ed = (ExtendedCanvasType) dest;
+					ed.semiFillArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
+							startAngle, angle);
+				}
+				else
+					dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
+							startAngle, angle);
+			}
+			else
+				dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
+						startAngle, angle);
 
 			// move on to the next radius
 			thisRadius += ring_separation;
@@ -344,6 +363,16 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	public final boolean getPlainRectangle()
 	{
 		return _plainRectangle;
+	}
+
+	public boolean getFillArcs()
+	{
+		return _fillArcs;
+	}
+
+	public void setFillArcs(boolean fillArcs)
+	{
+		_fillArcs = fillArcs;
 	}
 
 	/**
@@ -486,13 +515,15 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			{
 				final java.beans.PropertyDescriptor[] res =
 				{
-						prop("Color", "Color to paint highlight"),
-						prop("Radius", "Radius of outer ring (yds)"),
-						prop("Arcs", "Angle of arcs each side (degs)"),
-						prop("SpokeSeparation", "Angle between spokes (degs)"),
+						prop("Color", "Color to paint highlight", FORMAT),
+						prop("Radius", "Radius of outer ring (yds)", SPATIAL),
+						prop("Arcs", "Angle of arcs each side (degs)", SPATIAL),
+						prop("FillArcs", "whether to shade in the arcs", FORMAT),
+						prop("SpokeSeparation", "Angle between spokes (degs)", SPATIAL),
 						prop("JustPlotPrimary",
-								"Only plot range rings around the primary track"),
-						prop("NumRings", "Number of range rings to draw (including outer)"),
+								"Only plot range rings around the primary track", FORMAT),
+						prop("NumRings", "Number of range rings to draw (including outer)",
+								SPATIAL),
 				// prop("PlainRectangle", "Draw simple rectangle around point"),
 				};
 				return res;

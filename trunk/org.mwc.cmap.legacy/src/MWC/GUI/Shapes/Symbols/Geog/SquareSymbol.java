@@ -1,7 +1,7 @@
-
 /**
  * MWC.GUI.Shapes.Symbols.SquareSymbol
- */// Copyright MWC 1999, Debrief 3 Project
+ */
+// Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: SquareSymbol.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -82,115 +82,116 @@ import MWC.GenericData.WorldLocation;
 
 public class SquareSymbol extends PlainSymbol
 {
-  /**
- * // keep track of versions
- */
-  static final long serialVersionUID = 1;
+	/**
+	 * // keep track of versions
+	 */
+	static final long serialVersionUID = 1;
 
-  /** the name of our shape
-   *
-   */
-  static public final String SQUARE_SYMBOL = "Square";
+	/**
+	 * the name of our shape
+	 * 
+	 */
+	static public final String SQUARE_SYMBOL = "Square";
 
-  /**
-   * the size of the symbol
-   */
-  protected final int wid = 4;
+	/**
+	 * the size of the symbol
+	 */
+	protected final int wid = 4;
 
-  /**
-   * <init>
-   *
-   */
-  public SquareSymbol(){
-    super();
-     // construct the symbol from a sequence of metafile commands,
-     // if we think it is really necessary...
-  }
+	/**
+	 * <init>
+	 * 
+	 */
+	public SquareSymbol()
+	{
+		super();
+		// construct the symbol from a sequence of metafile commands,
+		// if we think it is really necessary...
+	}
 
-  /**
-   * getBounds
-   *
-   * @return the returned java.awt.Dimension
-   */
-  public java.awt.Dimension getBounds()
-  {
-    int sWid = (int)(wid * getScaleVal());
-    return new java.awt.Dimension(2 * sWid, 2 * sWid);
-  }
+	/**
+	 * getBounds
+	 * 
+	 * @return the returned java.awt.Dimension
+	 */
+	public java.awt.Dimension getBounds()
+	{
+		int sWid = (int) (wid * getScaleVal());
+		return new java.awt.Dimension(2 * sWid, 2 * sWid);
+	}
 
-  /**
-   * getType
-   *
-   * @return the returned String
-   */
-  public String getType()
-  {
-    return SQUARE_SYMBOL;
-  }
+	/**
+	 * getType
+	 * 
+	 * @return the returned String
+	 */
+	public String getType()
+	{
+		return SQUARE_SYMBOL;
+	}
 
-  /**
-   * getMetafile
-   *
-   */
-  public void getMetafile()
-  {
-    // return the metafile
-  }
+	/**
+	 * getMetafile
+	 * 
+	 */
+	public void getMetafile()
+	{
+		// return the metafile
+	}
 
-  /** get this symbol as a sequence of lines.
-   * The
-   *
-   * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
-   */
-  public Vector<Vector<Point2D>> getCoordinates() {
-  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
+	/**
+	 * get this symbol as a sequence of lines. The
+	 * 
+	 * @return a collection of paths. Each path is a collection of java.awt.Point
+	 *         objects.
+	 */
+	public Vector<Vector<Point2D>> getCoordinates()
+	{
+		Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0, 1);
 
-    Vector<Point2D> line1 = new Vector<Point2D>(0,1);
+		Vector<Point2D> line1 = new Vector<Point2D>(0, 1);
 
-    int wid1 = (int)(2 * getScaleVal());
-    line1.add(new Point(-wid1, -wid1));
-    line1.add(new Point( wid1, -wid1));
-    line1.add(new Point( wid1,  wid1));
-    line1.add(new Point( -wid1, wid1));
-    line1.add(new Point(-wid1, -wid1));
+		int wid1 = (int) (2 * getScaleVal());
+		line1.add(new Point(-wid1, -wid1));
+		line1.add(new Point(wid1, -wid1));
+		line1.add(new Point(wid1, wid1));
+		line1.add(new Point(-wid1, wid1));
+		line1.add(new Point(-wid1, -wid1));
 
-    res.add(line1);
+		res.add(line1);
 
-    return res;
-  }
+		return res;
+	}
 
-  public void paint(CanvasType dest, WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	public void paint(CanvasType dest, WorldLocation centre)
+	{
+		paint(dest, centre, 0.0);
+	}
 
+	/**
+	 * paint
+	 * 
+	 * @param dest
+	 *          parameter for paint
+	 * @param theLocation
+	 *          the place where we paint it
+	 */
+	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	{
+		// set the colour
+		dest.setColor(getColor());
 
-  /**
-   * paint
-   *
-   * @param dest parameter for paint
-   * @param theLocation the place where we paint it
-   */
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+		// create our centre point
+		java.awt.Point centre = dest.toScreen(theLocation);
 
-    // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+		// calculate the scaled width
+		int sWid = (int) (wid * getScaleVal());
 
-    // calculate the scaled width
-    int sWid = (int)(wid * getScaleVal());
-
-    // draw our square at the set radius around the centre
-    if(getFillSymbol())
-      dest.fillRect(centre.x - sWid, centre.y - sWid,  sWid * 2,  sWid * 2);
-    else
-      dest.drawRect(centre.x - sWid, centre.y - sWid,  sWid * 2,  sWid * 2);
-  }
-
+		// draw our square at the set radius around the centre
+		if (getFillSymbol())
+			dest.fillRect(centre.x - sWid, centre.y - sWid, sWid * 2, sWid * 2);
+		else
+			dest.drawRect(centre.x - sWid, centre.y - sWid, sWid * 2, sWid * 2);
+	}
 
 }
-
-
-

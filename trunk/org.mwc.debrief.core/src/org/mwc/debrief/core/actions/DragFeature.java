@@ -39,37 +39,37 @@ import MWC.GenericData.WorldVector;
  */
 public class DragFeature extends CoreDragAction
 {
-	
-	/** wrapper for an operation we apply to an object - such as drag
+
+	/**
+	 * wrapper for an operation we apply to an object - such as drag
 	 * 
 	 * @author Administrator
-	 *
+	 * 
 	 */
 	public static interface DragOperation
 	{
-		/** do the operation
+		/**
+		 * do the operation
 		 * 
-		 * @param item what we're doing it to
-		 * @param offset how far to do it
+		 * @param item
+		 *          what we're doing it to
+		 * @param offset
+		 *          how far to do it
 		 */
 		public void apply(DraggableItem item, WorldVector offset);
 	}
-	
+
 	public Cursor getDragCursor()
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin
-				.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
-				2);
+		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+				"icons/SelectFeatureHitDown.ico").getImageData(), 4, 2);
 	}
-	
+
 	public Cursor getHotspotCursor(DraggableItem hoverTarget)
 	{
-		return new Cursor(Display.getDefault(), DebriefPlugin
-				.getImageDescriptor("icons/SelectFeatureHit.ico").getImageData(), 4,
-				2);			
+		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+				"icons/SelectFeatureHit.ico").getImageData(), 4, 2);
 	}
-
-
 
 	public void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
@@ -93,7 +93,8 @@ public class DragFeature extends CoreDragAction
 				DraggableItem dw = (DraggableItem) thisLayer;
 
 				// yup, find the distance to it's nearest point
-				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, thisParentLayer, theData);
+				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
+						thisParentLayer, theData);
 
 				// right, this one's processed. carry on
 				sorted = true;
@@ -108,39 +109,44 @@ public class DragFeature extends CoreDragAction
 				{
 					Plottable pt = (Plottable) pts.nextElement();
 
-					// is this item a layer itself?
-					if (pt instanceof Layer)
+					if (pt.getVisible())
 					{
-						findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest, thisParentLayer, theData);
-					}
-					else
-					{
-						DraggableItem draggable = null;
 
-						// is it a shape?
-						if (pt instanceof DraggableItem)
+						// is this item a layer itself?
+						if (pt instanceof Layer)
 						{
-							draggable = (DraggableItem) pt;
-
-							// yup, find the distance to it's nearest point
-							draggable.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
+							findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest,
 									thisParentLayer, theData);
-
-							// right, this one's processed. carry on
-							sorted = true;
 						}
-
-						if (!sorted)
+						else
 						{
-							double rngDegs = pt.rangeFrom(cursorLoc);
-							if (rngDegs != -1)
-							{
-								WorldDistance thisSep = new WorldDistance(pt.rangeFrom(cursorLoc),
-										WorldDistance.DEGS);
-								currentNearest.checkMe(draggable, thisSep, null, thisLayer);
-							}
-						}
+							DraggableItem draggable = null;
 
+							// is it a shape?
+							if (pt instanceof DraggableItem)
+							{
+								draggable = (DraggableItem) pt;
+
+								// yup, find the distance to it's nearest point
+								draggable.findNearestHotSpotIn(cursorPos, cursorLoc,
+										currentNearest, thisParentLayer, theData);
+
+								// right, this one's processed. carry on
+								sorted = true;
+							}
+
+							if (!sorted)
+							{
+								double rngDegs = pt.rangeFrom(cursorLoc);
+								if (rngDegs != -1)
+								{
+									WorldDistance thisSep = new WorldDistance(pt
+											.rangeFrom(cursorLoc), WorldDistance.DEGS);
+									currentNearest.checkMe(draggable, thisSep, null, thisLayer);
+								}
+							}
+
+						}
 					}
 				}
 			}
@@ -209,8 +215,8 @@ public class DragFeature extends CoreDragAction
 		 * @param theLayers
 		 * @param theCanvas
 		 */
-		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theData, final SWTCanvas theCanvas)
+		public void doMouseMove(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theData, final SWTCanvas theCanvas)
 		{
 
 			// check we're not currently dragging something
@@ -235,7 +241,7 @@ public class DragFeature extends CoreDragAction
 					// find the nearest items, this method call will recursively pass down
 					// through
 					// the layers
-					findNearest(thisL, cursorLoc, cursorPt, currentNearest, null,theData);
+					findNearest(thisL, cursorLoc, cursorPt, currentNearest, null, theData);
 				}
 			}
 
@@ -300,11 +306,11 @@ public class DragFeature extends CoreDragAction
 		public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
 				Layers theLayers, SWTCanvas theCanvas)
 		{
-			
+
 			// do we have something selected?
-			if(_hoverTarget == null)
+			if (_hoverTarget == null)
 				return;
-			
+
 			if (_startPoint != null)
 			{
 				GC gc = new GC(_myCanvas.getCanvas());
@@ -335,8 +341,8 @@ public class DragFeature extends CoreDragAction
 
 				// remember where we are
 				_lastPoint = new java.awt.Point(pt.x, pt.y);
-				WorldLocation newLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
-						_lastPoint));
+				WorldLocation newLocation = new WorldLocation(_myCanvas.getProjection()
+						.toWorld(_lastPoint));
 
 				// now work out the vector from the last place plotted to the current
 				// place
@@ -361,9 +367,9 @@ public class DragFeature extends CoreDragAction
 		@SuppressWarnings("deprecation")
 		public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
-			if(_hoverTarget == null)
+			if (_hoverTarget == null)
 				return;
-			
+
 			if (_myCanvas == null)
 			{
 				System.out.println("canvas is null!");
@@ -398,11 +404,12 @@ public class DragFeature extends CoreDragAction
 			WorldVector forward = _lastLocation.subtract(_startLocation);
 
 			// put it into our action
-			DragFeatureAction dta = new DragFeatureAction(forward, _hoverTarget, _myChart
-					.getLayers(), _parentLayer, getOperation());
+			DragFeatureAction dta = new DragFeatureAction(forward, _hoverTarget,
+					_myChart.getLayers(), _parentLayer, getOperation());
 
 			// and wrap it
-			DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers());
+			DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart
+					.getLayers());
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);
@@ -414,8 +421,8 @@ public class DragFeature extends CoreDragAction
 			_startLocation = null;
 		}
 
-		final public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas,
-				PlainChart theChart)
+		final public void mouseDown(org.eclipse.swt.graphics.Point point,
+				SWTCanvas canvas, PlainChart theChart)
 		{
 			_startPoint = new Point(point.x, point.y);
 			_myCanvas = canvas;
@@ -424,22 +431,24 @@ public class DragFeature extends CoreDragAction
 					new java.awt.Point(point.x, point.y)));
 			_myChart = theChart;
 		}
-		
+
 		public DragOperation getOperation()
 		{
-			return new DragOperation(){
+			return new DragOperation()
+			{
 
-				public void apply(DraggableItem item, WorldVector offset) {
+				public void apply(DraggableItem item, WorldVector offset)
+				{
 					item.shift(offset);
 				}
-				
+
 			};
 		}
 
 		public Cursor getNormalCursor()
 		{
-			Cursor res = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-					"icons/SelectFeature.ico").getImageData(), 4, 2);
+			Cursor res = new Cursor(Display.getDefault(), DebriefPlugin
+					.getImageDescriptor("icons/SelectFeature.ico").getImageData(), 4, 2);
 			return res;
 		}
 
@@ -538,8 +547,9 @@ public class DragFeature extends CoreDragAction
 		 * @param theTrack
 		 * @param theLayers
 		 */
-		public DragFeatureAction(final WorldVector theOffset, final DraggableItem theTrack,
-				final Layers theLayers, final Layer parentLayer, final DragOperation operation)
+		public DragFeatureAction(final WorldVector theOffset,
+				final DraggableItem theTrack, final Layers theLayers,
+				final Layer parentLayer, final DragOperation operation)
 		{
 			_theOffset = theOffset;
 			_itemToDrag = theTrack;
@@ -553,7 +563,8 @@ public class DragFeature extends CoreDragAction
 		 */
 		public String toString()
 		{
-			final String res = "Drag " + _itemToDrag.getName() + _theOffset.toString();
+			final String res = "Drag " + _itemToDrag.getName()
+					+ _theOffset.toString();
 			return res;
 		}
 

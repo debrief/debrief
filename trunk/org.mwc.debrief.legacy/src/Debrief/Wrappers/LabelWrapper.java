@@ -941,17 +941,18 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ prop("Color", "the label color"), prop("Label", "the text showing"),
-						prop("Font", "the label font"),
-						prop("SymbolVisible", "whether a symbol is plotted"),
-						prop("LabelLocation", "the relative location of the label"),
-						prop("Location", "the location of the origin of the label"),
-						prop("SymbolType", "the type of symbol plotted for this label"),
-						prop("SymbolSize", "the scale of the symbol"),
-						prop("LabelVisible", "whether the label is plotted"),
-						prop("Visible", "whether the label and symbol are plotted"),
-						prop("TimeStart", "the start DTG"),
-						prop("Time_End", "the end DTG"), };
+				{ prop("Color", "the label color", FORMAT), 
+						prop("Label", "the text showing"),
+						prop("Font", "the label font", FORMAT),
+						prop("SymbolVisible", "whether a symbol is plotted", FORMAT),
+						prop("LabelLocation", "the relative location of the label", FORMAT),
+						prop("Location", "the location of the origin of the label", SPATIAL),
+						prop("SymbolType", "the type of symbol plotted for this label", FORMAT),
+						prop("SymbolSize", "the scale of the symbol", FORMAT),
+						prop("LabelVisible", "whether the label is plotted", FORMAT),
+						prop("Visible", "whether the label and symbol are plotted", FORMAT),
+						prop("TimeStart", "the start DTG", TEMPORAL),
+						prop("Time_End", "the end DTG", TEMPORAL) };
 
 				// set the custom editors
 				res[4]

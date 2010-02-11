@@ -271,8 +271,15 @@ public final class RangeHighlighter implements PlotHighlighter
 			origin.translate(-thisRadius, -thisRadius);
 
 			// draw in the arc itself
-			dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
-					startAngle, angle);
+			if(dest instanceof ExtendedCanvasType)
+			{
+				ExtendedCanvasType ed = (ExtendedCanvasType) dest;
+				ed.semiFillArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
+						startAngle, angle);
+			}
+			else
+				dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
+						startAngle, angle);
 
 			// move on to the next radius
 			thisRadius += ring_separation;

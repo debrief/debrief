@@ -5,6 +5,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -39,6 +40,8 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		else if (editable instanceof FixWrapper)
 			res = CorePlugin.getImageDescriptor("icons/Location.png");
 		else if (editable instanceof ShapeWrapper)
+			res = CorePlugin.getImageDescriptor("icons/shape.gif");
+		else if (editable instanceof LabelWrapper)
 			res = CorePlugin.getImageDescriptor("icons/shape.gif");
 
 		return res;

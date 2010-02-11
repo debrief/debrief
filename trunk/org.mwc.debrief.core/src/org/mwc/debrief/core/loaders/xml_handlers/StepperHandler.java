@@ -34,6 +34,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 	private static final String ARCS = "Arcs";
 
+	private static final String SHADE_ARCS = "ShadeArcs";
+
 	private static final String RADIUS = "Radius";
 
 	/** snail trail properties
@@ -269,6 +271,11 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		  String numRings = (String) details.properties.get(NUM_RINGS);
 			if (numRings != null)
 				rr.setNumRings(Integer.parseInt(numRings));
+
+		  String fillRings = (String) details.properties.get(SHADE_ARCS);
+			if (fillRings != null)
+				rr.setFillArcs(Boolean.valueOf(fillRings));
+
 		}
 	}
 
@@ -400,6 +407,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			details.addProperty(ARCS, MWCXMLReader.writeThis(hi.getArcs().getCurrent()));
 			details.addProperty(SPOKE_SEPARATION, MWCXMLReader.writeThis(hi.getSpokeSeparation()));
 			details.addProperty(NUM_RINGS,MWCXMLReader.writeThis(hi.getNumRings().getCurrent()));
+			details.addProperty(SHADE_ARCS,MWCXMLReader.writeThis(hi.getFillArcs()));
 		}
 	}
 

@@ -395,6 +395,8 @@ public class SymbolFactory
       /////////////////////////////////////////
       // put the other assorted items directly into the main list
       /////////////////////////////////////////
+      _theFactory._theSymbols.put("FilledSquare", MWC.GUI.Shapes.Symbols.Geog.FilledSquareSymbol.class);
+      _theFactory._theSymbols.put("FilledCircle", MWC.GUI.Shapes.Symbols.Geog.FilledCircleSymbol.class);
       _theFactory._theSymbols.put("Square", MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
       _theFactory._theSymbols.put("Circle", MWC.GUI.Shapes.Symbols.Geog.CircleSymbol.class);
       _theFactory._theSymbols.put("Cross", MWC.GUI.Shapes.Symbols.Geog.CrossSymbol.class);
