@@ -8,8 +8,16 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.TimeZone;
+
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 
 /** exporter class to replicate old Strand export format
  * 
@@ -32,6 +40,44 @@ public class FlatFileExporter
 	 * 
 	 */
 	final String tab = "\t";
+
+	public String export(WatchableList primaryTrack,
+			WatchableList[] secondaryTracks, TimePeriod period)
+	{
+		String res = null;
+		
+		TrackWrapper track = (TrackWrapper) primaryTrack;
+		
+		// get the sensor
+		Enumeration<SensorWrapper> sensors = track.getSensors();
+		SensorWrapper mySensor = null;
+		while (sensors.hasMoreElements())
+		{
+			SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
+			if(thisS.getVisible())
+			{
+				mySensor = thisS;
+			}
+		}
+
+		if(mySensor == null)
+			return null;
+		
+		// and the secondary track
+		TrackWrapper mySec = (TrackWrapper) secondaryTracks[0];
+		
+		// how many sensor cuts are there?
+		Collection<Editable> theCuts = mySensor.getItemsBetween(period.getStartDTG(), period.getEndDTG());
+		
+		
+		// start off with the header bits
+		res = this.getHeader(primaryTrack.getName(), primaryTrack.getName(), mySensor.getName(),
+				mySec.getName(), period.getStartDTG().getDate(), period.getEndDTG().getDate(), theCuts.size(), 0, 0);
+		
+		// now the body bits
+		
+		return res;
+	}
 
 
 
@@ -77,14 +123,16 @@ public class FlatFileExporter
 		return df.format(val);
 	}
 
-	public String testExport()
+	public String testExport() throws ParseException
 	{
 		final String StartTime = "04:45:00	20/04/2009";
+		final Date startDate = dateFrom(StartTime);
 		final String endTime = "04:45:05	20/04/2009";
+		final Date endDate = dateFrom(endTime);
 		String res = getHeader("Vessel", "OS track 0100-0330",
-				"GapsFatBowBTH_5-4-04", "tla", StartTime, endTime, "5", "-1.23E+04",
-				"-654321");
-		res += getBody();
+				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456,
+				-654321);
+		res += getTestBody();
 		return res;
 	}
 
@@ -94,23 +142,23 @@ public class FlatFileExporter
 	 * @param OS_TRACK_NAME
 	 * @param SENSOR_NAME
 	 * @param TGT_NAME
-	 * @param START_TIME
-	 * @param END_TIME
+	 * @param startDate
+	 * @param endDate
 	 * @param NUM_RECORDS
 	 * @param X_ORIGIN_YDS
 	 * @param Y_ORIGIN_YDS
 	 * @return
 	 */
 	public String getHeader(final String OWNSHIP, String OS_TRACK_NAME,
-			String SENSOR_NAME, String TGT_NAME, String START_TIME, String END_TIME,
-			String NUM_RECORDS, String X_ORIGIN_YDS, String Y_ORIGIN_YDS)
+			String SENSOR_NAME, String TGT_NAME, Date startDate, Date endDate,
+			int NUM_RECORDS, int X_ORIGIN_YDS, int Y_ORIGIN_YDS)
 	{
 
 		String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
 				+ "MISSION_NAME" + createTabs(33) + BRK + OWNSHIP + createTabs(33)
 				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
 				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
-				+ createTabs(33) + BRK + START_TIME + createTabs(32) + BRK + END_TIME
+				+ createTabs(33) + BRK + formatThis(startDate) + createTabs(32) + BRK + formatThis(endDate)
 				+ createTabs(32) + BRK + "0" + createTabs(33) + BRK + "0"
 				+ createTabs(33) + BRK + "0" + createTabs(33) + BRK + NUM_RECORDS
 				+ createTabs(33) + BRK + X_ORIGIN_YDS + "	" + Y_ORIGIN_YDS + createTabs(32)
@@ -118,7 +166,11 @@ public class FlatFileExporter
 		return header;
 	}
 
-	public String getBody()
+	/** produce a body of test data lines
+	 * 
+	 * @return 5 lines of test data - to match supplied sample
+	 */
+	public String getTestBody()
 	{
 		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999,
 				-999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6,
@@ -153,6 +205,9 @@ public class FlatFileExporter
 		return body;
 	}
 
+	/** produce a tab-separated line of data
+	 * @return
+	 */
 	private String collateLine(int secs, int osStat, double osX_yds, double osY_yds,
 			double spdKts, double headDegs, int sensorStat, int sensorX_yds, int sensorY_yds,
 			double sensorBrg, double sensorBacc, double sensorFreq,
@@ -175,6 +230,9 @@ public class FlatFileExporter
 		return res;
 	}
 
+	//////////////////////////////////////////////////////////////////
+	//  TEST THIS CLASS
+  //////////////////////////////////////////////////////////////////
 	static public final class testMe extends junit.framework.TestCase
 	{
 
@@ -183,6 +241,11 @@ public class FlatFileExporter
 		public testMe(final String val)
 		{
 			super(val);
+		}
+		
+		public void testExport()
+		{
+			
 		}
 
 		private String readFileAsString(String filePath) throws java.io.IOException
@@ -231,14 +294,21 @@ public class FlatFileExporter
 			return res;
 		}
 
-		public void testExport() throws IOException
+		public void testAgainstSample() throws IOException
 		{
 			final String TARGET_STR = getTestData();
 			assertNotNull("test data found", TARGET_STR);
-			// assertEquals("has data", 2157, TARGET_STR.length());
-
 			FlatFileExporter fa = new FlatFileExporter();
-			String res = fa.testExport();
+			String res = null;
+			try
+			{
+				res = fa.testExport();
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+			assertNotNull("produced string", res);
 			assertEquals("correct string", TARGET_STR, res);
 
 			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
@@ -248,11 +318,10 @@ public class FlatFileExporter
 		public void testDateFormat() throws ParseException
 		{
 			Date theDate = dateFrom("01:45:00	22/12/2002");
-
-			// Date theDate = new Date(2002,12,22,1,45,00);
 			String val = formatThis(theDate);
 			assertEquals("correct start date", "01:45:00	22/12/2002", val);
 		}
 	}
+
 
 }
