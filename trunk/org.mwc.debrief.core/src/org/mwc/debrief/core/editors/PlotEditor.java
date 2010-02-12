@@ -790,7 +790,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		// TODO Auto-generated method stub
 		SWTChart res = new SWTChart(_myLayers, parent)
 		{
 
@@ -829,7 +828,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			public void chartFireSelectionChanged(ISelection sel)
 			{
-				// TODO Auto-generated method stub
 				fireSelectionChanged(sel);
 			}
 
@@ -936,10 +934,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 
 			// right, have a look at it.
-			if (ext == null || ext.equalsIgnoreCase("rep"))
+			if ((ext == null) || (!ext.equalsIgnoreCase("xml")))
 			{
 				// not, we have to do a save-as
-				doSaveAs();
+				doSaveAs("Can't store this file-type, please save as Debrief plot-file (*.xml)");
 			}
 			else
 			{
@@ -1150,11 +1148,43 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	public void doSaveAs()
 	{
-		String message = "Save as";
+		doSaveAs("Save as");
+	}
+	
+	/** utility function to extact the root part of this filename
+	 * 
+	 * @param fileName full file path
+	 * @return root of file name (before the . marker)
+	 */
+	private String fileNamePartOf(String fileName)
+	 {
+    if (fileName == null)
+    {
+       throw new IllegalArgumentException("file name == null");
+    }
+    
+    // ok, extract the parent portion
+    File wholeFile = new File(fileName);
+    String parentSection = wholeFile.getParent();
+    int parentLen  = parentSection.length() + 1;
+    int fileLen = fileName.length();
+    String fileSection = fileName.substring(parentLen, fileLen);
+    
+    int pos = fileSection.lastIndexOf('.');
+    if (pos > 0 && pos < fileSection.length() - 1)
+    {
+       return fileSection.substring(0, pos);
+    }
+    return "";
+ }
+	
+	public void doSaveAs(String message)
+	{
 		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
 		dialog.setTitle("Save Plot As");
 		if (getEditorInput() instanceof FileEditorInput)
 		{
+			// this has been loaded from the navigator
 			IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
 			// dialog.setOriginalFile(oldFile);
 
@@ -1163,9 +1193,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			IPath newPath = newStart.addFileExtension("xml");
 			File asFile = newPath.toFile();
 			String newName = asFile.getName();
-			// dialog.setOriginalFile(newName);
 			dialog.setOriginalName(newName);
 		}
+		else if (getEditorInput()  instanceof FileStoreEditorInput)
+		{
+			// this has been dragged from an explorer window
+			FileStoreEditorInput fi = (FileStoreEditorInput) getEditorInput() ;
+			URI uri = fi.getURI();
+			File thisFile = new File(uri.getPath());
+			String newPath = fileNamePartOf(thisFile.getAbsolutePath());
+			newPath += ".xml";
+			dialog.setOriginalName(newPath);
+		}
+		
+		
 		dialog.create();
 		if (message != null)
 			dialog.setMessage(message, IMessageProvider.WARNING);
