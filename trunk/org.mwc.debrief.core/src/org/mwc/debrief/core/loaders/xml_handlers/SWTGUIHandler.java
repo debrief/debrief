@@ -170,7 +170,7 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 		if (controller != null)
 		{
 			ComponentDetails stepperD = _myStepperHandler.exportThis(controller, painter,
-					timeProvider);
+					timeProvider, doc);
 			stepperD.exportTo("Stepper", gui, doc);
 		}
 

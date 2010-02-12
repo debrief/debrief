@@ -9,17 +9,27 @@ package org.mwc.debrief.core.loaders.xml_handlers;
  * @version 1.0
  */
 
+import java.awt.Color;
+
 import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.*;
-import org.mwc.debrief.core.editors.painters.*;
-import org.mwc.debrief.core.editors.painters.highlighters.*;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.debrief.core.editors.painters.LayerPainterManager;
+import org.mwc.debrief.core.editors.painters.SnailHighlighter;
+import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTRangeHighlighter;
+import org.w3c.dom.Document;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.XML.GUIHandler;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class StepperHandler implements SWTGUIHandler.ComponentCreator
@@ -52,6 +62,12 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 	private static final String LINK_POSITIONS = "LinkPositions";
 
 	private static final String VECTOR_STRETCH = "VectorStretch";
+
+	private static final String COL_RED = "RED";
+
+	private static final String COL_GREEN = "GREEN";
+
+	private static final String COL_BLUE = "BLUE";
 
 	public final void makeThis(
 			Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
@@ -275,6 +291,16 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		  String fillRings = (String) details.properties.get(SHADE_ARCS);
 			if (fillRings != null)
 				rr.setFillArcs(Boolean.valueOf(fillRings));
+			
+		  String colRed = (String) details.properties.get(COL_RED);
+		  String colGreen = (String) details.properties.get(COL_GREEN);
+		  String colBlue = (String) details.properties.get(COL_BLUE);
+		  if((colRed != null) && (colGreen != null) && (colBlue != null))
+		  {
+		  	Color newCol = new Color(Integer.valueOf(colRed), Integer.valueOf(colGreen), Integer.valueOf(colBlue));
+		  	rr.setColor(newCol);
+		  }
+			
 
 		}
 	}
@@ -322,7 +348,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 	}
 
 	public final GUIHandler.ComponentDetails exportThis(TimeControlPreferences controller,
-			LayerPainterManager painterMgr, TimeProvider timeProvider)
+			LayerPainterManager painterMgr, TimeProvider timeProvider, Document doc)
 	{
 
 		// collate the details for this component
@@ -350,7 +376,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		for (int i = 0; i < highlighterList.length; i++)
 		{
 			SWTPlotHighlighter thisHighlighter = highlighterList[i];
-			storeThisHighlighter(thisHighlighter, thisHighlighter.getName(), details);
+			storeThisHighlighter(thisHighlighter, thisHighlighter.getName(), details, doc);
 		}
 
 		// ok, we're switching to exporting the step size in microseconds
@@ -396,7 +422,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		return details;
 	}
 
-	private void storeThisHighlighter(SWTPlotHighlighter thisHighlighter, String name, ComponentDetails details)
+	private void storeThisHighlighter(SWTPlotHighlighter thisHighlighter, String name, ComponentDetails details, Document doc)
 	{
 		if(name.equals(SWTRangeHighlighter.RANGE_RING_HIGHLIGHT))
 		{
@@ -408,6 +434,12 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			details.addProperty(SPOKE_SEPARATION, MWCXMLReader.writeThis(hi.getSpokeSeparation()));
 			details.addProperty(NUM_RINGS,MWCXMLReader.writeThis(hi.getNumRings().getCurrent()));
 			details.addProperty(SHADE_ARCS,MWCXMLReader.writeThis(hi.getFillArcs()));
+			
+			
+			details.addProperty(COL_RED,MWCXMLReader.writeThis(hi.getColor().getRed()));
+			details.addProperty(COL_GREEN,MWCXMLReader.writeThis(hi.getColor().getGreen()));
+			details.addProperty(COL_BLUE,MWCXMLReader.writeThis(hi.getColor().getBlue()));
+			
 		}
 	}
 
