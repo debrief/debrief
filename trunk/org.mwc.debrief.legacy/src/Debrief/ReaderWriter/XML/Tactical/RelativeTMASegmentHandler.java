@@ -59,6 +59,12 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 	@Override
 	protected TrackSegment createTrack()
 	{
+		if(_offset == null)
+		{
+			// duff data file, declare it
+			throw new RuntimeException("Offset data missing for TMA segment on " + _host);
+		}
+		
 		RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed,
 				_offset, _theLayers);
 		res.setBaseFrequency(_baseFrequency);
