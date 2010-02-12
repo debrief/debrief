@@ -35,10 +35,10 @@ public class ExportToFlatFile extends TimeControllerOperation
 			WatchableList[] secondaryTracks, TimePeriod period)
 	{
 		// sort out the destination file name
-		String fileName = null;;
+		String fileName = null;
 		
 		// sort out what type of file it is
-		String sensorType = null;;
+		String sensorType = null;
 		
 
 		
