@@ -1429,9 +1429,10 @@ and so on....</programlisting></para>
                         </indexterm>changed to suit different projection/printing mediums, or to
                         suit the analysts personal choice. Additionally, the width at which lines of
                         tactical objects are drawn can also be changed. Either of these options are
-                        accessed by double-clicking on the plot background. A properties panel will
-                        appear, use the drop-down list to change the background colour, or move the
-                        slider to change the line width itself. </para>
+                        accessed by right-clicking on the plot and selecting <emphasis>Edit base
+                            chart</emphasis>. A properties panel will appear, use the drop-down list
+                        to change the background colour, or move the slider to change the line width
+                        itself. </para>
                 </sect2>
             </sect1>
             <!-- formatting track data -->
@@ -2747,7 +2748,7 @@ and so on....</programlisting></para>
                     <sect3 id="relative_mode">
                         <title>Plotting Modes</title>
                         <para/>
-                        <para>The plotting mode affects the origin and orientation of the plot.  In
+                        <para>The plotting mode affects the origin and orientation of the plot. In
                                 <emphasis>Normal</emphasis> mode the plot viewport stays static as
                             the time changes, but if the is a primary track assigned, the viewport
                             moves to track the primary participant. Beyond that, the
