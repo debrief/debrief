@@ -84,7 +84,11 @@ public final class courseCalc extends plainCalc
 
   public final double calculate(Watchable primary, Watchable secondary, HiResDate thisTime)
   {
-    return Conversions.Rads2Degs(primary.getCourse());
+    double res = Conversions.Rads2Degs(primary.getCourse());
+    if(res < 0)
+    	res += 360;
+    
+    return res;
   }
   
   public final String update(Watchable primary, Watchable secondary, HiResDate time)

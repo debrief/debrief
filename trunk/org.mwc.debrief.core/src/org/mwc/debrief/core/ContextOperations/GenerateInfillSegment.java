@@ -18,6 +18,7 @@ import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -144,7 +145,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
 			if (res == null)
 			{
-				res = new Status(IStatus.OK, null, "generate infill successful", null);
+				res = new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME, "generate infill successful", null);
 			}
 			return res;
 		}

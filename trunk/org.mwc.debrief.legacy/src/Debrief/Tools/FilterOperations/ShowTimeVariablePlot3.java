@@ -895,7 +895,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 							HiResDate currentTime = thisSecondary.getTime();
 
 							// produce the new calculated value
-							double thisVal = theCalculation.calculate(null, thisSecondary,
+							double thisVal = theCalculation.calculate(thisSecondary, null,
 									currentTime);
 
 							// SPECIAL HANDLING - do we need to check if this data passes
@@ -1217,7 +1217,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			VersatileSeriesAdder theAdder)
 	{
 		// and perform the calculation
-		double data = theCalculation.calculate(thisPrimary, thisSecondary,
+		double data = theCalculation.calculate(thisSecondary, thisPrimary,
 				currentTime);
 
 		// just check that a valid answer was returned (if we don't have data,

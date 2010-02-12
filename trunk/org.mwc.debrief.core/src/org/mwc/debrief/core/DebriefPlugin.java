@@ -29,6 +29,7 @@ import MWC.Utilities.ReaderWriter.ImportManager;
  */
 public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 {
+	public  static final String PLUGIN_NAME = "org.mwc.debrief.core";
 	// The shared instance.
 	private static DebriefPlugin plugin;
 
@@ -50,7 +51,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 */
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core",
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_NAME,
 				path);
 	}
 
@@ -85,7 +86,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		final Status stat = new Status(severity, "org.mwc.debrief.core",
+		final Status stat = new Status(severity, PLUGIN_NAME,
 				IStatus.OK, message, exception);
 		getDefault().getLog().log(stat);
 		

@@ -1026,6 +1026,7 @@ public class ToteView extends ViewPart
 			{
 				if (_trackData != null)
 				{
+				//	System.err.println("heer 34");
 					WatchableList _thePrimary = _trackData.getPrimaryTrack();
 					WatchableList[] secLists = _trackData.getSecondaryTracks();
 
@@ -1101,7 +1102,8 @@ public class ToteView extends ViewPart
 							}
 						}
 
-						res = tc.update(primaryFix, secondaryFix, _theDTG);
+						if(primaryFix != null)
+  						res = tc.update(primaryFix, secondaryFix, _theDTG);
 
 					}
 				}

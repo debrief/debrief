@@ -276,7 +276,8 @@ public class XYPlotView extends ViewPart
 
 		// right, we need an SWT.EMBEDDED object to act as a holder
 		Composite holder = new Composite(parent, SWT.EMBEDDED);
-		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL|GridData.FILL_HORIZONTAL));
+		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL
+				| GridData.FILL_HORIZONTAL));
 
 		// now we need a Swing object to put our chart into
 		_plotControl = SWT_AWT.new_Frame(holder);
@@ -312,64 +313,76 @@ public class XYPlotView extends ViewPart
 	 */
 	private void restorePreviousPlot()
 	{
-		// retrieve the obvious stuff
-		_myTitle = _myMemento.getString(TITLE);
-		_myUnits = _myMemento.getString(UNITS);
+		try
+		{
+			// retrieve the obvious stuff
+			_myTitle = _myMemento.getString(TITLE);
+			_myUnits = _myMemento.getString(UNITS);
 
-		// get our special streaming library ready
-		XStream xs = new XStream(new DomDriver());
+			// get our special streaming library ready
+			XStream xs = new XStream(new DomDriver());
 
-		// formatter first
-		String theFormatterStr = _myMemento.getString(FORMATTER);
+			// formatter first
+			String theFormatterStr = _myMemento.getString(FORMATTER);
 
-		// hey, do we have a formatter?
-		if (theFormatterStr != null)
-			_theFormatter = (formattingOperation) xs.fromXML(theFormatterStr);
+			// hey, do we have a formatter?
+			if (theFormatterStr != null)
+				_theFormatter = (formattingOperation) xs.fromXML(theFormatterStr);
 
-		// and the data
-		String dataStr = _myMemento.getString(DATA);
+			// and the data
+			String dataStr = _myMemento.getString(DATA);
 
-		// hmm, is there anything in it?
-		if (dataStr == null)
-			return;
+			// hmm, is there anything in it?
+			if (dataStr == null)
+				return;
 
-		_dataset = (AbstractSeriesDataset) xs.fromXML(dataStr);
+			_dataset = (AbstractSeriesDataset) xs.fromXML(dataStr);
 
-		// right, that's the essential bits, now open the plot
-		showPlot(_myTitle, _dataset, _myUnits, _theFormatter);
+			// right, that's the essential bits, now open the plot
+			showPlot(_myTitle, _dataset, _myUnits, _theFormatter);
 
-		// right the plot's done, put back in our fancy formatting bits
-		String str;
-		str = _myMemento.getString(PLOT_ATTRIBUTES.AxisFont);
-		if (str != null)
-			_thePlotArea.setAxisFont((Font) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.TickFont);
-		if (str != null)
-			_thePlotArea.setTickFont((Font) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.TitleFont);
-		if (str != null)
-			_thePlotArea.setTitleFont((Font) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
-		if (str != null)
-			_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
-		str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
-		if (str != null)
-			_thePlotArea.setTitle((String) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.X_Title);
-		if (str != null)
-			_thePlotArea.setX_AxisTitle((String) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
-		if (str != null)
-			_thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
-		if (str != null)
-			_thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
-		str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
-		if (str != null)
-			_thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str)).booleanValue());
-		str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
-		if (str != null)
-			_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
+			// right the plot's done, put back in our fancy formatting bits
+			String str;
+			str = _myMemento.getString(PLOT_ATTRIBUTES.AxisFont);
+			if (str != null)
+			{
+				Font theFont = (Font) xs.fromXML(str);
+				_thePlotArea.setAxisFont(theFont);
+			}
+			str = _myMemento.getString(PLOT_ATTRIBUTES.TickFont);
+			if (str != null)
+				_thePlotArea.setTickFont((Font) xs.fromXML(str));
+			str = _myMemento.getString(PLOT_ATTRIBUTES.TitleFont);
+			if (str != null)
+				_thePlotArea.setTitleFont((Font) xs.fromXML(str));
+			str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
+			if (str != null)
+				_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
+			str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
+			if (str != null)
+				_thePlotArea.setTitle((String) xs.fromXML(str));
+			str = _myMemento.getString(PLOT_ATTRIBUTES.X_Title);
+			if (str != null)
+				_thePlotArea.setX_AxisTitle((String) xs.fromXML(str));
+			str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
+			if (str != null)
+				_thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
+			str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
+			if (str != null)
+				_thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
+			str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
+			if (str != null)
+				_thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str))
+						.booleanValue());
+			str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
+			if (str != null)
+				_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
+		}
+		catch (Exception e)
+		{
+			CorePlugin.logError(Status.ERROR, "Failed to read in saved XY Plot data",
+					e);
+		}
 	}
 
 	private void fillThePlot(String title, String units,
@@ -393,7 +406,7 @@ public class XYPlotView extends ViewPart
 		if (HiResDate.inHiResProcessingMode())
 		{
 
-		//	final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
+			// final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
 
 			// ok, simple enough for us...
 			NumberAxis nAxis = new NumberAxis("time (secs.micros)")
@@ -403,14 +416,14 @@ public class XYPlotView extends ViewPart
 				 */
 				private static final long serialVersionUID = 1L;
 
-//				public String getTickLabel(double currentTickValue)
-//				{
-//					long time = (long) currentTickValue;
-//					Date dtg = new HiResDate(0, time).getDate();
-//					String res = _secFormat.format(dtg) + "."
-//							+ DebriefFormatDateTime.formatMicros(new HiResDate(0, time));
-//					return res;
-//				}
+				// public String getTickLabel(double currentTickValue)
+				// {
+				// long time = (long) currentTickValue;
+				// Date dtg = new HiResDate(0, time).getDate();
+				// String res = _secFormat.format(dtg) + "."
+				// + DebriefFormatDateTime.formatMicros(new HiResDate(0, time));
+				// return res;
+				// }
 			};
 			nAxis.setAutoRangeIncludesZero(false);
 			xAxis = nAxis;
@@ -478,12 +491,12 @@ public class XYPlotView extends ViewPart
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		IWorkbenchPage page = win.getActivePage();
 		IEditorPart editor = null;
-		
+
 		// the page might not yet be open...
-		if(page != null)			
+		if (page != null)
 		{
-	 	   editor = page.getActiveEditor();
-	 	  
+			editor = page.getActiveEditor();
+
 		}
 
 		// do we have an active editor?

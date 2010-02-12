@@ -1006,6 +1006,20 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				}
 			}
 
+			final CustomisedSWTCanvas chart = this;
+			
+			Action changeBackColor = new Action("Edit base chart")
+			{
+				public void run()
+				{
+					EditableWrapper wrapped = new EditableWrapper(chart, getLayers());
+					ISelection selected = new StructuredSelection(wrapped);
+					parentFireSelectionChanged(selected);
+				}
+
+			};
+			mmgr.add(changeBackColor);
+
 			Action editProjection = new Action("Edit Projection")
 			{
 				public void run()
@@ -1018,6 +1032,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			};
 			mmgr.add(editProjection);
 
+			
 		}
 
 		/**
