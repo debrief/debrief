@@ -1,13 +1,19 @@
 package org.mwc.debrief.core.operations;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
+import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.wizards.FlatFile.ExportFlatFileDataPage;
-import org.mwc.debrief.core.wizards.FlatFile.ExportFlatFileWizard;
-import org.mwc.debrief.core.wizards.FlatFile.ExportFlatFileDataPage.ExportDataItem;
+import org.mwc.debrief.core.wizards.FlatFile.FlatFilenameWizardPage;
 
 import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
 import MWC.GenericData.TimePeriod;
@@ -16,12 +22,10 @@ import MWC.GenericData.WatchableList;
 public class ExportToFlatFile extends TimeControllerOperation
 {
 
-
 	public ExportToFlatFile()
 	{
 		super("Export to flat file", true);
 	}
-
 
 	@Override
 	public ImageDescriptor getDescriptor()
@@ -29,20 +33,18 @@ public class ExportToFlatFile extends TimeControllerOperation
 		return DebriefPlugin.getImageDescriptor("icons/new.gif");
 	}
 
-
 	@Override
 	public void executeExport(WatchableList primaryTrack,
 			WatchableList[] secondaryTracks, TimePeriod period)
 	{
 		// sort out the destination file name
-		String fileName = null;
-		
+		String filePath = null;
+
 		// sort out what type of file it is
 		String sensorType = null;
-		
 
-		
-		ExportFlatFileWizard wizard = new ExportFlatFileWizard();
+		SimplePageListWizard wizard = new SimplePageListWizard();
+		wizard.addWizard(new FlatFilenameWizardPage());
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
@@ -51,31 +53,56 @@ public class ExportToFlatFile extends TimeControllerOperation
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-
-			ExportFlatFileDataPage offsetPage = (ExportFlatFileDataPage) wizard
-					.getPage(ExportFlatFileDataPage.NAME);
-			if (offsetPage != null)
+			FlatFilenameWizardPage exportPage = (FlatFilenameWizardPage) wizard
+					.getPage(FlatFilenameWizardPage.PAGENAME);
+			if (exportPage != null)
 			{
-				if (offsetPage.isPageComplete())
+				if (exportPage.isPageComplete())
 				{
-					ExportDataItem res = (ExportDataItem) offsetPage.getEditable();
-					fileName = res.getFilePath();
-					sensorType = res.getSensorType();
-				}
+					filePath = exportPage.getFileName();
+					sensorType = exportPage.getSensorType();
 				}
 			}
-		
-		FlatFileExporter ff = new FlatFileExporter();
-		String theData = ff.export(primaryTrack, secondaryTracks, period, sensorType);
-		
-		// now write the data somewhere
-		System.out.println(theData);
-		System.out.println(fileName);
-		
-		// ask the user?
+			FlatFileExporter ff = new FlatFileExporter();
+			String theData = ff.export(primaryTrack, secondaryTracks, period,
+					sensorType);
 
-		// now loop through the OS track
-		System.err.println("DOING EXPORT TO FLAT FILE!!");
+			// now write the data to file
+
+			final String fileName = filePath + File.separator
+					+ primaryTrack.getName() + "." +FlatFilenameWizardPage.FILE_SUFFIX;
+			BufferedWriter out = null;
+			try
+			{
+				out = new BufferedWriter(new FileWriter(fileName));
+				out.write(theData);
+			}
+			catch (FileNotFoundException e)
+			{
+				DebriefPlugin.logError(Status.ERROR, "Unable to find output file:"
+						+ fileName, e);
+
+			}
+			catch (IOException e)
+			{
+				DebriefPlugin.logError(Status.ERROR, "Whilst writing to output file:"
+						+ fileName, e);
+			}
+			finally
+			{
+				try
+				{
+					if (out != null)
+						out.close();
+				}
+				catch (IOException e)
+				{
+					DebriefPlugin.logError(Status.ERROR, "Whilst closing output file:"
+							+ fileName, e);
+				}
+			}
+		}
+
 	}
 
 }

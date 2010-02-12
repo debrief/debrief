@@ -70,6 +70,7 @@ public class FlatFileExporter
 			if (thisS.getVisible())
 			{
 				mySensor = thisS;
+				break;
 			}
 		}
 
