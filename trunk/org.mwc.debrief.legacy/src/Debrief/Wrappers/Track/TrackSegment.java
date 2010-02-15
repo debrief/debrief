@@ -206,8 +206,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		FixWrapper origin = oneElements[oneElements.length - 1];
 		boolean first = true;
 
-		// get going then!
-		for (long tNow = tStart; tNow < tEnd; tNow += tDelta)
+		// get going then!  Note, we go past the end of the required data,
+		// - so that we can generate the correct course and speed for the last DR entry
+		for (long tNow = tStart; tNow < tEnd + tDelta; tNow += tDelta)
 		{
 			double thisLat = latSpline.interpolate(tNow);
 			double thisLong = longSpline.interpolate(tNow);
@@ -236,6 +237,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				double spdYps = distYds / timeSecs;
 				thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
 
+				// put course in the +ve domain
+				while (thisCourseRads < 0)
+					thisCourseRads += Math.PI * 2;
+
 				if (first)
 				{
 					// we don't edit the origin, it's from another track
@@ -247,27 +252,40 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					origin.setSpeed(thisSpeedKts);
 					origin.setCourse(thisCourseRads);
 				}
-
-				// convert the speed
-				WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
-				newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
-						theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
 			}
 			else
 			{
-				// OTG track
-				WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
-				newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
-						theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
 			}
+
+			// put course in the +ve domain
+			while (thisCourseRads < 0)
+				thisCourseRads += Math.PI * 2;
+
+			// convert the speed
+			WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
+
+			// create the fix
+			newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
+					theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
 
 			FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
-			this.addFix(fw);
+
+			// only add it if we're still in the time period.  We generate one position
+			// past the end of the time period in order to set the correct DR course
+			// for the last position.
+			if (tNow < tEnd)
+			{
+				this.addFix(fw);
+			}
 
 			// move along the bus, please (used if we're doing a DR Track).
 			origin = fw;
 		}
+
+		// aaah, special case. If we are generating a DR track, we need to put the
+		// next course and speed
+		// into the last entry - in order to get a smooth graph.
 
 		// sort out our name
 		String name = "infill_"
@@ -278,8 +296,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.setLineStyle(CanvasType.DOTTED);
 	}
 
-	/** constructor that builds a plain track segment from a tma segment
-	 *  - an operation we must do when we try to merge track segments
+	/**
+	 * constructor that builds a plain track segment from a tma segment - an
+	 * operation we must do when we try to merge track segments
+	 * 
 	 * @param tma
 	 */
 	public TrackSegment(CoreTMASegment tma)
@@ -720,9 +740,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	{
 		if (getData().size() > 0)
 		{
-			if(startDTG == null)
+			if (startDTG == null)
 				startDTG = startDTG();
-			
+
 			setName(FormatRNDateTime.toString(startDTG.getDate().getTime()));
 		}
 	}
@@ -808,15 +828,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		// get the time interval
 		final long interval = theVal.getMicros();
-		
+
 		// round myStart time to the supplied interval
 		long myStart = this.startDTG().getMicros();
 		myStart = (myStart / interval) * interval;
-		
-		// set the start time to be the later of our start time and the provided time
+
+		// set the start time to be the later of our start time and the provided
+		// time
 		startTime = Math.max(startTime, myStart);
 
-		
 		if (this instanceof CoreTMASegment)
 		{
 			CoreTMASegment tma = (CoreTMASegment) this;
@@ -828,7 +848,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// find the new start location - after we've slipped
 			WorldLocation myStartLocation = new WorldLocation(tma.getTrackStart());
 
-			
 			// right - sort out what time period we're working through
 			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
 					.getMicros())
@@ -847,21 +866,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				FixWrapper myStarter = (FixWrapper) tma.first();
 				FixWrapper myEnder = (FixWrapper) tma.last();
 				HiResDate startDTG = new HiResDate(0, startTime);
-				FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
+				FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder,
+						startDTG);
 				WorldLocation newStartLoc = newStarter.getLocation();
-				 
+
 				RelativeTMASegment rel = (RelativeTMASegment) tma;
 				Watchable[] newHost = rel.getReferenceTrack().getNearestTo(startDTG);
 				if (newHost.length > 0)
 				{
 					WorldLocation newOrigin = newHost[0].getLocation();
 					WorldVector newOffset = newStartLoc.subtract(newOrigin);
-					rel.setOffset(newOffset); 
+					rel.setOffset(newOffset);
 				}
-				
+
 				// lastly, reset the track name
 				rel.sortOutDate(startDTG);
-				
+
 				// and change the track name
 				rel._myTrack.setName(rel.getName());
 			}
@@ -940,7 +960,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					// reset the name
 					newF.resetName();
 				}
-				
+
 				newF.setSymbolShowing(true);
 
 				// add to our working list
@@ -991,7 +1011,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		newTrack.setName(this.getName());
 		newTrack.setColor(Color.red);
 		newTrack.add(this);
-		
+
 		return newTrack;
 	}
 
