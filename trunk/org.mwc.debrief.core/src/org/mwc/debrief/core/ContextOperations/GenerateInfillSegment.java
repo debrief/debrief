@@ -167,7 +167,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 						.showMessage(
 								"Generate infill segment",
 								"Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again");
-				res = new Status(IStatus.ERROR, null, "Overlapping data points", null);
+				res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, "Overlapping data points", null);
 			}
 			else
 			{
@@ -219,7 +219,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			fireModified();
 
 			// register success
-			return new Status(IStatus.OK, null, "ditch infill successful", null);
+			return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME, "ditch infill successful", null);
 		}
 	}
 }

@@ -45,9 +45,16 @@ public abstract class DataPointsDragTracker implements ChartMouseListenerExtensi
 	public void chartMouseMoved(ChartMouseEvent event) {
 		if (!myDragSubject.isEmpty()) {
 			myChartPanel.forgetZoomPoints();
-			Rectangle clientArea = myChartPanel.getClientArea();
-			int screenX = event.getTrigger().getX() - clientArea.x;
-			int screenY = event.getTrigger().getY() - clientArea.y;
+			
+//			Rectangle clientArea = myChartPanel.getClientArea();
+//			int screenX = event.getTrigger().getX() - clientArea.x;
+//			int screenY = event.getTrigger().getY() - clientArea.y;
+			
+			// [IM] don't bother with sorting out the client area offset
+			//  - we've stopped using it in the FixedChartComposite calling method
+			int screenX = event.getTrigger().getX();
+			int screenY = event.getTrigger().getY();
+
 			
 			// deliberately switch axes for following line, now that we've switched the axes to put time
 			// down the LH side.
