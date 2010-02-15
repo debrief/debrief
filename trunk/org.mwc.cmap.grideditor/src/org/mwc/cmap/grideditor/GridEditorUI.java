@@ -24,8 +24,8 @@ import org.mwc.cmap.gridharness.data.GriddableSeries;
 
 import MWC.GUI.TimeStampedDataItem;
 
-
-public class GridEditorUI extends Composite {
+public class GridEditorUI extends Composite
+{
 
 	private final SashForm mySashForm;
 
@@ -37,19 +37,24 @@ public class GridEditorUI extends Composite {
 
 	private ChartRefresher myChartRefresher;
 
-	public GridEditorUI(Composite parent, GridEditorActionGroup actionGroup) {
+	public GridEditorUI(Composite parent, GridEditorActionGroup actionGroup)
+	{
 		super(parent, SWT.NONE);
 		setLayout(new FillLayout());
 		mySashForm = new SashForm(this, SWT.VERTICAL);
 
 		myTable = new GridEditorTable(mySashForm, actionGroup);
-		myChart = new JFreeChartComposite(mySashForm, actionGroup.getContext(), myTable);
+		myChart = new JFreeChartComposite(mySashForm, actionGroup.getContext(),
+				myTable);
 
-		myTable.setColumnHeaderSelectionListener(new SelectionAdapter() {
+		myTable.setColumnHeaderSelectionListener(new SelectionAdapter()
+		{
 
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (e.widget instanceof TableColumn) {
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (e.widget instanceof TableColumn)
+				{
 					updateChart((TableColumn) e.widget);
 				}
 			}
@@ -58,67 +63,81 @@ public class GridEditorUI extends Composite {
 		myChart.setVisible(false);
 		myTable.setVisible(false);
 
-		mySashForm.setWeights(new int[] { 50, 50 });
+		mySashForm.setWeights(new int[]
+		{ 50, 50 });
 	}
 
-	public void forceTableFocus() {
+	public void forceTableFocus()
+	{
 		myTable.getTableViewer().getTable().forceFocus();
 	}
 
-	public GridEditorTable getTable() {
+	public GridEditorTable getTable()
+	{
 		return myTable;
 	}
 
-	public JFreeChartComposite getChart() {
+	public JFreeChartComposite getChart()
+	{
 		return myChart;
 	}
 
-	public void inputSeriesChanged(GriddableSeries input) {
-		if (myInput == input) {
+	public void inputSeriesChanged(GriddableSeries input)
+	{
+		if (myInput == input)
+		{
 			return;
 		}
-		if (!myTable.isTrackingSelection()) {
+		if (!myTable.isTrackingSelection())
+		{
 			return;
 		}
-		if (input == null) {
-			//ticket#13 - just ignore
-			return;
-		}
+
 		disposeRefresher();
+
 		myInput = input;
 		myTable.setInput(input);
-		myTable.setVisible(true);
+		myTable.setVisible(input != null);
 		myChart.setVisible(false);
+
 		refreshSashForm();
 	}
 
-	private void updateChart(TableColumn tableColumn) {
+	private void updateChart(TableColumn tableColumn)
+	{
 		boolean shown = showChart(tableColumn);
 		myChart.setVisible(shown);
 		refreshSashForm();
 		myChart.forceRedraw();
 	}
 
-	private void refreshSashForm() {
+	private void refreshSashForm()
+	{
 		mySashForm.layout();
 		mySashForm.update();
 		mySashForm.redraw();
 	}
 
-	private boolean showChart(TableColumn tableColumn) {
-		if (myInput == null) {
+	private boolean showChart(TableColumn tableColumn)
+	{
+		if (myInput == null)
+		{
 			return false;
 		}
-		TableModel.ColumnBase column = myTable.getTableModel().findColumnData(tableColumn);
-		if (column == null) {
+		TableModel.ColumnBase column = myTable.getTableModel().findColumnData(
+				tableColumn);
+		if (column == null)
+		{
 			return false;
 		}
 		GriddableItemDescriptor descriptor = column.getDescriptor();
-		if (descriptor == null) {
+		if (descriptor == null)
+		{
 			return false;
 		}
 		ChartDataManager chartDataManager = createChartDataManager(descriptor);
-		if (chartDataManager == null) {
+		if (chartDataManager == null)
+		{
 			return false;
 		}
 		disposeRefresher();
@@ -128,40 +147,52 @@ public class GridEditorUI extends Composite {
 		return true;
 	}
 
-	public ChartDataManager createChartDataManager(GriddableItemDescriptor descriptor) {
-		//first try adapter manager - allows redefinition for some descriptor types
-		ChartDataManager adapatee = (ChartDataManager) Platform.getAdapterManager().getAdapter(descriptor, ChartDataManager.class);
-		if (adapatee != null) {
+	public ChartDataManager createChartDataManager(
+			GriddableItemDescriptor descriptor)
+	{
+		// first try adapter manager - allows redefinition for some descriptor types
+		ChartDataManager adapatee = (ChartDataManager) Platform.getAdapterManager()
+				.getAdapter(descriptor, ChartDataManager.class);
+		if (adapatee != null)
+		{
 			return adapatee;
 		}
-		if (ChartComponentFactory.isChartable(descriptor)) {
-			GriddableItemChartComponent chartable = ChartComponentFactory.newChartComponent(descriptor);
+		if (ChartComponentFactory.isChartable(descriptor))
+		{
+			GriddableItemChartComponent chartable = ChartComponentFactory
+					.newChartComponent(descriptor);
 			return new Date2ValueManager(descriptor, chartable);
 		}
 		return null;
 	}
 
-	private void disposeRefresher() {
-		if (myChartRefresher != null) {
+	private void disposeRefresher()
+	{
+		if (myChartRefresher != null)
+		{
 			myChartRefresher.dispose();
 			myChartRefresher = null;
 		}
 	}
 
-	private static class ChartRefresher implements PropertyChangeListener {
+	private static class ChartRefresher implements PropertyChangeListener
+	{
 
 		private ChartDataManager myChartInput;
 
 		private GriddableSeries myData;
 
-		public ChartRefresher(GriddableSeries data, ChartDataManager chartInput) {
+		public ChartRefresher(GriddableSeries data, ChartDataManager chartInput)
+		{
 			myData = data;
 			myChartInput = chartInput;
 			myData.addPropertyChangeListener(this);
 		}
 
-		public void dispose() {
-			if (myData != null) {
+		public void dispose()
+		{
+			if (myData != null)
+			{
 				myData.removePropertyChangeListener(this);
 				myData = null;
 				myChartInput = null;
@@ -169,16 +200,25 @@ public class GridEditorUI extends Composite {
 		}
 
 		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			if (myChartInput == null) {
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			if (myChartInput == null)
+			{
 				return;
 			}
-			if (GriddableSeries.PROPERTY_DELETED.equals(evt.getPropertyName())) {
-				myChartInput.handleItemDeleted((Integer) evt.getOldValue(), (TimeStampedDataItem) evt.getNewValue());
-			} else if (GriddableSeries.PROPERTY_CHANGED.equals(evt.getPropertyName())) {
+			if (GriddableSeries.PROPERTY_DELETED.equals(evt.getPropertyName()))
+			{
+				myChartInput.handleItemDeleted((Integer) evt.getOldValue(),
+						(TimeStampedDataItem) evt.getNewValue());
+			}
+			else if (GriddableSeries.PROPERTY_CHANGED.equals(evt.getPropertyName()))
+			{
 				myChartInput.handleItemChanged((TimeStampedDataItem) evt.getNewValue());
-			} else if (GriddableSeries.PROPERTY_ADDED.equals(evt.getPropertyName())) {
-				myChartInput.handleItemAdded((Integer) evt.getOldValue(), (TimeStampedDataItem) evt.getNewValue());
+			}
+			else if (GriddableSeries.PROPERTY_ADDED.equals(evt.getPropertyName()))
+			{
+				myChartInput.handleItemAdded((Integer) evt.getOldValue(),
+						(TimeStampedDataItem) evt.getNewValue());
 			}
 		}
 

@@ -1487,11 +1487,13 @@ public class FixedChartComposite extends Composite implements ChartChangeListene
 			EntityCollection entities = this.info.getEntityCollection();
 			if (entities != null) {
 				//[MG] -- the code below from original org.jfree.experimental.chart.swt.ChartComposite 
-				//doewn't work -- because entities already placed with respect to the scale factor.
+				//doesn't work -- because entities already placed with respect to the scale factor.
 				//
-				//entity = entities.getEntity(x, y);
+				// [IM] -- reinstated the code below, since other version wasn't working. This one (
+				//    the one that doesn't shift them) now works.  Feb 10.
+				entity = entities.getEntity(x, y);
 				//
-				entity = entities.getEntity(event.x - getClientArea().x, event.y - getClientArea().y);
+				//entity = entities.getEntity(event.x - getClientArea().x, event.y - getClientArea().y);
 			}
 		}
 

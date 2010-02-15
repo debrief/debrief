@@ -410,7 +410,12 @@ public class GridEditorView extends ViewPart
 		}
 		GriddableWrapper input = extractGriddableSeries(actualSelection);
 
-		if (input != null)
+		if (input == null)
+		{
+			// not valid data - set input to null (which clears the UI
+			myUI.inputSeriesChanged(null);
+		}
+		else
 		{
 
 			// yes, but what are we currently looking at?
