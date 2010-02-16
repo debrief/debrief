@@ -1,12 +1,13 @@
 package org.mwc.cmap.plotViewer.editors.chart;
 
 import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.ui_support.LineItem;
 
 public class RangeTracker
 {
+	private static final String DUFF_RANGE_STRING = "[------.-- yds ----d]";
+
 	private static final String RANGE_TOOLTIP = "Current measured range/bearing";
 
 	/**
@@ -33,15 +34,13 @@ public class RangeTracker
 
 	public RangeTracker()
 	{
-		this("RangeTracker", "[123456.78 yds 1234d]", RANGE_TOOLTIP, null);
+		this("RangeTracker", DUFF_RANGE_STRING, RANGE_TOOLTIP, null);
 	}
 
-	protected RangeTracker(String string, String string2, String rangeTooltip,
-			Object object)
+	protected RangeTracker(String string, String duffString, String tooltip, String prefsId)
 	{
 		// first the status bar contribution
-		_myLine = new LineItem("RangeTracker", "[123456.78 yds 1234d]",
-				RANGE_TOOLTIP, null);
+		_myLine = new LineItem(string, duffString, tooltip, prefsId);
 	}
 
 	public void close()
@@ -75,6 +74,7 @@ public class RangeTracker
 		_myEditor = null;
 	}
 
+	
 	/**
 	 * setup for this chart
 	 * 
@@ -93,6 +93,8 @@ public class RangeTracker
 
 		// and tell everybody about the change
 		_myEditor.getEditorSite().getActionBars().updateActionBars();
+
+		_singleton._myLine.setText(DUFF_RANGE_STRING);
 	}
 
 	/**

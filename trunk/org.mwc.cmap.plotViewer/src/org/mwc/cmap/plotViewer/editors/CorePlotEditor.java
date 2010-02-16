@@ -46,7 +46,6 @@ import org.mwc.cmap.plotViewer.editors.chart.CursorTracker;
 import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
-import org.mwc.cmap.plotViewer.editors.chart.StatusPanel;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
@@ -124,8 +123,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected PartMonitor _myPartMonitor;
 
-	private StatusPanel _myRngBrg;
-
 	// //////////////////////////////
 	// constructor
 	// //////////////////////////////
@@ -181,9 +178,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		super.dispose();
 
-		_myRngBrg.close();
-		_myRngBrg = null;
-
 		// empty the part monitor
 		_myPartMonitor.ditch();
 		_myPartMonitor = null;
@@ -233,9 +227,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		});
 
 		getSite().setSelectionProvider(this);
-
-		// and the range bearing tracker
-		// _myRngBrg = RangeBearing.getPanel(this);
 
 		// and over-ride the undo button
 		IAction undoAction = new UndoActionHandler(getEditorSite(),

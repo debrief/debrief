@@ -1,7 +1,6 @@
 package org.mwc.cmap.plotViewer.editors.chart;
 
 import org.eclipse.jface.action.IStatusLineManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.ui_support.LineItem;
 
@@ -120,6 +119,10 @@ public class CursorTracker /* extends StatusPanel */
 
 		// well, and start listening to that one
 		_myChart.addCursorMovedListener(_singleton._myMoveListener);
+
+		// and reset the data string
+		_singleton._myLine.setText(POSITION_TEMPLATE);
+
 
 	}
 

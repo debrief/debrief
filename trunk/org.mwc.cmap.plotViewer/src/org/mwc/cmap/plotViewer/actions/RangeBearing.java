@@ -12,13 +12,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.preferences.CMAPPrefsPage;
 import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
-import org.mwc.cmap.plotViewer.editors.chart.StatusPanel;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.Conversions;
@@ -32,28 +29,6 @@ import MWC.GenericData.WorldVector;
  */
 final public class RangeBearing extends CoreDragAction
 {
-
-	static StatusPanel _myPanel;
-	
-	public static StatusPanel getPanel(EditorPart editor)
-	{
-		
-	//	if(_myPanel == null)
-	//	{
-			_myPanel = new StatusPanel(editor, 
-			    "Range Bearing", 
-			    "__________________", 
-			    "Last measured range/bearing (double click to change units)", 
-			    CMAPPrefsPage.PREFS_PAGE_ID);
-//		}
-	//	else
-//		{
-	//		StatusPanel thePanel = _myPanel;
-	//		System.err.println("range already there");
-	//	}
-				
-		return _myPanel;
-	}
 	
 	/**
 	 * embedded class that handles the range/bearing measurement
@@ -201,10 +176,11 @@ final public class RangeBearing extends CoreDragAction
 			loc.translate(0, fm.getHeight() / 2);
 			loc.translate(-txt.length() / 2 * fm.getAverageCharWidth(), 0);
 
+			// ok, do the write operation
 			dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
-
 			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
 			
+			// also get the RangeTracker to display the range/bearing
 			RangeTracker.write(txt);
 
 		}
