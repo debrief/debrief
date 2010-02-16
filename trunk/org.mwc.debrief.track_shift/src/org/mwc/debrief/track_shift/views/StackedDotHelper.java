@@ -32,6 +32,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -150,30 +151,33 @@ public final class StackedDotHelper
 								}
 							}
 
-							FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
-									.getDTG())[0];
-
-							final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
-									hostFix);
-
-							// if we've no target track add all the points
-							if (targetTrack == null)
+							Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+							if (matches != null)
 							{
-								// store our data
-								res.add(thisDub);
-							}
-							else
-							{
-								// if we've got a target track we only add points
-								// for which we
-								// have
-								// a target location
-								if (targetFix != null)
+								FixWrapper hostFix = (FixWrapper) matches[0];
+
+								final Doublet thisDub = new Doublet(scw, targetFix,
+										targetParent, hostFix);
+
+								// if we've no target track add all the points
+								if (targetTrack == null)
 								{
 									// store our data
 									res.add(thisDub);
 								}
-							}
+								else
+								{
+									// if we've got a target track we only add points
+									// for which we
+									// have
+									// a target location
+									if (targetFix != null)
+									{
+										// store our data
+										res.add(thisDub);
+									}
+								} // if we know the track
+							} // if there are any matching items
 							// if we find a match
 						} // if cut is visible
 					} // loop through cuts
@@ -224,7 +228,7 @@ public final class StackedDotHelper
 		// and check there's actually something in the re
 		if (_primaryDoublets.size() == 0)
 			return;
-		
+
 		// create the collection of series
 		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
 		final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
@@ -309,13 +313,13 @@ public final class StackedDotHelper
 
 		if (_primaryDoublets.size() == 0)
 		{
-			CorePlugin.logError(Status.WARNING,
-					"FOR SOME REASON PRIMARY DOUBLETS IS ZERO LENGTH - INVESTIGATE", null);
+			CorePlugin
+					.logError(Status.WARNING,
+							"FOR SOME REASON PRIMARY DOUBLETS IS ZERO LENGTH - INVESTIGATE",
+							null);
 			return;
 		}
 
-		
-		
 		startDTG = _primaryDoublets.firstElement().getDTG();
 		endDTG = _primaryDoublets.lastElement().getDTG();
 		Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG,
@@ -491,9 +495,9 @@ public final class StackedDotHelper
 			TrackManager tracks, boolean onlyVis, Composite holder,
 			ErrorLogger logger, boolean updateDoublets)
 	{
-		
+
 		// do we have anything?
-		if(_primaryTrack == null)
+		if (_primaryTrack == null)
 			return;
 
 		// ok, find the track wrappers

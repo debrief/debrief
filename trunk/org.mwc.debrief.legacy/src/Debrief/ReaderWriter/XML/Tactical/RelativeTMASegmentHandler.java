@@ -91,8 +91,9 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 
 		// and the offset vector
 		WorldVector theOffset = seg.getOffset();
-		if (theOffset != null)
-			WorldVectorHandler.exportVector(OFFSET, theOffset, segE, doc);
+		
+		// now we must have an offset. Throw a wobbly if we don't
+		WorldVectorHandler.exportVector(OFFSET, theOffset, segE, doc);
 
 		trk.appendChild(segE);
 

@@ -379,8 +379,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		catch (CoreException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Problem loading data file", e);
+			CorePlugin.logError(Status.ERROR, "Problem loading data file", e);
 		}
 	}
 
@@ -424,8 +423,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 			catch (RuntimeException e)
 			{
-				CorePlugin.logError(Status.ERROR,
-						"Problem loading data file:" + fileName, e);
+				CorePlugin.logError(Status.ERROR, "Problem loading data file:"
+						+ fileName, e);
 			}
 		}
 	}
@@ -877,21 +876,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							}
 
 							// ok, clear the nearest items
-							Watchable[] wList = list.getNearestTo(tNow);
-							Watchable watch = null;
-							if (wList.length > 0)
-								watch = wList[0];
-
-							if (watch != null)
+							if (tNow != null)
 							{
-								// aah, is this the primary?
-								boolean isPrimary = (list == _trackDataProvider
-										.getPrimaryTrack());
+								Watchable[] wList = list.getNearestTo(tNow);
+								Watchable watch = null;
+								if (wList.length > 0)
+									watch = wList[0];
 
-								// plot it
-								_layerPainterManager.getCurrentHighlighter().highlightIt(
-										dest.getProjection(), dest, list, watch, isPrimary);
-							}
+								if (watch != null)
+								{
+									// aah, is this the primary?
+									boolean isPrimary = (list == _trackDataProvider
+											.getPrimaryTrack());
+
+									// plot it
+									_layerPainterManager.getCurrentHighlighter().highlightIt(
+											dest.getProjection(), dest, list, watch, isPrimary);
+								}
+							} // whether we have a current time...
 						}
 					}
 				}
@@ -967,9 +969,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 					tmpOS.close();
 					tmpOS = null;
-					
+
 					// sort out the file size
-					CorePlugin.logError(Status.INFO, "Saved file size is:" + tmpFile.length()/1024 + " Kb", null);
+					CorePlugin.logError(Status.INFO, "Saved file size is:"
+							+ tmpFile.length() / 1024 + " Kb", null);
 
 					// 4. Check there's something in the temp file
 					if (tmpFile.exists())
@@ -989,7 +992,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							// sort out where we're saving to
 							if (input instanceof IFileEditorInput)
 							{
-								CorePlugin.logError(Status.INFO,"Performing IFileEditorInput save", null);
+								CorePlugin.logError(Status.INFO,
+										"Performing IFileEditorInput save", null);
 
 								IFile file = ((IFileEditorInput) getEditorInput()).getFile();
 
@@ -1034,8 +1038,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							}
 							else if (input instanceof FileStoreEditorInput)
 							{
-								
-								CorePlugin.logError(Status.INFO,"Performing FileStoreEditorInput save", null);
+
+								CorePlugin.logError(Status.INFO,
+										"Performing FileStoreEditorInput save", null);
 
 								// get the data-file
 								FileStoreEditorInput fi = (FileStoreEditorInput) input;
@@ -1133,8 +1138,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 			catch (Exception e)
 			{
-				DebriefPlugin.logError(Status.ERROR,
-						"Error exporting plot file", e);
+				DebriefPlugin.logError(Status.ERROR, "Error exporting plot file", e);
 			}
 
 		}
@@ -1150,34 +1154,36 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		doSaveAs("Save as");
 	}
-	
-	/** utility function to extact the root part of this filename
+
+	/**
+	 * utility function to extact the root part of this filename
 	 * 
-	 * @param fileName full file path
+	 * @param fileName
+	 *          full file path
 	 * @return root of file name (before the . marker)
 	 */
 	private String fileNamePartOf(String fileName)
-	 {
-    if (fileName == null)
-    {
-       throw new IllegalArgumentException("file name == null");
-    }
-    
-    // ok, extract the parent portion
-    File wholeFile = new File(fileName);
-    String parentSection = wholeFile.getParent();
-    int parentLen  = parentSection.length() + 1;
-    int fileLen = fileName.length();
-    String fileSection = fileName.substring(parentLen, fileLen);
-    
-    int pos = fileSection.lastIndexOf('.');
-    if (pos > 0 && pos < fileSection.length() - 1)
-    {
-       return fileSection.substring(0, pos);
-    }
-    return "";
- }
-	
+	{
+		if (fileName == null)
+		{
+			throw new IllegalArgumentException("file name == null");
+		}
+
+		// ok, extract the parent portion
+		File wholeFile = new File(fileName);
+		String parentSection = wholeFile.getParent();
+		int parentLen = parentSection.length() + 1;
+		int fileLen = fileName.length();
+		String fileSection = fileName.substring(parentLen, fileLen);
+
+		int pos = fileSection.lastIndexOf('.');
+		if (pos > 0 && pos < fileSection.length() - 1)
+		{
+			return fileSection.substring(0, pos);
+		}
+		return "";
+	}
+
 	public void doSaveAs(String message)
 	{
 		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
@@ -1195,18 +1201,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			String newName = asFile.getName();
 			dialog.setOriginalName(newName);
 		}
-		else if (getEditorInput()  instanceof FileStoreEditorInput)
+		else if (getEditorInput() instanceof FileStoreEditorInput)
 		{
 			// this has been dragged from an explorer window
-			FileStoreEditorInput fi = (FileStoreEditorInput) getEditorInput() ;
+			FileStoreEditorInput fi = (FileStoreEditorInput) getEditorInput();
 			URI uri = fi.getURI();
 			File thisFile = new File(uri.getPath());
 			String newPath = fileNamePartOf(thisFile.getAbsolutePath());
 			newPath += ".xml";
 			dialog.setOriginalName(newPath);
 		}
-		
-		
+
 		dialog.create();
 		if (message != null)
 			dialog.setMessage(message, IMessageProvider.WARNING);

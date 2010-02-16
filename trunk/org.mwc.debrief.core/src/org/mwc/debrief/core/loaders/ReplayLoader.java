@@ -49,13 +49,18 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 				int lines = 0;
 				try
 				{
-					// create ourselves a fresh stream. we create some fresh streams
-					// based on this one which get closed in processing
-					final FileInputStream lineCounterStream = new FileInputStream(fName);
-					lines = super.countLinesInStream(lineCounterStream);
-					lineCounterStream.close();
-					DebriefPlugin.logError(Status.INFO, "Replay loader - counted:"
-							+ lines + " lines", null);
+					// create a file-wrapper to see if we can open the file directly
+					File countFile = new File(fName);
+					if (countFile.exists())
+					{
+						// create ourselves a fresh stream. we create some fresh streams
+						// based on this one which get closed in processing
+						final FileInputStream lineCounterStream = new FileInputStream(fName);
+						lines = super.countLinesInStream(lineCounterStream);
+						lineCounterStream.close();
+						DebriefPlugin.logError(Status.INFO, "Replay loader - counted:"
+								+ lines + " lines", null);
+					}
 				}
 				catch (FileNotFoundException fe)
 				{
@@ -141,7 +146,8 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 							}
 							catch (IOException e)
 							{
-								DebriefPlugin.logError(Status.ERROR, "whilst closing input stream", e);
+								DebriefPlugin.logError(Status.ERROR,
+										"whilst closing input stream", e);
 							}
 						}
 
