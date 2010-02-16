@@ -91,8 +91,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 								DebriefPlugin.logError(Status.INFO,
 										"completed loading:" + fileName, null);
 
-								// and inform the plot editor
-								thePlot.loadingComplete(this);
 
 								DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
@@ -104,6 +102,9 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 							}
 							finally
 							{
+								// and inform the plot editor
+								thePlot.loadingComplete(this);
+
 								// ok, allow the layers object to inform anybody what's
 								// happening
 								// again

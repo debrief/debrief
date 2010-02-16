@@ -476,6 +476,12 @@ public class MetafileCanvas implements CanvasType
 			fm = g.getFontMetrics();
 
 		int wid = fm.stringWidth(theString);
+		
+		// have a go at stretching it by a single character
+		double newWid = (double)wid / theString.length() * (theString.length()+1);
+		
+		wid = (int) newWid;
+		
 		return wid;
 	}
 

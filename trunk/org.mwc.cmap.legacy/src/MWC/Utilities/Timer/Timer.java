@@ -50,7 +50,8 @@ implements java.io.Serializable {
     delay = DEFAULT_DELAY;
     onceOnly = DEFAULT_ONLY_ONCE;
     propertySupport = new PropertyChangeSupport (this);
-    start ();
+    // [IM] don't fire the timer at generation - always start it as a conscious decision
+    //  start ();
   }
 
   public synchronized void start () {
