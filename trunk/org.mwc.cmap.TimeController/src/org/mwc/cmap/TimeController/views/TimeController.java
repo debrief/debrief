@@ -117,7 +117,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * the automatic timer we are using
 	 */
-	MWC.Utilities.Timer.Timer _theTimer;
+	MWC.Utilities.Timer.Timer _myTimer;
 
 	/**
 	 * the editor the user is currently working with (assigned alongside the
@@ -341,14 +341,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
 
-		/**
-		 * the timer-related settings
-		 */
-		_theTimer = new MWC.Utilities.Timer.Timer();
-		_theTimer.stop();
-		_theTimer.setDelay(1000);
-		_theTimer.addTimerListener(this);
-
 		// sort out the live listener bits
 		_myStoppedListener = new PropertyChangeListener()
 		{
@@ -379,6 +371,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		};
 
+	}
+	
+	private MWC.Utilities.Timer.Timer getTimer()
+	{
+		// have we created it yet?
+		if(_myTimer == null)
+		{
+			// nope, better go for it.
+			/**
+			 * the timer-related settings
+			 */
+			_myTimer = new MWC.Utilities.Timer.Timer();
+			_myTimer.stop();
+			_myTimer.setDelay(1000);
+			_myTimer.addTimerListener(this);
+		}
+		
+		return _myTimer;
 	}
 
 	/**
@@ -692,7 +702,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	void stopPlaying()
 	{
-		_theTimer.stop();
+		getTimer().stop();
 	}
 
 	/**
@@ -706,16 +716,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				.getMillis(), 250);
 
 		// ok - make sure the time has the right time
-		_theTimer.setDelay(delayToUse);
+		getTimer().setDelay(delayToUse);
 
-		_theTimer.start();
+		getTimer().start();
 	}
 
 	public void onTime(ActionEvent event)
 	{
 
 		// temporarily remove ourselves, to prevent being called twice
-		_theTimer.removeTimerListener(this);
+		getTimer().removeTimerListener(this);
 
 		// catch any exceptions raised here, it doesn't really
 		// matter if we miss a time step
@@ -730,7 +740,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		}
 
 		// register ourselves as a time again
-		_theTimer.addTimerListener(this);
+		getTimer().addTimerListener(this);
 
 	}
 
@@ -994,7 +1004,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								// we're not.
 
 								// stop playing (if we were)
-								if (_theTimer.isRunning())
+								if (getTimer().isRunning())
 								{
 									// un-depress the play button
 									_playButton.setSelection(false);
@@ -1391,10 +1401,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 											// hey, if we're stepping, we'd
 											// better change the size of
 											// the time step
-											if (_theTimer.isRunning())
+											if (getTimer().isRunning())
 											{
 												Duration theDelay = (Duration) evt.getNewValue();
-												_theTimer.setDelay((long) theDelay
+												getTimer().setDelay((long) theDelay
 														.getValueIn(Duration.MILLISECONDS));
 											}
 										}
@@ -1626,6 +1636,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	public void dispose()
 	{
 		super.dispose();
+		
+		// and ditch the timer
+		_myTimer = null;
 
 		// and stop listening for part activity
 		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
