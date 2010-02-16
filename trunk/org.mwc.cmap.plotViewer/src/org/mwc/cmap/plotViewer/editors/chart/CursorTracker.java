@@ -1,8 +1,6 @@
 package org.mwc.cmap.plotViewer.editors.chart;
 
-import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.ui.part.EditorPart;
-import org.mwc.cmap.core.ui_support.LineItem;
 
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -10,7 +8,7 @@ import MWC.GUI.PlainChart.ChartCursorMovedListener;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
-public class CursorTracker /* extends StatusPanel */
+public class CursorTracker extends CoreTracker
 {
 	private static final String POSITION_TOOLTIP = "Mouse position";
 
@@ -18,7 +16,8 @@ public class CursorTracker /* extends StatusPanel */
 			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.00\"N 000"
 			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.00\"W ";
 
-	/** single instance of cursor tracker.
+	/**
+	 * single instance of cursor tracker.
 	 * 
 	 */
 	private static CursorTracker _singleton;
@@ -27,18 +26,6 @@ public class CursorTracker /* extends StatusPanel */
 	 * the projection we're looking at
 	 */
 	private SWTChart _myChart;
-
-
-	/** the currently assigned editor
-	 * 
-	 */
-	private EditorPart _myEditor;
-	
-	/** the line instance we write to
-	 * 
-	 */
-	final LineItem _myLine;
-
 	/**
 	 * something to listen out for chart movement
 	 * 
@@ -51,9 +38,8 @@ public class CursorTracker /* extends StatusPanel */
 
 	private CursorTracker()
 	{
-		// first the status bar contribution
-		_myLine = new LineItem("CursorTracker", POSITION_TEMPLATE,
-				POSITION_TOOLTIP, null);
+		// declare the item
+		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, null);
 
 		// sort out a chart listener
 		_myMoveListener = new PlainChart.ChartCursorMovedListener()
@@ -64,7 +50,7 @@ public class CursorTracker /* extends StatusPanel */
 				String msg = BriefFormatLocation.toString(thePos);
 				_myLine.setText(msg);
 			}
-		};		
+		};
 	}
 
 	public void close()
@@ -73,57 +59,43 @@ public class CursorTracker /* extends StatusPanel */
 		forgetSettings();
 	}
 
-	/** teardown for this chart
+	/**
+	 * teardown for this chart
 	 * 
 	 */
 	private void forgetSettings()
 	{
-		if (_myEditor != null)
-		{
-			// get the status manager for this editor
-			IStatusLineManager oldMgr = _myEditor.getEditorSite().getActionBars()
-					.getStatusLineManager();
+		// forget the parent bits
+		super.forgetSettings(this);
 
-			// try to remove our line item
-			oldMgr.remove(_singleton._myLine);
-		}
-		
-		if(_myChart != null)
+		if (_myChart != null)
 		{
 			// well, stop listening to that one
 			_myChart.removeCursorMovedListener(_singleton._myMoveListener);
 		}
 
-		_myEditor = null;
 		_myChart = null;
 	}
 
-	/** setup for this chart
+	/**
+	 * setup for this chart
 	 * 
 	 * @param editor
 	 * @param chart
 	 */
 	private void storeSettings(EditorPart editor, SWTChart chart)
 	{
-		_myEditor = editor;
+		// do the parent's store bit
+		CoreTracker.storeSettings(this, editor);
+		
+		// now do our store bit
 		_myChart = chart;
-
-		// get the status manager for this editor
-		IStatusLineManager oldMgr = _myEditor.getEditorSite().getActionBars()
-				.getStatusLineManager();
-		
-		// try to add our line item
-		oldMgr.add(_singleton._myLine);
-		
-		_myEditor.getEditorSite().getActionBars().updateActionBars();
 
 		// well, and start listening to that one
 		_myChart.addCursorMovedListener(_singleton._myMoveListener);
 
 		// and reset the data string
 		_singleton._myLine.setText(POSITION_TEMPLATE);
-
-
 	}
 
 	/**
@@ -137,12 +109,11 @@ public class CursorTracker /* extends StatusPanel */
 		// do we need to create our bits?
 		if (_singleton == null)
 		{
-			// go for it
 			_singleton = new CursorTracker();
 		}
 		else
 		{
-			// are we already listening to a chart?
+			// now forget our bits
 			_singleton.forgetSettings();
 		}
 

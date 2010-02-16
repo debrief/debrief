@@ -11,8 +11,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
-import MWC.Utilities.TextFormatting.BriefFormatLocation;
-
 /**
  * class representing line of text which may be plased on the status bar
  * 
@@ -22,9 +20,11 @@ import MWC.Utilities.TextFormatting.BriefFormatLocation;
 public class LineItem extends ControlContribution {
 	Label label;
 
-	String _lastText = " 00" + BriefFormatLocation.DEGREE_SYMBOL
-			+ "00\'00.00\"N 000" + BriefFormatLocation.DEGREE_SYMBOL
-			+ "00\'00.00\"W ";
+	final String _lastText;
+		
+//		" 00" + BriefFormatLocation.DEGREE_SYMBOL
+//			+ "00\'00.00\"N 000" + BriefFormatLocation.DEGREE_SYMBOL
+//			+ "00\'00.00\"W ";
 
 	/**
 	 * tooltip to show when hovering over panel
@@ -63,7 +63,7 @@ public class LineItem extends ControlContribution {
 		} else {
 			label.setText(val);
 		}
-		_lastText = val;
+	//	_lastText = val;
 	}
 
 	public boolean isDisposed() {
@@ -104,6 +104,14 @@ public class LineItem extends ControlContribution {
 		}
 
 		return label;
+	}
+
+	/** put the duff text back into the label
+	 * 
+	 */
+	public void reset()
+	{
+		setText(_lastText);
 	}
 
 }

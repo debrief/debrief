@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
+import org.mwc.cmap.plotViewer.editors.chart.CoreTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
@@ -181,7 +181,7 @@ final public class RangeBearing extends CoreDragAction
 			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
 			
 			// also get the RangeTracker to display the range/bearing
-			RangeTracker.write(txt);
+			CoreTracker.write(txt);
 
 		}
 	}
