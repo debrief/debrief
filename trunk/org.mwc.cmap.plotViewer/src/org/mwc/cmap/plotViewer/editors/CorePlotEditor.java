@@ -42,8 +42,8 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
-import org.mwc.cmap.plotViewer.actions.RangeBearing;
 import org.mwc.cmap.plotViewer.editors.chart.CursorTracker;
+import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.StatusPanel;
@@ -60,8 +60,9 @@ import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 
-public abstract class CorePlotEditor extends EditorPart implements IResourceProvider,
-		IControllableViewport, ISelectionProvider, IPlotGUI, IChartBasedEditor
+public abstract class CorePlotEditor extends EditorPart implements
+		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
+		IChartBasedEditor
 {
 
 	// //////////////////////////////
@@ -84,8 +85,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 * the graphic data we know about
 	 */
 	protected Layers _myLayers;
-
-
 
 	/**
 	 * the object which listens to time-change events. we remember it so that it
@@ -127,7 +126,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private StatusPanel _myRngBrg;
 
-
 	// //////////////////////////////
 	// constructor
 	// //////////////////////////////
@@ -162,7 +160,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_myLayers.addDataModifiedListener(_listenForMods);
 		_myLayers.addDataReformattedListener(_listenForMods);
 
-
 		// and listen for new times
 		_timeListener = new PropertyChangeListener()
 		{
@@ -183,15 +180,14 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	public void dispose()
 	{
 		super.dispose();
-		
+
 		_myRngBrg.close();
 		_myRngBrg = null;
-		
+
 		// empty the part monitor
 		_myPartMonitor.ditch();
 		_myPartMonitor = null;
 	}
-	
 
 	public void createPartControl(Composite parent)
 	{
@@ -230,85 +226,97 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				selectPlottable(res, parentLayer);
 			}
 
-
 			protected void handleItemNotFound(PlainProjection projection)
 			{
-						putBackdropIntoProperties();
+				putBackdropIntoProperties();
 			}
 		});
 
 		getSite().setSelectionProvider(this);
-		
-		// and the range bearing tracker
-		_myRngBrg = RangeBearing.getPanel(this);
 
+		// and the range bearing tracker
+		// _myRngBrg = RangeBearing.getPanel(this);
 
 		// and over-ride the undo button
-		IAction undoAction = new UndoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
-		IAction redoAction = new RedoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
+		IAction undoAction = new UndoActionHandler(getEditorSite(),
+				CorePlugin.CMAP_CONTEXT);
+		IAction redoAction = new RedoActionHandler(getEditorSite(),
+				CorePlugin.CMAP_CONTEXT);
 
-		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.UNDO.getId(),
-				undoAction);
-		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(),
-				redoAction);
-		
+		getEditorSite().getActionBars().setGlobalActionHandler(
+				ActionFactory.UNDO.getId(), undoAction);
+		getEditorSite().getActionBars().setGlobalActionHandler(
+				ActionFactory.REDO.getId(), redoAction);
+
 		// put in the plot-copy support
 
-    IAction _copyClipboardAction = new Action()
+		IAction _copyClipboardAction = new Action()
 		{
 			public void runWithEvent(Event event)
 			{
 				ExportWMF ew = new ExportWMF(true, false);
 				ew.run(null);
 			}
-		};	
-		
-		IActionBars actionBars= getEditorSite().getActionBars();
-		actionBars.setGlobalActionHandler(
-				ActionFactory.COPY.getId(),
-				_copyClipboardAction);			
-		
+		};
+
+		IActionBars actionBars = getEditorSite().getActionBars();
+		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+				_copyClipboardAction);
+
 		// listen out for us losing focus - so we can drop the selection
 		listenForMeLosingFocus();
-		
+
 		// listen out for us gaining focus - so we can set the cursort tracker
 		listenForMeGainingFocus();
 	}
-	
 
 	private void listenForMeLosingFocus()
 	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.DEACTIVATED, new PartMonitor.ICallback(){
-			public void eventTriggered(String type, Object instance, IWorkbenchPart parentPart)
-			{
-				boolean isMe = checkIfImTheSameAs(instance);
-				if(isMe)
-					_currentSelection = null;
-			}});
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+		_myPartMonitor.addPartListener(CorePlotEditor.class,
+				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object instance,
+							IWorkbenchPart parentPart)
+					{
+						boolean isMe = checkIfImTheSameAs(instance);
+						if (isMe)
+							_currentSelection = null;
+					}
+				});
 	}
 
 	private void listenForMeGainingFocus()
 	{
 		final EditorPart linkToMe = this;
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback(){
-			public void eventTriggered(String type, Object instance, IWorkbenchPart parentPart)
-			{
-				boolean isMe = checkIfImTheSameAs(instance);
-				if(isMe)
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
-					// tell the cursor track that we're it's bitch.
-					CursorTracker.trackThisChart(_myChart, linkToMe);
-				}
-			}});
+					public void eventTriggered(String type, Object instance,
+							IWorkbenchPart parentPart)
+					{
+						if (type == PartMonitor.ACTIVATED)
+						{
+							boolean isMe = checkIfImTheSameAs(instance);
+							if (isMe)
+							{
+								// tell the cursor track that we're it's bitch.
+								RangeTracker.displayResultsIn(linkToMe);
+								CursorTracker.trackThisChart(_myChart, linkToMe);
+							}
+						}
+					}
+				});
 	}
-	
+
 	boolean checkIfImTheSameAs(Object target1)
 	{
-		boolean res =false;
+		boolean res = false;
 		// is it me?
-		if(target1 == this)
+		if (target1 == this)
 			res = true;
 		else
 		{
@@ -317,36 +325,42 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		return res;
 	}
 
-	/** ok - let somebody else select an item on the plot.  The initial reason for making this public 
-	 * was so that when a new item is created, we can select it on the plot.  The plot then fires a 
-	 * 'selected' event, and the new item is shown in the properties window.  Cool.
-	 * @param target1 - the item to select
-	 * @param parentLayer - the item's parent layer.  Used to decide which layers to update.
+	/**
+	 * ok - let somebody else select an item on the plot. The initial reason for
+	 * making this public was so that when a new item is created, we can select it
+	 * on the plot. The plot then fires a 'selected' event, and the new item is
+	 * shown in the properties window. Cool.
+	 * 
+	 * @param target1
+	 *          - the item to select
+	 * @param parentLayer
+	 *          - the item's parent layer. Used to decide which layers to update.
 	 */
 	public void selectPlottable(Plottable target1, Layer parentLayer)
 	{
-		CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + target1, null);
+		CorePlugin.logError(Status.INFO,
+				"Double-click processed, opening property editor for:" + target1, null);
 		EditableWrapper parentP = new EditableWrapper(parentLayer, null, getChart()
 				.getLayers());
 		EditableWrapper wrapped = new EditableWrapper(target1, parentP, getChart()
 				.getLayers());
 		ISelection selected = new StructuredSelection(wrapped);
 		fireSelectionChanged(selected);
-	}	
+	}
 
-	/** place the chart in the properties window
-	 *
+	/**
+	 * place the chart in the properties window
+	 * 
 	 */
 	final void putBackdropIntoProperties()
 	{
 		SWTCanvas can = (SWTCanvas) getChart().getCanvas();
-		EditableWrapper wrapped = new EditableWrapper(can,
-				getChart().getLayers());
+		EditableWrapper wrapped = new EditableWrapper(can, getChart().getLayers());
 		ISelection sel = new StructuredSelection(wrapped);
 		fireSelectionChanged(sel);
 
 	}
-	
+
 	/**
 	 * create the chart we're after
 	 * 
@@ -355,7 +369,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent){
+		SWTChart res = new SWTChart(_myLayers, parent)
+		{
 
 			/**
 			 * 
@@ -365,7 +380,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			public void chartFireSelectionChanged(ISelection sel)
 			{
 				fireSelectionChanged(sel);
-			}};
+			}
+		};
 		return res;
 	}
 
@@ -375,7 +391,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	private void configureFileDropSupport()
 	{
 		int dropOperation = DND.DROP_COPY;
-		Transfer[] dropTypes = { FileTransfer.getInstance() };
+		Transfer[] dropTypes =
+		{ FileTransfer.getInstance() };
 
 		target = new DropTarget(_myChart.getCanvasControl(), dropOperation);
 		target.setTransfer(dropTypes);
@@ -440,18 +457,18 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	{
 		// just put some kind of blank object into the properties window
 		// putBackdropIntoProperties();
-		
+
 		// ok, set the drag mode to whatever our common "mode" is.
 		// - start off by getting the current mode
 		PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
-		
+
 		// has one been set?
-		if(curMode != null)
+		if (curMode != null)
 		{
 			// yup, better observe it then
 			_myChart.setDragMode(curMode);
 		}
-		
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -476,7 +493,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		{
 			res = _myChart.getCanvas();
 		}
-
 
 		return res;
 	}
@@ -535,7 +551,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+	 * @see
+	 * org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener
+	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
@@ -570,7 +588,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+	 * @see
+	 * org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener
+	 * (org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
@@ -580,7 +600,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
+	 * @see
+	 * org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface
+	 * .viewers.ISelection)
 	 */
 	public void setSelection(ISelection selection)
 	{
@@ -596,7 +618,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			if (_selectionListeners != null)
 			{
 				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
-				for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
+				for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
+						.iterator(); stepper.hasNext();)
 				{
 					ISelectionChangedListener thisL = stepper.next();
 					if (thisL != null)
@@ -688,11 +711,12 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_myChart.update();
 	}
 
-	/** get the chart to fit to window
-	 *
+	/**
+	 * get the chart to fit to window
+	 * 
 	 */
 	public void rescale()
 	{
-	  _myChart.rescale();
+		_myChart.rescale();
 	}
 }

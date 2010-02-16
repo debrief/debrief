@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.preferences.CMAPPrefsPage;
+import org.mwc.cmap.plotViewer.editors.chart.RangeTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.StatusPanel;
@@ -36,14 +37,20 @@ final public class RangeBearing extends CoreDragAction
 	
 	public static StatusPanel getPanel(EditorPart editor)
 	{
-		if(_myPanel == null)
-		{
+		
+	//	if(_myPanel == null)
+	//	{
 			_myPanel = new StatusPanel(editor, 
 			    "Range Bearing", 
 			    "__________________", 
 			    "Last measured range/bearing (double click to change units)", 
 			    CMAPPrefsPage.PREFS_PAGE_ID);
-		}
+//		}
+	//	else
+//		{
+	//		StatusPanel thePanel = _myPanel;
+	//		System.err.println("range already there");
+	//	}
 				
 		return _myPanel;
 	}
@@ -182,7 +189,7 @@ final public class RangeBearing extends CoreDragAction
 				brg += 360;
 			DecimalFormat df = new DecimalFormat("0.00");
 			String numComponent = df.format(rng);
-			final String txt = numComponent + myUnits + " " + (int) brg + "\u00b0";
+			final String txt = "[" + numComponent + myUnits + " " + (int) brg + "\u00b0"  + "]";
 
 			// decide the mid-point
 			java.awt.Point loc = new java.awt.Point(
@@ -195,11 +202,10 @@ final public class RangeBearing extends CoreDragAction
 			loc.translate(-txt.length() / 2 * fm.getAverageCharWidth(), 0);
 
 			dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
-			// dest.setForeground(dest.getBackground());
 
-			dest.drawText("[" + txt + "]", loc.x, loc.y, SWT.DRAW_TRANSPARENT);
+			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
 			
-			_myPanel.write(txt);
+			RangeTracker.write(txt);
 
 		}
 	}
