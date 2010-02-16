@@ -134,16 +134,16 @@ public class CursorTracker /* extends StatusPanel */
 	 */
 	public static void trackThisChart(SWTChart chart, EditorPart editor)
 	{
-		// are we already listening to a chart?
-		if (_singleton != null)
-		{
-			_singleton.forgetSettings();
-		}
-
 		// do we need to create our bits?
 		if (_singleton == null)
 		{
+			// go for it
 			_singleton = new CursorTracker();
+		}
+		else
+		{
+			// are we already listening to a chart?
+			_singleton.forgetSettings();
 		}
 
 		// now start listening to the new one

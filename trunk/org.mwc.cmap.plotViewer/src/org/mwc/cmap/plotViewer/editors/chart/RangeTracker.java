@@ -46,7 +46,7 @@ public class RangeTracker
 	public void close()
 	{
 		// belt & braces, ditch stuff.
-		forgetSettings();
+		forgetSettings(this);
 	}
 
 	public static void write(String txt)
@@ -59,19 +59,19 @@ public class RangeTracker
 	 * teardown for this chart
 	 * 
 	 */
-	protected void forgetSettings()
+	protected static void forgetSettings(RangeTracker tracker)
 	{
-		if (_myEditor != null)
+		if (tracker._myEditor != null)
 		{
 			// get the status manager for this editor
-			IStatusLineManager oldMgr = _myEditor.getEditorSite().getActionBars()
+			IStatusLineManager oldMgr = tracker._myEditor.getEditorSite().getActionBars()
 					.getStatusLineManager();
 
 			// try to remove our line item
-			oldMgr.remove(_singleton._myLine);
+			oldMgr.remove(tracker._myLine);
 		}
 
-		_myEditor = null;
+		tracker._myEditor = null;
 	}
 
 	
@@ -80,23 +80,23 @@ public class RangeTracker
 	 * 
 	 * @param editor
 	 */
-	protected void storeSettings(EditorPart editor)
+	protected static void storeSettings(RangeTracker tracker, EditorPart editor)
 	{
-		_myEditor = editor;
+		tracker._myEditor = editor;
 
 		// get the status manager for this editor
-		IStatusLineManager oldMgr = _myEditor.getEditorSite().getActionBars()
+		IStatusLineManager oldMgr = tracker._myEditor.getEditorSite().getActionBars()
 				.getStatusLineManager();
 
 		// try to add our line item
-		oldMgr.add(_singleton._myLine);
+		oldMgr.add(tracker._myLine);
 
 		// and tell everybody about the change
-		_myEditor.getEditorSite().getActionBars().updateActionBars();
+		tracker._myEditor.getEditorSite().getActionBars().updateActionBars();
 
 		_singleton._myLine.setText(DUFF_RANGE_STRING);
 	}
-
+	
 	/**
 	 * start tracking the indicated chart
 	 * 
@@ -108,7 +108,7 @@ public class RangeTracker
 		// are we already listening to a chart?
 		if (_singleton != null)
 		{
-			_singleton.forgetSettings();
+			forgetSettings(_singleton);
 		}
 
 		// do we need to create our bits?
@@ -118,6 +118,6 @@ public class RangeTracker
 		}
 
 		// now start listening to the new one
-		_singleton.storeSettings(editor);
+		storeSettings(_singleton, editor);
 	}
 }
