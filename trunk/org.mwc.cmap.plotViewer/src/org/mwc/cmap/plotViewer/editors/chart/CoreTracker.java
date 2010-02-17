@@ -17,7 +17,7 @@ public class CoreTracker
 	 * the currently assigned editor
 	 * 
 	 */
-	private EditorPart _myEditor;
+	protected EditorPart _myEditor;
 
 	/**
 	 * the line instance we write to
@@ -25,12 +25,14 @@ public class CoreTracker
 	 */
 	final LineItem _myLine;
 
+	public String _lastText = null;
+
 	// ///////////////////////////////////////////////////
 	// constructor
 	// ///////////////////////////////////////////////////
 
-
-	protected CoreTracker(String string, String duffString, String tooltip, String prefsId)
+	protected CoreTracker(String string, String duffString, String tooltip,
+			String prefsId)
 	{
 		// first the status bar contribution
 		_myLine = new LineItem(string, duffString, tooltip, prefsId);
@@ -45,7 +47,10 @@ public class CoreTracker
 	public static void write(String txt)
 	{
 		if (_singleton != null)
+		{
 			_singleton._myLine.setText(txt);
+			_singleton._lastText = txt;
+		}
 	}
 
 	/**
@@ -57,8 +62,8 @@ public class CoreTracker
 		if (tracker._myEditor != null)
 		{
 			// get the status manager for this editor
-			IStatusLineManager oldMgr = tracker._myEditor.getEditorSite().getActionBars()
-					.getStatusLineManager();
+			IStatusLineManager oldMgr = tracker._myEditor.getEditorSite()
+					.getActionBars().getStatusLineManager();
 
 			// try to remove our line item
 			oldMgr.remove(tracker._myLine);
@@ -67,7 +72,6 @@ public class CoreTracker
 		tracker._myEditor = null;
 	}
 
-	
 	/**
 	 * setup for this chart
 	 * 
@@ -75,11 +79,13 @@ public class CoreTracker
 	 */
 	protected static void storeSettings(CoreTracker tracker, EditorPart editor)
 	{
+		_singleton._myLine.reset();
+
 		tracker._myEditor = editor;
 
 		// get the status manager for this editor
-		IStatusLineManager oldMgr = tracker._myEditor.getEditorSite().getActionBars()
-				.getStatusLineManager();
+		IStatusLineManager oldMgr = tracker._myEditor.getEditorSite()
+				.getActionBars().getStatusLineManager();
 
 		// try to add our line item
 		oldMgr.add(tracker._myLine);
@@ -87,6 +93,5 @@ public class CoreTracker
 		// and tell everybody about the change
 		tracker._myEditor.getEditorSite().getActionBars().updateActionBars();
 
-		_singleton._myLine.reset();
 	}
 }

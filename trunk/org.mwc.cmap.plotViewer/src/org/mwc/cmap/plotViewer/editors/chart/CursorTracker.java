@@ -87,7 +87,7 @@ public class CursorTracker extends CoreTracker
 	{
 		// do the parent's store bit
 		CoreTracker.storeSettings(this, editor);
-		
+
 		// now do our store bit
 		_myChart = chart;
 
@@ -106,18 +106,25 @@ public class CursorTracker extends CoreTracker
 	 */
 	public static void trackThisChart(SWTChart chart, EditorPart editor)
 	{
-		// do we need to create our bits?
-		if (_singleton == null)
+		if ((_singleton == null) || (_singleton._myEditor != editor))
 		{
-			_singleton = new CursorTracker();
+			// do we need to create our bits?
+			if (_singleton == null)
+			{
+				_singleton = new CursorTracker();
+			}
+			else
+			{
+				forgetSettings(_singleton);
+			}
+
+			// now start listening to the new one
+			_singleton.storeSettings(editor, chart);
 		}
 		else
 		{
-			// now forget our bits
-			_singleton.forgetSettings();
+			if (_singleton._lastText != null)
+				CoreTracker.write(_singleton._lastText);
 		}
-
-		// now start listening to the new one
-		_singleton.storeSettings(editor, chart);
 	}
 }
