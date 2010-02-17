@@ -512,9 +512,9 @@ public class ImportReplay extends PlainImporterBase
 				{
 					// ok, see if we're importing it as DR or ATG (or ask the audience)
 					String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
-					
+
 					// catch a missing import mode
-					if(importMode == null)
+					if (importMode == null)
 					{
 						// belt & braces it is then...
 						importMode = ImportReplay.ASK_THE_AUDIENCE;
@@ -531,7 +531,13 @@ public class ImportReplay extends PlainImporterBase
 
 					TrackSegment initialLayer = null;
 
-					if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
+					if (importMode == null)
+					{
+						// and drop out of the whole affair
+						throw new RuntimeException("User cancelled import");
+					}
+					else if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
+
 					{
 						initialLayer = new TrackSegment();
 						initialLayer.setPlotRelative(false);
@@ -540,11 +546,6 @@ public class ImportReplay extends PlainImporterBase
 					{
 						initialLayer = new TrackSegment();
 						initialLayer.setPlotRelative(true);
-					}
-					else
-					{
-						// and drop out of the whole affair
-						throw new RuntimeException("User cancelled import");
 					}
 
 					// now create the wrapper
@@ -1078,7 +1079,7 @@ public class ImportReplay extends PlainImporterBase
 
 		return res;
 	}
-	
+
 	static public Color replayColorFor(int index)
 	{
 		Color res = null;
@@ -1087,12 +1088,11 @@ public class ImportReplay extends PlainImporterBase
 		initialiseColours();
 
 		int theIndex = index % colors.size();
-		
+
 		res = colors.elementAt(theIndex).color;
 
 		return res;
 	}
-
 
 	static public Color replayColorFor(String theSym)
 	{
