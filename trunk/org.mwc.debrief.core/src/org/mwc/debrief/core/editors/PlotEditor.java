@@ -1286,6 +1286,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		// inform our parent
 		super.layersExtended();
+		
+		// we should also recalculate the time period we cover
+		TimePeriod timePeriod = getPeriodFor(_myLayers);
+
+		if (timePeriod != null)
+		{
+			_timeManager.setPeriod(this, timePeriod);
+		}
+		
 
 		// and tell the track data manager that something's happened. One of
 		// it's

@@ -70,15 +70,15 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 					if (canDo)
 					{
 						String title;
-						
+
 						// see if there are more than one segment to be generated
-						if(subjects.length > 2)
+						if (subjects.length > 2)
 							title = "Generate infill segments";
 						else
 							title = "Generate infill segment";
-						
+
 						final String finalTitle = title;
-						
+
 						// create this operation
 						Action doMerge = new Action(title)
 						{
@@ -124,34 +124,35 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 				throws ExecutionException
 		{
 			IStatus res = null;
-			
+
 			// ok, loop through the segments
-			for (int i = 0; i < _segments.length-1; i++)
+			for (int i = 0; i < _segments.length - 1; i++)
 			{
 				// get the juicy pair we're looking at
-				TrackSegment  trackOne = (TrackSegment) _segments[i];
-				TrackSegment  trackTwo = (TrackSegment) _segments[i+1];
-				
+				TrackSegment trackOne = (TrackSegment) _segments[i];
+				TrackSegment trackTwo = (TrackSegment) _segments[i + 1];
+
 				// join them
 				res = fillSegments(trackOne, trackTwo);
-				
+
 				// did it work?
-				if(res != null)
+				if (res != null)
 					break;
 			}
-
 
 			fireModified();
 
 			if (res == null)
 			{
-				res = new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME, "generate infill successful", null);
+				res = new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
+						"generate infill successful", null);
 			}
 			return res;
 		}
 
-		/** create a joining infill segment for these two sections
-		 *  
+		/**
+		 * create a joining infill segment for these two sections
+		 * 
 		 * @param trackOne
 		 * @param trackTwo
 		 * @return null for ok, status message for fail
@@ -167,7 +168,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 						.showMessage(
 								"Generate infill segment",
 								"Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again");
-				res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, "Overlapping data points", null);
+				res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+						"Overlapping data points", null);
 			}
 			else
 			{
@@ -175,11 +177,15 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 				// generate the new track segment
 				TrackSegment newSeg = new TrackSegment(trackOne, trackTwo);
 
-				// add the track segment to the parent track
-				_parentTrack.add(newSeg);
-				
-				// and remember it
-				_infills.add(newSeg);
+				// aah, but, no but, are there points in the segment
+				if (newSeg.getData().size() > 0)
+				{
+					// add the track segment to the parent track
+					_parentTrack.add(newSeg);
+
+					// and remember it
+					_infills.add(newSeg);
+				}
 			}
 
 			return res;
@@ -207,10 +213,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 				throws ExecutionException
 		{
 			Iterator<TrackSegment> iter = _infills.iterator();
-			while(iter.hasNext())
+			while (iter.hasNext())
 			{
 				TrackSegment thisSeg = iter.next();
-				
+
 				// right, just delete our new track segments
 				_parentTrack.removeElement(thisSeg);
 			}
@@ -219,7 +225,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 			fireModified();
 
 			// register success
-			return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME, "ditch infill successful", null);
+			return new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
+					"ditch infill successful", null);
 		}
 	}
 }

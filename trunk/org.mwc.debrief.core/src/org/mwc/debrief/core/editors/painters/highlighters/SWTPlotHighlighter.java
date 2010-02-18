@@ -163,7 +163,7 @@ public interface SWTPlotHighlighter extends Editable  {
      * @return current size, stored with it's constraints
      */
     public final BoundedInteger getSize()
-    { return new BoundedInteger(_mySize, 1, 20);  }
+    { return new BoundedInteger(_mySize, 0, 20);  }
 
 
     /////////////////////////////////////////////////////////////
