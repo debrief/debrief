@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -1026,7 +1027,6 @@ public class ToteView extends ViewPart
 			{
 				if (_trackData != null)
 				{
-					// System.err.println("heer 34");
 					WatchableList _thePrimary = _trackData.getPrimaryTrack();
 					WatchableList[] secLists = _trackData.getSecondaryTracks();
 
@@ -1073,14 +1073,15 @@ public class ToteView extends ViewPart
 							}
 							else
 							{
-								if (columnIndex < 2)
-								{
-									System.err.println("getting wrong data in tote view - investigate column index of:" + columnIndex);
-								}
-								else
+								try  // temporarily trap this error whilst we find what happened
 								{
 									// we're in a secondary track, retrieve it's data
 									wList = secLists[columnIndex - 2];
+								}
+								catch (ArrayIndexOutOfBoundsException e)
+								{
+									CorePlugin.logError(Status.ERROR, "Wrong column index:"
+											+ columnIndex, e);
 								}
 							}
 
