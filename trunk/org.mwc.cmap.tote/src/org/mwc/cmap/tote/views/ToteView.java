@@ -1026,7 +1026,7 @@ public class ToteView extends ViewPart
 			{
 				if (_trackData != null)
 				{
-				//	System.err.println("heer 34");
+					// System.err.println("heer 34");
 					WatchableList _thePrimary = _trackData.getPrimaryTrack();
 					WatchableList[] secLists = _trackData.getSecondaryTracks();
 
@@ -1073,8 +1073,15 @@ public class ToteView extends ViewPart
 							}
 							else
 							{
-								// we're in a secondary track, retrieve it's data
-								wList = secLists[columnIndex - 2];
+								if (columnIndex < 2)
+								{
+									System.err.println("getting wrong data in tote view - investigate column index of:" + columnIndex);
+								}
+								else
+								{
+									// we're in a secondary track, retrieve it's data
+									wList = secLists[columnIndex - 2];
+								}
 							}
 
 							if (wList != null)
@@ -1102,8 +1109,8 @@ public class ToteView extends ViewPart
 							}
 						}
 
-						if(primaryFix != null)
-  						res = tc.update(primaryFix, secondaryFix, _theDTG);
+						if (primaryFix != null)
+							res = tc.update(primaryFix, secondaryFix, _theDTG);
 
 					}
 				}
