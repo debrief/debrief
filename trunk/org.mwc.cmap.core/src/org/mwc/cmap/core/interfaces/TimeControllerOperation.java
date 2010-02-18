@@ -121,7 +121,7 @@ public abstract class TimeControllerOperation
 
 		}
 
-		if (secondaries == null)
+		if ((secondaries == null) || (secondaries.length == 0))
 		{
 			showMessage("Sorry, there must be a secondary selection");
 			return;
