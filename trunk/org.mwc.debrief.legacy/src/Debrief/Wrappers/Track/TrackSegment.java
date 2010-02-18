@@ -27,7 +27,6 @@ import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -177,8 +176,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		double[] lats = new double[allElements.length];
 		double[] longs = new double[allElements.length];
 		double[] depths = new double[allElements.length];
-		double[] coursesRads = new double[allElements.length];
-		double[] speedsKts = new double[allElements.length];
 		for (int i = 0; i < allElements.length; i++)
 		{
 			FixWrapper fw = allElements[i];
@@ -186,15 +183,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
-			coursesRads[i] = fw.getCourse();
-			speedsKts[i] = fw.getSpeed();
 		}
 
 		CubicSpline latSpline = new CubicSpline(times, lats);
 		CubicSpline longSpline = new CubicSpline(times, longs);
 		CubicSpline depthSpline = new CubicSpline(times, depths);
-		CubicSpline courseRadsSpline = new CubicSpline(times, coursesRads);
-		CubicSpline speedKtsSpline = new CubicSpline(times, speedsKts);
 
 		// what's the interval?
 		long tDelta = getTimeDelta(trackTwo);
@@ -206,55 +199,46 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		FixWrapper origin = oneElements[oneElements.length - 1];
 		boolean first = true;
 
-		// get going then!  Note, we go past the end of the required data,
-		// - so that we can generate the correct course and speed for the last DR entry
+		// get going then! Note, we go past the end of the required data,
+		// - so that we can generate the correct course and speed for the last DR
+		// entry
 		for (long tNow = tStart; tNow < tEnd + tDelta; tNow += tDelta)
 		{
-			double thisLat = latSpline.interpolate(tNow);
-			double thisLong = longSpline.interpolate(tNow);
-			double thisDepth = depthSpline.interpolate(tNow);
-			double thisCourseRads = courseRadsSpline.interpolate(tNow);
-			double thisSpeedKts = speedKtsSpline.interpolate(tNow);
-
+			final double thisLat = latSpline.interpolate(tNow);
+			final double thisLong = longSpline.interpolate(tNow);
+			final double thisDepth = depthSpline.interpolate(tNow);
+			
 			// create the new location
 			WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
 			Fix newFix = null;
 
-			// now, if this is a DR track, we won't be using the interpolated values,
-			// we'll be generating the values to put the vessel on the correct track
-			if (isDR)
+			WorldVector offset = newLocation.subtract(origin.getLocation());
+			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
+			// start off with the course
+			double thisCourseRads = offset.getBearing();
+
+			// and now the speed
+			final double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS)
+					.getValueIn(WorldDistance.YARDS);
+			final double spdYps = distYds / timeSecs;
+			final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
+
+			// put course in the +ve domain
+			while (thisCourseRads < 0)
+				thisCourseRads += Math.PI * 2;
+
+			if (first)
 			{
-				WorldVector offset = newLocation.subtract(origin.getLocation());
-				double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
-				// start off with the course
-				thisCourseRads = offset.getBearing();
-
-				// and now the speed
-				double distYds = new WorldDistance(offset.getRange(),
-						WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-				double spdYps = distYds / timeSecs;
-				thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
-
-				// put course in the +ve domain
-				while (thisCourseRads < 0)
-					thisCourseRads += Math.PI * 2;
-
-				if (first)
-				{
-					// we don't edit the origin, it's from another track
-					first = false;
-				}
-				else
-				{
-					// over-write the course and speed of the previous entry
-					origin.setSpeed(thisSpeedKts);
-					origin.setCourse(thisCourseRads);
-				}
+				// we don't edit the origin, it's from another track
+				first = false;
 			}
 			else
 			{
+				// over-write the course and speed of the previous entry
+				origin.setSpeed(thisSpeedKts);
+				origin.setCourse(thisCourseRads);
 			}
 
 			// put course in the +ve domain
@@ -271,7 +255,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
 
-			// only add it if we're still in the time period.  We generate one position
+			// only add it if we're still in the time period. We generate one position
 			// past the end of the time period in order to set the correct DR course
 			// for the last position.
 			if (tNow < tEnd)
@@ -605,21 +589,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	public double rangeFrom(final WorldLocation other)
 	{
 		double res = Plottable.INVALID_RANGE;
-		final Vector<FixWrapper> visPoints = getVisiblePoints();
 
-		if (visPoints.size() > 0)
-		{
-			final FixWrapper first = visPoints.firstElement();
-			final FixWrapper last = visPoints.lastElement();
-			final WorldArea area = new WorldArea(first.getFixLocation(), last
-					.getFixLocation());
-			final WorldLocation centrePt = area.getCentre();
-			final double centre = centrePt.rangeFrom(other);
-			final double oneEnd = first.rangeFrom(other);
-			final double otherEnd = last.rangeFrom(other);
-			res = Math.min(centre, oneEnd);
-			res = Math.min(res, otherEnd);
-		}
+		if (getBounds() != null)
+			res = getBounds().rangeFrom(other);
+
 		return res;
 	}
 
