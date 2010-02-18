@@ -62,6 +62,7 @@ public class LayerPainterManager extends PropertyChangeSupport
 		_myHighlighterList.add(new SWTPlotHighlighter.RectangleHighlight());
 		_myHighlighterList.add(new SWTSymbolHighlighter());
 		_myHighlighterList.add(new SWTRangeHighlighter());
+		_myHighlighterList.add(new NullHighlighter());
 		
 		// and sort out the defaults
 		_currentPainter = _myPainterList.firstElement();

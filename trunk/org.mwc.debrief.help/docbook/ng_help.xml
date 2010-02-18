@@ -2789,7 +2789,6 @@ and so on....</programlisting></para>
                                             colour and size of the rectangle to plot</para>
                                     </listitem>
                                 </varlistentry>
-                            </variablelist><variablelist>
                                 <varlistentry>
                                     <term>Symbol Highlight</term>
                                     <listitem>
@@ -2800,7 +2799,14 @@ and so on....</programlisting></para>
                                             plotted.</para>
                                     </listitem>
                                 </varlistentry>
-                            </variablelist><variablelist>
+                                <varlistentry>
+                                    <term>Highlight off</term>
+                                    <listitem>
+                                        <para>For when you don't want a highlight to be shown (such
+                                            as when taking a screenshot using
+                                                <application>PrintScreen</application>)</para>
+                                    </listitem>
+                                </varlistentry>
                                 <varlistentry>
                                     <term>Range Ring Highlight</term>
                                     <listitem>
