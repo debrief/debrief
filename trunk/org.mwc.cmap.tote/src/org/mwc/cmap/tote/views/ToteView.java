@@ -670,10 +670,11 @@ public class ToteView extends ViewPart
 			// ok, store it
 			_trackData = part;
 
-			_tableViewer.setInput(this);
-
 			// ok - now update the content of our table
 			redoTableAfterTrackChanges();
+
+			// and now tell it that there's new data
+			_tableViewer.setInput(this);
 
 			// lastly listen out for any future changes
 			part.addTrackDataListener(new TrackDataListener()
@@ -1073,15 +1074,16 @@ public class ToteView extends ViewPart
 							}
 							else
 							{
-								try  // temporarily trap this error whilst we find what happened
+
+								if (columnIndex < 2)
+								{
+									CorePlugin.logError(Status.ERROR, "Wrong column index:"
+											+ columnIndex, null);
+								}
+								else
 								{
 									// we're in a secondary track, retrieve it's data
 									wList = secLists[columnIndex - 2];
-								}
-								catch (ArrayIndexOutOfBoundsException e)
-								{
-									CorePlugin.logError(Status.ERROR, "Wrong column index:"
-											+ columnIndex, e);
 								}
 							}
 

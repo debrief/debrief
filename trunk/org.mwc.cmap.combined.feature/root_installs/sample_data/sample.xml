@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Feb 11 16:20:26 GMT 2010" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Thu Feb 11 13:25:33 GMT 2010"/>
+<plot Created="Thu Feb 18 15:12:38 GMT 2010" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Thu Feb 18 14:33:55 GMT 2010"/>
 <session>
 <layers>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
@@ -4867,6 +4867,14 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Misc" Visible="true">
+<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
+<colour Value="YELLOW"/>
+<fontcolour Value="YELLOW"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
+</centre>
+</circle>
 <textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -4896,14 +4904,6 @@
 <shortLocation Depth="0.000" Lat="12.2268027" Long="-11.8028454"/>
 </br>
 </line>
-<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
-<colour Value="YELLOW"/>
-<fontcolour Value="YELLOW"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
-</centre>
-</circle>
 </layer>
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET"/>
@@ -4941,12 +4941,15 @@
 <secondary Name="ALLIANCE"/>
 </tote>
 <component Type="Stepper">
+<property Name="GREEN" Value="64"/>
 <property Name="DateFormat" Value="ddHHmm:ss"/>
 <property Name="ShadeArcs" Value="true"/>
 <property Name="Radius" Value="3500.000"/>
-<property Name="Highlighter" Value="Range Ring Highlight"/>
+<property Name="Highlighter" Value="Highlight off"/>
+<property Name="BLUE" Value="64"/>
 <property Name="LinkPositions" Value="true"/>
-<property Name="CurrentTime" Value="951212 095939"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="951212 094452"/>
 <property Name="NumRings" Value="1"/>
 <property Name="PointSize" Value="5"/>
 <property Name="LargeStep" Value="10.0 minutes"/>
