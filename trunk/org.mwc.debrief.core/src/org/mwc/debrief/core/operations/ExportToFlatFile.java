@@ -69,8 +69,13 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 			// now write the data to file
 
+			final String HOST_NAME = primaryTrack.getName();
+			final String HOST_DATE = MWC.Utilities.TextFormatting.FormatRNDateTime.toMediumString(period.getStartDTG().getDate().getTime());
+			
+			
 			final String fileName = filePath + File.separator
-					+ primaryTrack.getName() + "." +FlatFilenameWizardPage.FILE_SUFFIX;
+					+ HOST_NAME + "_" + HOST_DATE +"." + FlatFilenameWizardPage.FILE_SUFFIX;
+			
 			BufferedWriter out = null;
 			try
 			{

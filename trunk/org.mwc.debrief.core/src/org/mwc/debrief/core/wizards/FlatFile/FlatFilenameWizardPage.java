@@ -3,7 +3,6 @@ package org.mwc.debrief.core.wizards.FlatFile;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
-import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.wizard.WizardPage;
@@ -27,6 +26,10 @@ public class FlatFilenameWizardPage extends WizardPage
 	protected String _filePath;
 	protected String _sensorType;
 
+	private DirectoryFieldEditor _fileFieldEditor;
+
+	private RadioGroupFieldEditor _sensorTypeEditor;
+
 	public static final String FILE_SUFFIX = "txt";
 
 	/**
@@ -40,7 +43,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		setTitle("Export data to flat file");
 		setDescription("This wizard allows you to indicate the type of sensor used, and the "
 				+ "directory\nin which to place the output file. "
-				+ "The output file will rake the name of the primary \nfile with a " + FILE_SUFFIX + " suffix added");
+				+ "The output file will rake the name of the primary \nfile with a "
+				+ FILE_SUFFIX + " suffix added");
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
@@ -61,7 +65,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		String sensorKey = "Debrief.FlatFileSensorType";
 
 		String title = "Output directory:";
-		FieldEditor fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
+		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
 		{
 			protected void fireValueChanged(String property, Object oldValue,
 					Object newValue)
@@ -72,8 +76,12 @@ public class FlatFilenameWizardPage extends WizardPage
 				dialogChanged();
 			}
 		};
-		fileFieldEditor.fillIntoGrid(container, 3);
-		fileFieldEditor.setPreferenceStore(getPreferenceStore());
+		_fileFieldEditor.fillIntoGrid(container, 3);
+		_fileFieldEditor.setPreferenceStore(getPreferenceStore());
+		_fileFieldEditor.load();
+		
+		// store the current editor value
+		_filePath = _fileFieldEditor.getStringValue();
 
 		// and the sensor type
 		final String[][] sensorTypes = new String[][]
@@ -81,23 +89,23 @@ public class FlatFilenameWizardPage extends WizardPage
 		{ "Towed Array", "T" },
 		{ "Hull mounted array", "H" } };
 
-		RadioGroupFieldEditor sensorTypeEditor = new RadioGroupFieldEditor(
-				sensorKey, "Sensor type:", 2, sensorTypes, container)
+		_sensorTypeEditor = new RadioGroupFieldEditor(sensorKey, "Sensor type:", 2,
+				sensorTypes, container)
 		{
 			protected void fireValueChanged(String property, Object oldValue,
 					Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 				_sensorType = (String) newValue;
-
 				dialogChanged();
 			}
 		};
 
+		_sensorTypeEditor.setPreferenceStore(getPreferenceStore());
+		_sensorTypeEditor.load();
+
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
-
-		sensorTypeEditor.setPreferenceStore(getPreferenceStore());
 
 		container.layout();
 		setControl(container);
@@ -117,7 +125,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 		final String targetDir = getFileName();
 
-		if (targetDir.length() == 0)
+		if ((targetDir == null) || (targetDir.length() == 0))
 		{
 			updateStatus("Target directory must be specified");
 			return;
@@ -129,6 +137,11 @@ public class FlatFilenameWizardPage extends WizardPage
 			updateStatus("Sensor type must be selected");
 			return;
 		}
+
+		// so, we've got valid data. better store them
+		_sensorTypeEditor.store();
+		_fileFieldEditor.store();
+
 		updateStatus(null);
 	}
 
@@ -152,7 +165,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		setErrorMessage(message);
 		if (message == null)
 		{
-			this.setMessage("Press Finish to complete export", IMessageProvider.INFORMATION);
+			this.setMessage("Press Finish to complete export",
+					IMessageProvider.INFORMATION);
 			setPageComplete(true);
 		}
 	}
