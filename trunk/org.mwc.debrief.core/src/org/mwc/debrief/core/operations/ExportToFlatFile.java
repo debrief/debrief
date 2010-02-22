@@ -30,7 +30,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 	@Override
 	public ImageDescriptor getDescriptor()
 	{
-		return DebriefPlugin.getImageDescriptor("icons/new.gif");
+		return DebriefPlugin.getImageDescriptor("icons/NewFile.png");
 	}
 
 	@Override
