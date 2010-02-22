@@ -84,4 +84,28 @@
 	<!--This target defines the run-order of the targets-->
 	<target name="build" depends="clean, init, pde-build, copy-jre, move_dist, zip_dist" />
 
+	<property name="tgtDest" value="z://downloads"  />
+
+	<target name="can_do_mac_copy">
+		<available property="target.exists" file="${tgtDest}"/>
+	</target>
+	
+	<target name="copy_to_mac" depends="can_do_mac_copy" if="target.exists">
+		
+		<echo message="ditching existing versions"/>
+		<delete file="${tgtDest}/Repository.zip"/>
+		<delete dir="${tgtDest}/DebriefNG"/>
+
+		<echo message="copying new versions"/>
+		
+		<copy todir="${tgtDest}/">
+			<fileset  file="${buildDirectory}/../Repository.zip" />
+		</copy>
+
+		<copy todir="${tgtDest}/DebriefNG">
+			<fileset dir="${buildDirectory}/../DebriefNG/" />
+		</copy>
+
+	</target>
+	
 </project>
