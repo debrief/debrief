@@ -938,6 +938,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			// right, have a look at it.
 			if ((ext == null) || (!ext.equalsIgnoreCase("xml")))
 			{
+				String msg = "Debrief stores data in a structured (xml) file format,";
+				msg += "\nwhich is different to the format you've used to load the data.";
+				msg += "\nThus you must specify a new folder to "
+						+ "store the plot, and a new filename.";
+				msg += "\nNote: it's important that you give the file a .xml file suffix";
+				MessageDialog md = new MessageDialog(getEditorSite().getShell(),
+						"Save as", null, msg, MessageDialog.WARNING, new String[]
+						{ "Ok" }, 0);
+				md.open();
+
 				// not, we have to do a save-as
 				doSaveAs("Can't store this file-type, please save as Debrief plot-file (*.xml)");
 			}
@@ -1286,7 +1296,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		// inform our parent
 		super.layersExtended();
-		
+
 		// we should also recalculate the time period we cover
 		TimePeriod timePeriod = getPeriodFor(_myLayers);
 
@@ -1294,7 +1304,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			_timeManager.setPeriod(this, timePeriod);
 		}
-		
 
 		// and tell the track data manager that something's happened. One of
 		// it's
