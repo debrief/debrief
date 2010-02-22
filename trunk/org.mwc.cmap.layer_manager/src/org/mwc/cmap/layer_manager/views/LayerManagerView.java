@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -108,7 +109,7 @@ public class LayerManagerView extends ViewPart
 	 * add the current item to the secondary track
 	 */
 	Action _addAsSecondary;
-	
+
 	/**
 	 * hide the selected item(s)
 	 */
@@ -391,7 +392,7 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setUseHashlookup(true);
 		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
-		 _myLabelProvider = new CoreViewLabelProvider();
+		_myLabelProvider = new CoreViewLabelProvider();
 		_treeViewer.setLabelProvider(_myLabelProvider);
 		_treeViewer.setSorter(new NameSorter());
 		_treeViewer.setInput(getViewSite());
@@ -1036,7 +1037,7 @@ public class LayerManagerView extends ViewPart
 		_makeSecondary.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/secondary.gif"));
 		_makeSecondary.setEnabled(false);
-		
+
 		_addAsSecondary = new Action()
 		{
 			public void run()
@@ -1321,7 +1322,7 @@ public class LayerManagerView extends ViewPart
 
 	protected void processReformattedLayers()
 	{
-		
+
 		try
 		{
 			// right, we'll be building up a list of objects to refresh (all of the
@@ -1362,12 +1363,11 @@ public class LayerManagerView extends ViewPart
 			// right, tell our label generator to ditch it's cache, since one or more
 			// of the images may have changed
 			_myLabelProvider.resetCacheFor(newList);
-			
-			
+
 			// and do the update
 			Object[] itemsToUpdate = newList.toArray();
-			_treeViewer
-					.update(itemsToUpdate, new String[] { VISIBILITY_COLUMN_NAME });
+			_treeViewer.update(itemsToUpdate, new String[]
+			{ VISIBILITY_COLUMN_NAME });
 		}
 		catch (Exception e)
 		{
@@ -1389,8 +1389,13 @@ public class LayerManagerView extends ViewPart
 			{
 				public void run()
 				{
+					TreePath[] paths = _treeViewer.getExpandedTreePaths();
+
 					// ok, fire the change in the UI thread
 					_treeViewer.setInput(theData);
+
+					// open up the paths that were previously open
+					_treeViewer.setExpandedTreePaths(paths);
 
 					// hmm, do we know about the new item? If so, better select it
 					if (newItem != null)
@@ -1505,10 +1510,10 @@ public class LayerManagerView extends ViewPart
 		if (_followSelectionToggle.isChecked())
 		{
 			// ahh, just check if this is a whole new layers object
-			if(pw.getEditable() instanceof Layers)
+			if (pw.getEditable() instanceof Layers)
 				processNewLayers(pw.getEditable());
-			else	
-			_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
+			else
+				_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
 		}
 
 	}
