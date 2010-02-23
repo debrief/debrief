@@ -115,6 +115,11 @@ public class FlatFileExporter
 		StringBuffer buffer = new StringBuffer();
 
 		boolean primaryInterp = primaryTrack.getInterpolatePoints();
+		boolean secInterp = secTrack.getInterpolatePoints();
+		
+		// switch in the interpolation
+		primaryTrack.setInterpolatePoints(true);
+		secTrack.setInterpolatePoints(true);
 
 		WorldLocation origin = null;
 
@@ -195,6 +200,7 @@ public class FlatFileExporter
 
 		// restore the primary track interpolation
 		primaryTrack.setInterpolatePoints(primaryInterp);
+		secTrack.setInterpolatePoints(secInterp);
 
 		return buffer.toString();
 	}
