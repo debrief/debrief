@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="ForceProt"  xmlns="http://www.mwc.org/asset" >
-	<ScenarioGenerator>
+		<ScenarioGenerator>
 		<MultiParticipantGenerator>
 			<ParticipantVariance name="SSK" number="300">
 				<Variance name="Vary initial course" id="Status">
@@ -20,9 +20,10 @@
 					</WorldArea>
 				</ParticipantLocation></ParticipantVariance>
 		</MultiParticipantGenerator></ScenarioGenerator>
+	
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="24" Units="hours" />
+			<Duration Value="12" Units="hours" />
 		</TimeObserver>
 		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
@@ -30,7 +31,7 @@
 		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
 			record_positions="true" Active="true" record_decisions="true">
 		</DebriefReplayObserver>
-		<RemoveDetectedObserver Name="Dith" Active="true">
+		<RemoveDetectedObserver Name="Ditch reds as they are detected" Active="false">
 			<Target>
 				<TargetType>
 					<Type Name="RED" /></TargetType>
@@ -40,5 +41,29 @@
 					<Type Name="BLUE" ></Type>
 				</TargetType>
 			</Watch>
-		</RemoveDetectedObserver></ObserverList>
+		</RemoveDetectedObserver>
+		<PlotDetectionStatusObserver Name="View red detections" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotDetectionStatusObserver>
+		<PlotSensorObserver Name="watch blue detections" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver></ObserverList>
 </ScenarioController>

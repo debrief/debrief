@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbench version="2.0">
 <workbenchAdvisor/>
-<window height="988" width="1278" x="-1276" y="22">
+<window height="988" width="1278" x="154" y="22">
 <fastViewData fastViewLocation="1024"/>
 <perspectiveBar>
 <itemSize x="160"/>
@@ -21,8 +21,8 @@
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="152" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
-<coolItem id="org.mwc.asset.ASSETPlotEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
-<coolItem id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.mwc.asset.ASSETPlotEditor" itemType="typePlaceholder" x="-1" y="-1"/>
+<coolItem id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
 </coolbarLayout>
@@ -31,19 +31,10 @@
 <editorArea activeWorkbook="DefaultEditorWorkbook">
 <info part="DefaultEditorWorkbook">
 <folder appearance="1" expanded="2">
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-<part id="1"/>
-</presentation>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 </editorArea>
-<editor activePart="true" focus="true" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="Wales.xml" partName="Wales.xml" path="/Users/ianmayo/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Wales.xml" title="Wales.xml" tooltip="AssetData/Wales.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/Wales.xml"/>
-</editor>
-<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="Wales.asset" partName="Wales.asset" path="/Users/ianmayo/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Wales.asset" title="Wales.asset" tooltip="AssetData/Wales.asset" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/Wales.asset"/>
-</editor>
 </editors>
 <views>
 <view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
@@ -54,12 +45,17 @@
 </view>
 <view id="org.eclipse.ui.views.ResourceNavigator" partName="Navigator">
 <viewState LINK_NAVIGATOR_TO_EDITOR="0" sorter="1">
-<filters>&#x0A;<filter element=".*" isEnabled="false"/>
+<filters>
+<filter element=".*" isEnabled="false"/>
 </filters>
-<expanded>&#x0A;<element path="/AssetData"/>
+<expanded>
+<element path="/AssetData"/>
+<element path="/AssetData/results"/>
+<element path="/AssetData/results/1"/>
 <element path="/AssetData/Wales"/>
 </expanded>
-<selection>&#x0A;<element path="/AssetData/Wales/WalesScenario3_100128 114209.573.rep"/>
+<selection>
+<element path="/AssetData/results/ForceProt_19_100224 144623.352.rep"/>
 </selection>
 </viewState>
 </view>
@@ -70,7 +66,7 @@
 <viewState/>
 </view>
 <view id="org.mwc.asset.ScenarioController2" partName="Scenario controller">
-<viewState CONTROL_FILE="/Users/ianmayo/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Wales.xml" SCENARIO_FILE="/Users/ianmayo/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Wales.asset"/>
+<viewState CONTROL_FILE="/Users/ianmayo/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial_multi_scen.xml" SCENARIO_FILE="/Users/ianmayo/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial1.asset"/>
 </view>
 <view id="org.mwc.cmap.layer_manager.views.LayerManagerView" partName="Layer Manager">
 <viewState/>
@@ -82,7 +78,7 @@
 <viewState/>
 </view>
 </views>
-<perspectives activePart="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" activePerspective="org.mwc.asset.core.Perspective">
+<perspectives activePart="org.mwc.cmap.TimeController.views.TimeController" activePerspective="org.mwc.asset.core.Perspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
 <alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
@@ -213,7 +209,7 @@
 <page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="upperMidLeft" ratio="0.68217933" ratioLeft="601" ratioRight="280" relationship="4" relative="topLeft">
+<info folder="true" part="upperMidLeft" ratio="0.7797957" ratioLeft="687" ratioRight="194" relationship="4" relative="topLeft">
 <folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
@@ -237,7 +233,7 @@
 </presentation>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@37f0c4d2" ratio="0.49127907" ratioLeft="338" ratioRight="350" relationship="4" relative="topLeft">
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@37f0c4d2" ratio="0.34615386" ratioLeft="207" ratioRight="391" relationship="4" relative="topLeft">
 <folder activePageID="org.mwc.asset.ScenarioController2" appearance="2" expanded="2">
 <page content="org.mwc.asset.ScenarioController2" label="Scenario controller"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
@@ -253,8 +249,14 @@
 <navigationHistory>
 <editors>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Wales.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Wales.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/trial1.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" path="/AssetData/results/ForceProt_19_100224 144623.352.rep"/>
 </editors>
-<item active="true" historyLabel="Wales.xml" index="0"/>
+<item historyLabel="Wales.xml" index="0"/>
+<item historyLabel="Wales.asset" index="1"/>
+<item historyLabel="trial1.asset" index="2"/>
+<item active="true" historyLabel="ForceProt_19_100224 144623.352.rep" index="3"/>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
@@ -272,6 +274,18 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="ForceProt_19_100224 144623.352.rep" tooltip="AssetData/results/ForceProt_19_100224 144623.352.rep">
+<persistable path="/AssetData/results/ForceProt_19_100224 144623.352.rep"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_Cheat sheet scenario_100224 144357.497.png" tooltip="AssetData/results/res_Cheat sheet scenario_100224 144357.497.png">
+<persistable path="/AssetData/results/res_Cheat sheet scenario_100224 144357.497.png"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_Cheat sheet scenario_100224 144315.552.png" tooltip="AssetData/results/res_Cheat sheet scenario_100224 144315.552.png">
+<persistable path="/AssetData/results/res_Cheat sheet scenario_100224 144315.552.png"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.asset" tooltip="AssetData/trial1.asset">
+<persistable path="/AssetData/trial1.asset"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="WalesScenario3_100128 114209.573.rep" tooltip="AssetData/Wales/WalesScenario3_100128 114209.573.rep">
 <persistable path="/AssetData/Wales/WalesScenario3_100128 114209.573.rep"/>
 </file>
@@ -301,15 +315,6 @@
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_Cheat sheet scenario_100114 112723.470.png" tooltip="AssetData/results/res_Cheat sheet scenario_100114 112723.470.png">
 <persistable path="/AssetData/results/res_Cheat sheet scenario_100114 112723.470.png"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="Cheat sheet scenario_100114 112723.004.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 112723.004.rep">
-<persistable path="/AssetData/results/Cheat sheet scenario_100114 112723.004.rep"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="Cheat sheet scenario_100114 112459.972.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 112459.972.rep">
-<persistable path="/AssetData/results/Cheat sheet scenario_100114 112459.972.rep"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="Cheat sheet scenario_100114 111259.039.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 111259.039.rep">
-<persistable path="/AssetData/results/Cheat sheet scenario_100114 111259.039.rep"/>
 </file>
 </mruList>
 </workbench>
