@@ -134,10 +134,16 @@ public class FlatFileExporter
 			Watchable[] secMatches = secTrack.getNearestTo(thisDTG);
 
 			if ((priMatches == null) || (priMatches.length == 0))
-				throw new RuntimeException("No matching primary fixes for" + thisDTG);
+			{
+				// we need primary data, throw an error if we don't have points.
+				throw new RuntimeException("No matching secondary fixes for" + thisDTG);
+			}
 
 			if ((secMatches == null) || (secMatches.length == 0))
-				throw new RuntimeException("No matching secondary fixes for" + thisDTG);
+			{
+				// right, that's enough. let's stop
+				break;
+			}
 
 			FixWrapper priF = (FixWrapper) priMatches[0];
 			FixWrapper secF = (FixWrapper) secMatches[0];
