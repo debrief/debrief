@@ -317,33 +317,37 @@ public class RelativeTMASegment extends CoreTMASegment
 	public void setDTG_Start(HiResDate newStart)
 	{
 		// check that we're still after the start of the host track
-		if(newStart.lessThan(this.getReferenceTrack().getStartDTG()))
+		if (newStart.lessThan(this.getReferenceTrack().getStartDTG()))
 		{
 			newStart = this.getReferenceTrack().getStartDTG();
 		}
-		
+
 		// ok, how far is this from the current end
 		long delta = newStart.getMicros() - startDTG().getMicros();
-		
+
 		// and what distance does this mean?
 		double deltaHrs = delta / 1000000d / 60d / 60d;
-		double distDegs = this.getSpeed().getValueIn(WorldSpeed.Kts) * deltaHrs / 60;
+		double distDegs = this.getSpeed().getValueIn(WorldSpeed.Kts) * deltaHrs
+				/ 60;
 
-		double theDirection = MWC.Algorithms.Conversions.Degs2Rads(this.getCourse());
-		
-		// we don't need to worry about reversing the direction, since we have a -ve distance
-		
+		double theDirection = MWC.Algorithms.Conversions
+				.Degs2Rads(this.getCourse());
+
+		// we don't need to worry about reversing the direction, since we have a -ve
+		// distance
+
 		// so what's the new origin?
-		WorldLocation currentStart =new WorldLocation(this.getTrackStart());
-		WorldLocation newOrigin = currentStart.add(new WorldVector(theDirection, distDegs, 0));
-		
+		WorldLocation currentStart = new WorldLocation(this.getTrackStart());
+		WorldLocation newOrigin = currentStart.add(new WorldVector(theDirection,
+				distDegs, 0));
+
 		// and what's the point on the host track
-		Watchable[] matches =	this.getReferenceTrack().getNearestTo(newStart);
+		Watchable[] matches = this.getReferenceTrack().getNearestTo(newStart);
 		Watchable newRefPt = matches[0];
-		WorldVector newOffset =  newOrigin.subtract(newRefPt.getLocation());
+		WorldVector newOffset = newOrigin.subtract(newRefPt.getLocation());
 
 		// right, we know where the new track will be, see if we need to ditch any
-		if(delta > 0)
+		if (delta > 0)
 		{
 			// right, we're shortening the track.
 			// check the end point is before the end
@@ -372,7 +376,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			}
 		}
 
-		// right, we may have pruned off too far.  See if we need to put a bit back in...
+		// right, we may have pruned off too far. See if we need to put a bit back
+		// in...
 		if (newStart.lessThan(startDTG()))
 		{
 
@@ -383,8 +388,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			// don't worry about the location, we're going to DR it on anyway...
 			WorldLocation newLoc = null;
 			Fix newFix = new Fix(newStart, newLoc, MWC.Algorithms.Conversions
-					.Degs2Rads(this.getCourse()), MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
-					WorldSpeed.Kts)));
+					.Degs2Rads(this.getCourse()), MWC.Algorithms.Conversions.Kts2Yps(this
+					.getSpeed().getValueIn(WorldSpeed.Kts)));
 
 			// and apply the stretch
 			FixWrapper newItem = new FixWrapper(newFix);
@@ -402,7 +407,6 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// and sort out the new offset
 		this._offset = newOffset;
-		
 
 	}
 
@@ -447,7 +451,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			}
 		}
 
-		// right, we may have pruned off too far.  See if we need to put a bit back in...
+		// right, we may have pruned off too far. See if we need to put a bit back
+		// in...
 		if (newEnd.greaterThan(endDTG()))
 		{
 
@@ -458,8 +463,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			// don't worry about the location, we're going to DR it on anyway...
 			WorldLocation newLoc = null;
 			Fix newFix = new Fix(newEnd, newLoc, MWC.Algorithms.Conversions
-					.Degs2Rads(this.getCourse()), MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
-					WorldSpeed.Kts)));
+					.Degs2Rads(this.getCourse()), MWC.Algorithms.Conversions.Kts2Yps(this
+					.getSpeed().getValueIn(WorldSpeed.Kts)));
 
 			// and apply the stretch
 			FixWrapper newItem = new FixWrapper(newFix);
@@ -482,7 +487,8 @@ public class RelativeTMASegment extends CoreTMASegment
 		return this.endDTG();
 	}
 
-	/** the point on the host track that we're offset from
+	/**
+	 * the point on the host track that we're offset from
 	 * 
 	 * @return
 	 */
@@ -500,15 +506,15 @@ public class RelativeTMASegment extends CoreTMASegment
 		{
 			// interpolate on the parent track
 			boolean oldInterpSetting = _referenceTrack.getInterpolatePoints();
-			
+
 			_referenceTrack.setInterpolatePoints(true);
-			
+
 			Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
 			if (pts.length > 0)
 			{
 				res = pts[0].getLocation();
 			}
-			
+
 			_referenceTrack.setInterpolatePoints(oldInterpSetting);
 		}
 		return res;
@@ -560,9 +566,9 @@ public class RelativeTMASegment extends CoreTMASegment
 	public WatchableList getReferenceTrack()
 	{
 		// do we know it?
-		if(_referenceTrack == null)
+		if (_referenceTrack == null)
 			identifyReferenceTrack();
-		
+
 		// fingers crossed it's sorted.
 		return _referenceTrack;
 	}
@@ -575,7 +581,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	@Override
 	public WorldLocation getTrackStart()
 	{
-		WorldLocation res = getHostLocation(); 
+		WorldLocation res = getHostLocation();
 		if (res != null)
 		{
 			res = res.add(_offset);
@@ -640,12 +646,38 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		}
 
+		Double courseVal = new Double(MWC.Algorithms.Conversions
+				.Degs2Rads(this._courseDegs));
+		Double speedVal = null;
+		updateCourseSpeed(courseVal, speedVal);
+
 		// tell the segment it's being stretched
 		int newCourse = (int) getCourse();
 		if (newCourse < 0)
 			newCourse += 360;
 		_dragMsg = "[" + newCourse + "\u00B0]";
 
+	}
+
+	/**
+	 * tell the data points that course and speed have been updated
+	 * 
+	 * @param courseVal
+	 *          the (optional) course to update
+	 * @param speedVal
+	 *          the (optional) speed to update
+	 */
+	private void updateCourseSpeed(Double courseValRads, Double speedValKts)
+	{
+		Enumeration<Editable> obs = this.elements();
+		while (obs.hasMoreElements())
+		{
+			FixWrapper thisS = (FixWrapper) obs.nextElement();
+			if (courseValRads != null)
+				thisS.setCourse(courseValRads.doubleValue());
+			if (speedValKts != null)
+				thisS.setSpeed(speedValKts.doubleValue());
+		}
 	}
 
 	public void setDetectionBearing(double detectionBearing)
@@ -692,7 +724,8 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	}
 
-	/** manage the offset bearing (in degrees)
+	/**
+	 * manage the offset bearing (in degrees)
 	 * 
 	 * @param offsetBearing
 	 */
@@ -702,7 +735,8 @@ public class RelativeTMASegment extends CoreTMASegment
 				_offset.getRange(), _offset.getDepth());
 	}
 
-	/** manage the offset range (in degrees)
+	/**
+	 * manage the offset range (in degrees)
 	 * 
 	 * @param offsetRange
 	 */
@@ -772,6 +806,11 @@ public class RelativeTMASegment extends CoreTMASegment
 			newCourse += 360;
 
 		this.setCourse(newCourse);
+
+		Double newCourseRads = new Double(MWC.Algorithms.Conversions
+				.Degs2Rads(newCourse));
+		Double newSpeedKts = new Double(newSpeed.getValueIn(WorldSpeed.Kts));
+		updateCourseSpeed(newCourseRads, newSpeedKts);
 
 		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
 				.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
@@ -854,6 +893,9 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// how far must we go to sort this
 		double spdKts = distMins / periodHours;
+
+		double newSpeedKts = new Double(spdKts);
+		updateCourseSpeed(null, newSpeedKts);
 
 		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
 		this.setSpeed(newSpeed);
