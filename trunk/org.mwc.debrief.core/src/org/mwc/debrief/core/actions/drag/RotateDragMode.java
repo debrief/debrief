@@ -68,18 +68,21 @@ public class RotateDragMode extends DragMode
 						.hasNext();)
 				{
 					TrackSegment thisSeg = (TrackSegment) iterator.next();
-					double thisRes = thisSeg.rangeFrom(loc);
-					if (nearest == null)
+					if (thisSeg.getVisible())
 					{
-						nearest = thisSeg;
-						res = thisRes;
-					}
-					else
-					{
-						if (thisRes < res)
+						double thisRes = thisSeg.rangeFrom(loc);
+						if (nearest == null)
 						{
 							nearest = thisSeg;
 							res = thisRes;
+						}
+						else
+						{
+							if (thisRes < res)
+							{
+								nearest = thisSeg;
+								res = thisRes;
+							}
 						}
 					}
 				}
@@ -144,6 +147,8 @@ public class RotateDragMode extends DragMode
 						theLayers);
 				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
 						theLayers);
+
+				System.out.println("firstDist:" + first + " lastDist:" + last);
 
 				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
 				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
@@ -284,7 +289,10 @@ public class RotateDragMode extends DragMode
 		}
 	}
 
-	/** whether the user wants the live solution data to be shown in the properties window
+	/**
+	 * whether the user wants the live solution data to be shown in the properties
+	 * window
+	 * 
 	 * @return yes/no
 	 */
 	private static boolean showInProperties()

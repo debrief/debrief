@@ -2090,7 +2090,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				SortedSet<Editable> set = getRawPositions().tailSet(nearestFix);
 
 				// see if the requested DTG was inside the range of the data
-				if (!set.isEmpty())
+				if (!set.isEmpty() && (set.size() > 0))
 				{
 					res = (FixWrapper) set.first();
 
@@ -2148,7 +2148,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 							FixWrapper previous = null;
 
-							if (!set.isEmpty())
+							if (!otherSet.isEmpty())
 							{
 								previous = (FixWrapper) otherSet.last();
 							}
