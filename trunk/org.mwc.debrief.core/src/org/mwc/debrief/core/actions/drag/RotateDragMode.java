@@ -148,8 +148,6 @@ public class RotateDragMode extends DragMode
 				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
 						theLayers);
 
-				System.out.println("firstDist:" + first + " lastDist:" + last);
-
 				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
 				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
 				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
@@ -275,6 +273,10 @@ public class RotateDragMode extends DragMode
 			}
 
 			_segment.rotate(brg, _origin);
+			
+			// get the segment to recalc it's bounds
+		//	_segment.clearBounds();
+			
 			// and remember it
 			lastRotate = new Double(brg);
 
