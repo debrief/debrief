@@ -47,6 +47,9 @@ public class TranslateOperation implements DraggableItem, IconProvider
 	{
 		//
 		_mySegment.shift(vector);
+		
+		// tell the segment it's shifted
+		_mySegment.clearBounds();
 	}
 
 	public Cursor getHotspotCursor()

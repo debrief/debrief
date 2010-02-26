@@ -606,6 +606,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	public void rotate(final double brg, final WorldLocation origin)
 	{
+		System.err.println("doing rotate about:" + brg);
 		// add this vector to all my points.
 		final Collection<Editable> items = getData();
 		for (final Iterator<Editable> iterator = items.iterator(); iterator

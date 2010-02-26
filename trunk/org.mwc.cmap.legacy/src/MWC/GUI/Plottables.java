@@ -300,8 +300,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * get the area covered by this list
 	 */
 	public MWC.GenericData.WorldArea getBounds()
-	{
-
+	{	
 		// do we need to recalculate?
 		if (_myArea == null)
 		{
@@ -311,6 +310,14 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 
 		return _myArea;
 
+	}
+	
+	/** reset the bounds of this object
+	 * 
+	 */
+	public void clearBounds()
+	{
+		_myArea = null;
 	}
 
 	/**

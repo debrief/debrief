@@ -41,6 +41,9 @@ public class ShearDragMode extends RotateDragMode
 			}
 
 			seg.shear(workingLoc, _origin);
+			
+			// tell the segment it's shifted
+			seg.clearBounds();
 
 			// and remember it
 			_lastLoc = new WorldLocation(workingLoc);

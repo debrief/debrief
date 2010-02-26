@@ -59,7 +59,9 @@ public class StretchFanOperation implements DraggableItem, IconProvider
 			// tell it to do a fan stretch
 			seg.fanStretch(vector);
 			
-			
+			// tell the segment it's shifted
+			seg.clearBounds();
+
 			// and tell the props view to update itself
 			RotateDragMode.updatePropsView(seg, _parent, _layers);
 

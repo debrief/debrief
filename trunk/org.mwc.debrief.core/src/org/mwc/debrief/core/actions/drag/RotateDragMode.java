@@ -147,7 +147,7 @@ public class RotateDragMode extends DragMode
 						theLayers);
 				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
 						theLayers);
-
+				
 				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
 				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
 				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);

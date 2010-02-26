@@ -49,9 +49,11 @@ public class StretchDragMode extends RotateDragMode
 			// now do the current one
 			seg.stretch(rng, _origin);
 			
+			// tell the segment it's shifted
+			seg.clearBounds();
+			
 			// and remember it
 			lastRange = new Double(rng);
-			
 			
 			// and tell the props view to update itself
 			updatePropsView(seg, _parent, _layers);
