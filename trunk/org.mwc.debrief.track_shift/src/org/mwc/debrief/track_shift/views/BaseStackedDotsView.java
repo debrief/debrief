@@ -3,9 +3,15 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.Stroke;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -26,18 +32,24 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.Range;
+import org.jfree.ui.RectangleEdge;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -238,6 +250,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		_dotPlot
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
+		
+		
 
 		// now try to do add a zero marker on the error bar
 		Paint thePaint = Color.LIGHT_GRAY;
@@ -278,7 +292,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
-
+			
 		LegendItemSource[] sources =
 		{ _linePlot };
 		_myChart.getLegend().setSources(sources);
@@ -286,9 +300,66 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		final ChartPanel plotHolder = new ChartPanel(_myChart);
 		plotHolder.setMouseZoomable(true, true);
 		plotHolder.setDisplayToolTips(true);
+		
+//		_myChart.addChartMouseListener(new ChartMouseListener(){
+//			public void chartMouseClicked(ChartMouseEvent arg0)
+//			{
+//				System.err.println(arg0);
+//			}
+//
+//			@Override
+//			public void chartMouseMoved(ChartMouseEvent arg0)
+//			{
+//				System.out.println(arg0);
+//			}});
+
+
 
 		// and insert into the panel
 		plotControl.add(plotHolder, BorderLayout.CENTER);
+		
+		
+		plotControl.addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent e)
+			{
+				// ignore
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e)
+			{
+				Point pt = e.getPoint();
+				
+//			  int mouseX = pt.y; 
+//        int mouseY = pt.x; 
+//        Point2D p = plotHolder.translateScreenToJava2D( 
+//                new Point(mouseX, mouseY)); 
+//        System.out.println( pt.x + ", " + pt.y + " to: x = " + mouseX + ", y = " + mouseY);      
+//        //Rectangle2D plotArea = chartPanel.getScreenDataArea(); 
+//        
+//        CombinedDomainXYPlot comb = (CombinedDomainXYPlot) _dotPlot.getParent();
+//    //    XYPlot thisPlot = comb.findSubplot(comb.getParent().getp, p);
+//        
+//        Component comp = plotHolder.getComponentAt(pt);
+//        ChartEntity entity = plotHolder.getEntityForPoint(mouseX, mouseY);
+//        System.err.println("comp:" + comp + "// entity:"  + entity);
+//        
+//        Rectangle2D plotArea = plotHolder.getChartRenderingInfo().getPlotInfo().getDataArea();
+//        ValueAxis domainAxis = _dotPlot.getDomainAxis(); 
+//        RectangleEdge domainAxisEdge = _dotPlot.getDomainAxisEdge(); 
+//        ValueAxis rangeAxis = _dotPlot.getRangeAxis(); 
+//        RectangleEdge rangeAxisEdge = _dotPlot.getRangeAxisEdge(); 
+//        double chartX = domainAxis.java2DToValue(p.getX(), plotArea, 
+//                domainAxisEdge); 
+//        double chartY = rangeAxis.java2DToValue(p.getY(), plotArea, 
+//                rangeAxisEdge); 
+//        System.out.println("Chart: x = " + chartX + ", y = " + chartY); 
+//        
+				
+				// and convert it.
+			}});
 
 		// do a little tidying to reflect the memento settings
 		if (!_showLinePlot.isChecked())
