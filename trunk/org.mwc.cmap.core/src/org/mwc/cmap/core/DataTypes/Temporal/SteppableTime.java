@@ -48,5 +48,14 @@ public interface SteppableTime {
 	 * @param fireUpdate - whether to fire the update to any listeners.  This should normally be true, but may be false when originally loading the data
 	 */
 	public void stop(Object origin, boolean fireUpdate);
-	
+
+	/** pause running forward. but don't finish the scenario
+	 * 
+	 * @param origin - an identifier for the object sending the update,
+	 * provided largely so that triggering object can ignore time 
+	 * changes it originally created
+	 * @param fireUpdate - whether to fire the update to any listeners.  This should normally be true, but may be false when originally loading the data
+	 */
+	public void pause(Object origin, boolean fireUpdate);
+
 }

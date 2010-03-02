@@ -97,6 +97,16 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		}
 	}
 
+
+	@Override
+	public void pause(Object origin, boolean fireUpdate)
+	{
+		if (_myScenario != null)
+		{
+			_myScenario.pause();
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

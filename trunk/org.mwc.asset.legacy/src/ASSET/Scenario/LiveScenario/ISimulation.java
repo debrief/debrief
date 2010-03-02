@@ -30,6 +30,11 @@ public interface ISimulation
 	 * 
 	 */
 	public void stop();
+	
+	/** don't finish the scenario, just pause it
+	 * 
+	 */
+	public void pause();
 
 	/**
 	 * retrieve the current model time

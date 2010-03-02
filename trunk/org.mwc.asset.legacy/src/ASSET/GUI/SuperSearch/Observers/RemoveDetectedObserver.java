@@ -6,6 +6,7 @@
  */
 package ASSET.GUI.SuperSearch.Observers;
 
+import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Util.SupportTesting;
@@ -20,7 +21,8 @@ public class RemoveDetectedObserver extends ASSET.Scenario.Observers.DetectionOb
    *  member variables
    ***************************************************************/
 
-
+	protected int _numDitched = 0;
+	protected ScenarioType _myScenario = null;
 
   /**
    * ************************************************************
@@ -37,6 +39,8 @@ public class RemoveDetectedObserver extends ASSET.Scenario.Observers.DetectionOb
    *  member methods
    ***************************************************************/
 
+  
+  
   /**
    * valid detection happened, process it
    */
@@ -49,11 +53,26 @@ public class RemoveDetectedObserver extends ASSET.Scenario.Observers.DetectionOb
     final int tgt = detection.getTarget();
 
     getScenario().removeParticipant(tgt);
-
+    
+    _numDitched++;
+    
+		// tell the attribute helper
+		getAttributeHelper().newData(this.getScenario(), detection.getTime(), _numDitched);
   }
 
 
-  /***************************************************************
+  @Override
+	public void restart(ScenarioType scenario)
+	{
+		super.restart(scenario);
+		
+		// and reset our local counter
+		_numDitched = 0;
+	}
+
+
+
+	/***************************************************************
    *  plottable properties
    ***************************************************************/
   /**
@@ -103,7 +122,6 @@ public class RemoveDetectedObserver extends ASSET.Scenario.Observers.DetectionOb
       {
         final PropertyDescriptor[] res = {
           prop("Name", "the name of this observer"),
-          prop("NumDetected", "the number of targets detected"),
           prop("Active", "whether this listener is active"),
         };
         return res;

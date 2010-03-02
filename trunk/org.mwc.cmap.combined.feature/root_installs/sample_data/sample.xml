@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Feb 18 15:12:38 GMT 2010" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Thu Feb 18 14:33:55 GMT 2010"/>
+<plot Created="Tue Mar 02 16:45:03 GMT 2010" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Tue Mar 02 11:46:15 GMT 2010"/>
 <session>
 <layers>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
@@ -4867,6 +4867,17 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Misc" Visible="true">
+<line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
+<fontcolour Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1310897" Long="-11.6941116"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1795841" Long="-11.7324337"/>
+</br>
+</line>
 <circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
 <colour Value="YELLOW"/>
 <fontcolour Value="YELLOW"/>
@@ -4875,13 +4886,6 @@
 <shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
 </centre>
 </circle>
-<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.2199333" Long="-11.7112467"/>
-</centre>
-</textlabel>
 <rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
 <colour Value="GREEN"/>
 <fontcolour Value="GREEN"/>
@@ -4893,17 +4897,24 @@
 <shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
 </br>
 </rectangle>
-<line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
-<colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
-<fontcolour Value="CYAN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <tl>
-<shortLocation Depth="0.000" Lat="12.1914474" Long="-11.8389826"/>
+<shortLocation Depth="0.000" Lat="12.1303125" Long="-11.6938150"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="12.2268027" Long="-11.8028454"/>
+<shortLocation Depth="0.000" Lat="12.1836900" Long="-11.7870290"/>
 </br>
 </line>
+<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.2199333" Long="-11.7112467"/>
+</centre>
+</textlabel>
 </layer>
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET"/>

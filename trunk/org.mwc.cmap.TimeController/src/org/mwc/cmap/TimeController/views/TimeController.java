@@ -702,6 +702,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	void stopPlaying()
 	{
+		/** give the event to our child class, in case it's a scenario
+		 * 
+		 */
+		if(_steppableTime != null)
+			_steppableTime.pause(this, true);
+		
 		getTimer().stop();
 	}
 
@@ -961,12 +967,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							if (_liveScenario != null)
 								_liveScenario.removeStoppedListener(_myStoppedListener);
 
+							// also register as a listener
+							_liveScenario = (LiveScenario) part;
+
+							_liveScenario.addStoppedListener(_myStoppedListener);
 						}
-
-						// also register as a listener
-						_liveScenario = (LiveScenario) part;
-
-						_liveScenario.addStoppedListener(_myStoppedListener);
 
 					}
 				});

@@ -233,4 +233,10 @@ public class MockSimulation extends Simulation
 
 	}
 
+	@Override
+	public void pause()
+	{
+		stop();
+	}
+
 }
