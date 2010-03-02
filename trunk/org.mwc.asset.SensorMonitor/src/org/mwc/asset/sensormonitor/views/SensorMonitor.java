@@ -1,13 +1,27 @@
 package org.mwc.asset.sensormonitor.views;
 
-import java.beans.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.cmap.core.CorePlugin;
@@ -15,6 +29,9 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import ASSET.Models.SensorType;
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Sensor.Cookie.TypedCookieSensor;
+import ASSET.Models.Sensor.Cookie.TypedCookieSensor.TypedSensorComponentsEvent;
 import ASSET.Models.Sensor.Initial.InitialSensor.InitialSensorComponentsEvent;
 import ASSET.Models.Sensor.Lookup.LookupSensor;
 import ASSET.Models.Sensor.Lookup.LookupSensor.LookupSensorComponentsEvent;
@@ -47,6 +64,8 @@ public class SensorMonitor extends ViewPart
 	private PartMonitor _myPartMonitor;
 
 	private Action _followSelection;
+
+	private Action _onlyShowValidDetections;
 
 	ISelectionChangedListener _selectionChangeListener;
 
@@ -113,7 +132,8 @@ public class SensorMonitor extends ViewPart
 	protected void testCall()
 	{
 		TableItem t1 = new TableItem(_table, SWT.NONE);
-		t1.setText(new String[] { "a", "b", "c" });
+		t1.setText(new String[]
+		{ "a", "b", "c" });
 	}
 
 	private void listenToMyParts()
@@ -126,20 +146,23 @@ public class SensorMonitor extends ViewPart
 			}
 		};
 
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						ISelectionProvider iS = (ISelectionProvider) part;
 						iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED,
-				new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						ISelectionProvider iS = (ISelectionProvider) part;
 						iS.removeSelectionChangedListener(_selectionChangeListener);
@@ -147,7 +170,8 @@ public class SensorMonitor extends ViewPart
 				});
 
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+				.getActivePage());
 	}
 
 	private void hookContextMenu()
@@ -164,7 +188,10 @@ public class SensorMonitor extends ViewPart
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-
+		manager.add(_keepHistory);
+		manager.add(_followSelection);
+		manager.add(_newWindow);
+		manager.add(_onlyShowValidDetections);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
@@ -172,17 +199,28 @@ public class SensorMonitor extends ViewPart
 		manager.add(_keepHistory);
 		manager.add(_followSelection);
 		manager.add(_newWindow);
+		manager.add(_onlyShowValidDetections);
 	}
 
 	private void makeActions()
 	{
+		_onlyShowValidDetections = new Action("Only actual detections", SWT.TOGGLE)
+		{
+		};
+		_onlyShowValidDetections.setText("Only actual detections");
+		_onlyShowValidDetections.setChecked(true);
+		_onlyShowValidDetections.setToolTipText("Only show detections");
+		_onlyShowValidDetections.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/Binocular.gif"));
+
 		_followSelection = new Action("Track", SWT.TOGGLE)
 		{
 		};
 		_followSelection.setText("Sync");
 		_followSelection.setChecked(true);
 		_followSelection.setToolTipText("Follow selected participant");
-		_followSelection.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
+		_followSelection.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/synced.gif"));
 
 		_keepHistory = new Action("Keep History", SWT.TOGGLE)
 		{
@@ -190,7 +228,8 @@ public class SensorMonitor extends ViewPart
 		_keepHistory.setText("Keep History");
 		_keepHistory.setChecked(true);
 		_keepHistory.setToolTipText("remember past detection calculations");
-		_keepHistory.setImageDescriptor(CorePlugin.getImageDescriptor("icons/history.png"));
+		_keepHistory.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/history.png"));
 
 		_newWindow = new Action("New monitor", SWT.NONE)
 		{
@@ -199,14 +238,15 @@ public class SensorMonitor extends ViewPart
 				super.run();
 
 				// ok, open a new view
-				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
-						IWorkbenchPage.VIEW_VISIBLE);
+				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, ""
+						+ System.currentTimeMillis(), IWorkbenchPage.VIEW_VISIBLE);
 			}
 
 		};
 		_newWindow.setText("New monitor");
 		_newWindow.setToolTipText("Open a new sensor monitor");
-		_newWindow.setImageDescriptor(CorePlugin.getImageDescriptor("icons/window_new.png"));
+		_newWindow.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/window_new.png"));
 
 	}
 
@@ -278,7 +318,7 @@ public class SensorMonitor extends ViewPart
 						TableColumn column = cols[i];
 						column.dispose();
 					}
-					
+
 					// ok, now sort out our table
 					if (sensor instanceof LookupSensor)
 					{
@@ -288,6 +328,14 @@ public class SensorMonitor extends ViewPart
 						generateCol(_table, "RP (m)", 60);
 						generateCol(_table, "RI (m)", 60);
 						generateCol(_table, "Actual (m)", 60);
+					}
+					else if (sensor instanceof TypedCookieSensor)
+					{
+						generateCol(_table, "Name", 80);
+						generateCol(_table, "Msrd Range (m)", 60);
+						generateCol(_table, "Detection Range (m)", 60);
+						generateCol(_table, "Matching Types", 60);
+						generateCol(_table, "Detected", 60);
 					}
 					else
 					{
@@ -320,38 +368,67 @@ public class SensorMonitor extends ViewPart
 	 */
 	protected void processNewDetection(PropertyChangeEvent evt)
 	{
+
 		String[] fields = null;
 		final long newTime;
-
+		
+		boolean validDetection = false;
+		
 		if (evt.getNewValue() instanceof LookupSensorComponentsEvent)
 		{
 			// sort out the lookup fields
-			LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt.getNewValue();
-			fields = new String[] { ev.getTgtName(), ev.getStateString(), f(ev.getRP()),
-					f(ev.getRI()), f(ev.getActual()) };
+			LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt
+					.getNewValue();
+			fields = new String[]
+			{ ev.getTgtName(), ev.getStateString(), f(ev.getRP()), f(ev.getRI()),
+					f(ev.getActual()) };
 
-			newTime = ev.getTime();
-		}
-		else
-		{
-			if (evt.getNewValue() instanceof InitialSensorComponentsEvent)
+			if(ev.getStateString().equals(DetectionEvent.UNDETECTED_STR))
 			{
-				// sort out the component fields
-				InitialSensorComponentsEvent ev = (InitialSensorComponentsEvent) evt
-						.getNewValue();
-				fields = new String[] { ev.getTgtName(), f(ev.getLoss()), f(ev.getBkNoise()),
-						f(ev.getOsNoise()), f(ev.getTgtNoise()), f(ev.getRd()), f(ev.getDi()),
-						f(ev.getSE()) };
-				newTime = ev.getTime();
+				// nope, it's not detected
 			}
 			else
-				newTime = -1;
+				validDetection = true;
+			
+			newTime = ev.getTime();
 		}
+		else if (evt.getNewValue() instanceof InitialSensorComponentsEvent)
+		{
+			// sort out the component fields
+			InitialSensorComponentsEvent ev = (InitialSensorComponentsEvent) evt
+					.getNewValue();
+			fields = new String[]
+			{ ev.getTgtName(), f(ev.getLoss()), f(ev.getBkNoise()),
+					f(ev.getOsNoise()), f(ev.getTgtNoise()), f(ev.getRd()),
+					f(ev.getDi()), f(ev.getSE()) };
+			newTime = ev.getTime();
+			
+			if(ev.getSE() > 0)
+				validDetection = true;
+		}
+
+		else if (evt.getNewValue() instanceof TypedCookieSensor.TypedSensorComponentsEvent)
+		{
+			// sort out the lookup fields
+			TypedSensorComponentsEvent ev = (TypedSensorComponentsEvent) evt
+					.getNewValue();
+			fields = new String[]
+			{ ev.getTgtName(), f(ev.getDetRange()), f(ev.getTgtRange()),
+					ev.getTypeCriteria(), Boolean.toString(ev.getDetected()) };
+
+			newTime = ev.getTime();
+			
+			// aah, check out if we're only showing valid detections
+			if (ev.getDetected())
+				validDetection = true;
+		}
+		else
+			newTime = -1;
 
 		if (fields != null)
 		{
 			final String[] finalFields = fields;
-			Display.getDefault().asyncExec(new Runnable()
+			Runnable doUpdate = new Runnable()
 			{
 				public void run()
 				{
@@ -372,13 +449,18 @@ public class SensorMonitor extends ViewPart
 						item1.setText(finalFields);
 					}
 				}
-			});
+			};
+
+			if(!_onlyShowValidDetections.isChecked() || validDetection)
+  			Display.getDefault().asyncExec(doUpdate);
+
 		}
 	}
 
 	private String f(WorldDistance val)
 	{
-		return GeneralFormat.formatOneDecimalPlace(val.getValueIn(WorldDistance.METRES));
+		return GeneralFormat.formatOneDecimalPlace(val
+				.getValueIn(WorldDistance.METRES));
 	}
 
 	public void setKeepMonitoring(boolean val)
