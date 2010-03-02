@@ -26,8 +26,8 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
 /**
- * Extension of the simple cookie cutter model that allows different cookie cutter ranges to
- * be specified for different target types
+ * Extension of the simple cookie cutter model that allows different cookie
+ * cutter ranges to be specified for different target types
  * 
  * @author ianmayo
  * 
@@ -36,7 +36,7 @@ public class TypedCookieSensor extends CoreSensor
 {
 
 	private Vector<TypedRangeDoublet> _rangeDoublets;
-	
+
 	private HashMap<TypedRangeDoublet, DetectionList> _typedDetections;
 
 	private Integer _detectionState = DetectionEvent.DETECTED;
@@ -45,23 +45,23 @@ public class TypedCookieSensor extends CoreSensor
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
 
-	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets, Integer detectionState)
+	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets,
+			Integer detectionState)
 	{
 		super(id, 0, "Plain Cookie");
 
 		_rangeDoublets = rangeDoublets;
 		_typedDetections = new HashMap<TypedRangeDoublet, DetectionList>();
-		_detectionState  = detectionState;
-		
+		_detectionState = detectionState;
+
 	}
 
 	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets)
 	{
 		this(id, rangeDoublets, DetectionEvent.DETECTED);
 	}
-	
+
 	public Vector<TypedRangeDoublet> getRanges()
 	{
 		return _rangeDoublets;
@@ -76,9 +76,9 @@ public class TypedCookieSensor extends CoreSensor
 
 	protected void addRangeDoublet(TypedRangeDoublet myRangeDoublet)
 	{
-		if(_rangeDoublets == null)
+		if (_rangeDoublets == null)
 			_rangeDoublets = new Vector<TypedRangeDoublet>();
-		
+
 		_rangeDoublets.add(myRangeDoublet);
 	}
 
@@ -104,9 +104,14 @@ public class TypedCookieSensor extends CoreSensor
 		for (Iterator<TypedRangeDoublet> iterator = _rangeDoublets.iterator(); iterator
 				.hasNext();)
 		{
+			boolean detected = false;
+
 			TypedRangeDoublet doublet = iterator.next();
 			if (doublet.canDetect(target.getCategory(), range))
 			{
+
+				detected = true;
+
 				double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep.getBearing());
 
 				// cool, in contact. write it up.
@@ -116,12 +121,40 @@ public class TypedCookieSensor extends CoreSensor
 						new Float(1), target.getCategory(), new Float(target.getStatus()
 								.getSpeed().getValueIn(WorldSpeed.Kts)), new Float(target
 								.getStatus().getCourse()), target);
-				
+
 				res.setDetectionState(_detectionState);
-				
+
 				// store this detection
 				storeThisDetection(doublet, res);
+			}
 
+			// ok, just see if there are any pSupport listners
+			if (_pSupport != null)
+			{
+				if (_pSupport.hasListeners(SENSOR_COMPONENT_EVENT))
+				{
+					String typeList = "";
+					Vector<String> types = doublet.getMyTypes();
+					if (types != null)
+					{
+						for (Iterator<String> iterator2 = types.iterator(); iterator2
+								.hasNext();)
+						{
+							String string = iterator2.next();
+							typeList += string + ",";
+						}
+					}
+
+					if (typeList.length() == 0)
+						typeList = "Unset";
+
+					// create the event
+					TypedSensorComponentsEvent sev = new TypedSensorComponentsEvent(time,
+							range, doublet.getRange(), typeList, detected, target.getName());
+
+					// and fire it!
+					_pSupport.firePropertyChange(SENSOR_COMPONENT_EVENT, null, sev);
+				}
 			}
 
 		}
@@ -129,26 +162,27 @@ public class TypedCookieSensor extends CoreSensor
 		return res;
 	}
 
-	
 	public DetectionList getDetectionsFor(TypedRangeDoublet doublet)
 	{
 		return _typedDetections.get(doublet);
 	}
-	
-	/** store this detection in our typed collections
+
+	/**
+	 * store this detection in our typed collections
 	 * 
 	 * @param doublet
 	 * @param detection
 	 */
-	private void storeThisDetection(TypedRangeDoublet doublet, DetectionEvent detection)
+	private void storeThisDetection(TypedRangeDoublet doublet,
+			DetectionEvent detection)
 	{
 		DetectionList dl = _typedDetections.get(doublet);
-		if(dl == null)
+		if (dl == null)
 		{
 			dl = new DetectionList();
 			_typedDetections.put(doublet, dl);
 		}
-		
+
 		dl.add(detection);
 	}
 
@@ -269,7 +303,7 @@ public class TypedCookieSensor extends CoreSensor
 		{
 			return _types;
 		}
-		
+
 		/**
 		 * see if we can detect the target
 		 * 
@@ -319,6 +353,79 @@ public class TypedCookieSensor extends CoreSensor
 		}
 	}
 
+	// //////////////////////////////////////////////////
+	// embedded class for event fired after each detection step
+	// //////////////////////////////////////////////////
+	public static class TypedSensorComponentsEvent
+	{
+		// //////////////////////////////////////////////////
+		// member objects
+		// //////////////////////////////////////////////////
+		final private String _tgtName;
+		final private long _time;
+		private final WorldDistance _detRange;
+		private final WorldDistance _tgtRange;
+		private final String _typeCriteria;
+		private final boolean _detected;
+
+		/**
+		 * constructor
+		 */
+		public TypedSensorComponentsEvent(long time, WorldDistance detRange,
+				WorldDistance tgtRange, String typeCriteria, boolean detected,
+				String tgtName)
+		{
+
+			_detRange = detRange;
+			_tgtRange = tgtRange;
+			_typeCriteria = typeCriteria;
+			_tgtName = tgtName;
+			_time = time;
+			_detected = detected;
+		}
+
+		public long getTime()
+		{
+			return _time;
+		}
+
+		public String getTgtName()
+		{
+			return _tgtName;
+		}
+
+		public WorldDistance getDetRange()
+		{
+			return _detRange;
+		}
+
+		public WorldDistance getTgtRange()
+		{
+			return _tgtRange;
+		}
+
+		public String getTypeCriteria()
+		{
+			return _typeCriteria;
+		}
+
+		public String toString()
+		{
+			String res;
+
+			res = _typeCriteria + " det:"
+					+ (int) _detRange.getValueIn(WorldDistance.YARDS) + "actual:"
+					+ (int) _tgtRange.getValueIn(WorldDistance.YARDS) + " " + _tgtName;
+
+			return res;
+		}
+
+		public boolean getDetected()
+		{
+			return _detected;
+		}
+	}
+
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +448,6 @@ public class TypedCookieSensor extends CoreSensor
 			return new PlainCookieSensor(1, new WorldDistance(12, WorldDistance.DEGS));
 		}
 
-		
 		public void testRangeDoublet()
 		{
 			Vector<String> listOne = new Vector<String>();
@@ -349,26 +455,27 @@ public class TypedCookieSensor extends CoreSensor
 			listOne.add(Category.Force.GREEN);
 			listOne.add(Category.Environment.AIRBORNE);
 			listOne.add(Category.Type.FISHING_VESSEL);
-			
+
 			WorldDistance dist = new WorldDistance(2, WorldDistance.NM);
-			
+
 			TypedRangeDoublet td = new TypedRangeDoublet(listOne, dist);
 			WorldDistance tRange = new WorldDistance(1, WorldDistance.NM);
 			WorldDistance longRange = new WorldDistance(3, WorldDistance.NM);
-			
+
 			Category tCat = new Category(Force.RED, Environment.AIRBORNE, Type.HELO);
 			assertTrue("Matches item", td.canDetect(tCat, tRange));
 			assertFalse("too far", td.canDetect(tCat, longRange));
-			
+
 			tCat = new Category(Force.RED, Environment.SURFACE, Type.HELO);
 			assertFalse("doesn't match item", td.canDetect(tCat, tRange));
-			
+
 			tCat = new Category(Force.RED, Environment.SURFACE, Type.FISHING_VESSEL);
 			assertTrue("Matches item", td.canDetect(tCat, tRange));
-			
+
 			tCat = new Category(Force.BLUE, Environment.SURFACE, Type.HELO);
 			assertTrue("doesn't match item", td.canDetect(tCat, tRange));
 		}
+
 		public void testPlainSensor()
 		{
 

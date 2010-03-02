@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
-Bundle-Version: 1.0.11
+Bundle-Version: 1.0.12
 Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.debrief.legacy
 Export-Package: ASSET;
@@ -245,6 +245,7 @@ Export-Package: ASSET;
    ASSET.Models.Environment,
    ASSET.Models,
    MWC.GUI",
+ ASSET.Models.Sensor.Cookie,
  ASSET.Models.Sensor.Initial;
   uses:="ASSET,
    ASSET.Models.Sensor,

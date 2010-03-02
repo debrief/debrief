@@ -25,6 +25,11 @@ import MWC.GenericData.WorldSpeed;
 
 public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Serializable
 {
+	
+  public static final String IDENTIFIED_STR = "Identified";
+  public static final String CLASSIFIED_STR = "Classified";
+  public static final String DETECTED_STR = "Detected";
+  public static final String UNDETECTED_STR = "Undetected";
 
   /**
 	 * 
@@ -371,15 +376,16 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
 
   public static class DetectionStatePropertyEditor extends AbstractPropertyEditor
   {
-    ////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////
     // member objects
     ////////////////////////////////////////////////////
     private String _stringTags[] =
       {
-        "Undetected",
-        "Detected",
-        "Classified",
-        "Identified",
+        UNDETECTED_STR,
+        DETECTED_STR,
+        CLASSIFIED_STR,
+        IDENTIFIED_STR,
       };
 
     ////////////////////////////////////////////////////
