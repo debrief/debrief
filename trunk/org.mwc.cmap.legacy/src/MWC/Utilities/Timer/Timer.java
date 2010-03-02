@@ -61,10 +61,9 @@ implements java.io.Serializable {
     timerThread.start ();
   }
 
-  @SuppressWarnings("deprecation")
-	public synchronized void stop () {
+  public synchronized void stop () {
     if (!running) return;
-    timerThread.stop ();
+    timerThread.interrupt();
     timerThread = null;
     running = false;
   }
@@ -149,8 +148,9 @@ implements java.io.Serializable {
   }
 
   class TimerThread extends Thread {
-    public void run() {
-      while (true) {
+  	
+		public void run() {
+      while (running) {
         try 
         {
           sleep(delay);
@@ -167,7 +167,6 @@ implements java.io.Serializable {
         fireTimerEvent();
         if (onceOnly) break;
       }
-      running = false;
     }
   }
 
