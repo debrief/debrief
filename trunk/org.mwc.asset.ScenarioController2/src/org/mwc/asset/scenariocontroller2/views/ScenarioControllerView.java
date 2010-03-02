@@ -127,8 +127,6 @@ public class ScenarioControllerView extends ViewPart implements
 	 * watchable parts
 	 * 
 	 */
-	private TimeManager _myTimeProvider;
-
 	Vector<ISelectionChangedListener> _selectionListeners;
 
 	/**
@@ -137,7 +135,7 @@ public class ScenarioControllerView extends ViewPart implements
 	 */
 	private ScenarioWrapper _scenarioWrapper;
 	private Vector<ScenarioObserver> _theObservers;
-	private SteppableTime _steppableTime;
+	private WrappingSteppableTime _timeManager;
 	private MultiScenarioCore _myMultiScenario;
 	private String[] _myPendingFilenames;
 	private TimeControlPreferences _myTimeControlProps;
@@ -159,7 +157,7 @@ public class ScenarioControllerView extends ViewPart implements
 		_myScenario = new CoreScenario();
 		_scenarioWrapper = new ScenarioWrapper(this);
 
-		_myTimeProvider = new TimeManager();
+		_timeManager = new WrappingSteppableTime();
 
 		// listen to the scenario
 		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
@@ -215,45 +213,18 @@ public class ScenarioControllerView extends ViewPart implements
 			}
 		});
 
-		/**
-		 * and support for the time controller moving us forward
-		 * 
-		 */
-		_steppableTime = new SteppableTime()
-		{
-			public void run(Object origin, boolean fireUpdate)
-			{
-				_myScenario.start();
-			}
-
-			public void step(Object origin, boolean fireUpdate)
-			{
-				_myScenario.step();
-			}
-
-			public void stop(Object origin, boolean fireUpdate)
-			{
-				_myScenario.pause();
-			}
-
-			public void restart(Object origin, boolean fireUpdate)
-			{
-				_myScenario.restart();
-			}
-		};
-
 	}
 
 	protected void scenarioRestarted()
 	{
 		setScenarioStatus(_myScenario, "Restarted");
-		_myTimeProvider.setTime(this, new HiResDate(_myScenario.getTime()), true);
+		_timeManager.setTime(this, new HiResDate(_myScenario.getTime()), true);
 	}
 
 	protected void scenarioStepped(long newTime)
 	{
 		// update anybody listening to the time
-		_myTimeProvider.setTime(this, new HiResDate(newTime), true);
+		_timeManager.setTime(this, new HiResDate(newTime), true);
 
 		// and update the displayed time
 		setScenarioStatus(_myScenario, FormatRNDateTime.toString(newTime));
@@ -482,6 +453,12 @@ public class ScenarioControllerView extends ViewPart implements
 							_myUI.getDoGenerateButton().setEnabled(true);
 						}
 					});
+
+					// tell the time manager about the first scenario
+					CoreScenario firstScen = (CoreScenario) _myMultiScenario
+							.getSimulations().firstElement();
+					_timeManager.setCurrentScenario(firstScen);
+
 				}
 				catch (Exception e)
 				{
@@ -526,7 +503,7 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 		else if (adapter == TimeProvider.class)
 		{
-			res = _myTimeProvider;
+			res = _timeManager;
 		}
 		else if (adapter == TimeControlPreferences.class)
 		{
@@ -541,7 +518,7 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 		else if (adapter == SteppableTime.class)
 		{
-			return _steppableTime;
+			return _timeManager;
 		}
 
 		if (res == null)
@@ -892,6 +869,9 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		if (_myScenario != null)
 			_myUI.getSingleRunBtn().setEnabled(true);
+		
+		// clear the multi core scenario, just to be sure
+		_myMultiScenario = null;
 
 	}
 
@@ -903,7 +883,7 @@ public class ScenarioControllerView extends ViewPart implements
 	 */
 	private boolean inSingleScenarioRun()
 	{
-		return _myUI.getSingleRunBtn().getEnabled();
+		return (_myMultiScenario == null);
 	}
 
 	private void updateMultiTab()
@@ -1055,20 +1035,24 @@ public class ScenarioControllerView extends ViewPart implements
 	 */
 	private void fireScenarioChanged()
 	{
-		_scenarioWrapper.fireNewScenario();
-
-		// ok, change the time aswell
-		long time = _myScenario.getTime();
-		if (time != -1)
+		// do we know our controller?
+		if (inSingleScenarioRun())
 		{
-			_myTimeProvider.setTime(this, new HiResDate(time), true);
+			_scenarioWrapper.fireNewScenario();
+
+			// ok, change the time aswell
+			long time = _myScenario.getTime();
+			if (time != -1)
+			{
+				_timeManager.setTime(this, new HiResDate(time), true);
+			}
+
+			// also, re-initialise the observers
+			setupObservers(_myScenario);
+
+			// and show the loaded status in the ui
+			setScenarioStatus(_myScenario, "Loaded");
 		}
-
-		// also, re-initialise the observers
-		setupObservers(_myScenario);
-
-		// and show the loaded status in the ui
-		setScenarioStatus(_myScenario, "Loaded");
 	}
 
 	/**
