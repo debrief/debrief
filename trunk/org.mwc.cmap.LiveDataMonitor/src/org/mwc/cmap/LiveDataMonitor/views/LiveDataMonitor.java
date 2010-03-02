@@ -86,52 +86,57 @@ public class LiveDataMonitor extends ViewPart
 
 						DataDoublet newD = (DataDoublet) evt.getNewValue();
 						final long time = newD.getTime();
-						final Number value = (Number) newD.getValue();
-
-						// and store it
-						TimeSeriesCollection coll = (TimeSeriesCollection) _chart
-								.getXYPlot().getDataset();
-
-						TimeSeries tmpSeries;
-
-						if (coll == null)
+						Object newValue = newD.getValue();
+						if (newValue instanceof Number)
 						{
-							final TimeSeriesCollection dataset = new TimeSeriesCollection();
-							tmpSeries = new TimeSeries(_watchedAttr.getName());
-							dataset.addSeries(tmpSeries);
-							// add to series in different thread...
-							Display.getDefault().asyncExec(new Runnable()
-							{
+							final Number value = (Number) newValue;
 
+							// and store it
+							TimeSeriesCollection coll = (TimeSeriesCollection) _chart
+									.getXYPlot().getDataset();
+
+							TimeSeries tmpSeries;
+
+							if (coll == null)
+							{
+								final TimeSeriesCollection dataset = new TimeSeriesCollection();
+								tmpSeries = new TimeSeries(_watchedAttr.getName());
+								dataset.addSeries(tmpSeries);
+								// add to series in different thread...
+								Display.getDefault().asyncExec(new Runnable()
+								{
+
+									@Override
+									public void run()
+									{
+										_chart.getXYPlot().setDataset(dataset);
+									}
+								});
+							}
+							else
+							{
+								tmpSeries = coll.getSeries(0);
+							}
+
+							final TimeSeries series = tmpSeries;
+
+							// add to series in current thread, accepting it will slow down
+							// the
+							// UI
+							Display.getDefault().syncExec(new Runnable()
+							{
 								@Override
 								public void run()
 								{
-									_chart.getXYPlot().setDataset(dataset);
+									// are we still open?i
+									if (!_chartFrame.isDisposed())
+									{
+										// sure, go for it,
+										series.addOrUpdate(new Millisecond(new Date(time)), value);
+									}
 								}
 							});
 						}
-						else
-						{
-							tmpSeries = coll.getSeries(0);
-						}
-
-						final TimeSeries series = tmpSeries;
-
-						// add to series in current thread, accepting it will slow down the
-						// UI
-						Display.getDefault().syncExec(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								// are we still open?i
-								if (!_chartFrame.isDisposed())
-								{
-									// sure, go for it,
-									series.addOrUpdate(new Millisecond(new Date(time)), value);
-								}
-							}
-						});
 					}
 			}
 		};
@@ -162,7 +167,7 @@ public class LiveDataMonitor extends ViewPart
 		// is there any data in it?
 		if (data.size() == 0)
 		{
-			_chart.setTitle(attribute.getName() + " has no data");
+			_chart.setTitle(attribute.getName());
 			_chart.getXYPlot().setDataset(null);
 		}
 		else
@@ -173,8 +178,12 @@ public class LiveDataMonitor extends ViewPart
 			for (Iterator<DataDoublet> iterator = data.iterator(); iterator.hasNext();)
 			{
 				DataDoublet thisD = (DataDoublet) iterator.next();
-				series.addOrUpdate(new Millisecond(new Date(thisD.getTime())),
-						(Number) thisD.getValue());
+				Object thisVal = thisD.getValue();
+				if (thisVal instanceof Number)
+				{
+					series.addOrUpdate(new Millisecond(new Date(thisD.getTime())),
+							(Number) thisD.getValue());
+				}
 			}
 			// did it work?
 			if (!series.isEmpty())
