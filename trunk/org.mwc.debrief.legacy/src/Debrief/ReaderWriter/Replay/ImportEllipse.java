@@ -163,7 +163,7 @@ final class ImportEllipse implements PlainLineImporter
     minima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
 
     // and now read in the message
-    theText = st.nextToken("\r");
+    theText = st.nextToken("\r").trim();
 
     // create the tactical data
     theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,

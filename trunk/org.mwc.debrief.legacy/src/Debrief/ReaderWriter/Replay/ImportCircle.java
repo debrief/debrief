@@ -144,7 +144,7 @@ final class ImportCircle implements PlainLineImporter
     
     
     // and now read in the message
-    theText = st.nextToken("\r");
+    theText = st.nextToken("\r").trim();
     
     // create the tactical data    
     theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,

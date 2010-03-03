@@ -105,7 +105,7 @@ public final class ImportNarrative implements PlainLineImporter
     theTrack = ImportFix.checkForQuotedTrackName(st);
 
     // and now read in the message
-    theEntry = st.nextToken("\r");
+    theEntry = st.nextToken("\r").trim();
 
     // can we trim any leading whitespace?
     theEntry = theEntry.trim();

@@ -171,7 +171,7 @@ final class ImportBearing implements PlainLineImporter
     if(st.hasMoreTokens())
     {
       // and lastly read in the message
-      theText = st.nextToken("\r");
+      theText = st.nextToken("\r").trim();
     }
 
     // create the Line object

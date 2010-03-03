@@ -162,7 +162,7 @@ final class ImportRectangle implements PlainLineImporter
 
 
     // and lastly read in the message
-    theText = st.nextToken("\r");
+    theText = st.nextToken("\r").trim();
 
     // create the Rectangle object
     PlainShape sp = new RectangleShape(TL, BR);

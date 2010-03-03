@@ -195,7 +195,7 @@ final class ImportSensor implements PlainLineImporter {
     sensorName.trim();
 
     // and lastly read in the message
-    theText = st.nextToken("\r");
+    theText = st.nextToken("\r").trim();
 
     theColor = ImportReplay.replayColorFor(theSymbology);
 

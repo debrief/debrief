@@ -171,7 +171,7 @@ public final class ImportTMA_Pos implements PlainLineImporter
     depth = Double.valueOf(st.nextToken()).doubleValue();
 
     // and lastly read in the message
-    theLabel = st.nextToken("\r");
+    theLabel = st.nextToken("\r").trim();
     // strip off any gash
     theLabel = theLabel.trim();
 

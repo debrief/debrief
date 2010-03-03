@@ -159,12 +159,12 @@ final class ImportPeriodText implements PlainLineImporter
       if (theText != null)
       {
         // and now read in the remainder of the line, and append to the message
-        theText += " " + st.nextToken("\r");
+        theText += " " + st.nextToken("\r").trim();
       }
       else
       {
         // and now read in the message, we have already read the depth
-        theText = st.nextToken("\r");
+        theText = st.nextToken("\r").trim();
       }
     }
 
@@ -232,7 +232,7 @@ final class ImportPeriodText implements PlainLineImporter
       LabelWrapper lw = (LabelWrapper) val;
 
       // does it have a time period?
-      if (lw.getTimePeriod() != null)
+      if ((lw.getTimePeriod() != null) && (lw.getTimePeriod().getStartDTG() != null))
       {
         // yes, this is a label with only the start time specified,
         // we can export it
