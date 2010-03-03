@@ -160,6 +160,9 @@ public class ScenarioControllerView extends ViewPart implements
 		_timeManager = new WrappingSteppableTime();
 
 		// listen to the scenario
+		note; these operations shouldn't just apply to the local scenario
+		- we should be doing it for either the single one or the current multi-run scenario
+		when we have multi-run scenarios.
 		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
 		{
 			public void restart(ScenarioType scenario)
