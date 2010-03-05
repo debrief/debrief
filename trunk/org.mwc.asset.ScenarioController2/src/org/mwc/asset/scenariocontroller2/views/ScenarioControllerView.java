@@ -77,6 +77,7 @@ import org.w3c.dom.NodeList;
 import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
+import ASSET.GUI.CommandLine.NewScenarioListener;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
@@ -148,6 +149,8 @@ public class ScenarioControllerView extends ViewPart implements
 	private SimulationTable _simTable;
 	private ISelection _currentSelection;
 	private ResultsContainer _scenarioController;
+	private NewScenarioListener _newScenarioListener;
+	private ScenarioSteppedListener _stepListener;
 
 	/**
 	 * The constructor.
@@ -158,12 +161,8 @@ public class ScenarioControllerView extends ViewPart implements
 		_scenarioWrapper = new ScenarioWrapper(this);
 
 		_timeManager = new WrappingSteppableTime();
-
-		// listen to the scenario
-		note; these operations shouldn't just apply to the local scenario
-		- we should be doing it for either the single one or the current multi-run scenario
-		when we have multi-run scenarios.
-		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
+		
+		_stepListener = new ScenarioSteppedListener()
 		{
 			public void restart(ScenarioType scenario)
 			{
@@ -174,8 +173,23 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 				scenarioStepped(newTime);
 			}
-		});
+		};
+		_newScenarioListener = new NewScenarioListener()
+		{
+			@Override
+			public void newScenario(ScenarioType oldScenario, ScenarioType newScenario)
+			{
+				_timeManager.setCurrentScenario(newScenario);
+				
+				if(oldScenario != null)
+				{
+					oldScenario.removeScenarioSteppedListener(_stepListener);
+				}
+				newScenario.addScenarioSteppedListener(_stepListener);
+			}
+		};
 
+		// listen to the scenario
 		_myScenario.addScenarioRunningListener(new ScenarioRunningListener()
 		{
 			public void finished(long elapsedTime, String reason)
@@ -337,6 +351,8 @@ public class ScenarioControllerView extends ViewPart implements
 				String currLabel = _myUI.getSingleRunBtn().getText().trim();
 				if (currLabel.equals(RUN_SCENARIO.trim()))
 				{
+					_newScenarioListener.newScenario(null,_myScenario);
+					
 					// tell it we're running
 					_myUI.getSingleRunBtn().setText(PAUSE_SCENARIO);
 
@@ -366,7 +382,8 @@ public class ScenarioControllerView extends ViewPart implements
 			@Override
 			public void run()
 			{
-				_myMultiScenario.nowRun(System.out, System.err, System.in);
+				// tell them to go for it
+				_myMultiScenario.nowRun(System.out, System.err, System.in, _newScenarioListener);
 
 				// ok, better refresh the workspace
 				refreshWorkspace();
@@ -1047,6 +1064,8 @@ public class ScenarioControllerView extends ViewPart implements
 			long time = _myScenario.getTime();
 			if (time != -1)
 			{
+				// tell the time managemr what we're looking at 
+				_timeManager.setCurrentScenario(_myScenario);
 				_timeManager.setTime(this, new HiResDate(time), true);
 			}
 
@@ -1331,21 +1350,21 @@ public class ScenarioControllerView extends ViewPart implements
 		public final void testRelativePathMethod()
 		{
 			super.assertEquals("failed to recognise drive", false,
-					ScenarioControllerView.isRelativePath(new File("c:\\test.rep")));
+					isRelativePath(new File("c:\\test.rep")));
 			super.assertEquals("failed to root designator", false,
-					ScenarioControllerView.isRelativePath(new File("\\test.rep")));
+					isRelativePath(new File("\\test.rep")));
 			super.assertEquals("failed to root designator", false,
-					ScenarioControllerView.isRelativePath(new File("\\\\test.rep")));
+					isRelativePath(new File("\\\\test.rep")));
 			super.assertEquals("failed to root designator", false,
-					ScenarioControllerView.isRelativePath(new File("//test.rep")));
+					isRelativePath(new File("//test.rep")));
 			super.assertEquals("failed to root designator", false,
-					ScenarioControllerView.isRelativePath(new File("////test.rep")));
+					isRelativePath(new File("////test.rep")));
 			super.assertEquals("failed to recognise absolute ref", true,
-					ScenarioControllerView.isRelativePath(new File("test.rep")));
+					isRelativePath(new File("test.rep")));
 			super.assertEquals("failed to recognise relative ref", true,
-					ScenarioControllerView.isRelativePath(new File("./test.rep")));
+					isRelativePath(new File("./test.rep")));
 			super.assertEquals("failed to recognise parent ref", true,
-					ScenarioControllerView.isRelativePath(new File("../test.rep")));
+					isRelativePath(new File("../test.rep")));
 		}
 	}
 
