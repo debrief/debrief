@@ -175,6 +175,15 @@ public class PlotSensorObserver extends DetectionObserver implements
 		_shadeCircle = shadeCircle;
 	}
 
+	
+	/** whether this is a significant attribute, displayed by default
+	 * @return yes/no
+	 */
+	public boolean isSignificant()
+	{
+		return false;
+	}
+	
 	/**
 	 * paint this object to the specified canvas
 	 */

@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import org.w3c.dom.Document;
 
+import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
@@ -146,7 +147,7 @@ public class MultiScenarioCore implements ISimulationQue
 	 * @param err
 	 */
 	private int runAll(OutputStream out, OutputStream err, InputStream in,
-			Document controlFile)
+			Document controlFile, NewScenarioListener listener)
 	{
 		int result = SUCCESS;
 
@@ -180,9 +181,14 @@ public class MultiScenarioCore implements ISimulationQue
 		// ok, we've got our scenarios up and running, might as well run through
 		// them
 		int ctr = 0;
+		ScenarioType oldScenario = null;
 		for (Iterator<CoreScenario> iterator = _theScenarios.iterator(); iterator.hasNext();)
 		{
 			CoreScenario thisS = (CoreScenario) iterator.next();
+	
+			// tell the listener what's up
+			if(listener != null)
+  			listener.newScenario(oldScenario, thisS);
 			
 			File newOutputSubDirectory = new File(_resultsStore.outputDirectory, ""
 					+ (ctr + 1) + File.separator);
@@ -202,6 +208,10 @@ public class MultiScenarioCore implements ISimulationQue
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.
 			}
+
+			// and remember the scenario
+			oldScenario = thisS;
+			
 			
 			ctr++;
 		}
@@ -420,9 +430,9 @@ public class MultiScenarioCore implements ISimulationQue
 		return resCode;
 	}
 
-	public int nowRun(PrintStream out, PrintStream err, InputStream in)
+	public int nowRun(PrintStream out, PrintStream err, InputStream in, NewScenarioListener scenarioListener)
 	{
-		return runAll(out, err, in, _myGenny.getControlFile());
+		return runAll(out, err, in, _myGenny.getControlFile(), scenarioListener);
 	}
 
 	// //////////////////////////////////////////////////////////
@@ -537,11 +547,10 @@ public class MultiScenarioCore implements ISimulationQue
 		return false;
 	}
 
-	@Override
-	public void startQue()
+	public void startQue(NewScenarioListener listener)
 	{
 		// ok, go for it
-		nowRun(System.out, System.err, System.in);
+		nowRun(System.out, System.err, System.in, listener);
 	}
 
 	@Override

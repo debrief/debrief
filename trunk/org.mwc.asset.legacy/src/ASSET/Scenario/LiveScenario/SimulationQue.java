@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import ASSET.ScenarioType;
+import ASSET.GUI.CommandLine.NewScenarioListener;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
 import MWC.Algorithms.LiveData.Attribute;
@@ -111,7 +112,7 @@ public class SimulationQue implements ISimulationQue
 	/* (non-Javadoc)
 	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#startQue()
 	 */
-	public void startQue()
+	public void startQue(NewScenarioListener listener)
 	{
 		runThread = new runThread();
 		runThread.start();
@@ -264,7 +265,7 @@ public class SimulationQue implements ISimulationQue
 		}
 
 		// get it going
-		que.startQue();
+		que.startQue(null);
 
 		// wait until the simulation is complete
 		while (que.isRunning())

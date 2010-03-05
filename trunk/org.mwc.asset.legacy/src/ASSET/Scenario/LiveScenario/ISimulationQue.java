@@ -2,6 +2,7 @@ package ASSET.Scenario.LiveScenario;
 
 import java.util.Vector;
 
+import ASSET.GUI.CommandLine.NewScenarioListener;
 import MWC.Algorithms.LiveData.IAttribute;
 
 public interface ISimulationQue
@@ -31,7 +32,7 @@ public interface ISimulationQue
 	 * start the que running
 	 * 
 	 */
-	public abstract void startQue();
+	public abstract void startQue(NewScenarioListener newListener);
 
 	/**
 	 * whether the que is running
