@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.mwc.asset.SimulationController.table.SimulationTable;
 
+import ASSET.GUI.CommandLine.NewScenarioListener;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
 
 
@@ -27,7 +28,7 @@ public class SimControllerUI extends Composite {
 
 	private SimulationTable myTable;
 
-	public SimControllerUI(Composite parent) {
+	public SimControllerUI(Composite parent,final NewScenarioListener listener) {
 		super(parent, SWT.BORDER);
 		
 		parent.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
@@ -46,7 +47,7 @@ public class SimControllerUI extends Composite {
 
 			@Override
 			public void handleEvent(Event event) {
-				mySimulationQue.startQue();
+				mySimulationQue.startQue(listener);
 			}
 		});
 

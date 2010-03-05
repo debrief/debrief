@@ -29,7 +29,7 @@ public class SimControllerView extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		myUI = new SimControllerUI(parent);
+		myUI = new SimControllerUI(parent, null);
 		SelectionProvider selectionProvider = new SelectionProvider();
 		getSite().setSelectionProvider(selectionProvider);
 		myUI.setSelectionProvider(selectionProvider);
