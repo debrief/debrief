@@ -17,13 +17,13 @@
 		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="24" Units="hours" />
+			<Duration Value="24" Units="hours" ></Duration>
 		</TimeObserver>
-		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
+		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
 		</TrackPlotObserver>
 		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
-			record_positions="true" Active="true" record_decisions="true">
+			record_positions="true" Active="false" record_decisions="true">
 		</DebriefReplayObserver><RemoveDetectedObserver Name="Ditch detected fishermen" Active="true">
 			<Target>
 				<TargetType>
@@ -35,5 +35,17 @@
 					<Type Name="BLUE" />
 				</TargetType>
 			</Watch>
-		</RemoveDetectedObserver></ObserverList>
+		</RemoveDetectedObserver>
+		<PlotSensorObserver Name="Show detections" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="SURFACE" ></Type>
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="SURFACE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver></ObserverList>
 </ScenarioController>
