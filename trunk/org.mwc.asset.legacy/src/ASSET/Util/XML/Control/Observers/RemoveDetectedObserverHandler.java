@@ -18,6 +18,9 @@ abstract class RemoveDetectedObserverHandler extends DetectionObserverHandler
    * *************************************************************
    */
   private final static String _myNewType = "RemoveDetectedObserver";
+  private final static String DEAD_TYPE = "PlotTheDead";
+  private Boolean _plotTheDead = null;
+  
 
   /**
    * ************************************************************
@@ -27,6 +30,15 @@ abstract class RemoveDetectedObserverHandler extends DetectionObserverHandler
   public RemoveDetectedObserverHandler()
   {
     super(_myNewType);
+    
+    addAttributeHandler(new HandleBooleanAttribute(DEAD_TYPE)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _plotTheDead = new Boolean(val);
+      }
+    });
+
   }
 
   /**
@@ -41,7 +53,13 @@ abstract class RemoveDetectedObserverHandler extends DetectionObserverHandler
 
   protected DetectionObserver getObserver(final TargetType watch, final TargetType target, final String name, final Integer detectionLevel,boolean isActive)
   {
-    return new RemoveDetectedObserver(watch, target, name, detectionLevel,isActive);
+  	RemoveDetectedObserver res =  new RemoveDetectedObserver(watch, target, name, detectionLevel,isActive);
+  	if(_plotTheDead != null)
+  		res.setPlotTheDead(_plotTheDead.booleanValue());
+  	
+  	_plotTheDead = null;
+  	
+  	return res;
   }
 
 }

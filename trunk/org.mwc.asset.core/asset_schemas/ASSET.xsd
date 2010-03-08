@@ -3414,6 +3414,13 @@
 					<xs:element name="Target" type="TargetType" />
 					<xs:element name="Watch" type="WatchType" />
 				</xs:sequence>
+						<xs:attribute name="PlotTheDead" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>Whether to plot a marker where detected platforms are removed
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+				
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
