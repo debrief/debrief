@@ -229,6 +229,9 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     }
     else
     {
+      float oldWid = g.getLineWidth();
+      g.setLineWidth(this.getLineThickness());
+      
       MWC.GenericData.WorldArea area = g.getProjection().getVisibleDataArea();
 
       // check that an area has been created
@@ -263,6 +266,8 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
       {
         MWC.Utilities.Errors.Trace.trace("Error painting VPF for first time", false);
       }
+      
+      g.setLineWidth(oldWid);
     }
 
   }

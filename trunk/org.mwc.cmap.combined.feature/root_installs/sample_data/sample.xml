@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Mar 02 16:45:03 GMT 2010" Name="Debrief Plot">
+<plot Created="Wed Mar 03 11:21:48 GMT 2010" Name="Debrief Plot">
 <details Text="Saved with Debrief version dated Tue Mar 02 11:46:15 GMT 2010"/>
 <session>
 <layers>
@@ -4867,25 +4867,6 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Misc" Visible="true">
-<line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
-<colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
-<fontcolour Value="CYAN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1310897" Long="-11.6941116"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1795841" Long="-11.7324337"/>
-</br>
-</line>
-<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
-<colour Value="YELLOW"/>
-<fontcolour Value="YELLOW"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
-</centre>
-</circle>
 <rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
 <colour Value="GREEN"/>
 <fontcolour Value="GREEN"/>
@@ -4897,24 +4878,43 @@
 <shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
 </br>
 </rectangle>
+<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
+</centre>
+</textlabel>
+<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
+<colour Value="YELLOW"/>
+<fontcolour Value="YELLOW"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
+</centre>
+</circle>
+<line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
+<fontcolour Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1335477" Long="-11.7364340"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1722102" Long="-11.6331319"/>
+</br>
+</line>
 <line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
 <colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
 <fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <tl>
-<shortLocation Depth="0.000" Lat="12.1303125" Long="-11.6938150"/>
+<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="12.1836900" Long="-11.7870290"/>
+<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
 </br>
 </line>
-<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.2199333" Long="-11.7112467"/>
-</centre>
-</textlabel>
 </layer>
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET"/>
@@ -4937,10 +4937,11 @@
 <narrative_entry Dtg="951212 113700" Entry="comment 11" Track="CARPET"/>
 <narrative_entry Dtg="951212 114100" Entry="comment 12" Track="CARPET"/>
 </narrative>
+<layer LineThickness="0" Name="Annotations" Visible="true"/>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="12.2268027" Long="-11.8660803"/>
+<shortLocation Depth="0.000" Lat="12.2260444" Long="-11.8660803"/>
 </tl>
 <br>
 <shortLocation Depth="0.000" Lat="11.8942194" Long="-11.5727500"/>

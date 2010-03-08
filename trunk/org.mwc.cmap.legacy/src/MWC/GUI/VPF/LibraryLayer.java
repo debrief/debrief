@@ -231,7 +231,11 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
   {
     if(!getVisible())
       return;
+    
+    float oldWid = g.getLineWidth();
 
+    g.setLineWidth(this.getLineThickness());
+    
     // store this canvas in the warehouse, so that it knows where it's plotting to
     _myWarehouse.setCanvas(g);
 
@@ -245,6 +249,8 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
     // work out how long it took
  //   System.out.println("time:" + (System.currentTimeMillis() - l) + ", ct:" + DebriefFeatureWarehouse.counter);
 
+    g.setLineWidth(oldWid);
+    
   }
 
 }
