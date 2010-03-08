@@ -2914,7 +2914,7 @@ and so on....</programlisting></para>
                                 start/end time-sliders to return to the original time period.</para>
                         </sect4>
                         <sect4>
-                            <title>Export to Flat File format</title>
+                            <title>Export to Flat File (SAM) format</title>
                             <para>This control exports a data file of tab-separated variables
                                 formatted according to the Flat File format specified <link
                                     linkend="Section_Flat">later</link> in this document. Data is
@@ -6572,6 +6572,11 @@ BBB.B RRRR yy..yy xx..xx
 ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
 bearing (degs), range(yds), sensor name, label (to end of line)
 
+;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs)  
+[or the single word NULL], ambigous bearing (degs) [or the single word NULL], frequency(Hz) 
+[or the single word NULL],  range(yds) [or the single word NULL], sensor name, label (to end of line)
+
 ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx 
 ;; date, time, ownship name, symbology, tma lat, tma long, track name, 
@@ -6799,10 +6804,10 @@ course, speed, depth (m), label string
             <sect1 id="Section_Flat">
                 <title id="SectionFlat_Title">Flat File Format</title>
                 <sect2 id="IntroToFlat">
-                    <title>Introduction to Flat File Format</title>
+                    <title>Introduction to Flat File (SAM) Format</title>
                     <para> </para>
                     <para>One Debrief user organisation frequently has to use exported Debrief
-                        tracks in a subsequent analysis application. This application requires
+                        tracks in a subsequent analysis application (SAM). This application requires
                         tab-seaprated columns of data using a flat-earth measurements in imperial
                         units. The data is formatted as specified below. Note that records are only
                         included for times for which there is sensor datums - which may be a shorter
