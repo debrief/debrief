@@ -254,6 +254,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private HashMap<String, Button> _buttonList;
 
+	/** listener for the play button
+	 * 
+	 */
+	private SelectionAdapter _playListener;
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -354,13 +359,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						public void run()
 						{
 							// are we playing?
-							if (_playButton.getSelection())
+							String playTool = _playButton.getToolTipText();
+							if(playTool.equals(PAUSE_TEXT))
 							{
-
 								if (!_wholePanel.isDisposed())
 								{
-									// better stop it
 									_playButton.setSelection(false);
+									_playListener.widgetSelected(null);
+									// better stop it
+//									stopPlaying();
 									System.err.println("play stopped");
 								}
 							}
@@ -543,7 +550,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
 		_playButton.setToolTipText(PLAY_TEXT);
 		// _playButton.setImage(TimeControllerPlugin.getImage("icons/control_play_blue.png"));
-		_playButton.addSelectionListener(new SelectionAdapter()
+		_playListener = new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
@@ -565,7 +572,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 				_playButton.setImage(thisD.createImage());
 			}
-		});
+		};
+		_playButton.addSelectionListener(_playListener);
 
 		_forwardButton = new Button(_btnPanel, SWT.NONE);
 		// _forwardButton.setImage(TimeControllerPlugin.getImage("icons/control_forward_blue.png"));
