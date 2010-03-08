@@ -175,15 +175,16 @@ public class PlotSensorObserver extends DetectionObserver implements
 		_shadeCircle = shadeCircle;
 	}
 
-	
-	/** whether this is a significant attribute, displayed by default
+	/**
+	 * whether this is a significant attribute, displayed by default
+	 * 
 	 * @return yes/no
 	 */
 	public boolean isSignificant()
 	{
 		return false;
 	}
-	
+
 	/**
 	 * paint this object to the specified canvas
 	 */
@@ -226,12 +227,21 @@ public class PlotSensorObserver extends DetectionObserver implements
 						WorldDistance range = thisRange.getRange();
 
 						// converto to screen coords
-						WorldLocation tlW = thisP.getStatus().getLocation().add(
-								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(315),
+						WorldLocation tl1 = thisP.getStatus().getLocation().add(
+								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
 										range, null));
-						WorldLocation brW = thisP.getStatus().getLocation().add(
-								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(135),
+						WorldLocation tl2 = thisP.getStatus().getLocation().add(
+								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0),
 										range, null));
+						WorldLocation br1 = thisP.getStatus().getLocation().add(
+								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+										range, null));
+						WorldLocation br2 = thisP.getStatus().getLocation().add(
+								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180),
+										range, null));
+						
+						WorldLocation tlW = new WorldLocation(tl2.getLat(), tl1.getLong(), 0);
+						WorldLocation brW = new WorldLocation(br2.getLat(), br1.getLong(), 0);
 
 						Point tl = new Point(dest.toScreen(tlW));
 						Point br = dest.toScreen(brW);
@@ -281,19 +291,22 @@ public class PlotSensorObserver extends DetectionObserver implements
 							// collate a string of the types this ring represents
 							StringBuilder sb = new StringBuilder();
 							Vector<String> theItems = thisRange.getMyTypes();
-							Iterator<String> iter = theItems.iterator();
-							while (iter.hasNext())
+							if (theItems != null)
 							{
-								String thisT = iter.next();
-								sb.append(thisT + " ");
-							}
+								Iterator<String> iter = theItems.iterator();
+								while (iter.hasNext())
+								{
+									String thisT = iter.next();
+									sb.append(thisT + " ");
+								}
 
-							if (sb.length() > 0)
-							{
-								String theStr = sb.toString();
-								int wit = dest.getStringWidth(null, theStr);
-								dest.drawText(theStr, tl.x + (br.x - tl.x) / 2 - wit / 2, br.y
-										+ dest.getStringHeight(null));
+								if (sb.length() > 0)
+								{
+									String theStr = sb.toString();
+									int wit = dest.getStringWidth(null, theStr);
+									dest.drawText(theStr, tl.x + (br.x - tl.x) / 2 - wit / 2,
+											br.y + dest.getStringHeight(null));
+								}
 							}
 						}
 					}
