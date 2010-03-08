@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="Fisher One" number="100">
+				<ParticipantLocation>
+					<WorldArea>
+							<TopLeft>
+								<shortLocation Lat="51" Long="-9"></shortLocation>
+							</TopLeft>
+							<BottomRight>
+								<shortLocation Lat="50" Long="-8"></shortLocation>
+							</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+		</MultiParticipantGenerator></ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="24" Units="hours" ></Duration>
+		</TimeObserver>
+		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
+			<GridDelta Value="4" Units="nm" ></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
+			record_positions="true" Active="false" record_decisions="true">
+		</DebriefReplayObserver><RemoveDetectedObserver Name="Ditch detected fishermen" Active="true" PlotTheDead="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<PlotSensorObserver Name="Show detections" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="SURFACE" ></Type>
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="SURFACE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver></ObserverList>
+</ScenarioController>

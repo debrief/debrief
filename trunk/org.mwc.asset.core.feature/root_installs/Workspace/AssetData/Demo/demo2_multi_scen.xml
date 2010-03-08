@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+		<MultiScenarioGenerator Number="100" NameTemplate="ForceProt_">
+			<VarianceList>
+				<Variance name="Vary the search speed" id="//Wander[@Name='Count fishing vessels']/Speed">
+					<Attribute name="Value">
+						<Choice>
+							<Value value="4" ></Value>
+							<Value value="8" ></Value>
+							<Value value="12" />
+						</Choice>
+						
+					</Attribute>
+					
+				</Variance></VarianceList>
+		</MultiScenarioGenerator>
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="Fisher One" number="100">
+				<ParticipantLocation>
+					<WorldArea>
+							<TopLeft>
+								<shortLocation Lat="51" Long="-9"></shortLocation>
+							</TopLeft>
+							<BottomRight>
+								<shortLocation Lat="50" Long="-8"></shortLocation>
+							</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+		</MultiParticipantGenerator></ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="24" Units="hours" />
+		</TimeObserver>
+		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
+			<GridDelta Value="4" Units="nm" ></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
+			record_positions="true" Active="true" record_decisions="true">
+		</DebriefReplayObserver><RemoveDetectedObserver Name="Ditch detected fishermen" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<ProportionDetectedObserver Name="../What percentage of greens got detected" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+			<BatchCollator OnlyBatchReporting="true" Active="true"
+				CollationMethod="AVERAGE" PerCase="true" />
+		</ProportionDetectedObserver></ObserverList>
+</ScenarioController>
