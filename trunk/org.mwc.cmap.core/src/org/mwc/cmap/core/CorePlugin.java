@@ -84,6 +84,7 @@ public class CorePlugin extends AbstractUIPlugin
 	public static final String GRID_EDITOR = "com.pml.grid.editor";
 
 	public static final String POLYGON_EDITOR = "org.mwc.cmap.core.editor_views.PolygonEditorView";
+	public static final String LIVE_DATA_MONITOR = "org.mwc.cmap.LiveDataMonitor";
 
 	/**
 	 * support for lat/long editor in grid editor

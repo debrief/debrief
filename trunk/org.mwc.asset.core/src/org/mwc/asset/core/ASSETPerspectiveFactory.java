@@ -55,6 +55,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 				"bottom", IPageLayout.BOTTOM, 0.6f, editorArea);
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(CorePlugin.PLOT_3d + ":*");
+		bottomPanel.addPlaceholder(CorePlugin.LIVE_DATA_MONITOR);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
 		// bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
 
@@ -71,6 +72,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
+		layout.addShowViewShortcut(CorePlugin.LIVE_DATA_MONITOR);
 		
 		// and the error log
 		layout.addShowViewShortcut("org.eclipse.pde.runtime.LogView");
