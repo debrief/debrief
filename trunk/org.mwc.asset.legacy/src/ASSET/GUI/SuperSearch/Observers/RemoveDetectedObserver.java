@@ -9,7 +9,6 @@ package ASSET.GUI.SuperSearch.Observers;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Iterator;
 import java.util.Vector;
 
 import ASSET.ParticipantType;
@@ -32,7 +31,7 @@ public class RemoveDetectedObserver extends
 
 	protected int _numDitched = 0;
 	protected ScenarioType _myScenario = null;
-	private Vector<LabelWrapper> _myParts;
+	private Vector<LabelWrapper> _myDeadParts;
 
 	private boolean _plotTheDead = true;
 
@@ -84,10 +83,10 @@ public class RemoveDetectedObserver extends
 		LabelWrapper lw = new LabelWrapper(thisPart.getName(), loc, Color.red);
 		lw.setSymbolType("Reference Position");
 
-		if (_myParts == null)
-			_myParts = new Vector<LabelWrapper>(0, 1);
+		if (_myDeadParts == null)
+			_myDeadParts = new Vector<LabelWrapper>(0, 1);
 
-		_myParts.add(lw);
+		_myDeadParts.add(lw);
 
 		getScenario().removeParticipant(tgt);
 
@@ -108,9 +107,9 @@ public class RemoveDetectedObserver extends
 	{
 		if (_plotTheDead)
 		{
-			if (_myParts != null)
+			if (_myDeadParts != null)
 			{
-				Object[] labels = _myParts.toArray();
+				Object[] labels = _myDeadParts.toArray();
 				for (int i = 0; i < labels.length; i++)
 				{
 					LabelWrapper labelWrapper = (LabelWrapper) labels[i];
@@ -120,13 +119,26 @@ public class RemoveDetectedObserver extends
 		}
 	}
 
+	
+	public void performCloseProcessing(ScenarioType scenario)
+	{
+		super.performCloseProcessing(scenario);
+		
+		resetMe();
+	}
+	
+	private void resetMe()
+	{
+		_numDitched = 0;
+		_myDeadParts.removeAllElements();
+	}
+	
 	@Override
 	public void restart(ScenarioType scenario)
 	{
 		super.restart(scenario);
 
-		// and reset our local counter
-		_numDitched = 0;
+		resetMe();
 	}
 
 	/***************************************************************
