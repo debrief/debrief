@@ -16,6 +16,7 @@ import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Participants.Status;
 import ASSET.Util.SupportTesting;
 import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.CanvasType;
@@ -74,7 +75,12 @@ public class RemoveDetectedObserver extends
 	private void ditchHim(final int tgt)
 	{
 		ParticipantType thisPart = getScenario().getThisParticipant(tgt);
-		WorldLocation loc = thisPart.getStatus().getLocation();
+		if(thisPart == null)
+			return;
+		Status hisStat = thisPart.getStatus();
+		if(hisStat == null)
+			return;
+		WorldLocation loc = hisStat.getLocation();
 		LabelWrapper lw = new LabelWrapper(thisPart.getName(), loc, Color.red);
 		lw.setSymbolType("Reference Position");
 

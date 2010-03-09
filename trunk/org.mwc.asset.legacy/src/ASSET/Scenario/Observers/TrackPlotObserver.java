@@ -243,6 +243,9 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 		final File outputFilename = new File(thePath);
 
 		// do we have any data?
+		if(_myTracks == null)
+			return;
+		
 		if (_myTracks.size() > 0)
 		{
 
