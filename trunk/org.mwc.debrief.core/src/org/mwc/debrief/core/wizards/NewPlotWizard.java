@@ -28,6 +28,8 @@ import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.BaseLayer;
@@ -123,8 +125,9 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 						.getActiveWorkbenchWindow().getActivePage();
 				try {
 					IDE.openEditor(page, file,
-							"org.mwc.debrief.core.editors.PlotEditor");
+							DebriefPlugin.DEBRIEF_EDITOR);
 				} catch (final PartInitException e) {
+					CorePlugin.logError(Status.ERROR, "Whilst opening new file", e);
 				}
 			}
 		});

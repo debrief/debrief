@@ -99,7 +99,16 @@
             category="org.mwc.debrief.help.cheat_viewing"
             contentFile="cheat_sheets/ViewingPlots/FilteringYourData.xml"
             id="org.mwc.debrief.help.viewing.filtering_data"
-            name="Filtering visible data"/>            
+            name="Filtering visible data"/>     
+            
+                  <cheatsheet
+            category="org.mwc.debrief.help.cheat_started"
+            composite="true"
+            contentFile="cheat_sheets/analysis/CompositeAnalysis.xml"
+            id="org.mwc.debrief.help.cheatsheet.analysis.composite"
+            name="Starting to analyse data in Debrief">
+      </cheatsheet>   
+                   
             
      <!-- now for the formatting bits -->
       <cheatsheet

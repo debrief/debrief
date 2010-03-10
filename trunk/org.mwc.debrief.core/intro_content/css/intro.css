@@ -23,6 +23,9 @@ a#debrief-viewlog:hover img { background-image : url(graphics/viewloghov.gif); }
 a#debrief-viewS2R img { background-image : url(graphics/submarine.png); }
 a#debrief-viewS2R:hover img { background-image : url(graphics/submarinehov.png); }
 
+a#debrief-analysis img { background-image : url(graphics/overview54.gif); }
+a#debrief-analysis:hover img { background-image : url(graphics/overview54hov.png); }
+
 
 a#debrief-changelog img { background-image : url(graphics/changelog.gif); }
 a#debrief-changelog:hover img { background-image : url(graphics/changeloghov.gif); }

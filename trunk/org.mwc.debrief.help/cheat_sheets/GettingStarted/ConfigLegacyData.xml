@@ -9,12 +9,10 @@ These range from Vectored datasets such as VPF through to gridded datasets such 
       </description>
    </intro>
    <item
+         href="/org.mwc.debrief.help/html/legacy/external_datasets.html#getting_vpf"
          title="How to configure library datasets">
       <description>
-         The steps to configure VPF and Etopo are covered in Debrief&apos;s user manual.  If you wish to learn this at this stage, use the help link below, else search for <b>VPF</b> in Debrief&apos;s online help at some future stage.
+         The steps to configure VPF and Etopo are covered in Debrief&apos;s user manual.  If you wish to learn this at this stage, use the help link alongside, else search for <b>VPF</b> in Debrief&apos;s online help at some future stage. Here&apos;s a clue though, you go into the <b>Maritime Analysis</b> section of the Preferences.
       </description>
-      <command
-            required="false"
-            serialization="org.eclipse.ui.help.displayHelp(href=/org.mwc.debrief.help/html/legacy/external_datasets.html#getting_vpf)"/>
    </item>
 </cheatsheet>

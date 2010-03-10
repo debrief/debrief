@@ -30,6 +30,8 @@ import MWC.Utilities.ReaderWriter.ImportManager;
 public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 {
 	public  static final String PLUGIN_NAME = "org.mwc.debrief.core";
+	
+	public static final String DEBRIEF_EDITOR = "org.mwc.debrief.PlotEditor";
 	// The shared instance.
 	private static DebriefPlugin plugin;
 
