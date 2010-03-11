@@ -486,6 +486,10 @@ public class RightClickSupport
 			{
 				_theLayers.fireExtended(null, _topLayer);
 			}
+			else if (_method.isAnnotationPresent(FireReformatted.class))
+			{
+				_theLayers.fireReformatted(_topLayer);
+			}
 			else
 			{
 				// hey, let's do a redraw aswell...
