@@ -15,7 +15,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public final class Doublet
+public final class Doublet implements Comparable<Doublet>
 {
 	public static final double INVALID_BASE_FREQUENCY = -1d;
 
@@ -59,6 +59,7 @@ public final class Doublet
 
 	/**
 	 * ok find bearing error (wrapped to -..360)
+	 * 
 	 * @param measuredValue
 	 * @param calcValue
 	 * @return
@@ -84,11 +85,12 @@ public final class Doublet
 	public double getAmbiguousMeasuredBearing()
 	{
 		double res = INVALID_BASE_FREQUENCY;
-		if(_sensor.getHasAmbiguousBearing())
+		if (_sensor.getHasAmbiguousBearing())
 			res = _sensor.getAmbiguousBearing();
-		
+
 		return res;
 	}
+
 	public double getCalculatedBearing(final WorldVector sensorOffset,
 			final WorldVector targetOffset)
 	{
@@ -113,9 +115,18 @@ public final class Doublet
 
 		return calcBearing;
 	}
-	
+
+	@Override
+	public int compareTo(Doublet o)
+	{
+		int res = 0;
+		res = _hostFix.getDTG().compareTo(o._hostFix.getDTG());
+		return res;
+	}
+
 	/**
 	 * ok find frequency error
+	 * 
 	 * @param measuredValue
 	 * @param calcValue
 	 * @return
@@ -132,7 +143,6 @@ public final class Doublet
 
 		return theError;
 	}
-
 
 	/**
 	 * get the base frequency of this track participant, if it has one
@@ -232,14 +242,15 @@ public final class Doublet
 			final double hisDopplerComponent = calcDopplerComponent(Math.PI
 					+ theBearingRads, hisCourseRads, hisSpeedKts, baseFreq);
 
-			// note, we've changed the sign of how we add the two components to the base freq
-			// - this wasn't based on theoretical evidence, but on empirical observations
-			//   by users
+			// note, we've changed the sign of how we add the two components to the
+			// base freq
+			// - this wasn't based on theoretical evidence, but on empirical
+			// observations
+			// by users
 			predictedFreq = baseFreq - (myDopplerComponent + hisDopplerComponent);
 		}
 		return predictedFreq;
 	}
-
 
 	/**
 	 * get the colour of this sensor fix
@@ -295,4 +306,5 @@ public final class Doublet
 			assertEquals("right freq", -0.906, res, 0.01);
 		}
 	}
+
 }

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
@@ -50,9 +51,11 @@ public final class StackedDotHelper
 	private TrackWrapper _secondaryTrack;
 
 	/**
-	 * the set of points to watch on the primary track
+	 * the set of points to watch on the primary track.  This is stored as a sorted set 
+	 * because if we have multiple sensors they may be suppled in chronological order,
+	 * or they may represent overlapping time periods
 	 */
-	private Vector<Doublet> _primaryDoublets;
+	private TreeSet<Doublet> _primaryDoublets;
 
 	// ////////////////////////////////////////////////
 	// CONSTRUCTOR
@@ -66,10 +69,10 @@ public final class StackedDotHelper
 	 * sort out data of interest
 	 * 
 	 */
-	private Vector<Doublet> getDoublets(final TrackWrapper sensorHost,
+	private TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
 			final TrackWrapper targetTrack, boolean onlyVis)
 	{
-		final Vector<Doublet> res = new Vector<Doublet>(0, 1);
+		final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
 		// friendly fix-wrapper to save us repeatedly creating it
 		FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0),
@@ -320,8 +323,16 @@ public final class StackedDotHelper
 			return;
 		}
 
-		startDTG = _primaryDoublets.firstElement().getDTG();
-		endDTG = _primaryDoublets.lastElement().getDTG();
+		startDTG = _primaryDoublets.first().getDTG();
+		endDTG = _primaryDoublets.last().getDTG();
+
+		if (startDTG.greaterThan(endDTG))
+		{
+			System.err.println("in the wrong order, start:" + startDTG + " end:"
+					+ endDTG);
+			return;
+		}
+
 		Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG,
 				endDTG);
 
@@ -458,7 +469,7 @@ public final class StackedDotHelper
 	public void reset()
 	{
 		if (_primaryDoublets != null)
-			_primaryDoublets.removeAllElements();
+			_primaryDoublets.clear();
 		_primaryDoublets = null;
 		_primaryTrack = null;
 		_secondaryTrack = null;
