@@ -191,7 +191,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 																											 parent,
 																											 dtg,
                                                        backColor);
-
+		
 		// extend the rectangle, if necesary
 		if(dotsArea != null)
 			thisR.add(dotsArea);
@@ -200,7 +200,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		if(_plotName)
 		{
 			final String msg = fix.getTrackWrapper().getName();
-
+			
 			// shift the centre point across a bit
 			p.translate(5, 0);
 
@@ -216,18 +216,6 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 			// and add to the limits rectangle
 			thisR.add(p);
 		}
-
-    // set the width
-//    if(dest instanceof CanvasType)
-//    {
-//      CanvasType ct = (CanvasType)dest;
-//      ct.setLineWidth(1);
-//    }
-//    if(dest instanceof Graphics2D)
-//    {
-//      Graphics2D g2 = (Graphics2D)dest;
-//      BasicStroke bs = new BasicStroke(1);
-//    }
 
 		return thisR;
 	}

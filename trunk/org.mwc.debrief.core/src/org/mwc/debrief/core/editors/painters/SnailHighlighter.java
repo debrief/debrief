@@ -170,7 +170,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 			if (watch != null)
 			{
 				// plot it
-				highlightIt(dest.getProjection(), dest, list, watch, newDTG, java.awt.Color.black);
+				highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest.getBackgroundColor());
 			}
 		}
 	}
