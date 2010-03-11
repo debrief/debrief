@@ -19,7 +19,7 @@
 		<TimeObserver Name="Domesday Timer" Active="true">
 			<Duration Value="24" Units="hours" ></Duration>
 		</TimeObserver>
-		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
+		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
 		</TrackPlotObserver>
 		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
