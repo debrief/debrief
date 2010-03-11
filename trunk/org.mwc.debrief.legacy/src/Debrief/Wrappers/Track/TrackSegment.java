@@ -570,21 +570,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	}
 
-	private Vector<FixWrapper> getVisiblePoints()
-	{
-		Vector<FixWrapper> res = new Vector<FixWrapper>();
-
-		Enumeration<Editable> items = this.elements();
-		while (items.hasMoreElements())
-		{
-			FixWrapper next = (FixWrapper) items.nextElement();
-			if (next.getVisible())
-				res.add(next);
-		}
-
-		return res;
-	}
-
 	@Override
 	public double rangeFrom(final WorldLocation other)
 	{

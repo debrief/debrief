@@ -93,20 +93,28 @@ final class SnailDrawSWTTrack
 		
 		float proportion = ((float) ((float)trail_len - our_time) / (float) trail_len);
 		
+		// just check we've got a realistic proportion
+		proportion = Math.max(0, proportion);
+		
 		// now apply this proportion to the indicated color
 		final float backR = backColor.getRed();
 		final float backG = backColor.getGreen();
 		final float backB = backColor.getBlue();
 
+		int mainR = mainCol.getRed();
+		int mainG = mainCol.getGreen();
+		int mainB = mainCol.getBlue();
+
 		// now apply this proportion to the indicated color
-		final float r = (mainCol.getRed() - backR )* proportion;
-		final float g = (mainCol.getGreen() - backG )* proportion;
-		final float b = (mainCol.getBlue() - backB )* proportion;
+		final float r = (mainR - backR )* proportion;
+		final float g = (mainG - backG )* proportion;
+		final float b = (mainB - backB )* proportion;
 
 		// create the colour shade for this item
 		final int new_r = (int) (backR + r);
 		final int new_g = (int) (backG + g);
 		final int new_b = (int) (backB + b);
+		
 		Color thisCol = new Color(new_r, new_g, new_b);
 
 		return thisCol;
@@ -173,9 +181,6 @@ final class SnailDrawSWTTrack
 		{
 			if (dotPoints.size() > 0)
 			{
-				// how many shades to we need?
-				final float numShades = (float) dotPoints.size();
-
 				// keep track of how many points we've plotted
 				int pointCounter = 1;
 

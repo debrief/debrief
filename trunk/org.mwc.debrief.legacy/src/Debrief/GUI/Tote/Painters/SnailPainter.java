@@ -231,6 +231,7 @@ import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -532,6 +533,7 @@ public class SnailPainter extends TotePainter
 								|| (thisPlottable instanceof SensorContactWrapper)
 								|| (thisPlottable instanceof TMAWrapper)
 								|| (thisPlottable instanceof TrackSegment)
+								|| (thisPlottable instanceof SegmentList)
 								|| (thisPlottable instanceof TMAContactWrapper))
 						{
 							// leave it, it's track related
