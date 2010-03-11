@@ -207,7 +207,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 						tip = tip.replace("<u>", "");
 						tip = tip.replace("</u>", "");
 						tip = tip.replace("\\n", " ");
-						tip = tip.replace("<BR>", " ");
+						tip = tip.replace("<BR>", "\n");
 						tip = tip.replace("<html><font face=\"sansserif\">", "");
 						tip = tip.replace("</font></html>", "");
 
