@@ -501,6 +501,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _trackWrapper;
 	}
 
+	@FireReformatted	
 	public final void resetColor()
 	{
 		setColor(null);
@@ -579,15 +580,22 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param dest
 	 * @param centre
 	 */
-	public final void paintMe(final CanvasType dest, final WorldLocation centre)
+	public final void paintMe(final CanvasType dest, final WorldLocation centre, Color theColor)
 	{
 
-		// check the color of the location wrapper
-		final Color locCol = _theLocationWrapper.getColor();
-		if (locCol != getColor())
-		{
-			_theLocationWrapper.setColor(getColor());
-		}
+		// take a copy of the color
+		Color safeColor = _theLocationWrapper.getColor();
+		
+		// use the provided color
+		_theLocationWrapper.setColor(theColor);
+		_theLabel.setColor(theColor);
+		
+//		// check the color of the location wrapper
+//		final Color locCol = _theLocationWrapper.getColor();
+//		if (locCol != getColor())
+//		{
+//			_theLocationWrapper.setColor(getColor());
+//		}
 
 		if (getSymbolShowing())
 		{
@@ -605,7 +613,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_theLabel.setLocation(centre);
 
 		// and paint the label - if we're asked nicely
-		paintLabel(dest);
+		paintLabel(dest, theColor);
+		
+		_theLocationWrapper.setColor(safeColor);
 	}
 
 	/**
@@ -614,12 +624,12 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param dest
 	 *          the destination to paint to
 	 */
-	public void paintLabel(final CanvasType dest)
+	public void paintLabel(final CanvasType dest, final Color theCol)
 	{
 		// now draw the label
 		if (getLabelShowing())
 		{
-			_theLabel.setColor(getColor());
+			_theLabel.setColor(theCol);
 			_theLabel.setFont(getFont());
 			_theLabel.paint(dest);
 		}
@@ -663,6 +673,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _theFix;
 	}
 
+	@FireReformatted
 	public void resetName()
 	{
 		// do we have a time?

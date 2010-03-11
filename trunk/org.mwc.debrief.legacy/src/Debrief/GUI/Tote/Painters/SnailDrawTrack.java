@@ -248,7 +248,7 @@ final class SnailDrawTrack
             CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
             // and get the label to paint itself
-            gw.paintLabel(cad);
+            gw.paintLabel(cad, newCol);
 
             // ditch the canvas
             cad.endDraw(null);
