@@ -547,6 +547,7 @@ public interface CanvasType {
   public interface MultiLineTooltipProvider
   {
     /** get the data name in multi-line format (for tooltips)
+     * multi-lines are implemented using html line breaks
      *
      * @return multi-line text label
      */
