@@ -4957,7 +4957,7 @@
 <property Name="DateFormat" Value="ddHHmm:ss"/>
 <property Name="ShadeArcs" Value="true"/>
 <property Name="Radius" Value="3500.000"/>
-<property Name="Highlighter" Value="Highlight off"/>
+<property Name="Highlighter" Value="Default Highlight"/>
 <property Name="BLUE" Value="64"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
