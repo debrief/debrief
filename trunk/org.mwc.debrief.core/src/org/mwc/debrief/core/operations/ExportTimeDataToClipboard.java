@@ -15,7 +15,7 @@ public class ExportTimeDataToClipboard extends TimeControllerOperation
 
 	public ExportTimeDataToClipboard()
 	{
-		super("Export time data to clipboard", false);
+		super("Export time data to clipboard", false, false, false);
 	}
 
 	@Override

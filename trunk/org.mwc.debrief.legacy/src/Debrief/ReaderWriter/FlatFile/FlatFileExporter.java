@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TimeZone;
+import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -61,28 +62,19 @@ public class FlatFileExporter
 
 		TrackWrapper pTrack = (TrackWrapper) primaryTrack;
 
-		// get the sensor
-		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
-		SensorWrapper mySensor = null;
-		while (sensors.hasMoreElements())
-		{
-			SensorWrapper thisS = sensors.nextElement();
-			if (thisS.getVisible())
-			{
-				mySensor = thisS;
-				break;
-			}
-		}
+		// find the subject sensor
+		SensorWrapper mySensor = getSubjectSensor(pTrack);
 
+		// did we find it?
 		if (mySensor == null)
 			return null;
-
+		
+		// get the sensor cuts
+		Collection<Editable> theCuts =  mySensor.getItemsBetween(period
+				.getStartDTG(), period.getEndDTG());
+		
 		// and the secondary track
 		TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
-
-		// sort the cuts out
-		Collection<Editable> theCuts = mySensor.getItemsBetween(period
-				.getStartDTG(), period.getEndDTG());
 
 		// start off with the header bits
 		String header = this.getHeader(primaryTrack.getName(), primaryTrack
@@ -97,6 +89,34 @@ public class FlatFileExporter
 		res = header + body;
 
 		return res;
+	}
+
+	/**
+	 * @param pTrack
+	 *          the track to search for sensors
+	 * @return
+	 */
+	public static SensorWrapper getSubjectSensor(TrackWrapper pTrack)
+	{
+		Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the final
+		// solution
+
+		// loop through collecting cuts from visible sensors
+		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
+		while (sensors.hasMoreElements())
+		{
+			SensorWrapper thisS = sensors.nextElement();
+			if (thisS.getVisible())
+			{
+				mySensors.add(thisS);
+			}
+		}
+
+		SensorWrapper mySensor = null;
+		if (mySensors.size() == 1)
+			mySensor = mySensors.firstElement();
+
+		return mySensor;
 	}
 
 	/**
@@ -116,7 +136,7 @@ public class FlatFileExporter
 
 		boolean primaryInterp = primaryTrack.getInterpolatePoints();
 		boolean secInterp = secTrack.getInterpolatePoints();
-		
+
 		// switch in the interpolation
 		primaryTrack.setInterpolatePoints(true);
 		secTrack.setInterpolatePoints(true);
@@ -196,8 +216,8 @@ public class FlatFileExporter
 					priF.getCourseDegs(), senStat, senX, senY, scw.getBearing(), -999.9,
 					senFreq, -999.9, priF.getSpeed(), priF.getCourseDegs(), sensorType,
 					msdStat, secX, secY, secF.getSpeed(), secF.getCourseDegs(), prdStat,
-					-999.9, -999.9, -999.9, -999.9, -999, -999, -999.9,
-					-999.9, -999.9, -999.9, -999.9, -999.9);
+					-999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9,
+					-999.9, -999.9, -999.9);
 
 			buffer.append(nextLine);
 			buffer.append(BRK);

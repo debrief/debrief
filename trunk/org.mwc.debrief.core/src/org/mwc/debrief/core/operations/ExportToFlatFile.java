@@ -24,7 +24,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 	public ExportToFlatFile()
 	{
-		super("Export to flat file", true);
+		super("Export to flat file (SAM Format)", true, true, true);
 	}
 
 	@Override
@@ -63,6 +63,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 					sensorType = exportPage.getSensorType();
 				}
 			}
+			
 			FlatFileExporter ff = new FlatFileExporter();
 			String theData = ff.export(primaryTrack, secondaryTracks, period,
 					sensorType);

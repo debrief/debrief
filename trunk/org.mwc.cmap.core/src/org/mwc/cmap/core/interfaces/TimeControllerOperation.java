@@ -1,5 +1,6 @@
 package org.mwc.cmap.core.interfaces;
 
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -8,6 +9,7 @@ import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 
@@ -43,6 +45,17 @@ public abstract class TimeControllerOperation
 	private final boolean _requireSensor;
 
 	/**
+	 * whether there should just be a single sensor on the primary track
+	 * 
+	 */
+	private final boolean _singleSensor;
+	
+	/** 
+	 * whether there must be visible sensor data visible in the specified time period
+	 */
+	private final boolean _requiresSensorData;
+
+	/**
 	 * main constructor. we always want an operation name, so let the child
 	 * classes call this with a name
 	 * 
@@ -50,13 +63,16 @@ public abstract class TimeControllerOperation
 	 *          what we put on the menu and the dialog
 	 */
 	protected TimeControllerOperation(String operationName,
-			boolean requireSensorData)
+			boolean requireSensorData, boolean singleSensor, boolean  requiresSensorData)
 	{
 		_operationName = operationName;
 		_requireSensor = requireSensorData;
+		_singleSensor = singleSensor;
+		_requiresSensorData = requiresSensorData;
 	}
 
-	/** the image to show for this action
+	/**
+	 * the image to show for this action
 	 * 
 	 * @return the descriptor to show
 	 */
@@ -145,6 +161,42 @@ public abstract class TimeControllerOperation
 			return;
 		}
 
+		if (_singleSensor)
+		{
+			// right, check there's one visible sensor
+			SensorWrapper theSensor = getSubjectSensor((TrackWrapper) primaryTrack);
+
+			if (theSensor == null)
+			{
+				showMessage("Sorry, there must be only one sensor visible on the primary track");
+				return;
+			}
+		}
+		
+		if(_requiresSensorData)
+		{
+			// loop through the sensors
+			// loop through collecting cuts from visible sensors
+			Enumeration<SensorWrapper> sensors = primaryTrack.getSensors();
+			Collection <Editable> theCuts = new Vector<Editable>();
+			while (sensors.hasMoreElements())
+			{
+				SensorWrapper thisS = sensors.nextElement();
+				if (thisS.getVisible())
+				{
+					Collection<Editable> theseCuts = thisS.getItemsBetween(period.getStartDTG(), period.getEndDTG());
+					if(theseCuts != null)
+					theCuts.addAll(theseCuts);
+				}
+			}
+
+			if(theCuts.size() == 0)
+			{
+				showMessage("Sorry, there must be at least some visible sensor data data");
+				return;
+			}
+		}
+
 		if (period.getEndDTG().getMicros() - period.getStartDTG().getMicros() < 1000000)
 		{
 			showMessage("Sorry, there must be at least a second of data");
@@ -154,6 +206,34 @@ public abstract class TimeControllerOperation
 		// well, here we are. May as well go for it!
 		executeExport(primaryTrack, secondaries, period);
 
+	}
+
+	/**
+	 * @param pTrack
+	 *          the track to search for sensors
+	 * @return
+	 */
+	public static SensorWrapper getSubjectSensor(TrackWrapper pTrack)
+	{
+		Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the final
+		// solution
+
+		// loop through collecting cuts from visible sensors
+		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
+		while (sensors.hasMoreElements())
+		{
+			SensorWrapper thisS = sensors.nextElement();
+			if (thisS.getVisible())
+			{
+				mySensors.add(thisS);
+			}
+		}
+
+		SensorWrapper mySensor = null;
+		if (mySensors.size() == 1)
+			mySensor = mySensors.firstElement();
+
+		return mySensor;
 	}
 
 	/**
