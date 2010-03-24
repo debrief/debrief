@@ -25,7 +25,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 	public ExportToFlatFile()
 	{
-		super("Export to flat file (SAM Format)", true, true, true);
+		super("Export to flat file (SAM Format)", true, false, true);
 	}
 
 	@Override

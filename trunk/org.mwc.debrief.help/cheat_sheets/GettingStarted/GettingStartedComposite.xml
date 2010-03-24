@@ -85,7 +85,7 @@
                Here you&apos;ll learn more about the Debrief user interface
             </intro>
             <onCompletion>
-               You&apos;ve now mastered the initial steps of using Debrief. Why not go back to the Welcome view (there&apos;s a <b>Restore Welcome</b> link at the top of this view).  The <b>Using Debrief in analysis&lt;b/&gt; is a logical next step.
+               You&apos;ve now mastered the initial steps of using Debrief. Why not go back to the Welcome view (there&apos;s a <b>Restore Welcome</b> link at the top of this view).  The <b>Using Debrief in analysis</b> is a logical next step.
             </onCompletion>
             <param name="path" value="ViewHelpForUI.xml">
             </param>

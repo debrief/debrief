@@ -103,6 +103,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 		_sensorTypeEditor.setPreferenceStore(getPreferenceStore());
 		_sensorTypeEditor.load();
+		_sensorType = sensorTypes[0][1];
 
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;

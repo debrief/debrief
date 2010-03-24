@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.TimeZone;
-import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -54,6 +53,14 @@ public class FlatFileExporter
 	 */
 	final String tab = "\t";
 
+	/** export the dataset to a string
+	 * 
+	 * @param primaryTrack the ownship track
+	 * @param secondaryTracks sec tracks = presumed to be just one
+	 * @param period the time period to export
+	 * @param sensorType what sensor type was specified
+	 * @return
+	 */
 	public String export(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period,
 			final String sensorType)
@@ -62,61 +69,114 @@ public class FlatFileExporter
 
 		TrackWrapper pTrack = (TrackWrapper) primaryTrack;
 
-		// find the subject sensor
-		SensorWrapper mySensor = getSubjectSensor(pTrack);
+		// find the names of visible sensors
+		String sensorName = null;
+		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
+		while(sensors.hasMoreElements())
+		{
+			SensorWrapper sw = sensors.nextElement();
+			if(sw.getVisible())
+			{
+				if(sensorName == null)
+					sensorName = sw.getName();
+				else
+					sensorName += "_" + sw.getName();
+			}
+		}
 
-		// did we find it?
-		if (mySensor == null)
-			return null;
-		
-		// get the sensor cuts
-		Collection<Editable> theCuts =  mySensor.getItemsBetween(period
-				.getStartDTG(), period.getEndDTG());
-		
+
 		// and the secondary track
 		TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
 
-		// start off with the header bits
-		String header = this.getHeader(primaryTrack.getName(), primaryTrack
-				.getName(), mySensor.getName(), secTrack.getName(), period
-				.getStartDTG().getDate(), period.getEndDTG().getDate(), theCuts.size(),
-				0, 0);
 
 		// now the body bits
-		String body = this.getBody(pTrack, theCuts, secTrack, period, sensorType);
+		String body = this.getBody(pTrack, secTrack, period, sensorType);
 
+		// count how many items we found
+		int numRows = count(body, BRK);
+		
+		// start off with the header bits
+		String header = this.getHeader(primaryTrack.getName(), primaryTrack
+				.getName(), sensorName, secTrack.getName(), period
+				.getStartDTG().getDate(), period.getEndDTG().getDate(), numRows,
+				0, 0);
+
+		
 		// and collate it
 		res = header + body;
 
 		return res;
 	}
+	
+	
+  /**
+   * Count the number of instances of substring within a string.
+   *
+   * @param string     String to look for substring in.
+   * @param substring  Sub-string to look for.
+   * @return           Count of substrings in string.
+   */
+  private static int count(final String string, final String substring)
+  {
+     int count = 0;
+     int idx = 0;
+
+     while ((idx = string.indexOf(substring, idx)) != -1)
+     {
+        idx++;
+        count++;
+     }
+
+     return count;
+  }
 
 	/**
-	 * @param pTrack
-	 *          the track to search for sensors
+	 * find the sensor cut nearest to the supplied time
+	 * 
+	 * @param hostTrack
+	 * @param target
 	 * @return
 	 */
-	public static SensorWrapper getSubjectSensor(TrackWrapper pTrack)
+	protected SensorContactWrapper nearestCutTo(TrackWrapper hostTrack,
+			HiResDate target)
 	{
-		Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the final
-		// solution
-
-		// loop through collecting cuts from visible sensors
-		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
+		Long offset = null;
+		SensorContactWrapper res = null;
+		Enumeration<SensorWrapper> sensors = hostTrack.getSensors();
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper thisS = sensors.nextElement();
-			if (thisS.getVisible())
+			SensorWrapper sw = sensors.nextElement();
+			if (sw.getStartDTG().greaterThan(target)
+					|| sw.getEndDTG().lessThan(target))
 			{
-				mySensors.add(thisS);
+				// nope, it's out of our data period
+			}
+			else
+			{
+				Enumeration<Editable> contents = sw.elements();
+				while (contents.hasMoreElements())
+				{
+					SensorContactWrapper thisCut = (SensorContactWrapper) contents
+							.nextElement();
+					long thisDate = thisCut.getDTG().getDate().getTime();
+					long thisOffset = Math.abs(thisDate - target.getDate().getTime());
+					if (res == null)
+					{
+						res = thisCut;
+						offset = new Long(thisOffset);
+					}
+					else
+					{
+						if (thisOffset < offset.longValue())
+						{
+							offset = new Long(thisOffset);
+							res = thisCut;
+						}
+					}
+				}
 			}
 		}
-
-		SensorWrapper mySensor = null;
-		if (mySensors.size() == 1)
-			mySensor = mySensors.firstElement();
-
-		return mySensor;
+		return res;
 	}
 
 	/**
@@ -128,70 +188,78 @@ public class FlatFileExporter
 	 * @param period
 	 * @return
 	 */
-	private String getBody(final TrackWrapper primaryTrack,
-			final Collection<Editable> theCuts, final TrackWrapper secTrack,
+	private String getBody(final TrackWrapper primaryTrack, final TrackWrapper secTrack,
 			final TimePeriod period, final String sensorType)
 	{
 		StringBuffer buffer = new StringBuffer();
 
+		// right, we're going to loop through the target track, producing data
+		// points
+		// for the sensor when it's present
+
+		// remember the primary interpolation
 		boolean primaryInterp = primaryTrack.getInterpolatePoints();
-		boolean secInterp = secTrack.getInterpolatePoints();
 
 		// switch in the interpolation
 		primaryTrack.setInterpolatePoints(true);
-		secTrack.setInterpolatePoints(true);
 
 		WorldLocation origin = null;
 
-		// ok, better start stepping - we're going to step at each sensor cut
-		Iterator<Editable> cutLoop = theCuts.iterator();
-		while (cutLoop.hasNext())
+		Collection<Editable> secCuts = secTrack.getItemsBetween(period
+				.getStartDTG(), period.getEndDTG());
+		Iterator<Editable> secLoop = secCuts.iterator();
+
+		while (secLoop.hasNext())
 		{
-			SensorContactWrapper scw = (SensorContactWrapper) cutLoop.next();
-			// get the host fix
-			final HiResDate thisDTG = scw.getDTG();
+			FixWrapper secFix = (FixWrapper) secLoop.next();
+
+			// get the time
+			final HiResDate thisDTG = secFix.getDTG();
+
+			// now the primary track
 			Watchable[] priMatches = primaryTrack.getNearestTo(thisDTG);
-			Watchable[] secMatches = secTrack.getNearestTo(thisDTG);
+			FixWrapper priFix = (FixWrapper) priMatches[0];
+
+			// and the sensor cut ( which could be null)
+			SensorContactWrapper theCut = nearestCutTo(primaryTrack, thisDTG);
 
 			if ((priMatches == null) || (priMatches.length == 0))
 			{
 				// we need primary data, throw an error if we don't have points.
-				throw new RuntimeException("No matching secondary fixes for" + thisDTG);
+				throw new RuntimeException("No matching primary fixes for" + thisDTG);
 			}
-
-			if ((secMatches == null) || (secMatches.length == 0))
-			{
-				// right, that's enough. let's stop
-				break;
-			}
-
-			FixWrapper priF = (FixWrapper) priMatches[0];
-			FixWrapper secF = (FixWrapper) secMatches[0];
 
 			if (origin == null)
-				origin = priF.getLocation();
+				origin = priFix.getLocation();
 
 			// now sort out the spatial components
-			WorldVector priVector = new WorldVector(priF.getLocation().subtract(
+			WorldVector priVector = new WorldVector(priFix.getLocation().subtract(
 					origin));
-			WorldVector secVector = new WorldVector(secF.getLocation().subtract(
+			WorldVector secVector = new WorldVector(secFix.getLocation().subtract(
 					origin));
-			WorldVector senVector = new WorldVector(scw.getLocation()
-					.subtract(origin));
+			WorldVector senVector = null;
+			if (theCut != null)
+				senVector = new WorldVector(theCut.getLocation().subtract(origin));
 
 			double priRange = MWC.Algorithms.Conversions.Degs2Yds(priVector
 					.getRange());
 			double secRange = MWC.Algorithms.Conversions.Degs2Yds(secVector
 					.getRange());
-			double senRange = MWC.Algorithms.Conversions.Degs2Yds(senVector
-					.getRange());
+			double senRange = -999;
+			if (senVector != null)
+				senRange = MWC.Algorithms.Conversions.Degs2Yds(senVector.getRange());
 
 			double priX = (Math.sin(priVector.getBearing()) * priRange);
-			double secX = (Math.sin(secVector.getBearing()) * secRange);
-			double senX = (Math.sin(senVector.getBearing()) * senRange);
 			double priY = Math.cos(priVector.getBearing()) * priRange;
+			double secX = (Math.sin(secVector.getBearing()) * secRange);
 			double secY = (Math.cos(secVector.getBearing()) * secRange);
-			double senY = (Math.cos(senVector.getBearing()) * senRange);
+			double senX = -999.9;
+			double senY = -999.9;
+			if(senVector != null)
+			{
+				 senX = (Math.sin(senVector.getBearing()) * senRange);
+				 senY = (Math.cos(senVector.getBearing()) * senRange);
+			}
 
 			// do the calc as long, in case it's massive...
 			long longSecs = (thisDTG.getMicros() - period.getStartDTG().getMicros()) / 1000000;
@@ -199,25 +267,31 @@ public class FlatFileExporter
 
 			// and the freq
 			double senFreq = -999.9;
-			if (scw.getHasFrequency())
-				senFreq = scw.getFrequency();
+			if ((theCut != null) && (theCut.getHasFrequency()))
+				senFreq = theCut.getFrequency();
 
 			int osStat = 7;
 			int senStat;
-			if (scw.getHasFrequency())
+			if(theCut == null)
+				senStat = 0;
+			else if (theCut.getHasFrequency())
 				senStat = 63;
 			else
 				senStat = 59;
+			double theBearing = -999;
+			if(theCut != null)
+				theBearing = theCut.getBearing();
 
 			int msdStat = 7;
 			int prdStat = 0;
 
-			String nextLine = collateLine(secs, osStat, priX, priY, priF.getSpeed(),
-					priF.getCourseDegs(), senStat, senX, senY, scw.getBearing(), -999.9,
-					senFreq, -999.9, priF.getSpeed(), priF.getCourseDegs(), sensorType,
-					msdStat, secX, secY, secF.getSpeed(), secF.getCourseDegs(), prdStat,
-					-999.9, -999.9, -999.9, -999.9, -999, -999, -999.9, -999.9, -999.9,
-					-999.9, -999.9, -999.9);
+			String nextLine = collateLine(secs, osStat, priX, priY,
+					priFix.getSpeed(), priFix.getCourseDegs(), senStat, senX, senY,
+					theBearing, -999.9, senFreq, -999.9, priFix.getSpeed(),
+					priFix.getCourseDegs(), sensorType, msdStat, secX, secY, secFix
+							.getSpeed(), secFix.getCourseDegs(), prdStat, -999.9, -999.9,
+					-999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9,
+					-999.9);
 
 			buffer.append(nextLine);
 			buffer.append(BRK);
@@ -226,7 +300,6 @@ public class FlatFileExporter
 
 		// restore the primary track interpolation
 		primaryTrack.setInterpolatePoints(primaryInterp);
-		secTrack.setInterpolatePoints(secInterp);
 
 		return buffer.toString();
 	}
