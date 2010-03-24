@@ -87,7 +87,7 @@
       </description>
    </item>
    <item
-         href="/org.mwc.debrief.help/html/legacy/sensor_data.html#LENGTH_PREFS"
+         href="/org.mwc.debrief.help/html/legacy/sensor_data.html#SensorOffsetsEditor"
          title="Set array offset">
       <description>
          We can move on now that we&apos;ve tidied the sensor data.  As you&apos;ll see, the sensor data is ambiguous, as produced by a towed array.  Currently Debrief is plotting the sensor cuts against the attack datum of the platform, but we need to apply an offset for this sensor (-451m in this case).  So, select <b>Sensor:SENSOR_A</b> in the <b>Layer Manager</b>, then open the <b>Properties Window</b> (the click to perform button below will also open it).  In the Properties Window you&apos;ll see the <b>SensorOffset</b> attribute.  This allows you to enter a custom offset or to choose from a set of lengths from a shared datafile (see the Help entry for this item for further details).  Anyway, ignore the shared values and enter -451 metres in this field, click on the Plot, and you&apos;ll see the bearings jump to reflect the change.

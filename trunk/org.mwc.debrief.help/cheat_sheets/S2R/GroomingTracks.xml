@@ -19,7 +19,7 @@
 			(either REP or XML). REP files are flagged with a Debrief icon. </description>
 	</item>
 	<item title="Check import mode">
-		<description>For this tutorial we need to ensure that the data track is imported in Over the Ground mode.  To check the import mode, click on the Preferences item from the Window menu.  The Default track mode selector is in the CMAP preferences. Check that <b>Ask user</b> is selected - so that you can be confident of the mode in which the data is to be imported. </description>
+		<description>For this tutorial we need to ensure that the data track is imported in Over the Ground mode.  To check the import mode, click on the Preferences item from the Window menu.  The <b>Default track import mode</b> selector is in the <b>Maritime Analysis</b> preferences. Check that <b>Ask user</b> is selected - so that you can be confident of the mode in which the data is to be imported. </description>
   <command
         required="false"
         serialization="org.eclipse.ui.window.preferences(preferencePageId=org.mwc.cmap.core.preferences.CMAPPrefsPage)"/>
@@ -36,7 +36,7 @@
  <item
        title="Getting a feel for the data">
     <description>
-       Right we&apos;ve now got our first track section loaded.  You can see it in the layer manager view.  If this isn&apos;t open, either select it from <b>Window/Show View/Layer Manager</b> or click the shortcut immediately below.  It would be useful to show symbols for all of the data points on the track. So, right-click on Track:Frigate.  A large popup menu will appear - which shows the range of items we can edit for this track, and operations we can apply to this track.  From the menu, select <b>Frigate</b> to see the list of editable items specific to this track.  From the popup menu, open the <b>Symbol Freqency</b> menu, and select <b>All</b>.  This will switch on a symbol at every data point.
+       Right we&apos;ve now got our first track section loaded.  You can also see it in the Layer Manager view.  If this isn&apos;t open, either select it from <b>Window/Show View/Layer Manager</b> or click the shortcut immediately below.  It would be useful to show symbols for all of the data points on the track. So, right-click on Track:Frigate.  A large popup menu will appear - which shows the range of items we can edit for this track, and operations we can apply to this track.  From the menu, select <b>Frigate</b> to see the list of editable items specific to this track.  From the popup menu, open the <b>Symbol Freqency</b> menu, and select <b>All</b>.  This will switch on a symbol at every data point.
     </description>
     <command
           required="false"
@@ -63,7 +63,7 @@
  <item
        title="Align last section">
     <description>
-       Next, select <b>Drag Track Segment</b> from the toolbar,  it&apos;s an arrow cursor with a picture of a track-segment to it&apos;s top-right.  When you select <b>Drag Track Segment</b>, the Bearing Residuals window opens.  It isn&apos;t of relevance to our tidying of this single track - but the Translate/Rotate/Stretch/Shear would allow us to elect to rotate a track segment instead of just dragging it..  Now, move the hand-cursor over first point of the lower segment of track - it will be labelled with <b>030337.25</b>.  When it turns green, start dragging the track upwards and leftwards over the dangling end of the other track segment.  Whilst the track is being dragged, you&apos;ll see that extension legs are plotted on each end of the track, with a marker circle plotted at the distance along the extension equal to the distance from the end point to the first point on the track.  You can now fine-tune your drag operation to put the &apos;target&apos; over the last point on the blue track.
+       Next, select <b>Drag Track Segment</b> from the toolbar,  it&apos;s an arrow cursor with a picture of a track-segment to it&apos;s top-right.  When you select <b>Drag Track Segment</b>, the Bearing Residuals window opens.  It isn&apos;t of relevance to our tidying of this single track - but we do need to switch to Translate mode from the Translate/Rotate/Stretch/Shear modes offered.  Now, move the hand-cursor over first point of the lower segment of track - it will be labelled with <b>030337.25</b>.  When it turns green, start dragging the track upwards and leftwards over the dangling end of the other track segment.  Whilst the track is being dragged, you&apos;ll see that extension legs are plotted on each end of the track, with a marker circle plotted at the distance along the extension equal to the distance from the end point to the first point on the track.  You can now fine-tune your drag operation to put the &apos;target&apos; over the last point on the blue track.
     </description>
  </item>
  <item
@@ -104,7 +104,7 @@ Drag in this file of 3rd party data, again selecting OTG during the import.   Yo
  <item
        title="Move the third party track section into place.">
     <description>
-       Next, switch to <b>Drag track segment</b>, then move the cursor over the top-left end of the green track, and when the cursor turns green start dragging the green track down.
+       Next, switch to <b>Drag whole feature</b>, then move the cursor over the top-left end of the green track, and when the cursor turns green start dragging the green track down.
     </description>
  </item>
  <item

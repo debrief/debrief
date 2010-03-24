@@ -28,7 +28,7 @@
          </onCompletion>
          <task kind="cheatsheet" name="Load and groom sensor data" skip="false">
             <intro>
-               Now we&apos;ve learned about how to groom data by drag and dropping segments we&apos;re going to encounter the <b>Grid Editor</b> a Debrief panel dedicated to editing raw data.
+               Now we&apos;ve learned about how to groom data by drag and dropping segments we&apos;re going to encounter the <b>Grid Editor</b>  - a Debrief panel dedicated to editing raw data.
             </intro>
             <onCompletion>
                We&apos;ve now got a track with lovely smooth sensor data. Hmm.
@@ -50,6 +50,9 @@
             <intro>
                Next we&apos;re going to combine the discrete track segments into a tidy target track ready for subsequent analysis.
             </intro>
+            <onCompletion>
+               That&apos;s all the skills you need for single sided reconstruction using Debrief.  Clearly there&apos;s probably now another step to be performed in how you exploit your shiny new track, but that would depend on your analysis objective.
+            </onCompletion>
             <param name="path" value="CombineTargetTracks.xml">
             </param>
          </task>

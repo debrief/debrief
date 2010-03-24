@@ -13,11 +13,23 @@
        Was the navigator view already open?  If it was then you&apos;ve missed out on the Show View menu.  Just open the Window menu from the top of Debrief, and select <b>Show view</b>.  A list of Debrief-specific views will open. So, in the future, if you&apos;re directed to a view but you can&apos;t find it, just remember you can open any view from this menu,
     </description>
  </item>
+ <item
+       title="Learn about the Quick Access panel">
+    <description>
+       Alternatively, where ever you are in Debrief, you can popup the quick access panel.  Just hold down the <b>[ctrl]</b> key, press <b>3</b> and a yellow post-it like menu will appear.  As you start typing &apos;Navigator&apos; the list of available commands will shrink down until your required view is open.  Obviously, this is of greater relevance to those who favour keyboard over mouse.
+    </description>
+ </item>
+ <item
+       title="Learn about Views in Debrief">
+    <description>
+       A you&apos;ll have read, the Navigator panel is an example of a View in Debrief.  Views are supplemental panels that provide additional information (or control) to the conventional 2D Debrief plot.  They can be closed by clicking on the <b>X</b> icon on their name tab.  They can also be dragged around, both within Debrief (to put them, for exampe on the opposite side of the application), or out of Debrief into a separate window.  When you close Debrief, it remembers the views that were previously open.
+    </description>
+ </item>
 	<item title="Check you need a project">
 		<description>If the navigator window is empty, then you need to create a project.  If the window already contains a folder-icon (possibly containing sample data) then hey, you're ready to go, well done! Return to the Welcome page and select another tutorial (such as 'Getting your data into Debrief'. Otherwise, tick the 'Complete' box below and continue with this tutorial.</description>
 	</item>
 	<item title="Create a 'General' project" dialog="true">
-		<description>Right-click in the Navigator view, and select 'Project...' from the 'New' sub-menu.  The New Project wizard will open. From the 'General' folder, select Project, and then press 'Next'. Now just enter a name for your project (this could be the name of the current exercise). Just press the 'Finish' button, and you will see the new project in your workspace.
+		<description>Right-click in the Navigator view, and select <b>Project...</b> from the <b>New</b> sub-menu.  The New Project wizard will open. From the <b>General</b> folder, select <b>Project</b>, and then press <b>Next</b>. Now just enter a name for your project (this could be the name of the current exercise).  If you&apos;re in a workplace where users are unable to create folders in their home directory, clear the <b>Use default location</b> checkbox, and <b>Browse</b> to a folder in your personal working directories.  Then just press the &apos;Finish&apos; button, and you will see the new project in your workspace.
 		</description>
 	</item>
 </cheatsheet>

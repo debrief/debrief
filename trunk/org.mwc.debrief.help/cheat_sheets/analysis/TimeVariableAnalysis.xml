@@ -4,7 +4,7 @@
 		<description>Debrief is capable of producing analysis products beyond the traditional graphical track plots.  After all, it's got the data hasn't it?  The most obvious derived products are the analysis plots - graphs showing time versus either a recorded data value or a calculation based on a specific set of data-values.  Why not learn more...</description>
 	</intro>
 	<item title="The big-picture">
-		<description>Right, here's the process we're going to follow.  We need to tell Debrief the time-period we want plotted, which participants to plot data for, what type of data to plot, and which for relative calculations which is the primary track.  Let's go.</description>
+		<description>Right, here&apos;s the process we&apos;re going to follow.  We need to tell Debrief the time-period we want plotted, which participants to plot data for, what type of data to plot, and (for relative calculations) which is the primary track.  Let&apos;s go.</description>
 	</item>
 	<item title="Check you have some data" href="/org.eclipse.platform.doc.user/concepts/cnav.htm">
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  Also check you have our sample data-files - it they're not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
@@ -12,13 +12,13 @@
 	<item title="Open the sample plot-file">
 		<description>Double-click on 'sample.xml' in the Navigator window, and the sample plot will open.</description>
 	</item>
-	<item title="Fit to window" href="\org.mwc.debrief.help\html\legacy\moving_around.html#Fit_To_Win">
+	<item title="Fit to window" href="/org.mwc.debrief.help/html/legacy/moving_around.html#Fit_To_Win">
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.</description>
 	</item>
 	<item title="Open the Time Controller" href="/org.mwc.debrief.help/html/legacy/controlling_time.html" skip="true">
 		<description>In the top left hand corner of Debrief you should find the Time Controller.  If is isn't there, select "Time Controller" from Debrief's Window/Show View menu.</description>
 	</item>
-	<item title="Select the time period of interest" href="\org.mwc.debrief.help\html\legacy\controlling_time.html#time_controller">
+	<item title="Select the time period of interest" href="/org.mwc.debrief.help/html/legacy/controlling_time.html#time_controller">
 		<description>Right, select the period 120800 to 121100 using the time-period selector at the bottom of the Time Controller  (click help button above for more advice on the time controller).  Remember that holding down the shift-key makes the sliders move in one-hour jumps.</description>
 	</item>
 	<item title="Open the Layer Manager" href="/org.mwc.debrief.help/html/legacy/layer_mgr.html" skip="true">

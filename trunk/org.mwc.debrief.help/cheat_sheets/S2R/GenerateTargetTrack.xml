@@ -10,13 +10,13 @@
    <item
          title="Decide on contact period">
       <description>
-         The capable analyst will be able to recognise a couple of periods of steady bearing rate that lend themselves to being the basis of TMA solutions.  The first one we&apos;re going to use is the first dozen or so sensor cuts.  We can see that after a period of about 6 unstaedy cuts there&apos;s another steady period - we&apos;ll use that for a solution a little later.
+         The capable analyst will be able to recognise a couple of periods of steady bearing rate that lend themselves to being the basis of TMA solutions.  The first one we&apos;re going to use is the first dozen or so sensor cuts.  We can see that after a period of about 10 unsteady cuts there&apos;s another steady period - we&apos;ll use that for a solution a little later.
       </description>
    </item>
    <item
          title="Highlight contacts">
       <description>
-         We&apos;re going to change the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Layer Manager.  By my (unqualified eye), the last data point is the one at <b>090722 04417</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
+         We&apos;re going to change the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Layer Manager.  By my (unqualified eye), the last data point is the one at <b>090722 044127</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
       </description>
    </item>
    <item
@@ -28,56 +28,15 @@
    <item
          title="Follow the generate TMA wizard">
       <description>
-         Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with <b>TMA_</b> and the current time.   The solutions have times in their name to make it easier for you to manage them.
-      </description>
-   </item>
-   <item
-         skip="true"
-         title="Recognise track data">
-      <description>
-         If you expand the new track in the <b>Layer Manager</b> you&apos;ll see the <b>Positions</b> child item.  Notice that the icon for this item shows a straight-line section of data with an associated (but tiny) compass rose).  The equivalent object for <b>Track:NONSUCH</b> shows a non straight-line set of positions.  Also, note that on the plot, the name of the TMA segment is shown in italics, to denote that it&apos;s not based on actual position recordings.
-      </description>
-   </item>
-   <item
-         href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
-         title="Put the tracks on the tote">
-      <description>
-         To view residuals, we must indicate to Debrief which is the ownship and which is the target.  Debrief can hold many more than two tracks, so we must inform it which two tracks we want to compare with each other. So, in the Layer Manager, first select the <b>Track:NONSUCH</b> item, then click on the <b>1</b>  (primary) in the Layer Manager toolbar.  Next, click on the <b>Track_xxxx</b> item and select <b>2</b> (secondary) button in the Layer Manager toolbar.  If you switch to the <b>Track Tote</b> view (shortcut provided below) you&apos;ll now see it contains our primary and secondary tracks - and we&apos;ve successfully indicated who we want to view in the residuals plot.
-      </description>
-      <command
-            required="false"
-            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.tote.views.ToteView)"/>
-   </item>
-   <item
-         href="/org.mwc.debrief.help/html/legacy/formatting_data.html#track_shifting"
-         title="Drag the track segment">
-      <description>
-         You may now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment</b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
-In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
-     </description>
-      <subitem
-            label="Review bearing residuals.  When you enter drag-track mode, the view Bearing Residuals view is opened for you - so you can track the current residual errors."
-            skip="true">
-       </subitem>
-      <subitem
-            label="Review frequency residuals.  If you do have frequency data available, open the Frequency Residuals view to track the difference between measured and predicted frequency (taking ownship and target doppler into account)."
+         Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with <b>TMA_</b> and the current time.   The solutions have times in their name to make it easier for you to manage them.  Right, now you know what to expect, you can actually right-click on the selected data and select <b>Generate TMA solution from seIf you find then expand the new track (<b>TMA_220415.22</b>) in the <b>Layer Manager</b> you&apos;ll see the <b>Positions</b> child item.  Notice that the icon for this item shows a straight-line section of data with an associated (but tiny) compass rose).  The equivalent object for <b>Track:NONSUCH</b> shows a non straight-line set of positions.  Also, note that on the plot, the name of the TMA segment is shown in italics, to denote that it&apos;s not based on actual position recordings.ther. So, in the Layer Manager, first select the <b>Track:NONSUCH</b> item, then click on the <b>1</b>  (primary) in the Layer Manager toolbar.  Next, click on the <b>TraTo view residuals, we must indicate to Debrief which is the ownship and which is the target.  Debrief can hold many more than two tracks, so we must inform it which two tracks we want to compare with each other. So, in the Layer Manager, first select the <b>Track:NONSUCH</b> item, then click on the <b>1</b>  (primary) in the Layer Manager toolbar.  Next, click on the <b>Track_TMA_220415.22</b> item and select <b>2</b> (secondary) button in the Layer Manager toolbar.  If you switch to the <b>Track Tote</b> view (shortcut provided below) you&apos;ll now see it contains our primary and secondary tracks - and we&apos;ve successfully indicated who we want to view in the residuals plot. may now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment</b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <bYou may now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment</b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
+In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.  Have a go a switching to <b>Shear</b> mode and dragging the current solution to minimise the errors.  As with many  other views, the <b>Bearing Residuals</b> contains buttons on the toolbar and drop-down menu we haven&apos;t covered in this tutorial. Feel free to have a play with them, as you wish.  Have a go a switching to <b>Shear</b> mode and dragging the current solution to minimise the errors.e Frequency Residuals view to track the difference between measured and predicted frequency (taking ownship and target doppler into account)."
             skip="true">
          <command
                required="false"
-               serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.debrief.track_shift.views.FrequencyResidualsView)"/>
-      </subitem>
-   </item>
-   <item
-         title="Generate second TMA segment">
-      <description>
-         Once you&apos;re happy with the first solution it&apos;s time to move on.   It would appear from the sensor data that the turn is covered by about 13 cuts before a further straight line section of data.
+               serialization="org.eclipse.ui.views.showView(org.eclipse.Review frequency residuals.  If you do have frequency data available, open the Frequency Residuals view (From the &lt;b&gt;Window/Show View &lt;/b&gt;menu) to track the difference between measured and predicted frequency (taking ownship and target doppler into account).py with the first solution it&apos;s time to move on.   It would appear from the sensor data that the turn is covered by about 13 cuts before a further straight line section of data.
 So, now click on the first sensor cut of the second steady set of bearings - that cut will be highlighted in the <b>Layer Manager</b>. Now scroll down to the end of the data and shift-click the last sensor cut.  We&apos;ve now selected the cuts to be used for the second track segment.  Right click on one of the selected items and select <b>Multiple items/Color/Green</b>.  The cuts will turn green.  Now right-click again on the cuts and click on <b>Generate TMA solution from selected cuts</b>, and complete the wizard once again.
       </description>
-   </item>
-   <item
-         title="Refine second solution">
-      <description>
-         Now, find the new solution in the Layer Manager and set it as the secondary track.  You&apos;ll also have to switch to the track-tote and remove the existing secondary track.  Do this by right-clicking anywhere in the secondary track&apos;s column of data and selecting <b>Remove this track</b>.  Once the new solution is marked as secondary you are able to start dragging/refining this solution.
+  Now, find the new solution in the Layer Manager and set it as the secondary track.  Note, there are two secondary track related buttons in the Layer Manager toolbar.  The two/plus combination adds the selected track as another secondary track. The plain two symbol just makes the current track the secondary track. Once the new solution is marked as secondary you are able to start dragging/refining this solution.w solution is marked as secondary you are able to start dragging/refining this solution.
       </description>
    </item>
 </cheatsheet>

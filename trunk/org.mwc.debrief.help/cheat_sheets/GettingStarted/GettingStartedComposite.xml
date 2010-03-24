@@ -2,7 +2,7 @@
 <compositeCheatsheet name="Getting some data into Debrief NG">
    <taskGroup name="Getting started with Debrief NG" skip="false">
       <intro>
-         This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.
+         This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.  If you wish, you can widen this panel to make the tutorials easier to read.
       </intro>
       <taskGroup kind="sequence" name="Defining your workspace" skip="false">
          <intro>
@@ -66,7 +66,7 @@
          </task>
          <task kind="cheatsheet" name="Importing some existing data" skip="false">
             <intro>
-               Debrief NG stores it&apos;s user data in collections named projects.
+               At last we&apos;re about to view some actual vessel tracks.
             </intro>
             <param name="id" value="org.mwc.debrief.help.started.loading_data">
             </param>
@@ -84,6 +84,9 @@
             <intro>
                Here you&apos;ll learn more about the Debrief user interface
             </intro>
+            <onCompletion>
+               You&apos;ve now mastered the initial steps of using Debrief. Why not go back to the Welcome view (there&apos;s a <b>Restore Welcome</b> link at the top of this view).  The <b>Using Debrief in analysis&lt;b/&gt; is a logical next step.
+            </onCompletion>
             <param name="path" value="ViewHelpForUI.xml">
             </param>
          </task>

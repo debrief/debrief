@@ -7,7 +7,7 @@
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  We're going to be working with the Sample.xml data-file from Debrief's sample data distribution.  If you can't see the sample data, refer to the online help covering how to find/load it. </description>
 	</item>
 	<item title="Open a sample file">
-		<description>Right, double-click on "Sample.xml" in the navigator window.  Our sample Debrief plot should now open</description>
+		<description>Now double-click on <b>Sample.xml</b> in the navigator window.  Our sample Debrief plot should now open</description>
 	</item>
 	<item title="Check you can view the data">
 		<description>To be sure you can see all of the data, perform a fit-to-window operation, either via the Fit-to-Window button on the toolbar, or by the Fit-to-window button on the Chart Overview panel.</description>

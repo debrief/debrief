@@ -1186,7 +1186,7 @@ and so on....</programlisting></para>
                     <para>It is possible to direct Debrief to always import using the indicated mode
                         - by clicking on the Automatically use this mode next time. Once set to
                         'automatic', you can switch back to manual selection using the selections in
-                        the CMAP Preferences dialog:<screenshot>
+                        the Maritime Analysis Preferences dialog:<screenshot>
                             <mediaobject>
                                 <imageobject>
                                     <imagedata fileref="figures/ImportModePreference.png"/>
@@ -4635,7 +4635,7 @@ and so on....</programlisting></para>
             <sect1 id="etopo_data">
                 <title>ETOPO Data</title>
                 <sect2 id="etopo_install">
-                    <title>Configuring Debrief to read VPF data</title>
+                    <title>Configuring Debrief to read ETOPO data</title>
                     <para>Debrief determines where to find the <glossterm linkend="g_etopo"
                             >ETOPO</glossterm> data using <indexterm>
                             <primary>ETOPO Data</primary>
@@ -4644,7 +4644,7 @@ and so on....</programlisting></para>
                             <guibutton>Preferences</guibutton> dialog from the
                             <guimenu>Window</guimenu> menu. Indicate the location of your ETOPO.RAW
                         datafile using the file-browser button.<figure id="vpf_prefs" float="0">
-                            <title>VPF preferences</title>
+                            <title>ETOPO preferences</title>
                             <screenshot>
                                 <mediaobject>
                                     <imageobject>

@@ -41,6 +41,9 @@
          <intro>
             Debrief has lots of embedded functionality that deals with the relationship between two tracks: ranges, bearings, range and bearing rates ...  You can access some of this computational ability by asking Debrief to produce plots of your data. You&apos;ll learn how in this cheat sheet.
          </intro>
+         <onCompletion>
+            And that&apos;s all for using Debrief for analysis.  If you&apos;re from an organisation that conducts TMA analysis based on sensor data (or you&apos;ve a general yearning to learn) why not go back to the <b>Welcome</b> page (using the <b>Restore Welcome</b> link at the top of this view and try the <b>Debrief support for single sided reconstruction</b> tutorial.
+         </onCompletion>
          <param name="path" value="TimeVariableAnalysis.xml">
          </param>
       </task>

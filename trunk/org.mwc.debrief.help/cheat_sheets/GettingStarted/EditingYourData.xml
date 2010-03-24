@@ -7,16 +7,24 @@
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  Also check you have our sample data-files - it they're not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample plot-file">
-		<description>Double-click on 'sample.xml' in the Navigator window, and the sample plot will open.</description>
+		<description>If it&apos;s not already open, double-click on &apos;sample.xml&apos; in the Navigator window, and the sample plot will open.</description>
 	</item>
-	<item title="Fit to window">
-		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.</description>
+	<item
+       href="/org.mwc.debrief.help/html/legacy/moving_around.html"
+       title="Fit to window">
+		<description>To make sure all of the data is visible, click on the &quot;Fit-to-Window&quot; toolbar button.  Read more about the toolbar buttons by clicking on the help-link to the right of this text.</description>
 	</item>
+ <item
+       title="View a the data in tree form">
+    <description>
+       In addition to viewing your data on the 2D plot, the <b>Layer Manager</b> displays it in tree form.  Switch to the <b>Layer Manager</b> view to see the data.  You&apos;ll see the two tracks there, together with other layers that contain <b>Chart Features</b> (such as the <b>Grid</b> and <b>Scale</b>), and the <b>Misc</b> layer that contains graphical annotations.
+    </description>
+ </item>
 	<item title="Make sure the properties window is open" href="/org.eclipse.platform.doc.user/concepts/cpropview.htm">
 		<description>The properties window is normally at the bottom left of Debrief.  If it's there but not at the top of the 'stack', click on its title to reveal it.  If you can't find it, select "Properties" from the 'Window/Show View" drop-down list.</description>
 	</item>
 	<item title="Select an item">
-		<description>Now double-click on one of the corners of the green rectangle.  You&apos;ll now see its editable attributes appear on the properties window.  Cool.  You&apos;ll see that the attributes are grouped for ease of use, and some must be expanded (those for location &amp; time).  On your Debrief installation the Properties and Layer Manager views may be on the same stack.  If this is the case, drag the Properties view and move it into another stack (such as over the Navigator view).  Feel free to experiment with your arrangement of views - both their size and location.</description>
+		<description>Now double-click on one of the corners of the green rectangle near the centre of the track plot.  You&apos;ll now see its editable attributes appear on the properties window.  Cool.  You&apos;ll see that the attributes are grouped for ease of use, and some must be expanded (those for location &amp; time).</description>
 	</item>
 	<item title="Make a change">
 		<description>Now have a go at changing the rectangle's label color.  Click once on the green rectangle next to 'LabelColor'.  A button containing three dots will appear.  Click on this to open the color editor.  Click on the red rectangle and then the 'OK' button.  The dialog will close, the label color property will be updated, and the plot will redraw.  Well done.</description>
@@ -25,7 +33,7 @@
 		<description>Oops, it appears we shouldn't have changed the label color, it doesn't meet NATO MilStd 12332 Sub-para 14g (2002 version).  To undo a change, first click on the tab at the top of the sample.xml plot (to tell Debrief which plot we're undoing).  Now click on the Edit menu, and select Undo (it's the first item).  The color of the label will now change back.  Look on the Edit menu again, and you'll see there's now a "Redo" command available - just in case you're undecided about your adherence to sub-para 14g.  Note, it's not just edits that are undo-able, lots of operations can be undone, just have a look on the Edit menu whenever you feel the need to step-back.  If you think something isn't on there but it should be, just ask...</description>
 	</item>
 	<item title="Edit a position">
-		<description>To select a position within a track, just double-click on it - its editable attributes will appear in the properties window.</description>
+		<description>To select a position within a track, just double-click on it - its editable attributes will appear in the properties window.  You can now change the symbol, label, or track color for that position.</description>
 	</item>
 	<item title="Edit a whole track">
 		<description>Aaah, but how do you edit a track?  Easy, just use the Layer Manager to select it rather than clicking on the plot.  Open the Layer Manager (or select Layer Manager from the Window/Show View drop-down menu).  In the Layer Manager click once on the name of a track, and the whole track's properties will be editable in the Properties View.  The Layer Manager is also useful for selecting non-geographic entities (such as a grid, scale, or background data-set) to be edited.</description>
