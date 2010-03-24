@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Wed Mar 03 11:21:48 GMT 2010" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Tue Mar 02 11:46:15 GMT 2010"/>
+<plot Created="Tue Mar 23 11:44:37 GMT 2010" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Tue Mar 23 11:07:39 GMT 2010"/>
 <session>
 <layers>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
@@ -4867,6 +4867,32 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Misc" Visible="true">
+<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
+<colour Value="YELLOW"/>
+<fontcolour Value="YELLOW"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
+</centre>
+</circle>
+<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
+</centre>
+</textlabel>
+<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
+</br>
+</line>
 <rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
 <colour Value="GREEN"/>
 <fontcolour Value="GREEN"/>
@@ -4878,21 +4904,6 @@
 <shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
 </br>
 </rectangle>
-<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
-</centre>
-</textlabel>
-<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
-<colour Value="YELLOW"/>
-<fontcolour Value="YELLOW"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
-</centre>
-</circle>
 <line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
 <colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
 <fontcolour Value="CYAN"/>
@@ -4902,17 +4913,6 @@
 </tl>
 <br>
 <shortLocation Depth="0.000" Lat="12.1722102" Long="-11.6331319"/>
-</br>
-</line>
-<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
-<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
-<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
 </br>
 </line>
 </layer>
@@ -4954,18 +4954,20 @@
 </tote>
 <component Type="Stepper">
 <property Name="GREEN" Value="64"/>
-<property Name="DateFormat" Value="ddHHmm:ss"/>
+<property Name="DateFormat" Value="yy/MM/dd HH:mm"/>
 <property Name="ShadeArcs" Value="true"/>
 <property Name="Radius" Value="3500.000"/>
 <property Name="Highlighter" Value="Default Highlight"/>
 <property Name="BLUE" Value="64"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="951212 094452"/>
+<property Name="CurrentTime" Value="951212 101115"/>
 <property Name="NumRings" Value="1"/>
+<property Name="Toolbox_Start_Time" Value="951212 050000"/>
 <property Name="PointSize" Value="5"/>
 <property Name="LargeStep" Value="10.0 minutes"/>
 <property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Toolbox_End_Time" Value="951212 114500"/>
 <property Name="Cursor" Value="Normal"/>
 <property Name="TrailLength" Value="15.0 minutes"/>
 <property Name="PlotTrackName" Value="false"/>
