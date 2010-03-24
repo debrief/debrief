@@ -254,7 +254,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private HashMap<String, Button> _buttonList;
 
-	/** listener for the play button
+	/**
+	 * listener for the play button
 	 * 
 	 */
 	private SelectionAdapter _playListener;
@@ -360,14 +361,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						{
 							// are we playing?
 							String playTool = _playButton.getToolTipText();
-							if(playTool.equals(PAUSE_TEXT))
+							if (playTool.equals(PAUSE_TEXT))
 							{
 								if (!_wholePanel.isDisposed())
 								{
 									_playButton.setSelection(false);
 									_playListener.widgetSelected(null);
 									// better stop it
-//									stopPlaying();
+									// stopPlaying();
 									System.err.println("play stopped");
 								}
 							}
@@ -379,11 +380,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		};
 
 	}
-	
+
 	private MWC.Utilities.Timer.Timer getTimer()
 	{
 		// have we created it yet?
-		if(_myTimer == null)
+		if (_myTimer == null)
 		{
 			// nope, better go for it.
 			/**
@@ -394,7 +395,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			_myTimer.setDelay(1000);
 			_myTimer.addTimerListener(this);
 		}
-		
+
 		return _myTimer;
 	}
 
@@ -710,12 +711,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	void stopPlaying()
 	{
-		/** give the event to our child class, in case it's a scenario
+		/**
+		 * give the event to our child class, in case it's a scenario
 		 * 
 		 */
-		if(_steppableTime != null)
+		if (_steppableTime != null)
 			_steppableTime.pause(this, true);
-		
+
 		getTimer().stop();
 	}
 
@@ -801,7 +803,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	void processClick(Boolean large, boolean fwd)
 	{
 
-	 //	CorePlugin.logError(Status.INFO, "Starting step", null);
+		// CorePlugin.logError(Status.INFO, "Starting step", null);
 
 		// check that we have a current time (on initialisation some plots may
 		// not
@@ -886,7 +888,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		}
 
-	//	CorePlugin.logError(Status.INFO, "Step complete", null);
+		// CorePlugin.logError(Status.INFO, "Step complete", null);
 
 	}
 
@@ -1417,8 +1419,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 											if (getTimer().isRunning())
 											{
 												Duration theDelay = (Duration) evt.getNewValue();
-												getTimer().setDelay((long) theDelay
-														.getValueIn(Duration.MILLISECONDS));
+												getTimer().setDelay(
+														(long) theDelay.getValueIn(Duration.MILLISECONDS));
 											}
 										}
 									}
@@ -1497,12 +1499,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								.getSecondaryTracks(), getPeriod());
 					}
 				};
+				
+				// give it an id, so we can look for it shortly.
+				newAction.setId(newAction.getText());
 
 				ImageDescriptor id = newOp.getDescriptor();
 				if (id != null)
 					newAction.setImageDescriptor(id);
 
-				menuManager.insertBefore(TOOLBOX_PROPERTIES, newAction);
+				// see if we already contain it
+				if (menuManager.find(newAction.getId()) != null)
+				{
+					// ignore, we already know about it
+				}
+				else
+					menuManager.insertBefore(TOOLBOX_PROPERTIES, newAction);
 			}
 
 		}
@@ -1649,7 +1660,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	public void dispose()
 	{
 		super.dispose();
-		
+
 		// and ditch the timer
 		_myTimer = null;
 
