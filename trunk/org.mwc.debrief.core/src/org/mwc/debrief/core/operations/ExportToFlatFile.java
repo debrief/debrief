@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -82,6 +83,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 			{
 				out = new BufferedWriter(new FileWriter(fileName));
 				out.write(theData);
+				CorePlugin.showMessage("Export to SAM", "Tracks successfullly exported to SAM format");
 			}
 			catch (FileNotFoundException e)
 			{
