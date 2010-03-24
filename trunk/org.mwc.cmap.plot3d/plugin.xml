@@ -12,9 +12,9 @@
                icon="icons/view3d.gif"
                id="org.mwc.cmap.plot3d.actions.View3d"
                label="&amp;View 3d"
-               menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
+               menubarPath="org.mwc.debrief.core.EditorView"
                style="push"
-               toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"/>                    
+               toolbarPath="org.mwc.debrief.core.EditorView"/>                    
       </actionSet>
    </extension>
    
