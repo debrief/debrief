@@ -53,6 +53,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 	 */
 	private static final String TRAIL_LENGTH = "TrailLength";
 
+	private static final String USE_TRACK_COLOR = "UseTrackColor";
+
 	private static final String POINT_SIZE = "PointSize";
 
 	private static final String FADE_POINTS = "FadePoints";
@@ -170,7 +172,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			int len = Integer.valueOf(val).intValue();
 			timePrefs.setAutoInterval(new Duration(len, Duration.MILLISECONDS));
 		}
-
+			
 		// /////////////////////////////////////////////////////////////
 		val = (String) details.properties.get("StepLarge");
 		if (val != null)
@@ -291,7 +293,11 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		  String fillRings = (String) details.properties.get(SHADE_ARCS);
 			if (fillRings != null)
 				rr.setFillArcs(Boolean.valueOf(fillRings));
-			
+
+		  String useTrackColor = (String) details.properties.get(USE_TRACK_COLOR);
+			if (useTrackColor != null)
+				rr.setUseCurrentTrackColor(Boolean.valueOf(useTrackColor));
+		
 		  String colRed = (String) details.properties.get(COL_RED);
 		  String colGreen = (String) details.properties.get(COL_GREEN);
 		  String colBlue = (String) details.properties.get(COL_BLUE);
@@ -428,12 +434,12 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		{
 			SWTRangeHighlighter hi = (SWTRangeHighlighter) thisHighlighter;
 
-//			details.addProperty(COLOR, MWCXMLReader.writeThis(hi.getColor()));
 			details.addProperty(RADIUS, MWCXMLReader.writeThis(hi.getRadius()));
 			details.addProperty(ARCS, MWCXMLReader.writeThis(hi.getArcs().getCurrent()));
 			details.addProperty(SPOKE_SEPARATION, MWCXMLReader.writeThis(hi.getSpokeSeparation()));
 			details.addProperty(NUM_RINGS,MWCXMLReader.writeThis(hi.getNumRings().getCurrent()));
 			details.addProperty(SHADE_ARCS,MWCXMLReader.writeThis(hi.getFillArcs()));
+			details.addProperty(USE_TRACK_COLOR,MWCXMLReader.writeThis(hi.getUseCurrentTrackColor()));
 			
 			
 			details.addProperty(COL_RED,MWCXMLReader.writeThis(hi.getColor().getRed()));

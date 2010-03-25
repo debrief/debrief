@@ -36,6 +36,7 @@ import MWC.GenericData.WorldVector;
  */
 public class FlatFileExporter
 {
+
 	/**
 	 * header line
 	 * 
@@ -53,12 +54,17 @@ public class FlatFileExporter
 	 */
 	final String tab = "\t";
 
-	/** export the dataset to a string
+	/**
+	 * export the dataset to a string
 	 * 
-	 * @param primaryTrack the ownship track
-	 * @param secondaryTracks sec tracks = presumed to be just one
-	 * @param period the time period to export
-	 * @param sensorType what sensor type was specified
+	 * @param primaryTrack
+	 *          the ownship track
+	 * @param secondaryTracks
+	 *          sec tracks = presumed to be just one
+	 * @param period
+	 *          the time period to export
+	 * @param sensorType
+	 *          what sensor type was specified
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
@@ -72,63 +78,60 @@ public class FlatFileExporter
 		// find the names of visible sensors
 		String sensorName = null;
 		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
-		while(sensors.hasMoreElements())
+		while (sensors.hasMoreElements())
 		{
 			SensorWrapper sw = sensors.nextElement();
-			if(sw.getVisible())
+			if (sw.getVisible())
 			{
-				if(sensorName == null)
+				if (sensorName == null)
 					sensorName = sw.getName();
 				else
 					sensorName += "_" + sw.getName();
 			}
 		}
 
-
 		// and the secondary track
 		TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
-
 
 		// now the body bits
 		String body = this.getBody(pTrack, secTrack, period, sensorType);
 
 		// count how many items we found
 		int numRows = count(body, BRK);
-		
+
 		// start off with the header bits
 		String header = this.getHeader(primaryTrack.getName(), primaryTrack
-				.getName(), sensorName, secTrack.getName(), period
-				.getStartDTG().getDate(), period.getEndDTG().getDate(), numRows,
-				0, 0);
+				.getName(), sensorName, secTrack.getName(), period.getStartDTG()
+				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0);
 
-		
 		// and collate it
 		res = header + body;
 
 		return res;
 	}
-	
-	
-  /**
-   * Count the number of instances of substring within a string.
-   *
-   * @param string     String to look for substring in.
-   * @param substring  Sub-string to look for.
-   * @return           Count of substrings in string.
-   */
-  private static int count(final String string, final String substring)
-  {
-     int count = 0;
-     int idx = 0;
 
-     while ((idx = string.indexOf(substring, idx)) != -1)
-     {
-        idx++;
-        count++;
-     }
+	/**
+	 * Count the number of instances of substring within a string.
+	 * 
+	 * @param string
+	 *          String to look for substring in.
+	 * @param substring
+	 *          Sub-string to look for.
+	 * @return Count of substrings in string.
+	 */
+	private static int count(final String string, final String substring)
+	{
+		int count = 0;
+		int idx = 0;
 
-     return count;
-  }
+		while ((idx = string.indexOf(substring, idx)) != -1)
+		{
+			idx++;
+			count++;
+		}
+
+		return count;
+	}
 
 	/**
 	 * find the sensor cut nearest to the supplied time
@@ -160,7 +163,7 @@ public class FlatFileExporter
 							.nextElement();
 					long thisDate = thisCut.getDTG().getDate().getTime();
 					long thisOffset = Math.abs(thisDate - target.getDate().getTime());
-					if (res == null)
+					if (offset == null)
 					{
 						res = thisCut;
 						offset = new Long(thisOffset);
@@ -188,8 +191,9 @@ public class FlatFileExporter
 	 * @param period
 	 * @return
 	 */
-	private String getBody(final TrackWrapper primaryTrack, final TrackWrapper secTrack,
-			final TimePeriod period, final String sensorType)
+	private String getBody(final TrackWrapper primaryTrack,
+			final TrackWrapper secTrack, final TimePeriod period,
+			final String sensorType)
 	{
 		StringBuffer buffer = new StringBuffer();
 
@@ -255,10 +259,10 @@ public class FlatFileExporter
 			double secY = (Math.cos(secVector.getBearing()) * secRange);
 			double senX = -999.9;
 			double senY = -999.9;
-			if(senVector != null)
+			if (senVector != null)
 			{
-				 senX = (Math.sin(senVector.getBearing()) * senRange);
-				 senY = (Math.cos(senVector.getBearing()) * senRange);
+				senX = (Math.sin(senVector.getBearing()) * senRange);
+				senY = (Math.cos(senVector.getBearing()) * senRange);
 			}
 
 			// do the calc as long, in case it's massive...
@@ -272,26 +276,67 @@ public class FlatFileExporter
 
 			int osStat = 7;
 			int senStat;
-			if(theCut == null)
+			if (theCut == null)
 				senStat = 0;
 			else if (theCut.getHasFrequency())
 				senStat = 63;
 			else
 				senStat = 59;
 			double theBearing = -999;
-			if(theCut != null)
+			double senSpd = -999.9;
+			double senHeading = -999.9;
+			if (theCut != null)
+			{
 				theBearing = theCut.getBearing();
+				senSpd = priFix.getSpeed();
+				senHeading = priFix.getCourseDegs();
 
-			int msdStat = 7;
-			int prdStat = 0;
+			}
+
+			int msdStat = 0;
+			int prdStat = 1 + 2 + 8 + 32 + 128;
+
+			// sort out the range to the target
+			WorldVector toTarget = secFix.getLocation()
+					.subtract(priFix.getLocation());
+			double bearingToTarget = MWC.Algorithms.Conversions.Rads2Degs(toTarget
+					.getBearing());
+			double rangeYds = MWC.Algorithms.Conversions
+					.Degs2Yds(toTarget.getRange());
+
+			final double PRD_FREQ_ACC = -999.9;
+
+			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading Sensor_Status Sensor_X
+			// Sensor_Y Sensor_Brg Sensor_Bacc Sensor_Freq Sensor_Facc Sensor_Speed
+			// Sensor_Heading Sensor_Type Msd_Status Msd_X Msd_Y Msd_Speed Msd_Heading
+			// Prd_Status Prd_X Prd_Y Prd_Brg Prd_Brg_Acc Prd_Range Prd_Range_Acc
+			// Prd_Course Prd_Cacc Prd_Speed Prd_Sacc Prd_Freq Prd_Freq_Acc";
+
+			final double prdFreq = -999.9;
+			final double prdSpdAcc = -999.9;
+			final double prdSpdKts = secFix.getSpeed();
+			final double prdCourseAcc = -999.9;
+			final double prdCourse = secFix.getCourseDegs();
+			final int prdRangeAcc = -999;
+			final int prdRangeYds = (int) rangeYds;
+			final double prdBrgAcc = -999.9;
+			double prdBrg = bearingToTarget;
+			final double prdYYds = secY;
+			final double prdXYds = secX;
+			final double sensorFacc = -999.9;
+			final double sensorBacc = -999.9;
+
+			double msdX = -999.9;
+			double msdY = -999.9;
+			double msdSpd = -999.9;
+			double msdCourse = -999.9;
 
 			String nextLine = collateLine(secs, osStat, priX, priY,
 					priFix.getSpeed(), priFix.getCourseDegs(), senStat, senX, senY,
-					theBearing, -999.9, senFreq, -999.9, priFix.getSpeed(),
-					priFix.getCourseDegs(), sensorType, msdStat, secX, secY, secFix
-							.getSpeed(), secFix.getCourseDegs(), prdStat, -999.9, -999.9,
-					-999.9, -999.9, -999, -999, -999.9, -999.9, -999.9, -999.9, -999.9,
-					-999.9);
+					theBearing, sensorBacc, senFreq, sensorFacc, senSpd, senHeading,
+					sensorType, msdStat, msdX, msdY, msdSpd, msdCourse, prdStat, prdXYds,
+					prdYYds, prdBrg, prdBrgAcc, prdRangeYds, prdRangeAcc, prdCourse,
+					prdCourseAcc, prdSpdKts, prdSpdAcc, prdFreq, PRD_FREQ_ACC);
 
 			buffer.append(nextLine);
 			buffer.append(BRK);

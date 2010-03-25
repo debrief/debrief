@@ -56,6 +56,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	 */
 	private boolean _plainRectangle = false;
 
+	private boolean _useCurrentTrackColor = false;
+	
 	/**
 	 * whether to shade in the arcs
 	 * 
@@ -99,6 +101,12 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 				// hey, don't bother...
 				return;
 			}
+
+			// sort the colors out
+			if(getUseCurrentTrackColor())
+				dest.setColor(watch.getColor());
+			else
+				dest.setColor(_myColor);
 
 			if (_plainRectangle)
 			{
@@ -160,8 +168,6 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			final CanvasType dest, final MWC.Algorithms.PlainProjection proj,
 			final int mySize)
 	{
-		// set the highlight colour
-		dest.setColor(_myColor);
 		// get the current area of the watchable
 		final WorldArea wa = watch.getBounds();
 		// convert to screen coordinates
@@ -184,8 +190,6 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			final double worldRadius, final int rawAxis, final int arcs,
 			final int rings, final int spoke_separation, final CanvasType dest)
 	{
-
-		dest.setColor(_myColor);
 
 		final MWC.Algorithms.PlainProjection _proj = dest.getProjection();
 
@@ -374,6 +378,17 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	{
 		_fillArcs = fillArcs;
 	}
+	
+	public boolean getUseCurrentTrackColor()
+	{
+		return _useCurrentTrackColor;
+	}
+
+	public void setUseCurrentTrackColor(boolean useCurrentTrackColor)
+	{
+		_useCurrentTrackColor = useCurrentTrackColor;
+	}
+
 
 	/**
 	 * determine if we should just plot a ring around the primary track
@@ -516,6 +531,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 				final java.beans.PropertyDescriptor[] res =
 				{
 						prop("Color", "Color to paint highlight", FORMAT),
+						prop("UseCurrentTrackColor", "Paint hightlight using current track color", FORMAT),
 						prop("Radius", "Radius of outer ring (yds)", SPATIAL),
 						prop("Arcs", "Angle of arcs each side (degs)", SPATIAL),
 						prop("FillArcs", "whether to shade in the arcs", FORMAT),
