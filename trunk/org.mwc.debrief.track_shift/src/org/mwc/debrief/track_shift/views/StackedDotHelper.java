@@ -155,7 +155,7 @@ public final class StackedDotHelper
 							}
 
 							Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-							if (matches != null)
+							if ((matches != null) && (matches.length > 0))
 							{
 								FixWrapper hostFix = (FixWrapper) matches[0];
 
