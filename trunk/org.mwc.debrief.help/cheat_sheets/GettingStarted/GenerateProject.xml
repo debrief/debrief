@@ -22,7 +22,7 @@
  <item
        title="Learn about Views in Debrief">
     <description>
-       A you&apos;ll have read, the Navigator panel is an example of a View in Debrief.  Views are supplemental panels that provide additional information (or control) to the conventional 2D Debrief plot.  They can be closed by clicking on the <b>X</b> icon on their name tab.  They can also be dragged around, both within Debrief (to put them, for exampe on the opposite side of the application), or out of Debrief into a separate window.  When you close Debrief, it remembers the views that were previously open.
+       A you&apos;ll have read, the Navigator panel is an example of a View in Debrief.  Views are supplemental panels that provide additional information (or control) to the conventional 2D Debrief plot.  They can be closed by clicking on the <b>X</b> icon on their name tab.  They can also be dragged around, both within Debrief (to put them, for example on the opposite side of the application), or out of Debrief into a separate window.  When you close Debrief, it remembers the views that were previously open.
     </description>
  </item>
 	<item title="Check you need a project">
