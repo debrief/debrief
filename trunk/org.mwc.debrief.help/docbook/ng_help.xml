@@ -2747,7 +2747,6 @@ and so on....</programlisting></para>
                     </sect3>
                     <sect3 id="relative_mode">
                         <title>Plotting Modes</title>
-                        <para/>
                         <para>The plotting mode affects the origin and orientation of the plot. In
                                 <emphasis>Normal</emphasis> mode the plot viewport stays static as
                             the time changes, but if <emphasis>Primary Centred</emphasis> is
