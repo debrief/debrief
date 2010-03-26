@@ -163,18 +163,10 @@ public class FlatFileExporter
 							.nextElement();
 					long thisDate = thisCut.getDTG().getDate().getTime();
 					long thisOffset = Math.abs(thisDate - target.getDate().getTime());
-					if (offset == null)
+					if (thisOffset == 0)
 					{
 						res = thisCut;
 						offset = new Long(thisOffset);
-					}
-					else
-					{
-						if (thisOffset < offset.longValue())
-						{
-							offset = new Long(thisOffset);
-							res = thisCut;
-						}
 					}
 				}
 			}
