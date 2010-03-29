@@ -209,7 +209,6 @@ abstract public class GridHandler extends MWCXMLReader implements
 	{
 		// do the visibility
 		gridElement.setAttribute(VISIBLE, writeThis(theGrid.getVisible()));
-		gridElement.setAttribute(UNITS, theGrid.getDelta().getUnitsLabel());
 		gridElement.setAttribute(PLOT_LABELS, writeThis(theGrid.getPlotLabels()));
 
 		// does it have a none-standard name?
