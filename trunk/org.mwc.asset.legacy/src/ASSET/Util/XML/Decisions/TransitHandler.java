@@ -46,99 +46,111 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
 abstract public class TransitHandler extends CoreDecisionHandler
-  {
+{
 
-  private final static String type = "Transit";
-  private final static String LOOPING = "Looping";
-  private final static String SPEED = "Speed";
+	private final static String type = "Transit";
+	private final static String LOOPING = "Looping";
+	private final static String SPEED = "Speed";
+	private final static String REVERSE = "Reverse";
 
-  protected  MWC.GenericData.WorldPath _myPath;
-  protected boolean _looping;
-  protected WorldSpeed _speed;
+	protected MWC.GenericData.WorldPath _myPath;
+	protected boolean _looping;
+	protected WorldSpeed _speed;
+	protected Boolean _reverse = null;
 
+	public TransitHandler()
+	{
+		this(type);
+	}
 
-  public TransitHandler()
-  {
-    this(type);
-  }
+	public TransitHandler(String theType)
+	{
+		super(theType);
 
-  public TransitHandler(String theType)
-  {
-    super(theType);
+		final MWC.Utilities.ReaderWriter.XML.MWCXMLReader hand = new ASSETWorldPathHandler()
+		{
+			public void setPath(final MWC.GenericData.WorldPath path)
+			{
+				_myPath = path;
+			}
+		};
 
-    final MWC.Utilities.ReaderWriter.XML.MWCXMLReader hand = new ASSETWorldPathHandler()
-    {
-      public void setPath(final MWC.GenericData.WorldPath path)
-      {
-        _myPath = path;
-      }
-    };
+		addHandler(hand);
+		addAttributeHandler(new HandleAttribute(LOOPING)
+		{
+			public void setValue(String name, final String val)
+			{
+				_looping = Boolean.valueOf(val).booleanValue();
+			}
+		});
 
-    addHandler(hand);
-    addAttributeHandler(new HandleAttribute(LOOPING)
-    {
-      public void setValue(String name, final String val)
-      {
-        _looping = Boolean.valueOf(val).booleanValue();
-      }
-    });
+		addAttributeHandler(new HandleAttribute(REVERSE)
+		{
+			public void setValue(String name, final String val)
+			{
+				_reverse = Boolean.valueOf(val).booleanValue();
+			}
+		});
 
-    addHandler(new WorldSpeedHandler(SPEED)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        _speed = res;
-      }
-    });
-  }
+		addHandler(new WorldSpeedHandler(SPEED)
+		{
+			public void setSpeed(WorldSpeed res)
+			{
+				_speed = res;
+			}
+		});
+	}
 
+	public void elementClosed()
+	{
+		final Transit tr = getBehaviour();
+		super.setAttributes(tr);
+		setModel(tr);
+		if (_reverse != null)
+		{
+			tr.setReverse(_reverse);
+			System.err.println("setting reverse to:" + _reverse);
+		}
 
-  public void elementClosed()
-  {
-    final Transit tr = getBehaviour();
-    super.setAttributes(tr);
-    setModel(tr);
+		_myPath = null;
+		_speed = null;
+		_reverse = null;
+	}
 
-    _myPath = null;
-    _speed = null;
-  }
+	protected Transit getBehaviour()
+	{
+		return new Transit(_myPath, _speed, _looping);
+	}
 
-  protected Transit getBehaviour()
-  {
-    return new Transit(_myPath, _speed, _looping);
-  }
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 
+	static public void exportThis(final Object toExport,
+			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+	{
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-  abstract public void setModel(ASSET.Models.DecisionType dec);
+		// get data item
+		final ASSET.Models.Decision.Movement.Transit bb = (ASSET.Models.Decision.Movement.Transit) toExport;
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+		exportCoreAttributes(bb, thisPart, doc);
 
-    // get data item
-    final ASSET.Models.Decision.Movement.Transit bb = (ASSET.Models.Decision.Movement.Transit) toExport;
+		parent.appendChild(thisPart);
 
-    exportCoreAttributes(bb, thisPart, doc);
+	}
 
-    parent.appendChild(thisPart);
+	protected static void exportCoreAttributes(final Transit bb,
+			final org.w3c.dom.Element thisPart, final org.w3c.dom.Document doc)
+	{
+		// first the parent bits
+		CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
-  }
+		// output it's attributes
+		thisPart.setAttribute(LOOPING, writeThis(bb.getLoop()));
+		if (bb.getSpeed() != null)
+			WorldSpeedHandler.exportSpeed(SPEED, bb.getSpeed(), thisPart, doc);
 
-  protected static void exportCoreAttributes(final Transit bb,
-                                           final org.w3c.dom.Element thisPart, final org.w3c.dom.Document doc)
-  {
-    // first the parent bits
-    CoreDecisionHandler.exportThis(bb, thisPart, doc);
-
-    // output it's attributes
-    thisPart.setAttribute(LOOPING, writeThis(bb.getLoop()));
-    if (bb.getSpeed() != null)
-      WorldSpeedHandler.exportSpeed(SPEED, bb.getSpeed(), thisPart, doc);
-
-    ASSETWorldPathHandler.exportThis(bb.getDestinations(), thisPart, doc);
-  }
-
+		ASSETWorldPathHandler.exportThis(bb.getDestinations(), thisPart, doc);
+	}
 
 }
