@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="Wales"  xmlns="http://www.mwc.org/asset" >
+<ScenarioGenerator>
+	<MultiParticipantGenerator>
+		<ParticipantVariance name="WhiteS" number="10">
+			<Variance name="StartPause" id="/Wait[@Name='HVUPause']/Duration">
+				<Attribute name="Value">
+					<Range max="0.0" min="120" />
+				</Attribute>
+				
+			</Variance></ParticipantVariance>
+	</MultiParticipantGenerator></ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="4" Units="hours" />
+		</TimeObserver>
+		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
+			<GridDelta Value="4" Units="nm" ></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
+			record_positions="true" Active="true" record_decisions="true">
+		</DebriefReplayObserver>
+		<PlotSensorObserver Name="Show green detections" Active="true" ShadeCircle="true" ShowNames="true">
+			<Target>
+				<TargetType>
+					<Type Name="SURFACE" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver></ObserverList>
+</ScenarioController>

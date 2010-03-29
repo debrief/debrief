@@ -4,26 +4,6 @@
 	<StepTime Units="minutes" Value="2"></StepTime>
 	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
-		<VisualLookupEnvironment Name="Easy to see">
-			<VisualAttenuationDatum Haze="0.0000001" Mist="0.0000001"
-				LightHaze="0.0000001" VeryClear="0.0000001" Fog="0.0000001" Clear="0.0000001"></VisualAttenuationDatum>
-			<TargetVisibilitySet>
-				<TargetVisibilityDatum Type="CARRIER"
-					Visibility="2" />
-				<TargetVisibilityDatum Type="FRIGATE"
-					Visibility="2"></TargetVisibilityDatum>
-			</TargetVisibilitySet>
-			<TargetSeaStateSet>
-				<TargetSeaStateDatum Type="CARRIER" SeaState_5="1"
-					SeaState_4="1" SeaState_3="1" SeaState_2="1" SeaState_1="1"
-					SeaState_0="1" SeaState_6="1" />
-				<TargetSeaStateDatum Type="FRIGATE" SeaState_5="1"
-					SeaState_4="1" SeaState_3="1" SeaState_2="1" SeaState_1="1"
-					SeaState_0="1" SeaState_6="1" />
-			</TargetSeaStateSet>
-			<LightLevelDatum Dusk="1" DarkNight="1" MoonlitNight="1"
-				Daylight="1" />
-		</VisualLookupEnvironment>
 	</Environment>
 	<Participants>
 		<Surface Name="T23">
@@ -295,7 +275,7 @@
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
-				<Delta Units="degs" Value="1.000" />
+				<Delta Units="nm" Value="20.000" />
 				<colour Value="DARK_GREY" />
 			</grid>
 			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
