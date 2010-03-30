@@ -13,7 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ASSET.ScenarioType;
+import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Models.Environment.*;
+import ASSET.Scenario.CoreScenario;
 import ASSET.Util.XML.Utils.*;
 import MWC.GUI.*;
 import MWC.GenericData.Duration;
@@ -25,7 +27,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
   private static final String DEBRIEF_LAYER_NAME = "DebriefLayer";
 
-	ScenarioType _theScenario;
+	CoreScenario _theScenario;
 	Layers _myLayers = null;
 
   static final public String SCENARIO_NAME = "Scenario";
@@ -34,7 +36,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String CASE_ATTRIBUTE = "Case";
   private static final String SCENARIO_STEP_TIME = "StepTime";
   private static final String SCENARIO_STEP_PAUSE = "StepPause";
-
+  
 
   public ScenarioHandler(final ASSET.Scenario.CoreScenario theScenario)
   {
@@ -73,6 +75,42 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         _theScenario.setCaseId(val);
       }
     });
+    
+    super.addAttributeHandler(new HandleAttribute(ScenarioLayer.SHOW_ACTIVITY)
+    {
+      public void setValue(String name, final String val)
+      {
+        // store the name
+        _theScenario.addDisplaySetting(name, val);
+      }
+    });
+    super.addAttributeHandler(new HandleAttribute(ScenarioLayer.SHOW_NAME)
+    {
+      public void setValue(String name, final String val)
+      {
+        // store the name
+        _theScenario.addDisplaySetting(name, val);
+      }
+    });
+    super.addAttributeHandler(new HandleAttribute(ScenarioLayer.SHOW_STATUS)
+    {
+      public void setValue(String name, final String val)
+      {
+        // store the name
+        _theScenario.addDisplaySetting(name, val);
+      }
+    });
+    super.addAttributeHandler(new HandleAttribute(ScenarioLayer.SHOW_SYMBOL)
+    {
+      public void setValue(String name, final String val)
+      {
+        // store the name
+        _theScenario.addDisplaySetting(name, val);
+      }
+    });
+    
+    
+    
 
     // does the scenario have it's scenario object?
     addHandler(new ParticipantsHandler(theScenario));

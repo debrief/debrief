@@ -18,7 +18,15 @@ import MWC.GenericData.Duration;
 public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.ParticipantsChangedListener
 {
 
-  /**
+  public static final String SHOW_SYMBOL = "ShowSymbol";
+
+  public static final String SHOW_STATUS = "ShowStatus";
+
+  public static final String SHOW_NAME = "ShowName";
+
+  public static final String SHOW_ACTIVITY = "ShowActivity";
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -102,6 +110,20 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
     {
     	newParticipant(inds[i]);
     }
+    
+    // see if any of the display settings have been initialised
+    String doIt = scenario.getDisplaySettingFor(SHOW_ACTIVITY);
+    if(doIt != null)
+    	_plotBehaviour = Boolean.valueOf(doIt);
+    doIt = scenario.getDisplaySettingFor(SHOW_NAME);
+    if(doIt != null)
+    	_plotName = Boolean.valueOf(doIt);
+    doIt = scenario.getDisplaySettingFor(SHOW_STATUS);
+    if(doIt != null)
+    	_plotStatus = Boolean.valueOf(doIt);
+    doIt = scenario.getDisplaySettingFor(SHOW_SYMBOL);
+    if(doIt != null)
+    	_plotSymbol = Boolean.valueOf(doIt);
     
   }
 
@@ -275,10 +297,10 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
       try
       {
         final java.beans.PropertyDescriptor[] res = {
-          prop("ShowSymbol", "show symbol for participants"),
-          prop("ShowName", "show name for participants"),
-          prop("ShowStatus", "show the current vessel status"),
-          prop("ShowActivity", "show current activity for participants"),
+          prop(SHOW_SYMBOL, "show symbol for participants"),
+          prop(SHOW_NAME, "show name for participants"),
+          prop(SHOW_STATUS, "show the current vessel status"),
+          prop(SHOW_ACTIVITY, "show current activity for participants"),
           prop("StepTime", "time interval between auto steps"),
           prop("ScenarioStepTime", "model step time"),
         };

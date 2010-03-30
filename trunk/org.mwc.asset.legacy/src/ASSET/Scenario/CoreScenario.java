@@ -169,6 +169,10 @@ public class CoreScenario implements ScenarioType, ISimulation
     
     // give the scenario a random case id
     _myCaseId = "Case_" + (int)(Math.random() * 2000d);
+
+    // initialise the display settings
+		_displaySettings = new HashMap<String,String>();
+
   }
 
 
@@ -275,6 +279,8 @@ public class CoreScenario implements ScenarioType, ISimulation
    * 
    */
 	private BaseLayer _myBackdrop;
+
+	private HashMap<String, String> _displaySettings;
 
   /**
    * Move the scenario through a single step
@@ -1505,7 +1511,21 @@ public class CoreScenario implements ScenarioType, ISimulation
 	@Override
 	public void stop()
 	{
-		// TODO Auto-generated method stub
-		
+	}
+
+	/** store the specified display setting
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void addDisplaySetting(final String key, final String value)
+	{
+		_displaySettings.put(key, value);
+	}
+	
+	@Override
+	public String getDisplaySettingFor(final String key)
+	{
+		return _displaySettings.get(key);
 	}
 }

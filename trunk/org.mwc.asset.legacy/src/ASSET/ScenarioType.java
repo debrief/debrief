@@ -220,5 +220,11 @@ public interface ScenarioType extends ScenarioActivityMonitor
    */
   public void setBackdrop(BaseLayer layer);
   
+  /** collection of settings related to GUI display
+   * @param subject the particular setting to retrieve
+   * @return the current value of that setting (or null)
+   */
+  public String getDisplaySettingFor(String subject);
+  
   
 }
