@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.TimeController"
    name="Time Controller Plug-in"
-   version="1.0.40"
+   version="1.0.41"
    provider-name="MWC"
    class="org.mwc.cmap.TimeController.TimeControllerPlugin">
 

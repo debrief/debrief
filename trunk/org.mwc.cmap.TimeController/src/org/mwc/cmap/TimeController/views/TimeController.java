@@ -1499,7 +1499,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								.getSecondaryTracks(), getPeriod());
 					}
 				};
-				
+
 				// give it an id, so we can look for it shortly.
 				newAction.setId(newAction.getText());
 
@@ -1722,7 +1722,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// display the correct time.
 						String newVal = getFormattedDate(newDTG);
 
-						_timeLabel.setText(newVal);
+						if (!_timeLabel.isDisposed())
+							_timeLabel.setText(newVal);
 
 						if (!_alreadyProcessingChange)
 						{
