@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 	<!--                                -->
 	<!--Top Level-->
 	<!--                                -->
@@ -20,16 +19,14 @@
 							step</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="StepPause" type="DurationType"
-					minOccurs="0">
+				<xs:element name="StepPause" type="DurationType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>How long we pause for before moving to the next
 							time
 							step</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="Environment" type="CoreEnvironmentType"
-					minOccurs="0">
+				<xs:element name="Environment" type="CoreEnvironmentType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>The environment for this scenario
 						</xs:documentation>
@@ -42,8 +39,7 @@
 							scenario</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="DebriefLayer" type="DebriefLayerType"
-					minOccurs="0">
+				<xs:element name="DebriefLayer" type="DebriefLayerType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>The backdrop layers to show</xs:documentation>
 					</xs:annotation>
@@ -78,6 +74,26 @@
 						supplied </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="ShowActivity" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Whether to include participant activity details on plot </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="ShowName" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Whether to include participant names on plot </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="ShowStatus" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Whether to include participant status on plot </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="ShowSymbol" type="xs:boolean" use="optional">
+				<xs:annotation>
+					<xs:documentation>Whether to include participant symbols on plot </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="StandaloneObserverList">
@@ -95,8 +111,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="ObserverList" type="ObserverListType"
-					minOccurs="0">
+				<xs:element name="ObserverList" type="ObserverListType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>The list of observers &amp; referees which will
 							oversee this scenario</xs:documentation>
@@ -115,18 +130,15 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="ScenarioGenerator" type="ScenarioGeneratorType"
-					minOccurs="0" />
-				<xs:element name="ObserverList" type="ObserverListType"
-					minOccurs="0">
+				<xs:element name="ScenarioGenerator" type="ScenarioGeneratorType" minOccurs="0"/>
+				<xs:element name="ObserverList" type="ObserverListType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>The list of observers &amp; referees which will
 							oversee this scenario</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
-			<xs:attribute name="OutputDirectory" type="validString"
-				use="required">
+			<xs:attribute name="OutputDirectory" type="validString" use="required">
 				<xs:annotation>
 					<xs:documentation>The directory in which to place the data and
 						results
@@ -152,24 +164,25 @@
 				Editable: None</xs:documentation>
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType" />
+			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType"/>
 			<xs:element name="DebriefDeployableSensorLocationObserver"
-				type="DebriefDeployableSensorLocationObserverType" />
-			<xs:element name="TrackPlotObserver" type="TrackPlotObserverType" />
-			<xs:element name="ElapsedTimeObserver" type="ElapsedTimeObserverType" />
-			<xs:element name="FinalStateObserver" type="FinalStateObserverType" />
-			<xs:element name="CSVTrackObserver" type="CSVTrackObserverType" />
-			<xs:element name="TimeObserver" type="TimeObserverType" />
-			<xs:element name="ProximityObserver" type="ProximityObserverType" />
-			<xs:element name="StopOnProximityObserver" type="StopOnProximityObserverType" />
-			<xs:element name="RemoveDetectedObserver" type="RemoveDetectedObserverType" />
-			<xs:element name="DetectionObserver" type="DetectionObserverType" />
-			<xs:element name="PlotSensorObserver" type="PlotSensorObserverType" />
-			<xs:element name="PlotDetectionStatusObserver" type="PlotDetectionStatusObserverType" />
-			<xs:element name="StopOnDetectionObserver" type="StopOnDetectionObserverType" />
-			<xs:element name="StopOnProximityDetectionObserver" type="StopOnProximityDetectionObserverType" />
-			<xs:element name="ProportionDetectedObserver" type="ProportionDetectedObserverType" />
-			<xs:element name="TimeToLaunchObserver" type="TimeToLaunchObserverType" />
+				type="DebriefDeployableSensorLocationObserverType"/>
+			<xs:element name="TrackPlotObserver" type="TrackPlotObserverType"/>
+			<xs:element name="ElapsedTimeObserver" type="ElapsedTimeObserverType"/>
+			<xs:element name="FinalStateObserver" type="FinalStateObserverType"/>
+			<xs:element name="CSVTrackObserver" type="CSVTrackObserverType"/>
+			<xs:element name="TimeObserver" type="TimeObserverType"/>
+			<xs:element name="ProximityObserver" type="ProximityObserverType"/>
+			<xs:element name="StopOnProximityObserver" type="StopOnProximityObserverType"/>
+			<xs:element name="RemoveDetectedObserver" type="RemoveDetectedObserverType"/>
+			<xs:element name="DetectionObserver" type="DetectionObserverType"/>
+			<xs:element name="PlotSensorObserver" type="PlotSensorObserverType"/>
+			<xs:element name="PlotDetectionStatusObserver" type="PlotDetectionStatusObserverType"/>
+			<xs:element name="StopOnDetectionObserver" type="StopOnDetectionObserverType"/>
+			<xs:element name="StopOnProximityDetectionObserver"
+				type="StopOnProximityDetectionObserverType"/>
+			<xs:element name="ProportionDetectedObserver" type="ProportionDetectedObserverType"/>
+			<xs:element name="TimeToLaunchObserver" type="TimeToLaunchObserverType"/>
 		</xs:choice>
 	</xs:complexType>
 	<!--                                -->
@@ -239,26 +252,19 @@
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
-					<xs:element name="BroadbandSensor" type="BroadbandSensorType"
-						minOccurs="0" />
+					<xs:element name="BroadbandSensor" type="BroadbandSensorType" minOccurs="0"/>
 					<xs:element name="ActiveBroadbandSensor" type="ActiveBroadbandSensorType"
-						minOccurs="0" />
-					<xs:element name="DippingActiveBroadbandSensor" type="DippingActiveBroadbandSensorType"
-						minOccurs="0" />
-					<xs:element name="NarrowbandSensor" type="NarrowbandSensorType"
-						minOccurs="0" />
-					<xs:element name="OpticLookupSensor" type="OpticLookupSensorType"
-						minOccurs="0" />
-					<xs:element name="PlainCookieSensor" type="PlainCookieSensorType"
-						minOccurs="0" />
-					<xs:element name="TypedCookieSensor" type="TypedCookieSensorType"
-						minOccurs="0" />
-					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType"
-						minOccurs="0" />
-					<xs:element name="MADLookupSensor" type="MADLookupSensorType"
-						minOccurs="0" />
+						minOccurs="0"/>
+					<xs:element name="DippingActiveBroadbandSensor"
+						type="DippingActiveBroadbandSensorType" minOccurs="0"/>
+					<xs:element name="NarrowbandSensor" type="NarrowbandSensorType" minOccurs="0"/>
+					<xs:element name="OpticLookupSensor" type="OpticLookupSensorType" minOccurs="0"/>
+					<xs:element name="PlainCookieSensor" type="PlainCookieSensorType" minOccurs="0"/>
+					<xs:element name="TypedCookieSensor" type="TypedCookieSensorType" minOccurs="0"/>
+					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
+					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
 					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType"
-						minOccurs="0" />
+						minOccurs="0"/>
 				</xs:choice>
 			</xs:extension>
 		</xs:complexContent>
@@ -350,7 +356,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreLookupSensorType">
-				<xs:sequence />
+				<xs:sequence/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -361,7 +367,7 @@
 				Editable: inherited</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="CoreLookupSensorType" />
+			<xs:extension base="CoreLookupSensorType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="RadarLookupSensorType">
@@ -372,7 +378,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreLookupSensorType">
-				<xs:sequence />
+				<xs:sequence/>
 				<xs:attribute name="K" type="xs:float" use="required">
 					<xs:annotation>
 						<xs:documentation>The radar constant</xs:documentation>
@@ -391,7 +397,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
-				<xs:sequence />
+				<xs:sequence/>
 				<xs:attribute name="Aperture" type="xs:float" use="required">
 					<xs:annotation>
 						<xs:documentation>The angle of coverage in degrees for this sensor
@@ -442,7 +448,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="DetectionLevel"  type="DetectionLevelType">
+				<xs:attribute name="DetectionLevel" type="DetectionLevelType">
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this sensor</xs:documentation>
 					</xs:annotation>
@@ -482,7 +488,7 @@
 
 		<xs:complexContent>
 			<xs:extension base="BroadbandSensorType">
-				<xs:sequence />
+				<xs:sequence/>
 				<xs:attribute name="SourceLevel" type="xs:float" use="required">
 					<xs:annotation>
 						<xs:documentation>The active signal source level
@@ -501,12 +507,12 @@
 		<xs:complexContent>
 			<xs:extension base="ActiveBroadbandSensorType">
 				<xs:sequence>
-					<xs:element name="AirLowerRate" type="SpeedType" />
-					<xs:element name="AirRaiseRate" type="SpeedType" />
-					<xs:element name="WaterLowerRate" type="SpeedType" />
-					<xs:element name="WaterRaiseRate" type="SpeedType" />
-					<xs:element name="RaisePause" type="DurationType" />
-					<xs:element name="LowerPause" type="DurationType" />
+					<xs:element name="AirLowerRate" type="SpeedType"/>
+					<xs:element name="AirRaiseRate" type="SpeedType"/>
+					<xs:element name="WaterLowerRate" type="SpeedType"/>
+					<xs:element name="WaterRaiseRate" type="SpeedType"/>
+					<xs:element name="RaisePause" type="DurationType"/>
+					<xs:element name="LowerPause" type="DurationType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -519,7 +525,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
-				<xs:sequence />
+				<xs:sequence/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -535,12 +541,9 @@
 				Name</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="RadarLookupEnvironment" type="RadarLookupType"
-				minOccurs="0" />
-			<xs:element name="VisualLookupEnvironment" type="VisualLookupType"
-				minOccurs="0" />
-			<xs:element name="MADLookupEnvironment" type="MADLookupType"
-				minOccurs="0" />
+			<xs:element name="RadarLookupEnvironment" type="RadarLookupType" minOccurs="0"/>
+			<xs:element name="VisualLookupEnvironment" type="VisualLookupType" minOccurs="0"/>
+			<xs:element name="MADLookupEnvironment" type="MADLookupType" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="Name" type="xs:token" use="required">
 			<xs:annotation>
@@ -553,12 +556,12 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="1" />
-					<xs:enumeration value="2" />
-					<xs:enumeration value="3" />
-					<xs:enumeration value="4" />
-					<xs:enumeration value="5" />
-					<xs:enumeration value="6" />
+					<xs:enumeration value="1"/>
+					<xs:enumeration value="2"/>
+					<xs:enumeration value="3"/>
+					<xs:enumeration value="4"/>
+					<xs:enumeration value="5"/>
+					<xs:enumeration value="6"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -568,10 +571,10 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="DAYLIGHT" />
-					<xs:enumeration value="DUSK" />
-					<xs:enumeration value="MOON_NIGHT" />
-					<xs:enumeration value="DARK_NIGHT" />
+					<xs:enumeration value="DAYLIGHT"/>
+					<xs:enumeration value="DUSK"/>
+					<xs:enumeration value="MOON_NIGHT"/>
+					<xs:enumeration value="DARK_NIGHT"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -581,12 +584,12 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="VERY_CLEAR" />
-					<xs:enumeration value="CLEAR" />
-					<xs:enumeration value="LIGHT_HAZE" />
-					<xs:enumeration value="HAZE" />
-					<xs:enumeration value="MIST" />
-					<xs:enumeration value="FOG" />
+					<xs:enumeration value="VERY_CLEAR"/>
+					<xs:enumeration value="CLEAR"/>
+					<xs:enumeration value="LIGHT_HAZE"/>
+					<xs:enumeration value="HAZE"/>
+					<xs:enumeration value="MIST"/>
+					<xs:enumeration value="FOG"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -602,10 +605,10 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="TargetAspectSet" type="TargetAspectSetType" />
-			<xs:element name="TargetSeaStateSet" type="TargetSeaStateSetType" />
+			<xs:element name="TargetAspectSet" type="TargetAspectSetType"/>
+			<xs:element name="TargetSeaStateSet" type="TargetSeaStateSetType"/>
 		</xs:sequence>
-		<xs:attribute name="Name" type="xs:string" use="required" />
+		<xs:attribute name="Name" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="VisualLookupType">
 		<xs:annotation>
@@ -615,12 +618,12 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="VisualAttenuationDatum" type="VisualAttenuationDatumType" />
-			<xs:element name="TargetVisibilitySet" type="TargetVisibilitySetType" />
-			<xs:element name="TargetSeaStateSet" type="TargetSeaStateSetType" />
-			<xs:element name="LightLevelDatum" type="LightLevelDatumType" />
+			<xs:element name="VisualAttenuationDatum" type="VisualAttenuationDatumType"/>
+			<xs:element name="TargetVisibilitySet" type="TargetVisibilitySetType"/>
+			<xs:element name="TargetSeaStateSet" type="TargetSeaStateSetType"/>
+			<xs:element name="LightLevelDatum" type="LightLevelDatumType"/>
 		</xs:sequence>
-		<xs:attribute name="Name" type="xs:string" use="required" />
+		<xs:attribute name="Name" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="MADLookupType">
 		<xs:annotation>
@@ -629,9 +632,9 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="PredictedRangeSet" type="PredictedRangeSetType" />
+			<xs:element name="PredictedRangeSet" type="PredictedRangeSetType"/>
 		</xs:sequence>
-		<xs:attribute name="Name" type="xs:string" use="required" />
+		<xs:attribute name="Name" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="LightAttenuationDatumType">
 		<xs:annotation>
@@ -641,10 +644,10 @@
 			<xs:documentation source="http://asset.info/ui">Visible: Type Editable: nil
 			</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="Daylight" type="xs:float" use="required" />
-		<xs:attribute name="Dusk" type="xs:float" use="required" />
-		<xs:attribute name="MoonlitNight" type="xs:float" use="required" />
-		<xs:attribute name="DarkNight" type="xs:float" use="required" />
+		<xs:attribute name="Daylight" type="xs:float" use="required"/>
+		<xs:attribute name="Dusk" type="xs:float" use="required"/>
+		<xs:attribute name="MoonlitNight" type="xs:float" use="required"/>
+		<xs:attribute name="DarkNight" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="LightLevelDatumType">
 		<xs:annotation>
@@ -654,10 +657,10 @@
 			<xs:documentation source="http://asset.info/ui">Visible: Type Editable: nil
 			</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="Daylight" type="xs:float" use="required" />
-		<xs:attribute name="Dusk" type="xs:float" use="required" />
-		<xs:attribute name="MoonlitNight" type="xs:float" use="required" />
-		<xs:attribute name="DarkNight" type="xs:float" use="required" />
+		<xs:attribute name="Daylight" type="xs:float" use="required"/>
+		<xs:attribute name="Dusk" type="xs:float" use="required"/>
+		<xs:attribute name="MoonlitNight" type="xs:float" use="required"/>
+		<xs:attribute name="DarkNight" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="PredictedRangeSetType">
 		<xs:annotation>
@@ -668,7 +671,7 @@
 
 		<xs:sequence>
 			<xs:element name="PredictedRangeDatum" type="PredictedRangeDatumType"
-				maxOccurs="unbounded" />
+				maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -688,8 +691,8 @@
 			</xs:documentation>
 		</xs:annotation>
 
-		<xs:sequence />
-		<xs:attribute ref="Type" use="required" />
+		<xs:sequence/>
+		<xs:attribute ref="Type" use="required"/>
 		<xs:attribute name="PredictedRange" type="xs:float" use="required">
 			<xs:annotation>
 				<xs:documentation>Predicted range (in metres) at which MAD hit will
@@ -706,7 +709,7 @@
 
 		<xs:sequence>
 			<xs:element name="TargetVisibilityDatum" type="TargetVisibilityDatumType"
-				maxOccurs="unbounded" />
+				maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -728,9 +731,9 @@
 			</xs:documentation>
 		</xs:annotation>
 
-		<xs:sequence />
-		<xs:attribute ref="Type" use="required" />
-		<xs:attribute name="Visibility" type="xs:float" use="required" />
+		<xs:sequence/>
+		<xs:attribute ref="Type" use="required"/>
+		<xs:attribute name="Visibility" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="VisualAttenuationDatumType">
 		<xs:annotation>
@@ -741,13 +744,13 @@
 			</xs:documentation>
 		</xs:annotation>
 
-		<xs:sequence />
-		<xs:attribute name="VeryClear" type="xs:float" use="required" />
-		<xs:attribute name="Clear" type="xs:float" use="required" />
-		<xs:attribute name="LightHaze" type="xs:float" use="required" />
-		<xs:attribute name="Haze" type="xs:float" use="required" />
-		<xs:attribute name="Mist" type="xs:float" use="required" />
-		<xs:attribute name="Fog" type="xs:float" use="required" />
+		<xs:sequence/>
+		<xs:attribute name="VeryClear" type="xs:float" use="required"/>
+		<xs:attribute name="Clear" type="xs:float" use="required"/>
+		<xs:attribute name="LightHaze" type="xs:float" use="required"/>
+		<xs:attribute name="Haze" type="xs:float" use="required"/>
+		<xs:attribute name="Mist" type="xs:float" use="required"/>
+		<xs:attribute name="Fog" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="TargetAspectSetType">
 		<xs:annotation>
@@ -756,8 +759,8 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="TargetAspectDatum" type="TargetAspectDatumType"
-				maxOccurs="unbounded" />
+			<xs:element name="TargetAspectDatum" type="TargetAspectDatumType" maxOccurs="unbounded"
+			/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -778,7 +781,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="TargetSeaStateDatum" type="TargetSeaStateDatumType"
-				maxOccurs="unbounded" />
+				maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -798,12 +801,12 @@
 			<xs:documentation source="http://asset.info/ui">Visible: Type Editable: nil
 			</xs:documentation>
 		</xs:annotation>
-		<xs:attribute ref="Type" use="required" />
-		<xs:attribute name="DeadAhead" type="xs:float" use="required" />
-		<xs:attribute name="Bow" type="xs:float" use="required" />
-		<xs:attribute name="Beam" type="xs:float" use="required" />
-		<xs:attribute name="Quarter" type="xs:float" use="required" />
-		<xs:attribute name="Astern" type="xs:float" use="required" />
+		<xs:attribute ref="Type" use="required"/>
+		<xs:attribute name="DeadAhead" type="xs:float" use="required"/>
+		<xs:attribute name="Bow" type="xs:float" use="required"/>
+		<xs:attribute name="Beam" type="xs:float" use="required"/>
+		<xs:attribute name="Quarter" type="xs:float" use="required"/>
+		<xs:attribute name="Astern" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="TargetSeaStateDatumType">
 		<xs:annotation>
@@ -812,18 +815,18 @@
 			<xs:documentation source="http://asset.info/ui">Visible: Type Editable: nil
 			</xs:documentation>
 		</xs:annotation>
-		<xs:attribute ref="Type" use="required" />
-		<xs:attribute name="SeaState_0" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_1" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_2" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_3" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_4" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_5" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_6" type="xs:float" use="required" />
-		<xs:attribute name="SeaState_7" type="xs:float" use="optional" />
-		<xs:attribute name="SeaState_8" type="xs:float" use="optional" />
-		<xs:attribute name="SeaState_9" type="xs:float" use="optional" />
-		<xs:attribute name="SeaState_10" type="xs:float" use="optional" />
+		<xs:attribute ref="Type" use="required"/>
+		<xs:attribute name="SeaState_0" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_1" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_2" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_3" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_4" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_5" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_6" type="xs:float" use="required"/>
+		<xs:attribute name="SeaState_7" type="xs:float" use="optional"/>
+		<xs:attribute name="SeaState_8" type="xs:float" use="optional"/>
+		<xs:attribute name="SeaState_9" type="xs:float" use="optional"/>
+		<xs:attribute name="SeaState_10" type="xs:float" use="optional"/>
 	</xs:complexType>
 	<!--Participants-->
 	<!--                                -->
@@ -835,13 +838,12 @@
 				Editable: nil</xs:documentation>
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="SSK" type="SSKType" minOccurs="0" />
-			<xs:element name="Surface" type="SurfaceType" minOccurs="0" />
-			<xs:element name="Helo" type="HeloType" minOccurs="0" />
-			<xs:element name="FixedWing" type="FixedWingType"
-				minOccurs="0" />
-			<xs:element name="SSN" type="SSNType" minOccurs="0" />
-			<xs:element name="Torpedo" type="TorpedoType" minOccurs="0" />
+			<xs:element name="SSK" type="SSKType" minOccurs="0"/>
+			<xs:element name="Surface" type="SurfaceType" minOccurs="0"/>
+			<xs:element name="Helo" type="HeloType" minOccurs="0"/>
+			<xs:element name="FixedWing" type="FixedWingType" minOccurs="0"/>
+			<xs:element name="SSN" type="SSNType" minOccurs="0"/>
+			<xs:element name="Torpedo" type="TorpedoType" minOccurs="0"/>
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="ParticipantType" abstract="true">
@@ -872,8 +874,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="DemandedStatus" type="DemandedStatusType"
-				minOccurs="0">
+			<xs:element name="DemandedStatus" type="DemandedStatusType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>The current demanded status of this
 						participant
@@ -881,8 +882,7 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:choice>
-				<xs:element name="Waterfall" type="WaterfallType"
-					minOccurs="0">
+				<xs:element name="Waterfall" type="WaterfallType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>A hierarchy of behaviours, with control falling
 							to lower
@@ -890,8 +890,7 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="Sequence" type="SequenceType"
-					minOccurs="0">
+				<xs:element name="Sequence" type="SequenceType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>A sequence of behaviours, activated in
 							order
@@ -939,8 +938,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="MonteCarloTarget" type="xs:boolean"
-			use="optional">
+		<xs:attribute name="MonteCarloTarget" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>Flag to indicate that this participant should be
 					handled with
@@ -1021,7 +1019,8 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="HeloMovementCharacteristics" type="HeloMovementCharacteristicsType">
+					<xs:element name="HeloMovementCharacteristics"
+						type="HeloMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1041,7 +1040,8 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType" />
+					<xs:element name="SSMovementCharacteristics"
+						type="SSMovementCharacteristicsType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1056,7 +1056,8 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType">
+					<xs:element name="SSMovementCharacteristics"
+						type="SSMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1083,7 +1084,8 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType">
+					<xs:element name="SSMovementCharacteristics"
+						type="SSMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1103,7 +1105,8 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SurfaceMovementCharacteristics" type="SurfaceMovementCharacteristicsType">
+					<xs:element name="SurfaceMovementCharacteristics"
+						type="SurfaceMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1125,8 +1128,8 @@
 				Editable: base, snort</xs:documentation>
 		</xs:annotation>
 
-		<xs:attribute name="BaseNoiseLevel" type="xs:float" use="required" />
-		<xs:attribute name="SnortNoiseLevel" type="xs:float" use="required" />
+		<xs:attribute name="BaseNoiseLevel" type="xs:float" use="required"/>
+		<xs:attribute name="SnortNoiseLevel" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="OpticType">
 		<xs:annotation>
@@ -1136,7 +1139,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="Height" type="WorldDistanceType" />
+			<xs:element name="Height" type="WorldDistanceType"/>
 		</xs:sequence>
 		<xs:attribute name="XSectArea" type="xs:float" use="required">
 			<xs:annotation>
@@ -1177,7 +1180,7 @@
 				description Editable: nil</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:any processContents="skip" maxOccurs="unbounded" />
+			<xs:any processContents="skip" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<!--                                -->
@@ -1191,18 +1194,18 @@
 		</xs:annotation>
 		<xs:simpleType>
 			<xs:restriction base="xs:NMTOKEN">
-				<xs:enumeration value="SUBMARINE" />
-				<xs:enumeration value="MINISUB" />
-				<xs:enumeration value="TORPEDO" />
-				<xs:enumeration value="CARRIER" />
-				<xs:enumeration value="FRIGATE" />
-				<xs:enumeration value="DESTROYER" />
-				<xs:enumeration value="TROOP_CARRIER" />
-				<xs:enumeration value="OILER" />
-				<xs:enumeration value="FISHING_VESSEL" />
-				<xs:enumeration value="HELICOPTER" />
-				<xs:enumeration value="MPA" />
-				<xs:enumeration value="AV_MISSILE" />
+				<xs:enumeration value="SUBMARINE"/>
+				<xs:enumeration value="MINISUB"/>
+				<xs:enumeration value="TORPEDO"/>
+				<xs:enumeration value="CARRIER"/>
+				<xs:enumeration value="FRIGATE"/>
+				<xs:enumeration value="DESTROYER"/>
+				<xs:enumeration value="TROOP_CARRIER"/>
+				<xs:enumeration value="OILER"/>
+				<xs:enumeration value="FISHING_VESSEL"/>
+				<xs:enumeration value="HELICOPTER"/>
+				<xs:enumeration value="MPA"/>
+				<xs:enumeration value="AV_MISSILE"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>
@@ -1258,9 +1261,9 @@
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="RED" />
-					<xs:enumeration value="BLUE" />
-					<xs:enumeration value="GREEN" />
+					<xs:enumeration value="RED"/>
+					<xs:enumeration value="BLUE"/>
+					<xs:enumeration value="GREEN"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -1278,9 +1281,9 @@
 				Editable: inherited</xs:documentation>
 		</xs:annotation>
 		<xs:choice>
-			<xs:element name="shortLocation" type="shortLocationType" />
-			<xs:element name="longLocation" type="longLocationType" />
-			<xs:element name="relativeLocation" type="relativeLocationType" />
+			<xs:element name="shortLocation" type="shortLocationType"/>
+			<xs:element name="longLocation" type="longLocationType"/>
+			<xs:element name="relativeLocation" type="relativeLocationType"/>
 		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="DemandedStatusType">
@@ -1291,12 +1294,12 @@
 				Editable: course. speed</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Height" type="WorldDistanceType" />
-			<xs:element name="Speed" type="SpeedType" />
+			<xs:element name="Height" type="WorldDistanceType"/>
+			<xs:element name="Speed" type="SpeedType"/>
 		</xs:sequence>
-		<xs:attribute name="Course" type="xs:float" use="required" />
-		<xs:attribute name="Id" type="xs:string" default="0" />
-		<xs:attribute name="Time" type="xs:dateTime" />
+		<xs:attribute name="Course" type="xs:float" use="required"/>
+		<xs:attribute name="Id" type="xs:string" default="0"/>
+		<xs:attribute name="Time" type="xs:dateTime"/>
 	</xs:complexType>
 	<xs:complexType name="StatusType">
 
@@ -1306,13 +1309,13 @@
 				Editable: course, speed</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Location" type="LocationType" />
-			<xs:element name="Speed" type="SpeedType" />
+			<xs:element name="Location" type="LocationType"/>
+			<xs:element name="Speed" type="SpeedType"/>
 		</xs:sequence>
-		<xs:attribute name="Course" type="xs:float" use="required" />
-		<xs:attribute name="Fuel" type="xs:float" use="required" />
-		<xs:attribute name="Time" type="xs:dateTime" use="optional" />
-		<xs:attribute name="Id" type="xs:int" default="0" />
+		<xs:attribute name="Course" type="xs:float" use="required"/>
+		<xs:attribute name="Fuel" type="xs:float" use="required"/>
+		<xs:attribute name="Time" type="xs:dateTime" use="optional"/>
+		<xs:attribute name="Id" type="xs:int" default="0"/>
 	</xs:complexType>
 	<xs:complexType name="TypeType">
 
@@ -1324,25 +1327,25 @@
 		<xs:attribute name="Name" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="SUBSURFACE" />
-					<xs:enumeration value="SURFACE" />
-					<xs:enumeration value="AIRBORNE" />
-					<xs:enumeration value="CROSS" />
-					<xs:enumeration value="RED" />
-					<xs:enumeration value="BLUE" />
-					<xs:enumeration value="GREEN" />
-					<xs:enumeration value="SUBMARINE" />
-					<xs:enumeration value="MINISUB" />
-					<xs:enumeration value="CARRIER" />
-					<xs:enumeration value="FRIGATE" />
-					<xs:enumeration value="DESTROYER" />
-					<xs:enumeration value="TROOP_CARRIER" />
-					<xs:enumeration value="OILER" />
-					<xs:enumeration value="FISHING_VESSEL" />
-					<xs:enumeration value="HELICOPTER" />
-					<xs:enumeration value="MPA" />
-					<xs:enumeration value="AV_MISSILE" />
-					<xs:enumeration value="TORPEDO" />
+					<xs:enumeration value="SUBSURFACE"/>
+					<xs:enumeration value="SURFACE"/>
+					<xs:enumeration value="AIRBORNE"/>
+					<xs:enumeration value="CROSS"/>
+					<xs:enumeration value="RED"/>
+					<xs:enumeration value="BLUE"/>
+					<xs:enumeration value="GREEN"/>
+					<xs:enumeration value="SUBMARINE"/>
+					<xs:enumeration value="MINISUB"/>
+					<xs:enumeration value="CARRIER"/>
+					<xs:enumeration value="FRIGATE"/>
+					<xs:enumeration value="DESTROYER"/>
+					<xs:enumeration value="TROOP_CARRIER"/>
+					<xs:enumeration value="OILER"/>
+					<xs:enumeration value="FISHING_VESSEL"/>
+					<xs:enumeration value="HELICOPTER"/>
+					<xs:enumeration value="MPA"/>
+					<xs:enumeration value="AV_MISSILE"/>
+					<xs:enumeration value="TORPEDO"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -1356,8 +1359,8 @@
 				inherited</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="TopLeft" type="LocationType" />
-			<xs:element name="BottomRight" type="LocationType" />
+			<xs:element name="TopLeft" type="LocationType"/>
+			<xs:element name="BottomRight" type="LocationType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="WorldPathType">
@@ -1394,25 +1397,25 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="LatDeg" type="xs:int" use="required" />
-		<xs:attribute name="LatMin" type="xs:int" use="required" />
-		<xs:attribute name="LatSec" type="xs:float" use="required" />
+		<xs:attribute name="LatDeg" type="xs:int" use="required"/>
+		<xs:attribute name="LatMin" type="xs:int" use="required"/>
+		<xs:attribute name="LatSec" type="xs:float" use="required"/>
 		<xs:attribute name="LatHem" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="N" />
-					<xs:enumeration value="S" />
+					<xs:enumeration value="N"/>
+					<xs:enumeration value="S"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="LongDeg" type="xs:int" use="required" />
-		<xs:attribute name="LongMin" type="xs:int" use="required" />
-		<xs:attribute name="LongSec" type="xs:float" use="required" />
+		<xs:attribute name="LongDeg" type="xs:int" use="required"/>
+		<xs:attribute name="LongMin" type="xs:int" use="required"/>
+		<xs:attribute name="LongSec" type="xs:float" use="required"/>
 		<xs:attribute name="LongHem" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="E" />
-					<xs:enumeration value="W" />
+					<xs:enumeration value="E"/>
+					<xs:enumeration value="W"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
@@ -1426,8 +1429,7 @@
 				long</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Height" type="WorldDistanceType"
-				minOccurs="0">
+			<xs:element name="Height" type="WorldDistanceType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Height for this location (metres, optional)
 					</xs:documentation>
@@ -1467,8 +1469,7 @@
 					<xs:documentation>How far East this location is</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="Height" type="WorldDistanceType"
-				minOccurs="0">
+			<xs:element name="Height" type="WorldDistanceType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Height for this location (metres, optional)
 					</xs:documentation>
@@ -1483,10 +1484,10 @@
 				Editable: inherited</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="MinSpeed" type="SpeedType" />
-			<xs:element name="MaxSpeed" type="SpeedType" />
-			<xs:element name="AccelerationRate" type="AccelerationType" />
-			<xs:element name="DecelerationRate" type="AccelerationType" />
+			<xs:element name="MinSpeed" type="SpeedType"/>
+			<xs:element name="MaxSpeed" type="SpeedType"/>
+			<xs:element name="AccelerationRate" type="AccelerationType"/>
+			<xs:element name="DecelerationRate" type="AccelerationType"/>
 		</xs:sequence>
 		<xs:attribute name="FuelUsageRate" type="xs:float" use="required">
 			<xs:annotation>
@@ -1494,7 +1495,7 @@
 					second)</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="Name" type="xs:string" use="required" />
+		<xs:attribute name="Name" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="SurfaceMovementCharacteristicsType">
 		<xs:annotation>
@@ -1505,7 +1506,7 @@
 		<xs:complexContent>
 			<xs:extension base="MovementCharacteristicsType">
 				<xs:sequence>
-					<xs:element name="TurningCircle" type="WorldDistanceType" />
+					<xs:element name="TurningCircle" type="WorldDistanceType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1577,8 +1578,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="DefaultTurnRate" type="xs:float"
-					use="required">
+				<xs:attribute name="DefaultTurnRate" type="xs:float" use="required">
 					<xs:annotation>
 						<xs:documentation>The turn rate for this helo (degs per
 							second)
@@ -1598,11 +1598,10 @@
 		<xs:complexContent>
 			<xs:extension base="ThreeDimMovementCharacteristicsType">
 				<xs:sequence>
-					<xs:element name="DefaultClimbSpeed" type="SpeedType" />
-					<xs:element name="DefaultDiveSpeed" type="SpeedType" />
+					<xs:element name="DefaultClimbSpeed" type="SpeedType"/>
+					<xs:element name="DefaultDiveSpeed" type="SpeedType"/>
 				</xs:sequence>
-				<xs:attribute name="DefaultTurnRate" type="xs:float"
-					use="required">
+				<xs:attribute name="DefaultTurnRate" type="xs:float" use="required">
 					<xs:annotation>
 						<xs:documentation>The turn rate for this helo (degs per
 							second)
@@ -1621,7 +1620,7 @@
 		<xs:complexContent>
 			<xs:extension base="ThreeDimMovementCharacteristicsType">
 				<xs:sequence>
-					<xs:element name="TurningCircle" type="WorldDistanceType" />
+					<xs:element name="TurningCircle" type="WorldDistanceType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1634,7 +1633,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="TargetType" type="TargetTypeType" />
+			<xs:element name="TargetType" type="TargetTypeType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="TargetTypeType">
@@ -1645,8 +1644,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="Type" type="TypeType" minOccurs="1"
-				maxOccurs="unbounded" />
+			<xs:element name="Type" type="TypeType" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="TypedRangeDatumType">
@@ -1657,13 +1655,11 @@
 				Editable: nil</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Type" type="TypeType" minOccurs="0"
-				maxOccurs="unbounded" />
-			<xs:element name="DetectionRange" minOccurs="1"
-				type="WorldDistanceType" />
+			<xs:element name="Type" type="TypeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="DetectionRange" minOccurs="1" type="WorldDistanceType"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="MovementType" />
+	<xs:complexType name="MovementType"/>
 	<xs:complexType name="RadiatedCharacteristicsType">
 		<xs:annotation>
 			<xs:documentation>Platform radiated noise</xs:documentation>
@@ -1672,11 +1668,9 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="Optic" type="OpticType" minOccurs="0" />
-			<xs:element name="Broadband" type="BroadbandType"
-				minOccurs="0" />
-			<xs:element name="SSKBroadband" type="SSKBroadbandType"
-				minOccurs="0" />
+			<xs:element name="Optic" type="OpticType" minOccurs="0"/>
+			<xs:element name="Broadband" type="BroadbandType" minOccurs="0"/>
+			<xs:element name="SSKBroadband" type="SSKBroadbandType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="WatchType">
@@ -1687,7 +1681,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="TargetType" type="TargetTypeType" />
+			<xs:element name="TargetType" type="TargetTypeType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="SelfNoiseCharacteristicsType">
@@ -1698,11 +1692,9 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="Optic" type="OpticType" minOccurs="0" />
-			<xs:element name="Broadband" type="BroadbandType"
-				minOccurs="0" />
-			<xs:element name="SSKBroadband" type="SSKBroadbandType"
-				minOccurs="0" />
+			<xs:element name="Optic" type="OpticType" minOccurs="0"/>
+			<xs:element name="Broadband" type="BroadbandType" minOccurs="0"/>
+			<xs:element name="SSKBroadband" type="SSKBroadbandType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<!--                                -->
@@ -1718,15 +1710,15 @@
 		<xs:attribute name="Units" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="millis" />
-					<xs:enumeration value="seconds" />
-					<xs:enumeration value="minutes" />
-					<xs:enumeration value="hours" />
-					<xs:enumeration value="days" />
+					<xs:enumeration value="millis"/>
+					<xs:enumeration value="seconds"/>
+					<xs:enumeration value="minutes"/>
+					<xs:enumeration value="hours"/>
+					<xs:enumeration value="days"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="Value" type="xs:float" use="required" />
+		<xs:attribute name="Value" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="SpeedType">
 		<xs:annotation>
@@ -1738,14 +1730,14 @@
 		<xs:attribute name="Units" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:token">
-					<xs:enumeration value="m/s" />
-					<xs:enumeration value="kts" />
-					<xs:enumeration value="ft/s" />
-					<xs:enumeration value="ft/min" />
+					<xs:enumeration value="m/s"/>
+					<xs:enumeration value="kts"/>
+					<xs:enumeration value="ft/s"/>
+					<xs:enumeration value="ft/min"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="Value" type="xs:float" use="required" />
+		<xs:attribute name="Value" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="AccelerationType">
 		<xs:annotation>
@@ -1757,12 +1749,12 @@
 		<xs:attribute name="Units" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:token">
-					<xs:enumeration value="m/s/s" />
-					<xs:enumeration value="kt/s" />
+					<xs:enumeration value="m/s/s"/>
+					<xs:enumeration value="kt/s"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="Value" type="xs:float" use="required" />
+		<xs:attribute name="Value" type="xs:float" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="WorldDistanceType">
 		<xs:annotation>
@@ -1773,16 +1765,16 @@
 		<xs:attribute name="Units" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="ft" />
-					<xs:enumeration value="m" />
-					<xs:enumeration value="yds" />
-					<xs:enumeration value="km" />
-					<xs:enumeration value="nm" />
-					<xs:enumeration value="degs" />
+					<xs:enumeration value="ft"/>
+					<xs:enumeration value="m"/>
+					<xs:enumeration value="yds"/>
+					<xs:enumeration value="km"/>
+					<xs:enumeration value="nm"/>
+					<xs:enumeration value="degs"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="Value" type="xs:float" use="required" />
+		<xs:attribute name="Value" type="xs:float" use="required"/>
 	</xs:complexType>
 	<!--                                -->
 	<!--Behaviours-->
@@ -1818,15 +1810,13 @@
 			<xs:documentation source="http://asset.info/ui">Visible: Name, IsActive.
 				Editable: Name, IsActive</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="IsActive" type="xs:boolean" use="optional"
-			default="true">
+		<xs:attribute name="IsActive" type="xs:boolean" use="optional" default="true">
 			<xs:annotation>
 				<xs:documentation>Whether this decision model model is active
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="StayAlive" type="xs:boolean" use="optional"
-			default="true">
+		<xs:attribute name="StayAlive" type="xs:boolean" use="optional" default="true">
 			<xs:annotation>
 				<xs:documentation>Whether this decision model stays alive on
 					completion</xs:documentation>
@@ -2076,7 +2066,7 @@
 				inherited</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="WaterfallType" />
+			<xs:extension base="WaterfallType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="RectangleWanderType">
@@ -2092,9 +2082,9 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Area" type="WorldAreaType" />
-					<xs:element name="Speed" type="SpeedType" />
-					<xs:element name="Height" type="WorldDistanceType" />
+					<xs:element name="Area" type="WorldAreaType"/>
+					<xs:element name="Speed" type="SpeedType"/>
+					<xs:element name="Height" type="WorldDistanceType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2113,10 +2103,10 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Range" type="WorldDistanceType" />
-					<xs:element name="Location" type="LocationType" />
-					<xs:element name="Speed" type="SpeedType" />
-					<xs:element name="Height" type="WorldDistanceType" />
+					<xs:element name="Range" type="WorldDistanceType"/>
+					<xs:element name="Location" type="LocationType"/>
+					<xs:element name="Speed" type="SpeedType"/>
+					<xs:element name="Height" type="WorldDistanceType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2143,8 +2133,8 @@
 								fleeing</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="FleeSpeed" type="SpeedType" />
-					<xs:element name="TargetType" type="TargetTypeType" />
+					<xs:element name="FleeSpeed" type="SpeedType"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2159,9 +2149,9 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
-				<xs:attribute name="Course" type="xs:float" use="required" />
-				<xs:attribute name="Speed" type="xs:float" use="required" />
-				<xs:attribute name="Depth" type="xs:float" use="required" />
+				<xs:attribute name="Course" type="xs:float" use="required"/>
+				<xs:attribute name="Speed" type="xs:float" use="required"/>
+				<xs:attribute name="Depth" type="xs:float" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2178,14 +2168,11 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="WorldDistance" type="WorldDistanceType"
-						minOccurs="0" />
-					<xs:element name="TargetType" type="TargetTypeType" />
-					<xs:element name="Duration" type="DurationType"
-						minOccurs="0" />
+					<xs:element name="WorldDistance" type="WorldDistanceType" minOccurs="0"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
+					<xs:element name="Duration" type="DurationType" minOccurs="0"/>
 				</xs:sequence>
-				<xs:attribute name="ContinueMonitoring" type="xs:boolean"
-					use="required" />
+				<xs:attribute name="ContinueMonitoring" type="xs:boolean" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2200,18 +2187,14 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="WorldDistance" type="WorldDistanceType" />
-					<xs:element name="TargetType" type="TargetTypeType" />
+					<xs:element name="WorldDistance" type="WorldDistanceType"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
 				</xs:sequence>
-				<xs:attribute name="LaunchWeaponType" type="xs:string"
-					use="required" />
-				<xs:attribute name="LaunchWeaponFileName" type="xs:string"
-					use="required" />
-				<xs:attribute name="LaunchBuoyType" type="xs:string"
-					use="required" />
-				<xs:attribute name="LaunchBuoyFileName" type="xs:string"
-					use="required" />
-				<xs:attribute name="NumBuoys" type="xs:integer" use="required" />
+				<xs:attribute name="LaunchWeaponType" type="xs:string" use="required"/>
+				<xs:attribute name="LaunchWeaponFileName" type="xs:string" use="required"/>
+				<xs:attribute name="LaunchBuoyType" type="xs:string" use="required"/>
+				<xs:attribute name="LaunchBuoyFileName" type="xs:string" use="required"/>
+				<xs:attribute name="NumBuoys" type="xs:integer" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2232,7 +2215,7 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence minOccurs="0" maxOccurs="unbounded">
-					<xs:element name="Waterfall" type="WaterfallType" />
+					<xs:element name="Waterfall" type="WaterfallType"/>
 				</xs:sequence>
 				<xs:attribute name="Index" type="xs:integer" use="required">
 					<xs:annotation>
@@ -2256,14 +2239,14 @@
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
 					<xs:choice>
-						<xs:element name="Detection" type="DetectionType" />
-						<xs:element name="DetectionForPeriod" type="DetectionForPeriodType" />
-						<xs:element name="ElapsedTime" type="ElapsedTimeType" />
+						<xs:element name="Detection" type="DetectionType"/>
+						<xs:element name="DetectionForPeriod" type="DetectionForPeriodType"/>
+						<xs:element name="ElapsedTime" type="ElapsedTimeType"/>
 					</xs:choice>
 					<xs:choice>
-						<xs:element name="ManoeuvreToLocation" type="ManoeuvreToLocationType" />
-						<xs:element name="ManoeuvreToCourse" type="ManoeuvreToCourseType" />
-						<xs:element name="ChangeSensorLineUp" type="ChangeSensorLineUpType" />
+						<xs:element name="ManoeuvreToLocation" type="ManoeuvreToLocationType"/>
+						<xs:element name="ManoeuvreToCourse" type="ManoeuvreToCourseType"/>
+						<xs:element name="ChangeSensorLineUp" type="ChangeSensorLineUpType"/>
 					</xs:choice>
 				</xs:sequence>
 			</xs:extension>
@@ -2280,9 +2263,8 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="WorldDistance" type="WorldDistanceType"
-						minOccurs="0" />
-					<xs:element name="TargetType" type="TargetTypeType" />
+					<xs:element name="WorldDistance" type="WorldDistanceType" minOccurs="0"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2298,7 +2280,7 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Duration" type="DurationType" />
+					<xs:element name="Duration" type="DurationType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2314,11 +2296,10 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="WorldDistance" type="WorldDistanceType" />
-					<xs:element name="TargetType" type="TargetTypeType" />
+					<xs:element name="WorldDistance" type="WorldDistanceType"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
 				</xs:sequence>
-				<xs:attribute name="DetonationPower" type="xs:float"
-					use="required" />
+				<xs:attribute name="DetonationPower" type="xs:float" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2331,15 +2312,15 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Height" type="WorldDistanceType" />
+					<xs:element name="Height" type="WorldDistanceType"/>
 				</xs:sequence>
 				<xs:attribute name="SensorType" use="required">
 					<xs:simpleType>
 						<xs:restriction base="xs:NMTOKEN">
-							<xs:enumeration value="BB_PASSIVE" />
-							<xs:enumeration value="BB_ACTIVE" />
-							<xs:enumeration value="NB_PASSIVE" />
-							<xs:enumeration value="NB_ACTIVE" />
+							<xs:enumeration value="BB_PASSIVE"/>
+							<xs:enumeration value="BB_ACTIVE"/>
+							<xs:enumeration value="NB_PASSIVE"/>
+							<xs:enumeration value="NB_ACTIVE"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
@@ -2357,12 +2338,12 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="CoolOffTime" type="DurationType" />
-					<xs:element name="WorldDistance" type="WorldDistanceType" />
-					<xs:element name="TargetType" type="TargetTypeType" />
+					<xs:element name="CoolOffTime" type="DurationType"/>
+					<xs:element name="WorldDistance" type="WorldDistanceType"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
 				</xs:sequence>
-				<xs:attribute name="LaunchType" type="xs:string" />
-				<xs:attribute name="LaunchTypeFileName" type="xs:string" />
+				<xs:attribute name="LaunchType" type="xs:string"/>
+				<xs:attribute name="LaunchTypeFileName" type="xs:string"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2385,8 +2366,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="Height" type="WorldDistanceType"
-						minOccurs="0">
+					<xs:element name="Height" type="WorldDistanceType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The new height to adopt</xs:documentation>
 						</xs:annotation>
@@ -2399,7 +2379,7 @@
 							change</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="Course" type="xs:float" />
+				<xs:attribute name="Course" type="xs:float"/>
 				<xs:attribute name="RelativeCourse" type="xs:boolean">
 					<xs:annotation>
 						<xs:documentation>Whether to turn to a relative rather than
@@ -2429,8 +2409,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="Height" type="WorldDistanceType"
-						minOccurs="0">
+					<xs:element name="Height" type="WorldDistanceType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The height at which to conduct
 								investigation
@@ -2458,11 +2437,10 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="TrailRange" type="WorldDistanceType" />
-					<xs:element name="AllowableError" type="WorldDistanceType" />
-					<xs:element name="TargetType" type="TargetTypeType" />
-					<xs:element name="Height" type="WorldDistanceType"
-						minOccurs="0" />
+					<xs:element name="TrailRange" type="WorldDistanceType"/>
+					<xs:element name="AllowableError" type="WorldDistanceType"/>
+					<xs:element name="TargetType" type="TargetTypeType"/>
+					<xs:element name="Height" type="WorldDistanceType" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2480,7 +2458,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="TrailType">
-				<xs:attribute name="TrailBearing" type="xs:float" use="required" />
+				<xs:attribute name="TrailBearing" type="xs:float" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2503,8 +2481,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="AllowSpeedchange" type="xs:boolean"
-					use="required">
+				<xs:attribute name="AllowSpeedchange" type="xs:boolean" use="required">
 					<xs:annotation>
 						<xs:documentation>Whether we can request speed change (to max
 							speed) in
@@ -2534,8 +2511,7 @@
 								target</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="EvasionRange" type="WorldDistanceType"
-						minOccurs="0">
+					<xs:element name="EvasionRange" type="WorldDistanceType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The range to travel along the evasion course
 								for</xs:documentation>
@@ -2546,8 +2522,7 @@
 							<xs:documentation>The type of target to avoid</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="EvasionSpeed" type="SpeedType"
-						minOccurs="0">
+					<xs:element name="EvasionSpeed" type="SpeedType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The (optional) speed to travel at during
 								evasion</xs:documentation>
@@ -2565,20 +2540,20 @@
 				mediums, switch on
 			</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="Name" type="xs:string" use="required" />
+		<xs:attribute name="Name" type="xs:string" use="required"/>
 		<xs:attribute name="Medium" use="required">
 			<xs:simpleType>
 				<xs:restriction base="xs:NMTOKEN">
-					<xs:enumeration value="PassiveBB" />
-					<xs:enumeration value="Narrowband" />
-					<xs:enumeration value="Visual" />
-					<xs:enumeration value="Radar" />
-					<xs:enumeration value="Magnetic" />
-					<xs:enumeration value="ActiveBB" />
+					<xs:enumeration value="PassiveBB"/>
+					<xs:enumeration value="Narrowband"/>
+					<xs:enumeration value="Visual"/>
+					<xs:enumeration value="Radar"/>
+					<xs:enumeration value="Magnetic"/>
+					<xs:enumeration value="ActiveBB"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="SwitchOn" type="xs:boolean" use="required" />
+		<xs:attribute name="SwitchOn" type="xs:boolean" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="ManoeuvreToLocationType">
 		<xs:annotation>
@@ -2590,7 +2565,7 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Location" type="LocationType" />
+					<xs:element name="Location" type="LocationType"/>
 					<xs:element name="Speed" type="SpeedType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The speed to travel at</xs:documentation>
@@ -2610,11 +2585,9 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Speed" type="SpeedType" minOccurs="0" />
-					<xs:element name="Height" type="WorldDistanceType"
-						minOccurs="0" />
-					<xs:element name="Vector" type="WorldDistanceType"
-						minOccurs="0">
+					<xs:element name="Speed" type="SpeedType" minOccurs="0"/>
+					<xs:element name="Height" type="WorldDistanceType" minOccurs="0"/>
+					<xs:element name="Vector" type="WorldDistanceType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The vector to move by (or null to just get the
 								vessel
@@ -2622,7 +2595,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="Course" type="xs:float" use="optional" />
+				<xs:attribute name="Course" type="xs:float" use="optional"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2635,8 +2608,7 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Frequency" type="DurationType"
-						minOccurs="0">
+					<xs:element name="Frequency" type="DurationType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>To perform a series of Stern Arc Clearances
 								enter a
@@ -2651,8 +2623,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="RandomClearances" type="xs:boolean"
-					use="optional">
+				<xs:attribute name="RandomClearances" type="xs:boolean" use="optional">
 					<xs:annotation>
 						<xs:documentation>Whether to apply randomness to the
 							frequency
@@ -2666,8 +2637,8 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:NMTOKEN">
-							<xs:enumeration value="SingleLeg" />
-							<xs:enumeration value="DoubleLeg" />
+							<xs:enumeration value="SingleLeg"/>
+							<xs:enumeration value="DoubleLeg"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
@@ -2689,11 +2660,11 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="EvadeThese" type="TargetTypeType" />
-					<xs:element name="SnortSpeed" type="SpeedType" />
+					<xs:element name="EvadeThese" type="TargetTypeType"/>
+					<xs:element name="SnortSpeed" type="SpeedType"/>
 				</xs:sequence>
-				<xs:attribute name="MinLevel" type="xs:float" use="required" />
-				<xs:attribute name="SafeLevel" type="xs:float" use="required" />
+				<xs:attribute name="MinLevel" type="xs:float" use="required"/>
+				<xs:attribute name="SafeLevel" type="xs:float" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2707,7 +2678,7 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="WorldPath" type="WorldPathType" />
+					<xs:element name="WorldPath" type="WorldPathType"/>
 					<xs:element name="Speed" type="SpeedType">
 						<xs:annotation>
 							<xs:documentation>The speed to transit at (kts)
@@ -2772,7 +2743,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="TransitType">
-				<xs:sequence />
+				<xs:sequence/>
 				<xs:attribute name="Visitor" use="required">
 					<xs:annotation>
 						<xs:documentation>The strategy we want to use to travel through
@@ -2782,9 +2753,9 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:NMTOKEN">
-							<xs:enumeration value="OnTop" />
-							<xs:enumeration value="DirectedOnTop" />
-							<xs:enumeration value="MakeWaypoint" />
+							<xs:enumeration value="OnTop"/>
+							<xs:enumeration value="DirectedOnTop"/>
+							<xs:enumeration value="MakeWaypoint"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
@@ -2819,15 +2790,13 @@
 								travel</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="SearchHeight" type="WorldDistanceType"
-						minOccurs="0">
+					<xs:element name="SearchHeight" type="WorldDistanceType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The (optional) height to search at
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="SearchSpeed" type="SpeedType"
-						minOccurs="0">
+					<xs:element name="SearchSpeed" type="SpeedType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The (optional) speed to search at
 							</xs:documentation>
@@ -2863,12 +2832,12 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="StartPoint" type="LocationType" />
-					<xs:element name="TrackSpacing" type="WorldDistanceType" />
+					<xs:element name="StartPoint" type="LocationType"/>
+					<xs:element name="TrackSpacing" type="WorldDistanceType"/>
 				</xs:sequence>
-				<xs:attribute name="InitialTrack" type="xs:double" use="required" />
-				<xs:attribute name="Clockwise" type="xs:boolean" use="required" />
-				<xs:attribute name="MaxNumLegs" type="xs:integer" use="optional" />
+				<xs:attribute name="InitialTrack" type="xs:double" use="required"/>
+				<xs:attribute name="Clockwise" type="xs:boolean" use="required"/>
+				<xs:attribute name="MaxNumLegs" type="xs:integer" use="optional"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2885,9 +2854,9 @@
 				<xs:attribute name="RequestedState" use="required">
 					<xs:simpleType>
 						<xs:restriction base="xs:NMTOKEN">
-							<xs:enumeration value="ADS_DEPLOYED" />
-							<xs:enumeration value="ADS_HOUSED" />
-							<xs:enumeration value="IN_HOVER" />
+							<xs:enumeration value="ADS_DEPLOYED"/>
+							<xs:enumeration value="ADS_HOUSED"/>
+							<xs:enumeration value="IN_HOVER"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
@@ -2925,7 +2894,7 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="Duration" type="DurationType" />
+					<xs:element name="Duration" type="DurationType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2937,7 +2906,7 @@
 				Editable: inherited</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="DecisionModelType" />
+			<xs:extension base="DecisionModelType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<!--                                -->
@@ -2954,8 +2923,8 @@
 				Editable: name, active</xs:documentation>
 		</xs:annotation>
 
-		<xs:attribute name="Name" type="xs:token" use="required" />
-		<xs:attribute name="Active" type="xs:boolean" use="required" />
+		<xs:attribute name="Name" type="xs:token" use="required"/>
+		<xs:attribute name="Active" type="xs:boolean" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="BatchCollatorType">
 		<xs:annotation>
@@ -2980,8 +2949,7 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="OnlyBatchReporting" type="xs:boolean"
-			use="required">
+		<xs:attribute name="OnlyBatchReporting" type="xs:boolean" use="required">
 			<xs:annotation>
 				<xs:documentation>Whether to override (cancel) reporting scenario
 					performance for
@@ -3052,8 +3020,7 @@
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
 				<xs:sequence>
-					<xs:element name="BatchCollator" type="BatchCollatorType"
-						minOccurs="0" />
+					<xs:element name="BatchCollator" type="BatchCollatorType" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -3068,8 +3035,7 @@
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
 				<xs:sequence>
-					<xs:element name="BatchCollator" type="BatchCollatorType"
-						minOccurs="0" />
+					<xs:element name="BatchCollator" type="BatchCollatorType" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -3097,8 +3063,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="BatchCollator" type="BatchCollatorType"
-						minOccurs="0">
+					<xs:element name="BatchCollator" type="BatchCollatorType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>Optional structure defining if/how we collate
 								stats
@@ -3106,8 +3071,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="DetectionLevel" type="DetectionLevelType">
-				</xs:attribute>
+				<xs:attribute name="DetectionLevel" type="DetectionLevelType"> </xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3117,10 +3081,10 @@
 				of knowledge about the subject participant.</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:NMTOKEN">
-			<xs:enumeration value="Undetected" />
-			<xs:enumeration value="Detected" />
-			<xs:enumeration value="Classified" />
-			<xs:enumeration value="Identified" />
+			<xs:enumeration value="Undetected"/>
+			<xs:enumeration value="Detected"/>
+			<xs:enumeration value="Classified"/>
+			<xs:enumeration value="Identified"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="CoreFileObserverType">
@@ -3131,8 +3095,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
-				<xs:attribute name="directory_name" type="xs:string"
-					use="optional">
+				<xs:attribute name="directory_name" type="xs:string" use="optional">
 					<xs:annotation>
 						<xs:documentation>The directory to contain the results
 							plots
@@ -3159,8 +3122,7 @@
 				Editable: inherited</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="CoreFileObserverType">
-			</xs:extension>
+			<xs:extension base="CoreFileObserverType"> </xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="DebriefReplayObserverType">
@@ -3174,8 +3136,7 @@
 		<xs:complexContent>
 			<xs:extension base="CoreFileObserverType">
 				<xs:sequence>
-					<xs:element name="SubjectToTrack" type="TargetTypeType"
-						minOccurs="0">
+					<xs:element name="SubjectToTrack" type="TargetTypeType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The type of target we want to record a
 								narrative full
@@ -3183,22 +3144,19 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="record_detections" type="xs:boolean"
-					use="required">
+				<xs:attribute name="record_detections" type="xs:boolean" use="required">
 					<xs:annotation>
 						<xs:documentation>Whether to record detections to file
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="record_decisions" type="xs:boolean"
-					use="required">
+				<xs:attribute name="record_decisions" type="xs:boolean" use="required">
 					<xs:annotation>
 						<xs:documentation>Whether to record decisions to file
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="record_positions" type="xs:boolean"
-					use="required">
+				<xs:attribute name="record_positions" type="xs:boolean" use="required">
 					<xs:annotation>
 						<xs:documentation>Whether to record positions to file
 						</xs:documentation>
@@ -3218,7 +3176,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="DebriefReplayObserverType">
-				<xs:sequence />
+				<xs:sequence/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3232,38 +3190,33 @@
 		<xs:complexContent>
 			<xs:extension base="CoreFileObserverType">
 				<xs:sequence>
-					<xs:element name="GridDelta" type="WorldDistanceType" />
+					<xs:element name="GridDelta" type="WorldDistanceType"/>
 				</xs:sequence>
-				<xs:attribute name="image_width" type="xs:int" use="optional"
-					default="400">
+				<xs:attribute name="image_width" type="xs:int" use="optional" default="400">
 					<xs:annotation>
 						<xs:documentation>The width of plot to produce (pixels)
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="image_height" type="xs:int" use="optional"
-					default="400">
+				<xs:attribute name="image_height" type="xs:int" use="optional" default="400">
 					<xs:annotation>
 						<xs:documentation>The height of plot to produce (pixels)
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="show_scale" type="xs:boolean" use="optional"
-					default="true">
+				<xs:attribute name="show_scale" type="xs:boolean" use="optional" default="true">
 					<xs:annotation>
 						<xs:documentation>Whether to place a scale on the plot
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="show_positions" type="xs:boolean"
-					use="optional" default="true">
+				<xs:attribute name="show_positions" type="xs:boolean" use="optional" default="true">
 					<xs:annotation>
 						<xs:documentation>Whether to show a position symbol at all vessel
 							positions</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="only_final_positions" type="xs:boolean"
-					use="optional">
+				<xs:attribute name="only_final_positions" type="xs:boolean" use="optional">
 					<xs:annotation>
 						<xs:documentation>Only show the final vessel positions - don't
 							show the
@@ -3284,7 +3237,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="DetectionObserverType">
-				<xs:sequence />
+				<xs:sequence/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3299,7 +3252,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="DetectionObserverType">
-				<xs:sequence />
+				<xs:sequence/>
 				<xs:attribute name="ShowNames" type="xs:boolean" use="optional">
 					<xs:annotation>
 						<xs:documentation>Whether to label the rings with the target type</xs:documentation>
@@ -3323,7 +3276,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="DetectionObserverType">
-				<xs:sequence />
+				<xs:sequence/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3338,10 +3291,9 @@
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
 				<xs:sequence>
-					<xs:element name="Target" type="TargetType" />
-					<xs:element name="Watch" type="WatchType" />
-					<xs:element name="BatchCollator" type="BatchCollatorType"
-						minOccurs="0" />
+					<xs:element name="Target" type="TargetType"/>
+					<xs:element name="Watch" type="WatchType"/>
+					<xs:element name="BatchCollator" type="BatchCollatorType" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -3357,7 +3309,7 @@
 		<xs:complexContent>
 			<xs:extension base="ProximityObserverType">
 				<xs:sequence>
-					<xs:element name="Range" type="WorldDistanceType" />
+					<xs:element name="Range" type="WorldDistanceType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -3370,8 +3322,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
-			<xs:extension base="DetectionObserverType">
-			</xs:extension>
+			<xs:extension base="DetectionObserverType"> </xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="StopOnProximityDetectionObserverType">
@@ -3411,16 +3362,16 @@
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
 				<xs:sequence>
-					<xs:element name="Target" type="TargetType" />
-					<xs:element name="Watch" type="WatchType" />
+					<xs:element name="Target" type="TargetType"/>
+					<xs:element name="Watch" type="WatchType"/>
 				</xs:sequence>
-						<xs:attribute name="PlotTheDead" type="xs:boolean" use="required">
-			<xs:annotation>
-				<xs:documentation>Whether to plot a marker where detected platforms are removed
+				<xs:attribute name="PlotTheDead" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether to plot a marker where detected platforms are removed
 				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-				
+					</xs:annotation>
+				</xs:attribute>
+
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3434,7 +3385,7 @@
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
 				<xs:sequence>
-					<xs:element name="Duration" type="DurationType" />
+					<xs:element name="Duration" type="DurationType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -3450,7 +3401,7 @@
 		<xs:complexContent>
 			<xs:extension base="CoreObserverType">
 				<xs:sequence>
-					<xs:element name="Target" type="TargetType" />
+					<xs:element name="Target" type="TargetType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -3497,7 +3448,7 @@
 				<xs:documentation>The list of variances to apply to each scenario
 				</xs:documentation>
 			</xs:annotation>
-			<xs:element name="VarianceList" type="VarianceListType" />
+			<xs:element name="VarianceList" type="VarianceListType"/>
 		</xs:sequence>
 		<xs:attribute name="NameTemplate" type="validString" use="required">
 			<xs:annotation>
@@ -3532,7 +3483,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence maxOccurs="unbounded">
-			<xs:element name="ParticipantVariance" type="ParticipantVariancesType" />
+			<xs:element name="ParticipantVariance" type="ParticipantVariancesType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:annotation>
@@ -3573,8 +3524,7 @@
 							generate</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="inParallelPlanes" type="xs:boolean"
-					default="true">
+				<xs:attribute name="inParallelPlanes" type="xs:boolean" default="true">
 					<xs:annotation>
 						<xs:documentation>Whether the multiple instances of this
 							participant should
@@ -3614,8 +3564,7 @@
 			<xs:annotation>
 				<xs:documentation>A list of variances to apply</xs:documentation>
 			</xs:annotation>
-			<xs:element name="Variance" type="VarianceType" maxOccurs="unbounded"
-				minOccurs="0">
+			<xs:element name="Variance" type="VarianceType" maxOccurs="unbounded" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>A specific variance to be applied
 					</xs:documentation>
@@ -3737,7 +3686,7 @@
 				<xs:documentation>Provide a list of XML snippets to choose from
 				</xs:documentation>
 			</xs:annotation>
-			<xs:element name="XMLChoice" type="XMLChoiceType" />
+			<xs:element name="XMLChoice" type="XMLChoiceType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="ChoiceType">
@@ -3770,7 +3719,7 @@
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:any namespace="##any" processContents="skip" />
+						<xs:any namespace="##any" processContents="skip"/>
 					</xs:sequence>
 					<xs:attribute name="Name">
 						<xs:annotation>
@@ -3829,7 +3778,7 @@
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="RandomVarianceType">
-				<xs:sequence />
+				<xs:sequence/>
 				<xs:attribute name="min" type="xs:decimal" use="required">
 					<xs:annotation>
 						<xs:documentation>Min value to use (inclusive)</xs:documentation>
@@ -3849,8 +3798,7 @@
 							specified</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="number_permutations" type="xs:decimal"
-					use="optional">
+				<xs:attribute name="number_permutations" type="xs:decimal" use="optional">
 					<xs:annotation>
 						<xs:documentation>When calculating values within the range,
 							specifying the
@@ -3884,11 +3832,11 @@
 			<xs:documentation source="http://asset.info/ui">Visible: Value. Editable:
 				Value</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="value" type="validString" use="required" />
+		<xs:attribute name="value" type="validString" use="required"/>
 	</xs:complexType>
 	<xs:simpleType name="validString">
 		<xs:restriction base="xs:token">
-			<xs:minLength value="1" />
+			<xs:minLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="LocationAreaType">
