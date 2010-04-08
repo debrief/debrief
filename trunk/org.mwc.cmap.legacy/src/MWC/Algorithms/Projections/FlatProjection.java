@@ -136,8 +136,10 @@ public class FlatProjection extends PlainProjection
 		// Now work in screen coordinates
 		// scrRes = new Point((int)(Math.sin((double)brg) * (double)rng) ,
 		// (int)(Math.cos((double)brg) * (double)rng));
-		scrRes.move((int) (Math.sin((double) brg) * (double) rng), (int) (Math
-				.cos((double) brg) * (double) rng));
+		final int deltaX = (int) (Math.sin((double) brg) * (double) rng);
+		final int deltaY = (int) (Math
+				.cos((double) brg) * (double) rng);
+		scrRes.move(deltaX, deltaY);
 
 		// invert the y
 		scrRes.y = -scrRes.y;

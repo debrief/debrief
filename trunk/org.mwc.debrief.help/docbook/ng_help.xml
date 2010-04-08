@@ -4000,6 +4000,11 @@ and so on....</programlisting></para>
                                 </imageobject>
                             </mediaobject>
                         </figure></para>
+                    <note>
+                        <para>In summer 2010 a set of scaled symbols were introduced.  These are not
+                            shown at fixed screen sizes, but as representative sizes of the subject
+                            vessel - so they resize as you zoom in on a plot.</para>
+                    </note>
                 </sect2>
                 <sect2 id="more_buoy_patterns">
                     <title>Use in buoy patterns</title>

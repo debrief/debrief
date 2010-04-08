@@ -168,9 +168,6 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
       return true;
   }
 
-  /** retrieve the metafile from the implementation*/
-  public abstract void getMetafile();
-
   /** allow recipients to find out what type of symbol this is.
    * @return the name of this symbol
    */

@@ -335,6 +335,8 @@ public class SymbolFactory
       java.util.HashMap<String, Class<?>> vessels = new java.util.HashMap<String, Class<?>>();
       vessels.put("Helicopter", MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym.class);
       vessels.put("Aircraft", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
+      vessels.put("ScaledVessel", MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym.class);
+      vessels.put("ScaledSubmarine", MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym.class);
       vessels.put("Submarine", MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub.class);
       vessels.put("Missile", MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
       vessels.put("Torpedo", MWC.GUI.Shapes.Symbols.Vessels.TorpedoSym.class);
