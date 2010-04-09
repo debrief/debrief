@@ -370,9 +370,17 @@ public final class SensorContactWrapper extends
 			{
 
 				// better calculate it ourselves then
+				TrackWrapper parentTrack = (TrackWrapper) parent;
 
+				boolean parentInterpolated = parentTrack.getInterpolatePoints();
+				parentTrack.setInterpolatePoints(true);
+				
 				// get the origin
 				final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG);
+				
+				// and restore the interpolated value
+				parentTrack.setInterpolatePoints(parentInterpolated);
+				
 				MWC.GenericData.Watchable wa = null;
 				if (list.length > 0)
 					wa = list[0];

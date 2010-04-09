@@ -465,7 +465,15 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 	public void setWormInHole(Boolean wormInHole)
 	{
-		_wormInHole = wormInHole;
+		// see if this is a changed setting
+		if (wormInHole != _wormInHole)
+		{
+			// remember the new value
+			_wormInHole = wormInHole;
+
+			// we've got to recalculate our positions now, really.
+			clearChildOffsets();
+		}
 	}
 
 	public WorldDistance.ArrayLength getSensorOffset()
@@ -483,7 +491,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		}
 	}
 
-	/** our parent has changed, clear data that depends on it
+	/**
+	 * our parent has changed, clear data that depends on it
 	 * 
 	 */
 	private void clearChildOffsets()
@@ -495,7 +504,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		{
 			final SensorContactWrapper fw = (SensorContactWrapper) it.next();
 			fw.clearCalculatedOrigin();
-			
+
 			// and tell it we're the boss
 			fw.setSensor(this);
 		}
@@ -512,8 +521,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		// and clear offsets
 		clearChildOffsets();
 	}
-
-	
 
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
@@ -552,7 +559,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 						prop("LineThickness", "the thickness to draw these sensor lines"),
 						prop("Color", "the colour to plot this set of sensor data"),
 						prop("SensorOffset",
-								"the forward/backward offset of this sensor from the attack datum"),
+								"the forward/backward offset (m) of this sensor from the attack datum"),
 						prop(
 								"WormInHole",
 								"whether the origin of this sensor is offset in straight line, or back along the host track"),
@@ -925,24 +932,25 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return result;
 	}
 
-
-	/** create a new instance of an entity of this type, interpolated between the supplied sample objects
+	/**
+	 * create a new instance of an entity of this type, interpolated between the
+	 * supplied sample objects
 	 * 
 	 */
 	protected PlottableWrapperWithTimeAndOverrideableColor createItem(
 			PlottableWrapperWithTimeAndOverrideableColor last,
-			PlottableWrapperWithTimeAndOverrideableColor next, 
+			PlottableWrapperWithTimeAndOverrideableColor next,
 			LinearInterpolator interp, long tNow)
 	{
 		SensorContactWrapper _next = (SensorContactWrapper) next;
 		SensorContactWrapper _last = (SensorContactWrapper) last;
-		
+
 		double brg = interp.interp(_last.getBearing(), _next.getBearing());
-		double ambig =0;
-		if(_last.getHasAmbiguousBearing())
+		double ambig = 0;
+		if (_last.getHasAmbiguousBearing())
 		{
-	  	 ambig = interp.interp(_last.getAmbiguousBearing(), _next
-				.getAmbiguousBearing());
+			ambig = interp.interp(_last.getAmbiguousBearing(), _next
+					.getAmbiguousBearing());
 		}
 		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
 		// do we have range?
@@ -950,8 +958,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		if ((_last.getRange() != null) && (_next.getRange() != null))
 		{
 			double rngDegs = interp.interp(_last.getRange().getValueIn(
-					WorldDistance.DEGS), _last.getRange().getValueIn(
-					WorldDistance.DEGS));
+					WorldDistance.DEGS), _last.getRange().getValueIn(WorldDistance.DEGS));
 			theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
 		}
 		// do we have an origin?
@@ -966,14 +973,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		}
 
 		// now, go create the new data item
-		SensorContactWrapper newS = new SensorContactWrapper(_last
-				.getTrackName(), new HiResDate(0, tNow), theRng, brg, ambig, freq,
-				origin, _last.getActualColor(), _last.getName(), _last
-						.getLineStyle().intValue(), _last.getSensorName());
-		
+		SensorContactWrapper newS = new SensorContactWrapper(_last.getTrackName(),
+				new HiResDate(0, tNow), theRng, brg, ambig, freq, origin, _last
+						.getActualColor(), _last.getName(),
+				_last.getLineStyle().intValue(), _last.getSensorName());
+
 		// sort out the ambiguous data
 		newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
-		
+
 		return newS;
 	}
 }

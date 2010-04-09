@@ -2057,13 +2057,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			final TrackSegment firstSeg = (TrackSegment) _thePositions.first();
 			final TrackSegment lastSeg = (TrackSegment) _thePositions.last();
-
+			
 			// see if this DTG is inside our data range
 			// in which case we will just return null
 			final FixWrapper theFirst = (FixWrapper) firstSeg.first();
 			final FixWrapper theLast = (FixWrapper) lastSeg.last();
-
-			if ((srchDTG.greaterThanOrEqualTo(theFirst.getTime()))
+			
+			if ((srchDTG.greaterThan(theFirst.getTime()))
 					&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
 			{
 				// yes it's inside our data range, find the first fix
@@ -2165,6 +2165,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					}
 
 			}
+			else if(srchDTG.equals(theFirst.getDTG()))
+			{
+				// aaah, special case.  just see if we're after a data point that's the same
+				// as our start time
+				res = theFirst;
+			}
+
 
 			// and remember this fix
 			lastFix = res;
