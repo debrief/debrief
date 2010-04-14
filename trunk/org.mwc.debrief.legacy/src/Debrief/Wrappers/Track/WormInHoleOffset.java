@@ -1,6 +1,7 @@
 package Debrief.Wrappers.Track;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -23,6 +24,124 @@ import MWC.TacticalData.Fix;
  */
 public class WormInHoleOffset
 {
+
+	/**
+	 * 
+	 * @param track
+	 * @param dtg
+	 * @param arrayOffset
+	 * @return
+	 */
+	public static WorldLocation getWormOffsetFor(TrackWrapper track,
+			HiResDate dtg, WorldDistance arrayOffset)
+	{
+		WorldLocation res = null;
+		double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));
+
+		// check we're in period
+		if (dtg.lessThan(track.getStartDTG()) || dtg.greaterThan(track.getEndDTG()))
+			return res;
+
+		// start off by bracketing the time. work back along the track legs until we
+		// find the two positions either side
+		// of the time we're looking for
+		Enumeration<Editable> enumer = track.getPositions();
+
+		Vector<FixWrapper> backTrack = new Vector<FixWrapper>();
+		FixWrapper nextPoint = null;
+
+		while (enumer.hasMoreElements())
+		{
+			FixWrapper thisP = (FixWrapper) enumer.nextElement();
+
+			if (thisP.getDateTimeGroup().lessThan(dtg))
+			{
+				backTrack.add(thisP);
+			}
+			else
+			{
+				// we've passed the point
+				nextPoint = thisP;
+				break;
+			}
+		}
+
+		// check we're in bounds
+		if (backTrack.size() == 0)
+		{
+			// are we on the first data point?
+			if ((nextPoint != null) && (dtg.equals(nextPoint.getDTG())))
+			{
+				// yup, just use that one
+				System.out.println("pos at start:"
+						+ nextPoint.getDTG().getDate().getTime());
+				res = nextPoint.getLocation();
+
+				// offset by the array length along the heading
+				res = new WorldLocation(res.add(new WorldVector(nextPoint.getCourse(),
+						arrayOffset.getValueIn(WorldDistance.DEGS), 0d)));
+			}
+			else
+			{
+				// we're buggered - we're before the start of the track
+				throw new RuntimeException(
+						"wrong maths in worm in hole offset. I thought we'd established this data point was within our time period, but it's earlier");
+			}
+		}
+		else
+		{
+			// right, we have a back track. double-check we have our next point
+			if (nextPoint != null)
+			{
+				// yup, we've bracketed the point. work out where ownship is at this DTG
+				nextPoint = FixWrapper.interpolateFix(backTrack.lastElement(),
+						nextPoint, dtg);
+
+				for (int i = backTrack.size() - 1; i >= 0; i--)
+				{
+					FixWrapper thisI = backTrack.elementAt(i);
+
+					double thisLen = nextPoint.getLocation().subtract(
+							thisI.getFixLocation()).getRange();
+					double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
+
+					// is this less than our stub?
+					if (thisLenM > offsetM)
+					{
+						// right, we've got to interpolate within this section
+//						System.out.println("pos in last section "
+//								+ thisI.getDTG().getDate().getTime() + " and "
+//								+ nextPoint.getDTG().getDate().getTime());
+
+						// so just interpolate along the path
+						double posDelta = offsetM / thisLenM;
+						double timeDelta = (nextPoint.getDTG().getMicros() - thisI.getDTG()
+								.getMicros())
+								* posDelta;
+						FixWrapper newMidFix = FixWrapper.interpolateFix(thisI, nextPoint,
+								new HiResDate(0,
+										(long) (nextPoint.getDTG().getMicros() - timeDelta)));
+						res = newMidFix.getLocation();
+						break;
+					}
+					else
+					{
+						offsetM -= thisLenM;
+						nextPoint = thisI;
+					}
+				}
+			}
+			else
+			{
+				// we're buggered - we're past the end of the track
+				throw new RuntimeException(
+						"wrong maths in worm in hole offset. I thought we'd established this data point was within our time period, but it's later");
+
+			}
+		}
+
+		return res;
+	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
@@ -49,8 +168,8 @@ public class WormInHoleOffset
 			Thread.sleep(100);
 
 			outputTrack(track);
-			
-		  Thread.sleep(100);
+
+			Thread.sleep(100);
 			sw.setWormInHole(true);
 			outputSensorTrack(sw);
 
@@ -68,7 +187,7 @@ public class WormInHoleOffset
 						+ MWC.Algorithms.Conversions.Degs2m(thisF.getLocation().getLat()));
 			}
 		}
-		
+
 		private void outputSensorTrack(SensorWrapper sensor)
 		{
 			Enumeration<Editable> numer = sensor.elements();
@@ -77,8 +196,7 @@ public class WormInHoleOffset
 				SensorContactWrapper thisF = (SensorContactWrapper) numer.nextElement();
 				WorldLocation thisLoc = thisF.getLocation();
 				System.out.println(MWC.Algorithms.Conversions.Degs2m(thisLoc.getLong())
-						+ ", "
-						+ MWC.Algorithms.Conversions.Degs2m(thisLoc.getLat()));
+						+ ", " + MWC.Algorithms.Conversions.Degs2m(thisLoc.getLat()));
 			}
 		}
 
@@ -88,19 +206,24 @@ public class WormInHoleOffset
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 0),
-					loc_1.add(getVector(0, 0)), MWC.Algorithms.Conversions.Degs2Rads(0), 110));
+					loc_1.add(getVector(0, 0)), MWC.Algorithms.Conversions.Degs2Rads(0),
+					110));
 			fw1.setLabel("fw1");
 			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 0),
-					loc_1.add(getVector(0, 600)), MWC.Algorithms.Conversions.Degs2Rads(90), 120));
+					loc_1.add(getVector(0, 600)), MWC.Algorithms.Conversions
+							.Degs2Rads(90), 120));
 			fw2.setLabel("fw2");
 			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 0),
-					loc_1.add(getVector(45, 849)), MWC.Algorithms.Conversions.Degs2Rads(180), 130));
+					loc_1.add(getVector(45, 849)), MWC.Algorithms.Conversions
+							.Degs2Rads(180), 130));
 			fw3.setLabel("fw3");
 			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 0),
-					loc_1.add(getVector(90, 600)), MWC.Algorithms.Conversions.Degs2Rads(90), 140));
+					loc_1.add(getVector(90, 600)), MWC.Algorithms.Conversions
+							.Degs2Rads(90), 140));
 			fw4.setLabel("fw4");
 			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 0),
-					loc_1.add(getVector(90, 1200)), MWC.Algorithms.Conversions.Degs2Rads(90), 700));
+					loc_1.add(getVector(90, 1200)), MWC.Algorithms.Conversions
+							.Degs2Rads(90), 700));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
 			tw.addFix(fw2);
@@ -110,7 +233,7 @@ public class WormInHoleOffset
 
 			// also give it some sensor data
 			final SensorWrapper swa = new SensorWrapper("title one");
-			swa.setSensorOffset(new ArrayLength(200));
+			swa.setSensorOffset(new ArrayLength(-400));
 			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
 					new HiResDate(100, 0), null, 0, null, null, null, 0, null);
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",

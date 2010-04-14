@@ -26,6 +26,7 @@ import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
+import Debrief.Wrappers.Track.WormInHoleOffset;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.Conversions;
@@ -3564,11 +3565,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return visible;
 	}
 
-	/** calculate a position the specified distance back along the ownship track
+	/**
+	 * calculate a position the specified distance back along the ownship track
 	 * 
-	 * @param searchTime the time we're looking at 
-	 * @param sensorOffset how far back the sensor should be
-	 * @param wormInHole whether to plot a straight line back, or make sensor follow ownship
+	 * @param searchTime
+	 *          the time we're looking at
+	 * @param sensorOffset
+	 *          how far back the sensor should be
+	 * @param wormInHole
+	 *          whether to plot a straight line back, or make sensor follow
+	 *          ownship
 	 * @return the location
 	 */
 	public WorldLocation getBacktraceTo(HiResDate searchTime,
@@ -3576,45 +3582,36 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		WorldLocation res = null;
 
-		boolean parentInterpolated = getInterpolatePoints();
-		setInterpolatePoints(true);
-
-		final MWC.GenericData.Watchable[] list = getNearestTo(searchTime);
-
-		// and restore the interpolated value
-		setInterpolatePoints(parentInterpolated);
-
-		MWC.GenericData.Watchable wa = null;
-		if (list.length > 0)
-			wa = list[0];
-
-		// did we find it?
-		if (wa != null)
+		if (wormInHole)
 		{
-			// yes, store it
-			res = wa.getLocation();
+			res = WormInHoleOffset.getWormOffsetFor(this, searchTime, sensorOffset);
+		}
+		else
+		{
 
-			// ok, are we dealing with an offset?
-			if (sensorOffset != null)
+			boolean parentInterpolated = getInterpolatePoints();
+			setInterpolatePoints(true);
+
+			final MWC.GenericData.Watchable[] list = getNearestTo(searchTime);
+
+			// and restore the interpolated value
+			setInterpolatePoints(parentInterpolated);
+
+			MWC.GenericData.Watchable wa = null;
+			if (list.length > 0)
+				wa = list[0];
+
+			// did we find it?
+			if (wa != null)
 			{
-				// right, worm in hole?
-				if (wormInHole)
+				// yes, store it
+				res = wa.getLocation();
+
+				// ok, are we dealing with an offset?
+				if (sensorOffset != null)
 				{
 					// get the current heading
 					double hdg = wa.getCourse();
-
-					// and calculate where it leaves us
-					WorldVector vector = new WorldVector(-hdg, sensorOffset, null);
-
-					// now apply this vector to the origin
-					res = res.add(vector);
-
-				}
-				else
-				{
-					// get the current heading
-					double hdg = wa.getCourse();
-
 					// and calculate where it leaves us
 					WorldVector vector = new WorldVector(hdg, sensorOffset, null);
 
@@ -3622,6 +3619,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					res = res.add(vector);
 				}
 			}
+
 		}
 
 		return res;
