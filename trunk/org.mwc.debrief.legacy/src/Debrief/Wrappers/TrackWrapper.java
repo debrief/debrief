@@ -52,6 +52,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
@@ -2057,12 +2058,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			final TrackSegment firstSeg = (TrackSegment) _thePositions.first();
 			final TrackSegment lastSeg = (TrackSegment) _thePositions.last();
-			
+
 			// see if this DTG is inside our data range
 			// in which case we will just return null
 			final FixWrapper theFirst = (FixWrapper) firstSeg.first();
 			final FixWrapper theLast = (FixWrapper) lastSeg.last();
-			
+
 			if ((srchDTG.greaterThan(theFirst.getTime()))
 					&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
 			{
@@ -2165,13 +2166,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					}
 
 			}
-			else if(srchDTG.equals(theFirst.getDTG()))
+			else if (srchDTG.equals(theFirst.getDTG()))
 			{
-				// aaah, special case.  just see if we're after a data point that's the same
+				// aaah, special case. just see if we're after a data point that's the
+				// same
 				// as our start time
 				res = theFirst;
 			}
-
 
 			// and remember this fix
 			lastFix = res;
@@ -2519,7 +2520,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			Enumeration<Editable> segments = _thePositions.elements();
 			while (segments.hasMoreElements())
 			{
-				TrackSegment seg = (TrackSegment) segments.nextElement();				
+				TrackSegment seg = (TrackSegment) segments.nextElement();
 				lineStyle = seg.getLineStyle();
 
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
@@ -2536,9 +2537,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					continue;
 
 				// is this segment visible?
-				if(!seg.getVisible())
+				if (!seg.getVisible())
 					continue;
-				
+
 				final Enumeration<Editable> fixWrappers = seg.elements();
 				while (fixWrappers.hasMoreElements())
 				{
@@ -2770,9 +2771,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						while (posis.hasMoreElements())
 						{
 							TrackSegment thisE = (TrackSegment) posis.nextElement();
-							
+
 							// is this segment visible?
-							if(!thisE.getVisible())
+							if (!thisE.getVisible())
 								continue;
 
 							// is the first track a DR track?
@@ -3561,6 +3562,69 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		return visible;
+	}
+
+	/** calculate a position the specified distance back along the ownship track
+	 * 
+	 * @param searchTime the time we're looking at 
+	 * @param sensorOffset how far back the sensor should be
+	 * @param wormInHole whether to plot a straight line back, or make sensor follow ownship
+	 * @return the location
+	 */
+	public WorldLocation getBacktraceTo(HiResDate searchTime,
+			ArrayLength sensorOffset, boolean wormInHole)
+	{
+		WorldLocation res = null;
+
+		boolean parentInterpolated = getInterpolatePoints();
+		setInterpolatePoints(true);
+
+		final MWC.GenericData.Watchable[] list = getNearestTo(searchTime);
+
+		// and restore the interpolated value
+		setInterpolatePoints(parentInterpolated);
+
+		MWC.GenericData.Watchable wa = null;
+		if (list.length > 0)
+			wa = list[0];
+
+		// did we find it?
+		if (wa != null)
+		{
+			// yes, store it
+			res = wa.getLocation();
+
+			// ok, are we dealing with an offset?
+			if (sensorOffset != null)
+			{
+				// right, worm in hole?
+				if (wormInHole)
+				{
+					// get the current heading
+					double hdg = wa.getCourse();
+
+					// and calculate where it leaves us
+					WorldVector vector = new WorldVector(-hdg, sensorOffset, null);
+
+					// now apply this vector to the origin
+					res = res.add(vector);
+
+				}
+				else
+				{
+					// get the current heading
+					double hdg = wa.getCourse();
+
+					// and calculate where it leaves us
+					WorldVector vector = new WorldVector(hdg, sensorOffset, null);
+
+					// now apply this vector to the origin
+					res = res.add(vector);
+				}
+			}
+		}
+
+		return res;
 	}
 
 }
