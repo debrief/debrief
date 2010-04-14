@@ -45,13 +45,10 @@ public class WormInHoleOffset
 
 			assertNotNull("fix found", scw);
 
-
-
 			outputSensorTrack(sw);
 			Thread.sleep(100);
 
 			outputTrack(track);
-
 			
 		  Thread.sleep(100);
 			sw.setWormInHole(true);

@@ -372,41 +372,10 @@ public final class SensorContactWrapper extends
 				// better calculate it ourselves then
 				TrackWrapper parentTrack = (TrackWrapper) parent;
 
-				boolean parentInterpolated = parentTrack.getInterpolatePoints();
-				parentTrack.setInterpolatePoints(true);
-				
 				// get the origin
-				final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG);
-				
-				// and restore the interpolated value
-				parentTrack.setInterpolatePoints(parentInterpolated);
-				
-				MWC.GenericData.Watchable wa = null;
-				if (list.length > 0)
-					wa = list[0];
+				_calculatedOrigin = parentTrack.getBacktraceTo(_DTG, _mySensor.getSensorOffset(), _mySensor.getWormInHole());
 
-				// did we find it?
-				if (wa != null)
-				{
-					// yes, store it
-					_calculatedOrigin = wa.getLocation();
-
-					// ok, are we dealing with an offset?
-					WorldDistance offset = _mySensor.getSensorOffset();
-					if (offset != null)
-					{
-						// yup, better apply the offset
-
-						// get the current heading
-						double hdg = wa.getCourse();
-
-						// and calculate where it leaves us
-						WorldVector vector = new WorldVector(hdg, offset, null);
-
-						// now apply this vector to the origin
-						_calculatedOrigin = _calculatedOrigin.add(vector);
-					}
-				}
+	
 			}
 
 		}
