@@ -7,7 +7,9 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
+import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -66,77 +68,56 @@ public class WormInHoleOffset
 			}
 		}
 
-		// check we're in bounds
-		if (backTrack.size() == 0)
+		// right, we have a back track. double-check we have our next point
+		if (backTrack.size() > 0)
+		{
+			// yup, we've bracketed the point. work out where ownship is at this DTG
+			nextPoint = FixWrapper.interpolateFix(backTrack.lastElement(), nextPoint,
+					dtg);
+
+			for (int i = backTrack.size()-1; i >= 0; i--)
+			{
+				FixWrapper thisI = backTrack.elementAt(i);
+
+				double thisLen = nextPoint.getLocation().subtract(
+						thisI.getFixLocation()).getRange();
+				double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
+
+				// is this less than our stub?
+				if (thisLenM > offsetM)
+				{
+					// so just interpolate along the path
+					double posDelta = offsetM / thisLenM;
+					double timeDelta = (nextPoint.getDTG().getMicros() - thisI.getDTG()
+							.getMicros())
+							* posDelta;
+					FixWrapper newMidFix = FixWrapper.interpolateFix(thisI, nextPoint,
+							new HiResDate(0,
+									(long) (nextPoint.getDTG().getMicros() - timeDelta)));
+					res = newMidFix.getLocation();
+					offsetM = 0;
+					break;
+				}
+				else
+				{
+					offsetM -= thisLenM;
+					nextPoint = thisI;
+				}
+			}
+		}
+
+		// do we have any array left to consume?
+		if (offsetM > 0)
 		{
 			// are we on the first data point?
-			if ((nextPoint != null) && (dtg.equals(nextPoint.getDTG())))
+			if (nextPoint != null)
 			{
 				// yup, just use that one
-				System.out.println("pos at start:"
-						+ nextPoint.getDTG().getDate().getTime());
 				res = nextPoint.getLocation();
 
 				// offset by the array length along the heading
 				res = new WorldLocation(res.add(new WorldVector(nextPoint.getCourse(),
-						arrayOffset.getValueIn(WorldDistance.DEGS), 0d)));
-			}
-			else
-			{
-				// we're buggered - we're before the start of the track
-				throw new RuntimeException(
-						"wrong maths in worm in hole offset. I thought we'd established this data point was within our time period, but it's earlier");
-			}
-		}
-		else
-		{
-			// right, we have a back track. double-check we have our next point
-			if (nextPoint != null)
-			{
-				// yup, we've bracketed the point. work out where ownship is at this DTG
-				nextPoint = FixWrapper.interpolateFix(backTrack.lastElement(),
-						nextPoint, dtg);
-
-				for (int i = backTrack.size() - 1; i >= 0; i--)
-				{
-					FixWrapper thisI = backTrack.elementAt(i);
-
-					double thisLen = nextPoint.getLocation().subtract(
-							thisI.getFixLocation()).getRange();
-					double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
-
-					// is this less than our stub?
-					if (thisLenM > offsetM)
-					{
-						// right, we've got to interpolate within this section
-//						System.out.println("pos in last section "
-//								+ thisI.getDTG().getDate().getTime() + " and "
-//								+ nextPoint.getDTG().getDate().getTime());
-
-						// so just interpolate along the path
-						double posDelta = offsetM / thisLenM;
-						double timeDelta = (nextPoint.getDTG().getMicros() - thisI.getDTG()
-								.getMicros())
-								* posDelta;
-						FixWrapper newMidFix = FixWrapper.interpolateFix(thisI, nextPoint,
-								new HiResDate(0,
-										(long) (nextPoint.getDTG().getMicros() - timeDelta)));
-						res = newMidFix.getLocation();
-						break;
-					}
-					else
-					{
-						offsetM -= thisLenM;
-						nextPoint = thisI;
-					}
-				}
-			}
-			else
-			{
-				// we're buggered - we're past the end of the track
-				throw new RuntimeException(
-						"wrong maths in worm in hole offset. I thought we'd established this data point was within our time period, but it's later");
-
+						MWC.Algorithms.Conversions.m2Degs(-offsetM), 0d)));
 			}
 		}
 
@@ -237,7 +218,7 @@ public class WormInHoleOffset
 			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
 					new HiResDate(100, 0), null, 0, null, null, null, 0, null);
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
-					new HiResDate(250, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(140, 0), null, 0, null, null, null, 0, null);
 			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
 					new HiResDate(350, 0), null, 0, null, null, null, 0, null);
 			swa.add(scwa1);
