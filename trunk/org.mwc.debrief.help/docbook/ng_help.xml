@@ -2316,14 +2316,15 @@ and so on....</programlisting></para>
                                                 period</para></listitem><listitem><para>Write header
                                                 information to
                                                 file</para></listitem><listitem><para>Looping
-                                                thorough all points on the secondary
-                                                  track:<orderedlist><listitem><para>Find
-                                                  interpolated point on primary track nearest to
-                                                  secondary
-                                                  time</para></listitem><listitem><para>Find sensor
-                                                  cut nearest to secondary
-                                                  time</para></listitem><listitem><para>Output this
-                                                  data record calculating values from above as
+                                                thorough specified period in 1 second
+                                                  steps:<orderedlist><listitem><para>Calculate
+                                                  primary track location at specified time (via
+                                                  interpolation)</para></listitem><listitem><para>Calculate
+                                                  sensor location at specified time (via
+                                                  interpolation)</para></listitem><listitem><para>Calculate
+                                                  secondary track location at specified time (via
+                                                  interpolation)</para></listitem><listitem><para>Output
+                                                  this data record calculating values from above as
                                                   applicable</para></listitem></orderedlist></para></listitem></orderedlist></para>
                             </sect5>
                         </sect4>
