@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -164,7 +165,7 @@ public abstract class TimeControllerOperation
 		if (_singleSensor)
 		{
 			// right, check there's one visible sensor
-			SensorWrapper theSensor = getSubjectSensor((TrackWrapper) primaryTrack);
+			SensorWrapper theSensor = FlatFileExporter.getSubjectSensor((TrackWrapper) primaryTrack);
 
 			if (theSensor == null)
 			{
@@ -208,33 +209,7 @@ public abstract class TimeControllerOperation
 
 	}
 
-	/**
-	 * @param pTrack
-	 *          the track to search for sensors
-	 * @return
-	 */
-	public static SensorWrapper getSubjectSensor(TrackWrapper pTrack)
-	{
-		Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the final
-		// solution
 
-		// loop through collecting cuts from visible sensors
-		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
-		while (sensors.hasMoreElements())
-		{
-			SensorWrapper thisS = sensors.nextElement();
-			if (thisS.getVisible())
-			{
-				mySensors.add(thisS);
-			}
-		}
-
-		SensorWrapper mySensor = null;
-		if (mySensors.size() == 1)
-			mySensor = mySensors.firstElement();
-
-		return mySensor;
-	}
 
 	/**
 	 * perform the actual export

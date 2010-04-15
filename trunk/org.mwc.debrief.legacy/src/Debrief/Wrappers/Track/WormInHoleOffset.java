@@ -7,9 +7,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
-import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -220,10 +218,13 @@ public class WormInHoleOffset
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
 					new HiResDate(140, 0), null, 0, null, null, null, 0, null);
 			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+					new HiResDate(280, 0), null, 0, null, null, null, 0, null);
+			final SensorContactWrapper scwa4 = new SensorContactWrapper("ddd",
 					new HiResDate(350, 0), null, 0, null, null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);
+			swa.add(scwa4);
 			tw.add(swa);
 
 			return tw;
