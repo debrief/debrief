@@ -43,8 +43,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		setTitle("Export data to flat file");
 		setDescription("This wizard allows you to indicate the type of sensor used, and the "
 				+ "directory\nin which to place the output file. "
-				+ "The output file will rake the name of the primary \nfile with a "
-				+ FILE_SUFFIX + " suffix added");
+				+ "The output file will take the name of the primary \nfile with a "
+				+ FILE_SUFFIX + " suffix added. See online help for more details on the export format.");
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
