@@ -1,5 +1,7 @@
 package org.mwc.debrief.core.wizards.FlatFile;
 
+import java.io.File;
+
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
@@ -44,7 +46,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		setDescription("This wizard allows you to indicate the type of sensor used, and the "
 				+ "directory\nin which to place the output file. "
 				+ "The output file will take the name of the primary \nfile with a "
-				+ FILE_SUFFIX + " suffix added. See online help for more details on the export format.");
+				+ FILE_SUFFIX
+				+ " suffix added. See online help for more details on the export format.");
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
@@ -71,15 +74,20 @@ public class FlatFilenameWizardPage extends WizardPage
 					Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
-				// tell the ui to update itself
-				_filePath = (String) newValue;
+
+				if (property.equals("field_editor_value"))
+				{
+					// tell the ui to update itself
+					_filePath = (String) newValue;
+				}
 				dialogChanged();
+
 			}
 		};
 		_fileFieldEditor.fillIntoGrid(container, 3);
 		_fileFieldEditor.setPreferenceStore(getPreferenceStore());
 		_fileFieldEditor.load();
-		
+
 		// store the current editor value
 		_filePath = _fileFieldEditor.getStringValue();
 
@@ -131,6 +139,14 @@ public class FlatFilenameWizardPage extends WizardPage
 			updateStatus("Target directory must be specified");
 			return;
 		}
+		
+		// just check it's a directory, not a file
+		File testFile = new File(targetDir);
+		if(!testFile.isDirectory())
+		{
+			updateStatus("Target must be a directory, not a file");
+			return;
+		}
 
 		final String sensorType = getSensorType();
 		if (sensorType == null)
@@ -170,5 +186,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					IMessageProvider.INFORMATION);
 			setPageComplete(true);
 		}
+		else
+			setPageComplete(false);
 	}
 }
