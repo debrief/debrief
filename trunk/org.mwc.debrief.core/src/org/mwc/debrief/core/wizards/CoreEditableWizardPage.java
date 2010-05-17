@@ -393,6 +393,13 @@ abstract public class CoreEditableWizardPage extends WizardPage
 						}
 						else
 						{
+							// see if we can initialise the checkbox - we only do it if it's boolean
+							if(currentVal instanceof Boolean)
+							{
+								Button btn = (Button) newEditor;
+								Boolean bVal = (Boolean) currentVal;
+								btn.setSelection(bVal.booleanValue());
+							}
 							newEditor.setData(currentVal);
 						}
 
