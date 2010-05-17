@@ -26,5 +26,6 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.jem.beaninfo.BeanInfoNature</nature>
+		<nature>com.nwire.studio.tools.nwireNature</nature>
 	</natures>
 </projectDescription>
