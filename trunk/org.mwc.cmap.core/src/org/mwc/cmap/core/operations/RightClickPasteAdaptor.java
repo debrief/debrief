@@ -16,6 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -63,13 +64,19 @@ public class RightClickPasteAdaptor
 							allLayers = false;
 							continue;
 						}
+						
+						// just check that it we're not trying to drop a layer onto a layer
+						if((editable instanceof BaseLayer) &&(destination instanceof BaseLayer))
+						{
+							// nope, we don't allow a baselayer to be dropped onto a baselayer
+							return;
+						}
+						
 					}
 					
 					// so, are we just dealing with layers?
 					if (allLayers)
 					{
-				//		MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
-
 						// create the menu items
 						paster = new PasteLayer(theDataList, _clipboard, (Layer) destination, theLayers);
 					}
