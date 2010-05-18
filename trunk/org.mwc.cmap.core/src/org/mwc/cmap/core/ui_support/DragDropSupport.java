@@ -35,6 +35,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
+import MWC.GUI.VPF.VPFDatabase;
 import MWC.TacticalData.NarrativeEntry;
 
 /**
@@ -152,6 +153,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	{
 	}
 
+	@SuppressWarnings("unchecked")
 	public void dragOver(DropTargetEvent event)
 	{
 		boolean allowDrop = false;
@@ -199,14 +201,37 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 				{
 					allowDrop = false;
 				}
+				if (pl instanceof VPFDatabase)
+				{
+					// no, we won't let them drop something into a VPF database
+					allowDrop = false;
+				}
 				else if (pl instanceof BaseLayer)
 				{
+					// start off with reasonably sensible default
 					allowDrop = true;
+
+					// hmm, just double-check that we're not dragging a layer over this
+					StructuredSelection sel = getSelection();
+
+					// cycle through the elements
+					for (Iterator iter = sel.iterator(); iter.hasNext();)
+					{
+						EditableWrapper thisP = (EditableWrapper) iter.next();
+						Editable dragee = thisP.getEditable();
+						if(dragee instanceof BaseLayer)
+						{
+							allowDrop = false;
+							continue;
+						}
+					}
+					
 				}
 				else
 				{
 					allowDrop = false;
 				}
+				
 			}
 		}
 
