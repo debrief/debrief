@@ -12,11 +12,11 @@ package Debrief.ReaderWriter.XML.Shapes;
 import org.xml.sax.Attributes;
 
 import MWC.GenericData.WorldDistance;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
 
-abstract public class EllipseHandler extends ShapeHandler implements LayerHandler.exporter
+abstract public class EllipseHandler extends ShapeHandler implements PlottableExporter
 {
 
   MWC.GenericData.WorldLocation _centre;

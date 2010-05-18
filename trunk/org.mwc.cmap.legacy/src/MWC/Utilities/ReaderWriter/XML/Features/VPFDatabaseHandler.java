@@ -16,13 +16,13 @@ import MWC.GUI.VPF.CoverageLayer;
 import MWC.GUI.VPF.DebriefFeatureWarehouse;
 import MWC.GUI.VPF.LibraryLayer;
 import MWC.GUI.VPF.VPFDatabase;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 
 abstract public class VPFDatabaseHandler extends MWCXMLReader implements
-		LayerHandler.exporter
+		PlottableExporter
 {
 
 	private static final String _myType = "vpf_database";

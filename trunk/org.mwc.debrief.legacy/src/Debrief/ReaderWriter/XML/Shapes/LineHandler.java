@@ -9,11 +9,11 @@ package Debrief.ReaderWriter.XML.Shapes;
  * @version 1.0
  */
 
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
 
-abstract public class LineHandler extends ShapeHandler implements LayerHandler.exporter
+abstract public class LineHandler extends ShapeHandler implements PlottableExporter
 {
 
   MWC.GenericData.WorldLocation _start;

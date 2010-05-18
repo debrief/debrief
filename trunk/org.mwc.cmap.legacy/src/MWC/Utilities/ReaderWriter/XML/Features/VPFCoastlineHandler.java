@@ -11,13 +11,13 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import org.w3c.dom.Element;
 
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 
 
-abstract public class VPFCoastlineHandler extends MWCXMLReader  implements LayerHandler.exporter
+abstract public class VPFCoastlineHandler extends MWCXMLReader  implements PlottableExporter
 {
 
   private static final String _myType = "vpf_coastline";

@@ -9,10 +9,14 @@ package MWC.Utilities.ReaderWriter.XML;
  * @version 1.0
  */
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.XML.Features.CoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
@@ -21,14 +25,14 @@ import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
-public class LayerHandler extends MWCXMLReader
+public class LayerHandler extends MWCXMLReader implements PlottableExporter
 {
 
 	private MWC.GUI.Layers _theLayers;
 
 	protected MWC.GUI.BaseLayer _myLayer;
 
-	protected static java.util.Hashtable<Class<?>, LayerHandler.exporter> _myExporters;
+	protected static java.util.Hashtable<Class<?>, PlottableExporter> _myExporters;
 
 	/**
 	 * use the default layer name
@@ -167,25 +171,16 @@ public class LayerHandler extends MWCXMLReader
 		// if this has happened, we need to update it's visibility with our one
 		Layer theLayer = _theLayers.findLayer(_myLayer.getName());
 		theLayer.setVisible(_myLayer.getVisible());
-		
-		// right, make sure we make the chart-feature layer unbuffered		
-		// NO, don't bother making it buffered, we're having double-buffering trouble under VISTA		
-//		if(_myLayer.getName().equals(MWC.GUI.Layers.CHART_FEATURES))
-//		{
-//			// yup, we've either just loaded the chart-features layer, or it's magicced itself
-//			// from somewhere else.  Let's just double-check that it's buffered.
-//			_myLayer.setBuffered(true);
-//		}
 
 		_myLayer = null;
 
 	}
 
-	private static void checkExporters()
+	protected static void checkExporters()
 	{
 		if (_myExporters == null)
 		{
-			_myExporters = new java.util.Hashtable<Class<?>, LayerHandler.exporter>();
+			_myExporters = new java.util.Hashtable<Class<?>, PlottableExporter>();
 			_myExporters.put(MWC.GUI.Chart.Painters.CoastPainter.class, new CoastlineHandler()
 			{
 				public void addPlottable(MWC.GUI.Plottable plottable)
@@ -217,12 +212,6 @@ public class LayerHandler extends MWCXMLReader
 				{
 				}
 			});
-//			_myExporters.put(S57Layer.class, new S57Handler()
-//			{
-//				public void addPlottable(MWC.GUI.Plottable plottable)
-//				{
-//				}
-//			});
 			_myExporters.put(MWC.GUI.VPF.CoverageLayer.ReferenceCoverageLayer.class,
 					new VPFCoastlineHandler()
 					{
@@ -239,7 +228,7 @@ public class LayerHandler extends MWCXMLReader
 		}
 	}
 
-	public static void exportThisPlottable(MWC.GUI.Plottable nextPlottable,
+	public static void exportThisItem(MWC.GUI.Plottable nextPlottable,
 			org.w3c.dom.Element eLayer, org.w3c.dom.Document doc)
 	{
 
@@ -254,7 +243,7 @@ public class LayerHandler extends MWCXMLReader
 		Object exporterType = _myExporters.get(classId);
 		if (exporterType != null)
 		{
-			exporter cl = (exporter) exporterType;
+			PlottableExporter cl = (PlottableExporter) exporterType;
 			cl.exportThisPlottable(nextPlottable, eLayer, doc);
 		}
 		else
@@ -287,17 +276,18 @@ public class LayerHandler extends MWCXMLReader
 		{
 			MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer.nextElement();
 
-			exportThisPlottable(nextPlottable, eLayer, doc);
+			exportThisItem(nextPlottable, eLayer, doc);
 		}
 
 		parent.appendChild(eLayer);
 
 	}
 
-	public interface exporter
+	@Override
+	public void exportThisPlottable(Plottable plottable, Element parent,
+			Document doc)
 	{
-		public void exportThisPlottable(MWC.GUI.Plottable plottable,
-				org.w3c.dom.Element parent, org.w3c.dom.Document doc);
+		exportLayer((BaseLayer)plottable, parent, doc);
 	}
 
 }

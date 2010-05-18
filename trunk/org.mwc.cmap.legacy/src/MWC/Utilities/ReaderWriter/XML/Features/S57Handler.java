@@ -15,10 +15,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import MWC.GUI.S57.S57Layer;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 
-abstract public class S57Handler extends MWCXMLReader implements LayerHandler.exporter
+abstract public class S57Handler extends MWCXMLReader implements PlottableExporter
 {
 	private static final String VISIBLE = "Visible";
 

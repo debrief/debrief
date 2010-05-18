@@ -12,11 +12,11 @@ package Debrief.ReaderWriter.XML.Shapes;
 import org.w3c.dom.Element;
 
 import MWC.GenericData.HiResDate;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.*;
 
 
-abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandler.exporter
+abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements PlottableExporter
 {
 
   java.awt.Color _theColor;

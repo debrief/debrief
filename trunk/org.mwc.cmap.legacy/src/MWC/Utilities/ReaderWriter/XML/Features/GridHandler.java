@@ -16,14 +16,14 @@ import org.w3c.dom.Element;
 
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.WorldDistance;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
 abstract public class GridHandler extends MWCXMLReader implements
-		LayerHandler.exporter
+		PlottableExporter
 {
 	private static final String VISIBLE = "Visible";
 	private static final String PLOT_LABELS = "PlotLabels";

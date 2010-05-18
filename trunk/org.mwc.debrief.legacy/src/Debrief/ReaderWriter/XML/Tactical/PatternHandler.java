@@ -244,7 +244,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     {
       MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
       // make use of the static method in the DebriefLayerHandler which handles all sorts of plottables
-      Debrief.ReaderWriter.XML.DebriefLayerHandler.exportThisPlottable(pl, fld, doc);
+      Debrief.ReaderWriter.XML.DebriefLayerHandler.exportThisDebriefItem(pl, fld, doc);
     }
 
     parent.appendChild(fld);

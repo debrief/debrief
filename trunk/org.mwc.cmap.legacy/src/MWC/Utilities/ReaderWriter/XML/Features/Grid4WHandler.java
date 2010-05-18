@@ -19,14 +19,14 @@ import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
 
-abstract public class Grid4WHandler extends MWCXMLReader implements LayerHandler.exporter
+abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExporter
 {
   private static final String VISIBLE = "Visible";
   private static final String PLOT_LABELS = "PlotLabels";

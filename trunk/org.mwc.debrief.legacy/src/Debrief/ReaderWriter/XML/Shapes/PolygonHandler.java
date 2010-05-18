@@ -13,11 +13,11 @@ import org.xml.sax.Attributes;
 
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GenericData.WorldPath;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldPathHandler;
 
 
-abstract public class PolygonHandler extends ShapeHandler implements LayerHandler.exporter
+abstract public class PolygonHandler extends ShapeHandler implements PlottableExporter
 {
 
   private static final String FILLED_STR = "Filled";

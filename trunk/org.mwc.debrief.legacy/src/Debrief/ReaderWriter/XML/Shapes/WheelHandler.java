@@ -13,10 +13,10 @@ import org.xml.sax.Attributes;
 
 import MWC.GUI.Properties.*;
 import MWC.GenericData.WorldDistance;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
-abstract public class WheelHandler extends ShapeHandler implements LayerHandler.exporter
+abstract public class WheelHandler extends ShapeHandler implements PlottableExporter
 {
 
 	private static final String OUTER_RADIUS = "Outer";
