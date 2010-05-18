@@ -46,7 +46,13 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.data.general.AbstractSeriesDataset;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -56,6 +62,7 @@ import Debrief.GUI.Tote.StepControl;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
@@ -449,6 +456,28 @@ public class XYPlotView extends ViewPart
 		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis,
 				_theStepper, theRenderer);
 		theRenderer.setPlot(_thePlot);
+		
+		// loop through the datasets, setting the color of each series to the first color in that series
+		if(dataset instanceof TimeSeriesCollection)
+		{
+			Color seriesCol = null;
+			TimeSeriesCollection tsc = (TimeSeriesCollection) dataset;
+			for(int i=0;i<dataset.getSeriesCount();i++)
+			{
+				TimeSeries ts = tsc.getSeries(i);
+				if(ts.getItemCount() > 0)
+				{
+				TimeSeriesDataItem dataItem = ts.getDataItem(0);
+				if(dataItem instanceof ColouredDataItem)
+				{
+					ColouredDataItem cd = (ColouredDataItem) dataItem;
+					seriesCol = cd.getColor();
+					_thePlot.getRenderer().setSeriesPaint(i, seriesCol);
+				}
+				}
+			}
+		}
+		
 
 		// apply any formatting for this choice
 		if (theFormatter != null)

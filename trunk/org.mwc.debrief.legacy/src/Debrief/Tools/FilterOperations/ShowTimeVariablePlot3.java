@@ -567,7 +567,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 					TimeSeriesDataItem newItem = new ColouredDataItem(
 							new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data,
 							thisColor, connectToPrevious, provider1);
-
+					
 					// To change body of implemented methods use File | Settings | File
 					// Templates.
 					TimeSeries theSeries = (TimeSeries) thisSeries;
@@ -575,10 +575,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				}
 
 				public void addSeries(AbstractSeriesDataset collection,
-						Series thisSeries)
+						Series thisSeries, Color defaultColor)
 				{
 					TimeSeriesCollection coll = (TimeSeriesCollection) collection;
 					coll.addSeries((TimeSeries) thisSeries);
+					
 				}
 			};
 
@@ -607,7 +608,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				}
 
 				public void addSeries(AbstractSeriesDataset collection,
-						Series thisSeries)
+						Series thisSeries, Color defaultColor)
 				{
 					TimeSeriesCollection coll = (TimeSeriesCollection) collection;
 					coll.addSeries((TimeSeries) thisSeries);
@@ -650,6 +651,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			// empty data series to the collection.
 			if (ss != null)
 			{
+				// remember the default color for this series
+				Color seriesColor = Color.CYAN;
 
 				// ok, now collate the data
 				Series thisSeries = null;
@@ -663,6 +666,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 					thisSeries = new TimeSeries(thisSecondaryTrack.getName());
 				}
 
+				seriesColor = thisSecondaryTrack.getColor();
+				
 				// split into separate processing here, depending on where we're looking
 				// at a relative calculation
 				if (myOperation.isARelativeCalculation())
@@ -961,7 +966,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				// did we find anything?
 				if (thisSeries != null)
 				{
-					theAdder.addSeries(theSeriesCollection, thisSeries);
+					theAdder.addSeries(theSeriesCollection, thisSeries, seriesColor);
 				}
 
 			} // if this collection actually had data
@@ -1206,7 +1211,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				Color thisColor, boolean connectToPrevious,
 				ColouredDataItem.OffsetProvider provider);
 
-		void addSeries(AbstractSeriesDataset collection, Series thisSeries);
+		void addSeries(AbstractSeriesDataset collection, Series thisSeries, Color defaultColor);
 	}
 
 	/**
