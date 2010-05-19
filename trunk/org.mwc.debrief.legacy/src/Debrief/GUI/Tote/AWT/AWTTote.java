@@ -256,7 +256,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
 
     public final double calculate(final Watchable primary,final Watchable secondary,final HiResDate thisTime)
     {
-      return _myCalc.calculate(primary, secondary, thisTime);
+      return _myCalc.calculate(secondary, primary, thisTime);
     }
     
     public final String update(final Watchable primary,final Watchable secondary,final HiResDate thisTime)

@@ -831,8 +831,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 								// ////////////////////////////////////////////////
 
 								// produce the new calculated value
-								double thisVal = theCalculation.calculate(thisPrimary,
-										thisSecondary, currentTime);
+								double thisVal = theCalculation.calculate(thisSecondary,
+										thisPrimary, currentTime);
 
 								// SPECIAL HANDLING - do we need to check if this data passes
 								// through 360 degs?
