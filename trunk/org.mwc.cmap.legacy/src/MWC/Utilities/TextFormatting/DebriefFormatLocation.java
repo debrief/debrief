@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 
 import MWC.GenericData.WorldLocation;
 
-public class DebriefFormatLocation
+public class DebriefFormatLocation implements PlainFormatLocation
   {
 
   static DecimalFormat df = new DecimalFormat("00.00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
@@ -90,4 +90,16 @@ public class DebriefFormatLocation
     }
 
   }
+
+	@Override
+	public String convertToString(WorldLocation theLocation)
+	{
+		return toString(theLocation);
+	}
+
+	@Override
+	public String getExampleString()
+	{
+		return "Debrief format";
+	}
 }

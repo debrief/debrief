@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 
 import MWC.GenericData.WorldLocation;
 
-public class BriefFormatLocation
+public class BriefFormatLocation implements PlainFormatLocation
 {
 	/** degree symbol, obviously.  Taken from helpful website at http://www.fileformat.info/info/unicode/char/00b0/index.htm
 	 * 
@@ -89,11 +89,6 @@ public class BriefFormatLocation
     String res = toStringLat(loc.getLat(), true) + " " + toStringLong(loc.getLong(), true);
 
     return res;
-  }
-
-  static public String getExample()
-  {
-    return "short location";
   }
 
   static public class brokenDown
@@ -231,5 +226,17 @@ public class BriefFormatLocation
     System.out.println("fourth:" + BriefFormatLocation.toString(la));
 
   }
+
+	@Override
+	public String convertToString(WorldLocation theLocation)
+	{
+		return toString(theLocation);
+	}
+
+	@Override
+	public String getExampleString()
+	{
+		return "short location";
+	}
 
 }

@@ -1,12 +1,17 @@
 package org.mwc.cmap.plotViewer.editors.chart;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.part.EditorPart;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
+import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.PlainChart.ChartCursorMovedListener;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
+import MWC.Utilities.TextFormatting.PlainFormatLocation;
 
 public class CursorTracker extends CoreTracker
 {
@@ -38,6 +43,7 @@ public class CursorTracker extends CoreTracker
 
 	private CursorTracker()
 	{
+
 		// declare the item
 		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, null);
 
@@ -47,7 +53,15 @@ public class CursorTracker extends CoreTracker
 			public void cursorMoved(WorldLocation thePos, boolean dragging,
 					Layers theData)
 			{
-				String msg = BriefFormatLocation.toString(thePos);
+				String msg;
+				
+				PlainFormatLocation locationFormatter = CorePlugin.getDefault().getLocationFormat();
+
+				if (locationFormatter != null)
+					msg = locationFormatter.convertToString(thePos);
+				else
+					msg = BriefFormatLocation.toString(thePos);
+
 				_myLine.setText(msg);
 			}
 		};

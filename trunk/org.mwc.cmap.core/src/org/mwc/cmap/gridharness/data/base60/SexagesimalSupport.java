@@ -93,6 +93,12 @@ public class SexagesimalSupport {
 			double seconds = 0;
 			return new Sexagesimal(signum * degrees, minutes, seconds);
 		}
+
+		@Override
+		public String getExampleString()
+		{
+			return "_DD_MM_MMM";
+		}
 	};
 
 	public static final SexagesimalFormat _DD_MM_SS_SSS = new SexagesimalFormat() {
@@ -143,6 +149,12 @@ public class SexagesimalSupport {
 			double minutes = Math.floor(notRoundedMinutes);
 			double seconds = (notRoundedMinutes - minutes) * SECONDS_IN_MINUTE;
 			return new Sexagesimal(signum * degrees, minutes, seconds);
+		}
+
+		@Override
+		public String getExampleString()
+		{
+			return "_DD_MM_SS_SSS";
 		}
 
 	};

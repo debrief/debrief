@@ -46,7 +46,7 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage impl
 		};
 
 		RadioGroupFieldEditor formarEditor = new RadioGroupFieldEditor(//
-				Activator.PREF_BASE60_FORMAT_NO_SECONDS, //
+				CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, //
 				"Location Format", //
 				1, choices, locationFormatGroup, true);
 

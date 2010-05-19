@@ -1,5 +1,6 @@
 package org.mwc.cmap.gridharness.data;
 
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gridharness.Activator;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
@@ -30,7 +31,7 @@ public class WorldLocation {
 
 	@Override
 	public String toString() {
-		SexagesimalFormat format = Activator.getDefault().getLocationFormat();
+		SexagesimalFormat format = CorePlugin.getDefault().getLocationFormat();
 		Sexagesimal latitude = format.parseDouble(getLatitude());
 		Sexagesimal longitude = format.parseDouble(getLongitude());
 		return format.format(latitude, false) + " " + format.format(longitude, true);

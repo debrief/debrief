@@ -3,7 +3,10 @@ package org.mwc.cmap.gridharness.data.base60;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-public abstract class SexagesimalFormat {
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.PlainFormatLocation;
+
+public abstract class SexagesimalFormat implements PlainFormatLocation{
 
 	public static final char MINUS_LATITUDE = 'S';
 
@@ -60,4 +63,16 @@ public abstract class SexagesimalFormat {
 		}
 		throw new ParseException("There should be hemisphere: " + (forLongitudeNotLatitude ? " (W/E)" : " (N/S)") + ": " + text, 0);
 	}
+
+	@Override
+	public String convertToString(WorldLocation theLocation)
+	{
+		Sexagesimal theLat = parseDouble(theLocation.getLat());
+		Sexagesimal theLong = parseDouble(theLocation.getLong());
+		String res = format(theLat, false) + " " + format(theLong, true);
+		return res;
+	}
+	
+	
+	
 }

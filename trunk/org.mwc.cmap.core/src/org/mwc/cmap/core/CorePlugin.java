@@ -90,7 +90,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 * support for lat/long editor in grid editor
 	 * 
 	 */
-	static final String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID
+	static final public String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID
 			+ ".base60-no-seconds";
 
 	// The shared instance.
@@ -228,7 +228,7 @@ public class CorePlugin extends AbstractUIPlugin
 
 		return _myClipboard;
 	}
-
+	
 	/**
 	 * get the undo buffer
 	 * 

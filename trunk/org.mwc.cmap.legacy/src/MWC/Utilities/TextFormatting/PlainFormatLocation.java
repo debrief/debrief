@@ -13,6 +13,6 @@ import MWC.GenericData.WorldLocation;
 public interface PlainFormatLocation {
   /** conveert
    */
-  public String toString(WorldLocation theLocation);
-  public String getExample();
+  public String convertToString(WorldLocation theLocation);
+  public String getExampleString();
 }

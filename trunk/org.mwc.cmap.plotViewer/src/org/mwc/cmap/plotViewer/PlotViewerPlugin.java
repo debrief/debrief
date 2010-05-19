@@ -1,11 +1,13 @@
 package org.mwc.cmap.plotViewer;
 
-import java.util.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.plotViewer.editors.chart.SWTRasterPainter;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.osgi.framework.BundleContext;
 
@@ -30,7 +32,7 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 		super();
 		plugin = this;
 	}
-
+	
 	/**
 	 * This method is called upon plug-in activation
 	 */

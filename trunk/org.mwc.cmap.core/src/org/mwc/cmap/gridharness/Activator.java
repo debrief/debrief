@@ -1,10 +1,7 @@
 package org.mwc.cmap.gridharness;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
-import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 import org.osgi.framework.BundleContext;
 
 
@@ -34,12 +31,6 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-	}
-
-	public SexagesimalFormat getLocationFormat() {
-		IPreferenceStore preferenceStore = getPreferenceStore();
-		boolean noSeconds = preferenceStore.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
-		return noSeconds ? SexagesimalSupport._DD_MM_MMM : SexagesimalSupport._DD_MM_SS_SSS;
 	}
 
 	/*
