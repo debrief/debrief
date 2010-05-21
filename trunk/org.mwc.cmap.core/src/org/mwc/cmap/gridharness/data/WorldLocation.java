@@ -1,7 +1,6 @@
 package org.mwc.cmap.gridharness.data;
 
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.gridharness.Activator;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 

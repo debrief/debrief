@@ -15,6 +15,9 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage impl
 	private static final String LABEL_DD_MM_MMM = "DD\u00B0MM.MMM\u2032";
 
 	private static final String LABEL_DD_MM_SS_SSS = "DD\u00B0MM\u2032SS.SSS\u2033";
+	
+  public static final String PREFS_PAGE_ID = "org.mwc.cmap.core.preferences.LocationFormatPreferencePage";
+
 
 	public LocationFormatPreferencePage() {
 		super(GRID);

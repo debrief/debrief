@@ -1,10 +1,8 @@
 package org.mwc.cmap.plotViewer.editors.chart;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
-import org.mwc.cmap.plotViewer.PlotViewerPlugin;
+import org.mwc.cmap.gridharness.LocationFormatPreferencePage;
 
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -45,7 +43,7 @@ public class CursorTracker extends CoreTracker
 	{
 
 		// declare the item
-		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, null);
+		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, LocationFormatPreferencePage.PREFS_PAGE_ID);
 
 		// sort out a chart listener
 		_myMoveListener = new PlainChart.ChartCursorMovedListener()

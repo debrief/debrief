@@ -13,7 +13,7 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.pml.GridHarness";
 
-	static final String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID + ".base60-no-seconds";
+//	static final String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID + ".base60-no-seconds";
 
 	// The shared instance
 	private static Activator plugin;
