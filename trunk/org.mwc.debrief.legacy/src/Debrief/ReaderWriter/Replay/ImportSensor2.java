@@ -89,6 +89,8 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import java.util.StringTokenizer;
 
+import junit.framework.Assert;
+
 /**
  * class to parse a label from a line of text
  */
@@ -215,8 +217,8 @@ final class ImportSensor2 implements PlainLineImporter {
     	rng = new WorldDistance(new Double(Double.valueOf(tmp)), WorldDistance.YARDS);    	
     }
 
-    // read in the sensor name
-    sensorName = st.nextToken();
+    // get the (possibly multi-word) track name
+    sensorName = ImportFix.checkForQuotedTrackName(st);
 
     // trim the sensor name
     sensorName.trim();
@@ -272,5 +274,34 @@ final class ImportSensor2 implements PlainLineImporter {
     return res;
 
   }
+  
+//  ;SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414
 
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		public final void testImport()
+		{
+			String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
+			String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
+			
+			ImportSensor2 is2 = new ImportSensor2();
+			SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
+			Assert.assertEquals("lineA failed", "Contact_bearings", resA.getSensorName());
+			Assert.assertEquals("lineA failed", "0414", resA.getLabel());
+			SensorContactWrapper resB = (SensorContactWrapper) is2.readThisLine(lineB);
+			Assert.assertEquals("lineB failed", "0414", resB.getLabel());
+		}
+	}
+
+  
 }

@@ -188,12 +188,9 @@ final class ImportSensor implements PlainLineImporter {
     brg = Double.valueOf(st.nextToken()).doubleValue();
     rng = Double.valueOf(st.nextToken()).doubleValue();
 
-    // read in the sensor name
-    sensorName = st.nextToken();
-
-    // trim the sensor name
-    sensorName.trim();
-
+    // get the (possibly multi-word) track name
+    sensorName = ImportFix.checkForQuotedTrackName(st);
+ 
     // and lastly read in the message
     theText = st.nextToken("\r").trim();
 
