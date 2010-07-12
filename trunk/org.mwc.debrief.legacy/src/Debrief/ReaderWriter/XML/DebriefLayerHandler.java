@@ -99,6 +99,9 @@ public class DebriefLayerHandler extends
 	public static void exportThisDebriefItem(MWC.GUI.Plottable nextPlottable,
 			org.w3c.dom.Element eLayer, org.w3c.dom.Document doc)
 	{
+		// get ready..
+		checkExporters();
+		
 
 		// definition of what parameter we are going to search for (since
 		// shapeWrappers are indexed by shape not actual class)
