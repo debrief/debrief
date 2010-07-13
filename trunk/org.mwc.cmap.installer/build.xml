@@ -4,7 +4,7 @@
 	<property name="linuxDist" value="${deployDir}/Debrief.zip" description="the name for the linux/debrief dist (without JRE)" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
-	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 6.4" />
+	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 6.4.1" />
 
 	<!-- and the zip support filenames -->
 	<property name="zipName" value="Repository.zip" />
