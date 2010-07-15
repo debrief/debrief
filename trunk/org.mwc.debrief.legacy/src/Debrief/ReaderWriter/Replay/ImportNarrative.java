@@ -237,7 +237,7 @@ public final class ImportNarrative implements PlainLineImporter
       }
 
       // check we have the right number of lines read in
-      NarrativeWrapper nw = (NarrativeWrapper)theHolder.findLayer("Narratives");
+      NarrativeWrapper nw = (NarrativeWrapper)theHolder.findLayer(ImportReplay.NARRATIVE_LAYER);
       assertNotNull(nw);
 
       // and count the items
