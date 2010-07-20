@@ -198,6 +198,7 @@ public final class StackedDotHelper
 	 * @param dotPlot
 	 * @param onlyVis
 	 * @param showCourse
+	 * @param b 
 	 * @param holder
 	 * @param logger
 	 * 
@@ -206,7 +207,7 @@ public final class StackedDotHelper
 	 */
 	public void updateBearingData(XYPlot dotPlot, XYPlot linePlot,
 			TrackManager tracks, boolean onlyVis, boolean showCourse,
-			Composite holder, ErrorLogger logger, boolean updateDoublets)
+			boolean flipAxes, Composite holder, ErrorLogger logger, boolean updateDoublets)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -256,12 +257,18 @@ public final class StackedDotHelper
 
 				// obvious stuff first (stuff that doesn't need the tgt data)
 				final Color thisColor = thisD.getColor();
-				final double measuredBearing = thisD.getMeasuredBearing();
-				final double ambigBearing = thisD.getAmbiguousMeasuredBearing();
+				double measuredBearing = thisD.getMeasuredBearing();
+			  double ambigBearing = thisD.getAmbiguousMeasuredBearing();
 				final HiResDate currentTime = thisD.getDTG();
 				final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
 						.getDate().getTime());
 
+				// stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+				if(flipAxes)
+					if(measuredBearing > 180)
+						measuredBearing -= 360;
+
+				
 				final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
 						measuredBearing, thisColor, false, null);
 
@@ -270,6 +277,10 @@ public final class StackedDotHelper
 
 				if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
 				{
+					if(flipAxes)
+						if(ambigBearing > 180)
+							ambigBearing -= 360;
+					
 					final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
 							ambigBearing, thisColor, false, null);
 					ambigValues.add(amBearing);
@@ -278,13 +289,17 @@ public final class StackedDotHelper
 				// do we have target data?
 				if (thisD.getTarget() != null)
 				{
-					final double calculatedBearing = thisD.getCalculatedBearing(null,
+					double calculatedBearing = thisD.getCalculatedBearing(null,
 							null);
 					final Color calcColor = thisD.getTarget().getColor();
 					final double thisError = thisD.calculateBearingError(measuredBearing,
 							calculatedBearing);
 					final ColouredDataItem newError = new ColouredDataItem(thisMilli,
 							thisError, thisColor, false, null);
+
+					if(flipAxes)
+						if(calculatedBearing > 180)
+							calculatedBearing -= 360;
 
 					final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
 							calculatedBearing, calcColor, true, null);
@@ -343,8 +358,14 @@ public final class StackedDotHelper
 			FixWrapper fw = (FixWrapper) editable;
 			final FixedMillisecond thisMilli = new FixedMillisecond(fw
 					.getDateTimeGroup().getDate().getTime());
-			final double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+			double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
 					.getCourse());
+			
+			// stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+			if(flipAxes)
+				if(ownshipCourse > 180)
+					ownshipCourse -= 360;
+			
 			final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
 					ownshipCourse, fw.getColor(), true, null);
 			osCourseValues.add(crseBearing);

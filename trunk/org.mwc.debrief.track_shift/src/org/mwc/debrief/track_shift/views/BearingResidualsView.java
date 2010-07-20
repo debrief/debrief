@@ -2,6 +2,7 @@ package org.mwc.debrief.track_shift.views;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
@@ -14,12 +15,29 @@ public class BearingResidualsView extends BaseStackedDotsView
 
 	private static final String SHOW_COURSE = "SHOW_COURSE";
 	private Action showCourse;
+	private Action flipCourse;
 
 	@Override
 	protected void makeActions()
 	{
 		super.makeActions();
 
+		// now the course action
+		flipCourse = new Action("Use +/- 180 scale for absolute data", IAction.AS_CHECK_BOX)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+
+				processShowCourse();
+			}
+		};
+		flipCourse.setChecked(false);
+		flipCourse.setToolTipText("Plot absolute data on +/- 180 axes");
+		flipCourse.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/swapAxis.jpeg"));
+		
 		// now the course action
 		showCourse = new Action("Show ownship course", IAction.AS_CHECK_BOX)
 		{
@@ -42,9 +60,17 @@ public class BearingResidualsView extends BaseStackedDotsView
 	protected void fillLocalToolBar(IToolBarManager toolBarManager)
 	{
 		toolBarManager.add(showCourse);
+		toolBarManager.add(flipCourse);
 		super.fillLocalToolBar(toolBarManager);
 
 	}
+	
+	protected void fillLocalPullDown(IMenuManager manager)
+	{
+		manager.add(flipCourse);
+		super.fillLocalPullDown(manager);
+	}
+
 
 	protected String getUnits()
 	{
@@ -60,7 +86,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 	{
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
-				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this,
+				_onlyVisible.isChecked(), showCourse.isChecked(), flipCourse.isChecked(), _holder, this,
 				updateDoublets);
 
 		// hide the line for the course dataset (if we're showing the course)
