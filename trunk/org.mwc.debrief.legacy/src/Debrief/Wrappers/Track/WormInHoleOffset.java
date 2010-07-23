@@ -36,7 +36,8 @@ public class WormInHoleOffset
 			HiResDate dtg, WorldDistance arrayOffset)
 	{
 		WorldLocation res = null;
-		double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));
+		double offsetM = - arrayOffset.getValueIn(WorldDistance.METRES);
+//		double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));
 
 		// check we're in period
 		if (dtg.lessThan(track.getStartDTG()) || dtg.greaterThan(track.getEndDTG()))

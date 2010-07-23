@@ -756,6 +756,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								"whether to interpolate points between known data points",
 								SPATIAL),
 						expertProp("Color", "the track color", FORMAT),
+						expertProp("PlotArrayCentre", "highlight the sensor array centre when non-zero array length provided", FORMAT),
 						expertProp("TrackFont", "the track label font", FORMAT),
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("PositionsVisible", "show individual Positions",
@@ -1070,6 +1071,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * whether or not to link the Positions
 	 */
 	private final boolean _linkPositions;
+	
+	/** whether to show a highlight for the array centre
+	 * 
+	 */
+  private boolean	_plotArrayCentre;
 
 	/**
 	 * our editable details
@@ -3623,6 +3629,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		return res;
+	}
+
+	public void setPlotArrayCentre(boolean plotArrayCentre)
+	{
+		_plotArrayCentre = plotArrayCentre;
+	}
+
+	public boolean getPlotArrayCentre()
+	{
+		return _plotArrayCentre;
 	}
 
 }
