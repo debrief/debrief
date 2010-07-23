@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.19">
+      version="1.0.20">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
