@@ -12,9 +12,9 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 
 	public static final char PLUS_LATITUDE = 'N';
 
-	public static final char PLUS_LONGITUDE = 'W';
+	public static final char PLUS_LONGITUDE = 'E';
 
-	public static final char MINUS_LONGITUDE = 'E';
+	public static final char MINUS_LONGITUDE = 'W';
 
 	public static DecimalFormat DDD = new DecimalFormat("000");
 
