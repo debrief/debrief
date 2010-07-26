@@ -221,7 +221,7 @@ final class ImportSensor2 implements PlainLineImporter {
     sensorName = ImportFix.checkForQuotedTrackName(st);
 
     // trim the sensor name
-    sensorName.trim();
+    sensorName = sensorName.trim();
 
     // and lastly read in the message
     theText = st.nextToken("\r").trim();
