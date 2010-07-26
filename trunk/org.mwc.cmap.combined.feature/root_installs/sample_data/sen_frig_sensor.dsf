@@ -92,9 +92,9 @@
 ;SENSOR2:	700103	033825.000	Frigate	@A	NULL	66 180 79 	6943	Frigate_Optic4 some message
 ;SENSOR2:	700103	033925.000	Frigate	@A	NULL	63 180 79 	6198	Frigate_Optic4 some message
 ;SENSOR2:	700103	034025.000	Frigate	@A	NULL	59 170 78 	5475	Frigate_Optic4 some message
-;SENSOR2:	700103	034125.000	Frigate	@A	NULL	55 170 78 	4777	Frigate_Optic4 some message
-;SENSOR2:	700103	034225.000	Frigate	@A	NULL	49 170 77 	4112	Frigate_Optic4 some message
-;SENSOR2:	700103	034325.000	Frigate	@A	NULL	42 200 77 	3491	Frigate_Optic4 some message
-;SENSOR2:	700103	034425.000	Frigate	@A	NULL	33 205 76 	2934	Frigate_Optic4 some message
-;SENSOR2:	700103	034525.000	Frigate	@A	NULL	21 220 76 	2458	Frigate_Optic4 some message
-;SENSOR2:	700103	034625.000	Frigate	@A	NULL	7 230  76 	2089	Frigate_Optic4 some message
+;SENSOR2:	700103	034125.000	Frigate	@A	NULL	55 170 78 	4777	"Frigate Optic5" some message
+;SENSOR2:	700103	034225.000	Frigate	@A	NULL	49 170 77 	4112	"Frigate Optic5" some message
+;SENSOR2:	700103	034325.000	Frigate	@A	NULL	42 200 77 	3491	"Frigate Optic5" some message
+;SENSOR2:	700103	034425.000	Frigate	@A	NULL	33 205 76 	2934	" Frigate Optic5" some message
+;SENSOR2:	700103	034525.000	Frigate	@A	NULL	21 220 76 	2458	"Frigate Optic5" some message
+;SENSOR2:	700103	034625.000	Frigate	@A	NULL	7 230  76 	2089	" Frigate Optic5 " some message
