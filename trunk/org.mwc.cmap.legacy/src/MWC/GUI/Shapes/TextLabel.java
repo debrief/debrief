@@ -384,10 +384,11 @@ public class TextLabel extends PlainShape implements Editable
 		_numLines = t.countTokens();
 		for (int i = 0; i < _numLines; i++)
 		{
-			_subStrings.add(t.nextToken());
+	//		_subStrings.add(t.nextToken());
 //	Note: we used to do a 'trim' of the text to ditch any 
-//        stray chars. We don't do it now, so users can use padding spaces			
-//			_subStrings.add(t.nextToken().trim());
+//        stray chars. We don't do it now, so users can use padding spaces	
+// Note: and we've reinstated it
+			_subStrings.add(t.nextToken().trim());
 		}
 		
 		int lineHeight = dest.getStringHeight(getFont());
