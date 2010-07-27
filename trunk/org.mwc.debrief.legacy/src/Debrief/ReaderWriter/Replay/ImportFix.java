@@ -387,8 +387,8 @@ public final class ImportFix implements PlainLineImporter
 				// and trim away the quote
 				theTrackName = theTrackName.substring(theTrackName.indexOf("\"") + 1);
 
-				// consume the trailing quote delimiter
-				lastPartOfName = st.nextToken(" ");
+				// consume the trailing quote delimiter (note - we allow spaces & tabs)
+				lastPartOfName = st.nextToken(" \t");
 			}
 		}
 		return theTrackName;
