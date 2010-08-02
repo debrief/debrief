@@ -43,6 +43,7 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
 	private static final String NAME = "Name";
 	private static final String FILL_GRID = "FillGrid";
 	private static final String FILL_COLOR = "FillColor";
+	private static final String US_STANDARD = "US_Standard";
 
   java.awt.Color _theColor;
   boolean _isVisible;
@@ -60,6 +61,7 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
 	Font _font = null;
 	Color _fillColor= null;
 	boolean _fillGrid = false;
+	boolean _usStandard = false;
 	
 
   public Grid4WHandler()
@@ -84,6 +86,13 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
       public void setValue(String name, boolean value)
       {
         _plotLabels = value;
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(US_STANDARD)
+    {
+      public void setValue(String name, boolean value)
+      {
+        _usStandard = value;
       }
     });
     addAttributeHandler(new HandleDoubleAttribute(XDELTA)
@@ -210,6 +219,7 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
    	csp.setYDelta(new WorldDistance(_yDelta, WorldDistance.NM));
    	csp.setFillGrid(_fillGrid);
    	csp.setPlotLines(_plotLines);
+   	csp.setOriginAtTopLeft(_usStandard);
    	if(_fillColor != null)
    		csp.setFillColor(_fillColor);
    	
@@ -281,6 +291,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
     gridElement.setAttribute(PLOT_LABELS, writeThis(theGrid.getPlotLabels()));
     gridElement.setAttribute(PLOT_LINES, writeThis(theGrid.getPlotLines()));
     gridElement.setAttribute(FILL_GRID, writeThis(theGrid.getFillGrid()));
+    gridElement.setAttribute(US_STANDARD, writeThis(theGrid.getOriginAtTopLeft()));
+    
     
     // does it have a none-standard name?
     if(theGrid.getName() != GridPainter.GRID_TYPE_NAME)

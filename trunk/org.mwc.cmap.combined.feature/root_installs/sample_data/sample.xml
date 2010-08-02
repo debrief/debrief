@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Apr 08 14:52:51 BST 2010" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Fri Mar 26 11:53:54 GMT 2010"/>
+<plot Created="Mon Aug 02 11:36:17 BST 2010" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Mon Aug 02 11:18:50 BST 2010"/>
 <session>
 <layers>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
 <vpf_database Visible="false">
 <vpf_library Name="vmaplv0" Visible="false"/>
 </vpf_database>
-<Grid4W FillGrid="false" Name="4W Grid" Orientation="0.000" PlotLabels="true" PlotLines="true" Visible="false" xDelta="2.000" xMax="G" xMin="A" yDelta="2.000" yMax="6" yMin="1">
-<colour Value="DARK_GREY"/>
-<FillColor Value="WHITE"/>
+<Grid4W FillGrid="false" Name="4W Grid" Orientation="0.000" PlotLabels="true" PlotLines="true" US_Standard="true" Visible="true" xDelta="2.000" xMax="G" xMin="A" yDelta="2.000" yMax="6" yMin="1">
+<colour Value="WHITE"/>
+<FillColor CustomBlue="161" CustomGreen="161" CustomRed="161" Value="custom"/>
 <Origin>
-<shortLocation Depth="0.000" Lat="12.0325185" Long="-11.5744823"/>
+<shortLocation Depth="0.000" Lat="12.0283220" Long="-11.8240105"/>
 </Origin>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="8"/>
 </Grid4W>
-<grid PlotLabels="true" Visible="true">
+<grid PlotLabels="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="8"/>
 <Delta Units="m" Value="100.000"/>
 <colour CustomBlue="202" CustomGreen="202" CustomRed="202" Value="custom"/>
@@ -24,7 +24,7 @@
 <colour Value="GREY"/>
 </scale>
 </layer>
-<track InterpolatePoints="false" LineThickness="2" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="ScaledSubmarine" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" Symbol="ScaledSubmarine" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
@@ -2442,7 +2442,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Submarine" Visible="false">
+<track InterpolatePoints="false" LineThickness="2" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" Symbol="Submarine" Visible="false">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
@@ -4867,17 +4867,6 @@
 </TrackSegment>
 </track>
 <layer LineThickness="0" Name="Misc" Visible="true">
-<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
-<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
-<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
-</br>
-</line>
 <circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Radius="4.000" Visible="true">
 <colour Value="YELLOW"/>
 <fontcolour Value="YELLOW"/>
@@ -4897,13 +4886,6 @@
 <shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
 </br>
 </rectangle>
-<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
-</centre>
-</textlabel>
 <line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
 <colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
 <fontcolour Value="CYAN"/>
@@ -4915,36 +4897,54 @@
 <shortLocation Depth="0.000" Lat="12.1722102" Long="-11.6331319"/>
 </br>
 </line>
+<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
+</br>
+</line>
+<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
+</centre>
+</textlabel>
 </layer>
 <narrative Name="Narratives">
-<narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET"/>
-<narrative_entry Dtg="951212 050100" Entry="comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="CARPET"/>
-<narrative_entry Dtg="951212 050200" Entry="comment 3" Track="CARPET"/>
-<narrative_entry Dtg="951212 052200" Entry="comment 4" Track="CARPET"/>
-<narrative_entry Dtg="951212 061200" Entry="comment 4A" Track="CARPET"/>
-<narrative_entry Dtg="951212 062200" Entry="comment 4B" Track="CARPET"/>
-<narrative_entry Dtg="951212 064200" Entry="comment 4V" Track="CARPET"/>
-<narrative_entry Dtg="951212 095300" Entry="comment 5" Track="CARPET"/>
-<narrative_entry Dtg="951212 095400" Entry="comment 6" Track="CARPET"/>
-<narrative_entry Dtg="951212 095700" Entry="SUSPECTED DETECTION OF RED" Track="TOMATO"/>
-<narrative_entry Dtg="951212 100300" Entry="CONFIRMED. OBTAIN SOLUTION" Track="TOMATO"/>
-<narrative_entry Dtg="951212 101300" Entry="SUSPECT TARGET ZIG" Track="TOMATO"/>
-<narrative_entry Dtg="951212 101400" Entry="PORT DETECTION, 16 HZ" Track="CARPET"/>
-<narrative_entry Dtg="951212 102900" Entry="ENTER TRAIL" Track="CARPET"/>
-<narrative_entry Dtg="951212 103700" Entry="TARGET ZIG DETECTED" Track="CARPET"/>
-<narrative_entry Dtg="951212 111900" Entry="FINEX CALLED, ENTER TRANSITION" Track="TOMATO"/>
-<narrative_entry Dtg="951212 112000" Entry="comment 10" Track="CARPET"/>
-<narrative_entry Dtg="951212 113700" Entry="comment 11" Track="CARPET"/>
-<narrative_entry Dtg="951212 114100" Entry="comment 12" Track="CARPET"/>
+<narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 050100" Entry="comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2comment 2" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 050200" Entry="comment 3" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 052200" Entry="comment 4" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 061200" Entry="comment 4A" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 062200" Entry="comment 4B" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 064200" Entry="comment 4V" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 095300" Entry="comment 5" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 095400" Entry="comment 6" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 095700" Entry="SUSPECTED DETECTION OF RED" Track="TOMATO" Type="Narratives"/>
+<narrative_entry Dtg="951212 100300" Entry="CONFIRMED. OBTAIN SOLUTION" Track="TOMATO" Type="Narratives"/>
+<narrative_entry Dtg="951212 101300" Entry="SUSPECT TARGET ZIG" Track="TOMATO" Type="Narratives"/>
+<narrative_entry Dtg="951212 101400" Entry="PORT DETECTION, 16 HZ" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 102900" Entry="ENTER TRAIL" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 103700" Entry="TARGET ZIG DETECTED" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 111900" Entry="FINEX CALLED, ENTER TRANSITION" Track="TOMATO" Type="Narratives"/>
+<narrative_entry Dtg="951212 112000" Entry="comment 10" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 113700" Entry="comment 11" Track="CARPET" Type="Narratives"/>
+<narrative_entry Dtg="951212 114100" Entry="comment 12" Track="CARPET" Type="Narratives"/>
 </narrative>
 <layer LineThickness="0" Name="Annotations" Visible="true"/>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="12.1873719" Long="-11.7048723"/>
+<shortLocation Depth="0.000" Lat="12.2570111" Long="-11.8726289"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="12.1850922" Long="-11.7021657"/>
+<shortLocation Depth="0.000" Lat="11.9692011" Long="-11.5577007"/>
 </br>
 </projection>
 <gui>

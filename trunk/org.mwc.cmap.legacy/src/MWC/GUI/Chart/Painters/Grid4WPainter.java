@@ -221,6 +221,12 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	protected Color _fillColor = Color.white;
 
 	/**
+	 * whether to put the origin at the top-left
+	 * 
+	 */
+	private boolean _originTopLeft = false;
+
+	/**
 	 * the min x-axis square we're plotting
 	 * 
 	 */
@@ -469,6 +475,9 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 					centre.y = Math.min(centre.y, dim.height - 2 * ht);
 				}
 
+				if(getOriginAtTopLeft())
+					ht = -ht;
+				
 				// and draw it
 				g.drawText(_theFont, thisLbl, centre.x - wid / 2, centre.y + ht);
 			}
@@ -605,6 +614,13 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		double yNew = -xComponent * Math.sin(orient) + yComponent
 				* Math.cos(orient);
 
+		// are we in US units?
+		if (getOriginAtTopLeft())
+		{
+			// switch the vertical axis
+			yNew = -yNew;
+		}
+
 		WorldLocation res = new WorldLocation(_origin.getLat() + yNew, _origin
 				.getLong()
 				+ xNew, 0);
@@ -613,8 +629,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 	public double rangeFrom(MWC.GenericData.WorldLocation other)
 	{
+		MWC.GenericData.WorldArea wa = new WorldArea(calcLocationFor(_xMin, _yMin),
+				calcLocationFor(_xMax + 1, _yMax + 1));
 		// doesn't return a sensible distance;
-		return INVALID_RANGE;
+		return wa.rangeFrom(other);
 	}
 
 	/**
@@ -673,7 +691,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			try
 			{
 				PropertyDescriptor[] res =
-				{ prop("Color", "the Color to draw the grid", FORMAT),
+				{
+						prop("Color", "the Color to draw the grid", FORMAT),
 						prop("Visible", "whether this grid is visible", VISIBILITY),
 						prop("PlotLabels", "whether to plot grid labels", VISIBILITY),
 						prop("PlotLines", "whether to plot grid lines", VISIBILITY),
@@ -688,10 +707,13 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 						prop("XMax", "the max index shown on the x-axis", SPATIAL),
 						prop("YMin", "the min index shown on the y-axis", SPATIAL),
 						prop("YMax", "the max index shown on the y-axis", SPATIAL),
-						prop("Origin", "the bottom-left corner of the grid", SPATIAL) };
+						prop("Origin", "the bottom-left corner of the grid", SPATIAL),
+						prop("OriginAtTopLeft",
+								"whether to put the origin at the top-left", FORMAT) };
 
 				return res;
-			} catch (IntrospectionException e)
+			}
+			catch (IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -770,10 +792,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			WorldLocation origin = new WorldLocation(2, 3, 2);
 			Grid4WPainter pt = new Grid4WPainter(origin);
 			Assert.assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
-			Assert.assertEquals("wrong x def", new WorldDistance(10,
-					WorldDistance.NM), pt.getXDelta());
-			Assert.assertEquals("wrong y def", new WorldDistance(10,
-					WorldDistance.NM), pt.getYDelta());
+			Assert.assertEquals("wrong x def",
+					new WorldDistance(10, WorldDistance.NM), pt.getXDelta());
+			Assert.assertEquals("wrong y def",
+					new WorldDistance(10, WorldDistance.NM), pt.getYDelta());
 			Assert.assertEquals("wrong init index", 1, pt.getYMin().intValue());
 			Assert.assertEquals("wrong init index", 24, pt.getYMax().intValue());
 			Assert.assertEquals("wrong init index", "A", pt.getXMin());
@@ -812,10 +834,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			int x = 1, y = 1;
 			WorldLocation origin = new WorldLocation(0, 0, 0);
 			double orientation = 0;
-			WorldDistance xDelta = new WorldDistance(1,
-					WorldDistance.DEGS);
-			WorldDistance yDelta = new WorldDistance(1,
-					WorldDistance.DEGS);
+			WorldDistance xDelta = new WorldDistance(1, WorldDistance.DEGS);
+			WorldDistance yDelta = new WorldDistance(1, WorldDistance.DEGS);
 
 			Grid4WPainter pt = new Grid4WPainter(origin);
 			pt.setXDelta(xDelta);
@@ -980,6 +1000,26 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	public void setOrigin(WorldLocation origin)
 	{
 		_origin = origin;
+	}
+
+	/**
+	 * whether to put the origin at the top-left
+	 * 
+	 * @return
+	 */
+	public boolean getOriginAtTopLeft()
+	{
+		return _originTopLeft;
+	}
+
+	/**
+	 * whether to put the origin at the top-left
+	 * 
+	 * @return
+	 */
+	public void setOriginAtTopLeft(boolean uSStandard)
+	{
+		_originTopLeft = uSStandard;
 	}
 
 	/**
