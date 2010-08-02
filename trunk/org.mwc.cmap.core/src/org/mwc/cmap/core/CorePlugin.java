@@ -57,7 +57,8 @@ import MWC.GenericData.WorldLocation;
 public class CorePlugin extends AbstractUIPlugin
 {
 
-	/** how many UI operations to remember in the undo buffer
+	/**
+	 * how many UI operations to remember in the undo buffer
 	 * 
 	 */
 	private static final int LENGTH_OF_UNDO_BUFFER = 10;
@@ -228,7 +229,7 @@ public class CorePlugin extends AbstractUIPlugin
 
 		return _myClipboard;
 	}
-	
+
 	/**
 	 * get the undo buffer
 	 * 
@@ -301,8 +302,7 @@ public class CorePlugin extends AbstractUIPlugin
 					}
 					catch (InterruptedException e)
 					{
-						CorePlugin.logError(Status.ERROR,
-								"Property edit interruption", e);
+						CorePlugin.logError(Status.ERROR, "Property edit interruption", e);
 					}
 
 					// now update the selection
@@ -342,18 +342,49 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static WorldLocation fromClipboard(String txt)
 	{
-		// get rid of the title
-		String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt
-				.length());
-		StringTokenizer st = new StringTokenizer(dataPart);
-		String latP = st.nextToken(",");
-		String longP = st.nextToken(",");
-		String depthP = st.nextToken();
-		Double _lat = new Double(latP);
-		Double _long = new Double(longP);
-		Double _depth = new Double(depthP);
-		WorldLocation res = new WorldLocation(_lat.doubleValue(), _long
-				.doubleValue(), _depth.doubleValue());
+		WorldLocation res = null;
+
+		if (txt.startsWith(LOCATION_STRING_IDENTIFIER))
+		{
+
+			// get rid of the title
+			String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt
+					.length());
+			StringTokenizer st = new StringTokenizer(dataPart);
+			String latP = st.nextToken(",");
+			String longP = st.nextToken(",");
+			String depthP = st.nextToken();
+			Double _lat = new Double(latP);
+			Double _long = new Double(longP);
+			Double _depth = new Double(depthP);
+			res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth
+					.doubleValue());
+		}
+		else
+		{
+			// see what else we can sort out
+			// get a stream from the string
+			StringTokenizer st = new StringTokenizer(txt.trim());
+
+			String firstItem = st.nextToken(" \t");
+			String secondItem = st.nextToken();
+
+			if (firstItem != null && secondItem != null)
+			{
+				// hey, go for it
+				try
+				{
+					double latVal = Double.parseDouble(firstItem);
+					double longVal = Double.parseDouble(secondItem);
+					res = new WorldLocation(latVal, longVal, 0d);
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR, "whilst trying to get location off clipboard", e);
+				}
+			}
+		}
+
 		return res;
 	}
 
@@ -411,9 +442,9 @@ public class CorePlugin extends AbstractUIPlugin
 		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message,
 				exception);
 		getDefault().getLog().log(stat);
-		
+
 		// also throw it to the console
-		if(exception != null)
+		if (exception != null)
 			exception.printStackTrace();
 	}
 
@@ -422,7 +453,6 @@ public class CorePlugin extends AbstractUIPlugin
 		return plugin._imageRegistry;
 	}
 
-	
 	public static Image getImageFromRegistry(ImageDescriptor name)
 	{
 		Image res = null;
@@ -446,7 +476,6 @@ public class CorePlugin extends AbstractUIPlugin
 		return res;
 	}
 
-	
 	public static Image getImageFromRegistry(String name)
 	{
 		Image res = null;
