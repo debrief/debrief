@@ -62,12 +62,23 @@ public abstract class DataPointsDragTracker implements ChartMouseListenerExtensi
 			XYPlot xyplot = myChartPanel.getChart().getXYPlot();
 			ChartRenderingInfo renderingInfo = myChartPanel.getChartRenderingInfo();
 			Rectangle2D dataArea = renderingInfo.getPlotInfo().getDataArea();
+			
+			// WORKAROUND:  when the grid graph gets really wide, the labels on the y-axis get stretched.
+			//              but, the dataArea value doesn't reflect this.
+			//              So, get the width values from the getScreenDataArea method - which
+			//              does reflect the scaling applied to the y axis.
+			//              - and all works well now.
+			Rectangle dataArea2 = myChartPanel.getScreenDataArea();
+			dataArea = new Rectangle2D.Double(dataArea2.x, dataArea.getY(), dataArea2.width, dataArea.getHeight());
+			
+			
 			ValueAxis domainAxis = xyplot.getDomainAxis();
 			RectangleEdge domainEdge = xyplot.getDomainAxisEdge();
 			ValueAxis valueAxis = xyplot.getRangeAxis();
 			RectangleEdge valueEdge = xyplot.getRangeAxisEdge();
 			double domainX = domainAxis.java2DToValue(point2d.getX(), dataArea, domainEdge);
 			double domainY = valueAxis.java2DToValue(point2d.getY(), dataArea, valueEdge);
+			
 			if (myAllowVerticalMovesOnly) {
 				domainX = myDragSubject.getDraggedItem().getXValue();
 			}
