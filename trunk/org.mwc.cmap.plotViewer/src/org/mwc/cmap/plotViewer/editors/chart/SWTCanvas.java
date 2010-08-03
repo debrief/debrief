@@ -591,13 +591,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 			assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
 
 			// check for valid location
-			boolean validStr;
-			validStr = CorePlugin.isLocation(txt);
-			assertTrue("is a location string", validStr);
+			Object validStr;
+			validStr = CorePlugin.fromClipboard(txt);
+			assertNotNull("is a location string", validStr);
 
 			// and check for duff location
-			validStr = CorePlugin.isLocation("aasdfasdfasdfadf");
-			assertFalse("is a location string", validStr);
+			validStr = CorePlugin.fromClipboard("aasdfasdfasdfadf");
+			assertNull("is a location string", validStr);
 
 			// and back to the location
 			WorldLocation loc2 = CorePlugin.fromClipboard(txt);
@@ -608,6 +608,26 @@ public class SWTCanvas extends SWTCanvasAdapter
 			txt = CorePlugin.toClipboard(theLoc);
 			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
 					txt);
+			
+			WorldLocation loc3 = CorePlugin.fromClipboard("12.5 13.5");
+			assertNotNull("is a location string", loc3);
+			
+			loc3 = CorePlugin.fromClipboard("-12.5 13.5");
+			assertNotNull("is a location string", loc3);
+			
+			loc3 = CorePlugin.fromClipboard("-12.5\t 13.5");
+			assertNotNull("is a location string", loc3);
+			
+			loc3 = CorePlugin.fromClipboard("-12.5t 13.5");
+			assertNull("is not a location string", loc3);
+			
+			loc3 = CorePlugin.fromClipboard("12 01 02 N 14 12 32 W");
+			assertNotNull("is a location string", loc3);
+			
+			loc3 = CorePlugin.fromClipboard("12 01 02.225 S 14 12 32.116 E");
+			assertNotNull("is a location string", loc3);
+			
+
 		}
 	}
 }

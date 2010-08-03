@@ -186,11 +186,10 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 			if (val != null)
 			{
 				String txt = (String) val;
-				if (CorePlugin.isLocation(txt))
+				// cool, get the text
+				WorldLocation loc = CorePlugin.fromClipboard(txt);
+				if (loc != null)
 				{
-					// cool, get the text
-					WorldLocation loc = CorePlugin.fromClipboard(txt);
-
 					// create the output value
 					thisPoint.copy(loc);
 

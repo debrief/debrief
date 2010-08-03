@@ -366,37 +366,71 @@ public class CorePlugin extends AbstractUIPlugin
 			// get a stream from the string
 			StringTokenizer st = new StringTokenizer(txt.trim());
 
-			String firstItem = st.nextToken(" \t");
-			String secondItem = st.nextToken();
+			int numTokens = st.countTokens();
 
-			if (firstItem != null && secondItem != null)
+			if (numTokens == 2)
 			{
-				// hey, go for it
 				try
 				{
-					double latVal = Double.parseDouble(firstItem);
-					double longVal = Double.parseDouble(secondItem);
-					res = new WorldLocation(latVal, longVal, 0d);
+
+					String firstItem = st.nextToken(" \t");
+					String secondItem = st.nextToken();
+
+					if (firstItem != null && secondItem != null)
+					{
+						// hey, go for it
+						double latVal = Double.parseDouble(firstItem);
+						double longVal = Double.parseDouble(secondItem);
+						res = new WorldLocation(latVal, longVal, 0d);
+					}
 				}
 				catch (Exception e)
 				{
-					CorePlugin.logError(Status.ERROR, "whilst trying to get location off clipboard", e);
+					CorePlugin.logError(Status.ERROR,
+							"whilst trying to get (lat,long) location off clipboard", e);
+				}
+			}
+			else if (numTokens == 8)
+			{
+				try
+				{
+					Double latDegs = Double.parseDouble(st.nextToken());
+					Double latMin = Double.parseDouble(st.nextToken());
+					Double latSec = Double.parseDouble(st.nextToken());
+					char latHem = st.nextToken().charAt(0);
+					Double longDegs = Double.parseDouble(st.nextToken());
+					Double longMin = Double.parseDouble(st.nextToken());
+					Double longSec = Double.parseDouble(st.nextToken());
+					char longHem = st.nextToken().charAt(0);
+					res = new WorldLocation(latDegs, latMin, latSec, latHem, longDegs, longMin, longSec, longHem, 0);
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"whilst trying to get (dd mm ss.ss H dd mm ss.ss h) location off clipboard", e);
+				}
+			}
+			else if (numTokens == 6)
+			{
+				try
+				{
+					Double latDegs = Double.parseDouble(st.nextToken());
+					Double latMin = Double.parseDouble(st.nextToken());
+					char latHem = st.nextToken().charAt(0);
+					Double longDegs = Double.parseDouble(st.nextToken());
+					Double longMin = Double.parseDouble(st.nextToken());
+					char longHem = st.nextToken().charAt(0);
+					res = new WorldLocation(latDegs, latMin, 0, latHem, longDegs, longMin, 0, longHem, 0);
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"whilst trying to get (dd mm.mmm H dd mm.mmm h) location off clipboard", e);
 				}
 			}
 		}
 
 		return res;
-	}
-
-	/**
-	 * convenience method to check if a string is in our format
-	 * 
-	 * @param txt
-	 * @return
-	 */
-	public static boolean isLocation(String txt)
-	{
-		return txt.startsWith(LOCATION_STRING_IDENTIFIER);
 	}
 
 	/**
@@ -439,10 +473,14 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message,
-				exception);
-		getDefault().getLog().log(stat);
-
+		CorePlugin singleton = getDefault();
+		if (singleton != null)
+		{
+			Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK,
+					message, exception);
+			singleton.getLog().log(stat);
+		}
+		
 		// also throw it to the console
 		if (exception != null)
 			exception.printStackTrace();
