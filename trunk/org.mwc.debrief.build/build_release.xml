@@ -85,6 +85,7 @@
 	<target name="build" depends="clean, init, pde-build, copy-jre, move_dist, zip_dist" />
 
 	<property name="tgtDest" value="z://downloads"  />
+	<property name="usbDest" value="e://"  />
 
 	<target name="can_do_mac_copy">
 		<available property="target.exists" file="${tgtDest}"/>
@@ -107,5 +108,22 @@
 		</copy>
 
 	</target>
+
+	<target name="can_do_usb_copy">
+		<available property="target.exists" file="${usbDest}"/>
+	</target>
 	
+	<target name="copy_to_usb" depends="can_do_mac_copy">
+		
+		<echo message="ditching existing versions"/>
+		<delete file="${usbDest}/Repository.zip"/>
+		<delete dir="${usbDest}/DebriefNG"/>
+
+		<echo message="copying new versions"/>
+		
+		<copy todir="${usbDest}/">
+			<fileset  file="${buildDirectory}/../Repository.zip" />
+		</copy>
+	</target>
+
 </project>
