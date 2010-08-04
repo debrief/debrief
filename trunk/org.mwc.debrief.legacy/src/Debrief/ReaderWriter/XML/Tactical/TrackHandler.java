@@ -30,9 +30,8 @@ public final class TrackHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
 	private static final String PLOT_ARRAY_CENTRE = "PlotArrayCentre";
-
+	private static final String LINK_POSITIONS = "LinkPositions";
 	private static final String LINE_THICKNESS = "LineThickness";
-
 	private static final String INTERPOLATE_POINTS = "InterpolatePoints";
 
 	final MWC.GUI.Layers _theLayers;
@@ -69,6 +68,7 @@ public final class TrackHandler extends
 		trk.setAttribute(PLOT_ARRAY_CENTRE, writeThis(track.getPlotArrayCentre()));
 		trk.setAttribute(INTERPOLATE_POINTS, writeThis(track
 				.getInterpolatePoints()));
+		trk.setAttribute(LINK_POSITIONS, writeThis(track.getLinkPositions()));
 		lp.setValue(track.getNameLocation());
 		trk.setAttribute("NameLocation", lp.getAsText());
 		trk.setAttribute("Symbol", track.getSymbolType());
@@ -229,6 +229,12 @@ public final class TrackHandler extends
 			@Override
 			public void setValue(String name, boolean val) {
 				_myTrack.setPositionsVisible(val);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(LINK_POSITIONS) {
+			@Override
+			public void setValue(String name, boolean val) {
+				_myTrack.setLinkPositions(val);
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(PLOT_ARRAY_CENTRE) {

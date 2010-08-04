@@ -764,6 +764,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						expertProp("NameAtStart",
 								"whether to show the track name at the start (or end)",
 								VISIBILITY),
+								expertProp("LinkPositions",
+										"whether to join the track points",
+										FORMAT),
 						expertProp("Visible", "whether the track is visible", VISIBILITY),
 						expertLongProp("NameLocation", "relative location of track label",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
@@ -1070,7 +1073,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * whether or not to link the Positions
 	 */
-	private final boolean _linkPositions;
+	private boolean _linkPositions;
 	
 	/** whether to show a highlight for the array centre
 	 * 
@@ -2025,6 +2028,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return _theLabel.getVisible();
 	}
+
+	/** whether to link points
+	 * 
+	 * @return
+	 */
+	public boolean getLinkPositions()
+	{
+		return _linkPositions;
+	}
+
+	/** whether to link points
+	 * 
+	 * @param linkPositions
+	 */
+	public void setLinkPositions(boolean linkPositions)
+	{
+		_linkPositions = linkPositions;
+	}
+
+
 
 	/**
 	 * find the fix nearest to this time (or the first fix for an invalid time)
