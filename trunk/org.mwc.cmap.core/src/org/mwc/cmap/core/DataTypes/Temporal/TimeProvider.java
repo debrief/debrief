@@ -32,6 +32,12 @@ public interface TimeProvider
 	 * @return the time period
 	 */
 	public TimePeriod getPeriod();
+	
+	/** identifier for this time provider. We create this so that, when restored,  an xy plot 
+	 * can loop through the open plots to determine which time provider to connect to
+	 * 
+	 */
+	public String getId();
 
 	/**
 	 * obtain the current time

@@ -50,7 +50,20 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 * the time period covered by the data
 	 */
 	private TimePeriod _timePeriod;
+	
+	/** the id of this provider
+	 * 
+	 */
+	private String _myId;
+	
+	
+	public TimeManager()
+	{
+		_myId = "" + System.currentTimeMillis();
+	}
 
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -153,6 +166,21 @@ public class TimeManager implements ControllableTime, TimeProvider
 			_pSupport.firePropertyChange(PERIOD_CHANGED_PROPERTY_NAME, oldPeriod, _timePeriod);
 		}
 
+	}
+
+
+
+	@Override
+	public String getId()
+	{
+		return _myId;
+	}
+
+
+
+	public void setId(String val)
+	{
+		_myId = val;
 	}
 
 }

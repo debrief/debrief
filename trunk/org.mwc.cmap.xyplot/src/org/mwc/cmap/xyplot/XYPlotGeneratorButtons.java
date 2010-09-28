@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -26,6 +27,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
@@ -280,6 +282,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 						IWorkbench wb = PlatformUI.getWorkbench();
 						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 						IWorkbenchPage page = win.getActivePage();
+						
+						IEditorPart editor = page.getActiveEditor();
 
 						// get ready for the start/end times
 						HiResDate startTime, endTime;
@@ -300,6 +304,14 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 										title, message);
 								return;
 							}
+							
+							// have a go at determining the plot id
+							TimeProvider tp = (TimeProvider) editor.getAdapter(TimeProvider.class);
+							String thePlotId = null;
+							if(tp != null)
+							{
+								thePlotId = tp.getId();
+							}
 
 							IAdaptable timeC = (IAdaptable) timeRef.getView(true);
 
@@ -315,7 +327,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 												null);
 								return;
 							}
-
+							
 							startTime = period.getStartDTG();
 							endTime = period.getEndDTG();
 
@@ -332,6 +344,11 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// ok, sort out what we're plotting
 							// find out what the user wants to view
 							ShowTimeVariablePlot3.CalculationHolder theHolder = getChoice();
+							
+							// did user cancel?
+							if(theHolder == null)
+								return;
+							
 							// retrieve the necessary input data
 							toteCalculation myOperation = theHolder._theCalc;
 
@@ -388,7 +405,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							IViewReference plotRef = page.findViewReference(plotId, theTitle);
 							XYPlotView plotter = (XYPlotView) plotRef.getView(true);
 							plotter.showPlot(theTitle, ds, myOperation.toString() + " ("
-									+ myOperation.getUnits() + ")", theHolder._theFormatter);
+									+ myOperation.getUnits() + ")", theHolder._theFormatter, thePlotId);
 						}
 						catch (PartInitException e)
 						{

@@ -25,6 +25,18 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 
 	private HiResDate _currentTime;
 
+	private String _myId;
+	
+	
+
+	public WrappingSteppableTime()
+	{
+		super();
+		
+		// and store the system time as an id
+		_myId = "" + System.currentTimeMillis();
+	}
+
 	private void startWatching()
 	{
 		_myScenario.addScenarioSteppedListener(this);
@@ -218,6 +230,12 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	public void step(ScenarioType scenario, long newTime)
 	{
 		setTime(scenario, new HiResDate(newTime), true);
+	}
+
+	@Override
+	public String getId()
+	{
+		return _myId;
 	}
 
 }

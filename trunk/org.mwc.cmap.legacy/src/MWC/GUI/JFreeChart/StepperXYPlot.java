@@ -11,6 +11,7 @@ import java.util.Date;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.PlotState;
 import org.jfree.chart.plot.XYPlot;
@@ -42,12 +43,22 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	 * the current time we are looking at (or -1 for null) (micros)
 	 */
 	protected HiResDate _currentTime = null;
+	
+	/** whether to grow the axis with time
+	 * 
+	 */
+	protected boolean _growWithTime = false;
+	
+	/** flag for if we need to reset the axes, after a grow setting
+	 * 
+	 */
+  private boolean _resetAxes = false;
 
 	/**
 	 * whether to actually show the line
 	 * 
 	 */
-	protected boolean _showLine = true;
+	private boolean _showLine = true;
 
 	// ////////////////////////////////////////////////
 	// constructor
@@ -63,10 +74,12 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	 *          The domain axis.
 	 * @param rangeAxis
 	 *          The range axis.
-	 * @param theRenderer 
+	 * @param theRenderer
 	 */
 	public StepperXYPlot(final XYDataset data, final RelativeDateAxis domainAxis,
-			final ValueAxis rangeAxis, final StepperListener.StepperController stepper, XYItemRenderer theRenderer)
+			final ValueAxis rangeAxis,
+			final StepperListener.StepperController stepper,
+			XYItemRenderer theRenderer)
 	{
 		super(data, domainAxis, rangeAxis, theRenderer);
 		this._myStepper = stepper;
@@ -81,6 +94,25 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	// over-ride painting support
 	// ////////////////////////////////////////////////
 
+
+	public boolean isGrowWithTime()
+	{
+		return _growWithTime;
+	}
+
+	public void setGrowWithTime(boolean growWithTime)
+	{
+		// do we need to reset the bounds?
+		if(!growWithTime && isGrowWithTime())
+		{
+      _resetAxes = true;
+		}
+
+		this._growWithTime = growWithTime;
+		
+	}
+
+	
 	/**
 	 * Draws the XY plot on a Java 2D graphics device (such as the screen or a
 	 * printer), together with a current time marker
@@ -100,10 +132,10 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	 * @param info
 	 *          Collects chart drawing information (null permitted).
 	 */
-	public final void draw(final Graphics2D g2, final Rectangle2D plotArea, Point2D anchor, PlotState state,
-			final PlotRenderingInfo info)
+	public final void draw(final Graphics2D g2, final Rectangle2D plotArea,
+			Point2D anchor, PlotState state, final PlotRenderingInfo info)
 	{
-		super.draw(g2, plotArea,anchor, state, info);
+		super.draw(g2, plotArea, anchor, state, info);
 
 		// do we want to view the line?
 		if (!_showLine)
@@ -119,7 +151,9 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 			long theTime = _currentTime.getMicros();
 
 			// hmmm, how do we format the date
-			CanBeRelativeToTimeStepper axis = (CanBeRelativeToTimeStepper) this.getDomainAxis();
+			CanBeRelativeToTimeStepper axis = (CanBeRelativeToTimeStepper) this
+					.getDomainAxis();
+			
 
 			// are we working in relative time mode?
 			if (axis.isRelativeTimes())
@@ -140,19 +174,47 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 
 				// find the new x value
 				linePosition = dateAxis.dateToJava2D(new Date(theTime / 1000),
-						dataArea,this.getDomainAxisEdge());
+						dataArea, this.getDomainAxisEdge());
+
+				
+				if(isGrowWithTime())
+				  dateAxis.setRange(dateAxis.getMinimumDate(), new Date(theTime / 1000));
+				else
+				{
+					if(_resetAxes)
+					{
+						dateAxis.setAutoRange(true);
+						_resetAxes = false;
+					}
+				}
+				
 			}
 			else
 			{
 				if (axis instanceof NumberAxis)
 				{
 					NumberAxis numberAxis = (NumberAxis) axis;
-					linePosition = numberAxis.valueToJava2D(theTime, dataArea,this.getDomainAxisEdge());
+					linePosition = numberAxis.valueToJava2D(theTime, dataArea, this
+							.getDomainAxisEdge());
+					
+					if(isGrowWithTime())
+						numberAxis.setRange(numberAxis.getRange().getLowerBound(), theTime);
+					else
+					{
+						if(_resetAxes)
+						{
+							numberAxis.setAutoRange(true);
+							_resetAxes = false;
+						}
+					}
+
+					
 				}
 			}
 
-			// ok, finally draw the line
-			plotStepperLine(g2, linePosition, dataArea);
+			// ok, finally draw the line - if we're not showing the growing plot
+			if(!isGrowWithTime())
+  			plotStepperLine(g2, linePosition, dataArea);
 
 		}
 	}
@@ -174,10 +236,21 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 		// thicken up the line
 		g2.setStroke(new BasicStroke(3));
 
-		// draw the line
-		g2.drawLine((int) linePosition - 1, (int) dataArea.getY() + 1,
-				(int) linePosition - 1, (int) dataArea.getY()
-						+ (int) dataArea.getHeight() - 1);
+		if (this.getOrientation() == PlotOrientation.VERTICAL)
+		{
+			// draw the line
+			g2.drawLine((int) linePosition - 1, (int) dataArea.getY() + 1,
+					(int) linePosition - 1, (int) dataArea.getY()
+							+ (int) dataArea.getHeight() - 1);
+		}
+		else
+		{
+			// draw the line
+			g2.drawLine((int) dataArea.getY() + 1,(int) linePosition - 1, 
+					 (int) dataArea.getY()
+							+ (int) dataArea.getHeight() - 1, (int) linePosition - 1);
+			
+		}
 
 		// and restore everything
 		g2.setStroke(oldStroke);
@@ -197,14 +270,13 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 		_currentTime = newDTG;
 	}
 
-
 	@Override
 	public void zoom(double percent)
 	{
 		this.getDomainAxis().setAutoRange(true);
 		this.getRangeAxis().setAutoRange(true);
 	}
-	
+
 	/**
 	 * the mode for stepping has changed
 	 */

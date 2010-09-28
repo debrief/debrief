@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
@@ -45,14 +46,12 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
-import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -87,6 +86,11 @@ public class XYPlotView extends ViewPart
 	/**
 	 * data-type names
 	 */
+
+	private static final String PLOT_ID = "PlotId";
+
+	private static final String DO_WATERFALL = "DO_WATERFALL";
+
 	private final String TITLE = "XYPlot_Title";
 
 	private final String UNITS = "XYPlot_Units";
@@ -189,6 +193,16 @@ public class XYPlotView extends ViewPart
 	private Action _fitToWindow;
 
 	/**
+	 * resize the data to fill the window
+	 */
+	private Action _switchAxes;
+
+	/**
+	 * make the plot grow in real time
+	 */
+	private Action _growPlot;
+
+	/**
 	 * output the plot as a WMF
 	 */
 	private Action _exportToWMF;
@@ -235,6 +249,8 @@ public class XYPlotView extends ViewPart
 	 */
 	private IMemento _myMemento = null;
 
+	private String _myId;
+
 	/**
 	 * The constructor.
 	 */
@@ -253,9 +269,10 @@ public class XYPlotView extends ViewPart
 	 *          - the units (for the y axis)
 	 * @param theFormatter
 	 *          - an object capable of applying formatting to the plot
+	 * @param thePlotId
 	 */
 	public void showPlot(String title, AbstractSeriesDataset dataset,
-			String units, formattingOperation theFormatter)
+			String units, formattingOperation theFormatter, String thePlotId)
 	{
 		// right, store the incoming data, so we can save it when/if
 		// Eclipse closes with this view still open
@@ -263,6 +280,7 @@ public class XYPlotView extends ViewPart
 		_myUnits = units;
 		_theFormatter = theFormatter;
 		_dataset = dataset;
+		_myId = thePlotId;
 
 		// ok, update the plot.
 		this.setPartName(_myTitle);
@@ -325,6 +343,7 @@ public class XYPlotView extends ViewPart
 			// retrieve the obvious stuff
 			_myTitle = _myMemento.getString(TITLE);
 			_myUnits = _myMemento.getString(UNITS);
+			_myId = _myMemento.getString(PLOT_ID);
 
 			// get our special streaming library ready
 			XStream xs = new XStream(new DomDriver());
@@ -346,28 +365,25 @@ public class XYPlotView extends ViewPart
 			_dataset = (AbstractSeriesDataset) xs.fromXML(dataStr);
 
 			// right, that's the essential bits, now open the plot
-			showPlot(_myTitle, _dataset, _myUnits, _theFormatter);
+			showPlot(_myTitle, _dataset, _myUnits, _theFormatter, _myId);
 
 			// right the plot's done, put back in our fancy formatting bits
 			String str;
-			str = _myMemento.getString(PLOT_ATTRIBUTES.AxisFont);
-			if (str != null)
-			{
-				Font theFont = (Font) xs.fromXML(str);
-				_thePlotArea.setAxisFont(theFont);
-			}
-			str = _myMemento.getString(PLOT_ATTRIBUTES.TickFont);
-			if (str != null)
-				_thePlotArea.setTickFont((Font) xs.fromXML(str));
-			str = _myMemento.getString(PLOT_ATTRIBUTES.TitleFont);
-			if (str != null)
-				_thePlotArea.setTitleFont((Font) xs.fromXML(str));
-			str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
-			if (str != null)
-				_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
 			str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
 			if (str != null)
 				_thePlotArea.setTitle((String) xs.fromXML(str));
+			Font theF = getFont(_myMemento, PLOT_ATTRIBUTES.AxisFont);
+			if (theF != null)
+				_thePlotArea.setAxisFont(theF);
+			theF = getFont(_myMemento, PLOT_ATTRIBUTES.TickFont);
+			if (theF != null)
+				_thePlotArea.setTickFont(theF);
+			theF = getFont(_myMemento, PLOT_ATTRIBUTES.TitleFont);
+			if (theF != null)
+				_thePlotArea.setTitleFont(theF);
+			str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
+			if (str != null)
+				_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
 			str = _myMemento.getString(PLOT_ATTRIBUTES.X_Title);
 			if (str != null)
 				_thePlotArea.setX_AxisTitle((String) xs.fromXML(str));
@@ -384,6 +400,14 @@ public class XYPlotView extends ViewPart
 			str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
 			if (str != null)
 				_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
+
+			// and the axis orientation
+			String doWaterTxt = _myMemento.getString(DO_WATERFALL);
+			if (doWaterTxt != null)
+			{
+				_switchAxes.setChecked(Boolean.parseBoolean(doWaterTxt));
+				_switchAxes.run();
+			}
 		}
 		catch (Exception e)
 		{
@@ -456,28 +480,28 @@ public class XYPlotView extends ViewPart
 		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis,
 				_theStepper, theRenderer);
 		theRenderer.setPlot(_thePlot);
-		
-		// loop through the datasets, setting the color of each series to the first color in that series
-		if(dataset instanceof TimeSeriesCollection)
+
+		// loop through the datasets, setting the color of each series to the first
+		// color in that series
+		if (dataset instanceof TimeSeriesCollection)
 		{
 			Color seriesCol = null;
 			TimeSeriesCollection tsc = (TimeSeriesCollection) dataset;
-			for(int i=0;i<dataset.getSeriesCount();i++)
+			for (int i = 0; i < dataset.getSeriesCount(); i++)
 			{
 				TimeSeries ts = tsc.getSeries(i);
-				if(ts.getItemCount() > 0)
+				if (ts.getItemCount() > 0)
 				{
-				TimeSeriesDataItem dataItem = ts.getDataItem(0);
-				if(dataItem instanceof ColouredDataItem)
-				{
-					ColouredDataItem cd = (ColouredDataItem) dataItem;
-					seriesCol = cd.getColor();
-					_thePlot.getRenderer().setSeriesPaint(i, seriesCol);
-				}
+					TimeSeriesDataItem dataItem = ts.getDataItem(0);
+					if (dataItem instanceof ColouredDataItem)
+					{
+						ColouredDataItem cd = (ColouredDataItem) dataItem;
+						seriesCol = cd.getColor();
+						_thePlot.getRenderer().setSeriesPaint(i, seriesCol);
+					}
 				}
 			}
 		}
-		
 
 		// apply any formatting for this choice
 		if (theFormatter != null)
@@ -525,19 +549,42 @@ public class XYPlotView extends ViewPart
 		if (page != null)
 		{
 			editor = page.getActiveEditor();
+			// do we have an active editor?
+			if (editor == null)
+			{
+				// see if there are any editors at all open
+				IEditorReference[] theEditors = page.getEditorReferences();
+				for (int i = 0; i < theEditors.length; i++)
+				{
+					IEditorReference thisE = theEditors[i];
+					editor = thisE.getEditor(false);
 
+					// right, see if it has a time manager
+					TimeProvider tp = (TimeProvider) editor
+							.getAdapter(TimeProvider.class);
+					if (tp != null)
+					{
+						String hisId = tp.getId();
+						if (hisId == _myId)
+							break;
+					}
+				}
+
+				// nope, drop out.
+				return;
+			}
 		}
 
-		// do we have an active editor?
-		if (editor == null)
+		TimeProvider prov = null;
+		if (editor != null)
 		{
-			// nope, drop out.
-			return;
+			// get it's time-provider interface
+			prov = (TimeProvider) editor.getAdapter(TimeProvider.class);
 		}
-
-		// get it's time-provider interface
-		TimeProvider prov = (TimeProvider) editor.getAdapter(TimeProvider.class);
-
+		else
+			CorePlugin.logError(Status.WARNING,"Failed to identify time provider", null);
+		
+		
 		if (prov != null)
 		{
 			// create our listener
@@ -674,6 +721,8 @@ public class XYPlotView extends ViewPart
 	private void fillLocalPullDown(IMenuManager manager)
 	{
 		manager.add(_fitToWindow);
+		manager.add(_switchAxes);
+		manager.add(_growPlot);
 		manager.add(new Separator());
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
@@ -691,6 +740,8 @@ public class XYPlotView extends ViewPart
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
 		manager.add(_fitToWindow);
+		manager.add(_switchAxes);
+		manager.add(_growPlot);
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
 		manager.add(_editMyProperties);
@@ -711,6 +762,49 @@ public class XYPlotView extends ViewPart
 				.setToolTipText("Change editable properties for this chart");
 		_editMyProperties.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/properties.gif"));
+
+		_switchAxes = new Action("Plot as waterfall", SWT.TOGGLE)
+		{
+			public void run()
+			{
+				try
+				{
+					if (_switchAxes.isChecked())
+						_thePlot.setOrientation(PlotOrientation.HORIZONTAL);
+					else
+						_thePlot.setOrientation(PlotOrientation.VERTICAL);
+
+				}
+				catch (Exception e)
+				{
+					MWC.Utilities.Errors.Trace.trace(e,
+							"whilst performing resize after loading new plot");
+				}
+			}
+		};
+		_switchAxes.setToolTipText("Switch axes");
+		_switchAxes.setImageDescriptor(XYPlotPlugin
+				.getImageDescriptor("icons/switchAxes.png"));
+
+		_growPlot = new Action("Real time display", SWT.TOGGLE)
+		{
+			public void run()
+			{
+				try
+				{
+					_thePlot.setGrowWithTime(_growPlot.isChecked());
+				}
+				catch (Exception e)
+				{
+					MWC.Utilities.Errors.Trace.trace(e,
+							"whilst performing resize after loading new plot");
+				}
+			}
+		};
+		_growPlot
+				.setToolTipText("Expand period covered in sync with scenario time");
+		_growPlot.setImageDescriptor(XYPlotPlugin
+				.getImageDescriptor("icons/expandTime.png"));
 
 		_fitToWindow = new Action()
 		{
@@ -774,6 +868,12 @@ public class XYPlotView extends ViewPart
 	public void setFocus()
 	{
 		// viewer.getControl().setFocus();
+		
+		
+		if(_timeListener == null)
+		{
+			setupFiringChangesToChart();
+		}
 	}
 
 	/**
@@ -828,6 +928,10 @@ public class XYPlotView extends ViewPart
 
 		memento.putString(TITLE, _myTitle);
 		memento.putString(UNITS, _myUnits);
+		memento.putString(PLOT_ID, _myId);
+
+		// store whether the axes are switched
+		memento.putString(DO_WATERFALL, Boolean.toString(_switchAxes.isChecked()));
 
 		XStream xs = new XStream(new DomDriver());
 		String str;
@@ -844,15 +948,12 @@ public class XYPlotView extends ViewPart
 
 		// now the other plot bits
 		// @@
-		str = xs.toXML(_thePlotArea.getAxisFont());
-		memento.putString(PLOT_ATTRIBUTES.AxisFont, str);
-		str = xs.toXML(_thePlotArea.getTickFont());
-		memento.putString(PLOT_ATTRIBUTES.TickFont, str);
-		str = xs.toXML(_thePlotArea.getTitleFont());
-		memento.putString(PLOT_ATTRIBUTES.TitleFont, str);
+		storeFont(memento, PLOT_ATTRIBUTES.AxisFont, _thePlotArea.getAxisFont());
+		storeFont(memento, PLOT_ATTRIBUTES.TickFont, _thePlotArea.getTickFont());
+		storeFont(memento, PLOT_ATTRIBUTES.TitleFont, _thePlotArea.getTitleFont());
 		str = xs.toXML(new Integer(_thePlotArea.getDataLineWidth()));
 		memento.putString(PLOT_ATTRIBUTES.LineWidth, str);
-		str = xs.toXML(_thePlotArea.getTitle());
+		str = xs.toXML(_thePlotArea.getTitle().getText());
 		memento.putString(PLOT_ATTRIBUTES.Title, str);
 		str = xs.toXML(_thePlotArea.getX_AxisTitle());
 		memento.putString(PLOT_ATTRIBUTES.X_Title, str);
@@ -865,6 +966,26 @@ public class XYPlotView extends ViewPart
 		str = xs.toXML(new Boolean(_thePlotArea.isShowSymbols()));
 		memento.putString(PLOT_ATTRIBUTES.ShowSymbols, str);
 
+	}
+
+	private void storeFont(IMemento memento, String entryHeader, Font theFont)
+	{
+		// write elements
+		memento.putInteger(entryHeader + "_SIZE", theFont.getSize());
+		memento.putString(entryHeader + "_FAMILY", theFont.getFamily());
+		memento.putInteger(entryHeader + "_STYLE", theFont.getStyle());
+	}
+
+	private Font getFont(IMemento memento, String entryHeader)
+	{
+
+		Font res = null;
+		String family = memento.getString(entryHeader + "_FAMILY");
+		Integer size = memento.getInteger(entryHeader + "_SIZE");
+		Integer style = memento.getInteger(entryHeader + "_STYLE");
+		if (family != null)
+			res = new Font(family, style, size);
+		return res;
 	}
 
 	public static class StringHolder
