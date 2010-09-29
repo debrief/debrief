@@ -582,9 +582,9 @@ public class XYPlotView extends ViewPart
 			prov = (TimeProvider) editor.getAdapter(TimeProvider.class);
 		}
 		else
-			CorePlugin.logError(Status.WARNING,"Failed to identify time provider", null);
-		
-		
+			CorePlugin.logError(Status.WARNING, "Failed to identify time provider",
+					null);
+
 		if (prov != null)
 		{
 			// create our listener
@@ -868,9 +868,8 @@ public class XYPlotView extends ViewPart
 	public void setFocus()
 	{
 		// viewer.getControl().setFocus();
-		
-		
-		if(_timeListener == null)
+
+		if ((_timeListener == null) && (_chartInPanel != null))
 		{
 			setupFiringChangesToChart();
 		}
