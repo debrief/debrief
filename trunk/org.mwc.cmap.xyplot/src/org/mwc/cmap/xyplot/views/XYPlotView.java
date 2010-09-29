@@ -798,6 +798,9 @@ public class XYPlotView extends ViewPart
 				try
 				{
 					_thePlot.setGrowWithTime(_growPlot.isChecked());
+					
+					// may aswell trigger a redraw
+					_chartInPanel.invalidate();
 				}
 				catch (Exception e)
 				{
