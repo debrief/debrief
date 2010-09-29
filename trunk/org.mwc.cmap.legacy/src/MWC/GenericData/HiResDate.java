@@ -92,7 +92,12 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 		if (_hiResProcessing == null)
 		{
 			String hiRes = System.getProperty(HiResDate.HI_RES_PROPERTY_NAME);
-			_hiResProcessing = new Boolean(hiRes);
+			if (hiRes == null)
+			{
+				_hiResProcessing = Boolean.FALSE;
+			}
+			else
+				_hiResProcessing = new Boolean(hiRes);
 		}
 
 		return _hiResProcessing.booleanValue();
@@ -154,10 +159,12 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 		if (this.greaterThan(other))
 		{
 			res = 1;
-		} else if (this.lessThan(other))
+		}
+		else if (this.lessThan(other))
 		{
 			res = -1;
-		} else
+		}
+		else
 			res = 0;
 		return res;
 	}
