@@ -35,7 +35,8 @@ import MWC.GenericData.HiResDate;
  * axis steps/sizes, labels
  * *******************************************************************
  */
-public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
+public class NewFormattedJFreeChart extends JFreeChart implements
+		MWC.GUI.Editable
 {
 
 	/**
@@ -94,7 +95,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 		// update the line width's we're using
 		this.setDataLineWidth(_dataLineWidth);
-
+		
 		// let's not show symbols by default, eh?
 		this.setShowSymbols(false);
 	}
@@ -192,6 +193,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	{
 		this.getTitle().setText(text);
 	}
+
 	/**
 	 * the title of this plot
 	 * 
@@ -202,7 +204,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	{
 		this.getTitle().setFont(titleFont);
 	}
-
 
 	/**
 	 * the title of this plot
@@ -215,7 +216,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		return this.getTitle().getFont();
 	}
 
-	
 	public Font getTickFont()
 	{
 		return this.getXYPlot().getRangeAxis().getTickLabelFont();
@@ -227,28 +227,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
 	}
 
-	public boolean getAutoTimeScale()
-	{
-		return false;
-	}
-	
-	public void setAutoTimeScale(boolean val)
-	{
-		
-	}
-	
-	public void setTimeRange(Duration val)
-	{
-		
-	}
-	
-	public Duration getTimeRange()
-	{
-		return null;
-	}
-	
-	
-	
 	public Font getAxisFont()
 	{
 		return this.getXYPlot().getRangeAxis().getLabelFont();
@@ -257,7 +235,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	public void setAxisFont(Font axisFont)
 	{
 		this.getXYPlot().getRangeAxis().setLabelFont(axisFont);
-	 	this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
+		this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
 	}
 
 	/**
@@ -528,30 +506,26 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 			{
 				PropertyDescriptor[] res =
 				{
-						prop("AutoTimeScale", "whether to automatically range the time axis",
-								EditorType.TEMPORAL),
-						prop("TimeRange", "the range of time to use for the time axis",
-								EditorType.TEMPORAL),
-//						longProp("DataLineWidth", "the width to draw the data lines",
-//								MWC.GUI.Properties.LineWidthPropertyEditor.class),
-//						prop("TitleText", "the title of this plot"),
-//						prop("X_AxisTitle", "the x axis title of this plot"),
-//						prop("Y_AxisTitle", "the y axis title of this plot"),
-//						prop("RelativeTimes",
-//								"whether to plot times relative to an anchor value (tZero)",
-//								EditorType.TEMPORAL),
-//						longProp("DateTickUnits",
-//								"the minutes separation to use on the grid (or -1)",
-//								DateAxisEditor.class, EditorType.TEMPORAL),
-//						prop("ShowSymbols", "whether to show symbols at the data points",
-//								EditorType.VISIBILITY),
-//						prop("TitleFont", "font to use for the plot title",
-//								EditorType.FORMAT),
-//						prop("AxisFont", "font to use for the plot axis titles",
-//								EditorType.FORMAT),
-//						prop("TickFont", "font to use for the plot axis tick mark labels",
-//								EditorType.FORMAT)
-												};
+
+						 longProp("DataLineWidth", "the width to draw the data lines",
+						 MWC.GUI.Properties.LineWidthPropertyEditor.class),
+						 prop("TitleText", "the title of this plot"),
+						 prop("X_AxisTitle", "the x axis title of this plot"),
+						 prop("Y_AxisTitle", "the y axis title of this plot"),
+						 prop("RelativeTimes",
+						 "whether to plot times relative to an anchor value (tZero)",
+						 EditorType.TEMPORAL),
+						longProp("DateTickUnits", "the minutes separation to the axis",
+								DateAxisEditor.class, EditorType.TEMPORAL),
+						prop("ShowSymbols", "whether to show symbols at the data points",
+								EditorType.VISIBILITY),
+						prop("TitleFont", "font to use for the plot title",
+								EditorType.FORMAT),
+						prop("AxisFont", "font to use for the plot axis titles",
+								EditorType.FORMAT),
+						prop("TickFont", "font to use for the plot axis tick mark labels",
+								EditorType.FORMAT)
+				};
 				return res;
 			}
 			catch (IntrospectionException e)
