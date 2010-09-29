@@ -539,6 +539,11 @@ public class XYPlotView extends ViewPart
 
 	private void setupFiringChangesToChart()
 	{
+		
+		// see if we've alreay been configured
+		if(_timeListener != null)
+			return;
+		
 		// get the document being edited
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
