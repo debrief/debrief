@@ -26,6 +26,7 @@ import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 
 import MWC.GUI.Editable;
 import MWC.GUI.StepperListener;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -226,6 +227,28 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
 	}
 
+	public boolean getAutoTimeScale()
+	{
+		return false;
+	}
+	
+	public void setAutoTimeScale(boolean val)
+	{
+		
+	}
+	
+	public void setTimeRange(Duration val)
+	{
+		
+	}
+	
+	public Duration getTimeRange()
+	{
+		return null;
+	}
+	
+	
+	
 	public Font getAxisFont()
 	{
 		return this.getXYPlot().getRangeAxis().getLabelFont();
@@ -505,25 +528,30 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 			{
 				PropertyDescriptor[] res =
 				{
-						longProp("DataLineWidth", "the width to draw the data lines",
-								MWC.GUI.Properties.LineWidthPropertyEditor.class),
-						prop("TitleText", "the title of this plot"),
-						prop("X_AxisTitle", "the x axis title of this plot"),
-						prop("Y_AxisTitle", "the y axis title of this plot"),
-						prop("RelativeTimes",
-								"whether to plot times relative to an anchor value (tZero)",
+						prop("AutoTimeScale", "whether to automatically range the time axis",
 								EditorType.TEMPORAL),
-						longProp("DateTickUnits",
-								"the minutes separation to use on the grid (or -1)",
-								DateAxisEditor.class, EditorType.TEMPORAL),
-						prop("ShowSymbols", "whether to show symbols at the data points",
-								EditorType.VISIBILITY),
-						prop("TitleFont", "font to use for the plot title",
-								EditorType.FORMAT),
-						prop("AxisFont", "font to use for the plot axis titles",
-								EditorType.FORMAT),
-						prop("TickFont", "font to use for the plot axis tick mark labels",
-								EditorType.FORMAT), };
+						prop("TimeRange", "the range of time to use for the time axis",
+								EditorType.TEMPORAL),
+//						longProp("DataLineWidth", "the width to draw the data lines",
+//								MWC.GUI.Properties.LineWidthPropertyEditor.class),
+//						prop("TitleText", "the title of this plot"),
+//						prop("X_AxisTitle", "the x axis title of this plot"),
+//						prop("Y_AxisTitle", "the y axis title of this plot"),
+//						prop("RelativeTimes",
+//								"whether to plot times relative to an anchor value (tZero)",
+//								EditorType.TEMPORAL),
+//						longProp("DateTickUnits",
+//								"the minutes separation to use on the grid (or -1)",
+//								DateAxisEditor.class, EditorType.TEMPORAL),
+//						prop("ShowSymbols", "whether to show symbols at the data points",
+//								EditorType.VISIBILITY),
+//						prop("TitleFont", "font to use for the plot title",
+//								EditorType.FORMAT),
+//						prop("AxisFont", "font to use for the plot axis titles",
+//								EditorType.FORMAT),
+//						prop("TickFont", "font to use for the plot axis tick mark labels",
+//								EditorType.FORMAT)
+												};
 				return res;
 			}
 			catch (IntrospectionException e)
