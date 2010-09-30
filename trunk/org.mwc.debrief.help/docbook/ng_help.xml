@@ -3439,6 +3439,19 @@ and so on....</programlisting></para>
                             </mediaobject>
                         </screenshot>
                     </figure></para>
+                <para>
+                    <figure id="time_var_plot_vert" float="0">
+                        <title>View of time-variable plot in waterfall mode</title>
+                        <screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/time_variable_plot_switch.png"
+                                        width="100%"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot>
+                    </figure>
+                </para>
                 <note>
                     <para>
                         <application>Debrief</application> performs special processing depending on
@@ -3506,7 +3519,18 @@ and so on....</programlisting></para>
                     />, and the <guibutton>Export to Clipboard </guibutton> (<guiicon>
                         <inlinegraphic fileref="figures/ExportToClipboard.png"/>
                     </guiicon> places a copy of the plot on the Windows clipboard for onward
-                    insertion into MS Word.</para>
+                    insertion into MS Word</para>
+                <para>The <guibutton>Switch Axes</guibutton>
+                    <guiicon>
+                        <inlinegraphic fileref="figures/switchAxes.png"/>
+                    </guiicon> button changes the orientation of the plot from it's default format
+                    to a waterfall-style display with time plotted down the left-hand side.</para>
+                <para>The <guibutton>Grow Times</guibutton>
+                    <guiicon>
+                        <inlinegraphic fileref="figures/expandTime.png"/>
+                    </guiicon> button changes the time axis to make the top of the waterfall display
+                    the current Time Controller time, with the data displayed changing dynamically
+                    with time slider..</para>
                 <para>The <guibutton>Configure Plot</guibutton>(<guiicon>
                         <inlinegraphic fileref="figures/ConfigurePlot.png"/>
                     </guiicon>) button opens a <link linkend="g_property_window">property
@@ -3562,6 +3586,23 @@ and so on....</programlisting></para>
                                     <entry colname="col2">The font to use for the respective
                                         label</entry>
                                 </row>
+                                <row>
+                                    <entry colname="col1"> DisplayFixedDuration</entry>
+                                    <entry colname="col2">When data is being displayed in
+                                            <emphasis>Grow Times</emphasis>mode, this checkbox
+                                        specifies whether time-axis should grow to continuously show
+                                        all data, or whether it should just show data for a fixed
+                                        time period.</entry>
+                                </row>
+                                <row>
+                                    <entry colname="col1">FixedDuration</entry>
+                                    <entry colname="col2">The period of time (duration) that the
+                                        time-axis should display when in <emphasis>Grow
+                                            Times</emphasis> mode with
+                                            <emphasis>DisplayFixedDuration</emphasis> set to
+                                        True.</entry>
+                                </row>
+                                
                             </tbody>
                         </tgroup>
                     </informaltable>

@@ -812,7 +812,7 @@ public class XYPlotView extends ViewPart
 		_switchAxes.setImageDescriptor(XYPlotPlugin
 				.getImageDescriptor("icons/switchAxes.png"));
 
-		_growPlot = new Action("Real time display", SWT.TOGGLE)
+		_growPlot = new Action("Grow times", SWT.TOGGLE)
 		{
 			public void run()
 			{
