@@ -20,6 +20,7 @@ import org.jfree.data.xy.XYDataset;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.StepperListener;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -59,6 +60,8 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	 * 
 	 */
 	private boolean _showLine = true;
+
+	private Duration _fixedDuration;
 
 	// ////////////////////////////////////////////////
 	// constructor
@@ -176,16 +179,34 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 				linePosition = dateAxis.dateToJava2D(new Date(theTime / 1000),
 						dataArea, this.getDomainAxisEdge());
 
+				if(_resetAxes)
+				{
+					dateAxis.setAutoRange(true);
+					_resetAxes = false;
+				}
+
 				
 				if(isGrowWithTime())
-				  dateAxis.setRange(dateAxis.getMinimumDate(), new Date(theTime / 1000));
+				{
+					long endMillis = theTime / 1000;
+					long startMillis;
+					
+					if(_fixedDuration != null)
+					{
+						startMillis = endMillis - _fixedDuration.getMillis();
+					}
+					else
+					{
+						startMillis = (long) dateAxis.getLowerBound();
+					}
+					
+					Date startDate = new Date(startMillis);
+					Date endDate = new Date(endMillis);
+					
+				  dateAxis.setRange(startDate, endDate);
+				}
 				else
 				{
-					if(_resetAxes)
-					{
-						dateAxis.setAutoRange(true);
-						_resetAxes = false;
-					}
 				}
 				
 			}
@@ -291,6 +312,20 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	public void setShowLine(boolean line)
 	{
 		_showLine = line;
+	}
+
+	public void setFixedDuration(Duration dur)
+	{
+		_fixedDuration = dur;
+		
+		// do we need to reset the axes?
+		if(_fixedDuration == null)
+			_resetAxes = true;
+	}
+	
+	public Duration getFixedDuration()
+	{
+		return _fixedDuration;
 	}
 
 }

@@ -68,6 +68,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	 */
 	private SwitchableTimeOffsetProvider _provider = null;
 
+	private Duration _fixedDuration;
+
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
@@ -92,6 +94,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 			boolean createLegend)
 	{
 		super(title, titleFont, plot, createLegend);
+		
+		_fixedDuration = new Duration(3, Duration.HOURS);
 
 		// update the line width's we're using
 		this.setDataLineWidth(_dataLineWidth);
@@ -238,6 +242,44 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 		this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
 	}
 
+	public void setFixedDuration(Duration dur)
+	{
+		_fixedDuration = dur;
+	}
+	
+	public Duration getFixedDuration()
+	{
+		return _fixedDuration;
+	}
+	
+	public void setDisplayFixedDuration(boolean val)
+	{
+		XYPlot xp = this.getXYPlot();
+		if(xp instanceof StepperXYPlot)
+		{
+	    StepperXYPlot	stp = (StepperXYPlot) xp;
+	    if(val)
+	    stp.setFixedDuration(_fixedDuration);
+	    else
+	    	stp.setFixedDuration(null);
+		}
+		
+		this.fireChartChanged();
+	}
+	
+	public boolean getDisplayFixedDuration()
+	{
+		boolean res = false;
+		XYPlot xp = this.getXYPlot();
+		if(xp instanceof StepperXYPlot)
+		{
+	    StepperXYPlot	stp = (StepperXYPlot) xp;
+	    res = (stp.getFixedDuration() != null);
+		}
+		
+		return res;
+	}
+	
 	/**
 	 * accessor to get hold of the time offset provider
 	 * 
@@ -510,6 +552,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 						 longProp("DataLineWidth", "the width to draw the data lines",
 						 MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						 prop("TitleText", "the title of this plot"),
+						 prop("FixedDuration", "How long a time-span to display", EditorType.TEMPORAL),
+						 prop("DisplayFixedDuration", "Whether to show a limited time period (in Grow mode)", EditorType.TEMPORAL),
 						 prop("X_AxisTitle", "the x axis title of this plot"),
 						 prop("Y_AxisTitle", "the y axis title of this plot"),
 						 prop("RelativeTimes",

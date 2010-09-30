@@ -70,6 +70,7 @@ import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
 import com.pietjonas.wmfwriter2d.ClipboardCopy;
@@ -82,6 +83,10 @@ public class XYPlotView extends ViewPart
 	// //////////////////////////////////////////////////
 	// data we store between sessions
 	// //////////////////////////////////////////////////
+
+	private static final String FIXED_DURATION = "FixedDuration";
+
+	private static final String DISPLAY_FIXED_DURATION = "DisplayFixedDuration";
 
 	/**
 	 * data-type names
@@ -344,7 +349,8 @@ public class XYPlotView extends ViewPart
 			_myTitle = _myMemento.getString(TITLE);
 			_myUnits = _myMemento.getString(UNITS);
 			_myId = _myMemento.getString(PLOT_ID);
-
+			
+			
 			// get our special streaming library ready
 			XStream xs = new XStream(new DomDriver());
 
@@ -367,6 +373,21 @@ public class XYPlotView extends ViewPart
 			// right, that's the essential bits, now open the plot
 			showPlot(_myTitle, _dataset, _myUnits, _theFormatter, _myId);
 
+			// sort out the fixed duration bits - now we've got our plot
+			String theDur = _myMemento.getString(FIXED_DURATION);
+			Duration someDur = null;
+			if(theDur != null)
+			{
+				long dur = Long.parseLong(theDur);
+				someDur = new Duration(dur, Duration.MILLISECONDS);
+			}
+			Boolean doFixed = _myMemento.getBoolean(DISPLAY_FIXED_DURATION);
+			if(doFixed != null)
+			{
+				this._thePlotArea.setFixedDuration(someDur);
+				this._thePlotArea.setDisplayFixedDuration(doFixed);
+			}
+			
 			// right the plot's done, put back in our fancy formatting bits
 			String str;
 			str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
@@ -936,6 +957,10 @@ public class XYPlotView extends ViewPart
 		memento.putString(TITLE, _myTitle);
 		memento.putString(UNITS, _myUnits);
 		memento.putString(PLOT_ID, _myId);
+		
+		// sort out the fixed duration bits
+		memento.putBoolean(DISPLAY_FIXED_DURATION, this._thePlotArea.getDisplayFixedDuration() );
+		memento.putString(FIXED_DURATION,"" + this._thePlotArea.getFixedDuration().getMillis() );
 
 		// store whether the axes are switched
 		memento.putString(DO_WATERFALL, Boolean.toString(_switchAxes.isChecked()));
