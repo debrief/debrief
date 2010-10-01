@@ -245,6 +245,16 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 	public void setFixedDuration(Duration dur)
 	{
 		_fixedDuration = dur;
+		
+		// right, we've remembered the value, but if the plot is already
+		// set to display fixed duration we need to fire the data to the
+		// plot
+		if(getDisplayFixedDuration())
+		{
+			// yes, we're displaying fixed duration, remind
+			// everybody what's happening
+			setDisplayFixedDuration(true);
+		}
 	}
 	
 	public Duration getFixedDuration()
