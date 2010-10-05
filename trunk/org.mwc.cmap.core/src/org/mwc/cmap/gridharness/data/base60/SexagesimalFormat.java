@@ -31,7 +31,7 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 	public abstract String getNebulaPattern(boolean forLongitudeNotLatitude);
 
 	protected void appendHemisphere(Sexagesimal value, boolean forLongitudeNotLatitude, StringBuffer output) {
-		if (value.getDegrees() < 0) {
+		if (value.getHemi() < 0) {
 			output.append(forLongitudeNotLatitude ? MINUS_LONGITUDE : MINUS_LATITUDE);
 		} else {
 			output.append(forLongitudeNotLatitude ? PLUS_LONGITUDE : PLUS_LATITUDE);
@@ -72,7 +72,5 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 		String res = format(theLat, false) + " " + format(theLong, true);
 		return res;
 	}
-	
-	
-	
+
 }

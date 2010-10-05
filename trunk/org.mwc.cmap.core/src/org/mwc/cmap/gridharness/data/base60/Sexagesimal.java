@@ -8,13 +8,21 @@ public class Sexagesimal {
 	private final double myMinutes;
 
 	private final double mySeconds;
+	
+	private final int myHemi;
 
-	public Sexagesimal(int degrees, double minutes, double seconds) {
+	public Sexagesimal(int degrees, double minutes, double seconds, int hemi) {
 		myDegrees = degrees;
 		myMinutes = minutes;
 		mySeconds = seconds;
+		myHemi = hemi;
 	}
 
+	public int getHemi()
+	{
+		return myHemi;
+	}
+	
 	public double getDegrees() {
 		return myDegrees;
 	}
@@ -28,7 +36,7 @@ public class Sexagesimal {
 	}
 
 	public double getCombinedDegrees() {
-		return SexagesimalSupport.combineToDegrees(getDegrees(), getMinutes(), getSeconds());
+		return SexagesimalSupport.combineToDegrees(getDegrees(), getMinutes(), getSeconds(), getHemi());
 	}
 
 	public String format(SexagesimalFormat format, boolean forLongitudeNotLatitude) {
