@@ -16,8 +16,8 @@ public class CursorTracker extends CoreTracker
 	private static final String POSITION_TOOLTIP = "Mouse position";
 
 	private static final String POSITION_TEMPLATE = " 00"
-			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.00\"N 000"
-			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.00\"W ";
+			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.000\"N 000"
+			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.000\"W ";
 
 	/**
 	 * single instance of cursor tracker.
