@@ -469,8 +469,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 	}
 
 	public final String toString()
-	{
-		return "Annotation:" + _theLabel.getString();
+	{		
+		return _theShape.getName() + ":" + _theLabel.getString();
 	}
 
 	public final String getName()

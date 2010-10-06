@@ -86,112 +86,119 @@ import java.util.*;
 import MWC.GenericData.*;
 import MWC.Algorithms.*;
 
-/** class to parse a label from a line of text
+/**
+ * class to parse a label from a line of text
  */
 final class ImportEllipse implements PlainLineImporter
 {
 
-  /** the type for this string
-   */
-  private final String _myType = ";ELLIPSE:";
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";ELLIPSE:";
 
-  /** read in this string and return a Label
-   */
-  public final Object readThisLine(String theLine){
+	/**
+	 * read in this string and return a Label
+	 */
+	public final Object readThisLine(String theLine)
+	{
 
-    // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+		// get a stream from the string
+		StringTokenizer st = new StringTokenizer(theLine);
 
-    // declare local variables
-    WorldLocation theLoc;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    double maxima, minima, orient;
-    String theText;
-    String theSymbology;
-		HiResDate theDate= null;
+		// declare local variables
+		WorldLocation theLoc;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		double maxima, minima, orient;
+		String theText;
+		String theSymbology;
+		HiResDate theDate = null;
 
-    // skip the comment identifier
-    st.nextToken();
+		// skip the comment identifier
+		st.nextToken();
 
 		// start with the symbology
-    theSymbology = st.nextToken();
+		theSymbology = st.nextToken();
 
-    // now the date
-    String dateStr=null;
+		// now the date
+		String dateStr = null;
 
-    // get date
-    dateStr = st.nextToken();
+		// get date
+		dateStr = st.nextToken();
 
 		// now get the time, and add it to the date
 		dateStr = dateStr + " " + st.nextToken();
 
-    // produce a date from this data
+		// produce a date from this data
 		theDate = DebriefFormatDateTime.parseThis(dateStr);
 
-    // now the location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken());
+		// now the location
+		latDeg = Double.valueOf(st.nextToken());
+		latMin = Double.valueOf(st.nextToken());
+		latSec = Double.valueOf(st.nextToken());
 
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken());
-    longHem = st.nextToken().charAt(0);
+		/**
+		 * now, we may have trouble here, since there may not be a space between the
+		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+		 */
+		String vDiff = st.nextToken();
+		if (vDiff.length() > 3)
+		{
+			// hmm, they are combined
+			latHem = vDiff.charAt(0);
+			String secondPart = vDiff.substring(1, vDiff.length());
+			longDeg = Double.valueOf(secondPart);
+		}
+		else
+		{
+			// they are separate, so only the hem is in this one
+			latHem = vDiff.charAt(0);
+			longDeg = Double.valueOf(st.nextToken());
+		}
+		longMin = Double.valueOf(st.nextToken());
+		longSec = Double.valueOf(st.nextToken());
+		longHem = st.nextToken().charAt(0);
 
-    // now the radius of the circle
-    orient = Double.valueOf(st.nextToken()).doubleValue();
-    maxima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
-    minima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
+		// now the radius of the circle
+		orient = Double.valueOf(st.nextToken()).doubleValue();
+		maxima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
+		minima = Conversions.Yds2Degs(Double.valueOf(st.nextToken()).doubleValue());
 
-    // and now read in the message
-    theText = st.nextToken("\r").trim();
+		// and now read in the message
+		theText = st.nextToken("\r").trim();
 
-    // create the tactical data
-    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-                               longDeg, longMin, longSec, longHem,
-                               0);
+		// create the tactical data
+		theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+				longMin, longSec, longHem, 0);
 
-    // create the circle object
-    PlainShape sp = new EllipseShape(theLoc, orient, maxima, minima);
-    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+		// create the circle object
+		PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
+				WorldDistance.DEGS), new WorldDistance(minima, WorldDistance.DEGS));
+		sp.setColor(ImportReplay.replayColorFor(theSymbology));
 
-    // and put it into a shape
-    ShapeWrapper sw = new ShapeWrapper(theText,
-                                       sp,
-                                       ImportReplay.replayColorFor(theSymbology),
-																			 theDate);
+		// and put it into a shape
+		ShapeWrapper sw = new ShapeWrapper(theText, sp, ImportReplay
+				.replayColorFor(theSymbology), theDate);
 
-    return sw;
-  }
+		return sw;
+	}
 
-  /** determine the identifier returning this type of annotation
-   */
-  public final String getYourType(){
-    return _myType;
-  }
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	public final String getYourType()
+	{
+		return _myType;
+	}
 
-	/** export the specified shape as a string
+	/**
+	 * export the specified shape as a string
+	 * 
 	 * @return the shape in String form
-	 * @param theWrapper the Shape we are exporting
+	 * @param theWrapper
+	 *          the Shape we are exporting
 	 */
 	public final String exportThis(MWC.GUI.Plottable theWrapper)
 	{
@@ -213,16 +220,18 @@ final class ImportEllipse implements PlainLineImporter
 
 		line = line + " " + ImportReplay.formatThis(tmpDate);
 
-
-
-
-		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(ellipse.getCentre());
+		line = line
+				+ " "
+				+ MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(ellipse
+						.getCentre());
 
 		line = line + " " + ellipse.getOrientation();
 
-		line = line + " " + (long)(ellipse.getMaxima().getValueIn(WorldDistance.YARDS));
+		line = line + " "
+				+ (long) (ellipse.getMaxima().getValueIn(WorldDistance.YARDS));
 
-		line = line + " " + (long)(ellipse.getMinima().getValueIn(WorldDistance.YARDS));
+		line = line + " "
+				+ (long) (ellipse.getMinima().getValueIn(WorldDistance.YARDS));
 
 		line = line + " " + theShape.getLabel();
 
@@ -230,17 +239,18 @@ final class ImportEllipse implements PlainLineImporter
 
 	}
 
-
-
-	/** indicate if you can export this type of object
-	 * @param val the object to test
+	/**
+	 * indicate if you can export this type of object
+	 * 
+	 * @param val
+	 *          the object to test
 	 * @return boolean saying whether you can do it
 	 */
 	public final boolean canExportThis(Object val)
 	{
 		boolean res = false;
 
-		if(val instanceof ShapeWrapper)
+		if (val instanceof ShapeWrapper)
 		{
 			ShapeWrapper sw = (ShapeWrapper) val;
 			PlainShape ps = sw.getShape();
@@ -252,4 +262,3 @@ final class ImportEllipse implements PlainLineImporter
 	}
 
 }
-

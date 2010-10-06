@@ -300,7 +300,8 @@ public final class TMAWrapper extends TacticalDataWrapper
 		TMAContactWrapper _next = (TMAContactWrapper) next;
 		TMAContactWrapper _last = (TMAContactWrapper) last;
 
-		double courseDegs = MWC.Algorithms.Conversions.Rads2Degs(interp.interp(_last.getCourse(), _next.getCourse()));
+		double courseDegs = MWC.Algorithms.Conversions.Rads2Degs(interp.interp(
+				_last.getCourse(), _next.getCourse()));
 		double speedKts = interp.interp(_last.getSpeed(), _next.getSpeed());
 		double depthM = interp.interp(_last.getDepth(), _next.getDepth());
 
@@ -311,7 +312,9 @@ public final class TMAWrapper extends TacticalDataWrapper
 		double orient = interp.interp(_last.getOrientation(), _next
 				.getOrientation());
 
-		EllipseShape theEllipse = new EllipseShape(null, orient, maxima, minima);
+		EllipseShape theEllipse = new EllipseShape(null, orient, new WorldDistance(
+				maxima, WorldDistance.DEGS), new WorldDistance(minima,
+				WorldDistance.DEGS));
 
 		// do we have an origin?
 		WorldLocation origin = null;

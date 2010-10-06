@@ -306,6 +306,7 @@ import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor;
 import MWC.GUI.Tools.Operations.ShowVideo;
 import MWC.GUI.Tools.Palette.*;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldVector;
@@ -315,553 +316,542 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * a screen layout which represents screen panes necessary
- * for analysis
+ * a screen layout which represents screen panes necessary for analysis
  */
-abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop.FileDropSupport.FileDropListener
+abstract public class AnalysisView extends PlainView implements
+		MWC.GUI.DragDrop.FileDropSupport.FileDropListener
 {
 
-
-  ///////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////
-
-  private final Vector<MenuItemInfo> _theTools;
-  PlainChart _theChart;
-  private AnalysisTote _theTote;
-  private Toolbar _theToolbar;
-  private PropertiesPanel _theProperties;
-  private StatusBar _theStatusBar;
-  /**
-   * store the parent session
-   */
-  protected Session _theSession;
-
-  /**
-   * support for drag/drop of files onto this view
-   */
-  final transient protected MWC.GUI.DragDrop.FileDropSupport _dropSupport = new MWC.GUI.DragDrop.FileDropSupport();
-
-  /**
-   * the cut/copy adaptor.  we keep a handle to this so that we can explicitly clear it when we close
-   * - this is to overcome an UndoBuffer memory leak
-   */
-  private MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor _rightClicker;
-
-  /**
-   * the tote editor adaptor.  we keep a handle to this so that we can explicitly clear it when we close
-   * - this is to overcome an UndoBuffer memory leak
-   */
-  private Debrief.GUI.Tote.RightClickEditToteAdaptor _toteAdapter;
-
-
-  ///////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////
-  /**
-   * constructor for this class
-   *
-   * @param theParent  a parent class which will show busy cursors
-   * @param theSession the session which contains the data for this view
-   */
-  public AnalysisView(final ToolParent theParent, final Session theSession)
-  {
-    super("Analysis View", theParent);
-    _theTools = new Vector<MenuItemInfo>(0, 1);
-    _theSession = theSession;
-
-    /** note, we don't register an interest with the data for our parent session,
-     *  we leave that to the actual panes we contain
-     */
-    _dropSupport.setFileDropListener(this, ".REP,.XML,.DSF,.DTF");
-
-  }
-
-  ///////////////////////////////////////////////
-  // member functions
-  ///////////////////////////////////////////////
-
-  /**
-   * member method to create a toolbar button for this tool, it is intended
-   * that this class be overridden within more able GUI environments
-   * (in Swing we should have a tabbed interface)
-   *
-   * @param item the description of this tool
-   */
-  protected void addThisTool(final MenuItemInfo item)
-  {
-    // see if this is an action button, or it toggles as part of a group
-    if (item.getToggleGroup() == null)
-    {
-      _theToolbar.addTool(item.getTool(),
-                          item.getShortCut(),
-                          item.getMnemonic());
-    }
-    else
-    {
-      _theToolbar.addToggleTool(item.getMenuName(),
-                                item.getTool(),
-                                item.getShortCut(),
-                                item.getMnemonic());
-    }
-  }
-
-  /**
-   * <code>buildTheInterface</code> puts the bits together
-   */
-  protected final void buildTheInterface()
-  {
-
-
-    // we've had to do this here, so that we know we've foudn the chart
-    addTools();
-
-    // retrieve the tools for this interface
-    final Enumeration<MenuItemInfo> iter = getTools();
-
-
-    while (iter.hasMoreElements())
-    {
-      final MenuItemInfo thisItem = iter.nextElement();
-
-      addThisTool(thisItem);
-    }
-
-    // setup our double-click editor
-    // and add our dbl click listener
-    getChart().addCursorDblClickedListener(new DblClickEdit(getProperties()));
-
-    // create our right click editor, and add it's helpers
-    final RightClickEdit rc = new RightClickEdit(getProperties());
-    rc.addMenuCreator(new MWC.Algorithms.Editors.ProjectionEditPopupMenuAdaptor());
-    rc.addMenuCreator(new MWC.GUI.LayerManager.EditLayersPopupMenuAdaptor());
-    rc.addMenuCreator(new MWC.GUI.Canvas.EditCanvasPopupMenuAdaptor(getChart().getCanvas()));
-
-    _toteAdapter = new Debrief.GUI.Tote.RightClickEditToteAdaptor(_theTote);
-    rc.addPlottableMenuCreator(_toteAdapter, _theProperties);
-
-    // keep local reference to the right-clicker, to overcome a memory leak
-    _rightClicker = new RightClickCutCopyAdaptor(_theSession.getClipboard(),
-                                                 _theSession.getUndoBuffer());
-    rc.addPlottableMenuCreator(_rightClicker,
-                               _theProperties);
-    rc.addPlottableMenuCreator(new RightClickPasteAdaptor(_theSession.getClipboard()),
-                               _theProperties);
-
-    // we also want to try to give these properties to the layers object, so that it can be edited
-    // properly by the right-clicking in the Layer Manager
-    _theSession.getData().setEditor(rc);
-
-    // and add our right-click editor
-    getChart().addRightClickListener(rc);
-
-  }
-
-  /**
-   * return the tools we have created
-   */
-  private Enumeration<MenuItemInfo> getTools()
-  {
-    return _theTools.elements();
-  }
-
-  /**
-   * build the list of tools necessary for this type of view
-   */
-  private void addTools()
-  {
-
-    _theTools.addElement(new MenuItemInfo("File", null, "Save", new SavePlotXML(_theParent, _theSession), null, ' '));
-    _theTools.addElement(new MenuItemInfo("File", null, "Save As", new SavePlotAsXML(_theParent, _theSession), null, ' '));
-    _theTools.addElement(new MenuItemInfo("File", null, "Save WMF", new WriteMetafile(_theParent, _theChart, _theSession.getData()), null, ' '));
-    //    _theTools.addElement(new MenuItemInfo(null, "Copy to clipboard", new WriteClipboard(_theParent, _theChart, _theSession.getData()), null, ' '));
-    _theTools.addElement(new MenuItemInfo("File", null, "Import", new ImportData2(_theParent, null, _theSession), null, ' '));
-    _theTools.addElement(new MenuItemInfo("File", null, "Import Range",
-                                          new ImportRangeData(_theParent, _theProperties, _theSession.getData()), null, 'G'));
-
-
-    // NOTE: wrap this next creator, in case we haven't got the right files avaialble
-    try
-    {
-      _theTools.addElement(new MenuItemInfo("File", null, "View in 3d",
-                                            new View3dPlot(_theParent, _theProperties, _theSession.getData(), getTote().getStepper()), null, ' '));
-    }
-    catch (java.lang.NoClassDefFoundError e)
-    {
-      System.err.println("3D Viewer not provided, classes not found");
-    }
-
-    // NOTE: wrap this next creator, in case we haven't got the right files avaialble
-    try
-    {
-      _theTools.addElement(new MenuItemInfo("File", null, "Record to video",
-                                            new ShowVideo(_theParent, _theProperties, _theChart.getPanel()), null, ' '));
-    }
-    catch (java.lang.NoClassDefFoundError e)
-    {
-      System.err.println("Record to video not provided, JMF classes not found");
-      //e.printStackTrace();
-    }
-
-
-    _theTools.addElement(new MenuItemInfo("View", null, "Repaint", new Repaint(_theParent, _theChart), null, 'R'));
-
-    //////////////////////////
-    // second row
-    //////////////////////////
-
-    //    _theTools.addElement(new MenuItemInfo(null, "Print Chart", new PrintChart(_theParent, _theChart), null, 'f'));
-    _theTools.addElement(new MenuItemInfo("View", null, "Fit", new FitToWin(_theParent, _theChart), null, 'f'));
-    _theTools.addElement(new MenuItemInfo("View", "Drag", "Pan", new Pan(_theChart, _theParent, null), null, 'P'));
-    _theTools.addElement(new MenuItemInfo("View", "Drag", "Rng Brg", new RangeBearing(_theChart, _theParent, getStatusBar()), null, 'B'));
-    _theTools.addElement(new MenuItemInfo("View", "Drag", "Zoom", new ZoomIn(_theChart, _theParent), null, 'I'));
-    _theTools.addElement(new MenuItemInfo("View", null, "Zoom Out", new ZoomOut(_theParent, _theChart),
-                                          new java.awt.MenuShortcut(java.awt.event.KeyEvent.VK_SUBTRACT), 'O'));
-
-
-    ////////////////////////////////////////////////////////////
-    // now the decorations
-    ////////////////////////////////////////////////////////////
-    // find the decorations layer
-    final Layer decs = _theSession.getData().findLayer(Layers.CHART_FEATURES);
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create Scale",
-                                          new CreateScale(_theParent, _theProperties,
-                                                          decs,
-                                                          _theSession.getData(),
-                                                          _theChart), null, ' '));
-
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create Grid",
-                                          new CreateGrid(_theParent, _theProperties,
-                                                         decs,
-                                                         _theSession.getData(),
-                                                         _theChart), null, ' '));
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create Local Grid",
-                                          new CreateLocalGrid(_theParent, _theProperties,
-                                                              decs,
-                                                              _theSession.getData(),
-                                                              _theChart), null, ' '));
-
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create Coast",
-                                          new CreateCoast(_theParent, _theProperties,
-                                                          decs,
-                                                          _theSession.getData(),
-                                                          _theChart), null, ' '));
-    // let's not read in the VPF reference layer, since we can't get OpenMap code to read
-    // it in from the jar file.
-    /*  _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                            "Create VPF Coast",
-                                            new CreateVPFCoast(_theParent, _theProperties,
-                                                            decs,
-                                                            _theChart),null, ' ' ));*/
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create VPF Layers",
-                                          new CreateVPFLayers(_theParent, _theProperties,
-                                                              decs,
-                                                              _theSession.getData(),
-                                                              _theChart), null, ' '));
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create ETOPO Bathy",
-                                          new CreateTOPO(_theParent, _theProperties,
-                                                         _theSession.getData(),
-                                                         _theChart), null, ' '));
-    _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-                                          "Create Buoy Pattern",
-                                          new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent, _theProperties,
-                                                                                                   _theSession.getData(),
-                                                                                                   _theChart, "Buoy Pattern", "images/buoy.gif"), null, ' '));
-    ////////////////////////////////////////////////////////////
-    // now the shape creators
-    ////////////////////////////////////////////////////////////
-
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create Label",
-                                          new CreateLabel(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Label", "images/label.gif"), null, ' '));
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create Ellipse",
-                                          new CreateShape(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Ellipse", "images/ellipse.gif")
-                                          {
-                                            protected ShapeWrapper getShape(final WorldLocation centre)
-                                            {
-                                              return new ShapeWrapper("new ellipse",
-                                                                      new EllipseShape(centre, 0, 0, 0),
-                                                                      java.awt.Color.red, null);
-                                            }
-                                          }, null, ' '));
-    // rectangle
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create Rectangle",
-                                          new CreateShape(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Rectangle", "images/rectangle.gif")
-                                          {
-                                            protected ShapeWrapper getShape(final WorldLocation centre)
-                                            {
-                                              return new ShapeWrapper("new rectangle",
-                                                                      new RectangleShape(centre,
-                                                                                         centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45),
-                                                                                                                    0.05, 0))),
-                                                                      java.awt.Color.red, null);
-                                            }
-                                          }, null, ' '));
-
-    // arc
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create arc",
-                                          new CreateShape(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Arc", "images/arc.gif")
-                                          {
-                                            protected ShapeWrapper getShape(final WorldLocation centre)
-                                            {
-                                              return new ShapeWrapper("new arc",
-                                                                      new ArcShape(centre, 4000, 135, 90, true, false),
-                                                                      java.awt.Color.red, null);
-                                            }
-                                          }, null, ' '));    // circle
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create circle",
-                                          new CreateShape(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Circle", "images/circle.gif")
-                                          {
-                                            protected ShapeWrapper getShape(final WorldLocation centre)
-                                            {
-                                              return new ShapeWrapper("new circle",
-                                                                      new CircleShape(centre, 4000),
-                                                                      java.awt.Color.red, null);
-                                            }
-                                          }, null, ' '));
-    // line
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create line",
-                                          new CreateShape(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Line", "images/line.gif")
-                                          {
-                                            protected ShapeWrapper getShape(final WorldLocation centre)
-                                            {
-                                              return new ShapeWrapper("new line",
-                                                                      new LineShape(centre,
-                                                                                    centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
-                                                                                                               0.05, 0))),
-                                                                      java.awt.Color.red, null);
-                                            }
-                                          }, null, ' '));
-
-    // line
-    _theTools.addElement(new MenuItemInfo("Drawing", null,
-                                          "Create polygon",
-                                          new CreateShape(_theParent, _theProperties,
-                                                          _theSession.getData(),
-                                                          _theChart, "Polygon", "images/polygon.gif")
-                                          {
-                                            protected ShapeWrapper getShape(final WorldLocation centre)
-                                            {
-                                              return new ShapeWrapper("new polygon",
-                                                                      new PolygonShape(new WorldPath(new WorldLocation[]{centre})),
-                                                                      java.awt.Color.red, null);
-                                            }
-                                          }, null, ' '));
-
-
-  }
-
-  protected final void setChart(final PlainChart theChart)
-  {
-    _theChart = theChart;
-  }
-
-  protected final void setTote(final AnalysisTote theTote)
-  {
-    _theTote = theTote;
-  }
-
-  protected final void setToolbar(final Toolbar theToolbar)
-  {
-    _theToolbar = theToolbar;
-  }
-
-  public final AnalysisTote getTote()
-  {
-    return _theTote;
-  }
-
-  protected final void setProperties(final PropertiesPanel theProperties)
-  {
-    _theProperties = theProperties;
-  }
-
-  protected final void setStatusBar(final StatusBar theBar)
-  {
-    _theStatusBar = theBar;
-  }
-
-  private StatusBar getStatusBar()
-  {
-    return _theStatusBar;
-  }
-
-  private PropertiesPanel getProperties()
-  {
-    return _theProperties;
-  }
-
-  /**
-   * data has been modified, update panes as necesary
-   */
-  public final void update()
-  {
-    // check they are valid
-    if (_theChart != null)
-      _theChart.update();
-    if (_theTote != null)
-      _theTote.update();
-
-  }
-
-  /**
-   * data has been modified, update panes as necesary
-   */
-  public final void rescale()
-  {
-    // check they are valid
-    if (_theChart != null)
-      _theChart.rescale();
-  }
-
-  public final PlainChart getChart()
-  {
-    return _theChart;
-  }
-
-  /**
-   * get ready to close, set all local
-   * references to null, to assist garbage collection
-   */
-  public void close()
-  {
-    // we'll also try to remove all of the tools
-    final Enumeration<MenuItemInfo> iter = _theTools.elements();
-    while (iter.hasMoreElements())
-    {
-      final MenuItemInfo mn = iter.nextElement();
-      mn.close();
-    }
-
-    // clear the dangling reference to the undo buffer
-    _rightClicker.closeMe();
-    _toteAdapter = null;
-
-    // clear the file drop listener
-    if (_dropSupport != null)
-      _dropSupport.removeComponent(getChart().getPanel());
-
-    _dropSupport.removeFileDropListener(this);
-
-    // now remove references to the tools themselves
-    _theTools.removeAllElements();
-
-    _theChart.close();
-    _theChart = null;
-
-    if (_theTote != null)
-    {
-      _theTote.closeMe();
-      _theTote = null;
-    }
-    if (_theToolbar != null)
-      _theToolbar.close();
-    _theToolbar = null;
-    _theProperties = null;
-    _theStatusBar = null;
-
-    _theSession = null;
-
-
-  }
-
-  protected final void finalize()
-  {
-    try
-    {
-      super.finalize();
-    }
-    catch (Throwable t)
-    {
-      t.printStackTrace();
-    }
-  }
-
-  /**
-   * process this list of file
-   *
-   * @param files the list of files
-   */
-  public final void FilesReceived(final java.util.Vector<File> files)
-  {
-    // get our layers object
-    //   Layers newLayers = new Layers();
-    final Layers newLayers = _theSession.getData();
-
-    _theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
-
-    // set the pointer to the step control which we use when creating narrative objects
-    Debrief.ReaderWriter.Replay.ImportReplay.setStepper(this.getTote().getStepper());
-    Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(this.getTote().getStepper());
-
-    java.io.File[] theFiles = new java.io.File[]{null};
-    theFiles = (java.io.File[]) files.toArray(theFiles);
-
-    // ok, go for it!
-    final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller =
-      new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(theFiles, newLayers)
-      {
-        // handle the completion of each file
-        public void fileFinished(final java.io.File fName, final Layers newData)
-        {
-        }
-
-        // handle completion of the full import process
-        public void allFilesFinished(final java.io.File[] fNames, final Layers newData)
-        {
-          // _theSession.getData().addThis(newData);
-
-          _theSession.getData().fireExtended();
-
-          // clear the pointer to the step control which we use when creating narrative objects
-          Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
-          Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(null);
-
-          // and get the plot to redraw
-
-          // create a deferred event, to run immediately all of this madness is over.
-          // with these events inlined, the plot itself wasn't actaully getting.  Putting
-          // them into invokeLater triggers the refresh after the current processing is complete
-          javax.swing.SwingUtilities.invokeLater(new Runnable()
-          {
-            public void run()
-            {
-              _theChart.rescale();
-              _theChart.update();
-            }
-          });
-
-          // and clear the busy flag
-          _theParent.restoreCursor();
-        }
-      };
-
-    // ok, get going!
-    caller.start();
-
-  }
+	// /////////////////////////////////////////////
+	// member variables
+	// /////////////////////////////////////////////
+
+	private final Vector<MenuItemInfo> _theTools;
+	PlainChart _theChart;
+	private AnalysisTote _theTote;
+	private Toolbar _theToolbar;
+	private PropertiesPanel _theProperties;
+	private StatusBar _theStatusBar;
+	/**
+	 * store the parent session
+	 */
+	protected Session _theSession;
+
+	/**
+	 * support for drag/drop of files onto this view
+	 */
+	final transient protected MWC.GUI.DragDrop.FileDropSupport _dropSupport = new MWC.GUI.DragDrop.FileDropSupport();
+
+	/**
+	 * the cut/copy adaptor. we keep a handle to this so that we can explicitly
+	 * clear it when we close - this is to overcome an UndoBuffer memory leak
+	 */
+	private MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor _rightClicker;
+
+	/**
+	 * the tote editor adaptor. we keep a handle to this so that we can explicitly
+	 * clear it when we close - this is to overcome an UndoBuffer memory leak
+	 */
+	private Debrief.GUI.Tote.RightClickEditToteAdaptor _toteAdapter;
+
+	// /////////////////////////////////////////////
+	// constructor
+	// /////////////////////////////////////////////
+	/**
+	 * constructor for this class
+	 * 
+	 * @param theParent
+	 *          a parent class which will show busy cursors
+	 * @param theSession
+	 *          the session which contains the data for this view
+	 */
+	public AnalysisView(final ToolParent theParent, final Session theSession)
+	{
+		super("Analysis View", theParent);
+		_theTools = new Vector<MenuItemInfo>(0, 1);
+		_theSession = theSession;
+
+		/**
+		 * note, we don't register an interest with the data for our parent session,
+		 * we leave that to the actual panes we contain
+		 */
+		_dropSupport.setFileDropListener(this, ".REP,.XML,.DSF,.DTF");
+
+	}
+
+	// /////////////////////////////////////////////
+	// member functions
+	// /////////////////////////////////////////////
+
+	/**
+	 * member method to create a toolbar button for this tool, it is intended that
+	 * this class be overridden within more able GUI environments (in Swing we
+	 * should have a tabbed interface)
+	 * 
+	 * @param item
+	 *          the description of this tool
+	 */
+	protected void addThisTool(final MenuItemInfo item)
+	{
+		// see if this is an action button, or it toggles as part of a group
+		if (item.getToggleGroup() == null)
+		{
+			_theToolbar.addTool(item.getTool(), item.getShortCut(), item
+					.getMnemonic());
+		}
+		else
+		{
+			_theToolbar.addToggleTool(item.getMenuName(), item.getTool(), item
+					.getShortCut(), item.getMnemonic());
+		}
+	}
+
+	/**
+	 * <code>buildTheInterface</code> puts the bits together
+	 */
+	protected final void buildTheInterface()
+	{
+
+		// we've had to do this here, so that we know we've foudn the chart
+		addTools();
+
+		// retrieve the tools for this interface
+		final Enumeration<MenuItemInfo> iter = getTools();
+
+		while (iter.hasMoreElements())
+		{
+			final MenuItemInfo thisItem = iter.nextElement();
+
+			addThisTool(thisItem);
+		}
+
+		// setup our double-click editor
+		// and add our dbl click listener
+		getChart().addCursorDblClickedListener(new DblClickEdit(getProperties()));
+
+		// create our right click editor, and add it's helpers
+		final RightClickEdit rc = new RightClickEdit(getProperties());
+		rc
+				.addMenuCreator(new MWC.Algorithms.Editors.ProjectionEditPopupMenuAdaptor());
+		rc.addMenuCreator(new MWC.GUI.LayerManager.EditLayersPopupMenuAdaptor());
+		rc.addMenuCreator(new MWC.GUI.Canvas.EditCanvasPopupMenuAdaptor(getChart()
+				.getCanvas()));
+
+		_toteAdapter = new Debrief.GUI.Tote.RightClickEditToteAdaptor(_theTote);
+		rc.addPlottableMenuCreator(_toteAdapter, _theProperties);
+
+		// keep local reference to the right-clicker, to overcome a memory leak
+		_rightClicker = new RightClickCutCopyAdaptor(_theSession.getClipboard(),
+				_theSession.getUndoBuffer());
+		rc.addPlottableMenuCreator(_rightClicker, _theProperties);
+		rc.addPlottableMenuCreator(new RightClickPasteAdaptor(_theSession
+				.getClipboard()), _theProperties);
+
+		// we also want to try to give these properties to the layers object, so
+		// that it can be edited
+		// properly by the right-clicking in the Layer Manager
+		_theSession.getData().setEditor(rc);
+
+		// and add our right-click editor
+		getChart().addRightClickListener(rc);
+
+	}
+
+	/**
+	 * return the tools we have created
+	 */
+	private Enumeration<MenuItemInfo> getTools()
+	{
+		return _theTools.elements();
+	}
+
+	/**
+	 * build the list of tools necessary for this type of view
+	 */
+	private void addTools()
+	{
+
+		_theTools.addElement(new MenuItemInfo("File", null, "Save",
+				new SavePlotXML(_theParent, _theSession), null, ' '));
+		_theTools.addElement(new MenuItemInfo("File", null, "Save As",
+				new SavePlotAsXML(_theParent, _theSession), null, ' '));
+		_theTools.addElement(new MenuItemInfo("File", null, "Save WMF",
+				new WriteMetafile(_theParent, _theChart, _theSession.getData()), null,
+				' '));
+		// _theTools.addElement(new MenuItemInfo(null, "Copy to clipboard", new
+		// WriteClipboard(_theParent, _theChart, _theSession.getData()), null,
+		// ' '));
+		_theTools.addElement(new MenuItemInfo("File", null, "Import",
+				new ImportData2(_theParent, null, _theSession), null, ' '));
+		_theTools.addElement(new MenuItemInfo("File", null, "Import Range",
+				new ImportRangeData(_theParent, _theProperties, _theSession.getData()),
+				null, 'G'));
+
+		// NOTE: wrap this next creator, in case we haven't got the right files
+		// avaialble
+		try
+		{
+			_theTools.addElement(new MenuItemInfo("File", null, "View in 3d",
+					new View3dPlot(_theParent, _theProperties, _theSession.getData(),
+							getTote().getStepper()), null, ' '));
+		}
+		catch (java.lang.NoClassDefFoundError e)
+		{
+			System.err.println("3D Viewer not provided, classes not found");
+		}
+
+		// NOTE: wrap this next creator, in case we haven't got the right files
+		// avaialble
+		try
+		{
+			_theTools.addElement(new MenuItemInfo("File", null, "Record to video",
+					new ShowVideo(_theParent, _theProperties, _theChart.getPanel()),
+					null, ' '));
+		}
+		catch (java.lang.NoClassDefFoundError e)
+		{
+			System.err.println("Record to video not provided, JMF classes not found");
+			// e.printStackTrace();
+		}
+
+		_theTools.addElement(new MenuItemInfo("View", null, "Repaint", new Repaint(
+				_theParent, _theChart), null, 'R'));
+
+		// ////////////////////////
+		// second row
+		// ////////////////////////
+
+		// _theTools.addElement(new MenuItemInfo(null, "Print Chart", new
+		// PrintChart(_theParent, _theChart), null, 'f'));
+		_theTools.addElement(new MenuItemInfo("View", null, "Fit", new FitToWin(
+				_theParent, _theChart), null, 'f'));
+		_theTools.addElement(new MenuItemInfo("View", "Drag", "Pan", new Pan(
+				_theChart, _theParent, null), null, 'P'));
+		_theTools.addElement(new MenuItemInfo("View", "Drag", "Rng Brg",
+				new RangeBearing(_theChart, _theParent, getStatusBar()), null, 'B'));
+		_theTools.addElement(new MenuItemInfo("View", "Drag", "Zoom", new ZoomIn(
+				_theChart, _theParent), null, 'I'));
+		_theTools.addElement(new MenuItemInfo("View", null, "Zoom Out",
+				new ZoomOut(_theParent, _theChart), new java.awt.MenuShortcut(
+						java.awt.event.KeyEvent.VK_SUBTRACT), 'O'));
+
+		// //////////////////////////////////////////////////////////
+		// now the decorations
+		// //////////////////////////////////////////////////////////
+		// find the decorations layer
+		final Layer decs = _theSession.getData().findLayer(Layers.CHART_FEATURES);
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create Scale", new CreateScale(_theParent, _theProperties, decs,
+						_theSession.getData(), _theChart), null, ' '));
+
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create Grid", new CreateGrid(_theParent, _theProperties, decs,
+						_theSession.getData(), _theChart), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create Local Grid", new CreateLocalGrid(_theParent, _theProperties,
+						decs, _theSession.getData(), _theChart), null, ' '));
+
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create Coast", new CreateCoast(_theParent, _theProperties, decs,
+						_theSession.getData(), _theChart), null, ' '));
+		// let's not read in the VPF reference layer, since we can't get OpenMap
+		// code to read
+		// it in from the jar file.
+		/*
+		 * _theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+		 * "Create VPF Coast", new CreateVPFCoast(_theParent, _theProperties, decs,
+		 * _theChart),null, ' ' ));
+		 */
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create VPF Layers", new CreateVPFLayers(_theParent, _theProperties,
+						decs, _theSession.getData(), _theChart), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create ETOPO Bathy", new CreateTOPO(_theParent, _theProperties,
+						_theSession.getData(), _theChart), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
+				"Create Buoy Pattern",
+				new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent,
+						_theProperties, _theSession.getData(), _theChart, "Buoy Pattern",
+						"images/buoy.gif"), null, ' '));
+		// //////////////////////////////////////////////////////////
+		// now the shape creators
+		// //////////////////////////////////////////////////////////
+
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Label",
+				new CreateLabel(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Label", "images/label.gif"), null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
+				new CreateShape(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Ellipse", "images/ellipse.gif")
+				{
+					protected ShapeWrapper getShape(final WorldLocation centre)
+					{
+						return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
+								new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
+										WorldDistance.DEGS)), java.awt.Color.red, null);
+					}
+				}, null, ' '));
+		// rectangle
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle",
+				new CreateShape(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Rectangle", "images/rectangle.gif")
+				{
+					protected ShapeWrapper getShape(final WorldLocation centre)
+					{
+						return new ShapeWrapper("new rectangle", new RectangleShape(centre,
+								centre.add(new WorldVector(MWC.Algorithms.Conversions
+										.Degs2Rads(45), 0.05, 0))), java.awt.Color.red, null);
+					}
+				}, null, ' '));
+
+		// arc
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc",
+				new CreateShape(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Arc", "images/arc.gif")
+				{
+					protected ShapeWrapper getShape(final WorldLocation centre)
+					{
+						return new ShapeWrapper("new arc", new ArcShape(centre,
+								new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
+								false), java.awt.Color.red, null);
+					}
+				}, null, ' ')); // circle
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
+				new CreateShape(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Circle", "images/circle.gif")
+				{
+					protected ShapeWrapper getShape(final WorldLocation centre)
+					{
+						return new ShapeWrapper("new circle",
+								new CircleShape(centre, 4000), java.awt.Color.red, null);
+					}
+				}, null, ' '));
+		// line
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line",
+				new CreateShape(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Line", "images/line.gif")
+				{
+					protected ShapeWrapper getShape(final WorldLocation centre)
+					{
+						return new ShapeWrapper("new line", new LineShape(centre, centre
+								.add(new WorldVector(
+										MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
+								java.awt.Color.red, null);
+					}
+				}, null, ' '));
+
+		// line
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon",
+				new CreateShape(_theParent, _theProperties, _theSession.getData(),
+						_theChart, "Polygon", "images/polygon.gif")
+				{
+					protected ShapeWrapper getShape(final WorldLocation centre)
+					{
+						return new ShapeWrapper("new polygon", new PolygonShape(
+								new WorldPath(new WorldLocation[]
+								{ centre })), java.awt.Color.red, null);
+					}
+				}, null, ' '));
+
+	}
+
+	protected final void setChart(final PlainChart theChart)
+	{
+		_theChart = theChart;
+	}
+
+	protected final void setTote(final AnalysisTote theTote)
+	{
+		_theTote = theTote;
+	}
+
+	protected final void setToolbar(final Toolbar theToolbar)
+	{
+		_theToolbar = theToolbar;
+	}
+
+	public final AnalysisTote getTote()
+	{
+		return _theTote;
+	}
+
+	protected final void setProperties(final PropertiesPanel theProperties)
+	{
+		_theProperties = theProperties;
+	}
+
+	protected final void setStatusBar(final StatusBar theBar)
+	{
+		_theStatusBar = theBar;
+	}
+
+	private StatusBar getStatusBar()
+	{
+		return _theStatusBar;
+	}
+
+	private PropertiesPanel getProperties()
+	{
+		return _theProperties;
+	}
+
+	/**
+	 * data has been modified, update panes as necesary
+	 */
+	public final void update()
+	{
+		// check they are valid
+		if (_theChart != null)
+			_theChart.update();
+		if (_theTote != null)
+			_theTote.update();
+
+	}
+
+	/**
+	 * data has been modified, update panes as necesary
+	 */
+	public final void rescale()
+	{
+		// check they are valid
+		if (_theChart != null)
+			_theChart.rescale();
+	}
+
+	public final PlainChart getChart()
+	{
+		return _theChart;
+	}
+
+	/**
+	 * get ready to close, set all local references to null, to assist garbage
+	 * collection
+	 */
+	public void close()
+	{
+		// we'll also try to remove all of the tools
+		final Enumeration<MenuItemInfo> iter = _theTools.elements();
+		while (iter.hasMoreElements())
+		{
+			final MenuItemInfo mn = iter.nextElement();
+			mn.close();
+		}
+
+		// clear the dangling reference to the undo buffer
+		_rightClicker.closeMe();
+		_toteAdapter = null;
+
+		// clear the file drop listener
+		if (_dropSupport != null)
+			_dropSupport.removeComponent(getChart().getPanel());
+
+		_dropSupport.removeFileDropListener(this);
+
+		// now remove references to the tools themselves
+		_theTools.removeAllElements();
+
+		_theChart.close();
+		_theChart = null;
+
+		if (_theTote != null)
+		{
+			_theTote.closeMe();
+			_theTote = null;
+		}
+		if (_theToolbar != null)
+			_theToolbar.close();
+		_theToolbar = null;
+		_theProperties = null;
+		_theStatusBar = null;
+
+		_theSession = null;
+
+	}
+
+	protected final void finalize()
+	{
+		try
+		{
+			super.finalize();
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace();
+		}
+	}
+
+	/**
+	 * process this list of file
+	 * 
+	 * @param files
+	 *          the list of files
+	 */
+	public final void FilesReceived(final java.util.Vector<File> files)
+	{
+		// get our layers object
+		// Layers newLayers = new Layers();
+		final Layers newLayers = _theSession.getData();
+
+		_theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
+
+		// set the pointer to the step control which we use when creating narrative
+		// objects
+		Debrief.ReaderWriter.Replay.ImportReplay.setStepper(this.getTote()
+				.getStepper());
+		Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(this
+				.getTote().getStepper());
+
+		java.io.File[] theFiles = new java.io.File[]
+		{ null };
+		theFiles = (java.io.File[]) files.toArray(theFiles);
+
+		// ok, go for it!
+		final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+				theFiles, newLayers)
+		{
+			// handle the completion of each file
+			public void fileFinished(final java.io.File fName, final Layers newData)
+			{
+			}
+
+			// handle completion of the full import process
+			public void allFilesFinished(final java.io.File[] fNames,
+					final Layers newData)
+			{
+				// _theSession.getData().addThis(newData);
+
+				_theSession.getData().fireExtended();
+
+				// clear the pointer to the step control which we use when creating
+				// narrative objects
+				Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
+				Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(null);
+
+				// and get the plot to redraw
+
+				// create a deferred event, to run immediately all of this madness is
+				// over.
+				// with these events inlined, the plot itself wasn't actaully getting.
+				// Putting
+				// them into invokeLater triggers the refresh after the current
+				// processing is complete
+				javax.swing.SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						_theChart.rescale();
+						_theChart.update();
+					}
+				});
+
+				// and clear the busy flag
+				_theParent.restoreCursor();
+			}
+		};
+
+		// ok, get going!
+		caller.start();
+
+	}
 
 }

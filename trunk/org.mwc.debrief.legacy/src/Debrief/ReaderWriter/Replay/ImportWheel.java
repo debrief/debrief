@@ -155,7 +155,8 @@ final class ImportWheel implements PlainLineImporter
                                0);
 
     // create the circle object
-    PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius, ImportReplay.replayColorFor(theSymbology));
+    PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius);
+    wh.setColor(ImportReplay.replayColorFor(theSymbology));
 
     // and put it into a shape
     ShapeWrapper sw = new ShapeWrapper(theText,

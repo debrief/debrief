@@ -4,6 +4,7 @@
 package org.mwc.debrief.core.creators.shapes;
 
 import MWC.GUI.Shapes.*;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -22,7 +23,7 @@ public class InsertCircle extends CoreInsertShape
 	protected PlainShape getShape(WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new CircleShape(centre, 4000);
+		PlainShape res = new CircleShape(centre,  new WorldDistance(4000, WorldDistance.YARDS));
 		return res;
 	}	
 	

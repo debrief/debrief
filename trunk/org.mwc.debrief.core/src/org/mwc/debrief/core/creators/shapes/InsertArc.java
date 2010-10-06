@@ -4,6 +4,7 @@
 package org.mwc.debrief.core.creators.shapes;
 
 import MWC.GUI.Shapes.*;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -22,7 +23,7 @@ public class InsertArc extends CoreInsertShape
 	protected PlainShape getShape(WorldLocation centre)
 	{
 		// generate the shape
-		PlainShape res = new ArcShape(centre, 4000, 135, 90, true, false);
+		PlainShape res = new ArcShape(centre, new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true, false);
 		return res;
 	}
 

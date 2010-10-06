@@ -3,6 +3,8 @@ package Debrief.ReaderWriter.XML.Shapes;
 import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.WorldDistance;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -77,8 +79,15 @@ abstract public class ArcHandler extends CircleHandler
 
   public PlainShape getShape()
   {
-    return new ArcShape(super._centre, super._radius * 1000, _centreBearing, _arcWidth, _plotOrigin, _plotSpokes);
-  }
+  	PlainShape res = null;
+  	if(_radiusDist != null)
+  		res = new ArcShape(super._centre, _radiusDist, _centreBearing, _arcWidth, _plotOrigin, _plotSpokes);
+  	else
+  		res = new ArcShape(super._centre, new WorldDistance(super._radius * 1000, WorldDistance.YARDS),
+  				_centreBearing, _arcWidth, _plotOrigin, _plotSpokes);
+	
+    return res;
+    }
 
   // export the circle  specific components
   protected void exportCircleAttributes(Element ePlottable, CircleShape cs, Document doc)

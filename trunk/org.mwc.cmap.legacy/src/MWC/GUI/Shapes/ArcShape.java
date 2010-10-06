@@ -136,6 +136,7 @@ import java.util.Vector;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
@@ -191,6 +192,22 @@ public class ArcShape extends CircleShape
                   boolean plotOrigin,
                   boolean plotSpokes)
   {
+  	this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS), centreBearing, arcWidth, plotOrigin, plotSpokes);
+  } 
+  
+  /**
+   * constructor
+   *
+   * @param theCentre the WorldLocation marking the centre of the circle
+   * @param theRadius the radius of the circle (in yards)
+   */
+  public ArcShape(WorldLocation theCentre,
+                  WorldDistance theRadius,
+                  double centreBearing,
+                  double arcWidth,
+                  boolean plotOrigin,
+                  boolean plotSpokes)
+  {
     super(theCentre, theRadius);
 
     super.setName("Arc");
@@ -221,7 +238,7 @@ public class ArcShape extends CircleShape
       dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
     }
 
-    double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
+    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
     WorldLocation topLeft = new WorldLocation(_theCentre.add(new WorldVector(0, radDegs, 0)));
     topLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), radDegs, 0));
 
@@ -295,7 +312,7 @@ public class ArcShape extends CircleShape
   protected void calcPoints()
   {
     // calc the radius in degrees
-    double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
+    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
 
     // create our area, starting with the centre point
     _theArea = new WorldArea(_theCentre, _theCentre);
@@ -365,7 +382,7 @@ public class ArcShape extends CircleShape
     /** note, the user may also be clicking on the arc itself
      *
      */
-    double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
+    double radDegs =_theRadius.getValueIn(WorldDistance.DEGS);
 
     // first the start
     double res2 = getStartPoint(radDegs).rangeFrom(point);
@@ -514,7 +531,7 @@ public class ArcShape extends CircleShape
     Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // convert the radius to degs
-    double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
+    double radDegs =_theRadius.getValueIn(WorldDistance.DEGS);
 
 
     for (int i = 0; i <= NUM_SEGMENTS1; i++)
@@ -587,7 +604,7 @@ public class ArcShape extends CircleShape
 
     public void testMyParams()
     {
-      Editable ed = new ArcShape(new WorldLocation(2d, 2d, 2d), 2d, 12, 2, true, true);
+      Editable ed = new ArcShape(new WorldLocation(2d, 2d, 2d),new WorldDistance(2d, WorldDistance.YARDS), 12, 2, true, true);
       editableTesterSupport.testParams(ed, this);
       ed = null;
     }

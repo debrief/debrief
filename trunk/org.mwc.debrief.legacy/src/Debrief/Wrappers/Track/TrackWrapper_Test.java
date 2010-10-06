@@ -116,8 +116,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("wrong num entries", 3, infill.size());
 
 	}
-	
-	
+
 	public void testDecimate()
 	{
 		TrackSegment ts1 = new TrackSegment();
@@ -193,36 +192,44 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		SensorWrapper sw = new SensorWrapper("dummy sensor");
 		SensorContactWrapper scw1 = new SensorContactWrapper("the track",
-				new HiResDate(1 * 60000),
-				new WorldDistance(2, WorldDistance.NM), 12, new Double(12), new Double(
-						44), null, Color.red, "aa", 1, "dummy sensor");
+				new HiResDate(1 * 60000), new WorldDistance(2, WorldDistance.NM), 12,
+				new Double(12), new Double(44), null, Color.red, "aa", 1,
+				"dummy sensor");
 		SensorContactWrapper scw2 = new SensorContactWrapper("the track",
-				new HiResDate(3 * 60000),
-				new WorldDistance(4, WorldDistance.NM), 15, new Double(15), new Double(
-						46), null, Color.red, "aa", 1, "dummy sensor");
+				new HiResDate(3 * 60000), new WorldDistance(4, WorldDistance.NM), 15,
+				new Double(15), new Double(46), null, Color.red, "aa", 1,
+				"dummy sensor");
 		SensorContactWrapper scw3 = new SensorContactWrapper("the track",
-				new HiResDate(7 * 60000), new WorldDistance(12,
-						WorldDistance.NM), 18, new Double(12), new Double(12), null,
-				Color.red, "aa", 1, "dummy sensor");
+				new HiResDate(7 * 60000), new WorldDistance(12, WorldDistance.NM), 18,
+				new Double(12), new Double(12), null, Color.red, "aa", 1,
+				"dummy sensor");
 		SensorContactWrapper scw4 = new SensorContactWrapper("the track",
-				new HiResDate(8 * 60000),
-				new WorldDistance(7, WorldDistance.NM), 35, new Double(12), new Double(
-						312), null, Color.red, "aa", 1, "dummy sensor");
+				new HiResDate(8 * 60000), new WorldDistance(7, WorldDistance.NM), 35,
+				new Double(12), new Double(312), null, Color.red, "aa", 1,
+				"dummy sensor");
 		sw.add(scw1);
 		sw.add(scw2);
 		sw.add(scw3);
 		sw.add(scw4);
-		
+
 		TMAWrapper tmw = new TMAWrapper("dummy tma");
-		TMAContactWrapper tc1 = new TMAContactWrapper("sola", "tracla", new HiResDate(2 * 60000), 12d, 14d, 22d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 12, 12, 12), "aa");
-		TMAContactWrapper tc2 = new TMAContactWrapper("sola", "tracla", new HiResDate(7 * 60000), 13d, 22d, 17d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 14, 21, 15), "aa");
-		TMAContactWrapper tc3 = new TMAContactWrapper("sola", "tracla", new HiResDate(9 * 60000), 21d, 23d, 15d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 19, 29, 32), "aa");
-		TMAContactWrapper tc4 = new TMAContactWrapper("sola", "tracla", new HiResDate(16 * 60000), 14d, 14d, 22d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 12, 22, 12), "aa");
-		
-		tmw.add(tc1);		
-		tmw.add(tc2);		
-		tmw.add(tc3);		
-		tmw.add(tc4);		
+		TMAContactWrapper tc1 = new TMAContactWrapper("sola", "tracla",
+				new HiResDate(2 * 60000), 12d, 14d, 22d, 12.2, 0d, Color.red, "bb",
+				new EllipseShape(null, 12, new WorldDistance(12, WorldDistance.DEGS), new WorldDistance(12, WorldDistance.DEGS)), "aa");
+		TMAContactWrapper tc2 = new TMAContactWrapper("sola", "tracla",
+				new HiResDate(7 * 60000), 13d, 22d, 17d, 12.2, 0d, Color.red, "bb",
+				new EllipseShape(null, 14, new WorldDistance(21, WorldDistance.DEGS), new WorldDistance(15, WorldDistance.DEGS)), "aa");
+		TMAContactWrapper tc3 = new TMAContactWrapper("sola", "tracla",
+				new HiResDate(9 * 60000), 21d, 23d, 15d, 12.2, 0d, Color.red, "bb",
+				new EllipseShape(null, 19, new WorldDistance(29, WorldDistance.DEGS), new WorldDistance(32, WorldDistance.DEGS)), "aa");
+		TMAContactWrapper tc4 = new TMAContactWrapper("sola", "tracla",
+				new HiResDate(16 * 60000), 14d, 14d, 22d, 12.2, 0d, Color.red, "bb",
+				new EllipseShape(null, 12, new WorldDistance(22, WorldDistance.DEGS), new WorldDistance(12, WorldDistance.DEGS)), "aa");
+
+		tmw.add(tc1);
+		tmw.add(tc2);
+		tmw.add(tc3);
+		tmw.add(tc4);
 
 		TrackWrapper tw = new TrackWrapper();
 		tw.add(ts1);
@@ -250,7 +257,6 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has all sensor cuts", 17, countCuts(tw.getSensors()));
 		assertEquals("has all tma cuts", 33, countSolutions(tw.getSolutions()));
 
-		
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(4 * 60000));
 
@@ -264,22 +270,22 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private int countSolutions(Enumeration<TMAWrapper> solutions)
 	{
-		if(solutions == null)
+		if (solutions == null)
 			return 0;
-		
-		int counter=0;
-		while(solutions.hasMoreElements())
+
+		int counter = 0;
+		while (solutions.hasMoreElements())
 		{
 			TMAWrapper sw = solutions.nextElement();
 			Enumeration<Editable> ele = sw.elements();
-			while(ele.hasMoreElements())
+			while (ele.hasMoreElements())
 			{
 				counter++;
 				ele.nextElement();
-//				TMAContactWrapper sc = (TMAContactWrapper) ele.nextElement();
-//				System.out.println(" solution time is:" +
-//						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
-//						+ " brg is:" + MWC.Algorithms.Conversions.Rads2Degs(sc.getCourse()));
+				// TMAContactWrapper sc = (TMAContactWrapper) ele.nextElement();
+				// System.out.println(" solution time is:" +
+				// MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
+				// + " brg is:" + MWC.Algorithms.Conversions.Rads2Degs(sc.getCourse()));
 			}
 		}
 		System.out.println("===========");
@@ -288,22 +294,22 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 	private int countCuts(Enumeration<SensorWrapper> sensors)
 	{
-		if(sensors == null)
+		if (sensors == null)
 			return 0;
 
-		int counter=0;
-		while(sensors.hasMoreElements())
+		int counter = 0;
+		while (sensors.hasMoreElements())
 		{
 			SensorWrapper sw = sensors.nextElement();
 			Enumeration<Editable> ele = sw.elements();
-			while(ele.hasMoreElements())
+			while (ele.hasMoreElements())
 			{
 				counter++;
 				ele.nextElement();
-	//			SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
-//				System.out.println("cut time is:" +
-//						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
-//						+ " brg is:" + sc.getBearing());
+				// SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
+				// System.out.println("cut time is:" +
+				// MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
+				// + " brg is:" + sc.getBearing());
 			}
 		}
 		System.out.println("===========");

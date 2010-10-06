@@ -15,6 +15,7 @@ import MWC.GUI.Properties.*;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
 abstract public class WheelHandler extends ShapeHandler implements PlottableExporter
 {
@@ -25,9 +26,8 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 
 	MWC.GenericData.WorldLocation _centre;
 
-	double _inner; // degs
-
-	double _outer; // degs
+	WorldDistance _innerDist;
+	WorldDistance _outerDist;
 
 	Integer _spokeSize = null; // degs
 
@@ -44,13 +44,29 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 			}
 		});
 
+		addHandler(new WorldDistanceHandler(INNER_RADIUS){
+
+			@Override
+			public void setWorldDistance(WorldDistance res)
+			{
+				_innerDist = res;
+			}});
+		addHandler(new WorldDistanceHandler(OUTER_RADIUS){
+
+			@Override
+			public void setWorldDistance(WorldDistance res)
+			{
+				_outerDist = res;
+			}});
+		
 		addAttributeHandler(new HandleAttribute(INNER_RADIUS)
 		{
 			public void setValue(String name, String val)
 			{
 				try
 				{
-					_inner = readThisDouble(val);
+					double _inner = readThisDouble(val);
+					_innerDist = new WorldDistance(_inner, WorldDistance.YARDS);
 				}
 				catch (java.text.ParseException pe)
 				{
@@ -66,7 +82,8 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 			{
 				try
 				{
-					_outer = readThisDouble(val);
+					double _outer = readThisDouble(val);
+					_outerDist = new WorldDistance(_outer, WorldDistance.YARDS);
 				}
 				catch (java.text.ParseException pe)
 				{
@@ -89,14 +106,14 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(String name, Attributes attributes)
 	{
-		_inner = _outer = 0.0;
 		_centre = null;
+		_innerDist = _outerDist = null;
 		super.handleOurselves(name, attributes);
 	}
 
 	public final MWC.GUI.Shapes.PlainShape getShape()
 	{
-		MWC.GUI.Shapes.WheelShape ls = new MWC.GUI.Shapes.WheelShape(_centre, _inner, _outer);
+		MWC.GUI.Shapes.WheelShape ls = new MWC.GUI.Shapes.WheelShape(_centre, _innerDist, _outerDist);
 		if(_spokeSize != null)
 			 ls.setSpokeSize(new SteppingBoundedInteger(_spokeSize.intValue(), 0,10, 1));
 		
@@ -127,6 +144,8 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 			ePlottable.setAttribute("SpokeSize", writeThis(cs.getSpokeSize().getCurrent()));
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCentre(),
 					"centre", ePlottable, doc);
+			WorldDistanceHandler.exportDistance(INNER_RADIUS, cs.getRadiusInner(), ePlottable, doc);
+			WorldDistanceHandler.exportDistance(OUTER_RADIUS, cs.getRadiusOuter(), ePlottable, doc);
 		}
 		else
 		{

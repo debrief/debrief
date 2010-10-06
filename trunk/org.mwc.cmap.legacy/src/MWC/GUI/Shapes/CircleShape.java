@@ -162,7 +162,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   /**
    * the radius of this circle (in yards)
    */
-  protected double _theRadius;
+  protected WorldDistance _theRadius;
 
   /**
    * our editor
@@ -186,6 +186,17 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    */
   public CircleShape(WorldLocation theCentre, double theRadius)
   {
+  	this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS));
+  }
+  
+  /**
+   * constructor
+   *
+   * @param theCentre the WorldLocation marking the centre of the circle
+   * @param theRadius the radius of the circle (in yards)
+   */
+  public CircleShape(WorldLocation theCentre, WorldDistance theRadius)
+  {
     super(0, 1, "Circle");
 
     // store the values
@@ -194,6 +205,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
 
     // now represented our circle as an area
     calcPoints();
+  	
   }
 
   //  public CircleShape(){
@@ -251,8 +263,8 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
   protected void calcPoints()
   {
     // calc the radius in degrees
-    double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
-
+    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
+    
     // create our area
     _theArea = new WorldArea(_theCentre, _theCentre);
 
@@ -301,7 +313,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
      * check using the difference between the range from the
      * centre of the circle and the radius of the circle
      */
-    double res2 = Math.abs(MWC.Algorithms.Conversions.Yds2Degs(_theRadius) - res);
+    double res2 = Math.abs(_theRadius.getValueIn(WorldDistance.DEGS) - res);
 
     return Math.min(res, res2);
   }
@@ -313,7 +325,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    */
   public WorldDistance getRadius()
   {
-    return new WorldDistance(_theRadius, WorldDistance.YARDS);
+    return _theRadius;
   }
 
   /**
@@ -357,7 +369,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
    */
   public void setRadius(WorldDistance val)
   {
-    _theRadius = val.getValueIn(WorldDistance.YARDS);
+    _theRadius = val;
     
     // and calc the new summary data
     calcPoints();
@@ -401,8 +413,7 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
     Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // convert the radius to degs
-    double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
-
+    double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
 
     for (int i = 0; i <= NUM_SEGMENTS; i++)
     {
@@ -482,7 +493,8 @@ public class CircleShape extends PlainShape implements Editable, HasDraggableCom
 		WorldDistance sep = new WorldDistance(vec);
 		
 		// ahh, now subtract the radius from this separation
-		WorldDistance newSep = new WorldDistance(Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theRadius), WorldDistance.YARDS);
+		WorldDistance newSep = new WorldDistance(Math.abs(sep.getValueIn(WorldDistance.YARDS) - 
+				this._theRadius.getValueIn(WorldDistance.YARDS)), WorldDistance.YARDS);
 		
 		// now we have to wrap this operation in a made-up location
 		WorldLocation dragCentre = new WorldLocation(cursorLoc){

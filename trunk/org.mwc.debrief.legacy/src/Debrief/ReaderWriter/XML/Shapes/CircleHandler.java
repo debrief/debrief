@@ -12,6 +12,8 @@ package Debrief.ReaderWriter.XML.Shapes;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
+
 import org.xml.sax.Attributes;
 
 
@@ -21,6 +23,7 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
   protected MWC.GenericData.WorldLocation _centre;
   protected double _radius;     // in kiloyards
   protected Boolean _filled;
+	protected WorldDistance _radiusDist = null;
   private static final String MY_TYPE = "circle";
   private static final String CENTRE = "centre";
   private static final String RADIUS = "Radius";
@@ -45,6 +48,16 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
         _centre = res;
       }
     });
+    
+    addHandler(new WorldDistanceHandler(RADIUS)
+		{
+			
+			@Override
+			public void setWorldDistance(WorldDistance res)
+			{
+				_radiusDist  = res;
+			}
+		});
 
     addAttributeHandler(new HandleAttribute(RADIUS)
     {
@@ -79,13 +92,21 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
     _radius = 0.0;
     _centre = null;
     _filled = null;
+    _radiusDist = null;
     super.handleOurselves(name, attributes);
   }
 
 
   public MWC.GUI.Shapes.PlainShape getShape()
   {
-    MWC.GUI.Shapes.CircleShape ls = new MWC.GUI.Shapes.CircleShape(_centre, _radius * 1000);
+    MWC.GUI.Shapes.CircleShape ls = null;
+    if(_radiusDist != null)
+    {
+    	ls = new MWC.GUI.Shapes.CircleShape(_centre, _radiusDist);
+    }
+    else
+    	ls = new MWC.GUI.Shapes.CircleShape(_centre, new WorldDistance(_radius * 1000, WorldDistance.YARDS));
+    
     if (_filled != null)
       ls.setFilled(_filled.booleanValue());
 
@@ -116,9 +137,9 @@ abstract public class CircleHandler extends ShapeHandler implements PlottableExp
   protected void exportCircleAttributes(org.w3c.dom.Element ePlottable, MWC.GUI.Shapes.CircleShape cs,
                                         org.w3c.dom.Document doc)
   {
-    ePlottable.setAttribute(RADIUS, writeThis(cs.getRadius().getValueIn(WorldDistance.YARDS) / 1000d));
     ePlottable.setAttribute(FILLED, writeThis(cs.getFilled()));
     LocationHandler.exportLocation(cs.getCentre(), CENTRE, ePlottable, doc);
+    WorldDistanceHandler.exportDistance(RADIUS, cs.getRadius(), ePlottable, doc);
   }
 
 }

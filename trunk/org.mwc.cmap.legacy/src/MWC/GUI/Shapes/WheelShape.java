@@ -128,12 +128,12 @@ public class WheelShape extends PlainShape implements Editable
   /**
    * the outer radius of the wheel (in degs)
    */
-  private double _theOuterRadius;
+  private WorldDistance _theOuterRadius;
 
   /**
    * the inner radius of the  wheel (in degs)
    */
-  private double _theInnerRadius;
+  private WorldDistance _theInnerRadius;
 
 
   /**
@@ -155,25 +155,32 @@ public class WheelShape extends PlainShape implements Editable
    * Normal constructor for object
    *
    * @param theCentre      the centre of the wheel
-   * @param theInnerRadius the inner radius of the wheel, in degs
-   * @param theOuterRadius the outer radius of the wheel, in degs
+   * @param theInnerRadius the inner radius of the wheel, in yds
+   * @param theOuterRadius the outer radius of the wheel, in yds
    * @param theColor       the colour to plot the wheel
    */
-  public WheelShape(WorldLocation theCentre, double theInnerRadius, double theOuterRadius, java.awt.Color theColor)
+  public WheelShape(WorldLocation theCentre, double theInnerRadius, double theOuterRadius)
   {
-    this(theCentre, theInnerRadius, theOuterRadius);
-
-    super.setColor(theColor);
+  	this(theCentre, new WorldDistance(theInnerRadius, WorldDistance.YARDS),
+  			new WorldDistance(theOuterRadius, WorldDistance.YARDS));
   }
 
-  public WheelShape(WorldLocation theCentre, double theInnerRadius, double theOuterRadius)
+  /**
+   * Normal constructor for object
+   *
+   * @param theCentre      the centre of the wheel
+   * @param theInnerRadius the inner radius of the wheel, in yds
+   * @param theOuterRadius the outer radius of the wheel, in yds
+   * @param theColor       the colour to plot the wheel
+   */
+  public WheelShape(WorldLocation theCentre, WorldDistance theInnerRadius, WorldDistance theOuterRadius)
   {
     super(0, 1, "Wheel");
 
     // store the values
     _theCentre = theCentre;
-    _theInnerRadius = MWC.Algorithms.Conversions.Yds2Degs(theInnerRadius);
-    _theOuterRadius = MWC.Algorithms.Conversions.Yds2Degs(theOuterRadius);
+    _theInnerRadius = theInnerRadius;
+    _theOuterRadius = theOuterRadius;
 
     // store the corners of the area,
     calcPoints();
@@ -217,8 +224,8 @@ public class WheelShape extends PlainShape implements Editable
     Point centre = new Point(_proj.toScreen(_theCentre));
 
     // sort out the range in screen coords
-    WorldLocation outerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0), _theOuterRadius, 0));
-    WorldLocation innerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0), _theInnerRadius, 0));
+    WorldLocation outerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
+    WorldLocation innerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0), _theInnerRadius.getValueIn(WorldDistance.DEGS), 0));
     Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
     Point screenInnerEdge = new Point(_proj.toScreen(innerEdge));
     int dx = screenOuterEdge.x - centre.x;
@@ -308,13 +315,13 @@ public class WheelShape extends PlainShape implements Editable
     _theArea = new WorldArea(_theCentre, _theCentre);
 
     // create & extend to top left
-    WorldLocation other = _theCentre.add(new WorldVector(0, _theOuterRadius, 0));
-    other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), _theOuterRadius, 0));
+    WorldLocation other = _theCentre.add(new WorldVector(0, _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
+    other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
     _theArea.extend(other);
 
     // create & extend to bottom right
-    other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), _theOuterRadius, 0));
-    other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), _theOuterRadius, 0));
+    other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
+    other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
     _theArea.extend(other);
   }
 
@@ -370,7 +377,7 @@ public class WheelShape extends PlainShape implements Editable
    */
   public WorldDistance getRadiusInner()
   {
-    return new WorldDistance(_theInnerRadius, WorldDistance.DEGS);
+  return  _theInnerRadius;
   }
 
   /**
@@ -380,7 +387,7 @@ public class WheelShape extends PlainShape implements Editable
    */
   public WorldDistance getRadiusOuter()
   {
-    return new WorldDistance(_theOuterRadius, WorldDistance.DEGS);
+    return _theOuterRadius;
   }
 
   /**
@@ -390,7 +397,7 @@ public class WheelShape extends PlainShape implements Editable
    */
   public void setRadiusInner(WorldDistance val)
   {
-    _theInnerRadius = val.getValueIn(WorldDistance.DEGS);
+    _theInnerRadius = val;
     // and calc the new summary data
     calcPoints();
     
@@ -406,7 +413,7 @@ public class WheelShape extends PlainShape implements Editable
    */
   public void setRadiusOuter(WorldDistance val)
   {
-    _theOuterRadius = val.getValueIn(WorldDistance.DEGS);
+    _theOuterRadius = val;
     
     // and calc the new summary data
     calcPoints();

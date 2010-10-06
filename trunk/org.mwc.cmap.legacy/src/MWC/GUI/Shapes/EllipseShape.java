@@ -167,12 +167,12 @@ public class EllipseShape extends PlainShape implements Editable
   /**
    * the maxima of this Ellipse (in degs)
    */
-  private double _theMaxima;
+  private WorldDistance _theMaxima;
 
   /**
    * the minima of this Ellipse (in degs)
    */
-  private double _theMinima;
+  private WorldDistance _theMinima;
 
   /**
    * the series of world locations which represent this ellipse
@@ -192,7 +192,7 @@ public class EllipseShape extends PlainShape implements Editable
   //////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
-
+ 
   /**
    * constructor
    *
@@ -203,8 +203,8 @@ public class EllipseShape extends PlainShape implements Editable
    */
   public EllipseShape(WorldLocation theCentre,
                       double theOrient,
-                      double theMaxima,
-                      double theMinima)
+                      WorldDistance theMaxima,
+                      WorldDistance theMinima)
   {
     super(0, 1, "Ellipse");
 
@@ -289,8 +289,8 @@ public class EllipseShape extends PlainShape implements Editable
 
 
       // first produce a standard ellipse of the correct size
-      double x1 = Math.sin(this_brg) * _theMaxima;
-      double y1 = Math.cos(this_brg) * _theMinima;
+      double x1 = Math.sin(this_brg) * _theMaxima.getValueIn(WorldDistance.DEGS);
+      double y1 = Math.cos(this_brg) * _theMinima.getValueIn(WorldDistance.DEGS);
 
       // now produce the range out to the edge of the ellipse at
       // this point
@@ -328,7 +328,7 @@ public class EllipseShape extends PlainShape implements Editable
     // create our area
     _theArea = new WorldArea(_theCentre, _theCentre);
 
-    double dist = Math.max(_theMaxima, _theMinima);
+    double dist = Math.max(_theMaxima.getValueIn(WorldDistance.DEGS), _theMinima.getValueIn(WorldDistance.DEGS));
 
     // create & extend to top left
     WorldLocation other = _theCentre.add(new WorldVector(0, dist, 0));
@@ -384,8 +384,8 @@ public class EllipseShape extends PlainShape implements Editable
           double this_brg = (360.0 / NUM_SEGMENTS_TEST * i) / 180.0 * Math.PI;
 
           // first produce a standard ellipse of the correct size
-          double x1 = Math.sin(this_brg) * _theMaxima;
-          double y1 = Math.cos(this_brg) * _theMinima;
+          double x1 = Math.sin(this_brg) * _theMaxima.getValueIn(WorldDistance.DEGS);
+          double y1 = Math.cos(this_brg) * _theMinima.getValueIn(WorldDistance.DEGS);
 
           // now produce the range out to the edge of the ellipse at
           // this point
@@ -447,7 +447,7 @@ public class EllipseShape extends PlainShape implements Editable
    */
   public WorldDistance getMinima()
   {
-    return new WorldDistance(_theMinima, WorldDistance.DEGS);
+    return _theMinima;
   }
 
   /**
@@ -458,7 +458,7 @@ public class EllipseShape extends PlainShape implements Editable
   public WorldDistance getMaxima()
   {
     // convert to yards
-    return new WorldDistance(_theMaxima, WorldDistance.DEGS);
+    return _theMaxima;
   }
 
   /**
@@ -482,7 +482,7 @@ public class EllipseShape extends PlainShape implements Editable
       return;
 
     // convert to yarda
-    _theMinima = val.getValueIn(WorldDistance.DEGS);
+    _theMinima = val;
 
     // and calc the new summary data
     calcPoints();
@@ -502,7 +502,7 @@ public class EllipseShape extends PlainShape implements Editable
       return;
 
     // convert to yards
-    _theMaxima = val.getValueIn(WorldDistance.DEGS);
+    _theMaxima = val;
 
     // and calc the new summary data
     calcPoints();
@@ -619,7 +619,7 @@ public class EllipseShape extends PlainShape implements Editable
 
     public void testMyParams()
     {
-      MWC.GUI.Editable ed = new EllipseShape(new WorldLocation(2d, 2d, 2d), 12d, 12d, 12d);
+      MWC.GUI.Editable ed = new EllipseShape(new WorldLocation(2d, 2d, 2d), 12d, new WorldDistance(12d, WorldDistance.DEGS),new WorldDistance( 12d, WorldDistance.DEGS));
       MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
       ed = null;
     }

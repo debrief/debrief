@@ -28,7 +28,6 @@
 // Initial revision
 //
 
-
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
@@ -46,291 +45,308 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  */
 public final class ImportTMA_Pos implements PlainLineImporter
 {
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";TMA_POS:";
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";TMA_POS:";
 
-  /**
-   * read in this string and return a Label
-   */
-  public final Object readThisLine(String theLine)
-  {
+	/**
+	 * read in this string and return a Label
+	 */
+	public final Object readThisLine(String theLine)
+	{
 
-    // ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx
-    // ;; date, time, ownship name, symbology, tma lat, tma long, track name, ellipse orientation (deg from north),  maxima (yds), minima (yds), course, speed, depth (m), label string
+		// ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
+		// TT...TT OOO.O XXXX YYYY CCC SSS DDD xx.xx
+		// ;; date, time, ownship name, symbology, tma lat, tma long, track name,
+		// ellipse orientation (deg from north), maxima (yds), minima (yds), course,
+		// speed, depth (m), label string
 
-    // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+		// get a stream from the string
+		StringTokenizer st = new StringTokenizer(theLine);
 
-    // declare local variables
-    String theLabel;
-    String theSymbology;
-    String vesselName;
-    String solutionName;
-    String dateStr;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    HiResDate theDtg = null;
-    double course, speed, depth;
-    double orientation, maxima, minima;
-    WorldLocation origin = null;
-    EllipseShape theEllipse = null;
-    Color theColor;
+		// declare local variables
+		String theLabel;
+		String theSymbology;
+		String vesselName;
+		String solutionName;
+		String dateStr;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		HiResDate theDtg = null;
+		double course, speed, depth;
+		double orientation, maxima, minima;
+		WorldLocation origin = null;
+		EllipseShape theEllipse = null;
+		Color theColor;
 
-    // skip the comment identifier
-    st.nextToken();
+		// skip the comment identifier
+		st.nextToken();
 
-    // now the dtg
-    dateStr = st.nextToken();
+		// now the dtg
+		dateStr = st.nextToken();
 
-    // append the time
-    dateStr = dateStr + " " + st.nextToken();
+		// append the time
+		dateStr = dateStr + " " + st.nextToken();
 
-    // and extract the date
-    theDtg = DebriefFormatDateTime.parseThis(dateStr);
+		// and extract the date
+		theDtg = DebriefFormatDateTime.parseThis(dateStr);
 
-    // now the vessel name
-    vesselName = ImportFix.checkForQuotedTrackName(st);
+		// now the vessel name
+		vesselName = ImportFix.checkForQuotedTrackName(st);
 
-    // next with the symbology
-    theSymbology = st.nextToken(normalDelimiters);
+		// next with the symbology
+		theSymbology = st.nextToken(normalDelimiters);
 
-    // find out if it's our null value
-    String next = st.nextToken();
+		// find out if it's our null value
+		String next = st.nextToken();
 
-    // get the deg out of this value
-    latDeg = Double.valueOf(next);
+		// get the deg out of this value
+		latDeg = Double.valueOf(next);
 
-    // ok, this is valid data, persevere with it
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+		// ok, this is valid data, persevere with it
+		latMin = Double.valueOf(st.nextToken());
+		latSec = Double.valueOf(st.nextToken()).doubleValue();
 
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    String vDiff = st.nextToken();
-    if (vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
+		/**
+		 * now, we may have trouble here, since there may not be a space between the
+		 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+		 */
+		String vDiff = st.nextToken();
+		if (vDiff.length() > 3)
+		{
+			// hmm, they are combined
+			latHem = vDiff.charAt(0);
+			String secondPart = vDiff.substring(1, vDiff.length());
+			longDeg = Double.valueOf(secondPart);
+		}
+		else
+		{
+			// they are separate, so only the hem is in this one
+			latHem = vDiff.charAt(0);
+			longDeg = Double.valueOf(st.nextToken());
+		}
 
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+		longMin = Double.valueOf(st.nextToken());
+		longSec = Double.valueOf(st.nextToken()).doubleValue();
+		longHem = st.nextToken().charAt(0);
 
-    // create the origin
-    origin = new WorldLocation(latDeg, latMin, latSec, latHem,
-                               longDeg, longMin, longSec, longHem,
-                               0);
+		// create the origin
+		origin = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+				longMin, longSec, longHem, 0);
 
-    // read in the solution name
-    solutionName = st.nextToken();
+		// read in the solution name
+		solutionName = st.nextToken();
 
-    // trim the sensor name
-    solutionName = solutionName.trim();
+		// trim the sensor name
+		solutionName = solutionName.trim();
 
-    // now the ellipse details (or null)
-    next = st.nextToken();
+		// now the ellipse details (or null)
+		next = st.nextToken();
 
-    // let's trim this string aswell, just so we're sure N is the first letter
-    // if that's its destiny
-    next = next.trim();
+		// let's trim this string aswell, just so we're sure N is the first letter
+		// if that's its destiny
+		next = next.trim();
 
-    // find out if it's our null value
-    if (next.startsWith("N"))
-    {
-      // ditch it,
-    }
-    else
-    {
-      // now the ellipse details
-      orientation = Double.valueOf(next).doubleValue();
-      maxima = Double.valueOf(st.nextToken()).doubleValue();
-      minima = Double.valueOf(st.nextToken()).doubleValue();
+		// find out if it's our null value
+		if (next.startsWith("N"))
+		{
+			// ditch it,
+		}
+		else
+		{
+			// now the ellipse details
+			orientation = Double.valueOf(next).doubleValue();
+			maxima = Double.valueOf(st.nextToken()).doubleValue();
+			minima = Double.valueOf(st.nextToken()).doubleValue();
 
-      theEllipse = new EllipseShape(null, orientation,
-                                    Conversions.Yds2Degs(maxima),
-                                    Conversions.Yds2Degs(minima));
+			theEllipse = new EllipseShape(null, orientation, new WorldDistance(
+					Conversions.Yds2Degs(maxima), WorldDistance.DEGS), new WorldDistance(
+					Conversions.Yds2Degs(minima), WorldDistance.DEGS));
 
-    } // whether the duff ellipse data was entered
+		} // whether the duff ellipse data was entered
 
-    course = Double.valueOf(st.nextToken()).doubleValue();
-    speed = Double.valueOf(st.nextToken()).doubleValue();
-    depth = Double.valueOf(st.nextToken()).doubleValue();
+		course = Double.valueOf(st.nextToken()).doubleValue();
+		speed = Double.valueOf(st.nextToken()).doubleValue();
+		depth = Double.valueOf(st.nextToken()).doubleValue();
 
-    // and lastly read in the message
-    theLabel = st.nextToken("\r").trim();
-    // strip off any gash
-    theLabel = theLabel.trim();
+		// and lastly read in the message
+		theLabel = st.nextToken("\r").trim();
+		// strip off any gash
+		theLabel = theLabel.trim();
 
-    theColor = ImportReplay.replayColorFor(theSymbology);
+		theColor = ImportReplay.replayColorFor(theSymbology);
 
-    String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
+		String theStyle = ImportReplay.replayTrackSymbolFor(theSymbology);
 
-    // create the contact object
-    TMAContactWrapper data =
-      new TMAContactWrapper(solutionName, vesselName, theDtg, origin, course, speed, depth,
-                            theColor, theLabel, theEllipse, theStyle);
+		// create the contact object
+		TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
+				theDtg, origin, course, speed, depth, theColor, theLabel, theEllipse,
+				theStyle);
 
-    return data;
-  }
+		return data;
+	}
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	public final String getYourType()
+	{
+		return _myType;
+	}
 
-  /**
-   * export the specified shape as a string
-   *
-   * @param theWrapper the thing we are going to export
-   * @return the shape in String form
-   */
-  public final String exportThis(MWC.GUI.Plottable theWrapper)
-  {
-    // result value
-    String line = ";; Export of sensor data not implemented";
-    return line;
+	/**
+	 * export the specified shape as a string
+	 * 
+	 * @param theWrapper
+	 *          the thing we are going to export
+	 * @return the shape in String form
+	 */
+	public final String exportThis(MWC.GUI.Plottable theWrapper)
+	{
+		// result value
+		String line = ";; Export of sensor data not implemented";
+		return line;
 
-  }
+	}
 
-  /**
-   * indicate if you can export this type of object
-   *
-   * @param val the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(Object val)
-  {
-    boolean res = false;
+	/**
+	 * indicate if you can export this type of object
+	 * 
+	 * @param val
+	 *          the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	public final boolean canExportThis(Object val)
+	{
+		boolean res = false;
 
-    if (val instanceof SensorWrapper)
-    {
-      res = true;
-    }
+		if (val instanceof SensorWrapper)
+		{
+			res = true;
+		}
 
-    return res;
+		return res;
 
-  }
+	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testImportTMA_POS extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testImportTMA_POS extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testImportTMA_POS(final String val)
-    {
-      super(val);
-    }
+		public testImportTMA_POS(final String val)
+		{
+			super(val);
+		}
 
-    public final void testImport()
-    {
+		public final void testImport()
+		{
 
-      //  ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx
-      //  ;; date, time, ownship name, symbology, tma lat, tma long, track name, ellipse orientation (deg from north),  maxima (yds), minima (yds), course, speed, depth (m), label string
+			// ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
+			// TT...TT OOO.O XXXX YYYY CCC SSS DDD xx.xx
+			// ;; date, time, ownship name, symbology, tma lat, tma long, track name,
+			// ellipse orientation (deg from north), maxima (yds), minima (yds),
+			// course, speed, depth (m), label string
 
-      final String testLine =
-        ";TMA_POS: 030211 120312 CARPET S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 045.0  4000 2000 050 12.4 100 Trial label";
+			final String testLine = ";TMA_POS: 030211 120312 CARPET S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 045.0  4000 2000 050 12.4 100 Trial label";
 
-      // ok, create the importer
-      ImportTMA_Pos importer = new ImportTMA_Pos();
+			// ok, create the importer
+			ImportTMA_Pos importer = new ImportTMA_Pos();
 
-      // see if we can read this type
-      String theType = importer.getYourType();
-      assertEquals("returned correct type", theType, ";TMA_POS:");
+			// see if we can read this type
+			String theType = importer.getYourType();
+			assertEquals("returned correct type", theType, ";TMA_POS:");
 
-      // now read the line
-      Object res = importer.readThisLine(testLine);
-      assertNotNull("managed to read item", res);
+			// now read the line
+			Object res = importer.readThisLine(testLine);
+			assertNotNull("managed to read item", res);
 
-      // check it's of the correct type
-      assertEquals("of correct class", "class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
-      TMAContactWrapper tc = (TMAContactWrapper) res;
+			// check it's of the correct type
+			assertEquals("of correct class",
+					"class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
+			TMAContactWrapper tc = (TMAContactWrapper) res;
 
-      // check the values we've used
-      HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
-      assertEquals("correct date", theDate, tc.getDTG());
-      assertEquals("Correct track", "CARPET", tc.getTrackName());
-      assertEquals("correct color", Color.white, tc.getColor());
-      assertEquals("correct symbol", "Submarine", tc.getSymbol());
-      assertNotNull("correct origin", tc.buildGetOrigin());
-      assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
-      assertEquals("correct orientation", 45, tc.getEllipse().getOrientation(), 0.0001d);
-      assertEquals("correct maxima", 4000, tc.getEllipse().getMaxima().getValueIn(WorldDistance.YARDS), 0.0001d);
-      assertEquals("correct minima", 2000, tc.getEllipse().getMinima().getValueIn(WorldDistance.YARDS), 0.0001d);
-      assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
-      assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
-      assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
-      assertEquals("correct label", "Trial label", tc.getLabel());
+			// check the values we've used
+			HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
+			assertEquals("correct date", theDate, tc.getDTG());
+			assertEquals("Correct track", "CARPET", tc.getTrackName());
+			assertEquals("correct color", Color.white, tc.getColor());
+			assertEquals("correct symbol", "Submarine", tc.getSymbol());
+			assertNotNull("correct origin", tc.buildGetOrigin());
+			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
+			assertEquals("correct orientation", 45, tc.getEllipse().getOrientation(),
+					0.0001d);
+			assertEquals("correct maxima", 4000, tc.getEllipse().getMaxima()
+					.getValueIn(WorldDistance.YARDS), 0.0001d);
+			assertEquals("correct minima", 2000, tc.getEllipse().getMinima()
+					.getValueIn(WorldDistance.YARDS), 0.0001d);
+			assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
+			assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
+			assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
+			assertEquals("correct label", "Trial label", tc.getLabel());
 
-    }
+		}
 
-    public final void testImportNoEllipse()
-    {
-      //  ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx
-      //  ;; date, time, ownship name, symbology, tma lat, tma long, track name, ellipse orientation (deg from north),  maxima (yds), minima (yds), course, speed, depth (m), label string
+		public final void testImportNoEllipse()
+		{
+			// ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
+			// TT...TT OOO.O XXXX YYYY CCC SSS DDD xx.xx
+			// ;; date, time, ownship name, symbology, tma lat, tma long, track name,
+			// ellipse orientation (deg from north), maxima (yds), minima (yds),
+			// course, speed, depth (m), label string
 
-      final String testLine =
-        ";TMA_POS: 030211 120312 CARPET S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 NULL 050 12.4 100 Trial label";
+			final String testLine = ";TMA_POS: 030211 120312 CARPET S@ 22 11 10.63 N 21 41 52.37 W TRACK_060 NULL 050 12.4 100 Trial label";
 
-      // ok, create the importer
-      ImportTMA_Pos importer = new ImportTMA_Pos();
+			// ok, create the importer
+			ImportTMA_Pos importer = new ImportTMA_Pos();
 
-      // see if we can read this type
-      String theType = importer.getYourType();
-      assertEquals("returned correct type", theType, ";TMA_POS:");
+			// see if we can read this type
+			String theType = importer.getYourType();
+			assertEquals("returned correct type", theType, ";TMA_POS:");
 
-      // now read the line
-      Object res = importer.readThisLine(testLine);
-      assertNotNull("managed to read item", res);
+			// now read the line
+			Object res = importer.readThisLine(testLine);
+			assertNotNull("managed to read item", res);
 
-      // check it's of the correct type
-      assertEquals("of correct class", "class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
-      TMAContactWrapper tc = (TMAContactWrapper) res;
+			// check it's of the correct type
+			assertEquals("of correct class",
+					"class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
+			TMAContactWrapper tc = (TMAContactWrapper) res;
 
-      // check the values we've used
-      HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
-      assertEquals("correct date", theDate, tc.getDTG());
-      assertEquals("Correct track", "CARPET", tc.getTrackName());
-      assertEquals("correct color", Color.white, tc.getColor());
-      assertEquals("correct symbol", "Submarine", tc.getSymbol());
-      assertNotNull("correct origin", tc.buildGetOrigin());
-      assertEquals("correct range", Conversions.Yds2Degs(0), tc.buildGetVector().getRange(), 0.001d);
-      assertEquals("correct bearing", 0, tc.buildGetVector().getBearing(), 0.001d);
-      assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
-      assertEquals("correct orientation", 0, tc.getEllipse().getOrientation(), 0.0001d);
-      assertEquals("correct maxima", 0, tc.getEllipse().getMaxima().getValueIn(WorldDistance.YARDS), 0.0001d);
-      assertEquals("correct minima", 0, tc.getEllipse().getMinima().getValueIn(WorldDistance.YARDS), 0.0001d);
-      assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
-      assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
-      assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
-      assertEquals("correct label", "Trial label", tc.getLabel());
-    }
-  }
+			// check the values we've used
+			HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
+			assertEquals("correct date", theDate, tc.getDTG());
+			assertEquals("Correct track", "CARPET", tc.getTrackName());
+			assertEquals("correct color", Color.white, tc.getColor());
+			assertEquals("correct symbol", "Submarine", tc.getSymbol());
+			assertNotNull("correct origin", tc.buildGetOrigin());
+			assertEquals("correct range", Conversions.Yds2Degs(0), tc
+					.buildGetVector().getRange(), 0.001d);
+			assertEquals("correct bearing", 0, tc.buildGetVector().getBearing(),
+					0.001d);
+			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
+			assertEquals("correct orientation", 0, tc.getEllipse().getOrientation(),
+					0.0001d);
+			assertEquals("correct maxima", 0, tc.getEllipse().getMaxima().getValueIn(
+					WorldDistance.YARDS), 0.0001d);
+			assertEquals("correct minima", 0, tc.getEllipse().getMinima().getValueIn(
+					WorldDistance.YARDS), 0.0001d);
+			assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
+			assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
+			assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
+			assertEquals("correct label", "Trial label", tc.getLabel());
+		}
+	}
 
-
-  public static void main(String[] args)
-  {
-    testImportTMA_POS tm = new testImportTMA_POS("scrap");
-    tm.testImport();
-    tm.testImportNoEllipse();
-  }
+	public static void main(String[] args)
+	{
+		testImportTMA_POS tm = new testImportTMA_POS("scrap");
+		tm.testImport();
+		tm.testImportNoEllipse();
+	}
 
 }
