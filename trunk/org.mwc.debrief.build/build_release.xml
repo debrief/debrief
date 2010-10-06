@@ -113,7 +113,7 @@
 		<available property="target.exists" file="${usbDest}"/>
 	</target>
 	
-	<target name="copy_to_usb" depends="can_do_mac_copy">
+	<target name="copy_to_usb" depends="can_do_usb_copy">
 		
 		<echo message="ditching existing versions"/>
 		<delete file="${usbDest}/Repository.zip"/>
