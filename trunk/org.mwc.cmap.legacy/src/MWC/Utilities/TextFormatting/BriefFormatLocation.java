@@ -43,7 +43,11 @@ public class BriefFormatLocation implements PlainFormatLocation
 
     String res = " " + df2.format(_workingHolder.deg) + DEGREE_SYMBOL +
       df2.format(_workingHolder.min) + "\'" +
-      secFormat.format(_workingHolder.sec) + "\"" + _workingHolder.hem + " ";
+      secFormat.format(_workingHolder.sec) + "\"";
+
+    // just check we're not at origin
+    if(val != 0)
+    	 res += _workingHolder.hem + " ";
 
     // hack: when the degs symbol appears in the third character of the string, when
     // we write to Metafile the following (4th) character is swapped for a y.
@@ -75,8 +79,11 @@ public class BriefFormatLocation implements PlainFormatLocation
 
     String res = df3.format(_workingHolder.deg) + DEGREE_SYMBOL +
       df2.format(_workingHolder.min) + "\'" +
-      secFormat.format(_workingHolder.sec) + "\"" + _workingHolder.hem;
+      secFormat.format(_workingHolder.sec) + "\"";
 
+    // just check we're not at origin
+    if(val != 0)
+    	 res += _workingHolder.hem + " ";
 
     return res;
   }
