@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="RB_output"  xmlns="http://www.mwc.org/asset" >
+	<ObserverList>
+		<TimeObserver Name="elapsed time" Active="true">
+			<Duration Value="12" Units="hours" />
+		</TimeObserver></ObserverList>
+</ScenarioController>
+
