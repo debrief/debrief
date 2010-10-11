@@ -161,7 +161,7 @@ public class ScenarioControllerView extends ViewPart implements
 		_scenarioWrapper = new ScenarioWrapper(this);
 
 		_timeManager = new WrappingSteppableTime();
-		
+
 		_stepListener = new ScenarioSteppedListener()
 		{
 			public void restart(ScenarioType scenario)
@@ -180,8 +180,8 @@ public class ScenarioControllerView extends ViewPart implements
 			public void newScenario(ScenarioType oldScenario, ScenarioType newScenario)
 			{
 				_timeManager.setCurrentScenario(newScenario);
-				
-				if(oldScenario != null)
+
+				if (oldScenario != null)
 				{
 					oldScenario.removeScenarioSteppedListener(_stepListener);
 				}
@@ -351,8 +351,8 @@ public class ScenarioControllerView extends ViewPart implements
 				String currLabel = _myUI.getSingleRunBtn().getText().trim();
 				if (currLabel.equals(RUN_SCENARIO.trim()))
 				{
-					_newScenarioListener.newScenario(null,_myScenario);
-					
+					_newScenarioListener.newScenario(null, _myScenario);
+
 					// tell it we're running
 					_myUI.getSingleRunBtn().setText(PAUSE_SCENARIO);
 
@@ -383,7 +383,8 @@ public class ScenarioControllerView extends ViewPart implements
 			public void run()
 			{
 				// tell them to go for it
-				_myMultiScenario.nowRun(System.out, System.err, System.in, _newScenarioListener);
+				_myMultiScenario.nowRun(System.out, System.err, System.in,
+						_newScenarioListener);
 
 				// ok, better refresh the workspace
 				refreshWorkspace();
@@ -889,7 +890,7 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		if (_myScenario != null)
 			_myUI.getSingleRunBtn().setEnabled(true);
-		
+
 		// clear the multi core scenario, just to be sure
 		_myMultiScenario = null;
 
@@ -1064,7 +1065,7 @@ public class ScenarioControllerView extends ViewPart implements
 			long time = _myScenario.getTime();
 			if (time != -1)
 			{
-				// tell the time managemr what we're looking at 
+				// tell the time managemr what we're looking at
 				_timeManager.setCurrentScenario(_myScenario);
 				_timeManager.setTime(this, new HiResDate(time), true);
 			}
@@ -1281,6 +1282,20 @@ public class ScenarioControllerView extends ViewPart implements
 		if (_controlFileName != null)
 			filesDropped(new String[]
 			{ _controlFileName });
+
+		// re-initialise any scenarios
+		// do we know our controller?
+		if (inSingleScenarioRun())
+		{
+			// also, re-initialise the observers
+			setupObservers(_myScenario);
+			
+			// also, tell the scenario to restart itself
+			_myScenario.restart();
+			
+			// reset the start button 
+			_myUI.getSingleRunBtn().setText(RUN_SCENARIO);
+		}
 
 		// and clear the scenario table
 		_simTable.setInput(null);

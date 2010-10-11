@@ -376,6 +376,10 @@ public class CoreScenario implements ScenarioType, ISimulation
   {
     // reset our local time values
     _myTime = _myStartTime;
+    
+    // clear the 'dead' flag
+    _stopReason = null;
+    
 
     // step through the participants
     // move the participants forward

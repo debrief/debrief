@@ -222,8 +222,7 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	@Override
 	public void restart(ScenarioType scenario)
 	{
-		if (_myScenario != null)
-			_myScenario.restart();
+
 	}
 
 	@Override
