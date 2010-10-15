@@ -10,8 +10,8 @@ import org.mwc.cmap.core.property_support.DurationHelper;
 import MWC.GUI.Properties.*;
 import MWC.GenericData.*;
 
-public class TimeControlProperties extends java.beans.PropertyChangeSupport implements
-		IPropertySource2, TimeControlPreferences
+public class TimeControlProperties extends java.beans.PropertyChangeSupport
+		implements IPropertySource2, TimeControlPreferences
 {
 
 	/**
@@ -41,11 +41,12 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 
 	static private String[] DTG_FORMAT_STRINGS;
 
-	/** and the slider limits (which may be different to the period of the data
+	/**
+	 * and the slider limits (which may be different to the period of the data
 	 * 
 	 */
 	private HiResDate _sliderStart, _sliderEnd;
-	
+
 	/**
 	 * the property names
 	 */
@@ -56,7 +57,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 	final public static String STEP_INTERVAL_ID = "Step Interval";
 
 	final public static String DTG_FORMAT_ID = "DTG Format";
-	
+
 	final public static String SLIDER_LIMITS_ID = "Slider limits";
 
 	/**
@@ -128,7 +129,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 				{
 					return new DurationHelper.DurationCellEditor(parent);
 				}
-				
+
 			};
 			SMALL_STEP.setAlwaysIncompatible(true);
 			SMALL_STEP.setDescription("The size of the small time step");
@@ -144,7 +145,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 			{
 				public CellEditor createPropertyEditor(Composite parent)
 				{
-					return new DurationHelper.TimeIntervalEditor(parent); 
+					return new DurationHelper.TimeIntervalEditor(parent);
 				}
 
 				/**
@@ -158,18 +159,19 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 						{
 							// ok, this is a duration. get the duration itself
 							Duration dur = (Duration) element;
-							
+
 							// find which is the matching entry
 							TimeIntervalPropertyEditor ep = new TimeIntervalPropertyEditor();
-							ep.setValue(new Integer((int) dur.getValueIn(Duration.MILLISECONDS)));
-							
+							ep.setValue(new Integer((int) dur
+									.getValueIn(Duration.MILLISECONDS)));
+
 							return ep.getAsText();
 						}
-						
+
 					};
 					return provider;
 				}
-				
+
 			};
 			AUTO_STEP.setAlwaysIncompatible(true);
 			AUTO_STEP.setDescription("The interval between automatic time steps");
@@ -184,7 +186,8 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 			// hey, don't bother putting the DTG format in the properties window
 			// anymore - we've got it in the time-controller's
 			// drop-down menu
-			PROPERTY_DESCRIPTORS = new PropertyDescriptor[] { LARGE_STEP, SMALL_STEP, AUTO_STEP };
+			PROPERTY_DESCRIPTORS = new PropertyDescriptor[]
+			{ LARGE_STEP, SMALL_STEP, AUTO_STEP };
 
 		}
 
@@ -282,7 +285,8 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 
 	private void fireChange(String name, Object oldValue, Object newValue)
 	{
-		PropertyChangeEvent pe = new PropertyChangeEvent(this, name, oldValue, newValue);
+		PropertyChangeEvent pe = new PropertyChangeEvent(this, name, oldValue,
+				newValue);
 		super.firePropertyChange(pe);
 	}
 
@@ -310,11 +314,11 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 		int index = DateFormatPropertyEditor.getIndexOf(format);
 
 		// ok, what's the index
-//		if (index == DateFormatPropertyEditor.INVALID_INDEX)
-//		{
-//			// bugger, didn't find it.
-//			index = 0;
-//		}
+		// if (index == DateFormatPropertyEditor.INVALID_INDEX)
+		// {
+		// // bugger, didn't find it.
+		// index = 0;
+		// }
 
 		// ok, sorted.
 		_dtgFormat = new Integer(index);
@@ -332,13 +336,15 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 
 	public void setSmallStep(Duration step)
 	{
-		_smallStep = step;
+		if (step != null)
+			_smallStep = step;
 
 	}
 
 	public void setLargeStep(Duration step)
 	{
-		_largeStep = step;
+		if (step != null)
+			_largeStep = step;
 	}
 
 	public Duration getAutoInterval()
@@ -365,23 +371,23 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 	{
 		// take a copy, to start with
 		HiResDate oldDTG = dtg;
-		
+
 		// update the value
 		_sliderStart = dtg;
-		
+
 		// and fire the update
 		firePropertyChange(SLIDER_LIMITS_ID, oldDTG, _sliderStart);
-		
+
 	}
 
 	public void setSliderEndTime(HiResDate dtg)
 	{
 		// take a copy, to start with
 		HiResDate oldDTG = dtg;
-		
+
 		// update the value
 		_sliderEnd = dtg;
-		
+
 		// and fire the update
 		firePropertyChange(SLIDER_LIMITS_ID, oldDTG, _sliderEnd);
 	}

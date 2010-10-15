@@ -35,7 +35,8 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 {
 
-	/** Range ring highlighter
+	/**
+	 * Range ring highlighter
 	 * 
 	 */
 	private static final String NUM_RINGS = "NumRings";
@@ -48,7 +49,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 	private static final String RADIUS = "Radius";
 
-	/** snail trail properties
+	/**
+	 * snail trail properties
 	 * 
 	 */
 	private static final String TRAIL_LENGTH = "TrailLength";
@@ -73,7 +75,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 	public final void makeThis(
 			Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
-			final TimeControlPreferences timePrefs, final LayerPainterManager painterMgr,
+			final TimeControlPreferences timePrefs,
+			final LayerPainterManager painterMgr,
 			final ControllableTime timeController)
 	{
 		String val = null;
@@ -94,7 +97,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			configureThisPainter(thisPainter, details);
 		}
 
-		//////////////////////////////////////////////////////////////
+		// ////////////////////////////////////////////////////////////
 		String highlighter = (String) details.properties.get("Highlighter");
 		if (highlighter != null)
 			painterMgr.setCurrentHighlighter(highlighter);
@@ -105,7 +108,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			SWTPlotHighlighter thisHighlighter = highlighters[i];
 			configureThisHighlighter(thisHighlighter, details);
 		}
-		
+
 		// ////////////////////////////////////////////////////////////
 		String dateFormat = (String) details.properties.get("DateFormat");
 		if (dateFormat != null)
@@ -172,7 +175,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			int len = Integer.valueOf(val).intValue();
 			timePrefs.setAutoInterval(new Duration(len, Duration.MILLISECONDS));
 		}
-			
+
 		// /////////////////////////////////////////////////////////////
 		val = (String) details.properties.get("StepLarge");
 		if (val != null)
@@ -185,8 +188,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			}
 			catch (java.text.ParseException pe)
 			{
-				MWC.Utilities.Errors.Trace.trace(pe, "Failed reading large step size value is:"
-						+ val);
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading large step size value is:" + val);
 			}
 
 		}
@@ -203,8 +206,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			}
 			catch (java.text.ParseException pe)
 			{
-				MWC.Utilities.Errors.Trace.trace(pe, "Failed reading small step size value is:"
-						+ val);
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading small step size value is:" + val);
 			}
 		}
 
@@ -244,8 +247,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			}
 			catch (java.text.ParseException pe)
 			{
-				MWC.Utilities.Errors.Trace.trace(pe, "Failed reading large step size value is:"
-						+ val);
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading large step size value is:" + val);
 			}
 
 		}
@@ -262,51 +265,53 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			}
 			catch (java.text.ParseException pe)
 			{
-				MWC.Utilities.Errors.Trace.trace(pe, "Failed reading small step size value is:"
-						+ val);
+				MWC.Utilities.Errors.Trace.trace(pe,
+						"Failed reading small step size value is:" + val);
 			}
 		}
 	}
 
-	private void configureThisHighlighter(SWTPlotHighlighter thisHighlighter, ComponentDetails details)
+	private void configureThisHighlighter(SWTPlotHighlighter thisHighlighter,
+			ComponentDetails details)
 	{
-		if(thisHighlighter.getName().equals(SWTRangeHighlighter.RANGE_RING_HIGHLIGHT))
+		if (thisHighlighter.getName().equals(
+				SWTRangeHighlighter.RANGE_RING_HIGHLIGHT))
 		{
-		  SWTRangeHighlighter rr = (SWTRangeHighlighter) thisHighlighter;
+			SWTRangeHighlighter rr = (SWTRangeHighlighter) thisHighlighter;
 
-		  String radius = (String) details.properties.get(RADIUS);
+			String radius = (String) details.properties.get(RADIUS);
 			if (radius != null)
 				rr.setRadius(Double.parseDouble(radius));
 
-		  String arcs = (String) details.properties.get(ARCS);
+			String arcs = (String) details.properties.get(ARCS);
 			if (arcs != null)
 				rr.setArcs(Integer.parseInt(arcs));
 
-		  String spokeSep = (String) details.properties.get(SPOKE_SEPARATION);
+			String spokeSep = (String) details.properties.get(SPOKE_SEPARATION);
 			if (spokeSep != null)
 				rr.setSpokeSeparation(Integer.parseInt(spokeSep));
 
-		  String numRings = (String) details.properties.get(NUM_RINGS);
+			String numRings = (String) details.properties.get(NUM_RINGS);
 			if (numRings != null)
 				rr.setNumRings(Integer.parseInt(numRings));
 
-		  String fillRings = (String) details.properties.get(SHADE_ARCS);
+			String fillRings = (String) details.properties.get(SHADE_ARCS);
 			if (fillRings != null)
 				rr.setFillArcs(Boolean.valueOf(fillRings));
 
-		  String useTrackColor = (String) details.properties.get(USE_TRACK_COLOR);
+			String useTrackColor = (String) details.properties.get(USE_TRACK_COLOR);
 			if (useTrackColor != null)
 				rr.setUseCurrentTrackColor(Boolean.valueOf(useTrackColor));
-		
-		  String colRed = (String) details.properties.get(COL_RED);
-		  String colGreen = (String) details.properties.get(COL_GREEN);
-		  String colBlue = (String) details.properties.get(COL_BLUE);
-		  if((colRed != null) && (colGreen != null) && (colBlue != null))
-		  {
-		  	Color newCol = new Color(Integer.valueOf(colRed), Integer.valueOf(colGreen), Integer.valueOf(colBlue));
-		  	rr.setColor(newCol);
-		  }
-			
+
+			String colRed = (String) details.properties.get(COL_RED);
+			String colGreen = (String) details.properties.get(COL_GREEN);
+			String colBlue = (String) details.properties.get(COL_BLUE);
+			if ((colRed != null) && (colGreen != null) && (colBlue != null))
+			{
+				Color newCol = new Color(Integer.valueOf(colRed), Integer
+						.valueOf(colGreen), Integer.valueOf(colBlue));
+				rr.setColor(newCol);
+			}
 
 		}
 	}
@@ -330,7 +335,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 			String plotTrkName = (String) details.properties.get(PLOT_TRACK_NAME);
 			if (plotTrkName != null)
-				sp.getSnailProperties().setPlotTrackName(Boolean.parseBoolean(plotTrkName));
+				sp.getSnailProperties().setPlotTrackName(
+						Boolean.parseBoolean(plotTrkName));
 
 			String fadePoints = (String) details.properties.get(FADE_POINTS);
 			if (fadePoints != null)
@@ -349,12 +355,14 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 			String vectorStretch = (String) details.properties.get(VECTOR_STRETCH);
 			if (vectorStretch != null)
-				sp.getSnailProperties().setVectorStretch(Double.parseDouble(vectorStretch));
+				sp.getSnailProperties().setVectorStretch(
+						Double.parseDouble(vectorStretch));
 		}
 	}
 
-	public final GUIHandler.ComponentDetails exportThis(TimeControlPreferences controller,
-			LayerPainterManager painterMgr, TimeProvider timeProvider, Document doc)
+	public final GUIHandler.ComponentDetails exportThis(
+			TimeControlPreferences controller, LayerPainterManager painterMgr,
+			TimeProvider timeProvider, Document doc)
 	{
 
 		// collate the details for this component
@@ -382,7 +390,8 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		for (int i = 0; i < highlighterList.length; i++)
 		{
 			SWTPlotHighlighter thisHighlighter = highlighterList[i];
-			storeThisHighlighter(thisHighlighter, thisHighlighter.getName(), details, doc);
+			storeThisHighlighter(thisHighlighter, thisHighlighter.getName(), details,
+					doc);
 		}
 
 		// ok, we're switching to exporting the step size in microseconds
@@ -394,11 +403,16 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		// and now the stepper bits
 		// ////////////////////////////////
 
-		details.addProperty("LargeStep", MWCXMLReader.writeThis(controller.getLargeStep()));
-		details.addProperty("SmallStep", MWCXMLReader.writeThis(controller.getSmallStep()));
+		if (controller.getLargeStep() != null)
+			details.addProperty("LargeStep", MWCXMLReader.writeThis(controller
+					.getLargeStep()));
+		if (controller.getSmallStep() != null)
+			details.addProperty("SmallStep", MWCXMLReader.writeThis(controller
+					.getSmallStep()));
 
-		details.addProperty("AutoStepInterval", MWCXMLReader.writeThis(controller
-				.getAutoInterval()));
+		if (controller.getAutoInterval() != null)
+			details.addProperty("AutoStepInterval", MWCXMLReader.writeThis(controller
+					.getAutoInterval()));
 
 		details.addProperty("DateFormat", controller.getDTGFormat());
 
@@ -428,24 +442,31 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		return details;
 	}
 
-	private void storeThisHighlighter(SWTPlotHighlighter thisHighlighter, String name, ComponentDetails details, Document doc)
+	private void storeThisHighlighter(SWTPlotHighlighter thisHighlighter,
+			String name, ComponentDetails details, Document doc)
 	{
-		if(name.equals(SWTRangeHighlighter.RANGE_RING_HIGHLIGHT))
+		if (name.equals(SWTRangeHighlighter.RANGE_RING_HIGHLIGHT))
 		{
 			SWTRangeHighlighter hi = (SWTRangeHighlighter) thisHighlighter;
 
 			details.addProperty(RADIUS, MWCXMLReader.writeThis(hi.getRadius()));
-			details.addProperty(ARCS, MWCXMLReader.writeThis(hi.getArcs().getCurrent()));
-			details.addProperty(SPOKE_SEPARATION, MWCXMLReader.writeThis(hi.getSpokeSeparation()));
-			details.addProperty(NUM_RINGS,MWCXMLReader.writeThis(hi.getNumRings().getCurrent()));
-			details.addProperty(SHADE_ARCS,MWCXMLReader.writeThis(hi.getFillArcs()));
-			details.addProperty(USE_TRACK_COLOR,MWCXMLReader.writeThis(hi.getUseCurrentTrackColor()));
-			
-			
-			details.addProperty(COL_RED,MWCXMLReader.writeThis(hi.getColor().getRed()));
-			details.addProperty(COL_GREEN,MWCXMLReader.writeThis(hi.getColor().getGreen()));
-			details.addProperty(COL_BLUE,MWCXMLReader.writeThis(hi.getColor().getBlue()));
-			
+			details.addProperty(ARCS, MWCXMLReader.writeThis(hi.getArcs()
+					.getCurrent()));
+			details.addProperty(SPOKE_SEPARATION, MWCXMLReader.writeThis(hi
+					.getSpokeSeparation()));
+			details.addProperty(NUM_RINGS, MWCXMLReader.writeThis(hi.getNumRings()
+					.getCurrent()));
+			details.addProperty(SHADE_ARCS, MWCXMLReader.writeThis(hi.getFillArcs()));
+			details.addProperty(USE_TRACK_COLOR, MWCXMLReader.writeThis(hi
+					.getUseCurrentTrackColor()));
+
+			details.addProperty(COL_RED, MWCXMLReader.writeThis(hi.getColor()
+					.getRed()));
+			details.addProperty(COL_GREEN, MWCXMLReader.writeThis(hi.getColor()
+					.getGreen()));
+			details.addProperty(COL_BLUE, MWCXMLReader.writeThis(hi.getColor()
+					.getBlue()));
+
 		}
 	}
 
@@ -456,18 +477,18 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		if (name.equals(SnailPainter.SNAIL_NAME))
 		{
 			SnailHighlighter sp = (SnailHighlighter) thisPainter;
-			details.addProperty(LINK_POSITIONS, MWCXMLReader.writeThis(sp.getSnailProperties()
-					.getLinkPositions()));
-			details.addProperty(PLOT_TRACK_NAME, MWCXMLReader.writeThis(sp.getSnailProperties()
-					.getPlotTrackName()));
-			details.addProperty(FADE_POINTS, MWCXMLReader.writeThis(sp.getSnailProperties()
-					.getFadePoints()));
-			details.addProperty(POINT_SIZE, MWCXMLReader.writeThis(sp.getSnailProperties()
-					.getPointSize().getCurrent()));
-			details.addProperty(TRAIL_LENGTH, MWCXMLReader.writeThis(sp.getSnailProperties()
-					.getTrailLength()));
-			details.addProperty(VECTOR_STRETCH, MWCXMLReader.writeThis(sp.getSnailProperties()
-					.getVectorStretch()));
+			details.addProperty(LINK_POSITIONS, MWCXMLReader.writeThis(sp
+					.getSnailProperties().getLinkPositions()));
+			details.addProperty(PLOT_TRACK_NAME, MWCXMLReader.writeThis(sp
+					.getSnailProperties().getPlotTrackName()));
+			details.addProperty(FADE_POINTS, MWCXMLReader.writeThis(sp
+					.getSnailProperties().getFadePoints()));
+			details.addProperty(POINT_SIZE, MWCXMLReader.writeThis(sp
+					.getSnailProperties().getPointSize().getCurrent()));
+			details.addProperty(TRAIL_LENGTH, MWCXMLReader.writeThis(sp
+					.getSnailProperties().getTrailLength()));
+			details.addProperty(VECTOR_STRETCH, MWCXMLReader.writeThis(sp
+					.getSnailProperties().getVectorStretch()));
 		}
 	}
 
