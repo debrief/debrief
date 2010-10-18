@@ -15,6 +15,7 @@ import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Participants.Category;
 import ASSET.Participants.Status;
 import ASSET.Util.SupportTesting;
 import Debrief.Wrappers.LabelWrapper;
@@ -80,7 +81,8 @@ public class RemoveDetectedObserver extends
 		if(hisStat == null)
 			return;
 		WorldLocation loc = hisStat.getLocation();
-		LabelWrapper lw = new LabelWrapper(thisPart.getName(), loc, Color.red);
+		Color hisColor = Category.getColorFor(thisPart.getCategory());
+		LabelWrapper lw = new LabelWrapper(thisPart.getName(), loc, hisColor);
 		lw.setSymbolType("Reference Position");
 
 		if (_myDeadParts == null)
