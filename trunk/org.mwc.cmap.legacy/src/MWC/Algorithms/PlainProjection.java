@@ -84,7 +84,7 @@ abstract public class PlainProjection implements Serializable,
   /**
    * our editor
    */
-  transient private Editable.EditorType _myEditor;
+  transient protected Editable.EditorType _myEditor;
 
   /**
    * support for property listeners

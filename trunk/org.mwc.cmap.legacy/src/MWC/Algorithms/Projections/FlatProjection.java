@@ -6,8 +6,12 @@
 package MWC.Algorithms.Projections;
 
 import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.PlainProjection.PlainProjectionInfo;
+import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -71,6 +75,14 @@ public class FlatProjection extends PlainProjection
 		return _scaleVal;
 	}
 
+  public Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new FlatProjectionInfo(this);
+
+    return _myEditor;
+  }
+	
 	public java.awt.Point toScreen(WorldLocation val)
 	{
 		// Point scrRes;
@@ -232,6 +244,24 @@ public class FlatProjection extends PlainProjection
 
 		return _workingLocation;
 	}
+	
+	
+
+	public double getScaleVal()
+	{
+		return _scaleVal;
+	}
+
+	/** override the current scale factor
+	 * 
+	 * @param scaleVal
+	 */
+	public void setScaleVal(double scaleVal)
+	{
+		_scaleVal = scaleVal;
+		
+		offsetOrigin(true);
+	}
 
 	public void zoom(double value)
 	{
@@ -363,4 +393,35 @@ public class FlatProjection extends PlainProjection
 		// and recalc the scale/origin
 		zoom(0.0);
 	}
+	
+
+  ////////////////////////////////////////////////////////////////////////////
+  //  embedded class, used for editing the projection
+  ////////////////////////////////////////////////////////////////////////////
+  public class FlatProjectionInfo extends Editable.EditorType
+  {
+
+    public FlatProjectionInfo(PlainProjection data)
+    {
+      super(data, data.getName(), "");
+    }
+
+    public PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        PropertyDescriptor[] res = {
+          prop("DataBorder", "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
+          prop("ScaleVal", "the scaling factor to use (world units/screen units)")
+        };
+
+        return res;
+      }
+      catch (IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
+  }
+	
 }
