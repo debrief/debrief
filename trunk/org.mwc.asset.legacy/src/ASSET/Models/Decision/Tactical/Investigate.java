@@ -143,7 +143,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
           DetectionList dl = detections.getDetectionsOf(_currentTarget.intValue());
           if (dl != null)
           {
-            validDetection = detections.getBestDetection();
+          	// of the detections of our current target. what's our best quality detection?
+            validDetection = dl.getBestDetection();
 
             // ok. have we reached the correct detection level?
             if (validDetection.getDetectionState() >= _detectionLevel)
