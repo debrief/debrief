@@ -49,7 +49,7 @@
 			</Watch>
 			<Range Value="6" Units="nm" />
 		</StopOnProximityObserver>
-		<RemoveDetectedObserver PlotTheDead="true" Name="Delete detected targets"
+		<RemoveDetectedObserver PlotTheDead="true" Name="Delete id'd targets"
 			Active="true" DetectionLevel="Identified">
 			<Target>
 				<TargetType>

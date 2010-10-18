@@ -197,14 +197,19 @@
   		</Status>
   		<Waterfall Name="LX PAtrol">
   			<Trail Name="">
-  				<TrailRange Value="3000" Units="yds" />
-  				<AllowableError Value="12" Units="nm" />
+  				<TrailRange Value="5" Units="nm" />
+  				<AllowableError Value="9" Units="nm" />
   				<TargetType>
   					<Type Name="BLUE" />
   				</TargetType>
   			</Trail><Investigate Name="Check out reds" DetectionLevel="Identified">
   				<TargetType>
   					<Type Name="RED" />
+  				</TargetType>
+  			</Investigate>
+  			<Investigate Name="Check out greens" DetectionLevel="Identified">
+  				<TargetType>
+  					<Type Name="GREEN" />
   				</TargetType>
   			</Investigate>
   			</Waterfall>
