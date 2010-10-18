@@ -94,17 +94,16 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 				Integer oldVal = _detectionStates.get(tgtId);
 				int detectionState = de.getDetectionState();
 
-
-				if(oldVal != null)
+				if (oldVal != null)
 				{
 					// ditch any old state
 					_detectionStates.remove(tgtId);
-					
+
 					detectionState = Math.max(oldVal, detectionState);
 				}
 
 				_detectionStates.put(tgtId, detectionState);
-				
+
 			}
 
 		}
@@ -198,20 +197,25 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 
 				switch (theState)
 				{
-				case (DetectionEvent.DETECTED):
-				{
-					hisColor = Color.orange;
-					break;
-				}
-				case (DetectionEvent.CLASSIFIED):
-				{
-					hisColor = Color.green;
-					break;
-				}
-				default:
-				{
-					hisColor = Color.red;
-				}
+					case (DetectionEvent.CLASSIFIED):
+					{
+						hisColor = Color.orange;
+						break;
+					}
+					case (DetectionEvent.DETECTED):
+					{
+						hisColor = Color.yellow;
+						break;
+					}
+					case (DetectionEvent.IDENTIFIED):
+					{
+						hisColor = Color.green;
+						break;
+					}
+					default:
+					{
+						hisColor = Color.red;
+					}
 				}
 			}
 
