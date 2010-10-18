@@ -3,6 +3,24 @@
 	<ObserverList>
 		<TimeObserver Name="elapsed time" Active="true">
 			<Duration Value="12" Units="hours" />
-		</TimeObserver></ObserverList>
+		</TimeObserver>
+		<PlotDetectionStatusObserver Name="Detection status" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="SUBSURFACE" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="SUBSURFACE" />
+				</TargetType>
+			</Watch>
+		</PlotDetectionStatusObserver>
+		<DebriefReplayObserver Name="DebriefPlot" record_detections="true"
+			record_positions="true" Active="true" record_decisions="true" file_name="RBTrial">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</DebriefReplayObserver></ObserverList>
 </ScenarioController>
 

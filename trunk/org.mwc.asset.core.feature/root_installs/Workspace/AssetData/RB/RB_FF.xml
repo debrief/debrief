@@ -2,26 +2,26 @@
 <Scenario Name="RB_scenario"  xmlns="http://www.mwc.org/asset" >
   <StepTime Units="seconds" Value="30"/>
   <Participants>
-  <Surface Name="FV1">
+  <Surface Name="RedFV1">
   		<Category Type="FISHING_VESSEL" Force="RED"
   			Environment="SURFACE" />
   		<SensorFit>
   			<PlainCookieSensor>
   				<DetectionRange Value="6" Units="nm" />
   			</PlainCookieSensor></SensorFit>
-  		<Status Course="0.0" Fuel="100">
+  		<Status Course="56" Fuel="100">
   			<Location>
   				<shortLocation Lat="0" Long="0"></shortLocation>
   			</Location>
   			<Speed Value="0.0" Units="m/s" ></Speed>
   		</Status>
-  		<Waterfall Name="">
+  		<Waterfall Name="Mock fishing">
   			<Intercept Name="CloseBlue" AllowSpeedchange="true">
   				<TargetType>
   					<Type Name="BLUE" />
   				</TargetType>
   			</Intercept>
-  			<RectangleWander Name="">
+  			<RectangleWander Name="Pretend to fish">
   				<Area>
   					<TopLeft>
   						<shortLocation Lat="1" Long="0"></shortLocation>
@@ -41,26 +41,56 @@
   			<TurningCircle Value="100" Units="m" />
   		</SurfaceMovementCharacteristics>
   	</Surface>
-  	<Surface Name="SWM">
+  <Surface Name="GreenFV1">
+  		<Category Type="FISHING_VESSEL" Force="GREEN"
+  			Environment="SURFACE" />
+  		<SensorFit></SensorFit>
+  		<Status Course="113" Fuel="100">
+  			<Location>
+  				<shortLocation Lat="0.2" Long="0.3"></shortLocation>
+  			</Location>
+  			<Speed Value="0.0" Units="m/s" ></Speed>
+  		</Status>
+  		<Waterfall Name="Fishing">
+  			<RectangleWander Name="Fish in area">
+  				<Area>
+  					<TopLeft>
+  						<shortLocation Lat="1" Long="0"></shortLocation>
+  					</TopLeft>
+  					<BottomRight>
+  						<shortLocation Lat="0" Long="1"></shortLocation>
+  					</BottomRight>
+  				</Area>
+  				<Speed Value="6" Units="kts" />
+  				<Height Value="0.0" Units="ft" ></Height>
+  			</RectangleWander></Waterfall>
+  		<SurfaceMovementCharacteristics Name="f_perf" FuelUsageRate="0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="50" Units="kts" ></MaxSpeed>
+  			<AccelerationRate Value="3" Units="kt/s" />
+  			<DecelerationRate Value="3" Units="kt/s" />
+  			<TurningCircle Value="100" Units="m" />
+  		</SurfaceMovementCharacteristics>
+  	</Surface>  	<Surface Name="RedSWM">
   		<Category Type="DESTROYER" Force="RED"
   			Environment="SURFACE" />
   		<SensorFit>
   			<PlainCookieSensor>
   				<DetectionRange Value="15" Units="nm" />
   			</PlainCookieSensor></SensorFit>
-  		<Status Course="0.0" Fuel="100">
+  		<Status Course="316" Fuel="100">
   			<Location>
   				<shortLocation Lat="1" Long="1"></shortLocation>
   			</Location>
   			<Speed Value="0.0" Units="m/s" ></Speed>
   		</Status>
-  		<Waterfall Name="">
+  		<Waterfall Name="Attack blue targets">
   			<Intercept Name="CloseBlue" AllowSpeedchange="true">
   				<TargetType>
   					<Type Name="BLUE" />
   				</TargetType>
   			</Intercept>
-  			<RectangleWander Name="">
+  			<RectangleWander Name="Loiter">
   				<Area>
   					<TopLeft>
   						<shortLocation Lat="1" Long="0"></shortLocation>
@@ -69,7 +99,7 @@
   						<shortLocation Lat="0" Long="1"></shortLocation>
   					</BottomRight>
   				</Area>
-  				<Speed Value="6" Units="kts" />
+  				<Speed Value="1" Units="kts" />
   				<Height Value="0.0" Units="ft" ></Height>
   			</RectangleWander></Waterfall>
   		<SurfaceMovementCharacteristics Name="f_perf" FuelUsageRate="0">
@@ -80,26 +110,26 @@
   			<TurningCircle Value="100" Units="m" />
   		</SurfaceMovementCharacteristics>
   	</Surface>
-  	<Surface Name="F1">
+  	<Surface Name="RedFC">
   		<Category Type="FRIGATE" Force="RED"
-  			Environment="SURFACE" />
+  			Environment="SURFACE" ></Category>
   		<SensorFit>
   			<PlainCookieSensor>
   				<DetectionRange Value="10" Units="nm" />
   			</PlainCookieSensor></SensorFit>
-  		<Status Course="0.0" Fuel="100">
+  		<Status Course="18" Fuel="100">
   			<Location>
   				<shortLocation Lat="0.25" Long="0.25"></shortLocation>
   			</Location>
   			<Speed Value="0.0" Units="m/s" ></Speed>
   		</Status>
-  		<Waterfall Name="">
+  		<Waterfall Name="Agressive patrol">
   			<Intercept Name="CloseBlue" AllowSpeedchange="true">
   				<TargetType>
   					<Type Name="BLUE" />
   				</TargetType>
   			</Intercept>
-  			<RectangleWander Name="">
+  			<RectangleWander Name="Patrol">
   				<Area>
   					<TopLeft>
   						<shortLocation Lat="1" Long="0"></shortLocation>
@@ -108,7 +138,7 @@
   						<shortLocation Lat="0" Long="1"></shortLocation>
   					</BottomRight>
   				</Area>
-  				<Speed Value="6" Units="kts" />
+  				<Speed Value="12" Units="kts" />
   				<Height Value="0.0" Units="ft" ></Height>
   			</RectangleWander></Waterfall>
   		<SurfaceMovementCharacteristics Name="f_perf" FuelUsageRate="0">
@@ -118,7 +148,116 @@
   			<DecelerationRate Value="3" Units="kt/s" />
   			<TurningCircle Value="100" Units="m" />
   		</SurfaceMovementCharacteristics>
-  	</Surface></Participants>
+  	</Surface>
+  	<Helo Name="LX">
+  		<Category Type="HELICOPTER" Force="BLUE"
+  			Environment="AIRBORNE" />
+  		<SensorFit>
+  			<TypedCookieSensor DetectionLevel="Classified">
+  				<TypedRangeDoublet>
+  					<Type Name="DESTROYER" />
+  					<DetectionRange Value="20" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="FISHING_VESSEL" ></Type>
+  					<DetectionRange Value="12" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="FRIGATE" />
+  					<DetectionRange Value="30" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="BLUE" />
+  					<DetectionRange Value="500" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor>
+  			  			<TypedCookieSensor DetectionLevel="Identified">
+  				<TypedRangeDoublet>
+  					<Type Name="DESTROYER" />
+  					<DetectionRange Value="5" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="FISHING_VESSEL" ></Type>
+  					<DetectionRange Value="1" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="FRIGATE" />
+  					<DetectionRange Value="12" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="BLUE" />
+  					<DetectionRange Value="500" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor></SensorFit>
+  		<Status Course="22" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="0.5" Long="0.5"></shortLocation>
+  			</Location>
+  			<Speed Value="60" Units="kts" />
+  		</Status>
+  		<Waterfall Name="LX PAtrol">
+  			<Investigate Name="Check out reds" DetectionLevel="Identified">
+  				<TargetType>
+  					<Type Name="RED" />
+  				</TargetType>
+  			</Investigate>
+  			<Trail Name="">
+  				<TrailRange Value="3000" Units="yds" ></TrailRange>
+  				<AllowableError Value="3000" Units="yds" />
+  				<TargetType>
+  					<Type Name="BLUE" ></Type>
+  				</TargetType>
+  			</Trail></Waterfall>
+  		<HeloMovementCharacteristics Name="" FuelUsageRate="0.0"
+  			DefaultTurnRate="1">
+  			<MinSpeed Value="0.0" Units="m/s" />
+  			<MaxSpeed Value="80" Units="kts" />
+  			<AccelerationRate Value="5" Units="kt/s" />
+  			<DecelerationRate Value="8" Units="kts/s" />
+  			<MinHeight Value="0.0" Units="ft" />
+  			<MaxHeight Value="2000" Units="ft" />
+  			<DefaultClimbRate Value="3" Units="m/s" />
+  			<DefaultDiveRate Value="6" Units="m/s" />
+  			<DefaultClimbSpeed Value="40" Units="kts" />
+  			<DefaultDiveSpeed Value="80" Units="kts" />
+  		</HeloMovementCharacteristics>
+  	</Helo>
+  	<Helo Name="MER">
+  		<Category Type="HELICOPTER" Force="BLUE"
+  			Environment="AIRBORNE" />
+  		<SensorFit></SensorFit>
+  		<Status Course="99" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="0.7" Long="0.8"></shortLocation>
+  			</Location>
+  			<Speed Value="0.0" Units="m/s" />
+  		</Status>
+  		<Waterfall Name="MerPatrol"><RectangleWander Name="Patrol">
+  				<Area>
+  					<TopLeft>
+  						<shortLocation Lat="1" Long="0"></shortLocation>
+  					</TopLeft>
+  					<BottomRight>
+  						<shortLocation Lat="0" Long="1"></shortLocation>
+  					</BottomRight>
+  				</Area>
+  				<Speed Value="12" Units="kts" />
+  				<Height Value="0.0" Units="ft" ></Height>
+  			</RectangleWander></Waterfall>
+  		<HeloMovementCharacteristics Name="" FuelUsageRate="0.0"
+  			DefaultTurnRate="1">
+  			<MinSpeed Value="0.0" Units="m/s" />
+  			<MaxSpeed Value="80" Units="kts" />
+  			<AccelerationRate Value="5" Units="kt/s" />
+  			<DecelerationRate Value="8" Units="kts/s" />
+  			<MinHeight Value="0.0" Units="ft" />
+  			<MaxHeight Value="2000" Units="ft" />
+  			<DefaultClimbRate Value="3" Units="m/s" />
+  			<DefaultDiveRate Value="6" Units="m/s" />
+  			<DefaultClimbSpeed Value="40" Units="kts" />
+  			<DefaultDiveSpeed Value="80" Units="kts" />
+  		</HeloMovementCharacteristics>
+  	</Helo></Participants>
   			<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 <grid PlotLabels="true" Units="degs" Visible="true">
