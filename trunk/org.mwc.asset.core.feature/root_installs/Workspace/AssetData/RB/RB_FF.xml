@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="RB_scenario"  xmlns="http://www.mwc.org/asset" >
+<Scenario Name="RB_scenario"  xmlns="http://www.mwc.org/asset" ShowSymbol="false" ShowActivity="false">
   <StepTime Units="seconds" Value="30"/>
   <Participants>
   <Surface Name="RedFV1">
@@ -153,10 +153,10 @@
   		<Category Type="HELICOPTER" Force="BLUE"
   			Environment="AIRBORNE" />
   		<SensorFit>
-  			<TypedCookieSensor DetectionLevel="Classified">
+  			<TypedCookieSensor DetectionLevel="Detected">
   				<TypedRangeDoublet>
   					<Type Name="DESTROYER" />
-  					<DetectionRange Value="20" Units="nm" />
+  					<DetectionRange Value="40" Units="nm" />
   				</TypedRangeDoublet>
   				<TypedRangeDoublet>
   					<Type Name="FISHING_VESSEL" ></Type>
@@ -164,7 +164,7 @@
   				</TypedRangeDoublet>
   				<TypedRangeDoublet>
   					<Type Name="FRIGATE" />
-  					<DetectionRange Value="30" Units="nm" />
+  					<DetectionRange Value="30" Units="nm" ></DetectionRange>
   				</TypedRangeDoublet>
   				<TypedRangeDoublet>
   					<Type Name="BLUE" />
@@ -196,18 +196,18 @@
   			<Speed Value="60" Units="kts" />
   		</Status>
   		<Waterfall Name="LX PAtrol">
-  			<Investigate Name="Check out reds" DetectionLevel="Identified">
+  			<Trail Name="">
+  				<TrailRange Value="3000" Units="yds" />
+  				<AllowableError Value="12" Units="nm" />
+  				<TargetType>
+  					<Type Name="BLUE" />
+  				</TargetType>
+  			</Trail><Investigate Name="Check out reds" DetectionLevel="Identified">
   				<TargetType>
   					<Type Name="RED" />
   				</TargetType>
   			</Investigate>
-  			<Trail Name="">
-  				<TrailRange Value="3000" Units="yds" ></TrailRange>
-  				<AllowableError Value="3000" Units="yds" />
-  				<TargetType>
-  					<Type Name="BLUE" ></Type>
-  				</TargetType>
-  			</Trail></Waterfall>
+  			</Waterfall>
   		<HeloMovementCharacteristics Name="" FuelUsageRate="0.0"
   			DefaultTurnRate="1">
   			<MinSpeed Value="0.0" Units="m/s" />
@@ -223,7 +223,7 @@
   		</HeloMovementCharacteristics>
   	</Helo>
   	<Helo Name="MER">
-  		<Category Type="HELICOPTER" Force="BLUE"
+  		<Category Type="MPA" Force="BLUE"
   			Environment="AIRBORNE" />
   		<SensorFit></SensorFit>
   		<Status Course="99" Fuel="0.0">

@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="RB_output"  xmlns="http://www.mwc.org/asset" >
+	<ScenarioGenerator>
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="GreenFV1" number="80">
+				<ParticipantLocation>
+					<WorldArea>
+						<TopLeft>
+							<shortLocation Lat="1" Long="0"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0" Long="1"></shortLocation>
+						</BottomRight>
+					</WorldArea>
+				</ParticipantLocation></ParticipantVariance>
+		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="elapsed time" Active="true">
 			<Duration Value="12" Units="hours" />
@@ -7,12 +21,12 @@
 		<PlotDetectionStatusObserver Name="Detection status" Active="true">
 			<Target>
 				<TargetType>
-					<Type Name="SUBSURFACE" />
+					<Type Name="RED" />
 				</TargetType>
 			</Target>
 			<Watch>
 				<TargetType>
-					<Type Name="SUBSURFACE" />
+					<Type Name="BLUE" />
 				</TargetType>
 			</Watch>
 		</PlotDetectionStatusObserver>
@@ -21,6 +35,44 @@
 			<SubjectToTrack>
 				<Type Name="BLUE" />
 			</SubjectToTrack>
-		</DebriefReplayObserver></ObserverList>
+		</DebriefReplayObserver>
+		<StopOnProximityObserver Name="Red2Mer" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="MPA" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Watch>
+			<Range Value="6" Units="nm" />
+		</StopOnProximityObserver>
+		<RemoveDetectedObserver PlotTheDead="true" Name="Delete detected targets"
+			Active="true" DetectionLevel="Identified">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="HELICOPTER" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver><RemoveDetectedObserver PlotTheDead="true" Name="Delete id'd friendlies"
+			Active="true" DetectionLevel="Identified">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="HELICOPTER" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver></ObserverList>
 </ScenarioController>
 
