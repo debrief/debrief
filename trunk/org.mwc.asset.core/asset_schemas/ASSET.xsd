@@ -3429,7 +3429,7 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="MultiParticipantGenerator" type="MultiParticipantGeneratorType"
-				minOccurs="0">
+				minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>To specify that multiple participants will be
 						generated within
