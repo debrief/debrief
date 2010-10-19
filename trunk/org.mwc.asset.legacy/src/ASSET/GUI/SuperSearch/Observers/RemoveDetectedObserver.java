@@ -75,10 +75,10 @@ public class RemoveDetectedObserver extends
 	private void ditchHim(final int tgt)
 	{
 		ParticipantType thisPart = getScenario().getThisParticipant(tgt);
-		if(thisPart == null)
+		if (thisPart == null)
 			return;
 		Status hisStat = thisPart.getStatus();
-		if(hisStat == null)
+		if (hisStat == null)
 			return;
 		WorldLocation loc = hisStat.getLocation();
 		Color hisColor = Category.getColorFor(thisPart.getCategory());
@@ -121,20 +121,20 @@ public class RemoveDetectedObserver extends
 		}
 	}
 
-	
 	public void performCloseProcessing(ScenarioType scenario)
 	{
 		super.performCloseProcessing(scenario);
-		
+
 		resetMe();
 	}
-	
+
 	private void resetMe()
 	{
 		_numDitched = 0;
-		_myDeadParts.removeAllElements();
+		if (_myDeadParts != null)
+			_myDeadParts.removeAllElements();
 	}
-	
+
 	@Override
 	public void restart(ScenarioType scenario)
 	{
