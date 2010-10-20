@@ -14,6 +14,10 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
 {
 
   static private final String type = "TargetType";
+  static private final String ANDoperation = "AND";
+  
+  private Boolean doAND = null;
+  
 //  static private final String TYPE_NAME = "Type";
 //  static private final String ATTRIBUTE_NAME = "Name";
 
@@ -23,6 +27,14 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
   {
     super(myType);
 
+    addAttributeHandler(new HandleBooleanAttribute(ANDoperation)
+    {
+      public void setValue(String name, final boolean val)
+      {
+      	doAND = val;
+      }
+    });
+    
     addHandler(new TypeHandler()
     {
       public void addType(final String attr)
@@ -62,6 +74,10 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
   {
     // pass to parent
     setTargetType(tt);
+    
+    // test to comparison
+    if(doAND != null)
+    	tt.setANDOperation(doAND);
 
     // restart
     tt = null;
@@ -114,6 +130,7 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
   {
     // convert it
     final ASSET.Models.Decision.TargetType type1 = (ASSET.Models.Decision.TargetType) toExport;
+    
 
     // is it a real object?
     if (type1 != null)
@@ -121,6 +138,8 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
       // get it as an element
       final org.w3c.dom.Element el = getElement(elementName, type1, doc);
 
+      el.setAttribute(ANDoperation, writeThis(type1.getANDOperation()));
+      
       // add to parent
       parent.appendChild(el);
     }
