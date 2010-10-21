@@ -112,30 +112,34 @@ public final class MultiScenarioGenerator
 			NodeList nl = (NodeList) xp2.evaluate(document, XPathConstants.NODESET);
 			Element el = (Element) nl.item(0);
 
-			// retrieve our working values
-			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
-			_myFileTemplate = el.getAttribute(NAME_TEMPLATE);
-			String numPerms = el.getAttribute(NUMBER_PERMS);
-			_numPerms = Integer.parseInt(numPerms);
-
-			String maxPerms = el.getAttribute(MAX_INSTANCES);
-			if (maxPerms != "")
-			{
-				_maxPerms = Integer.parseInt(maxPerms);
-			}
-
+			// did we find it?
 			if (el != null)
 			{
-				// build up our list of variances from this document
-				final NodeList lis = el.getElementsByTagName("VarianceList");
+				// retrieve our working values
+				_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
+				_myFileTemplate = el.getAttribute(NAME_TEMPLATE);
+				String numPerms = el.getAttribute(NUMBER_PERMS);
+				_numPerms = Integer.parseInt(numPerms);
 
-				final int len = lis.getLength();
-				for (int i = 0; i < len; i++)
+				String maxPerms = el.getAttribute(MAX_INSTANCES);
+				if (maxPerms != "")
 				{
-					final Element o = (Element) lis.item(i);
+					_maxPerms = Integer.parseInt(maxPerms);
+				}
 
-					// and store it
-					_myVariances = new XMLVarianceList(o);
+				if (el != null)
+				{
+					// build up our list of variances from this document
+					final NodeList lis = el.getElementsByTagName("VarianceList");
+
+					final int len = lis.getLength();
+					for (int i = 0; i < len; i++)
+					{
+						final Element o = (Element) lis.item(i);
+
+						// and store it
+						_myVariances = new XMLVarianceList(o);
+					}
 				}
 			}
 		}
@@ -566,8 +570,12 @@ public final class MultiScenarioGenerator
 			Document document = null;
 			try
 			{
-				document = ScenarioGenerator.readDocumentFrom(new FileInputStream(
-						docPath + "test_variance1.xml"));
+				File iFile = new File(docPath + "test_variance1.xml");
+				if (iFile.exists())
+				{
+					FileInputStream fis = new FileInputStream(iFile);
+					document = ScenarioGenerator.readDocumentFrom(fis);
+				}
 			}
 			catch (SAXException e)
 			{
@@ -733,7 +741,7 @@ public final class MultiScenarioGenerator
 			assertTrue("check no exceptions thrown", worked);
 
 			assertNotNull("got some documents", results);
-			if(results == null)
+			if (results == null)
 				return;
 			assertEquals("correct num scenarios", 3, results.length);
 
@@ -789,8 +797,9 @@ public final class MultiScenarioGenerator
 			InputStream varianceStream = null;
 			try
 			{
-				dataStream = new FileInputStream(docPath
+				File iFile = new File(docPath
 						+ "test_variance_scenario_area.xml");
+				dataStream = new FileInputStream(iFile);
 				varianceStream = new FileInputStream(docPath + "test_variance_area.xml");
 			}
 			catch (FileNotFoundException e)
@@ -866,8 +875,8 @@ public final class MultiScenarioGenerator
 			// can we find a scenario generator?
 			try
 			{
-				XPathExpression xp2 = NamespaceContextProvider
-						.createPath("//" + MultiParticipantGenerator.GENERATOR_TYPE);
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//"
+						+ MultiParticipantGenerator.GENERATOR_TYPE);
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element el = (Element) nl.item(0);

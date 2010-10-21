@@ -83,12 +83,14 @@ public class Status implements java.io.Serializable
     _id = id;
     _timeUpdated = time;
 
-    // just double-check the time value
-    if (_timeUpdated == 0)
-    {
-      _timeUpdated = TimePeriod.INVALID_TIME;
-      System.out.println("corrected initial status time");
-    }
+   
+//   NOTE: we used to correct the time - we don't any more, since zero is a valid time
+//    // just double-check the time value
+//    if (_timeUpdated == 0)
+//    {
+//      _timeUpdated = TimePeriod.INVALID_TIME;
+//      System.out.println("corrected initial status time");
+//    }
 
   }
 

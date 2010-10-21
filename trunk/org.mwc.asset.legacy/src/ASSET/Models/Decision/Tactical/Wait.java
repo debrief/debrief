@@ -103,6 +103,13 @@ public class Wait extends CoreDecision implements Serializable
    */
   protected long _expiryTime = -1;
 
+  
+  /** the previous status for this platform (so we can return to it on completion)
+   * 
+   */
+	private DemandedStatus _originalStatus;
+  
+
   //////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
@@ -148,12 +155,16 @@ public class Wait extends CoreDecision implements Serializable
     {
       // no, initialise ourseves
       _expiryTime = newTime + _myDuration.getMillis();
+      _originalStatus = demStatus;
     }
 
     // now check whether we have any remaining wait
     if (newTime >= _expiryTime)
     {
       // all done!
+    	// restore the prior status
+    	res = _originalStatus;
+    	_originalStatus = null;
     }
     else
     {
@@ -161,8 +172,12 @@ public class Wait extends CoreDecision implements Serializable
       // are we working towards a demanded status?
       if (demStatus instanceof SimpleDemandedStatus)
       {
-        // keep us heading towards the current dem status
-        res = new SimpleDemandedStatus(newTime, (SimpleDemandedStatus) demStatus);
+				// keep us heading towards the current dem status
+    //    res = new SimpleDemandedStatus(newTime, (SimpleDemandedStatus) demStatus);
+      	// CHANGE: we're introducing stationery change
+        Status beStationery = new Status(status);
+        beStationery.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
+      	res = new SimpleDemandedStatus(newTime, beStationery);
       }
       else
       {

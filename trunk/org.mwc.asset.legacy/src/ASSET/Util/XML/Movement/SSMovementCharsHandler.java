@@ -64,6 +64,9 @@ abstract public class SSMovementCharsHandler extends ThreeDimMovementCharsHandle
 
     // pass it to the parent
     setMovement(moves);
+    
+    // forget the data
+    _turningCircle = null;
   }
 
 
@@ -79,14 +82,15 @@ abstract public class SSMovementCharsHandler extends ThreeDimMovementCharsHandle
 
     stat.setAttribute("Name", toExport.getName());
     stat.setAttribute(FUEL, writeThis(toExport.getFuelUsageRate()));
-    stat.setAttribute(TURN_CIRCLE, writeThis(toExport.getTurningCircleDiameter(1)));
 
     WorldAccelerationHandler.exportAcceleration(ACCEL, toExport.getAccelRate(), stat, doc);
     WorldAccelerationHandler.exportAcceleration(DECEL, toExport.getDecelRate(), stat, doc);
     WorldSpeedHandler.exportSpeed(MAX_SPEED, toExport.getMaxSpeed(), stat, doc);
     WorldSpeedHandler.exportSpeed(MIN_SPEED, toExport.getMinSpeed(), stat, doc);
 
-
+    WorldDistance theD = new WorldDistance(toExport.getTurningCircleDiameter(1), WorldDistance.METRES);
+    WorldDistanceHandler.exportDistance(TURN_CIRCLE,theD , stat, doc);
+    
     // add to parent
     parent.appendChild(stat);
 

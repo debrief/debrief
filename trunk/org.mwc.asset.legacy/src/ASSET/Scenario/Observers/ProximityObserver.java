@@ -303,8 +303,11 @@ public class ProximityObserver extends CoreObserver implements
 		 * @param rng
 		 *          thje current range (in degrees)
 		 */
-		protected void handleThisRange(double rng)
+		protected void handleThisRange(ScenarioType scenario, final long time, double rng)
 		{
+			// do the super case
+			super.handleThisRange(scenario, time, rng);
+			
 			double distDegs = _cutOffRange.getValueIn(WorldDistance.DEGS);
 
 			if (rng <= distDegs)

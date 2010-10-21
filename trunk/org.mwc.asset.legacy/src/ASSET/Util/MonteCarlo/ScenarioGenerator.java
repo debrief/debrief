@@ -111,9 +111,11 @@ public final class ScenarioGenerator
 	/**
 	 * ************************************************************ member methods
 	 * *
+	 * 
 	 * @param mWrap
 	 *          *
-	 * @param outputDirectory TODO**********************************************************
+	 * @param outputDirectory
+	 *          TODO**********************************************************
 	 */
 
 	public String createScenarios(String templatePath, String controlPath,
@@ -185,11 +187,13 @@ public final class ScenarioGenerator
 	 * @param results
 	 *          vector containing the new scenarios
 	 * @param mWrap
-	 * @param outputDirectory TODO
+	 * @param outputDirectory
+	 *          TODO
 	 * @return error message on failure, or null for success
 	 */
 	protected String doScenarioGeneration(Document template,
-			Document controlFile, Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
+			Document controlFile, Vector<Document> results,
+			ASSETProgressMonitor mWrap, File outputDirectory)
 	{
 		String res = null;
 
@@ -493,14 +497,17 @@ public final class ScenarioGenerator
 
 	/**
 	 * read in the list of variances, and collate them into our list
-	 * @param outputDirectory where to put the generated files
+	 * 
+	 * @param outputDirectory
+	 *          where to put the generated files
 	 */
 	protected void setVariances(final Document document, File outputDirectory)
 	{
 		try
 		{
 			// can we find a scenario generator?
-			XPathExpression xp2 = NamespaceContextProvider.createPath("//" + MultiScenarioGenerator.GENERATOR_TYPE);
+			XPathExpression xp2 = NamespaceContextProvider.createPath("//"
+					+ MultiScenarioGenerator.GENERATOR_TYPE);
 			Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
 			if (el != null)
@@ -509,13 +516,14 @@ public final class ScenarioGenerator
 			}
 
 			// can we find a scenario generator?
-			xp2 = NamespaceContextProvider.createPath("//" + MultiParticipantGenerator.GENERATOR_TYPE);
+			xp2 = NamespaceContextProvider.createPath("//"
+					+ MultiParticipantGenerator.GENERATOR_TYPE);
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 			if (el != null)
 			{
 				this._participantGenny = new MultiParticipantGenerator(document);
 			}
-			
+
 			xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
@@ -523,18 +531,17 @@ public final class ScenarioGenerator
 			xp2 = NamespaceContextProvider.createPath("//ScenarioController");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			if(el != null)
+			if (el != null)
 			{
-  			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);	
-  			String theSeedStr = el.getAttribute(RANDOM_SEED);
-  			if (theSeedStr != null)
-  				if (theSeedStr.length() > 0)
-  					_theSeed = Integer.valueOf(theSeedStr);
+				_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
+				String theSeedStr = el.getAttribute(RANDOM_SEED);
+				if (theSeedStr != null)
+					if (theSeedStr.length() > 0)
+						_theSeed = Integer.valueOf(theSeedStr);
 			}
-			
-			if(outputDirectory != null)
-  			_myDirectory = outputDirectory.getAbsolutePath();
 
+			if (outputDirectory != null)
+				_myDirectory = outputDirectory.getAbsolutePath();
 
 		}
 		catch (Exception e)
@@ -586,7 +593,6 @@ public final class ScenarioGenerator
 	public final String createNewRandomisedPermutations(
 			Vector<Document> resultsContainer, ASSETProgressMonitor mWrap)
 	{
-
 
 		String res = null;
 
@@ -675,9 +681,9 @@ public final class ScenarioGenerator
 				}
 
 				newResults.add(thisScenario);
-				
+
 				// report progress to the monitor, if we have one
-				if(mWrap != null)
+				if (mWrap != null)
 					mWrap.worked(1);
 
 				// and indicate our progress
@@ -885,8 +891,9 @@ public final class ScenarioGenerator
 			Document var = null;
 			try
 			{
-				var = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath
-						+ VARIANCE_FILE));
+				File iFile = new File(docPath + VARIANCE_FILE);
+				FileInputStream fis = new FileInputStream(iFile);
+				var = ScenarioGenerator.readDocumentFrom(fis);
 			}
 			catch (SAXException e)
 			{
@@ -1159,9 +1166,12 @@ public final class ScenarioGenerator
 			assertNotNull("valid file didn't throw any errors", res);
 
 			// and check it's contents
-			assertEquals("correct error message",
-					"cvc-elt.1: Cannot find the declaration of element 'Scenaio'.", res);
-
+			// assertEquals("correct error message",
+			// "cvc-elt.1: Cannot find the declaration of element 'Scenaio'.", res);
+			assertEquals(
+					"correct error message",
+					"The element type \"Scenaio\" must be terminated by the matching end-tag \"</Scenaio>\".",
+					res);
 		}
 
 	}

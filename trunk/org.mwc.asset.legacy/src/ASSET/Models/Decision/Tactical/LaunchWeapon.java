@@ -803,7 +803,7 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
       "<Broadband BaseNoiseLevel=\"40\"/>" +
       "</RadiatedCharacteristics>" +
       "<SSMovementCharacteristics AccelerationRate=\"10\" DepthChangeRate=\"2\"" +
-      " FuelUsageRate=\"0\" MaxDepth=\"200\" MaxSpeed=\"34\" Name=\"SPEARFISH\" TurningCircle=\"45\">" +
+      " FuelUsageRate=\"0\" MaxDepth=\"200\" MaxSpeed=\"34\" Name=\"SPEARFISH\" >" +
       " <MinSpeed Units=\"m/s\" Value=\"0\"/>" + 
       " <MaxSpeed Units=\"m/s\" Value=\"16\"/>" + 
       " <MinHeight Units=\"m\" Value=\"-100\"/>" + 
@@ -811,6 +811,7 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
       " <DefaultClimbRate Units=\"ft/s\" Value=\"20\"/>" +
       " <DefaultDiveRate Units=\"ft/s\" Value=\"20\"/>" +
       " <AccelerationRate Units=\"m/s/s\" Value=\"12\"/>" + 
+      " <TurningCircle Units=\"m\" Value=\"45\"/>" + 
       " <DecelerationRate Units=\"m/s/s\" Value=\"12\"/> </SSMovementCharacteristics>" + 
       "</Torpedo>";
 

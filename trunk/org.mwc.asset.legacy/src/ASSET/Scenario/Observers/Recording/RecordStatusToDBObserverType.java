@@ -535,7 +535,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		public void testCombinations()
 		{
 //			doThisTest(true, true, true, null);
-			doThisTest(true, false, false, null);
+	//		doThisTest(true, false, false, null);
 //			doThisTest(false, true, false, null);
 //			doThisTest(false, false, false, null);
 		}

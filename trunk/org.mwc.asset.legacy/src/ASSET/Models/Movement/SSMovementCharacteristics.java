@@ -71,6 +71,8 @@ public class SSMovementCharacteristics extends ThreeDimMovementCharacteristics
    */
   public double getTurningCircleDiameter(double m_sec)
   {
+  	if(_turningCircleDiameter == null)
+  		System.err.println("here");
     return _turningCircleDiameter.getValueIn(WorldDistance.METRES);
   }
 

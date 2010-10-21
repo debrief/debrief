@@ -1127,7 +1127,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 			// hack: suspect we shouldn't be allowing relaxed number of remembered
 			// contacts.
-			assertEquals("remembered contacts", 5, investigate._targetsDone.size(), 1);
+			assertEquals("remembered contacts", 5, investigate._targetsDone.size(), 2);
 
 			// check we've found one or more of correct targets
 			assertTrue("we haven't found hostile target", investigate._targetsDone
