@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/dev/cmap_64/org.mwc.asset.legacy/schemas/ASSET.xsd"
- OutputDirectory="test_reports/asset_test_output/test_variance1">
+<ScenarioController OutputDirectory="RB_output"
+	xmlns="http://www.mwc.org/asset">
   <ScenarioGenerator>
     <MultiScenarioGenerator NameTemplate="output" Number="3">
       <VarianceList>

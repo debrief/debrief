@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:schemas/ASSET.xsd" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
+<Scenario xmlns="http://www.mwc.org/asset" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
   <StepTime Units="seconds" Value="30"/>
   <Environment Name="first test env" SeaState="3" AtmosphericAttenuation="HAZE" LightLevel="DAYLIGHT">
     <RadarLookupEnvironment Name="radar environment">
