@@ -502,7 +502,8 @@ public interface Editable
     public final void removePropertyChangeListener(
         final PropertyChangeListener listener)
     {
-      _pSupport.removePropertyChangeListener(listener);
+    	if(_pSupport != null)
+        _pSupport.removePropertyChangeListener(listener);
     }
 
     /**
