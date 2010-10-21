@@ -194,7 +194,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * 
 	 * @author ian.mayo
 	 */
-	public static class CompareEditables implements Comparator<Editable>, Serializable
+	public static class CompareEditables implements Comparator<Editable>,
+			Serializable
 	{
 		/**
 		 * 
@@ -212,15 +213,18 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			else if (p1 instanceof PlotMeFirst)
 			{
 				res = -1;
-			} else if (p2 instanceof PlotMeFirst)
+			}
+			else if (p2 instanceof PlotMeFirst)
 			{
 				res = 1;
-			} else if (p1 instanceof Comparable)
+			}
+			else if (p1 instanceof Comparable)
 			{
 				// yup, let them go for it
 				Comparable<Editable> c1 = (Comparable<Editable>) p1;
 				res = c1.compareTo(p2);
-			} else
+			}
+			else
 				res = p1.getName().compareTo(p2.getName());
 
 			return res;
@@ -279,18 +283,24 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			{
 				Plottable thisP = (Plottable) next;
 
-				// see if this plottable is within the data area
-				WorldArea wp = thisP.getBounds();
+				// is this plottable visible
+				if (thisP.getVisible())
+				{
 
-				if (wp != null)
-				{
-					// it has an area, see if it is in view
-					if (wp.overlaps(wa))
+					// see if this plottable is within the data area
+					WorldArea wp = thisP.getBounds();
+
+					if (wp != null)
+					{
+						// it has an area, see if it is in view
+						if (wp.overlaps(wa))
+							thisP.paint(dest);
+					}
+					else
+					{
+						// it doesn't have an area, so plot it anyway
 						thisP.paint(dest);
-				} else
-				{
-					// it doesn't have an area, so plot it anyway
-					thisP.paint(dest);
+					}
 				}
 			}
 		}
@@ -300,7 +310,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * get the area covered by this list
 	 */
 	public MWC.GenericData.WorldArea getBounds()
-	{	
+	{
 		// do we need to recalculate?
 		if (_myArea == null)
 		{
@@ -311,8 +321,9 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		return _myArea;
 
 	}
-	
-	/** reset the bounds of this object
+
+	/**
+	 * reset the bounds of this object
 	 * 
 	 */
 	public void clearBounds()
@@ -341,7 +352,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 					WorldArea thisA = thisOne.getBounds();
 					if (thisA != null)
 						res = new WorldArea(thisA);
-				} else
+				}
+				else
 				{
 					WorldArea thisA = thisOne.getBounds();
 					if (thisA != null)
