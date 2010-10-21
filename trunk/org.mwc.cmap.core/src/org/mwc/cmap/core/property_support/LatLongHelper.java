@@ -7,6 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CellEditor;
@@ -37,6 +38,7 @@ public class LatLongHelper extends EditorHelper
 	 * remember how to format items on line
 	 */
 	protected static DecimalFormat _floatFormat = new DecimalFormat("0.0000");
+	private HashMap<WorldLocation, LatLongPropertySource> _myLocations;
 
 	/**
 	 * constructor. just declare our object type
@@ -65,12 +67,29 @@ public class LatLongHelper extends EditorHelper
 		return (target == WorldLocation.class);
 	}
 
-	public Object translateToSWT(Object value)
+	public Object translateToSWT(Object orig)
 	{
+		WorldLocation value = (WorldLocation) orig;
+		
+		// do we have a list?
+		if(_myLocations == null)
+		  _myLocations = new HashMap<WorldLocation, LatLongPropertySource>();
+		
+		
+		LatLongPropertySource res = null;
+		
+		// do we know this one already?
+		res = _myLocations.get(value);
+		if(res == null)
+		{
+			res = new LatLongPropertySource((WorldLocation) value);
+			_myLocations.put(value, res);
+		}
+		
 		// ok, we've received a location. Return our new property source
 		// representing a
 		// DTG
-		return new LatLongPropertySource((WorldLocation) value);
+		return res;
 	}
 
 	public Object translateFromSWT(Object value)
@@ -149,7 +168,7 @@ public class LatLongHelper extends EditorHelper
 
 		private WorldDistance _origDepth;
 
-		private WorldLocation _originalLocation;
+		final private WorldLocation _originalLocation;
 
 		/**
 		 * name for the lat & long properties
@@ -321,6 +340,11 @@ public class LatLongHelper extends EditorHelper
 			return res;
 		}
 
+		public WorldLocation getOriginalValue()
+		{
+			return _originalLocation;
+		}
+		
 		/**
 		 * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(Object)
 		 */
