@@ -812,4 +812,19 @@ public final class WorldArea implements Serializable
 		}
 	}
 
+	/** generate a random location, uniformly distributed within this area
+	 * 
+	 * @return
+	 */
+	public WorldLocation getRandomLocation()
+	{
+		double _lat, _long, _depth;
+		
+		_lat = _bottomLeft.getLat() + Math.random() * getHeight();
+		_long = _bottomLeft.getLong() + Math.random() * getWidth();
+		_depth = _bottomLeft.getDepth() + Math.random() * getDepthRange();
+		
+		return new WorldLocation(_lat, _long, _depth);
+	}
+
 }
