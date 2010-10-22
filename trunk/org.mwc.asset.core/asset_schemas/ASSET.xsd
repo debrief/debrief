@@ -3207,6 +3207,11 @@
 							be processed in separate (parallel) planes </xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="RandomCourse" type="xs:boolean" default="true">
+					<xs:annotation>
+						<xs:documentation>Whether the give the participant a random course</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -3225,6 +3230,12 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
+		<xs:attribute name="inRandomLocations" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Whether to distribute patricipants randomly within area (alternate is uniform distribution)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		
 	</xs:complexType>
 	<xs:complexType name="VarianceListType">
 		<xs:annotation>
