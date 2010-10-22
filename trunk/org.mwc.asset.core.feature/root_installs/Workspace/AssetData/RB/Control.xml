@@ -4,13 +4,8 @@
 	<ScenarioGenerator>
 
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="GreenFV1" number="60">
-				<Variance name="Vary initial course" id="Status">
-					<Attribute name="Course">
-						<Range max="0" min="360" />
-					</Attribute>
-				</Variance>
-				<ParticipantLocation>
+			<ParticipantVariance name="GreenFV1" number="50">
+				<ParticipantLocation inRandomLocations="false">
 					<WorldArea>
 						<TopLeft>
 							<shortLocation Lat="1" Long="0"></shortLocation>
@@ -21,13 +16,8 @@
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-			<ParticipantVariance name="RedFV1" number="3">
-				<Variance name="Vary initial course" id="Status">
-					<Attribute name="Course">
-						<Range max="0" min="360" />
-					</Attribute>
-				</Variance>
-				<ParticipantLocation>
+			<ParticipantVariance name="RedFV1" number="12">
+				<ParticipantLocation inRandomLocations="true">
 					<WorldArea>
 						<TopLeft>
 							<shortLocation Lat="1" Long="0.3"></shortLocation>
@@ -38,14 +28,20 @@
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-						<ParticipantVariance name="RedFC" number="6">
-				<Variance name="Vary initial course" id="Status">
-					<Attribute name="Course">
-						<Range max="0" min="360" />
-					</Attribute>
-
-				</Variance>
+			<ParticipantVariance name="RedFC" number="6">
 				<ParticipantLocation>
+					<WorldArea>
+						<TopLeft>
+							<shortLocation Lat="1" Long="0.1"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0.2" Long="1"></shortLocation>
+						</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+			<ParticipantVariance name="RedSWM" number="1">
+				<ParticipantLocation inRandomLocations="true">
 					<WorldArea>
 						<TopLeft>
 							<shortLocation Lat="1" Long="0"></shortLocation>
@@ -82,30 +78,17 @@
 				<Type Name="BLUE" />
 			</SubjectToTrack>
 		</DebriefReplayObserver>
-		<StopOnProximityObserver Name="Red2Mer"
+		<StopOnProximityObserver Name="Non-BLUE near MER"
 			Active="true">
 			<Target>
-				<TargetType>
-					<Type Name="MPA" />
-				</TargetType>
-			</Target>
-			<Watch>
-				<TargetType>
+				<TargetType AND="false">
 					<Type Name="RED" />
-				</TargetType>
-			</Watch>
-			<Range Value="6" Units="nm" />
-		</StopOnProximityObserver>
-				<StopOnProximityObserver Name="Green2Mer"
-			Active="true">
-			<Target>
-				<TargetType>
-					<Type Name="MPA" />
+					<Type Name="GREEN" />
 				</TargetType>
 			</Target>
 			<Watch>
 				<TargetType>
-					<Type Name="GREEN" />
+					<Type Name="MPA" />
 				</TargetType>
 			</Watch>
 			<Range Value="6" Units="nm" />
@@ -113,20 +96,8 @@
 		<RemoveDetectedObserver PlotTheDead="true"
 			Name="Delete id'd targets" Active="true" DetectionLevel="Identified">
 			<Target>
-				<TargetType>
+				<TargetType AND="false">
 					<Type Name="RED" />
-				</TargetType>
-			</Target>
-			<Watch>
-				<TargetType>
-					<Type Name="HELICOPTER" />
-				</TargetType>
-			</Watch>
-		</RemoveDetectedObserver>
-		<RemoveDetectedObserver PlotTheDead="true"
-			Name="Delete id'd friendlies" Active="true" DetectionLevel="Identified">
-			<Target>
-				<TargetType>
 					<Type Name="GREEN" />
 				</TargetType>
 			</Target>

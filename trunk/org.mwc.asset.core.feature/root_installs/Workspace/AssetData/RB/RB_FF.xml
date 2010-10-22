@@ -237,11 +237,21 @@
 			<SensorFit></SensorFit>
 			<Status Course="99" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="0.72" Long="0.86"></shortLocation>
+					<shortLocation Lat="0.72" Long="1.0"></shortLocation>
 				</Location>
 				<Speed Value="80" Units="m/s" />
 			</Status>
 			<Waterfall Name="MerPatrol">
+				<Evade Name="Keep clear">
+					<Duration Value="2" Units="minutes" />
+					<FleeHeight Value="200" Units="ft" ></FleeHeight>
+					<FleeSpeed Value="60" Units="ft/s" />
+					<TargetType AND="false">
+						<Type Name="RED" ></Type>
+						<Type Name="GREEN" />
+					</TargetType>
+				</Evade>
+				<Sequence>
 				<Move Name="Leg 1" Course="330">
 					<Vector Value="6" Units="nm" />
 				</Move>
@@ -296,6 +306,7 @@
 				<Wait Name="do dip">
 					<Duration Value="7" Units="minutes"></Duration>
 				</Wait>
+				</Sequence>
 			</Waterfall>
 			<HeloMovementCharacteristics Name=""
 				FuelUsageRate="0.0" DefaultTurnRate="1">
