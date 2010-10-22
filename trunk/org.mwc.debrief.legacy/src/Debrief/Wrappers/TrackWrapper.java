@@ -786,7 +786,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			catch (final IntrospectionException e)
 			{
-				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
 		}
