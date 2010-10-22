@@ -248,6 +248,11 @@ public class EditableWrapper implements IPropertySource
 			}
 
 		}
+		
+		// just make sure we aren't returning a null...
+		if(_myDescriptors == null)
+			_myDescriptors = new IPropertyDescriptor[]{};
+		
 		return _myDescriptors;
 	}
 

@@ -72,6 +72,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import MWC.GUI.ToolParent;
+
 /** Class to allow the output of stack traces to file, instead of the command line
  *
  * @author Ian.Mayo
@@ -97,11 +99,23 @@ public class Trace extends java.lang.Object {
      * trace file being created
      */
     static private boolean _warningShown = false;
+    
+    static private ToolParent _myParent;
 
   //////////////////////////////////////////////////
   // member methods
   //////////////////////////////////////////////////
 
+  	/**
+  	 * initialise the tool, so that it knows where to get it's layers information
+  	 * 
+  	 * @param theParent
+  	 */
+  	public static void initialise(ToolParent theParent)
+  	{
+  		_myParent = theParent;
+  	}
+    
 /** write this exception to the trace file
  * @param e the exception to record
  */
@@ -124,6 +138,10 @@ public class Trace extends java.lang.Object {
 
       e.printStackTrace(_output);
 
+      // do we have a logger?
+      if(_myParent != null)
+      	_myParent.logError(ToolParent.INFO, "Exception caught:" + e.getMessage(),null);
+      
       if(DEBUG)
       {
         e.printStackTrace();
@@ -147,6 +165,10 @@ public class Trace extends java.lang.Object {
         MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
         _warningShown = true;
       }
+
+      // do we have a logger?
+      if(_myParent != null)
+      	_myParent.logError(ToolParent.INFO, message,null);
 
 
       //
@@ -199,6 +221,11 @@ public class Trace extends java.lang.Object {
         System.err.println(message);
         e.printStackTrace();
       }
+      
+      // do we have a logger?
+      if(_myParent != null)
+      	_myParent.logError(ToolParent.INFO, message + "-" + e.getMessage(),null);
+
     }
 
 /** create the output stream

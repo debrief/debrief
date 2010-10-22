@@ -50,6 +50,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -171,6 +172,9 @@ public class CorePlugin extends AbstractUIPlugin
 
 		// and the range calculator (it needs to know for the user pref on units)
 		rangeCalc.init(_toolParent);
+		
+		// and the old error logger
+		Trace.initialise(_toolParent);
 
 	}
 

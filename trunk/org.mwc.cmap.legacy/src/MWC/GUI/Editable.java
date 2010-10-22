@@ -437,6 +437,9 @@ public interface Editable
      */
     public PropertyDescriptor[] getPropertyDescriptors()
     {
+			MWC.Utilities.Errors.Trace
+			.trace("Possible problem collating properties for:" + getName() + " (" + getData().getClass() + ")", false);
+
       return super.getPropertyDescriptors();
     }
 
