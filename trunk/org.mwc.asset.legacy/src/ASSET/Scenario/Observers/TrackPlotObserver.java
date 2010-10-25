@@ -780,7 +780,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 			File file = new File(directoryName + fileName);
 			assertTrue("file got created", file.exists());
 			System.out.println("file size is:" + file.length());
-			assertEquals("file is of correct size", (float) 3823, (float) file
+			assertEquals("file is of correct size", (float) 7540, (float) file
 					.length(), 100);
 		}
 	}
