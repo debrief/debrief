@@ -372,28 +372,6 @@ public class ScenarioControllerView extends ViewPart implements
 
 	}
 
-	protected void doMultiRunOperation()
-	{
-		System.out.println("doing run");
-
-		Thread doRun = new Thread()
-		{
-
-			@Override
-			public void run()
-			{
-				// tell them to go for it
-				_myMultiScenario.nowRun(System.out, System.err, System.in,
-						_newScenarioListener);
-
-				// ok, better refresh the workspace
-				refreshWorkspace();
-			}
-		};
-		doRun.start();
-
-	}
-
 	protected static class WrappedProgressMonitor implements ASSETProgressMonitor
 	{
 		final IProgressMonitor monitor;
@@ -503,6 +481,28 @@ public class ScenarioControllerView extends ViewPart implements
 		});
 		job.setUser(true);
 		job.schedule(); // start as soon as possible
+	}
+
+	protected void doMultiRunOperation()
+	{
+		System.out.println("doing run");
+	
+		Thread doRun = new Thread()
+		{
+	
+			@Override
+			public void run()
+			{
+				// tell them to go for it
+				_myMultiScenario.nowRun(System.out, System.err, System.in,
+						_newScenarioListener);
+	
+				// ok, better refresh the workspace
+				refreshWorkspace();
+			}
+		};
+		doRun.start();
+	
 	}
 
 	@SuppressWarnings("unchecked")
