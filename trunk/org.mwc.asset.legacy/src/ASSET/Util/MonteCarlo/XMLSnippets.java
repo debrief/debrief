@@ -46,7 +46,12 @@ public final class XMLSnippets
 			final Element thisNode = (Element) theSnippets.item(i);
 
 			// and now for the sibling (which contains our data)
-			final Node nextS = thisNode.getNextSibling();
+			 Node nextS = thisNode.getFirstChild();
+			
+			// aah, it may have been blank space...
+			 int theType = nextS.getNodeType();
+			 if(theType == Node.TEXT_NODE)
+					nextS = nextS.getNextSibling();
 
 			// now add them to our choices
 			_mySnippets.add(nextS);
@@ -71,6 +76,7 @@ public final class XMLSnippets
 		final int len = _mySnippets.size();
 		final int rndIndex = (int) (ASSET.Util.RandomGenerator.nextRandom() * len);
 
+		Node nextS = _mySnippets.get(rndIndex);
 		final Element res = (Element) _mySnippets.get(rndIndex);
 
 		return res;
