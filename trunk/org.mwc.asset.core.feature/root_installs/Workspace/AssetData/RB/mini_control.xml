@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="RB_output"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="GreenFV1" number="400"
+				RandomCourse="true">
+				<ParticipantLocation inRandomLocations="true">
+					<WorldArea>
+						<TopLeft>
+							<shortLocation Lat="1" Long="0"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0" Long="1"></shortLocation>
+						</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+		</MultiParticipantGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="elapsed time" Active="true">
+			<Duration Value="10" Units="minutes" />
+		</TimeObserver>
+		<PlotDetectionStatusObserver Name="Detection status"
+			Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotDetectionStatusObserver>
+		<DebriefReplayObserver Name="DebriefPlot"
+			record_detections="true" record_positions="true" Active="true"
+			record_decisions="true" file_name="RBTrial">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+		<RemoveDetectedObserver PlotTheDead="true"
+			Name="Delete id'd targets" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<PlotSensorObserver Name="PlotMerlin" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+	</ObserverList>
+</ScenarioController>
+

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="RB_mini_scenario" xmlns="http://www.mwc.org/asset"
+	ShowSymbol="false" ShowActivity="false" ShowName="false">
+	<StepTime Units="seconds" Value="15" />
+	<Participants>
+		<Surface Name="GreenFV1">
+			<Category Type="FISHING_VESSEL" Force="GREEN" Environment="SURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="113" Fuel="100">
+				<Location>
+					<shortLocation Lat="0.2" Long="0.3"></shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s"></Speed>
+			</Status>
+			<Waterfall Name="Fishing">
+				<RectangleWander Name="Fish in area">
+					<Area>
+						<TopLeft>
+							<shortLocation Lat="1" Long="0"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0" Long="1"></shortLocation>
+						</BottomRight>
+					</Area>
+					<Speed Value="6" Units="kts" />
+					<Height Value="0.0" Units="ft"></Height>
+				</RectangleWander>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name="f_perf"
+				FuelUsageRate="0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="10" Units="kts"></MaxSpeed>
+				<AccelerationRate Value="3" Units="kt/s" />
+				<DecelerationRate Value="3" Units="kt/s" />
+				<TurningCircle Value="100" Units="m" />
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Helo Name="MER">
+			<Category Type="MPA" Force="BLUE" Environment="AIRBORNE" />
+			<SensorFit>
+				<PlainCookieSensor Name="SimpleCookie">
+					<DetectionRange Value="4" Units="nm">
+					</DetectionRange>
+				</PlainCookieSensor></SensorFit>
+			<Status Course="99" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="0.5" Long="0.5"></shortLocation>
+				</Location>
+				<Speed Value="0" Units="m/s" />
+			</Status>
+			<Waterfall Name="MerPatrol">
+			</Waterfall>
+			<HeloMovementCharacteristics Name=""
+				FuelUsageRate="0.0" DefaultTurnRate="1">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="80" Units="kts" />
+				<AccelerationRate Value="5" Units="kt/s" />
+				<DecelerationRate Value="8" Units="kts/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="2000" Units="ft" />
+				<DefaultClimbRate Value="3" Units="m/s" />
+				<DefaultDiveRate Value="6" Units="m/s" />
+				<DefaultClimbSpeed Value="40" Units="kts" />
+				<DefaultDiveSpeed Value="80" Units="kts" />
+			</HeloMovementCharacteristics>
+		</Helo>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
+				<Delta Units="nm" Value="10" />
+				<colour Value="DARK_GREY" />
+			</grid>
+			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
+				Name="World Default" ScaleMax="100000" ScaleStep="50000" Visible="true">
+				<colour Value="GREY" />
+			</scale>
+		</layer>
+	</DebriefLayer>
+</Scenario>
