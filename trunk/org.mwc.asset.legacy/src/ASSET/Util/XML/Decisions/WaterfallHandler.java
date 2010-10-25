@@ -27,7 +27,7 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 	// control this, by only allowing Chains to nest 5 deep (at the fifth level,
 	// don't add
 	// the chain and sequence handlers)
-	public final static int MAX_CHAIN_DEPTH = 5;
+	public final static int MAX_CHAIN_DEPTH = 4;
 	public static int _thisChainDepth = 0;
 
 	public WaterfallHandler(int thisDepth)

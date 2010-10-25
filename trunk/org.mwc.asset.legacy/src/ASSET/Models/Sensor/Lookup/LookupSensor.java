@@ -23,6 +23,7 @@ import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
 import MWC.GenericData.*;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -1990,7 +1991,9 @@ public abstract class LookupSensor extends CoreSensor
 			CoreScenario cs = new CoreScenario();
 			try
 			{
-				String fName = "../org.mwc.asset.sample_data/data/lookup_tutorial_scenario.xml";
+				String fName = "../org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/legacy/lookup_tutorial_scenario.xml";
+				File tFile = new File(fName);
+				assertTrue("sceanrio not found", tFile.exists());
 				java.io.FileInputStream fis = new java.io.FileInputStream(fName);
 				ASSET.Util.XML.ASSETReaderWriter.importThis(cs, fName, fis);
 			}

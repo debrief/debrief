@@ -77,6 +77,14 @@ public class SupportTesting extends junit.framework.TestCase
     outputThis(theDoc, title);
   }
 
+  /** dummy test to make Eclipse's automated test finder work
+   * satisfactorily
+   */
+  public void testDummy()
+  {
+  	assertTrue("I'm not really in right now", true);
+  }
+  
   public static void outputThis(Document theDoc, String title)
   {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
-<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:schemas/ASSET.xsd" OutputDirectory="test_reports/asset_test_output/test_variance1">
+<ScenarioController xmlns="http://www.mwc.org/asset" OutputDirectory="test_reports/asset_test_output/test_variance1">
 	<ObserverList>
 		<TimeObserver Name="run for couple of hours" Active="true">
 			<Duration Units="hours" Value="8"/>

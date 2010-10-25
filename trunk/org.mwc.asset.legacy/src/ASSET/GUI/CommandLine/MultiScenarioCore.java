@@ -463,7 +463,14 @@ public class MultiScenarioCore implements ISimulationQue
 			// args[1] =
 			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
 			MultiScenarioCore scen = new MultiScenarioCore();
-			int res = scen.prepareFiles(args[0], args[1], out, err, in, null, null);
+			ASSETProgressMonitor pMon = new ASSETProgressMonitor(){
+				public void beginTask(String name, int totalWork)
+				{
+				}
+				public void worked(int work)
+				{
+				}};
+			int res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
 			assertEquals("ran ok", SUCCESS, res);
 
 			// check the contents of the error message

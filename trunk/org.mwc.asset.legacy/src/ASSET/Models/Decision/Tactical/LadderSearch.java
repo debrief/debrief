@@ -93,6 +93,7 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioActivityMonitor;
 import ASSET.Util.SupportTesting;
+import MWC.Algorithms.EarthModel;
 import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
@@ -731,13 +732,42 @@ public final class LadderSearch extends CoreDecision implements Serializable
   public static final class LadderSearchTest extends SupportTesting.EditableTesting
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		private EarthModel _oldModel;
 
     public LadderSearchTest(final String s)
     {
       super(s);
+      
     }
+    
+    
 
-    /**
+    @Override
+		protected void setUp() throws Exception
+		{
+			super.setUp();
+
+			_oldModel = WorldLocation.getModel();
+			
+			// store the model we're expecting
+      MWC.GenericData.WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
+
+		}
+
+
+
+		@Override
+		protected void tearDown() throws Exception
+		{
+			super.tearDown();
+			
+			// restore the previous model
+			WorldLocation.setModel(_oldModel);
+		}
+
+
+
+		/**
      * get an object which we can test
      *
      * @return Editable object which we can check the properties for
@@ -937,10 +967,10 @@ public final class LadderSearch extends CoreDecision implements Serializable
       //      tpo.tearDown(cs);
 
       WorldLocation endPoint = merlin.getStatus().getLocation();
-      WorldLocation correctEnd = SupportTesting.createLocation(255658, 8313035);
+      WorldLocation correctEnd = SupportTesting.createLocation(64456,8312860);
       SupportTesting.outputLocation(endPoint);
       WorldVector error = correctEnd.subtract(endPoint);
-      assertEquals("near to correct end point", 0, MWC.Algorithms.Conversions.Degs2m(error.getRange()), 400);
+      assertEquals("near to correct end point:" + endPoint, 0, MWC.Algorithms.Conversions.Degs2m(error.getRange()), 400);
 
     }
 
@@ -1049,7 +1079,7 @@ public final class LadderSearch extends CoreDecision implements Serializable
       //      tpo.tearDown(cs);
 
       WorldLocation endPoint = merlin.getStatus().getLocation();
-      WorldLocation correctEnd = SupportTesting.createLocation(265420,25517);
+      WorldLocation correctEnd = SupportTesting.createLocation(265396,26140);
             SupportTesting.outputLocation(endPoint);
       WorldVector error = correctEnd.subtract(endPoint);
       assertEquals("near to correct end point", 0, MWC.Algorithms.Conversions.Degs2m(error.getRange()), 400);
