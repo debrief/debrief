@@ -414,10 +414,7 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
     {
       DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
       Layers res = new Layers();
-      //       final String fName = "D:\\dev\\Debrief\\Source\\src\\Debrief\\test_tma_read_write.xml";
-      String fName = System.getProperty("dataDir");
-      assertNotNull("dataDir system variable not set - should be in debrief_legacy\\src", fName);
-      fName += "/test_tma_read_write.xml";
+      String fName = "src/test_tma_read_write.xml";
       
       java.io.File fileTest = new File(fName);
       assertTrue("Test file not found:" + fName, fileTest.exists());

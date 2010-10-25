@@ -254,8 +254,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 49, tw.numFixes());
-		assertEquals("has all sensor cuts", 17, countCuts(tw.getSensors()));
-		assertEquals("has all tma cuts", 33, countSolutions(tw.getSolutions()));
+		assertEquals("has all sensor cuts", 15, countCuts(tw.getSensors()));
+		assertEquals("has all tma cuts", 29, countSolutions(tw.getSolutions()));
 
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(4 * 60000));

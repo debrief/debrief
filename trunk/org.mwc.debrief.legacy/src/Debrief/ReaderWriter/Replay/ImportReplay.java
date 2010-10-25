@@ -250,6 +250,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -269,6 +270,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
+import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
@@ -1197,7 +1199,7 @@ public class ImportReplay extends PlainImporterBase
 		public testImport(String val)
 		{
 			super(val);
-			String fileRoot = System.getProperty("dataDir");
+			String fileRoot = "src";
 
 			// 
 			assertNotNull("Check data directory is configured", fileRoot);
@@ -1211,6 +1213,58 @@ public class ImportReplay extends PlainImporterBase
 		public final void testReadREP()
 		{
 			java.io.File testFile = null;
+			
+			// specify the parent object - so our processing can retrieve the 
+			// OTG setting
+			ImportReplay.initialise(new ToolParent(){
+
+				@Override
+				public void addActionToBuffer(Action theAction)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public Map<String, String> getPropertiesLike(String pattern)
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public String getProperty(String name)
+				{
+					return ImportReplay.IMPORT_AS_OTG;
+				}
+
+				@Override
+				public void restoreCursor()
+				{
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void setCursor(int theCursor)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void setProperty(String name, String value)
+				{
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void logError(int status, String text, Exception e)
+				{
+					// TODO Auto-generated method stub
+					
+				}});
 
 			// can we load it directly
 			testFile = new java.io.File(fileName);
@@ -1282,7 +1336,7 @@ public class ImportReplay extends PlainImporterBase
 			assertTrue("File finished received", fileFinished);
 			assertTrue("All Files finished received", allFilesFinished);
 
-			assertEquals("Count of layers", _theLayers.size(), 2);
+			assertEquals("Count of layers",2,  _theLayers.size());
 
 			// area of coverage
 			MWC.GenericData.WorldArea area = _theLayers.elementAt(0).getBounds();

@@ -139,6 +139,7 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 
 import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
@@ -148,9 +149,12 @@ import MWC.GUI.Editable;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -1328,6 +1332,11 @@ public final class SensorContactWrapper extends
 			final WorldVector test_other_vector = new WorldVector(
 					MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
 			final WorldLocation test_other_end = origin.add(test_other_vector);
+			
+			SensorWrapper sw = new SensorWrapper("dummy");
+			sw.setHost(new TrackWrapper());
+			ed.setSensor(sw);
+			ed.setOrigin(origin);
 
 			// ok, now test that we find the distance from the indicated point
 			double dist = ed.rangeFrom(test_other_end);

@@ -188,7 +188,7 @@ public final class ImportNarrative2 implements PlainLineImporter
 
     public void testImportSingleLine()
     {
-      final String theLine = ";NARRATIVE2: TYPE_1	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
+      final String theLine = ";NARRATIVE2:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
       ImportNarrative2 in = new ImportNarrative2();
       Object res = in.readThisLine(theLine);
       NarrativeEntry ne = (NarrativeEntry)res;
@@ -197,12 +197,12 @@ public final class ImportNarrative2 implements PlainLineImporter
       String theDate = ne.getDTGString();
       assertEquals(theDate, "020421 121857");
       assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
-			assertEquals("type matches", "TYPE_1", ne.getType());
+			assertEquals("type matches", "GenComment", ne.getType());
     }
 
     public void testImportQuotedLine()
     {
-      final String theLine = ";NARRATIVE2: TYPE_2	020421	121857	\"HMS TORBAY\" 	GenComment	Mk Rge BAAA R121212";
+      final String theLine = ";NARRATIVE2:	020421	121857	\"HMS TORBAY\" 	GenComment2	Mk Rge BAAA R121212";
       ImportNarrative2 in = new ImportNarrative2();
       Object res = in.readThisLine(theLine);
       NarrativeEntry ne = (NarrativeEntry)res;
@@ -211,7 +211,7 @@ public final class ImportNarrative2 implements PlainLineImporter
       String theDate = ne.getDTGString();
       assertEquals("020421 121857", theDate);
       assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
-			assertEquals("type matches", "TYPE_2", ne.getType());
+			assertEquals("type matches", "GenComment2", ne.getType());
 			
     }
 

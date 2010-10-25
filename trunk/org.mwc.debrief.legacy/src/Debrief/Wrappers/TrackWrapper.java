@@ -2320,9 +2320,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final HiResDate getStartDTG()
 	{
-		TimePeriod res = getTimePeriod();
+		HiResDate res = null;
+		TimePeriod period = getTimePeriod();
+		if(period != null)
+			res = period.getStartDTG();
 
-		return res.getStartDTG();
+		return res;
 	}
 
 	private TimePeriod getTimePeriod()
@@ -3086,6 +3089,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// have a go at trimming the start time to a whole number of intervals
 		final long interval = theVal.getMicros();
+		
+		// do we have a start time (we may just be being tested...)
+		if(this.getStartDTG() == null)
+		{
+			return;
+		}
+		
 		final long currentStart = this.getStartDTG().getMicros();
 		long startTime = (currentStart / interval) * interval;
 

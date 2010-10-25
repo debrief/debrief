@@ -1003,7 +1003,7 @@ public final class ReformatFixes implements FilterOperation
 //        System.out.println("this key:" + s);
 //      }
 
-      assertEquals("found correct number of properties for track", 8, keys.size());
+      assertEquals("found correct number of properties for track", 9, keys.size());
 
       // see if we've got a property we expect
       assertTrue("found get color", keys.contains("Color"));
