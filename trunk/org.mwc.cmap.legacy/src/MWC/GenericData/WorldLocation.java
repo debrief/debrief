@@ -241,7 +241,7 @@ public class WorldLocation implements Serializable, Cloneable
 			latMin -= dec;
 			latSec += dec * 60d;
 		}
-		
+
 		// Now for longitude:
 		//
 		// just check if we've got decimal values for degs or minutes. If so,
@@ -490,6 +490,15 @@ public class WorldLocation implements Serializable, Cloneable
 	}
 
 	/**
+	 * provide setter method to allow us to override the earth model used for
+	 * calculating separations of locations
+	 */
+	static final public MWC.Algorithms.EarthModel getModel()
+	{
+		return _model;
+	}
+
+	/**
 	 * note that addToMe changes this object
 	 * 
 	 * @param delta
@@ -718,7 +727,8 @@ public class WorldLocation implements Serializable, Cloneable
 		public final void testConstructor()
 		{
 			WorldLocation v1 = new WorldLocation(12.225, 12.275, 12.5);
-			WorldLocation v2 = new WorldLocation(12, 13.5,0, 'N', 12, 16.5,0, 'E', 12.5);
+			WorldLocation v2 = new WorldLocation(12, 13.5, 0, 'N', 12, 16.5, 0, 'E',
+					12.5);
 			WorldLocation v3 = new WorldLocation(12, 13, 30, 'N', 12, 16, 30, 'E',
 					12.5);
 			WorldLocation v4 = new WorldLocation(w5);
