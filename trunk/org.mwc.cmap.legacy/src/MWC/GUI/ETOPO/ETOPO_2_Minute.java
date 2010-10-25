@@ -99,13 +99,13 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	 */
 	public final void paint(final CanvasType dest)
 	{
-//		long tThen = System.currentTimeMillis();
-		
+		// long tThen = System.currentTimeMillis();
+
 		// start the paint
 		openFile();
-		
+
 		// hey, it's only worth plotting if we've got some data
-		if(!isDataLoaded())
+		if (!isDataLoaded())
 			return;
 
 		if (getVisible())
@@ -129,9 +129,9 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 		// catch (IOException e) {
 		// e.printStackTrace();
 		// }
-		
-//		long tNow = System.currentTimeMillis();
-//		System.out.println("Elapsed time:" + (tNow - tThen));
+
+		// long tNow = System.currentTimeMillis();
+		// System.out.println("Elapsed time:" + (tNow - tThen));
 	}
 
 	// ////////////////////////////////////////////////
@@ -156,13 +156,13 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
 		return (ra != null);
 	}
-	
-	
 
-	/** we do want to double-buffer this layer - since it takes "so" long to create
+	/**
+	 * we do want to double-buffer this layer - since it takes "so" long to create
 	 * 
 	 */
-	public boolean isBuffered() {
+	public boolean isBuffered()
+	{
 		return true;
 	}
 
@@ -202,14 +202,15 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	{
 		return 10800;
 	}
-//
-//	/**
-//	 * how many vertical data points are in our data?
-//	 */
-//	private static int getVerticalNumber()
-//	{
-//		return 21600;
-//	}
+
+	//
+	// /**
+	// * how many vertical data points are in our data?
+	// */
+	// private static int getVerticalNumber()
+	// {
+	// return 21600;
+	// }
 
 	/**
 	 * open our datafile in random access mode
@@ -236,7 +237,8 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 				try
 				{
 					ra = new RandomAccessFile(thePath, "r");
-				} catch (IOException e)
+				}
+				catch (IOException e)
 				{
 					if (_reportedMissingData)
 					{
@@ -251,73 +253,76 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
 	/* returns a color based on slope and elevation */
 	public final int getColor(final int elevation, final double lowerLimit,
-			final double upperLimit, final SpatialRasterPainter.ColorConverter converter)
+			final double upperLimit,
+			final SpatialRasterPainter.ColorConverter converter)
 	{
-		return getETOPOColor((short) elevation, lowerLimit, upperLimit,
-				_showLand, converter);
+		return getETOPOColor((short) elevation, lowerLimit, upperLimit, _showLand,
+				converter);
 	}
-	
 
-  /* returns a color based on slope and elevation */
-  public static int getETOPOColor(short elevation, double lowerLimit, double upperLimit, boolean showLand, final SpatialRasterPainter.ColorConverter converter)
-  {
-    int res = 0;
+	/* returns a color based on slope and elevation */
+	public static int getETOPOColor(short elevation, double lowerLimit,
+			double upperLimit, boolean showLand,
+			final SpatialRasterPainter.ColorConverter converter)
+	{
+		int res = 0;
 
-    // so, just produce a shade of blue depending on how deep we are.
+		// so, just produce a shade of blue depending on how deep we are.
 
-    // see if we are above or beneath water level
-    if((elevation > 0) && (showLand))
-    {
-      // ABOVE WATER
+		// see if we are above or beneath water level
+		if ((elevation > 0) && (showLand))
+		{
+			// ABOVE WATER
 
-      // switch to positive
-      double val = elevation;
-      if(val > upperLimit)
-        val = upperLimit;
+			// switch to positive
+			double val = elevation;
+			if (val > upperLimit)
+				val = upperLimit;
 
-      double proportion = val / upperLimit;
+			double proportion = val / upperLimit;
 
-      double color_val = proportion * 125;
+			double color_val = proportion * 125;
 
-      // limit the colour val to the minimum value
-      int green_tone = 255 - (int)color_val;
+			// limit the colour val to the minimum value
+			int green_tone = 255 - (int) color_val;
 
-      // just check we've got a valid colour
-      green_tone = Math.min(250, green_tone);
+			// just check we've got a valid colour
+			green_tone = Math.min(250, green_tone);
 
-      res = converter.convertColor(88, green_tone, 88);
+			res = converter.convertColor(88, green_tone, 88);
 
-     // res = new Color(88, green_tone, 88);
+			// res = new Color(88, green_tone, 88);
 
-    }
-    else
-    {
-      // BELOW WATER
+		}
+		else
+		{
+			// BELOW WATER
 
-      // switch to positive
-      double val = elevation;
-      if(val < lowerLimit)
-        val = lowerLimit;
+			// switch to positive
+			double val = elevation;
+			if (val < lowerLimit)
+				val = lowerLimit;
 
-      double proportion = val / lowerLimit;
+			double proportion = val / lowerLimit;
 
-      double color_val = proportion * ETOPOWrapper.BLUE_MULTIPLIER;
+			double color_val = proportion * ETOPOWrapper.BLUE_MULTIPLIER;
 
-      // limit the colour val to the minimum value
-      int blue_tone = 255 - (int)color_val;
+			// limit the colour val to the minimum value
+			int blue_tone = 255 - (int) color_val;
 
-      // just check we've got a valid colour
-      blue_tone = Math.min(250, blue_tone);
+			// just check we've got a valid colour
+			blue_tone = Math.min(250, blue_tone);
 
-      int green =  (int)ETOPOWrapper.GREEN_BASE_VALUE + (int)(blue_tone * ETOPOWrapper.GREEN_MULTIPLIER);
+			int green = (int) ETOPOWrapper.GREEN_BASE_VALUE
+					+ (int) (blue_tone * ETOPOWrapper.GREEN_MULTIPLIER);
 
-      res = converter.convertColor(ETOPOWrapper.RED_COMPONENT, green, blue_tone);
+			res = converter
+					.convertColor(ETOPOWrapper.RED_COMPONENT, green, blue_tone);
 
-    }
+		}
 
-    return res;
-  }
-	
+		return res;
+	}
 
 	/**
 	 * over-rideable method to constrain max value to zero (such as when not
@@ -376,9 +381,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
 				// rescale as appropriate
 				res = rescaleValue(res);
-			} catch (IOException e)
+			}
+			catch (IOException e)
 			{
-				e.printStackTrace(); // To change body of catch statement use Options |
+				e.printStackTrace(); // To change body of catch statement use
+				// Options |
 				// File Templates.
 			}
 		}
@@ -559,7 +566,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			java.io.Serializable
 	{
 
-
 		/**
 		 * 
 		 */
@@ -574,25 +580,34 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res = {
+				final java.beans.PropertyDescriptor[] res =
+				{
 						prop("Visible", "whether this layer is visible", VISIBILITY),
-						longProp("KeyLocation", "the current location of the color-key", KeyLocationPropertyEditor.class, EditorType.FORMAT),
+						longProp("KeyLocation", "the current location of the color-key",
+								KeyLocationPropertyEditor.class, EditorType.FORMAT),
 						prop("Color", "the color of the color-key", EditorType.FORMAT),
 						prop("ShowLand", "whether to shade land-data", EditorType.FORMAT),
-						longProp("LineThickness", "the thickness to plot the scale border", LineWidthPropertyEditor.class, EditorType.FORMAT),
+						longProp("LineThickness", "the thickness to plot the scale border",
+								LineWidthPropertyEditor.class, EditorType.FORMAT),
 						prop(
 								"BathyRes",
-								"the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)", EditorType.FORMAT),
-						prop("BathyVisible", "whether to show the gridded contours", VISIBILITY),
-						prop("ContourDepths", "the contour depths to plot", EditorType.FORMAT),
+								"the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
+								EditorType.FORMAT),
+						prop("BathyVisible", "whether to show the gridded contours",
+								VISIBILITY),
+						prop("ContourDepths", "the contour depths to plot",
+								EditorType.FORMAT),
 						prop("ContoursVisible", "whether to show the contours", VISIBILITY),
 						prop(
 								"ContourGridInterval",
-								"the interval at which to calculate the contours (larger interval leads to faster performance)", EditorType.FORMAT),
+								"the interval at which to calculate the contours (larger interval leads to faster performance)",
+								EditorType.FORMAT),
 						prop("ContourOptimiseGrid",
-								"whether the grid interval should be optimised", EditorType.FORMAT)};
+								"whether the grid interval should be optimised",
+								EditorType.FORMAT) };
 				return res;
-			} catch (java.beans.IntrospectionException e)
+			}
+			catch (java.beans.IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -607,7 +622,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		static public String THE_PATH;
+		 public String _etopoPath;
 
 		public Etopo2Test(final String val)
 		{
@@ -616,10 +631,15 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 			String pathFromProp = System.getProperty("etopoDir");
 			if (pathFromProp == null)
 			{
-				THE_PATH = "C:\\Program Files\\Debrief 2003\\etopo";
+				// are we in OS?
+				String sys = System.getProperty("os.name");
+				if ("Mac OS X".equals(sys))
+					_etopoPath = "../deploy/";
+				else
+					_etopoPath = "C:\\Program Files\\Debrief 2003\\etopo";
 			}
 			else
-				THE_PATH = pathFromProp;
+				_etopoPath = pathFromProp;
 
 		}
 
@@ -634,14 +654,15 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 		// check data
 		public void testFindData()
 		{
-			final String thefile = THE_PATH;
-			assertTrue("Failed to find the 2 minute dataset:" + thefile,
-					ETOPO_2_Minute.dataFileExists(thefile));
+
+		//	String thefile = THE_PATH;
+			assertTrue("Failed to find the 2 minute dataset:" + _etopoPath,
+					ETOPO_2_Minute.dataFileExists(_etopoPath));
 		}
 
 		public void testConversions()
 		{
-			final ETOPO_2_Minute e2m = new ETOPO_2_Minute(THE_PATH);
+			final ETOPO_2_Minute e2m = new ETOPO_2_Minute(_etopoPath);
 
 			WorldLocation loc = new WorldLocation(54, -3, 0);
 			int lat = e2m.getLatIndex(loc);

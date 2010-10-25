@@ -47,7 +47,7 @@ public class BriefFormatLocation implements PlainFormatLocation
 
     // just check we're not at origin
     if(val != 0)
-    	 res += _workingHolder.hem + " ";
+    	 res += _workingHolder.hem + "";
 
     // hack: when the degs symbol appears in the third character of the string, when
     // we write to Metafile the following (4th) character is swapped for a y.
@@ -83,7 +83,7 @@ public class BriefFormatLocation implements PlainFormatLocation
 
     // just check we're not at origin
     if(val != 0)
-    	 res += _workingHolder.hem + " ";
+    	 res += _workingHolder.hem + "";
 
     return res;
   }
@@ -200,19 +200,19 @@ public class BriefFormatLocation implements PlainFormatLocation
     	assertEquals("degree symbol wrong length", 1, DEGREE_SYMBOL.length());
     	
       WorldLocation la = new WorldLocation(0d, 0d, 0d);
-      String res1 = " 00" + DEGREE_SYMBOL + "00\'00.00\"S  000" + DEGREE_SYMBOL + "00\'00.00\"W";
+      String res1 = " 00" + DEGREE_SYMBOL + "00\'00.00\" 000" + DEGREE_SYMBOL + "00\'00.00\"";
       super.assertEquals("first test", res1, BriefFormatLocation.toString(la));
       la.setLat(-12.345);
       la.setLong(22.432);
-      res1 = " 12" + DEGREE_SYMBOL + "20\'42.00\"S  022" + DEGREE_SYMBOL + "25\'55.20\"E";
+      res1 = " 12" + DEGREE_SYMBOL + "20\'42.00\"S 022" + DEGREE_SYMBOL + "25\'55.20\"E";
       super.assertEquals("second test", res1, BriefFormatLocation.toString(la));
       la.setLat(12.34533);
       la.setLong(-22.43222);
-      res1 = " 12" + DEGREE_SYMBOL + "20\'43.19\"N  022" + DEGREE_SYMBOL + "25\'55.99\"W";
+      res1 = " 12" + DEGREE_SYMBOL + "20\'43.19\"N 022" + DEGREE_SYMBOL + "25\'55.99\"W";
       super.assertEquals("third test", res1, BriefFormatLocation.toString(la));
       la.setLat(82.345);
       la.setLong(172.432);
-      res1 = " 82" + DEGREE_SYMBOL + "20\'42.00\"N  172" + DEGREE_SYMBOL + "25\'55.20\"E";
+      res1 = " 82" + DEGREE_SYMBOL + "20\'42.00\"N 172" + DEGREE_SYMBOL + "25\'55.20\"E";
       super.assertEquals("fourth test", res1, BriefFormatLocation.toString(la));
 
     }

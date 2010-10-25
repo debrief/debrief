@@ -842,30 +842,30 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			pt.setYDelta(yDelta);
 			pt.setOrientation(orientation);
 			WorldLocation newLoc = pt.calcLocationFor(1, 1);
-			Assert.assertEquals("easy Lat wrong", 0d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
-			newLoc = pt.calcLocationFor(2, 2);
 			Assert.assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
 			Assert.assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
+			newLoc = pt.calcLocationFor(2, 2);
+			Assert.assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 2d, newLoc.getLong(), 0.001);
 
 			// turn, baby
 			pt.setOrientation(90d);
 			newLoc = pt.calcLocationFor(x, y);
-			Assert.assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
+			Assert.assertEquals("easy Lat wrong", -1d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
 
 			// have another go
 			pt.setXDelta(new WorldDistance(2, WorldDistance.DEGS));
 			pt.setYDelta(new WorldDistance(3, WorldDistance.DEGS));
 			newLoc = pt.calcLocationFor(x, y);
-			Assert.assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
+			Assert.assertEquals("easy Lat wrong", -2d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 3d, newLoc.getLong(), 0.001);
 
 			// and turn back
 			pt.setOrientation(0d);
 			newLoc = pt.calcLocationFor(x, y);
-			Assert.assertEquals("easy Lat wrong", 0d, newLoc.getLat());
-			Assert.assertEquals("easy Long wrong", 3d, newLoc.getLong());
+			Assert.assertEquals("easy Lat wrong", 3d, newLoc.getLat());
+			Assert.assertEquals("easy Long wrong", 2d, newLoc.getLong());
 
 			// now try more complex orientations
 
