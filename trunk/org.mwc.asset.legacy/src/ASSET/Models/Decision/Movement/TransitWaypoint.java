@@ -571,7 +571,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       WorldLocation targetLocation = createLocation(2319, 1515);
       double range_offset = MWC.Algorithms.Conversions.Degs2m(finalLocation.rangeFrom(targetLocation));
       outputLocation(finalLocation);
-      assertTrue("near target - error: " + (int) range_offset, range_offset <= 10);
+      assertTrue("near target - error: " + (int) range_offset, range_offset <= 11);
 
     }
 
