@@ -756,7 +756,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								"whether to interpolate points between known data points",
 								SPATIAL),
 						expertProp("Color", "the track color", FORMAT),
-						expertProp("PlotArrayCentre", "highlight the sensor array centre when non-zero array length provided", FORMAT),
+						expertProp(
+								"PlotArrayCentre",
+								"highlight the sensor array centre when non-zero array length provided",
+								FORMAT),
 						expertProp("TrackFont", "the track label font", FORMAT),
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("PositionsVisible", "show individual Positions",
@@ -764,9 +767,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						expertProp("NameAtStart",
 								"whether to show the track name at the start (or end)",
 								VISIBILITY),
-								expertProp("LinkPositions",
-										"whether to join the track points",
-										FORMAT),
+						expertProp("LinkPositions", "whether to join the track points",
+								FORMAT),
 						expertProp("Visible", "whether the track is visible", VISIBILITY),
 						expertLongProp("NameLocation", "relative location of track label",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
@@ -1073,11 +1075,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * whether or not to link the Positions
 	 */
 	private boolean _linkPositions;
-	
-	/** whether to show a highlight for the array centre
+
+	/**
+	 * whether to show a highlight for the array centre
 	 * 
 	 */
-  private boolean	_plotArrayCentre;
+	private boolean _plotArrayCentre;
 
 	/**
 	 * our editable details
@@ -2028,7 +2031,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return _theLabel.getVisible();
 	}
 
-	/** whether to link points
+	/**
+	 * whether to link points
 	 * 
 	 * @return
 	 */
@@ -2037,7 +2041,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return _linkPositions;
 	}
 
-	/** whether to link points
+	/**
+	 * whether to link points
 	 * 
 	 * @param linkPositions
 	 */
@@ -2045,8 +2050,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_linkPositions = linkPositions;
 	}
-
-
 
 	/**
 	 * find the fix nearest to this time (or the first fix for an invalid time)
@@ -2322,7 +2325,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		HiResDate res = null;
 		TimePeriod period = getTimePeriod();
-		if(period != null)
+		if (period != null)
 			res = period.getStartDTG();
 
 		return res;
@@ -3089,13 +3092,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// have a go at trimming the start time to a whole number of intervals
 		final long interval = theVal.getMicros();
-		
+
 		// do we have a start time (we may just be being tested...)
-		if(this.getStartDTG() == null)
+		if (this.getStartDTG() == null)
 		{
 			return;
 		}
-		
+
 		final long currentStart = this.getStartDTG().getMicros();
 		long startTime = (currentStart / interval) * interval;
 
@@ -3605,6 +3608,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	/**
 	 * calculate a position the specified distance back along the ownship track
+	 * (note, we always interpolate the parent track position)
 	 * 
 	 * @param searchTime
 	 *          the time we're looking at
