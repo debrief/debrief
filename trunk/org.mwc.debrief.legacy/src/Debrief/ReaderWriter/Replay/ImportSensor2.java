@@ -293,6 +293,8 @@ final class ImportSensor2 implements PlainLineImporter {
 		{
 			String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
 			String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
+			String lineTabs = ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
+			String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
 			
 			ImportSensor2 is2 = new ImportSensor2();
 			SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
@@ -300,6 +302,10 @@ final class ImportSensor2 implements PlainLineImporter {
 			Assert.assertEquals("lineA failed", "0414", resA.getLabel());
 			SensorContactWrapper resB = (SensorContactWrapper) is2.readThisLine(lineB);
 			Assert.assertEquals("lineB failed", "0414", resB.getLabel());
+			SensorContactWrapper resC = (SensorContactWrapper) is2.readThisLine(lineTabs);
+			Assert.assertEquals("lineTabs failed", "0414", resC.getLabel());
+			SensorContactWrapper resD = (SensorContactWrapper) is2.readThisLine(lineD);
+			Assert.assertEquals("lineD failed", "0414", resD.getLabel());
 		}
 	}
 
