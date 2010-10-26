@@ -328,15 +328,6 @@ public class MultiScenarioCore implements ISimulationQue
 		return resCode;
 	}
 
-	/**
-	 * assign the observers for the first scenario
-	 * 
-	 * @param scenarioController
-	 */
-	public void initialiseFirstRunObservers(ResultsContainer scenarioController)
-	{
-	}
-
 	public int prepareControllers(ResultsContainer multiRunResultsStore,
 			ASSETProgressMonitor pMon)
 	{

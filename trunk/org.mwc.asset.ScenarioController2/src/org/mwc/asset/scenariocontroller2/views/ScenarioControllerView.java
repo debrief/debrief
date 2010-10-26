@@ -439,7 +439,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and sort out the observers
 					_myMultiScenario.prepareControllers(_scenarioController, pMon);
-
+					
 					// ok, now give the scenarios to the multi scenario table (in the UI
 					// thread
 					Display.getDefault().asyncExec(new Runnable()
