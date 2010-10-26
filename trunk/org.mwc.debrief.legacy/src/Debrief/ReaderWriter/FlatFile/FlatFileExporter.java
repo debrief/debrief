@@ -518,18 +518,20 @@ public class FlatFileExporter
 			double prdFreqAcc)
 	{
 
-		NumberFormat nf = new DecimalFormat("0.00");
+		NumberFormat dp2 = new DecimalFormat("0.00");
+		NumberFormat dp1 = new DecimalFormat("0.0");
+		NumberFormat dp0 = new DecimalFormat("0");
 
 		String res = null;
-		res = secs + tab + osStat + tab + nf.format(osX_yds) + tab
-				+ nf.format(osY_yds) + tab + nf.format(spdKts) + tab
-				+ nf.format(headDegs) + tab + sensorStat + tab + nf.format(sensorX_yds)
-				+ tab + nf.format(sensorY_yds) + tab + nf.format(sensorBrg) + tab
+		res = secs + tab + osStat + tab + dp2.format(osX_yds) + tab
+				+ dp2.format(osY_yds) + tab + dp2.format(spdKts) + tab
+				+ dp2.format(headDegs) + tab + sensorStat + tab + dp0.format(sensorX_yds)
+				+ tab + dp0.format(sensorY_yds) + tab + dp1.format(sensorBrg) + tab
 				+ sensorBacc + tab + sensorFreq + tab + sensorFacc + tab
-				+ nf.format(sensorSpdKts) + tab + nf.format(sensorHdg) + tab
-				+ sensorType + tab + msdStat + tab + nf.format(msdX_yds) + tab
-				+ nf.format(msdY_yds) + tab + nf.format(msdSpdKts) + tab
-				+ nf.format(msdHdg) + tab + prdStat + tab + prdX_yds + tab + prdY_yds
+				+ dp1.format(sensorSpdKts) + tab + dp1.format(sensorHdg) + tab
+				+ sensorType + tab + msdStat + tab + dp1.format(msdX_yds) + tab
+				+ dp1.format(msdY_yds) + tab + dp1.format(msdSpdKts) + tab
+				+ dp2.format(msdHdg) + tab + prdStat + tab + prdX_yds + tab + prdY_yds
 				+ tab + prdBrg + tab + prdBrgAcc + tab + prdRangeYds + tab
 				+ prdRangeAcc + tab + prdCourse + tab + prdCourseAcc + tab + prdSpdKts
 				+ tab + prdSpdAcc + tab + prdFreq + tab + prdFreqAcc;
