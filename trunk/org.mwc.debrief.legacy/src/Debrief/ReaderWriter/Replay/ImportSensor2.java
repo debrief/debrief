@@ -294,7 +294,7 @@ final class ImportSensor2 implements PlainLineImporter {
 			String lineA = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
 			String lineB = ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
 			String lineTabs = ";SENSOR2:	20090722	041434.000	NONSUCH	@B	NULL	59.3	300.8	49.96	NULL	\"Contact bearings\"	0414";
-			String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 300.8 49.96 NULL \"Contact bearings\" 0414";
+			String lineD = ";SENSOR2: 20090722 041434.000 \"NON SUCH\" @B NULL 59.3 NULL NULL NULL \"Contact bearings\" 0414";
 			
 			ImportSensor2 is2 = new ImportSensor2();
 			SensorContactWrapper resA = (SensorContactWrapper) is2.readThisLine(lineA);
