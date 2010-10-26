@@ -225,6 +225,12 @@ public interface ScenarioType extends ScenarioActivityMonitor
    * @return the current value of that setting (or null)
    */
   public String getDisplaySettingFor(String subject);
+
+  /** initialise the randomiser
+   * 
+   * @param theSeed
+   */
+	public void setSeed(Integer theSeed);
   
   
 }

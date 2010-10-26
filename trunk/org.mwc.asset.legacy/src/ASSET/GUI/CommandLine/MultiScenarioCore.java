@@ -74,9 +74,11 @@ public class MultiScenarioCore implements ISimulationQue
 
 	private Vector<ScenarioObserver> _thePlainObservers;
 
+	private Vector<ScenarioObserver> _allObservers;
+
 	private ResultsContainer _resultsStore;
 
-	private Vector<CoreScenario> _theScenarios;
+	private Vector<InstanceWrapper> _theScenarios;
 
 	private Vector<IAttribute> _myAttributes;
 
@@ -89,11 +91,14 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          the scenario file
 	 * @param control
 	 *          the control file
-	 * @param pMon 
-	 * @param outputDirectory TODO
+	 * @param pMon
+	 *          who tell what we're up to
+	 * @param outputDirectory
+	 *          where to write to
 	 * @return null for success, message for failure
 	 */
-	private String setup(String scenario, String control, ASSETProgressMonitor pMon, File outputDirectory)
+	private String setup(String scenario, String control,
+			ASSETProgressMonitor pMon, File outputDirectory)
 	{
 		// ok, create our genny
 		_myGenny = new ScenarioGenerator();
@@ -151,53 +156,63 @@ public class MultiScenarioCore implements ISimulationQue
 	{
 		int result = SUCCESS;
 
+
+		final int scenarioLen = _myScenarioDocuments.size();
+
 		// get the data we're after
 		String controlStr = ScenarioGenerator.writeToString(_myGenny
 				.getControlFile());
 		InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
 
-		// ok, everything's loaded. Just have a pass through to
-		// initialise any intra-scenario observers
-		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++)
-		{
-			ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
-			if (scen.isActive())
-			{
-				InterScenarioObserverType obs = (InterScenarioObserverType) scen;
-				// is it active?
-				obs.initialise(_resultsStore.outputDirectory);
-			}
-		}
-
-		// combine the two sets of observers
-		Vector<ScenarioObserver> _allObservers = new Vector<ScenarioObserver>();
-		_allObservers.addAll(_theInterObservers);
-		_allObservers.addAll(_thePlainObservers);
-		
-		
-		final int scenarioLen = _myScenarioDocuments.size();
-		
-
 		// ok, we've got our scenarios up and running, might as well run through
 		// them
 		int ctr = 0;
 		ScenarioType oldScenario = null;
-		for (Iterator<CoreScenario> iterator = _theScenarios.iterator(); iterator.hasNext();)
+		boolean firstRun = true;
+		for (Iterator<InstanceWrapper> iterator = _theScenarios.iterator(); iterator
+				.hasNext();)
 		{
-			CoreScenario thisS = (CoreScenario) iterator.next();
-	
+			InstanceWrapper wrapper = iterator.next();
+			ScenarioType thisS = wrapper.scenario;
+
 			// tell the listener what's up
-			if(listener != null)
-  			listener.newScenario(oldScenario, thisS);
-			
-			File newOutputSubDirectory = new File(_resultsStore.outputDirectory, ""
-					+ (ctr + 1) + File.separator);
+			if (listener != null)
+				listener.newScenario(oldScenario, thisS);
 
-			// and run through this one
-			runThisOne(controlStream, thisS, _allObservers,
-					newOutputSubDirectory, _resultsStore.randomSeed, ctr, scenarioLen);
+			if(firstRun)
+			{
+				firstRun = false;
+				// we don't need to initialise the listeners for the first scenario, it gets done in advance.
+			}
+			else
+			{
+				// get the observers sorted
+				wrapper.initialise(_allObservers);
+			}
 
-			
+			// now run this one
+			CommandLine runner = wrapper.commandLine;
+
+			System.out.print("Run " + (ctr + 1) + " of " + scenarioLen + " ");
+
+			// now set the seed
+			thisS.setSeed(_resultsStore.randomSeed);
+
+			// and get going....
+			runner.run();
+
+			// ok, tell the observers it's time for bed
+			for (int i = 0; i < _allObservers.size(); i++)
+			{
+				CoreObserver thisObs = (CoreObserver) _allObservers.elementAt(i);
+
+				// go for it
+				thisObs.tearDown(runner.getScenario());
+			}
+
+			// and remove the observers
+			runner.clearObservers();
+
 			try
 			{
 				// and reset the control stream
@@ -211,8 +226,7 @@ public class MultiScenarioCore implements ISimulationQue
 
 			// and remember the scenario
 			oldScenario = thisS;
-			
-			
+
 			ctr++;
 		}
 
@@ -231,74 +245,7 @@ public class MultiScenarioCore implements ISimulationQue
 		return result;
 	}
 
-	/**
-	 * run through a single scenario - using the ASSET command line runner
-	 * 
-	 * @param controlStream
-	 *          the stream containing the control file
-	 * @param scenarioStream
-	 *          the stream containing the scenario
-	 * @param theObservers
-	 *          and observers to setup
-	 * @param outputDirectory
-	 *          the output directory to dump into
-	 * @param theSeed
-	 *          a seed for this scenario
-	 * @param thisIndex
-	 *          a counter running through the scenarios
-	 * @param numScenarios
-	 *          the total number of scenarios
-	 */
-	private void runThisOne(InputStream controlStream,
-			CoreScenario thisScenario, Vector<ScenarioObserver> theObservers,
-			File outputDirectory, Integer theSeed, int thisIndex, int numScenarios)
-	{
-		// wrap the scenario
-		CommandLine runner = new CommandLine(thisScenario);
-		
-		// now set the seed
-		thisScenario.setSeed(theSeed);
 
-		// ok, get the scenario, so we can set up our observers
-		for (int i = 0; i < theObservers.size(); i++)
-		{
-			CoreObserver thisObs = (CoreObserver) theObservers.elementAt(i);
-
-//			// is it file-related?
-//			if (thisObs instanceof RecordToFileObserverType)
-//			{
-//				RecordToFileObserverType rec = (RecordToFileObserverType) thisObs;
-//				rec.setDirectory(outputDirectory);
-//			}
-
-			// and set it up
-			thisObs.setup(runner.getScenario());
-
-			// and add to the runner
-			runner.addObserver(thisObs);
-		}
-
-		System.out.print("Run " + (thisIndex + 1) + " of " + numScenarios + " ");
-
-		// and get going....
-		runner.run();
-		
-		// ok, tell the observers it's time for bed
-		for (int i = 0; i < theObservers.size(); i++)
-		{
-			CoreObserver thisObs = (CoreObserver) theObservers.elementAt(i);
-			
-			// go for it
-			thisObs.tearDown(runner.getScenario());
-		}
-
-
-		// and remove the observers
-		runner.clearObservers();
-	}
-
-	
-	
 	/**
 	 * member method, effectively to handle "main" processing.
 	 * 
@@ -310,13 +257,15 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          error out
 	 * @param in
 	 *          input (to receive user input)
-	 * @param pMon 
-	 * @param outputDirectory - where to put the working files
+	 * @param pMon
+	 * @param outputDirectory
+	 *          - where to put the working files
 	 * @return success code (0) or failure codes
 	 */
 
 	public int prepareFiles(String controlFile, String scenarioFile,
-			PrintStream out, PrintStream err, InputStream in, ASSETProgressMonitor pMon, File outputDirectory)
+			PrintStream out, PrintStream err, InputStream in,
+			ASSETProgressMonitor pMon, File outputDirectory)
 	{
 		int resCode = 0;
 
@@ -347,12 +296,12 @@ public class MultiScenarioCore implements ISimulationQue
 		else
 		{
 			out.println("about to write new scenarios to disk");
-			
+
 			pMon.beginTask("Writing generated scenarios to disk", 1);
 
 			// ok, now write the scenarios to disk
 			resCode = writeToDisk(out, err, in);
-			
+
 			pMon.worked(1);
 
 			// and let our generator ditch some gash
@@ -375,24 +324,33 @@ public class MultiScenarioCore implements ISimulationQue
 				}
 			}
 		}
-		
 
 		return resCode;
 	}
 
-	public int prepareControllers(ResultsContainer multiRunResultsStore, ASSETProgressMonitor pMon)
+	/**
+	 * assign the observers for the first scenario
+	 * 
+	 * @param scenarioController
+	 */
+	public void initialiseFirstRunObservers(ResultsContainer scenarioController)
+	{
+	}
+
+	public int prepareControllers(ResultsContainer multiRunResultsStore,
+			ASSETProgressMonitor pMon)
 	{
 		int resCode = 0;
 
 		_resultsStore = multiRunResultsStore;
-		
+
 		// sort out observers (inter & intra)
 		_theInterObservers = new Vector<InterScenarioObserverType>(0, 1);
 		_thePlainObservers = new Vector<ScenarioObserver>();
 
 		// start off by generating the time/state observers that we create for
 		// everybody
-		 _stateObserver = new ScenarioStatusObserver();
+		_stateObserver = new ScenarioStatusObserver();
 		_thePlainObservers.add(_stateObserver);
 		_thePlainObservers.add(new TimeObserver());
 
@@ -408,11 +366,19 @@ public class MultiScenarioCore implements ISimulationQue
 			else
 				_thePlainObservers.add(observer);
 		}
+		
+		// also collate the collected set of observers
+		// combine the two sets of observers
+  	 _allObservers = new Vector<ScenarioObserver>();
+		_allObservers.addAll(_theInterObservers);
+		_allObservers.addAll(_thePlainObservers);
+
 
 		// also read in the collection of scenarios
-		_theScenarios = new Vector<CoreScenario>(0, 1);
-		
-		pMon.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
+		_theScenarios = new Vector<InstanceWrapper>(0, 1);
+
+		pMon
+				.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
 
 		for (Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator
 				.hasNext();)
@@ -423,14 +389,41 @@ public class MultiScenarioCore implements ISimulationQue
 					.getBytes());
 			CoreScenario newS = new CoreScenario();
 			ASSETReaderWriter.importThis(newS, null, scenarioStream);
-			_theScenarios.add(newS);			
+			// wrap the scenario
+			CommandLine runner = new CommandLine(newS);
+
+			InstanceWrapper wrapper = new InstanceWrapper(newS, runner);
+
+			_theScenarios.add(wrapper);
 			pMon.worked(1);
 		}
 
+		// ok, everything's loaded. Just have a pass through to
+		// initialise any intra-scenario observers
+		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++)
+		{
+			ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
+			if (scen.isActive())
+			{
+				InterScenarioObserverType obs = (InterScenarioObserverType) scen;
+				// is it active?
+				obs.initialise(_resultsStore.outputDirectory);
+			}
+		}
+		
+		// right, just setup the listeners for the first scenario, so it can be controlled form 
+		// the time controller
+		if(!_theScenarios.isEmpty())
+		{
+			InstanceWrapper firstS = _theScenarios.firstElement();
+			firstS.initialise(_allObservers);
+		}
+		
 		return resCode;
 	}
 
-	public int nowRun(PrintStream out, PrintStream err, InputStream in, NewScenarioListener scenarioListener)
+	public int nowRun(PrintStream out, PrintStream err, InputStream in,
+			NewScenarioListener scenarioListener)
 	{
 		return runAll(out, err, in, _myGenny.getControlFile(), scenarioListener);
 	}
@@ -463,13 +456,16 @@ public class MultiScenarioCore implements ISimulationQue
 			// args[1] =
 			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
 			MultiScenarioCore scen = new MultiScenarioCore();
-			ASSETProgressMonitor pMon = new ASSETProgressMonitor(){
+			ASSETProgressMonitor pMon = new ASSETProgressMonitor()
+			{
 				public void beginTask(String name, int totalWork)
 				{
 				}
+
 				public void worked(int work)
 				{
-				}};
+				}
+			};
 			int res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
 			assertEquals("ran ok", SUCCESS, res);
 
@@ -525,8 +521,8 @@ public class MultiScenarioCore implements ISimulationQue
 			}
 
 			// now the multi-scenario observers
-			for (Iterator<InterScenarioObserverType> iterator = _theInterObservers.iterator(); iterator
-					.hasNext();)
+			for (Iterator<InterScenarioObserverType> iterator = _theInterObservers
+					.iterator(); iterator.hasNext();)
 			{
 				InterScenarioObserverType thisS = iterator.next();
 				if (thisS instanceof IAttribute)
@@ -542,7 +538,9 @@ public class MultiScenarioCore implements ISimulationQue
 	public Vector<ISimulation> getSimulations()
 	{
 		Vector<ISimulation> res = new Vector<ISimulation>();
-		res.addAll(_theScenarios);
+		for (Iterator<InstanceWrapper> iter = _theScenarios.iterator(); iter
+				.hasNext();)
+			res.add((ISimulation) iter.next().scenario);
 		// return my list of simulations
 		return res;
 	}
@@ -550,7 +548,6 @@ public class MultiScenarioCore implements ISimulationQue
 	@Override
 	public boolean isRunning()
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -563,14 +560,40 @@ public class MultiScenarioCore implements ISimulationQue
 	@Override
 	public void stopQue()
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public IAttribute getState()
 	{
 		return _stateObserver;
+	}
+
+	protected static class InstanceWrapper
+	{
+		final ScenarioType scenario;
+		final CommandLine commandLine;
+
+		public InstanceWrapper(ScenarioType theScenario, CommandLine theCommandLine)
+		{
+			scenario = theScenario;
+			commandLine = theCommandLine;
+		}
+
+		public void initialise(Vector<ScenarioObserver> allObservers)
+		{
+
+			// ok, get the scenario, so we can set up our observers
+			for (int i = 0; i < allObservers.size(); i++)
+			{
+				CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
+
+				// and set it up
+				thisObs.setup(scenario);
+
+				// and add to the runner
+				commandLine.addObserver(thisObs);
+			}
+		}
 	}
 
 }
