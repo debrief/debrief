@@ -193,11 +193,11 @@ public class RightClickCutCopyAdaptor
 
 			// now the copy action
 			// hey, it it cloneable?
-//			if (editables[0] instanceof Cloneable)
-//			{
-				copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
-						updateLayers);
-//			}
+			// if (editables[0] instanceof Cloneable)
+			// {
+			copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
+					updateLayers);
+			// }
 
 			// create the menu items
 
@@ -249,9 +249,15 @@ public class RightClickCutCopyAdaptor
 			// formatting
 			super.setText("Cut " + toString());
 
+			// and the icon
+			setImageIcon();
+
+		}
+
+		protected void setImageIcon()
+		{
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 					.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
-
 		}
 
 		// remember what used to be on the clipboard
@@ -435,14 +441,14 @@ public class RightClickCutCopyAdaptor
 	public static class CopyItem extends CutItem
 	{
 		private final String _originalName;
-		
+
 		public CopyItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
 				Layers theLayers, Layer[] updateLayer)
 		{
 			super(data, clipboard, theParent, theLayers, updateLayer);
 
 			_originalName = data[0].getName();
-			
+
 			super.setText(toString());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 					.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
@@ -503,7 +509,7 @@ public class RightClickCutCopyAdaptor
 				{
 					// remember the old contents
 					rememberPreviousContents();
-					
+
 					_data = cloneThese(_data);
 
 					// we stick a pointer to the ACTUAL item on the clipboard - we
@@ -623,8 +629,7 @@ public class RightClickCutCopyAdaptor
 			}
 			catch (ExecutionException e)
 			{
-				CorePlugin.logError(Status.ERROR,
-						"Problem with undo for test", e);
+				CorePlugin.logError(Status.ERROR, "Problem with undo for test", e);
 				assertTrue("threw assertion", e == null);
 			}
 		}
@@ -690,6 +695,25 @@ public class RightClickCutCopyAdaptor
 				}
 			}
 			return itemFound;
+		}
+		
+		private static class MyCutItem extends CutItem
+		{
+
+			public MyCutItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
+					Layers theLayers, Layer[] updateLayer)
+			{
+				super(data, clipboard, theParent, theLayers, updateLayer);
+			}
+
+			@Override
+			protected void setImageIcon()
+			{
+				// don't bother, we haven't got enough platform running
+			}
+
+			
+			
 		}
 
 		public void testCut()
@@ -776,7 +800,7 @@ public class RightClickCutCopyAdaptor
 			final Clipboard clipboard = new Clipboard(Display.getDefault());
 			Layer[] parentLayer = new Layer[]
 			{ tw };
-			CutItem ci = new CutItem(new Editable[]
+			CutItem ci = new MyCutItem(new Editable[]
 			{ fw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			// check our item's in there
 			assertTrue("item there before op", isPositionThere(tw, fw2));
@@ -793,7 +817,7 @@ public class RightClickCutCopyAdaptor
 			// now let's try two items
 			parentLayer = new Layer[]
 			{ tw, tw };
-			CutItem c2 = new CutItem(new Editable[]
+			CutItem c2 = new MyCutItem(new Editable[]
 			{ fw2, fw4 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isPositionThere(tw, fw2));
 			assertTrue("item there before op", isPositionThere(tw, fw3));
@@ -812,7 +836,7 @@ public class RightClickCutCopyAdaptor
 			// right, now let's try to delete a sensor item
 			parentLayer = new Layer[]
 			{ swa };
-			CutItem c3 = new CutItem(new Editable[]
+			CutItem c3 = new MyCutItem(new Editable[]
 			{ scwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scwa2));
@@ -828,7 +852,7 @@ public class RightClickCutCopyAdaptor
 			// now let's try two items
 			parentLayer = new Layer[]
 			{ swa, swa };
-			c3 = new CutItem(new Editable[]
+			c3 = new MyCutItem(new Editable[]
 			{ scwa1, scwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scwa2));
@@ -844,7 +868,7 @@ public class RightClickCutCopyAdaptor
 			// now let's try two items in different layers
 			parentLayer = new Layer[]
 			{ swa, sw };
-			c3 = new CutItem(new Editable[]
+			c3 = new MyCutItem(new Editable[]
 			{ scwa1, scw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scw2));
@@ -864,7 +888,7 @@ public class RightClickCutCopyAdaptor
 			// right, now let's try to delete a sensor item
 			parentLayer = new Layer[]
 			{ mwa };
-			c3 = new CutItem(new Editable[]
+			c3 = new MyCutItem(new Editable[]
 			{ tcwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
@@ -880,7 +904,7 @@ public class RightClickCutCopyAdaptor
 			// now let's try two items
 			parentLayer = new Layer[]
 			{ mwa, mwa };
-			c3 = new CutItem(new Editable[]
+			c3 = new MyCutItem(new Editable[]
 			{ tcwa1, tcwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
@@ -896,7 +920,7 @@ public class RightClickCutCopyAdaptor
 			// now let's try two items in different layers
 			parentLayer = new Layer[]
 			{ mwa, mw };
-			c3 = new CutItem(new Editable[]
+			c3 = new MyCutItem(new Editable[]
 			{ tcwa1, tcw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcw2));
