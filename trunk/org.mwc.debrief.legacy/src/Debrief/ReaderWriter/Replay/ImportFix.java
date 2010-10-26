@@ -645,8 +645,7 @@ public final class ImportFix implements PlainLineImporter
 
 			val = "700101 000000.000000000022";
 			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 0, micros);
+			assertNull("Shouldn't manage to produce value", ers);
 		}
 
 		public void testMilliSecValues()
