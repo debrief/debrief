@@ -193,8 +193,6 @@ public class PlotSensorObserver extends DetectionObserver implements
 		if (!this.getVisible())
 			return;
 
-		// cool, here we go.
-
 		// loop through our selected vessels
 		Vector<ParticipantType> parts = this.getWatchedVessels();
 		for (Iterator<ParticipantType> iterator = parts.iterator(); iterator
@@ -393,13 +391,6 @@ public class PlotSensorObserver extends DetectionObserver implements
 				return super.getPropertyDescriptors();
 			}
 		}
-	}
-
-	@Override
-	protected void stopListeningTo(ParticipantType thisPart)
-	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

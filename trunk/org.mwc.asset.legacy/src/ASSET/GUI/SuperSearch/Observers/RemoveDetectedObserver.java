@@ -31,7 +31,6 @@ public class RemoveDetectedObserver extends
 	 ***************************************************************/
 
 	protected int _numDitched = 0;
-	protected ScenarioType _myScenario = null;
 	private Vector<LabelWrapper> _myDeadParts;
 
 	private boolean _plotTheDead = true;
@@ -121,11 +120,20 @@ public class RemoveDetectedObserver extends
 		}
 	}
 
+	
+	
+	@Override
+	protected void performSetupProcessing(ScenarioType scenario)
+	{
+		super.performSetupProcessing(scenario);
+		
+		// chuck in the reset operation, so we're ready for this run
+		resetMe();
+	}
+
 	public void performCloseProcessing(ScenarioType scenario)
 	{
 		super.performCloseProcessing(scenario);
-
-		resetMe();
 	}
 
 	private void resetMe()

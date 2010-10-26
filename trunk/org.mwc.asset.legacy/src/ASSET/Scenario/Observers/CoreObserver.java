@@ -253,14 +253,14 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
 
   /**
    * add any applicable listeners
-   * @param scenario TODO
+   * @param scenario the scenario to listen to
    */
   abstract protected void addListeners(ScenarioType scenario);
 
 
   /**
    * remove any listeners
-   * @param scenario TODO
+   * @param scenario the scenario to stop listening to
    */
   abstract protected void removeListeners(ScenarioType scenario);
 

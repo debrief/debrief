@@ -64,6 +64,12 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
    */
   protected void performSetupProcessing(ScenarioType scenario)
   {
+  	
+  	// clear anything we're currently listening to (we don't do this in the close, since
+  	// we may wish to continue plotting our data after the scenario is complete
+    _watchedVessels.removeAllElements();
+
+  	
     // get the participants from this scenario
     final Integer[] pList = scenario.getListOfParticipants();
 
@@ -111,9 +117,6 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
       final ASSET.ParticipantType part = (ASSET.ParticipantType) it.next();
       stopListeningTo(part);
     }
-
-    // clear our watched vessels list
-    _watchedVessels.removeAllElements();
 
     // and un-register as a listener with the scenario
     _myScenario.removeParticipantsChangedListener(this);
