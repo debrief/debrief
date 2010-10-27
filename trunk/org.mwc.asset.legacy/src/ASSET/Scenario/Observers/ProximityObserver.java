@@ -41,7 +41,8 @@ import MWC.GenericData.WorldSpeed;
  * another indicated type of vessel
  */
 public class ProximityObserver extends CoreObserver implements
-		ScenarioObserver.ScenarioReferee, BatchCollator, IAttribute, ScenarioSteppedListener
+		ScenarioObserver.ScenarioReferee, BatchCollator, IAttribute,
+		ScenarioSteppedListener
 {
 	// ////////////////////////////////////////////////
 	// property listings
@@ -303,17 +304,22 @@ public class ProximityObserver extends CoreObserver implements
 		 * @param rng
 		 *          thje current range (in degrees)
 		 */
-		protected void handleThisRange(ScenarioType scenario, final long time, double rng)
+		protected void handleThisRange(ScenarioType scenario, final long time,
+				double rng)
 		{
 			// do the super case
 			super.handleThisRange(scenario, time, rng);
-			
-			double distDegs = _cutOffRange.getValueIn(WorldDistance.DEGS);
 
-			if (rng <= distDegs)
+			// hmm, are we active?
+			if (this.getVisible())
 			{
-				// ok, call a stop
-				stopScenario();
+				double distDegs = _cutOffRange.getValueIn(WorldDistance.DEGS);
+
+				if (rng <= distDegs)
+				{
+					// ok, call a stop
+					stopScenario();
+				}
 			}
 		}
 
@@ -402,12 +408,11 @@ public class ProximityObserver extends CoreObserver implements
 	 */
 	private BatchCollatorHelper _batcher = null;
 
-
 	/**
 	 * whether to override (cancel) writing per-scenario results to file
 	 */
 	private boolean _onlyBatch = true;
-	
+
 	private EditorType _myEditor1;
 
 	/**
@@ -420,7 +425,7 @@ public class ProximityObserver extends CoreObserver implements
 		super(myType, isActive);
 		// remember the target types
 		_watchType = watchType;
-		_targetType = targetType;		
+		_targetType = targetType;
 	}
 
 	/**
@@ -543,7 +548,8 @@ public class ProximityObserver extends CoreObserver implements
 	 *          thje current range (in degrees)
 	 * @param rng2
 	 */
-	protected void handleThisRange(ScenarioType scenario, final long time, double rng)
+	protected void handleThisRange(ScenarioType scenario, final long time,
+			double rng)
 	{
 		// is this the first range?
 		if (_myScore == -1)
