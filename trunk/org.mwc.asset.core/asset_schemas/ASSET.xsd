@@ -2232,9 +2232,15 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:element name="TargetType" type="TargetTypeType">
+					<xs:element name="TargetType" type="TargetTypeType" minOccurs="1" maxOccurs="1">
 						<xs:annotation>
 							<xs:documentation>The type of target to investigate </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="WatchType" type="TargetTypeType" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The type of platform we're defending (investigate targets nearest 
+							to the first matching platform of this type) </xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="Height" type="WorldDistanceType" minOccurs="0">

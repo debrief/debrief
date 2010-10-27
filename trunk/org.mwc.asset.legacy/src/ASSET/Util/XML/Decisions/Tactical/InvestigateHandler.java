@@ -21,6 +21,7 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
   private final static String type = "Investigate";
 
   private final static String TARGET_TYPE = "TargetType";
+  private final static String WATCH_TYPE = "WatchType";
   private final static String DETECTION_LEVEL = "DetectionLevel";
   private final static String INVESTIGATE_HEIGHT = "Height";
 
@@ -28,6 +29,8 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
   TargetType _myTargetType;
   String _detLevel = null;
   WorldDistance _investigateHeight;
+
+	protected TargetType _myWatchType;
 
   /**
    * get the handler ready
@@ -54,6 +57,13 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
         _myTargetType = type;
       }
     });
+    addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler(WATCH_TYPE)
+    {
+      public void setTargetType(final TargetType type)
+      {
+        _myWatchType = type;
+      }
+    });
 
     addHandler(new MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler(INVESTIGATE_HEIGHT)
     {
@@ -72,7 +82,7 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
 
     int val = _detectionHandler.getIndex();
 
-    final Investigate tr = new Investigate(null, _myTargetType, val, _investigateHeight);
+    final Investigate tr = new Investigate(null, _myTargetType, _myWatchType, val, _investigateHeight);
 
     // update the parent fields
     super.setAttributes(tr);
@@ -80,6 +90,7 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
     setModel(tr);
 
     _myTargetType = null;
+    _myWatchType  = null;
     _detLevel = null;
     _investigateHeight = null;
 
@@ -105,6 +116,8 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
 
     // output it's attributes
     TargetTypeHandler.exportThis(TARGET_TYPE, bb.getTargetType(), element, doc);
+    if(bb.getWatchType() != null)
+    TargetTypeHandler.exportThis(WATCH_TYPE, bb.getWatchType(), element, doc);
     element.setAttribute(DETECTION_LEVEL, _detectionHandler.getAsText());
 
     if (bb.getInvestigateHeight() != null)
