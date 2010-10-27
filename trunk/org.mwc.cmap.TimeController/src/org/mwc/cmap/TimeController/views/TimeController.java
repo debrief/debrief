@@ -970,18 +970,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// hiding
 						reformatUI(false);
 
-						// is it a different scenario?
-						if (part != _liveScenario)
-						{
-							// stop listening to the current one
-							if (_liveScenario != null)
-								_liveScenario.removeStoppedListener(_myStoppedListener);
+						// stop listening to the current one
+						if (_liveScenario != null)
+							_liveScenario.removeStoppedListener(_myStoppedListener);
 
-							// also register as a listener
-							_liveScenario = (LiveScenario) part;
+						// also register as a listener
+						_liveScenario = (LiveScenario) part;
 
-							_liveScenario.addStoppedListener(_myStoppedListener);
-						}
+						_liveScenario.addStoppedListener(_myStoppedListener);
 
 					}
 				});
