@@ -60,6 +60,11 @@ public class Trail extends CoreDecision implements java.io.Serializable
 	 * the time period we should stay on course for (following a valid detection)
 	 */
 	private Duration _stayOnBearing = null;
+	
+	/** whether to allow the platform to change speed to hit the ideal trail range
+	 * 
+	 */
+	private boolean _allowSpeedChange = true;
 
 	/**
 	 * the time at which we will stop staying on bearing
@@ -409,7 +414,9 @@ public class Trail extends CoreDecision implements java.io.Serializable
 				final double rngYds = rng.getValueIn(WorldDistance.YARDS);
 
 				// work out the minimum change in speed requested
-				final double spdChange = Math.max(0.4, res.getSpeed() * 0.05);
+				double spdChange = 0;
+				if(isAllowSpeedChange())
+					spdChange = Math.max(0.4, res.getSpeed() * 0.05);
 
 				// work our our distance from the estimated target location
 				WorldVector sensorToTarget = new WorldVector(MWC.Algorithms.Conversions
@@ -520,6 +527,18 @@ public class Trail extends CoreDecision implements java.io.Serializable
 	{
 		_trailRange = val;
 	}
+	
+	public boolean isAllowSpeedChange()
+	{
+		return _allowSpeedChange;
+	}
+
+	public void setAllowSpeedChange(boolean allowSpeedChange)
+	{
+		_allowSpeedChange = allowSpeedChange;
+	}
+
+
 
 	// //////////////////////////////////////////////////////////
 	// model support

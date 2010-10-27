@@ -20,6 +20,7 @@ abstract public class TrailHandler extends CoreDecisionHandler
 
   private final static String type = "Trail";
   private final static String ALLOWABLE_ERROR = "AllowableError";
+  private final static String ALLOWABLE_SPEED = "AllowSpeedChange";
   private final static String RANGE = "TrailRange";
   private final static String TRAIL_HEIGHT = "Height";
 
@@ -28,6 +29,7 @@ abstract public class TrailHandler extends CoreDecisionHandler
   WorldDistance _myRange;
   WorldDistance _myAllowableError;
   WorldDistance _trailHeight = null;
+  Boolean _myAllowSpeedChange;
 
   public TrailHandler()
   {
@@ -61,6 +63,15 @@ abstract public class TrailHandler extends CoreDecisionHandler
         _myAllowableError = res;
       }
     });
+    
+    addAttributeHandler(new HandleBooleanAttribute(ALLOWABLE_SPEED)
+		{			
+			@Override
+			public void setValue(String name, boolean value)
+			{
+				_myAllowSpeedChange = new Boolean(value);
+			}
+		});
 
   }
 
@@ -71,6 +82,9 @@ abstract public class TrailHandler extends CoreDecisionHandler
     tr.setTargetType(_myTargetType);
     tr.setAllowableError(_myAllowableError);
 
+    if(_myAllowSpeedChange != null)
+    	tr.setAllowSpeedChange(_myAllowSpeedChange);
+    
     super.setAttributes(tr);
 
     if (_trailHeight != null)
@@ -82,6 +96,7 @@ abstract public class TrailHandler extends CoreDecisionHandler
     _trailHeight = null;
     _myTargetType = null;
     _myAllowableError = null;
+    _myAllowSpeedChange = null;
 
   }
 
@@ -109,6 +124,8 @@ abstract public class TrailHandler extends CoreDecisionHandler
     WorldDistanceHandler.exportDistance(RANGE, bb.getTrailRange(), thisPart, doc);
     WorldDistanceHandler.exportDistance(ALLOWABLE_ERROR, bb.getAllowableError(), thisPart, doc);
 
+    thisPart.setAttribute(ALLOWABLE_SPEED, "" + bb.isAllowSpeedChange());
+    
 
     parent.appendChild(thisPart);
 
