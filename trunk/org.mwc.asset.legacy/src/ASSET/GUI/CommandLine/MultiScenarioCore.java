@@ -150,12 +150,12 @@ public class MultiScenarioCore implements ISimulationQue
 	 * 
 	 * @param out
 	 * @param err
+	 * @param scenarioRunningListener
 	 */
 	private int runAll(OutputStream out, OutputStream err, InputStream in,
 			Document controlFile, NewScenarioListener listener)
 	{
 		int result = SUCCESS;
-
 
 		final int scenarioLen = _myScenarioDocuments.size();
 
@@ -179,10 +179,11 @@ public class MultiScenarioCore implements ISimulationQue
 			if (listener != null)
 				listener.newScenario(oldScenario, thisS);
 
-			if(firstRun)
+			if (firstRun)
 			{
 				firstRun = false;
-				// we don't need to initialise the listeners for the first scenario, it gets done in advance.
+				// we don't need to initialise the listeners for the first scenario, it
+				// gets done in advance.
 			}
 			else
 			{
@@ -244,7 +245,6 @@ public class MultiScenarioCore implements ISimulationQue
 
 		return result;
 	}
-
 
 	/**
 	 * member method, effectively to handle "main" processing.
@@ -357,13 +357,12 @@ public class MultiScenarioCore implements ISimulationQue
 			else
 				_thePlainObservers.add(observer);
 		}
-		
+
 		// also collate the collected set of observers
 		// combine the two sets of observers
-  	 _allObservers = new Vector<ScenarioObserver>();
+		_allObservers = new Vector<ScenarioObserver>();
 		_allObservers.addAll(_theInterObservers);
 		_allObservers.addAll(_thePlainObservers);
-
 
 		// also read in the collection of scenarios
 		_theScenarios = new Vector<InstanceWrapper>(0, 1);
@@ -401,15 +400,16 @@ public class MultiScenarioCore implements ISimulationQue
 				obs.initialise(_resultsStore.outputDirectory);
 			}
 		}
-		
-		// right, just setup the listeners for the first scenario, so it can be controlled form 
+
+		// right, just setup the listeners for the first scenario, so it can be
+		// controlled form
 		// the time controller
-		if(!_theScenarios.isEmpty())
+		if (!_theScenarios.isEmpty())
 		{
 			InstanceWrapper firstS = _theScenarios.firstElement();
 			firstS.initialise(_allObservers);
 		}
-		
+
 		return resCode;
 	}
 
