@@ -70,6 +70,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -88,6 +89,7 @@ import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -190,7 +192,7 @@ public class ScenarioControllerView extends ViewPart implements
 		};
 
 		// listen to the scenario
-		_myScenario.addScenarioRunningListener(new ScenarioRunningListener()
+		ScenarioRunningListener _scenarioRunningListener = new ScenarioRunningListener()
 		{
 			public void finished(long elapsedTime, String reason)
 			{
@@ -228,7 +230,8 @@ public class ScenarioControllerView extends ViewPart implements
 			public void restart(ScenarioType scenario)
 			{
 			}
-		});
+		};
+		_myScenario.addScenarioRunningListener(_scenarioRunningListener);
 
 	}
 
@@ -439,7 +442,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and sort out the observers
 					_myMultiScenario.prepareControllers(_scenarioController, pMon);
-					
+
 					// ok, now give the scenarios to the multi scenario table (in the UI
 					// thread
 					Display.getDefault().asyncExec(new Runnable()
@@ -486,23 +489,23 @@ public class ScenarioControllerView extends ViewPart implements
 	protected void doMultiRunOperation()
 	{
 		System.out.println("doing run");
-	
+
 		Thread doRun = new Thread()
 		{
-	
+
 			@Override
 			public void run()
 			{
 				// tell them to go for it
 				_myMultiScenario.nowRun(System.out, System.err, System.in,
 						_newScenarioListener);
-	
+
 				// ok, better refresh the workspace
 				refreshWorkspace();
 			}
 		};
 		doRun.start();
-	
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -535,7 +538,24 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 		else if (adapter == TimeManager.LiveScenario.class)
 		{
-			return this;
+			// aah, are we in single or multi mode?
+			if (inSingleScenarioRun())
+				return this;
+			else
+			{
+				// return the current selected item
+				StructuredSelection sel = (StructuredSelection) _currentSelection;
+				if (sel != null)
+				{
+					EditableWrapper obj = (EditableWrapper) sel.getFirstElement();
+					if (obj instanceof EditableWrapper)
+					{
+						Editable ed = obj.getEditable();
+						if(ed instanceof LiveScenario)
+						return ed;
+					}
+				}
+			}
 		}
 		else if (adapter == SteppableTime.class)
 		{
@@ -1289,11 +1309,11 @@ public class ScenarioControllerView extends ViewPart implements
 		{
 			// also, re-initialise the observers
 			setupObservers(_myScenario);
-			
+
 			// also, tell the scenario to restart itself
 			_myScenario.restart();
-			
-			// reset the start button 
+
+			// reset the start button
 			_myUI.getSingleRunBtn().setText(RUN_SCENARIO);
 		}
 

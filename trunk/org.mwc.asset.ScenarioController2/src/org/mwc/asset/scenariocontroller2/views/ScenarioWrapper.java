@@ -1,11 +1,17 @@
 package org.mwc.asset.scenariocontroller2.views;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
+
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
+import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -18,7 +24,7 @@ import MWC.GUI.Layers;
  * @author Administrator
  * 
  */
-public class ScenarioWrapper extends Layers
+public class ScenarioWrapper extends Layers implements LiveScenario
 {
 	/**
 	 * 
@@ -143,6 +149,63 @@ public class ScenarioWrapper extends Layers
 
 		}
 
+	}
+
+	private ScenarioRunningListener _runListener;
+	private PropertyChangeSupport _pSupport;
+
+	@Override
+	public void addStoppedListener(PropertyChangeListener listener)
+	{
+		if (_runListener == null)
+		{
+			_runListener = new ScenarioRunningListener()
+			{
+
+				@Override
+				public void finished(long elapsedTime, String reason)
+				{
+					_pSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED, elapsedTime, reason);
+				}
+
+				@Override
+				public void newScenarioStepTime(int val)
+				{
+				}
+
+				@Override
+				public void newStepTime(int val)
+				{
+				}
+
+				@Override
+				public void paused()
+				{
+				}
+
+				@Override
+				public void restart(ScenarioType scenario)
+				{
+				}
+
+				@Override
+				public void started()
+				{
+				}
+			};
+			_pSupport = new PropertyChangeSupport(this);
+
+			_scenLayer.getScenario().addScenarioRunningListener(_runListener);
+		}
+		
+		_pSupport.addPropertyChangeListener(TimeManager.LiveScenario.FINISHED, listener);
+	}
+
+	@Override
+	public void removeStoppedListener(PropertyChangeListener listener)
+	{
+		if(_pSupport != null)
+		_pSupport.removePropertyChangeListener(TimeManager.LiveScenario.FINISHED, listener);
 	}
 
 }
