@@ -244,30 +244,41 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			// yes, calc the course to it
 			ParticipantType pt = monitor.getThisParticipant(validDetection
 					.getTarget());
-			Status tgtStat = pt.getStatus();
-			res = Intercept.calculateInterceptCourseFor(status, tgtStat, time);
 
-			// create the results object
-			// res = new SimpleDemandedStatus(time, status);
-			//
-			// // and over-ride the bearing
-			// res.setCourse(brgToTarget);
+			// just check the participant is still live!!
+			if (pt != null)
+			{
+				Status tgtStat = pt.getStatus();
+				res = Intercept.calculateInterceptCourseFor(status, tgtStat, time);
 
-			// ok, do we have a demanded height?
-			if (_investigateHeight != null)
-				res.setHeight(_investigateHeight);
+				// just check we're capable of catching him
+				if (res !=null)
+				{
 
-			activity += "Turning towards target:" + pt.getName() + ". Dem brg:"
-					+ MWC.Utilities.TextFormatting.GeneralFormat.formatBearing(res
-							.getCourse());
+					// create the results object
+					// res = new SimpleDemandedStatus(time, status);
+					//
+					// // and over-ride the bearing
+					// res.setCourse(brgToTarget);
 
-			// output results to any listeners
-			handleNewDemCourseChange((float) res.getCourse(), time, monitor,
-					validDetection.getTarget());
+					// ok, do we have a demanded height?
+					if (_investigateHeight != null)
+						res.setHeight(_investigateHeight);
 
-			// and remember that we're heading for it
-			_currentTarget = new Integer(validDetection.getTarget());
+					activity += "Turning towards target:"
+							+ pt.getName()
+							+ ". Dem brg:"
+							+ MWC.Utilities.TextFormatting.GeneralFormat.formatBearing(res
+									.getCourse());
 
+					// output results to any listeners
+					handleNewDemCourseChange((float) res.getCourse(), time, monitor,
+							validDetection.getTarget());
+
+					// and remember that we're heading for it
+					_currentTarget = new Integer(validDetection.getTarget());
+				}
+			}
 		}
 
 		if (activity == "")
@@ -1386,7 +1397,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
 			assertNotNull("inv target not still empty", investigate._currentTarget);
-	
+
 			// ok. let's lose the target and see what happens
 			theDetections.clear();
 			res = investigate.decide(myStat, theChars, theDemStat, theDetections,
