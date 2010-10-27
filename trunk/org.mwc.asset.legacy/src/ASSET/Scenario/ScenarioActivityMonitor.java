@@ -40,4 +40,12 @@ public interface ScenarioActivityMonitor
     public  ParticipantType getThisParticipant(final int id);
 
 
+    /**
+     * Provide a list of id numbers of Participant we contain
+     *
+     * @return list of ids of Participant we contain
+     */
+    public Integer[] getListOfParticipants();
+
+
 }

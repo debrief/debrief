@@ -166,13 +166,6 @@ public interface ScenarioType extends ScenarioActivityMonitor
   ParticipantType getThisParticipant(int id);
 
   /**
-   * Provide a list of id numbers of Participant we contain
-   *
-   * @return list of ids of Participant we contain
-   */
-  public Integer[] getListOfParticipants();
-
-  /**
    * Provide a list of id numbers of visible Participants we contain
    * (in monte carlo, the multiple instances can't see each other)
    *
