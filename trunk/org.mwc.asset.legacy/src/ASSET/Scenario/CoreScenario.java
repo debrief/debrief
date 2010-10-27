@@ -271,6 +271,8 @@ public class CoreScenario implements ScenarioType, ISimulation
 
     // fire event
     this.fireScenarioStopped(elapsedTime, thisReason);
+    
+    System.out.println("Scenario stopped:" + thisReason);
   }
 
   boolean _firstPass = true;
