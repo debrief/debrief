@@ -71,26 +71,16 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 * a local copy of our editable object
 	 */
 	private InvestigateInfo _myEditor = null;
-
-	/**
-	 * list of targets we've already found
-	 */
-	protected Vector<Integer> targetsDone;
 	
 	/** keep track of how everybody's getting on
 	 * 
 	 */
-	protected InvestigateStore.MappedStores _invData;
+	protected static InvestigateStore.MappedStores _invData;
 	
 	/** whether to conduct a collaborative investigation
 	 * 
 	 */
 	protected boolean _collaborativeSearch;
-
-	/**
-	 * the target id we're currently investigating
-	 */
-	protected Integer currentTarget;
 
 	/**
 	 * the height at which we conduct investigation
@@ -296,7 +286,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 							validDetection.getTarget());
 
 					// and remember that we're heading for it
-					store.setCurrentTarget(myId, new Integer(validDetection.getTarget()));
+					store.setCurrentTarget(myId, validDetection.getTarget());
 				}
 			}
 		}
@@ -392,7 +382,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		THROUGH_DETECTIONS: for (int i = 0; i < len; i++)
 		{
-
 			final DetectionEvent de = detections.getDetection(i);
 			// do we know the range
 			final Float brg = de.getBearing();
@@ -404,9 +393,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				{
 
 					// have we found it already?
-					Integer tgtId = new Integer(de.getTarget());
+					Integer tgtId = de.getTarget();
 
-					if (store.hasBeenDone(tgtId))
+					boolean beenDone = store.hasBeenDone(tgtId);
+					boolean isCurrent = store.isACurrentTarget(tgtId);
+					
+					if (beenDone || isCurrent)
 					{
 						// already found it. continue
 					}
@@ -802,7 +794,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	{
 		static protected class MappedStores
 		{
-			private HashMap<String, InvestigateStore> _myStore = new HashMap<String, InvestigateStore>();
+			private HashMap<Integer, InvestigateStore> _myStore = new HashMap<Integer, InvestigateStore>();
 
 			/**
 			 * 
@@ -821,14 +813,16 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					boolean isCollab)
 			{
 				InvestigateStore res = null;
-				String index;
+				Integer index;
 				if (isCollab)
-					index = monitor.toString();
+					index = monitor.hashCode();
 				else
-					index = monitor + ":" + id;
+					index = monitor.hashCode() * id;
 
-				if (_myStore.containsKey(index))
+				if (_myStore.get(index) != null)
+				{
 					res = _myStore.get(index);
+				}
 				else
 				{
 					res = new InvestigateStore();
@@ -853,6 +847,13 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		{
 			currentTargets = new HashMap<Integer, Integer>();
 			targetsDone = new Vector<Integer>(5, 5);
+		}
+
+		public boolean isACurrentTarget(Integer tgtId)
+		{
+			boolean res = currentTargets.containsValue(tgtId);
+			// is anybody looking at this
+			return res;
 		}
 
 		/**
@@ -885,7 +886,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		public void setCurrentTarget(int myId, int hisId)
 		{
-			if (currentTargets.containsKey(myId))
+			if (currentTargets.get(myId) != null)
 				currentTargets.remove(myId);
 
 			currentTargets.put(myId, hisId);
@@ -1041,17 +1042,15 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			res = investigate.decide(myStat, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("null dem stat when invalid target", res);
-			InvestigateStore thisData = investigate._invData.get(theMonitor, 23, investigate.isCollaborativeSearch());
-			assertNull("inv target still empty", thisData.getCurrentTarget(12));
+			InvestigateStore theStore = investigate._invData.get(theMonitor, 12, investigate.isCollaborativeSearch());
+			assertNull("inv target still empty", theStore.getCurrentTarget(12));
 
 			// now try a valid target
 			tgtCategory.setForce(Category.Force.RED);
 			res = investigate.decide(myStat, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			
-			InvestigateStore theStore = investigate._invData.get(theMonitor, 23, investigate.isCollaborativeSearch());
-			
+						
 			assertNotNull("inv target not still empty", theStore.getCurrentTarget(12));
 
 			// ok. let's lose the target and see what happens
@@ -1108,6 +1107,16 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			
 
 		}
+		
+		public void testHashMap()
+		{
+			HashMap<Integer,String> map = new HashMap<Integer, String>();
+			map.put(12, "twelve");
+			assertTrue(map.containsKey(12));
+			assertTrue(map.containsKey(11+1));
+			Integer newVal = 33 - 21;
+			assertTrue(map.containsKey(newVal));
+		}
 
 		public void testRunning()
 		{
@@ -1126,29 +1135,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 			Waterfall searchPattern = new Waterfall();
 			searchPattern.setName("Searching");
-
-			ScenarioActivityMonitor theMonitor = new ScenarioActivityMonitor(){
-				public void createParticipant(ParticipantType newPart)
-				{
-				}
-
-				@Override
-				public void detonationAt(int id, WorldLocation loc, double power)
-				{
-				}
-
-				@Override
-				public Integer[] getListOfParticipants()
-				{
-					return null;
-				}
-
-				@Override
-				public ParticipantType getThisParticipant(int id)
-				{
-					return null;
-				}};
-			
+		
 			TargetType theTarget = new TargetType(Category.Force.RED);
 			Investigate investigate = new Investigate("investigating red targets",
 					theTarget, DetectionEvent.IDENTIFIED, null);
@@ -1220,22 +1207,22 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			//
 			dro.outputThisArea(theArea);
 			
-			InvestigateStore theStore = investigate._invData.get(theMonitor,12,investigate.isCollaborativeSearch());
+			InvestigateStore theStore = investigate._invData.firstStore();
 
 			// now run through to completion
 			int counter = 0;
-			while ((cs.getTime() < 12000000) && (theStore.getCurrentTarget(12) == null))
+			while ((cs.getTime() < 12000000) && (theStore.getCurrentTarget(23) == null))
 			{
 				cs.step();
 				counter++;
 			}
 
 			// so, we should have found our tartget
-			assertNotNull("found target", theStore.getCurrentTarget(12));
+			assertNotNull("found target", theStore.getCurrentTarget(23));
 
 			// ok. we've found it. check that we do transition to detected
 			counter = 0;
-			while ((counter++ < 100) && (theStore.getCurrentTarget(12) != null))
+			while ((counter++ < 100) && (theStore.getCurrentTarget(23) != null))
 			{
 				cs.step();
 			}
@@ -1244,8 +1231,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			tpo.tearDown(cs);
 
 			// so, we should have cleared our tartget
-			assertNull("found target", theStore.getCurrentTarget(12));
-			assertEquals("remembered contact", 1, theStore.countCurrentTargets(12));
+			assertNull("found target", theStore.getCurrentTarget(23));
+			assertEquals("remembered contact", 1, theStore.countCurrentTargets(23));
 
 		}
 
@@ -1628,7 +1615,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		}
 
-		public void tstCollaborative()
+		public void testCollaborative()
 		{
 			TargetType theWatch1 = new TargetType(Category.Type.MPA);
 			TargetType theTarget1 = new TargetType(Category.Force.RED);
@@ -1647,21 +1634,29 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		
 			final int TGT1_ID = 567;
 			final int TGT2_ID = 568;
-			final int BLUE_ID = 34;
+			final int BLUE_ID1 = 34;
+			final int BLUE_ID2 = 46;
 			int NOT_TGT_ID = 123;
 		
-			Status blueStat = new Status(BLUE_ID, 0);
-			blueStat.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
-			blueStat.setLocation(new WorldLocation(4, 4, 2));
-			final CoreParticipant blueP = new CoreParticipant(BLUE_ID);
-			blueP.setStatus(blueStat);
-			Category blueCat = new Category(Category.Force.BLUE,
+			Status blueStat1 = new Status(BLUE_ID1, 0);
+			blueStat1.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
+			blueStat1.setLocation(new WorldLocation(4, 4, 2));
+			final CoreParticipant blueP1 = new CoreParticipant(BLUE_ID1);
+			blueP1.setStatus(blueStat1);
+			Category blueCat1 = new Category(Category.Force.BLUE,
 					Category.Environment.AIRBORNE, Category.Type.MPA);
-			blueP.setCategory(blueCat);
+			blueP1.setCategory(blueCat1);
 		
-			Status myStat = new Status(12, 0);
-			myStat.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
-			myStat.setLocation(new WorldLocation(2, 2, 2));
+			
+			Status blueStat2 = new Status(BLUE_ID2, 0);
+			blueStat2.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
+			blueStat2.setLocation(new WorldLocation(4, 4, 2));
+			final CoreParticipant blueP2 = new CoreParticipant(BLUE_ID2);
+			blueP2.setStatus(blueStat2);
+			Category blueCat2 = new Category(Category.Force.BLUE,
+					Category.Environment.AIRBORNE, Category.Type.MPA);
+			blueP2.setCategory(blueCat2);
+
 		
 			Status tgt1Stat = new Status(222, 0);
 			tgt1Stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
@@ -1688,7 +1683,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			target2.setStatus(tgt2Stat);
 		
 			ScenarioActivityMonitor theMonitor = new ScenarioActivityMonitor()
-			{
+			{			
 				public void detonationAt(int id, WorldLocation loc, double power)
 				{
 				}
@@ -1703,8 +1698,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					ParticipantType res = null;
 					switch (id)
 					{
-					case BLUE_ID:
-						res = blueP;
+					case BLUE_ID1:
+						res = blueP1;
 						break;
 					case TGT1_ID:
 						res = target1;
@@ -1720,11 +1715,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				public Integer[] getListOfParticipants()
 				{
 					return new Integer[]
-					{ BLUE_ID, TGT1_ID, TGT2_ID };
+					{ BLUE_ID1, TGT1_ID, TGT2_ID };
 				}
 			};
 		
-			DemandedStatus res = investigate1.decide(myStat, theChars, theDemStat,
+		
+			DemandedStatus res = investigate1.decide(blueStat1, theChars, theDemStat,
 					theDetections, theMonitor, 1000);
 			SimpleDemandedStatus simple = (SimpleDemandedStatus) res;
 			assertNull("null dem stat when null detections", res);
@@ -1732,7 +1728,10 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			// ok. now use zero length detections
 			theDetections = new DetectionList();
 		
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("null dem stat when empty detections", res);
+			res = investigate2.decide(blueStat2, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("null dem stat when empty detections", res);
 		
@@ -1749,96 +1748,102 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 							12, WorldSpeed.Kts), null, target2, DetectionEvent.DETECTED);
 			theDetections.add(de2);
 		
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("null dem stat when invalid target", res);
-			InvestigateStore theStore1 = investigate1._invData.get(theMonitor, 12, investigate1.isCollaborativeSearch());
-			assertNull("inv target still empty", theStore1.getCurrentTarget(12));
+			InvestigateStore theStore1 = investigate1._invData.get(theMonitor, BLUE_ID1, investigate1.isCollaborativeSearch());
+			assertNull("inv target still empty", theStore1.getCurrentTarget(BLUE_ID1));
 		
+			res = investigate2.decide(blueStat2, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("null dem stat when invalid target", res);
+			InvestigateStore theStore2 = investigate2._invData.get(theMonitor, BLUE_ID2, investigate2.isCollaborativeSearch());
+			assertNull("inv target still empty", theStore2.getCurrentTarget(BLUE_ID2));
+
 			// now try a valid target
 			tgtCategory.setForce(Category.Force.RED);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertNotNull("inv target not still empty", theStore1.getCurrentTarget(12));
-			assertEquals("inv target not still empty", theStore1.getCurrentTarget(12)
+			assertNotNull("inv target not still empty", theStore1.getCurrentTarget(BLUE_ID1));
+			assertEquals("inv target not still empty", theStore1.getCurrentTarget(BLUE_ID1)
 					.intValue(), TGT2_ID);
 			
 			// check that the other searcher spots the other target
 			tgtCategory.setForce(Category.Force.RED);
-			res = investigate2.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate2.decide(blueStat2, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertNotNull("inv target not still empty", theStore1.getCurrentTarget(12));
-			assertEquals("inv target not still empty", theStore1.getCurrentTarget(12)
+			assertNotNull("inv target not still empty", theStore2.getCurrentTarget(BLUE_ID2));
+			assertEquals("inv target not still empty", theStore2.getCurrentTarget(BLUE_ID2)
 					.intValue(), TGT1_ID);
 			
 		
 			// now make it so there's no valid watch
-			blueCat.setType(Category.Type.MINISUB);
+			blueCat1.setType(Category.Type.MINISUB);
 			theStore1.clearCurrentTarget(12);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("dem stat when valid target", res);
-			assertNull("inv target not still empty", theStore1.getCurrentTarget(12));
+			assertNull("inv target not still empty", theStore1.getCurrentTarget(BLUE_ID1));
 		
 			// and put back our watched item
-			blueCat.setType(Category.Type.MPA);
+			blueCat1.setType(Category.Type.MPA);
 			theStore1.clearCurrentTarget(12);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertNotNull("inv target not still empty", theStore1.getCurrentTarget(12));
+			assertNotNull("inv target not still empty", theStore1.getCurrentTarget(BLUE_ID1));
 		
 			// ok. let's lose the target and see what happens
 			theDetections.clear();
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("null dem stat when target lost", res);
 			assertNotNull("remembered target", theStore1.getCurrentTarget(12));
-			assertEquals("got correct tgt id", TGT2_ID, theStore1.getCurrentTarget(12)
+			assertEquals("got correct tgt id", TGT2_ID, theStore1.getCurrentTarget(BLUE_ID1)
 					.intValue());
 		
 			// and offer another target
 			theDetections.add(de);
 			de.setTarget(NOT_TGT_ID);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("new dem stat when valid target", res);
 		
 			// back to our target
 			de.setTarget(TGT1_ID);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			simple = (SimpleDemandedStatus) res;
 			assertNotNull("new dem stat when valid target", res);
 			assertTrue("on a good bearing", simple.getCourse() > 0);
-			assertEquals("got new tgt id", TGT1_ID, theStore1.getCurrentTarget(12)
+			assertEquals("got new tgt id", TGT1_ID, theStore1.getCurrentTarget(BLUE_ID1)
 					.intValue());
 		
 			// check that we can tick off target when found
 			de.setDetectionState(DetectionEvent.CLASSIFIED);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertEquals("got new tgt id", TGT1_ID, theStore1.getCurrentTarget(12)
+			assertEquals("got new tgt id", TGT1_ID, theStore1.getCurrentTarget(BLUE_ID1)
 					.intValue());
 		
 			// check that we can tick off target when found
 			de.setDetectionState(DetectionEvent.IDENTIFIED);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("no dem status", res);
-			assertNull("ditched current target", theStore1.getCurrentTarget(12));
-			assertEquals("got something in found targets",1, theStore1.countCurrentTargets(12));
+			assertNull("ditched current target", theStore1.getCurrentTarget(BLUE_ID1));
+			assertEquals("got something in found targets",1, theStore1.countCurrentTargets(BLUE_ID1));
 		
 			// check that we can tick off target when found
 			de.setDetectionState(DetectionEvent.CLASSIFIED);
-			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("no dem status when only existing target found", res);
-			assertNull("ditched current target", theStore1.getCurrentTarget(12));
-			assertEquals("got something in found targets",1, theStore1.countCurrentTargets(12));
+			assertNull("ditched current target", theStore1.getCurrentTarget(BLUE_ID1));
+			assertEquals("got something in found targets",1, theStore1.countCurrentTargets(BLUE_ID1));
 
 		
 		}
