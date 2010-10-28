@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_scenario" xmlns="http://www.mwc.org/asset"
-	ShowSymbol="false" ShowActivity="false" ShowName="true">
+	ShowSymbol="false" ShowActivity="false" ShowName="false" ShowStatus="true">
 	<StepTime Units="seconds" Value="15" />
 	<Participants>
 		<Surface Name="RedFV1">
@@ -138,7 +138,7 @@
 			<Waterfall Name="Agressive patrol">
 				<Intercept Name="CloseBlue" AllowSpeedchange="true">
 					<TargetType>
-						<Type Name="BLUE" />
+						<Type Name="MPA" />
 					</TargetType>
 				</Intercept>
 				<RectangleWander Name="Patrol">
@@ -221,12 +221,15 @@
 					<TargetType>
 						<Type Name="FRIGATE" />
 					</TargetType>
+					<WatchType>
+						<Type Name="MPA" />
+					</WatchType>
 				</Investigate>
 			</Waterfall>
 			<HeloMovementCharacteristics Name=""
 				FuelUsageRate="0.0" DefaultTurnRate="1">
 				<MinSpeed Value="0.0" Units="m/s" />
-				<MaxSpeed Value="80" Units="kts" />
+				<MaxSpeed Value="140" Units="kts" />
 				<AccelerationRate Value="5" Units="kt/s" />
 				<DecelerationRate Value="8" Units="kts/s" />
 				<MinHeight Value="0.0" Units="ft" />
@@ -322,7 +325,7 @@
 			<HeloMovementCharacteristics Name=""
 				FuelUsageRate="0.0" DefaultTurnRate="1">
 				<MinSpeed Value="0.0" Units="m/s" />
-				<MaxSpeed Value="80" Units="kts" />
+				<MaxSpeed Value="100" Units="kts" />
 				<AccelerationRate Value="5" Units="kt/s" />
 				<DecelerationRate Value="8" Units="kts/s" />
 				<MinHeight Value="0.0" Units="ft" />

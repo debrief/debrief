@@ -28,7 +28,7 @@
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-			<ParticipantVariance name="RedFC" number="80">
+			<ParticipantVariance name="RedFC" number="80" RandomCourse="true">
 				<ParticipantLocation>
 					<WorldArea>
 						<TopLeft>
@@ -40,14 +40,14 @@
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-			<ParticipantVariance name="LX" number="3">
+			<ParticipantVariance name="LX" number="2">
 				<ParticipantLocation inRandomLocations="true">
 					<WorldArea>
 						<TopLeft>
-							<shortLocation Lat="0.3" Long="0.9"></shortLocation>
+							<shortLocation Lat="0.35" Long="0.9"></shortLocation>
 						</TopLeft>
 						<BottomRight>
-							<shortLocation Lat="0.1" Long="1.0"></shortLocation>
+							<shortLocation Lat="0.15" Long="1.1"></shortLocation>
 						</BottomRight>
 					</WorldArea>
 				</ParticipantLocation>
@@ -56,7 +56,7 @@
 	</ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="elapsed time" Active="true">
-			<Duration Value="15" Units="hours" ></Duration>
+			<Duration Value="2" Units="hours" ></Duration>
 		</TimeObserver>
 		<PlotDetectionStatusObserver Name="Detection status"
 			Active="false">

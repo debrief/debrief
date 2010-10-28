@@ -36,6 +36,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 
 /**
  * Our implementation of investigation. The host platform will close on a
@@ -265,7 +266,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 							myLoc);
 
 					if (validDetection != null)
+					{
 						activity += "New target found.";
+					}
 
 				} // whether we've found the existing target
 			} // if we have any detections
@@ -299,6 +302,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 							+ MWC.Utilities.TextFormatting.GeneralFormat.formatBearing(res
 									.getCourse());
 
+					// see if there's any other demStatus setting to do
+					res = getPattern().amendDemStatus(res, status, tgtStat);
+					
 					// output results to any listeners
 					handleNewDemCourseChange((float) res.getCourse(), time, monitor,
 							validDetection.getTarget());
@@ -308,6 +314,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 					// take copy, just for convenience
 					_currentTarget = validDetection.getTarget();
+					
 				}
 			}
 		}
@@ -379,6 +386,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	protected void handleNewTarget(final DetectionEvent de, long time,
 			final ScenarioActivityMonitor monitor)
 	{
+		// ok, clear the detection helper
+		getPattern().newTarget(de.getTarget());
 	}
 
 	/**
@@ -525,7 +534,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				double toMe = tgtLoc.rangeFrom(myLoc);
 
 				// and calculate the range using a cost function
-				res = new WorldDistance(toMe * 0.1 + toWatch, WorldDistance.DEGS);
+				res = new WorldDistance(toMe * 0.0 + toWatch, WorldDistance.DEGS);
 			}
 		}
 		else
@@ -954,6 +963,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		{
 
 			boolean invComplete(DetectionEvent validDetection, int detectionLevel);
+
+			SimpleDemandedStatus amendDemStatus(SimpleDemandedStatus res,
+					Status status, Status tgtStat);
+
+			void newTarget(int target);
 			
 		}
 		
@@ -967,6 +981,27 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				// ok. have we reached the correct detection level?
 				int detState = validDetection.getDetectionState();
 				boolean res = (detState >= detectionLevel);
+				return res;
+			}
+
+			@Override
+			public void newTarget(int target)
+			{
+			}
+
+			@Override
+			public SimpleDemandedStatus amendDemStatus(SimpleDemandedStatus res,
+					Status status, Status tgtStat)
+			{
+//				// are we close?
+//				WorldVector dist = tgtStat.getLocation().subtract(status.getLocation());
+//				WorldDistance dd = new WorldDistance(dist.getRange(), WorldDistance.DEGS);
+//				if(dd.lessThan(new WorldDistance(2.5, WorldDistance.NM)))
+//				{
+//					// ok, match him for speed
+//					res.setSpeed(tgtStat.getSpeed());
+//				}
+//				
 				return res;
 			}
 			

@@ -740,12 +740,17 @@ public class ProximityObserver extends CoreObserver implements
 				// check they're not the same vessel
 				if (thisTarget != thisWatch)
 				{
-					// find the range
-					final double rng = thisTarget.getStatus().getLocation().rangeFrom(
-							thisWatch.getStatus().getLocation());
+					// just double-check this target still exists
+					if (scenario.getThisParticipant(thisTarget.getId()) != null)
+					{
 
-					// ok. we know this range. handle it
-					handleThisRange(scenario, newTime, rng);
+						// find the range
+						final double rng = thisTarget.getStatus().getLocation().rangeFrom(
+								thisWatch.getStatus().getLocation());
+
+						// ok. we know this range. handle it
+						handleThisRange(scenario, newTime, rng);
+					}
 				}
 			}
 		}
