@@ -83,39 +83,48 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 				doPlot(dest, thisD, myId);
 			}
 		}
-		else
+
+			checkThisBehaviour(dest, decision, myId);
+		
+	}
+
+	/** is this one we're looking for?
+	 * If so, get plotting
+	 * @param dest the screen
+	 * @param decision the decision to look at 
+	 * @param myId who I am
+	 */
+	private void checkThisBehaviour(CanvasType dest, DecisionType decision,
+			Integer myId)
+	{
+		if (decision instanceof Investigate)
 		{
-			if (decision instanceof Investigate)
+			// get my location
+			ParticipantType me = _myScenario.getThisParticipant(myId);
+			Status myStat = me.getStatus();
+			WorldLocation loc = myStat.getLocation();
+
+			// get the investigation-related bits
+			Investigate inv = (Investigate) decision;
+			Integer tgtId = inv.getCurrentTarget();
+			if (tgtId != null)
 			{
-				Investigate inv = (Investigate) decision;
-
-				// get my location
-				
-				ParticipantType me = _myScenario.getThisParticipant(myId);
-				Status myStat = me.getStatus();
-				WorldLocation loc = myStat.getLocation();
-
-				Integer tgtId = inv.getCurrentTarget();
-				if (tgtId != null)
+				ParticipantType theTarget = _myScenario.getThisParticipant(tgtId);
+				if (theTarget != null)
 				{
-					ParticipantType theTarget = _myScenario.getThisParticipant(tgtId);
-					if (theTarget != null)
-					{
-						Status hisStat = theTarget.getStatus();
-						WorldLocation hisLoc = hisStat.getLocation();
+					Status hisStat = theTarget.getStatus();
+					WorldLocation hisLoc = hisStat.getLocation();
 
-						Point pt1 = new Point(dest.toScreen(loc));
-						Point pt2 = new Point(dest.toScreen(hisLoc));
-						
-						// get my color
-						String force = me.getCategory().getForce();
-						dest.setColor(ScenarioParticipantWrapper.getColorFor(force));
-						dest.setLineStyle(CanvasType.DOTTED);
+					Point pt1 = new Point(dest.toScreen(loc));
+					Point pt2 = new Point(dest.toScreen(hisLoc));
+					
+					// get my color
+					String force = me.getCategory().getForce();
+					dest.setColor(ScenarioParticipantWrapper.getColorFor(force));
+					dest.setLineStyle(CanvasType.DOTTED);
 
-						dest.drawLine(pt1.x, pt1.y, pt2.x, pt2.y);
-					}
+					dest.drawLine(pt1.x, pt1.y, pt2.x, pt2.y);
 				}
-
 			}
 		}
 	}
