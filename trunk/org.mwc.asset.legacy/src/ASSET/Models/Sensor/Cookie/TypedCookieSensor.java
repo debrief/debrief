@@ -96,9 +96,8 @@ public class TypedCookieSensor extends CoreSensor
 		DetectionEvent res = null;
 
 		// right, what's the distance?
-		WorldVector sep = target.getStatus().getLocation().subtract(
-				host.getStatus().getLocation());
-		WorldDistance range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
+		WorldDistance range = null; // defer calculation until we need it
+		WorldVector sep = null;
 
 		// loop through our detection types
 		for (Iterator<TypedRangeDoublet> iterator = _rangeDoublets.iterator(); iterator
@@ -107,25 +106,37 @@ public class TypedCookieSensor extends CoreSensor
 			boolean detected = false;
 
 			TypedRangeDoublet doublet = iterator.next();
-			if (doublet.canDetect(target.getCategory(), range))
+			if (doublet.mayDetect(target.getCategory()))
 			{
+				// ok, it's worth sorting out the range
+				if (range == null)
+				{
+					sep = target.getStatus().getLocation().subtract(
+							host.getStatus().getLocation());
+					range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
+				}
 
-				detected = true;
+				if (doublet.canDetect(range))
+				{
 
-				double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep.getBearing());
+					detected = true;
 
-				// cool, in contact. write it up.
-				res = new DetectionEvent(time, host.getId(), host.getStatus()
-						.getLocation(), this, range, range, new Float(brgDegs), new Float(
-						super.relativeBearing(host.getStatus().getCourse(), brgDegs)),
-						new Float(1), target.getCategory(), new Float(target.getStatus()
-								.getSpeed().getValueIn(WorldSpeed.Kts)), new Float(target
-								.getStatus().getCourse()), target);
+					double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
+							.getBearing());
 
-				res.setDetectionState(_detectionState);
+					// cool, in contact. write it up.
+					res = new DetectionEvent(time, host.getId(), host.getStatus()
+							.getLocation(), this, range, range, new Float(brgDegs),
+							new Float(super.relativeBearing(host.getStatus().getCourse(),
+									brgDegs)), new Float(1), target.getCategory(), new Float(
+									target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
+							new Float(target.getStatus().getCourse()), target);
 
-				// store this detection
-				storeThisDetection(doublet, res);
+					res.setDetectionState(_detectionState);
+
+					// store this detection
+					storeThisDetection(doublet, res);
+				}
 			}
 
 			// ok, just see if there are any pSupport listners
@@ -313,7 +324,29 @@ public class TypedCookieSensor extends CoreSensor
 		 *          the range to the target
 		 * @return
 		 */
-		public boolean canDetect(Category targetCat, WorldDistance targetRange)
+		public boolean canDetect(WorldDistance targetRange)
+		{
+			boolean res = false;
+
+			// right, we can detect it - see if we are in range
+			if (targetRange.lessThan(_range))
+				res = true;
+			else
+				res = false;
+
+			return res;
+		}
+
+		/**
+		 * see if we can detect the target
+		 * 
+		 * @param targetCat
+		 *          the type of target we're looking at
+		 * @param targetRange
+		 *          the range to the target
+		 * @return
+		 */
+		public boolean mayDetect(Category targetCat)
 		{
 			boolean res = false;
 
@@ -338,15 +371,6 @@ public class TypedCookieSensor extends CoreSensor
 					if (targetCat.getType().equals(thisType))
 						res = true;
 				}
-			}
-
-			if (res)
-			{
-				// right, we can detect it - see if we are in range
-				if (targetRange.lessThan(_range))
-					res = true;
-				else
-					res = false;
 			}
 
 			return res;
@@ -463,17 +487,18 @@ public class TypedCookieSensor extends CoreSensor
 			WorldDistance longRange = new WorldDistance(3, WorldDistance.NM);
 
 			Category tCat = new Category(Force.RED, Environment.AIRBORNE, Type.HELO);
-			assertTrue("Matches item", td.canDetect(tCat, tRange));
-			assertFalse("too far", td.canDetect(tCat, longRange));
+			assertTrue("Matches item", td.mayDetect(tCat));
+			assertFalse("too far", td.canDetect(longRange));
 
 			tCat = new Category(Force.RED, Environment.SURFACE, Type.HELO);
-			assertFalse("doesn't match item", td.canDetect(tCat, tRange));
+			assertFalse("doesn't match item", td.mayDetect(tCat));
 
 			tCat = new Category(Force.RED, Environment.SURFACE, Type.FISHING_VESSEL);
-			assertTrue("Matches item", td.canDetect(tCat, tRange));
+			assertTrue("Matches item", td.mayDetect(tCat));
+			assertTrue("Matches item", td.canDetect(tRange));
 
 			tCat = new Category(Force.BLUE, Environment.SURFACE, Type.HELO);
-			assertTrue("doesn't match item", td.canDetect(tCat, tRange));
+			assertTrue("doesn't match item", td.mayDetect(tCat));
 		}
 
 		public void testPlainSensor()
