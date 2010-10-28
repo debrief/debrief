@@ -2512,6 +2512,13 @@
 							before moving onto the next</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="CollaborativeSearch" type="xs:boolean"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether platforms conduct collaborative search,
+						only trying to ID a target if it hasn't already been done by one in the scenario</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

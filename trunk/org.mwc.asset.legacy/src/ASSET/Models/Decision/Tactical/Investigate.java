@@ -1037,8 +1037,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			// ok. now use zero length detections
 			theDetections = new DetectionList();
 			WorldDistance dist1 = new WorldDistance(1, WorldDistance.MINUTES);
-			WorldDistance dist2 = new WorldDistance(2, WorldDistance.MINUTES);
-			WorldDistance dist3 = new WorldDistance(3, WorldDistance.MINUTES);
 
 			res = investigate.decide(myStat, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
@@ -1256,6 +1254,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		public void testRunningMultipleTargets()
 		{
+			
+			Investigate._invData.clearStores();
 
 			// initialise the random genny
 			ASSET.Util.RandomGenerator.seed(12);

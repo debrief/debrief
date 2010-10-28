@@ -24,6 +24,7 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
   private final static String WATCH_TYPE = "WatchType";
   private final static String DETECTION_LEVEL = "DetectionLevel";
   private final static String INVESTIGATE_HEIGHT = "Height";
+  private final static String COLLAB_SEARCH = "CollaborativeSearch";
 
 
   TargetType _myTargetType;
@@ -31,6 +32,8 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
   WorldDistance _investigateHeight;
 
 	protected TargetType _myWatchType;
+
+	protected Boolean _collabSearch;
 
   /**
    * get the handler ready
@@ -47,6 +50,13 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
       public void setValue(String name, String value)
       {
         _detLevel = value;
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(COLLAB_SEARCH)
+    {
+      public void setValue(String name, boolean value)
+      {
+        _collabSearch = new Boolean(value);
       }
     });
 
@@ -84,6 +94,9 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
 
     final Investigate tr = new Investigate(null, _myTargetType, _myWatchType, val, _investigateHeight);
 
+    if(_collabSearch != null)
+    	tr.setCollaborativeSearch(_collabSearch.booleanValue());
+    
     // update the parent fields
     super.setAttributes(tr);
 
@@ -93,6 +106,7 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
     _myWatchType  = null;
     _detLevel = null;
     _investigateHeight = null;
+    _collabSearch = null;
 
   }
 
@@ -119,6 +133,7 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
     if(bb.getWatchType() != null)
     TargetTypeHandler.exportThis(WATCH_TYPE, bb.getWatchType(), element, doc);
     element.setAttribute(DETECTION_LEVEL, _detectionHandler.getAsText());
+    element.setAttribute(COLLAB_SEARCH,writeThis(bb.isCollaborativeSearch()));
 
     if (bb.getInvestigateHeight() != null)
     {
