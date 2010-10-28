@@ -87,6 +87,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 */
 	private WorldDistance _investigateHeight;
 
+	/** convenience value for who we're currently looking for
+	 * 
+	 */
+	private Integer _currentTarget;
+
 	/****************************************************
 	 * constructor
 	 ***************************************************/
@@ -206,6 +211,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 							// and forget the current target
 							store.clearCurrentTarget(myId);
+							
+							// and clear our local copy
+							_currentTarget = null;
 
 							// just reinforce the fact that we need to look for another target
 							validDetection = null;
@@ -288,6 +296,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 					// and remember that we're heading for it
 					store.setCurrentTarget(myId, validDetection.getTarget());
+					
+					// take copy, just for convenience
+					_currentTarget = validDetection.getTarget();
 				}
 			}
 		}
@@ -1891,6 +1902,15 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	public TargetType getWatchType()
 	{
 		return _watchType;
+	}
+
+	/** convenience method to get who we're looking for
+	 * 
+	 * @return
+	 */
+	public Integer getCurrentTarget()
+	{
+		return _currentTarget;
 	}
 
 }

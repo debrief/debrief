@@ -182,6 +182,7 @@
 				None</xs:documentation>
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="PlotInvestigationSubjectObserver" type="PlotInvestigationSubjectObserverType" />
 			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType" />
 			<xs:element name="DebriefDeployableSensorLocationObserver"
 				type="DebriefDeployableSensorLocationObserverType" />
@@ -3117,7 +3118,29 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="DetectionObserverType">
+
+
+	<xs:complexType name="PlotInvestigationSubjectObserverType">
+		<xs:annotation>
+			<xs:documentation>Show who's investigating what</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible:Inherited .
+				Editable:
+				inherited</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreObserverType">
+				<xs:sequence>
+					<xs:element name="Watch" type="WatchType">
+						<xs:annotation>
+							<xs:documentation>The participant hosting the sensor
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+		<xs:complexType name="DetectionObserverType">
 		<xs:annotation>
 			<xs:documentation>Record any detections</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible:Inherited .
