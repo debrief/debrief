@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
+import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
 import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.BehaviourList;
 import ASSET.Models.Decision.TargetType;
@@ -89,19 +90,30 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 				Investigate inv = (Investigate) decision;
 
 				// get my location
-				Status myStat = _myScenario.getThisParticipant(myId).getStatus();
+				
+				ParticipantType me = _myScenario.getThisParticipant(myId);
+				Status myStat = me.getStatus();
 				WorldLocation loc = myStat.getLocation();
 
 				Integer tgtId = inv.getCurrentTarget();
 				if (tgtId != null)
 				{
-					Status hisStat = _myScenario.getThisParticipant(tgtId).getStatus();
-					WorldLocation hisLoc = hisStat.getLocation();
-					
-					Point pt1 = new Point(dest.toScreen(loc));
-					Point pt2 = new Point(dest.toScreen(hisLoc));
-					
-					dest.drawLine(pt1.x, pt1.y, pt2.x, pt2.y);
+					ParticipantType theTarget = _myScenario.getThisParticipant(tgtId);
+					if (theTarget != null)
+					{
+						Status hisStat = theTarget.getStatus();
+						WorldLocation hisLoc = hisStat.getLocation();
+
+						Point pt1 = new Point(dest.toScreen(loc));
+						Point pt2 = new Point(dest.toScreen(hisLoc));
+						
+						// get my color
+						String force = me.getCategory().getForce();
+						dest.setColor(ScenarioParticipantWrapper.getColorFor(force));
+						dest.setLineStyle(CanvasType.DOTTED);
+
+						dest.drawLine(pt1.x, pt1.y, pt2.x, pt2.y);
+					}
 				}
 
 			}
@@ -114,6 +126,9 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 	public void paint(CanvasType dest)
 	{
 		if (!this.getVisible())
+			return;
+
+		if (_myScenario == null)
 			return;
 
 		Integer[] parts = _myScenario.getListOfParticipants();
