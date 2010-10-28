@@ -345,7 +345,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public void update()
 	{
 
-		Display.getDefault().syncExec(new Runnable()
+		Display.getDefault().asyncExec(new Runnable()
 		{
 
 			@Override
