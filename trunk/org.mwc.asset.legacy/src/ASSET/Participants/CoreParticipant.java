@@ -157,13 +157,9 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			final DemandedStatus demStatus, final String name)
 	{
 		_myId = id;
-		_myStatus = status;
-		_myDemandedStatus = demStatus;
-		if (_myStatus != null)
-			_myInitialStatus = new Status(_myStatus);
-		if (_myDemandedStatus != null)
-			_myInitialDemandedStatus = DemandedStatus.copy(_myDemandedStatus
-					.getTime(), _myDemandedStatus);
+		setStatus(status);
+		setDemandedStatus(demStatus);
+
 		_movement = new ASSET.Models.Movement.CoreMovement();
 		_myName = name;
 		_myNewDetections = new DetectionList();
@@ -687,19 +683,26 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	public void setStatus(final Status val)
 	{
-		_myStatus = val;
+		// just check we have the right id for this status
+		if (val != null)
+		{
+			val.setId(this.getId());
 
-		// copy it to the initial status, if we haven't already got one
-		if (_myInitialStatus == null)
-		{
-			_myInitialStatus = new Status(val);
-		}
-		else
-		{
-			// just do a quick check to ensure that we're not working with a dummy
-			// status
-			if (_myInitialStatus.getLocation() == null)
+			// and store it
+			_myStatus = val;
+
+			// copy it to the initial status, if we haven't already got one
+			if (_myInitialStatus == null)
+			{
 				_myInitialStatus = new Status(val);
+			}
+			else
+			{
+				// just do a quick check to ensure that we're not working with a dummy
+				// status
+				if (_myInitialStatus.getLocation() == null)
+					_myInitialStatus = new Status(val);
+			}
 		}
 
 	}
@@ -710,6 +713,9 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	public void setDemandedStatus(final DemandedStatus val)
 	{
 		_myDemandedStatus = val;
+		if (_myDemandedStatus != null)
+			_myInitialDemandedStatus = DemandedStatus.copy(_myDemandedStatus
+					.getTime(), _myDemandedStatus);
 	}
 
 	/**
@@ -872,7 +878,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			public void restart(ScenarioType scenario)
 			{
-				
+
 			}
 		}
 
@@ -885,7 +891,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			public void restart(ScenarioType scenario)
 			{
-				
+
 			}
 		}
 
@@ -898,7 +904,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			public void restart(ScenarioType scenario)
 			{
-				
+
 			}
 		}
 
