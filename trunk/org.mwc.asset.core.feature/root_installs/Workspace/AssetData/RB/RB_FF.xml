@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_scenario" xmlns="http://www.mwc.org/asset"
-	ShowSymbol="false" ShowActivity="false" ShowName="false">
+	ShowSymbol="false" ShowActivity="false" ShowName="true">
 	<StepTime Units="seconds" Value="15" />
 	<Participants>
 		<Surface Name="RedFV1">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
 			<SensorFit>
-				<PlainCookieSensor>
-					<DetectionRange Value="6" Units="nm" />
-				</PlainCookieSensor>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" />
+						<DetectionRange Value="15" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
 			</SensorFit>
 			<Status Course="56" Fuel="100">
 				<Location>
@@ -78,11 +81,12 @@
 		</Surface>
 		<Surface Name="RedSWM">
 			<Category Type="DESTROYER" Force="RED" Environment="SURFACE" />
-			<SensorFit>
-				<PlainCookieSensor>
-					<DetectionRange Value="15" Units="nm" />
-				</PlainCookieSensor>
-			</SensorFit>
+				<SensorFit><TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" />
+						<DetectionRange Value="15" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
 			<Status Course="316" Fuel="100">
 				<Location>
 					<shortLocation Lat="1" Long="1"></shortLocation>
@@ -119,11 +123,12 @@
 		</Surface>
 		<Surface Name="RedFC">
 			<Category Type="FRIGATE" Force="RED" Environment="SURFACE"></Category>
-			<SensorFit>
-				<PlainCookieSensor>
-					<DetectionRange Value="10" Units="nm" />
-				</PlainCookieSensor>
-			</SensorFit>
+				<SensorFit><TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" />
+						<DetectionRange Value="15" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
 			<Status Course="18" Fuel="100">
 				<Location>
 					<shortLocation Lat="0.25" Long="0.25"></shortLocation>
@@ -190,7 +195,7 @@
 					</TypedRangeDoublet>
 					<TypedRangeDoublet>
 						<Type Name="FRIGATE" />
-						<DetectionRange Value="12" Units="nm" />
+						<DetectionRange Value="2" Units="nm" />
 					</TypedRangeDoublet>
 					<TypedRangeDoublet>
 						<Type Name="BLUE" />
@@ -202,17 +207,17 @@
 				<Location>
 					<shortLocation Lat="0.7" Long="0.85"></shortLocation>
 				</Location>
-				<Speed Value="60" Units="kts" />
+				<Speed Value="110" Units="kts" />
 			</Status>
 			<Waterfall Name="LX PAtrol">
-				<Trail Name="">
+				<Trail Name="" AllowSpeedChange="false">
 					<TrailRange Value="5" Units="nm" />
-					<AllowableError Value="9" Units="nm" />
+					<AllowableError Value="16" Units="nm" />
 					<TargetType>
 						<Type Name="BLUE" />
 					</TargetType>
 				</Trail>
-				<Investigate Name="Check out reds" DetectionLevel="Identified">
+				<Investigate Name="Check out reds" DetectionLevel="Identified" CollaborativeSearch="true">
 					<TargetType>
 						<Type Name="FRIGATE" />
 					</TargetType>
@@ -234,10 +239,16 @@
 		</Helo>
 		<Helo Name="MER">
 			<Category Type="MPA" Force="BLUE" Environment="AIRBORNE" />
-			<SensorFit></SensorFit>
+			<SensorFit>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="GREEN" />
+						<DetectionRange Value="6" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
 			<Status Course="99" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="0.72" Long="1.0"></shortLocation>
+					<shortLocation Lat="0.23" Long="1.0"></shortLocation>
 				</Location>
 				<Speed Value="80" Units="m/s" />
 			</Status>

@@ -4,7 +4,7 @@
 	<ScenarioGenerator>
 
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="GreenFV1" number="50">
+			<ParticipantVariance name="GreenFV1" number="0">
 				<ParticipantLocation inRandomLocations="false">
 					<WorldArea>
 						<TopLeft>
@@ -16,38 +16,38 @@
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-			<ParticipantVariance name="RedFV1" number="12">
+			<ParticipantVariance name="RedFV1" number="0">
 				<ParticipantLocation inRandomLocations="true">
 					<WorldArea>
 						<TopLeft>
 							<shortLocation Lat="1" Long="0.3"></shortLocation>
 						</TopLeft>
 						<BottomRight>
-							<shortLocation Lat="0.03" Long="1"></shortLocation>
+							<shortLocation Lat="0.03" Long="0.7"></shortLocation>
 						</BottomRight>
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-			<ParticipantVariance name="RedFC" number="6">
+			<ParticipantVariance name="RedFC" number="80">
 				<ParticipantLocation>
 					<WorldArea>
 						<TopLeft>
 							<shortLocation Lat="1" Long="0.1"></shortLocation>
 						</TopLeft>
 						<BottomRight>
-							<shortLocation Lat="0.2" Long="1"></shortLocation>
+							<shortLocation Lat="0.2" Long="0.8"></shortLocation>
 						</BottomRight>
 					</WorldArea>
 				</ParticipantLocation>
 			</ParticipantVariance>
-			<ParticipantVariance name="RedSWM" number="1">
+			<ParticipantVariance name="LX" number="3">
 				<ParticipantLocation inRandomLocations="true">
 					<WorldArea>
 						<TopLeft>
-							<shortLocation Lat="1" Long="0"></shortLocation>
+							<shortLocation Lat="0.3" Long="0.9"></shortLocation>
 						</TopLeft>
 						<BottomRight>
-							<shortLocation Lat="0" Long="1"></shortLocation>
+							<shortLocation Lat="0.1" Long="1.0"></shortLocation>
 						</BottomRight>
 					</WorldArea>
 				</ParticipantLocation>
@@ -56,10 +56,10 @@
 	</ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="elapsed time" Active="true">
-			<Duration Value="1" Units="hours" />
+			<Duration Value="15" Units="hours" ></Duration>
 		</TimeObserver>
 		<PlotDetectionStatusObserver Name="Detection status"
-			Active="true">
+			Active="false">
 			<Target>
 				<TargetType>
 					<Type Name="RED" />
@@ -81,9 +81,8 @@
 		<StopOnProximityObserver Name="Non-BLUE near MER"
 			Active="true">
 			<Target>
-				<TargetType AND="false">
+				<TargetType>
 					<Type Name="RED" />
-					<Type Name="GREEN" />
 				</TargetType>
 			</Target>
 			<Watch>
@@ -107,6 +106,25 @@
 				</TargetType>
 			</Watch>
 		</RemoveDetectedObserver>
+		<PlotInvestigationSubjectObserver Name="blue contacts" Active="true">
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotInvestigationSubjectObserver>
+		<PlotSensorObserver Name="merlin rings" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="OILER" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="MPA" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
 	</ObserverList>
 </ScenarioController>
 
