@@ -71,6 +71,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 * list of targets we've already found
 	 */
 	protected Vector<Integer> _targetsDone;
+	
+	/** whether to conduct a collaborative investigation
+	 * 
+	 */
+	protected boolean _collaborativeSearch;
 
 	/**
 	 * the target id we're currently investigating
@@ -556,6 +561,24 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		this._detectionLevel = detectionLevel;
 	}
 
+	/** whether to collaboratively search (agree who's spotting which targets)
+	 * 
+	 * @return yes/no
+	 */
+	public boolean isCollaborativeSearch()
+	{
+		return _collaborativeSearch;
+	}
+
+	/** whether to collaboratively search (agree who's spotting which targets)
+	 * 
+	 * @return yes/no
+	 */
+	public void setCollaborativeSearch(boolean collaborativeSearch)
+	{
+		_collaborativeSearch = collaborativeSearch;
+	}
+
 	/**
 	 * get the (possibly null) height at which to conduct investigation
 	 * 
@@ -873,6 +896,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 			// ok. now use zero length detections
 			theDetections = new DetectionList();
+			WorldDistance dist1 = new WorldDistance(1, WorldDistance.MINUTES);
+			WorldDistance dist2 = new WorldDistance(2, WorldDistance.MINUTES);
+			WorldDistance dist3 = new WorldDistance(3, WorldDistance.MINUTES);
 
 			res = investigate.decide(myStat, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
@@ -882,7 +908,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			Category tgtCategory = new Category(Category.Force.BLUE,
 					Category.Environment.SURFACE, Category.Type.FISHING_VESSEL);
 			double target_brg = 12;
-			DetectionEvent de = new DetectionEvent(1200, 12, null, duffSensor, null,
+			DetectionEvent de = new DetectionEvent(1200, 12, null, duffSensor, dist1,
 					null, new Float(target_brg), null, null, tgtCategory, new WorldSpeed(
 							12, WorldSpeed.Kts), null, target, DetectionEvent.DETECTED);
 			theDetections.add(de);
@@ -1256,6 +1282,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		}
 
+		
 		public void testWithWatch()
 		{
 			TargetType theWatch = new TargetType(Category.Type.MPA);
@@ -1450,6 +1477,221 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			assertTrue("still got something in found targets",
 					investigate._targetsDone.size() == 1);
 
+		}
+
+		public void tstCollaborative()
+		{
+			TargetType theWatch1 = new TargetType(Category.Type.MPA);
+			TargetType theTarget1 = new TargetType(Category.Force.RED);
+			Investigate investigate1 = new Investigate(
+					"investigating red targets near blue", theTarget1, theWatch1,
+					DetectionEvent.IDENTIFIED, null);
+			investigate1.setCollaborativeSearch(true);
+			
+			TargetType theWatch2 = new TargetType(Category.Type.MPA);
+			TargetType theTarget2 = new TargetType(Category.Force.RED);
+			Investigate investigate2 = new Investigate(
+					"other investigating red targets near blue", theTarget2, theWatch2,
+					DetectionEvent.IDENTIFIED, null);
+			investigate2.setCollaborativeSearch(true);
+
+		
+			final int TGT1_ID = 567;
+			final int TGT2_ID = 568;
+			final int BLUE_ID = 34;
+			int NOT_TGT_ID = 123;
+		
+			Status blueStat = new Status(BLUE_ID, 0);
+			blueStat.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
+			blueStat.setLocation(new WorldLocation(4, 4, 2));
+			final CoreParticipant blueP = new CoreParticipant(BLUE_ID);
+			blueP.setStatus(blueStat);
+			Category blueCat = new Category(Category.Force.BLUE,
+					Category.Environment.AIRBORNE, Category.Type.MPA);
+			blueP.setCategory(blueCat);
+		
+			Status myStat = new Status(12, 0);
+			myStat.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
+			myStat.setLocation(new WorldLocation(2, 2, 2));
+		
+			Status tgt1Stat = new Status(222, 0);
+			tgt1Stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			tgt1Stat.setLocation(new WorldLocation(2, 2.5, 2));
+			tgt1Stat.setCourse(22);
+		
+			Status tgt2Stat = new Status(222, 0);
+			tgt2Stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			tgt2Stat.setLocation(new WorldLocation(4, 2.5, 2));
+			tgt2Stat.setCourse(22);
+		
+			MovementCharacteristics theChars = HeloMovementCharacteristics
+					.getSampleChars();
+			SimpleDemandedStatus theDemStat = new SimpleDemandedStatus(12, 12000);
+			DetectionList theDetections = null;
+		
+			LookupSensor duffSensor = new RadarLookupSensor(12, "sensor", 0, 0, 0, 0,
+					null, 0, null, 0);
+		
+			final Surface target1 = new Surface(TGT1_ID, null, null, "fisher");
+			target1.setStatus(tgt1Stat);
+		
+			final Surface target2 = new Surface(TGT2_ID, null, null, "fisher");
+			target2.setStatus(tgt2Stat);
+		
+			ScenarioActivityMonitor theMonitor = new ScenarioActivityMonitor()
+			{
+				public void detonationAt(int id, WorldLocation loc, double power)
+				{
+				}
+		
+				public void createParticipant(ParticipantType newPart)
+				{
+				}
+		
+				public ParticipantType getThisParticipant(int id)
+		
+				{
+					ParticipantType res = null;
+					switch (id)
+					{
+					case BLUE_ID:
+						res = blueP;
+						break;
+					case TGT1_ID:
+						res = target1;
+						break;
+					case TGT2_ID:
+						res = target2;
+						break;
+					}
+					return res;
+				}
+		
+				@Override
+				public Integer[] getListOfParticipants()
+				{
+					return new Integer[]
+					{ BLUE_ID, TGT1_ID, TGT2_ID };
+				}
+			};
+		
+			DemandedStatus res = investigate1.decide(myStat, theChars, theDemStat,
+					theDetections, theMonitor, 1000);
+			SimpleDemandedStatus simple = (SimpleDemandedStatus) res;
+			assertNull("null dem stat when null detections", res);
+		
+			// ok. now use zero length detections
+			theDetections = new DetectionList();
+		
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("null dem stat when empty detections", res);
+		
+			// and put in an invalid detection
+			Category tgtCategory = new Category(Category.Force.BLUE,
+					Category.Environment.SURFACE, Category.Type.FISHING_VESSEL);
+			double target_brg = 12;
+			DetectionEvent de = new DetectionEvent(1200, 12, null, duffSensor, null,
+					null, new Float(target_brg), null, null, tgtCategory, new WorldSpeed(
+							12, WorldSpeed.Kts), null, target1, DetectionEvent.DETECTED);
+			theDetections.add(de);
+			DetectionEvent de2 = new DetectionEvent(1200, 12, null, duffSensor, null,
+					null, new Float(target_brg), null, null, tgtCategory, new WorldSpeed(
+							12, WorldSpeed.Kts), null, target2, DetectionEvent.DETECTED);
+			theDetections.add(de2);
+		
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("null dem stat when invalid target", res);
+			assertNull("inv target still empty", investigate1._currentTarget);
+		
+			// now try a valid target
+			tgtCategory.setForce(Category.Force.RED);
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNotNull("dem stat when valid target", res);
+			assertNotNull("inv target not still empty", investigate1._currentTarget);
+			assertEquals("inv target not still empty", investigate1._currentTarget
+					.intValue(), TGT2_ID);
+			
+			// check that the other searcher spots the other target
+			tgtCategory.setForce(Category.Force.RED);
+			res = investigate2.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNotNull("dem stat when valid target", res);
+			assertNotNull("inv target not still empty", investigate1._currentTarget);
+			assertEquals("inv target not still empty", investigate1._currentTarget
+					.intValue(), TGT1_ID);
+			
+		
+			// now make it so there's no valid watch
+			blueCat.setType(Category.Type.MINISUB);
+			investigate1._currentTarget = null;
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("dem stat when valid target", res);
+			assertNull("inv target not still empty", investigate1._currentTarget);
+		
+			// and put back our watched item
+			blueCat.setType(Category.Type.MPA);
+			investigate1._currentTarget = null;
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNotNull("dem stat when valid target", res);
+			assertNotNull("inv target not still empty", investigate1._currentTarget);
+		
+			// ok. let's lose the target and see what happens
+			theDetections.clear();
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("null dem stat when target lost", res);
+			assertNotNull("remembered target", investigate1._currentTarget);
+			assertEquals("got correct tgt id", TGT2_ID, investigate1._currentTarget
+					.intValue());
+		
+			// and offer another target
+			theDetections.add(de);
+			de.setTarget(NOT_TGT_ID);
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("new dem stat when valid target", res);
+		
+			// back to our target
+			de.setTarget(TGT1_ID);
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			simple = (SimpleDemandedStatus) res;
+			assertNotNull("new dem stat when valid target", res);
+			assertTrue("on a good bearing", simple.getCourse() > 0);
+			assertEquals("got new tgt id", TGT1_ID, investigate1._currentTarget
+					.intValue());
+		
+			// check that we can tick off target when found
+			de.setDetectionState(DetectionEvent.CLASSIFIED);
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNotNull("dem stat when valid target", res);
+			assertEquals("got new tgt id", TGT1_ID, investigate1._currentTarget
+					.intValue());
+		
+			// check that we can tick off target when found
+			de.setDetectionState(DetectionEvent.IDENTIFIED);
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("no dem status", res);
+			assertNull("ditched current target", investigate1._currentTarget);
+			assertTrue("got something in found targets", investigate1._targetsDone
+					.size() == 1);
+		
+			// check that we can tick off target when found
+			de.setDetectionState(DetectionEvent.CLASSIFIED);
+			res = investigate1.decide(myStat, theChars, theDemStat, theDetections,
+					theMonitor, 1000);
+			assertNull("no dem status when only existing target found", res);
+			assertNull("ditched current target", investigate1._currentTarget);
+			assertTrue("still got something in found targets",
+					investigate1._targetsDone.size() == 1);
+		
 		}
 
 		// public void testReadFromCommandLine()
