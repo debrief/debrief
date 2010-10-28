@@ -162,6 +162,18 @@ final public class WorldSpeed implements Serializable
     return convert(_myUnits, units, _mySpeed);
   }
 
+  public boolean lessThan(final WorldSpeed other)
+  {
+    return this.getValueIn(Kts) < other.getValueIn(Kts);
+  }
+
+  public boolean greaterThan(final WorldSpeed other)
+  {
+    return this.getValueIn(Kts) > other.getValueIn(Kts);
+  }
+  
+
+  
   /** get this speed, expressed in it's native units
    * 
    */
