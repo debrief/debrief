@@ -515,7 +515,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				double toMe = tgtLoc.rangeFrom(myLoc);
 
 				// and calculate the range using a cost function
-				res = new WorldDistance(toMe +  0.3 * toWatch, WorldDistance.DEGS);
+				res = new WorldDistance(toMe * 0.3 + toWatch, WorldDistance.DEGS);
 			}
 		}
 		else
