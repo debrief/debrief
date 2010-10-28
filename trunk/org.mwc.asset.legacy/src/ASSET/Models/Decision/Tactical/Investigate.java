@@ -179,7 +179,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			final int len = detections.size();
 			if (len > 0)
 			{
-
 				// first see if we are still in contact with our existing target
 				// do we have an existing target?
 				Integer myTarget = store.getCurrentTarget(myId);
@@ -243,8 +242,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				// do we still need to look for another target?
 				if (validDetection == null)
 				{
+					// hmm, where are we?
+					WorldLocation myLoc = status.getLocation();
+					
 					// yes, go and find one amongst the remaining targets
-					validDetection = findNewTarget(len, detections, time, monitor, store);
+					validDetection = findNewTarget(len, detections, time, monitor, store, myLoc);
 
 					if (validDetection != null)
 						activity += "New target found.";
@@ -383,11 +385,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 *          the current time
 	 * @param monitor
 	 *          our scenario activity monitor
+	 * @param myLoc ownship location
 	 * @return a contact representing our new target
 	 */
 	protected DetectionEvent findNewTarget(final int len,
 			final DetectionList detections, long time,
-			final ScenarioActivityMonitor monitor, InvestigateStore store)
+			final ScenarioActivityMonitor monitor, InvestigateStore store, WorldLocation myLoc)
 	{
 		DetectionEvent res = null;
 		WorldDistance tmpRange = null;
@@ -421,7 +424,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 						if (monitor.getThisParticipant(de.getTarget()) != null)
 						{
 							// right, work out the range to the target
-							WorldDistance targetRange = rangeToTarget(de, monitor);
+							WorldDistance targetRange = rangeToTarget(de, monitor, myLoc);
 
 							// did we find a range?
 							if (targetRange != null)
@@ -471,10 +474,11 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 *          the detection we're looking at
 	 * @param monitor
 	 *          the accessor for the list of participants
+	 * @param myLoc my location 
 	 * @return
 	 */
 	private WorldDistance rangeToTarget(final DetectionEvent de,
-			ScenarioActivityMonitor monitor)
+			ScenarioActivityMonitor monitor, WorldLocation myLoc)
 	{
 		WorldDistance res = null;
 		if (_watchType != null)
@@ -506,9 +510,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 				// and the location of who I'm defending
 				WorldLocation watchLoc = watched.getStatus().getLocation();
+				
+				double toWatch = tgtLoc.rangeFrom(watchLoc);
+				double toMe = tgtLoc.rangeFrom(myLoc);
 
-				// and calculate the range
-				res = new WorldDistance(tgtLoc.rangeFrom(watchLoc), WorldDistance.DEGS);
+				// and calculate the range using a cost function
+				res = new WorldDistance(toMe +  0.3 * toWatch, WorldDistance.DEGS);
 			}
 		}
 		else
