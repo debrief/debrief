@@ -6,7 +6,7 @@
 		<MultiParticipantGenerator>
 			<ParticipantVariance name="GreenFV1" number="400"
 				RandomCourse="true">
-				<ParticipantLocation inRandomLocations="true">
+				<ParticipantLocation inRandomLocations="false">
 					<WorldArea>
 						<TopLeft>
 							<shortLocation Lat="1" Long="0"></shortLocation>
