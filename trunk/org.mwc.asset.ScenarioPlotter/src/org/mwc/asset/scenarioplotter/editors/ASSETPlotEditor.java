@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
@@ -27,7 +26,6 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
-import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
@@ -344,26 +342,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	public void update()
 	{
-
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				// call a chart update - so it removes it's cached data
-				_myChart.update();
-
-				// get the canvas
-				final SWTCanvas canv = _myChart.getSWTCanvas();
-
-				// we want the canvas to redraw in this thread - to deliberately slow
-				// this thread down
-				canv.redraw();
-			}
-		});
-
-		// _myChart.update();
+		// call a chart update - so it removes it's cached data
+		_myChart.update();
 	}
 
 	/**
