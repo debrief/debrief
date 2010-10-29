@@ -212,7 +212,7 @@
 			<Waterfall Name="LX PAtrol">
 				<Trail Name="" AllowSpeedChange="false">
 					<TrailRange Value="5" Units="nm" />
-					<AllowableError Value="16" Units="nm" />
+					<AllowableError Value="25" Units="nm" />
 					<TargetType>
 						<Type Name="BLUE" />
 					</TargetType>
