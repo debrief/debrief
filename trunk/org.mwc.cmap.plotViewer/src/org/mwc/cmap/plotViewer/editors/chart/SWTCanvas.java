@@ -149,13 +149,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	private static final long serialVersionUID = 1L;
 
-	org.eclipse.swt.widgets.Canvas _myCanvas = null;
+	private org.eclipse.swt.widgets.Canvas _myCanvas = null;
 
-	/** an event queue - where we place screen update events, to trim down
-	 * lots of consecutive screen updates
+	/**
+	 * an event queue - where we place screen update events, to trim down lots of
+	 * consecutive screen updates
 	 */
-	private EventStack _eventQue = new EventStack(15);
-
+	private EventStack _eventQue = new EventStack(50);
 
 	/**
 	 * our double-buffering safe copy.
@@ -184,17 +184,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 			public void mouseHover(MouseEvent e)
 			{
 				String tip = getTheToolTipText(new java.awt.Point(e.x, e.y));
-
-				// _tooltip = new Shell(Display.getCurrent());//, SWT.ON_TOP |
-				// SWT.NO_FOCUS | SWT.TOOL);
-				// Label bl = new Label(_tooltip,SWT.NONE);
-				// bl.setText(tip);
-				// bl.pack();
-				// Point dimen =bl.getSize();
-				// // _tooltip.setBounds(e.x, e.y, dimen.x, dimen.y);
-				// System.out.println("loc is:" + e);
-				// _tooltip.setBounds(e.x, e.y, 200,50);
-				// _tooltip.setVisible(true);
 
 				// clear the existing tooltip
 				_myCanvas.setToolTipText(null);
@@ -240,13 +229,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 		});
 
-		// switch on tooltips for this panel
-		// _myCanvas.setToolTipText("ending");
-
 		// setup our own painter
 		_myCanvas.addPaintListener(new org.eclipse.swt.events.PaintListener()
 		{
-
 			public void paintControl(PaintEvent e)
 			{
 				repaintMe(e);
@@ -441,7 +426,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 	// graphics plotting related
 	// //////////////////////////////////////////////////////////
 
-
 	/**
 	 * first repaint the plot, then trigger a screen update
 	 */
@@ -456,32 +440,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 			_dblBuff = null;
 		}
 
-		if (!_myCanvas.isDisposed())
-		{
-			// create the runnable to place in the que
-			Runnable runme = new Runnable()
-			{
-				public void run()
-				{
-					// called deferred redraw method
-					Display.getDefault().asyncExec(new Runnable()
-					{
-						public void run()
-						{
-							if (!_myCanvas.isDisposed())
-							{
-								_myCanvas.redraw();
-							}
-						}
-					});
-				}
-			};
+		redraw();
 
-			// add it to the cache
-			_eventQue.addEvent(runme);
-
-			
-		}
 	}
 
 	/**
@@ -494,7 +454,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 	public String getName()
 	{
-		// TODO Auto-generated method stub
 		return "SWT Canvas";
 	}
 
@@ -511,7 +470,23 @@ public class SWTCanvas extends SWTCanvasAdapter
 	public void redraw()
 	{
 		if (!_myCanvas.isDisposed())
-			_myCanvas.redraw();
+		{
+			// create the runnable to place in the que
+			Runnable runme = new Runnable()
+			{
+				public void run()
+				{
+					if (!_myCanvas.isDisposed())
+					{
+						_myCanvas.redraw();
+					}
+				}
+			};
+			
+			// add it to the cache
+			_eventQue.addEvent(runme);
+		}
+
 	}
 
 	public void addControlListener(ControlAdapter adapter)
@@ -608,25 +583,24 @@ public class SWTCanvas extends SWTCanvasAdapter
 			txt = CorePlugin.toClipboard(theLoc);
 			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
 					txt);
-			
+
 			WorldLocation loc3 = CorePlugin.fromClipboard("12.5 13.5");
 			assertNotNull("is a location string", loc3);
-			
+
 			loc3 = CorePlugin.fromClipboard("-12.5 13.5");
 			assertNotNull("is a location string", loc3);
-			
+
 			loc3 = CorePlugin.fromClipboard("-12.5\t 13.5");
 			assertNotNull("is a location string", loc3);
-			
+
 			loc3 = CorePlugin.fromClipboard("-12.5t 13.5");
 			assertNull("is not a location string", loc3);
-			
+
 			loc3 = CorePlugin.fromClipboard("12 01 02 N 14 12 32 W");
 			assertNotNull("is a location string", loc3);
-			
+
 			loc3 = CorePlugin.fromClipboard("12 01 02.225 S 14 12 32.116 E");
 			assertNotNull("is a location string", loc3);
-			
 
 		}
 	}
