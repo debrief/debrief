@@ -91,6 +91,7 @@ import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
@@ -153,6 +154,7 @@ public class ScenarioControllerView extends ViewPart implements
 	private ResultsContainer _scenarioController;
 	private NewScenarioListener _newScenarioListener;
 	private ScenarioSteppedListener _stepListener;
+	private Duration _myPendingStepSize;
 
 	/**
 	 * The constructor.
@@ -532,7 +534,10 @@ public class ScenarioControllerView extends ViewPart implements
 		else if (adapter == TimeControlPreferences.class)
 		{
 			if (_myTimeControlProps == null)
+			{
 				_myTimeControlProps = new TimeControlProperties();
+				_myTimeControlProps.setAutoInterval(_myPendingStepSize);
+			}
 
 			res = _myTimeControlProps;
 		}
@@ -551,8 +556,8 @@ public class ScenarioControllerView extends ViewPart implements
 					if (obj instanceof EditableWrapper)
 					{
 						Editable ed = obj.getEditable();
-						if(ed instanceof LiveScenario)
-						return ed;
+						if (ed instanceof LiveScenario)
+							return ed;
 					}
 				}
 			}
@@ -1011,6 +1016,13 @@ public class ScenarioControllerView extends ViewPart implements
 			memento.putString(SCENARIO_FILE_INDEX, _scenarioFileName);
 		if (_controlFileName != null)
 			memento.putString(CONTROL_FILE_INDEX, _controlFileName);
+
+		if (_myTimeControlProps != null)
+		{
+			Duration stepSize = _myTimeControlProps.getAutoInterval();
+			String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
+			memento.putString("StepInterval", stepSizeStr);
+		}
 	}
 
 	/*
@@ -1045,6 +1057,15 @@ public class ScenarioControllerView extends ViewPart implements
 		if (pendingFilenames.size() > 0)
 			_myPendingFilenames = pendingFilenames.toArray(new String[]
 			{});
+
+		// also, see if we have an auto-step size property
+		String stepSizeStr = memento.getString("StepInterval");
+		if (stepSizeStr != null)
+		{
+			// and store it.
+			Double duration = Double.valueOf(stepSizeStr);
+			_myPendingStepSize = new Duration(duration, Duration.MILLISECONDS);
+		}
 
 	}
 
