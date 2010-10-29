@@ -329,7 +329,7 @@ public class MultiScenarioCore implements ISimulationQue
 	}
 
 	public int prepareControllers(ResultsContainer multiRunResultsStore,
-			ASSETProgressMonitor pMon)
+			ASSETProgressMonitor pMon, NewScenarioListener newScenarioListener)
 	{
 		int resCode = 0;
 
@@ -410,6 +410,10 @@ public class MultiScenarioCore implements ISimulationQue
 			firstS.initialise(_allObservers);
 		}
 
+		// tell the parent we've got a new scenario
+		if(newScenarioListener != null)
+			newScenarioListener.newScenario(null,_theScenarios.firstElement().scenario);
+		
 		return resCode;
 	}
 

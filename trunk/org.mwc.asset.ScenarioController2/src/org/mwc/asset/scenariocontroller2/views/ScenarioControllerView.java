@@ -443,7 +443,7 @@ public class ScenarioControllerView extends ViewPart implements
 							_scenarioController.outputDirectory);
 
 					// and sort out the observers
-					_myMultiScenario.prepareControllers(_scenarioController, pMon);
+					_myMultiScenario.prepareControllers(_scenarioController, pMon, _newScenarioListener);
 
 					// ok, now give the scenarios to the multi scenario table (in the UI
 					// thread
@@ -457,12 +457,6 @@ public class ScenarioControllerView extends ViewPart implements
 							_myUI.getDoGenerateButton().setEnabled(true);
 						}
 					});
-
-					// tell the time manager about the first scenario
-					CoreScenario firstScen = (CoreScenario) _myMultiScenario
-							.getSimulations().firstElement();
-					_timeManager.setCurrentScenario(firstScen);
-
 				}
 				catch (Exception e)
 				{

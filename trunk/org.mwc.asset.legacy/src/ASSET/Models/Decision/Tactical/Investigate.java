@@ -36,7 +36,6 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldVector;
 
 /**
  * Our implementation of investigation. The host platform will close on a
