@@ -3,8 +3,6 @@
  */
 package org.mwc.cmap.core.ui_support;
 
-import java.util.Date;
-
 import org.eclipse.swt.widgets.Display;
 
 
@@ -32,7 +30,7 @@ public class EventStack
 		synchronized public void setNextEvent(Runnable runnable)
 		{
 			// store the time we received this
-			eventReceivedTime = new Date().getTime();
+			eventReceivedTime = System.currentTimeMillis();
 	
 			// remember this event (over-writing any previous events)
 			nextEvent = runnable;
@@ -48,7 +46,7 @@ public class EventStack
 					{
 						boolean isDelayUp = false;
 	
-						final long currentTime = new Date().getTime();
+						final long currentTime = System.currentTimeMillis();
 	
 						// how long since we last received an event?
 						long elapsedTime = currentTime - eventReceivedTime;
@@ -64,7 +62,6 @@ public class EventStack
 						}
 					}
 				}
-	
 				try
 				{
 					Thread.sleep(10);
@@ -83,7 +80,7 @@ public class EventStack
 	 * property of hundreds of items will trigger hundreds of screen updates, this
 	 * allows us to just fire the last one
 	 * 
-	 * @param delay how long we should wait for another before running the current operation
+	 * @param delay how (millis) long we should wait for another before running the current operation
 	 */
 	public EventStack(int delay)
 	{
