@@ -137,6 +137,7 @@ package MWC.GUI;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -162,7 +163,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * the actual list of plottables
 	 */
 	// private TreeSet<Editable> _thePlottables;
-	private TreeSet<Editable> _thePlottables;
+	private SortedSet<Editable> _thePlottables;
 
 	// protected com.sun.java.util.collections.Hashset _thePlottables;
 	/**
@@ -185,7 +186,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	// //////////////////////////////////////////////////////////////
 	public Plottables()
 	{
-		_thePlottables = new TreeSet<Editable>(new CompareEditables());
+		_thePlottables = Collections.synchronizedSortedSet(new TreeSet<Editable>(
+				new CompareEditables()));
 		_visible = true;
 	}
 
@@ -254,13 +256,11 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	/**
 	 * paint this list to the canvas
 	 */
-	public void paint(CanvasType dest)
+	public synchronized void paint(CanvasType dest)
 	{
 		// see if I am visible
 		if (!getVisible())
 			return;
-
-		Iterator<Editable> enumer = _thePlottables.iterator();
 
 		// note, we used to only test it the subject was in the data area,
 		// but that left some items outside the user-dragged area not being visible.
@@ -276,30 +276,35 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			wa = dest.getProjection().getVisibleDataArea();
 		}
 
-		while (enumer.hasNext())
+		synchronized (_thePlottables)
 		{
-			Object next = enumer.next();
-			if (next instanceof Plottable)
+			Iterator<Editable> enumer = _thePlottables.iterator();
+
+			while (enumer.hasNext())
 			{
-				Plottable thisP = (Plottable) next;
-
-				// is this plottable visible
-				if (thisP.getVisible())
+				Object next = enumer.next();
+				if (next instanceof Plottable)
 				{
+					Plottable thisP = (Plottable) next;
 
-					// see if this plottable is within the data area
-					WorldArea wp = thisP.getBounds();
-
-					if (wp != null)
+					// is this plottable visible
+					if (thisP.getVisible())
 					{
-						// it has an area, see if it is in view
-						if (wp.overlaps(wa))
+
+						// see if this plottable is within the data area
+						WorldArea wp = thisP.getBounds();
+
+						if (wp != null)
+						{
+							// it has an area, see if it is in view
+							if (wp.overlaps(wa))
+								thisP.paint(dest);
+						}
+						else
+						{
+							// it doesn't have an area, so plot it anyway
 							thisP.paint(dest);
-					}
-					else
-					{
-						// it doesn't have an area, so plot it anyway
-						thisP.paint(dest);
+						}
 					}
 				}
 			}
