@@ -91,18 +91,21 @@ public class RotateDragMode extends DragMode
 			else if (editable instanceof TrackSegment)
 			{
 				TrackSegment thisSeg = (TrackSegment) editable;
-				double thisRes = thisSeg.rangeFrom(loc);
-				if (nearest == null)
+				if (thisSeg.getVisible())
 				{
-					nearest = thisSeg;
-					res = thisRes;
-				}
-				else
-				{
-					if (thisRes < res)
+					double thisRes = thisSeg.rangeFrom(loc);
+					if (nearest == null)
 					{
 						nearest = thisSeg;
 						res = thisRes;
+					}
+					else
+					{
+						if (thisRes < res)
+						{
+							nearest = thisSeg;
+							res = thisRes;
+						}
 					}
 				}
 
@@ -147,7 +150,7 @@ public class RotateDragMode extends DragMode
 						theLayers);
 				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
 						theLayers);
-				
+
 				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
 				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
 				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
@@ -273,10 +276,10 @@ public class RotateDragMode extends DragMode
 			}
 
 			_segment.rotate(brg, _origin);
-			
+
 			// get the segment to recalc it's bounds
-		//	_segment.clearBounds();
-			
+			// _segment.clearBounds();
+
 			// and remember it
 			lastRotate = new Double(brg);
 
