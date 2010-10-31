@@ -429,7 +429,7 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
         assertNotNull("found tomato track");
 
         TrackWrapper tw = (TrackWrapper) layer;
-        Enumeration<TMAWrapper> solutions = tw.getSolutions();
+        Enumeration<Editable> solutions = tw.getSolutions().elements();
         assertNotNull("found solutions", solutions);
 
         // find our solution track

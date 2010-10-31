@@ -383,7 +383,7 @@ public class SnailPainter extends TotePainter
 						final TrackWrapper trw = (TrackWrapper) thisLayer;
 
 						// first plot the sensors
-						final Enumeration<SensorWrapper> sensors = trw.getSensors();
+						final Enumeration<Editable> sensors = trw.getSensors().elements();
 						if (sensors != null)
 						{
 							while (sensors.hasMoreElements())
@@ -398,7 +398,7 @@ public class SnailPainter extends TotePainter
 						}
 
 						// now the TMA solutons
-						final Enumeration<TMAWrapper> solutions = trw.getSolutions();
+						final Enumeration<Editable> solutions = trw.getSolutions().elements();
 						if (solutions != null)
 						{
 							while (solutions.hasMoreElements())

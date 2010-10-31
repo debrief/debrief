@@ -132,10 +132,10 @@ public interface SWTPlotHighlighter extends Editable
 					TrackWrapper tw = fw.getTrackWrapper();
 					if (tw.getPlotArrayCentre())
 					{
-						Enumeration<SensorWrapper> enumer = tw.getSensors();
+						Enumeration<Editable> enumer = tw.getSensors().elements();
 						while (enumer.hasMoreElements())
 						{
-							SensorWrapper sw = enumer.nextElement();
+							SensorWrapper sw = (SensorWrapper) enumer.nextElement();
 							ArrayLength len = sw.getSensorOffset();
 							if (len != null)
 							{

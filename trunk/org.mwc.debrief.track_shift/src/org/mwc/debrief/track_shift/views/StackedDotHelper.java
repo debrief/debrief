@@ -79,12 +79,12 @@ public final class StackedDotHelper
 				0.0, 0.0));
 
 		// loop through our sensor data
-		Enumeration<SensorWrapper> sensors = sensorHost.getSensors();
+		Enumeration<Editable> sensors = sensorHost.getSensors().elements();
 		if (sensors != null)
 		{
 			while (sensors.hasMoreElements())
 			{
-				SensorWrapper wrapper = sensors.nextElement();
+				SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
 				if (!onlyVis || (onlyVis && wrapper.getVisible()))
 				{
 					Enumeration<Editable> cuts = wrapper.elements();

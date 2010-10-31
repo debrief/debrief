@@ -1086,10 +1086,10 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// right, get the sensors for our reference track
 		TrackWrapper tw = (TrackWrapper) getReferenceTrack();
-		Enumeration<SensorWrapper> sensors = tw.getSensors();
+		Enumeration<Editable> sensors = tw.getSensors().elements();
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper thisS = sensors.nextElement();
+			SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
 			if (thisS.getVisible())
 			{
 				Watchable[] matches = thisS.getNearestTo(dtg);

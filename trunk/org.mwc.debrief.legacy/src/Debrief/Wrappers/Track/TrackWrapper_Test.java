@@ -252,7 +252,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has all fixes", 15, tw.numFixes());
 		// check we've got all the sensor data
 		assertEquals("has all sensor cuts", 4, countCuts(tw.getSensors().elements()));
-		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()));
+		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions().elements()));
 
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(30 * 1000l));
@@ -261,7 +261,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 49, tw.numFixes());
 		assertEquals("has all sensor cuts", 15, countCuts(tw.getSensors().elements()));
-		assertEquals("has all tma cuts", 29, countSolutions(tw.getSolutions()));
+		assertEquals("has all tma cuts", 29, countSolutions(tw.getSolutions().elements()));
 
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(4 * 60000));
@@ -270,11 +270,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 7, tw.numFixes());
 		assertEquals("has all resampled sensor cuts", 3, countCuts(tw.getSensors().elements()));
-		assertEquals("has all tma cuts", 5, countSolutions(tw.getSolutions()));
+		assertEquals("has all tma cuts", 5, countSolutions(tw.getSolutions().elements()));
 
 	}
 
-	private int countSolutions(Enumeration<TMAWrapper> solutions)
+	private int countSolutions(Enumeration<Editable> solutions)
 	{
 		if (solutions == null)
 			return 0;
@@ -282,7 +282,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		int counter = 0;
 		while (solutions.hasMoreElements())
 		{
-			TMAWrapper sw = solutions.nextElement();
+			TMAWrapper sw = (TMAWrapper) solutions.nextElement();
 			Enumeration<Editable> ele = sw.elements();
 			while (ele.hasMoreElements())
 			{

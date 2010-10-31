@@ -608,7 +608,7 @@ public class ImportReplay extends PlainImporterBase
 					{
 						// so, we've found a track - see if it holds this sensor
 						TrackWrapper tw = (TrackWrapper) val;
-						Enumeration<SensorWrapper> iter = tw.getSensors();
+						Enumeration<Editable> iter = tw.getSensors().elements();
 
 						// step through this track' sensors
 						if (iter != null)
@@ -616,7 +616,7 @@ public class ImportReplay extends PlainImporterBase
 							while (iter.hasMoreElements())
 							{
 								//
-								SensorWrapper sensorw = iter.nextElement();
+								SensorWrapper sensorw = (SensorWrapper) iter.nextElement();
 
 								// is this our sensor?
 								if (sensorw.getName().equals(sensorName))
@@ -709,7 +709,7 @@ public class ImportReplay extends PlainImporterBase
 					{
 						// so, we've found a track - see if it holds this solution
 						TrackWrapper tw = (TrackWrapper) val;
-						Enumeration<TMAWrapper> iter = tw.getSolutions();
+						Enumeration<Editable> iter = tw.getSolutions().elements();
 
 						// step through this track's solutions
 						if (iter != null)
@@ -717,7 +717,7 @@ public class ImportReplay extends PlainImporterBase
 							while (iter.hasMoreElements())
 							{
 								//
-								TMAWrapper sensorw = iter.nextElement();
+								TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
 
 								// is this our sensor?
 								if (sensorw.getName().equals(solutionName))

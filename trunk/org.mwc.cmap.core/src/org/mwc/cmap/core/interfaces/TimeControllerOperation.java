@@ -116,7 +116,7 @@ public abstract class TimeControllerOperation
 		if (_requireSensor)
 		{
 
-			Enumeration<SensorWrapper> enumer = primaryTrack.getSensors();
+			Enumeration<Editable> enumer = primaryTrack.getSensors().elements();
 			if (enumer == null)
 			{
 				showMessage("Sorry, primary selection must be have sensor data");
@@ -178,11 +178,11 @@ public abstract class TimeControllerOperation
 		{
 			// loop through the sensors
 			// loop through collecting cuts from visible sensors
-			Enumeration<SensorWrapper> sensors = primaryTrack.getSensors();
+			Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
 			Collection <Editable> theCuts = new Vector<Editable>();
 			while (sensors.hasMoreElements())
 			{
-				SensorWrapper thisS = sensors.nextElement();
+				SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
 				if (thisS.getVisible())
 				{
 					Collection<Editable> theseCuts = thisS.getItemsBetween(period.getStartDTG(), period.getEndDTG());

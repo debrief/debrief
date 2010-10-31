@@ -655,11 +655,11 @@ public class RightClickCutCopyAdaptor
 				final SensorContactWrapper scwa1)
 		{
 			boolean itemFound;
-			Enumeration<SensorWrapper> enumer = tw.getSensors();
+			Enumeration<Editable> enumer = tw.getSensors().elements();
 			itemFound = false;
 			while (enumer.hasMoreElements())
 			{
-				SensorWrapper ee = enumer.nextElement();
+				SensorWrapper ee = (SensorWrapper) enumer.nextElement();
 				Enumeration<Editable> contacts = ee.elements();
 				while (contacts.hasMoreElements())
 				{
@@ -678,11 +678,11 @@ public class RightClickCutCopyAdaptor
 				final TMAContactWrapper scwa1)
 		{
 			boolean itemFound;
-			Enumeration<TMAWrapper> enumer = tw.getSolutions();
+			Enumeration<Editable> enumer = tw.getSolutions().elements();
 			itemFound = false;
 			while (enumer.hasMoreElements())
 			{
-				TMAWrapper ee = enumer.nextElement();
+				TMAWrapper ee = (TMAWrapper) enumer.nextElement();
 				Enumeration<Editable> contacts = ee.elements();
 				while (contacts.hasMoreElements())
 				{

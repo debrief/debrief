@@ -76,10 +76,10 @@ public class FlatFileExporter
 
 		// find the names of visible sensors
 		String sensorName = null;
-		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
+		Enumeration<Editable> sensors = pTrack.getSensors().elements();
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper sw = sensors.nextElement();
+			SensorWrapper sw = (SensorWrapper) sensors.nextElement();
 			if (sw.getVisible())
 			{
 				if (sensorName == null)
@@ -122,10 +122,10 @@ public class FlatFileExporter
 		// solution
 
 		// loop through collecting cuts from visible sensors
-		Enumeration<SensorWrapper> sensors = pTrack.getSensors();
+		Enumeration<Editable> sensors = pTrack.getSensors().elements();
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper thisS = sensors.nextElement();
+			SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
 			if (thisS.getVisible())
 			{
 				mySensors.add(thisS);

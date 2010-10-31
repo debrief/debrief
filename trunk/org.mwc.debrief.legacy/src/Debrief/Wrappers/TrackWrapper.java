@@ -30,6 +30,7 @@ import Debrief.Wrappers.Track.WormInHoleOffset;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.Conversions;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
@@ -121,11 +122,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		@SuppressWarnings("synthetic-access")
 		private int countVisibleSensorWrappers(TrackWrapper tw)
 		{
-			final Iterator<SensorWrapper> iter2 = tw._mySensors.iterator();
+			final Enumeration<Editable> iter2 = tw._mySensors.elements();
 			int sCtr = 0;
-			while (iter2.hasNext())
+			while (iter2.hasMoreElements())
 			{
-				final SensorWrapper sw = iter2.next();
+				final SensorWrapper sw = (SensorWrapper) iter2.nextElement();
 				final Enumeration<Editable> enumS = sw.elements();
 				while (enumS.hasMoreElements())
 				{
@@ -140,11 +141,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		@SuppressWarnings("synthetic-access")
 		private int countVisibleSolutionWrappers(TrackWrapper tw)
 		{
-			final Iterator<TMAWrapper> iter2 = tw._mySolutions.iterator();
+			final Enumeration<Editable> iter2 = tw._mySolutions.elements();
 			int sCtr = 0;
-			while (iter2.hasNext())
+			while (iter2.hasMoreElements())
 			{
-				final TMAWrapper sw = iter2.next();
+				final TMAWrapper sw = (TMAWrapper) iter2.nextElement();
 				final Enumeration<Editable> enumS = sw.elements();
 				while (enumS.hasMoreElements())
 				{
@@ -1096,12 +1097,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the sensor tracks for this vessel
 	 */
-	private Vector<SensorWrapper> _mySensors = null;
+	final private BaseLayer _mySensors;
 
 	/**
 	 * the TMA solutions for this vessel
 	 */
-	private Vector<TMAWrapper> _mySolutions = null;
+	final private BaseLayer _mySolutions;
 
 	/**
 	 * keep track of how far we are through our array of points
@@ -1168,6 +1169,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public TrackWrapper()
 	{
+		_mySensors = new BaseLayer(true);
+		_mySensors.setName("Sensors");
+		_mySolutions = new BaseLayer(true);
+		_mySolutions.setName("Solutions");
 
 		// create a property listener for when fixes are moved
 		_locationListener = new PropertyChangeListener()
@@ -1223,10 +1228,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof SensorWrapper)
 		{
 			final SensorWrapper swr = (SensorWrapper) point;
-			if (_mySensors == null)
-			{
-				_mySensors = new Vector<SensorWrapper>(0, 1);
-			}
+
 			// add to our list
 			_mySensors.add(swr);
 
@@ -1248,10 +1250,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof TMAWrapper)
 		{
 			final TMAWrapper twr = (TMAWrapper) point;
-			if (_mySolutions == null)
-			{
-				_mySolutions = new Vector<TMAWrapper>(0, 1);
-			}
 			// add to our list
 			_mySolutions.add(twr);
 
@@ -1386,10 +1384,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// first ask the sensors to close themselves
 		if (_mySensors != null)
 		{
-			final Iterator<SensorWrapper> it2 = _mySensors.iterator();
-			while (it2.hasNext())
+			final Enumeration<Editable> it2 = _mySensors.elements();
+			while (it2.hasMoreElements())
 			{
-				final Object val = it2.next();
+				final Object val = it2.nextElement();
 				if (val instanceof PlainWrapper)
 				{
 					final PlainWrapper pw = (PlainWrapper) val;
@@ -1397,16 +1395,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 			// now ditch them
-			_mySensors.clear();
+			_mySensors.removeAllElements();
 		}
 
 		// now ask the solutions to close themselves
 		if (_mySolutions != null)
 		{
-			final Iterator<TMAWrapper> it2 = _mySolutions.iterator();
-			while (it2.hasNext())
+			final Enumeration<Editable> it2 = _mySolutions.elements();
+			while (it2.hasMoreElements())
 			{
-				final Object val = it2.next();
+				final Object val = it2.nextElement();
 				if (val instanceof PlainWrapper)
 				{
 					final PlainWrapper pw = (PlainWrapper) val;
@@ -1414,7 +1412,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 			}
 			// now ditch them
-			_mySolutions.clear();
+			_mySolutions.removeAllElements();
 		}
 
 		// and our utility objects
@@ -1466,10 +1464,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		if (_mySensors != null)
 		{
-			final Enumeration<SensorWrapper> iter = _mySensors.elements();
+			final Enumeration<Editable> iter = _mySensors.elements();
 			while (iter.hasMoreElements())
 			{
-				final SensorWrapper sw = iter.nextElement();
+				final SensorWrapper sw = (SensorWrapper) iter.nextElement();
 				// is it visible?
 				if (sw.getVisible())
 				{
@@ -1480,10 +1478,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		if (_mySolutions != null)
 		{
-			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
+			final Enumeration<Editable> iter = _mySolutions.elements();
 			while (iter.hasMoreElements())
 			{
-				final TMAWrapper sw = iter.nextElement();
+				final TMAWrapper sw = (TMAWrapper) iter.nextElement();
 				if (sw.getVisible())
 				{
 					res.addAll(sw._myContacts);
@@ -1508,23 +1506,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		final TreeSet<Editable> res = new TreeSet<Editable>();
 
-		if (_mySensors != null)
+		if (_mySensors.size() > 0)
 		{
-			final Enumeration<SensorWrapper> iter = _mySensors.elements();
-			while (iter.hasMoreElements())
-			{
-				res.add(iter.nextElement());
-			}
+			res.add(_mySensors);
 		}
 
-		if (_mySolutions != null)
+		if (_mySolutions.size() > 0)
 		{
-
-			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
-			while (iter.hasMoreElements())
-			{
-				res.add(iter.nextElement());
-			}
+			res.add(_mySolutions);
 		}
 
 		// ok, we want to wrap our fast-data as a set of plottables
@@ -1581,10 +1570,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// now do the same for our sensor data
 		if (_mySensors != null)
 		{
-			final Enumeration<SensorWrapper> iter = _mySensors.elements();
+			final Enumeration<Editable> iter = _mySensors.elements();
 			while (iter.hasMoreElements())
 			{
-				final WatchableList sw = iter.nextElement();
+				final WatchableList sw = (WatchableList) iter.nextElement();
 				sw.filterListTo(start, end);
 			} // through the sensors
 		} // whether we have any sensors
@@ -1592,10 +1581,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// and our solution data
 		if (_mySolutions != null)
 		{
-			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
+			final Enumeration<Editable> iter = _mySolutions.elements();
 			while (iter.hasMoreElements())
 			{
-				final WatchableList sw = iter.nextElement();
+				final WatchableList sw = (WatchableList) iter.nextElement();
 				sw.filterListTo(start, end);
 			} // through the sensors
 		} // whether we have any sensors
@@ -1707,10 +1696,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		if (_mySensors != null)
 		{
-			final Iterator<SensorWrapper> iter = _mySensors.iterator();
-			while (iter.hasNext())
+			final Enumeration<Editable> iter = _mySensors.elements();
+			while (iter.hasMoreElements())
 			{
-				final SensorWrapper nextS = iter.next();
+				final SensorWrapper nextS = (SensorWrapper) iter.nextElement();
 				nextS.setHost(this);
 			}
 		}
@@ -1763,10 +1752,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// also extend to include our sensor data
 			if (_mySensors != null)
 			{
-				final Enumeration<SensorWrapper> iter = _mySensors.elements();
+				final Enumeration<Editable> iter = _mySensors.elements();
 				while (iter.hasMoreElements())
 				{
-					final PlainWrapper sw = iter.nextElement();
+					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
 					final WorldArea theseBounds = sw.getBounds();
 					if (theseBounds != null)
 					{
@@ -1781,10 +1770,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// and our solution data
 			if (_mySolutions != null)
 			{
-				final Enumeration<TMAWrapper> iter = _mySolutions.elements();
+				final Enumeration<Editable> iter = _mySolutions.elements();
 				while (iter.hasMoreElements())
 				{
-					final PlainWrapper sw = iter.nextElement();
+					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
 					final WorldArea theseBounds = sw.getBounds();
 					if (theseBounds != null)
 					{
@@ -2282,14 +2271,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final Enumeration<SensorWrapper> getSensors()
+	public final BaseLayer getSensors()
 	{
-		Enumeration<SensorWrapper> res = null;
-
-		if (_mySensors != null)
-			res = _mySensors.elements();
-
-		return res;
+		return _mySensors;
 	}
 
 	/**
@@ -2303,14 +2287,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final Enumeration<TMAWrapper> getSolutions()
+	public final BaseLayer getSolutions()
 	{
-		Enumeration<TMAWrapper> res = null;
-
-		if (_mySolutions != null)
-			res = _mySolutions.elements();
-
-		return res;
+		return _mySolutions;
 	}
 
 	// //////////////////////////////////////
@@ -2483,12 +2462,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// /////////////////////////////////////////////
 			// firstly plot the solutions
 			// /////////////////////////////////////////////
-			if (_mySolutions != null)
+			if (_mySolutions.getVisible())
 			{
-				final Enumeration<TMAWrapper> iter = _mySolutions.elements();
+				final Enumeration<Editable> iter = _mySolutions.elements();
 				while (iter.hasMoreElements())
 				{
-					final TMAWrapper sw = iter.nextElement();
+					final TMAWrapper sw = (TMAWrapper) iter.nextElement();
 					// just check that the sensor knows we're it's parent
 					if (sw.getHost() == null)
 						sw.setHost(this);
@@ -2496,17 +2475,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					sw.paint(dest);
 
 				} // through the solutions
-			} // whether we have any solutions
+			} // whether the solutions are visible
 
 			// /////////////////////////////////////////////
 			// now plot the sensors
 			// /////////////////////////////////////////////
-			if (_mySensors != null)
+			if (_mySensors.getVisible())
 			{
-				final Enumeration<SensorWrapper> iter = _mySensors.elements();
+				final Enumeration<Editable> iter = _mySensors.elements();
 				while (iter.hasMoreElements())
 				{
-					final SensorWrapper sw = iter.nextElement();
+					final SensorWrapper sw = (SensorWrapper) iter.nextElement();
 					// just check that the sensor knows we're it's parent
 					if (sw.getHost() == null)
 						sw.setHost(this);
@@ -2515,7 +2494,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					sw.paint(dest);
 
 				} // through the sensors
-			} // whether we have any sensors
+			} // whether the sensor layer is visible
 
 			// /////////////////////////////////////////////
 			// and now the track itself
@@ -2896,7 +2875,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// just see if it's a sensor which is trying to be removed
 		if (point instanceof SensorWrapper)
 		{
-			_mySensors.remove(point);
+			_mySensors.removeElement(point);
 
 			// tell the sensor wrapper to forget about us
 			TacticalDataWrapper sw = (TacticalDataWrapper) point;
@@ -2904,7 +2883,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else if (point instanceof TMAWrapper)
 		{
-			_mySolutions.remove(point);
+			_mySolutions.removeElement(point);
 
 			// tell the sensor wrapper to forget about us
 			TacticalDataWrapper sw = (TacticalDataWrapper) point;
@@ -2913,10 +2892,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof SensorContactWrapper)
 		{
 			// ok, cycle through our sensors, try to remove this contact...
-			final Iterator<SensorWrapper> iter = _mySensors.iterator();
-			while (iter.hasNext())
+			final Enumeration<Editable> iter = _mySensors.elements();
+			while (iter.hasMoreElements())
 			{
-				final SensorWrapper sw = iter.next();
+				final SensorWrapper sw = (SensorWrapper) iter.nextElement();
 				// try to remove it from this one...
 				sw.removeElement(point);
 			}
@@ -3125,10 +3104,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// start off with the sensor data
 			if (_mySensors != null)
 			{
-				for (Iterator<SensorWrapper> iterator = _mySensors.iterator(); iterator
-						.hasNext();)
+				for (Enumeration<Editable> iterator = _mySensors.elements(); iterator
+						.hasMoreElements();)
 				{
-					SensorWrapper thisS = (SensorWrapper) iterator.next();
+					SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
 					thisS.decimate(theVal, startTime);
 				}
 			}
@@ -3136,10 +3115,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// now the solutions
 			if (_mySolutions != null)
 			{
-				for (Iterator<TMAWrapper> iterator = _mySolutions.iterator(); iterator
-						.hasNext();)
+				for (Enumeration<Editable> iterator = _mySolutions.elements(); iterator
+						.hasMoreElements();)
 				{
-					TMAWrapper thisT = (TMAWrapper) iterator.next();
+					TMAWrapper thisT = (TMAWrapper) iterator.nextElement();
 					thisT.decimate(theVal, startTime);
 				}
 			}

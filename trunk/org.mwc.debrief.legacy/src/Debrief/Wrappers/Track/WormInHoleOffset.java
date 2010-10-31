@@ -136,7 +136,7 @@ public class WormInHoleOffset
 			assertEquals("correct points", 5, track.numFixes());
 
 			// get the sensor
-			SensorWrapper sw = track.getSensors().nextElement();
+			SensorWrapper sw = (SensorWrapper) track.getSensors().elements().nextElement();
 
 			// find the position of the last fix
 			SensorContactWrapper scw = (SensorContactWrapper) sw.getNearestTo(sw

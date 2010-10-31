@@ -539,7 +539,7 @@ final public class TimeEditorPanel extends JPanel
         // and solutions
         if (l instanceof TrackWrapper)
         {
-          Enumeration<TMAWrapper> solutions = ((TrackWrapper) l).getSolutions();
+          Enumeration<Editable> solutions = ((TrackWrapper) l).getSolutions().elements();
           if (solutions != null)
           {
             while (solutions.hasMoreElements())
@@ -548,7 +548,7 @@ final public class TimeEditorPanel extends JPanel
               addElement(tmaWrapper, res);
             }
           }
-          Enumeration<SensorWrapper> sensors = ((TrackWrapper) l).getSensors();
+          Enumeration<Editable> sensors = ((TrackWrapper) l).getSensors().elements();
           if (sensors != null)
           {
             while (sensors.hasMoreElements())
