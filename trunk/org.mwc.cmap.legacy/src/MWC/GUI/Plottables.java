@@ -352,17 +352,21 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			{
 				Plottable thisOne = (Plottable) nextOne;
 
-				if (res == null)
+				// is this item visible?
+				if (thisOne.getVisible())
 				{
-					WorldArea thisA = thisOne.getBounds();
-					if (thisA != null)
-						res = new WorldArea(thisA);
-				}
-				else
-				{
-					WorldArea thisA = thisOne.getBounds();
-					if (thisA != null)
-						res.extend(thisOne.getBounds());
+					if (res == null)
+					{
+						WorldArea thisA = thisOne.getBounds();
+						if (thisA != null)
+							res = new WorldArea(thisA);
+					}
+					else
+					{
+						WorldArea thisA = thisOne.getBounds();
+						if (thisA != null)
+							res.extend(thisOne.getBounds());
+					}
 				}
 			}
 		}
@@ -543,7 +547,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	{
 		return (Plottable) _thePlottables.last();
 	}
-
+	
 	/**
 	 * @return all items in our list greater or equal to fromElement
 	 */
