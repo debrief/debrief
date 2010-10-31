@@ -226,12 +226,13 @@ public final class StackedDotHelper
 			updateDoublets(onlyVis);
 
 		// aah - but what if we've ditched our doublets?
-		if (_primaryDoublets == null)
+		if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
+		{
+			// better clear the plot
+			dotPlot.setDataset(null);
+			linePlot.setDataset(null);
 			return;
-
-		// and check there's actually something in the re
-		if (_primaryDoublets.size() == 0)
-			return;
+		}
 
 		// create the collection of series
 		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
@@ -541,12 +542,14 @@ public final class StackedDotHelper
 			updateDoublets(onlyVis);
 
 		// aah - but what if we've ditched our doublets?
-		if (_primaryDoublets == null)
+		// aah - but what if we've ditched our doublets?
+		if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
+		{
+			// better clear the plot
+			dotPlot.setDataset(null);
+			linePlot.setDataset(null);
 			return;
-
-		// and check there's actually something in the re
-		if (_primaryDoublets.size() == 0)
-			return;
+		}
 
 		// create the collection of series
 		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
