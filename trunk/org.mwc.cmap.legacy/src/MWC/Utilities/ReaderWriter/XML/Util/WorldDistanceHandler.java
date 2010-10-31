@@ -101,7 +101,7 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
     org.w3c.dom.Element eLoc = doc.createElement(myType);
     
     // store the fields
-    eLoc.setAttribute(VALUE, writeThis(distance.getValue()));
+    eLoc.setAttribute(VALUE, writeThisLong(distance.getValue()));
     eLoc.setAttribute(UNITS, distance.getUnitsLabel());
 
     // remember it

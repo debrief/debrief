@@ -281,8 +281,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements PlottableExp
   {
     // do the visibility
     gridElement.setAttribute(VISIBLE, writeThis(theGrid.getVisible()));
-    gridElement.setAttribute(XDELTA, writeThis(theGrid.getXDelta().getValueIn(WorldDistance.NM)));
-    gridElement.setAttribute(YDELTA, writeThis(theGrid.getYDelta().getValueIn(WorldDistance.NM)));
+    gridElement.setAttribute(XDELTA, writeThisLong(theGrid.getXDelta().getValueIn(WorldDistance.NM)));
+    gridElement.setAttribute(YDELTA, writeThisLong(theGrid.getYDelta().getValueIn(WorldDistance.NM)));
     gridElement.setAttribute(XMIN, theGrid.getXMin());
     gridElement.setAttribute(XMAX, theGrid.getXMax());
     gridElement.setAttribute(YMIN, writeThis(theGrid.getYMin().intValue()));
