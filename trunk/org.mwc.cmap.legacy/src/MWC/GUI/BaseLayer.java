@@ -194,9 +194,6 @@ public class BaseLayer extends Plottables implements Layer
   public BaseLayer()
   {
   	this(false);
-  	
-    // initialise the property change support
-    _pSupport = new java.beans.PropertyChangeSupport(this);
   }
   
   /** indicate whether our children have a native order
@@ -206,6 +203,9 @@ public class BaseLayer extends Plottables implements Layer
   public BaseLayer(boolean orderedChildren)
   {
   	_orderedChildren = orderedChildren;
+  	
+    // initialise the property change support
+    _pSupport = new java.beans.PropertyChangeSupport(this);
   }
 
   /////////////////////////////////////////////////////////////
