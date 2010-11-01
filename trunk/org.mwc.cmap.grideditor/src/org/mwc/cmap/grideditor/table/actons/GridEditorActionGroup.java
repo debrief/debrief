@@ -12,7 +12,7 @@ import org.eclipse.ui.actions.ActionGroup;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.grideditor.GridEditorActionContext;
 import org.mwc.cmap.grideditor.GridEditorView;
-import org.mwc.cmap.grideditor.GridEditorView.GriddableWrapper;
+import org.mwc.cmap.grideditor.data.GriddableWrapper;
 import org.mwc.cmap.grideditor.table.GridEditorTable;
 
 import MWC.GUI.Editable;
