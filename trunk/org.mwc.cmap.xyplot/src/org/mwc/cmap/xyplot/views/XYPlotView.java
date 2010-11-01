@@ -45,6 +45,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -58,6 +59,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -557,13 +559,21 @@ public class XYPlotView extends ViewPart
 
 		// and insert into the panel
 		_plotControl.add(_chartInPanel, BorderLayout.CENTER);
-		
+
+		// get the cross hairs ready
 		_thePlot.setDomainCrosshairVisible(true);
 		_thePlot.setRangeCrosshairVisible(true);
 		_thePlot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
 		_thePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
 		_thePlot.setDomainCrosshairStroke(new BasicStroke(1));
 		_thePlot.setRangeCrosshairStroke(new BasicStroke(1));
+		
+		// and the plot object to display the cross hair value
+		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
+		annot.setTextAnchor(TextAnchor.TOP_LEFT);
+		annot.setPaint(Color.black);
+		annot.setBackgroundPaint(Color.white);
+		_thePlot.addAnnotation(annot);
 		
 		_thePlotArea.addProgressListener(new ChartProgressListener()
 		{
@@ -572,15 +582,21 @@ public class XYPlotView extends ViewPart
 				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
 					return;
 
+				// double-check our label is still in the right place
+				double xVal = _thePlot.getRangeAxis().getUpperBound();
+				double yVal = _thePlot.getDomainAxis().getLowerBound();
+				annot.setX(yVal);
+				annot.setY(xVal);
+
+				// and write the text
 				String numA = MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
-				
+				.formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
 				Date newDate = new Date((long)_thePlot.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				String dateVal = _df.format(newDate);
-				
-				_thePlotArea.setTitle(title + " [" + dateVal + "," + numA + "]");
+				String theMessage =  " [" + dateVal + "," + numA + "]";
+				annot.setText(theMessage);
 			}
 		});
 

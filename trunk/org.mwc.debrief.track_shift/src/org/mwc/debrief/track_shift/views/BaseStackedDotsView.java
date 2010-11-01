@@ -7,7 +7,6 @@ import java.awt.Frame;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,18 +32,19 @@ import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemSource;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
-import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.Range;
+import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -269,6 +269,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setDomainCrosshairStroke(new BasicStroke(1));
 		_linePlot.setRangeCrosshairStroke(new BasicStroke(1));
 		
+		// and the plot object to display the cross hair value
+		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
+		annot.setTextAnchor(TextAnchor.TOP_LEFT);
+		annot.setPaint(Color.white);
+		annot.setBackgroundPaint(Color.black);
+		_linePlot.addAnnotation(annot);
+		
 		// give them a high contrast backdrop
 		_dotPlot.setBackgroundPaint(Color.black);
 		_linePlot.setBackgroundPaint(Color.black);
@@ -301,14 +308,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			{
 				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
 					return;
+				
 
+				// double-check our label is still in the right place
+				double xVal = _linePlot.getRangeAxis().getLowerBound()  ;
+				double yVal =  _linePlot.getDomainAxis().getUpperBound() ;
+				annot.setX(yVal);
+				annot.setY(xVal);
+
+				// and write the text
 				String numA = MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
-				
+				.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
 				Date newDate = new Date((long)_linePlot.getDomainCrosshairValue());
+				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
+				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				String dateVal = _df.format(newDate);
+				String theMessage =  " [" + dateVal + "," + numA + "]";
+				annot.setText(theMessage);
 				
-				_myChart.setTitle(getType() + " error [" + dateVal + "," + numA + "]");
+				_myChart.setTitle(theMessage);
 			}
 		});
 
