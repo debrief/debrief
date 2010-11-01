@@ -224,10 +224,8 @@ import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.Wrappers.BuoyPatternWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
-import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -314,7 +312,8 @@ public class SnailPainter extends TotePainter
 		_myHighlightPlotters.addElement(_mySnailPlotter);
 		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
 		_myHighlightPlotters.addElement(new SnailDrawAnnotation());
-		_myHighlightPlotters.addElement(new SnailDrawSensorContact(_mySnailPlotter));
+		_myHighlightPlotters
+				.addElement(new SnailDrawSensorContact(_mySnailPlotter));
 		_myHighlightPlotters.addElement(new SnailDrawTMAContact(_mySnailPlotter));
 
 		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
@@ -398,7 +397,8 @@ public class SnailPainter extends TotePainter
 						}
 
 						// now the TMA solutons
-						final Enumeration<Editable> solutions = trw.getSolutions().elements();
+						final Enumeration<Editable> solutions = trw.getSolutions()
+								.elements();
 						if (solutions != null)
 						{
 							while (solutions.hasMoreElements())
@@ -480,6 +480,17 @@ public class SnailPainter extends TotePainter
 			{
 				res.addElement(thisLayer);
 			}
+			else if ((thisLayer instanceof FixWrapper)
+					|| (thisLayer instanceof TrackWrapper)
+					|| (thisLayer instanceof BuoyPatternWrapper)
+					|| (thisLayer instanceof SensorWrapper)
+					|| (thisLayer instanceof TMAWrapper)
+					|| (thisLayer instanceof TrackSegment)
+					|| (thisLayer instanceof SegmentList))
+			{
+				// ignore it - it's clearly tactical, and there's just no way
+				// it can contain non-tactical child elements
+			}
 			else
 			{
 				// just see if this layer is one of our back-ground layesr
@@ -526,23 +537,8 @@ public class SnailPainter extends TotePainter
 					}
 					else
 					{
-						if ((thisPlottable instanceof FixWrapper)
-								|| (thisPlottable instanceof TrackWrapper)
-								|| (thisPlottable instanceof BuoyPatternWrapper)
-								|| (thisPlottable instanceof SensorWrapper)
-								|| (thisPlottable instanceof SensorContactWrapper)
-								|| (thisPlottable instanceof TMAWrapper)
-								|| (thisPlottable instanceof TrackSegment)
-								|| (thisPlottable instanceof SegmentList)
-								|| (thisPlottable instanceof TMAContactWrapper))
-						{
-							// leave it, it's track related
-						}
-						else
-						{
-							// it's not a shape - it's probably the grid or the scale,
-							res.addElement(thisPlottable);
-						} // whether it's one of our dynamic objects
+						// it's not a shape - it's probably the grid or the scale,
+						res.addElement(thisPlottable);
 					} // whether it's a labelwrapper
 				} // looping through the elements of this layer
 			} // if this is a background layer (or not)
@@ -580,7 +576,8 @@ public class SnailPainter extends TotePainter
 		if (on)
 		{
 			// remove the current painters for the canvas
-			final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas().getPainters();
+			final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas()
+					.getPainters();
 
 			_oldPainters = new Vector<PaintListener>(0, 1);
 
@@ -591,7 +588,8 @@ public class SnailPainter extends TotePainter
 			}
 
 			// and remove the painters
-			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters.elements();
+			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
+					.elements();
 			while (oldies.hasMoreElements())
 			{
 				_theChart.getCanvas().removePainter(
@@ -611,10 +609,12 @@ public class SnailPainter extends TotePainter
 			_theChart.getCanvas().removePainter(this);
 
 			// restore the painters
-			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters.elements();
+			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
+					.elements();
 			while (oldies.hasMoreElements())
 			{
-				_theChart.getCanvas().addPainter((CanvasType.PaintListener) oldies.nextElement());
+				_theChart.getCanvas().addPainter(
+						(CanvasType.PaintListener) oldies.nextElement());
 			}
 
 		}
@@ -721,8 +721,10 @@ public class SnailPainter extends TotePainter
 					}
 
 					// ok, clear the nearest items
-					final WatchableList list = (WatchableList) _oldWatchables.get(thisOne);
-					highlightIt(canvas.getProjection(), dest, list, thisOne, _lastDTG, backColor);
+					final WatchableList list = (WatchableList) _oldWatchables
+							.get(thisOne);
+					highlightIt(canvas.getProjection(), dest, list, thisOne, _lastDTG,
+							backColor);
 				}
 			}
 
@@ -757,8 +759,8 @@ public class SnailPainter extends TotePainter
 			if (thisHighlighter.getName().equals("Range Rings"))
 			{
 
-				thisHighlighter.highlightIt(canvas.getProjection(), dest, _theTote.getPrimary(),
-						newPrimary, true);
+				thisHighlighter.highlightIt(canvas.getProjection(), dest, _theTote
+						.getPrimary(), newPrimary, true);
 			}
 		}
 
@@ -787,7 +789,8 @@ public class SnailPainter extends TotePainter
 			if (watch != null)
 			{
 				// plot it
-				highlightIt(canvas.getProjection(), dest, list, watch, newDTG, backColor);
+				highlightIt(canvas.getProjection(), dest, list, watch, newDTG,
+						backColor);
 			}
 		}
 
@@ -848,7 +851,8 @@ public class SnailPainter extends TotePainter
 			dest.setColor(Color.white);
 
 			// see if our plotters can plot this type of watchable
-			final Enumeration<SnailPainter.drawHighLight> iter = _myHighlightPlotters.elements();
+			final Enumeration<SnailPainter.drawHighLight> iter = _myHighlightPlotters
+					.elements();
 			while (iter.hasMoreElements())
 			{
 				final SnailPainter.drawHighLight plotter = (SnailPainter.drawHighLight) iter
@@ -866,18 +870,18 @@ public class SnailPainter extends TotePainter
 							g2.setStroke(new BasicStroke(ly.getLineThickness()));
 						}
 					}
-					else if(list instanceof ShapeWrapper)
+					else if (list instanceof ShapeWrapper)
 					{
-						final ShapeWrapper sw = (ShapeWrapper)list;
-						if(dest instanceof Graphics2D)
+						final ShapeWrapper sw = (ShapeWrapper) list;
+						if (dest instanceof Graphics2D)
 						{
-							final Graphics2D g2 = (Graphics2D)dest;
+							final Graphics2D g2 = (Graphics2D) dest;
 							g2.setStroke(new BasicStroke(sw.getLineThickness()));
 						}
 					}
 
-					final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this, dtg,
-							backColor);
+					final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this,
+							dtg, backColor);
 
 					// add this to the list to be hidden at a later date
 					if (!_paintingOldies)
@@ -1015,21 +1019,22 @@ public class SnailPainter extends TotePainter
 	// /////////////////////////////////////////////////
 	public interface drawHighLight
 	{
-		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj, Graphics dest,
-				WatchableList list, Watchable watch, SnailPainter parent, HiResDate dtg,
-				Color backColor);
+		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
+				Graphics dest, WatchableList list, Watchable watch,
+				SnailPainter parent, HiResDate dtg, Color backColor);
 
 		public boolean canPlot(Watchable wt);
 	}
-	
-	/** marker interface used by classes that don't want to be highlighted
+
+	/**
+	 * marker interface used by classes that don't want to be highlighted
 	 * 
 	 * @author ian.mayo
-	 *
+	 * 
 	 */
 	public interface DoNotHighlightMe
 	{
-		
+
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
