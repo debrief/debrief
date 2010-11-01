@@ -216,7 +216,7 @@ Library.
       <feature id="org.eclipse.rcp" version="3.5.2.R35x_v20100119-9SA0FxwFnoCU5XxWItFdXXb27BA6"/>
       <feature id="org.eclipse.platform" version="3.5.2.R35x_v20100210-0800-9hEiFzmFst-TiEn9hNYgDWg1XN8ulH_JvCNGB"/>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.97"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.105"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.106"/>
    </features>
 
 
