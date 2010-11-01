@@ -593,12 +593,17 @@ public class ImportReplay extends PlainImporterBase
 				// remember the dtg
 				res = sw.getTime();
 
-				SensorWrapper thisWrapper = null;
+				SensorWrapper thisSensor = null;
 
 				// do we have a sensor capable of handling this contact?
 				String sensorName = sw.getSensorName();
 				String trackName = sw.getTrackName();
 				Object val = getLayerFor(trackName);
+
+				// if we failed to get the trackname, try shortening it -
+				// it may have been mangled by BabelFish
+				if (val == null)
+					val = getLayerFor(trackName = trackName.substring(6));
 
 				// did we get anything?
 				if (val != null)
@@ -607,8 +612,8 @@ public class ImportReplay extends PlainImporterBase
 					if (val instanceof TrackWrapper)
 					{
 						// so, we've found a track - see if it holds this sensor
-						TrackWrapper tw = (TrackWrapper) val;
-						Enumeration<Editable> iter = tw.getSensors().elements();
+						TrackWrapper theTrack = (TrackWrapper) val;
+						Enumeration<Editable> iter = theTrack.getSensors().elements();
 
 						// step through this track' sensors
 						if (iter != null)
@@ -622,67 +627,46 @@ public class ImportReplay extends PlainImporterBase
 								if (sensorw.getName().equals(sensorName))
 								{
 									// cool, drop out
-									thisWrapper = sensorw;
+									thisSensor = sensorw;
 									break;
 								}
 							} // looping through the sensors
 						} // whether there are any sensors
+
+						// did we find it?
+						if (thisSensor == null)
+						{
+							// then create it
+							thisSensor = new SensorWrapper(sensorName);
+
+							// set it's colour to the colour of the first data point
+							thisSensor.setColor(sw.getColor());
+
+							// also set it's name
+							thisSensor.setTrackName(sw.getTrackName());
+
+							theTrack.add(thisSensor);
+
+						}
+
+						// so, we now have the wrapper. have a look to see if the colour of
+						// this
+						// data item is the same
+						// as the sensor - in which case we will erase the colour for this
+						// data
+						// item so that it
+						// always takes the colour of it's parent
+						if (sw.getColor().equals(thisSensor.getColor()))
+						{
+							// clear the colour - so it takes it form it's parent
+							sw.setColor(null);
+						}
+
+						// now add the new contact to this sensor
+						thisSensor.add(sw);
+
 					} // if the item found is a track
 				}
-
-				// did we find it?
-				if (thisWrapper == null)
-				{
-					// then create it
-					thisWrapper = new SensorWrapper(sensorName);
-
-					// set it's colour to the colour of the first data point
-					thisWrapper.setColor(sw.getColor());
-
-					// also set it's name
-					thisWrapper.setTrackName(sw.getTrackName());
-
-					// also get the track for this sensor
-					Layer thisTrk = getLayerFor(sw.getTrackName());
-
-					try
-					{
-						if (thisTrk != null)
-						{
-							TrackWrapper tw = (TrackWrapper) thisTrk;
-							tw.add(thisWrapper);
-						}
-						else
-						{
-							// no, maybe it's a track or something like that!
-							// ditch the process and warn the users
-							throw new java.io.IOException(
-									"Sorry we cannot find details for track:" + sw.getTrackName());
-						}
-					}
-					catch (java.lang.ClassCastException ce)
-					{
-						// no, maybe it's a track or something like that!
-						// ditch the process and warn the users
-						throw new java.io.IOException("Whilst there is a data item named:"
-								+ sw.getTrackName() + " it doesn't appear to be a track");
-					}
-
-				}
-
-				// so, we now have the wrapper. have a look to see if the colour of this
-				// data item is the same
-				// as the sensor - in which case we will erase the colour for this data
-				// item so that it
-				// always takes the colour of it's parent
-				if (sw.getColor().equals(thisWrapper.getColor()))
-				{
-					// clear the colour - so it takes it form it's parent
-					sw.setColor(null);
-				}
-
-				// now add the new contact to this sensor
-				thisWrapper.add(sw);
 
 			}
 			else if (thisObject instanceof TMAContactWrapper)
@@ -701,6 +685,11 @@ public class ImportReplay extends PlainImporterBase
 				String trackName = sw.getTrackName();
 				Object val = getLayerFor(trackName);
 
+				// if we failed to get the trackname, try shortening it -
+				// it may have been mangled by BabelFish
+				if (val == null)
+					val = getLayerFor(trackName = trackName.substring(6));
+
 				// did we get anything?
 				if (val != null)
 				{
@@ -708,8 +697,8 @@ public class ImportReplay extends PlainImporterBase
 					if (val instanceof TrackWrapper)
 					{
 						// so, we've found a track - see if it holds this solution
-						TrackWrapper tw = (TrackWrapper) val;
-						Enumeration<Editable> iter = tw.getSolutions().elements();
+						TrackWrapper theTrack = (TrackWrapper) val;
+						Enumeration<Editable> iter = theTrack.getSolutions().elements();
 
 						// step through this track's solutions
 						if (iter != null)
@@ -728,65 +717,44 @@ public class ImportReplay extends PlainImporterBase
 								}
 							} // looping through the sensors
 						} // whether there are any sensors
+
+						// did we find it?
+						if (thisWrapper == null)
+						{
+							// then create it
+							thisWrapper = new TMAWrapper(solutionName);
+
+							// set it's colour to the colour of the first data point
+							thisWrapper.setColor(sw.getColor());
+
+							// also set it's name
+							thisWrapper.setTrackName(sw.getTrackName());
+
+							theTrack.add(thisWrapper);
+
+						}
+
+						// so, we now have the wrapper. have a look to see if the colour of
+						// this
+						// data item is the same
+						// as the sensor - in which case we will erase the colour for this
+						// data
+						// item so that it
+						// always takes the colour of it's parent
+						if (sw.getColor().equals(thisWrapper.getColor()))
+						{
+							// clear the colour - so it takes it form it's parent
+							sw.setColor(null);
+						}
+
+						// lastly inform the sensor contact of it's parent
+						sw.setTMATrack(thisWrapper);
+
+						// now add the new contact to this sensor
+						thisWrapper.add(sw);
+
 					} // if the item found is a track
 				}
-
-				// did we find it?
-				if (thisWrapper == null)
-				{
-					// then create it
-					thisWrapper = new TMAWrapper(solutionName);
-
-					// set it's colour to the colour of the first data point
-					thisWrapper.setColor(sw.getColor());
-
-					// also set it's name
-					thisWrapper.setTrackName(sw.getTrackName());
-
-					// also get the track for this sensor
-					Layer thisTrk = getLayerFor(sw.getTrackName());
-
-					try
-					{
-						if (thisTrk != null)
-						{
-							TrackWrapper tw = (TrackWrapper) thisTrk;
-							tw.add(thisWrapper);
-						}
-						else
-						{
-							// no, maybe it's a track or something like that!
-							// ditch the process and warn the users
-							throw new java.io.IOException(
-									"Sorry we cannot find details for track:" + sw.getTrackName());
-						}
-					}
-					catch (java.lang.ClassCastException ce)
-					{
-						// no, maybe it's a track or something like that!
-						// ditch the process and warn the users
-						throw new java.io.IOException("Whilst there is a data item named:"
-								+ sw.getTrackName() + " it doesn't appear to be a track");
-					}
-
-				}
-
-				// so, we now have the wrapper. have a look to see if the colour of this
-				// data item is the same
-				// as the sensor - in which case we will erase the colour for this data
-				// item so that it
-				// always takes the colour of it's parent
-				if (sw.getColor().equals(thisWrapper.getColor()))
-				{
-					// clear the colour - so it takes it form it's parent
-					sw.setColor(null);
-				}
-
-				// lastly inform the sensor contact of it's parent
-				sw.setTMATrack(thisWrapper);
-
-				// now add the new contact to this sensor
-				thisWrapper.add(sw);
 
 			}
 			else if (thisObject instanceof NarrativeEntry)
@@ -1213,16 +1181,17 @@ public class ImportReplay extends PlainImporterBase
 		public final void testReadREP()
 		{
 			java.io.File testFile = null;
-			
-			// specify the parent object - so our processing can retrieve the 
+
+			// specify the parent object - so our processing can retrieve the
 			// OTG setting
-			ImportReplay.initialise(new ToolParent(){
+			ImportReplay.initialise(new ToolParent()
+			{
 
 				@Override
 				public void addActionToBuffer(Action theAction)
 				{
 					// TODO Auto-generated method stub
-					
+
 				}
 
 				@Override
@@ -1242,29 +1211,30 @@ public class ImportReplay extends PlainImporterBase
 				public void restoreCursor()
 				{
 					// TODO Auto-generated method stub
-					
+
 				}
 
 				@Override
 				public void setCursor(int theCursor)
 				{
 					// TODO Auto-generated method stub
-					
+
 				}
 
 				@Override
 				public void setProperty(String name, String value)
 				{
 					// TODO Auto-generated method stub
-					
+
 				}
 
 				@Override
 				public void logError(int status, String text, Exception e)
 				{
 					// TODO Auto-generated method stub
-					
-				}});
+
+				}
+			});
 
 			// can we load it directly
 			testFile = new java.io.File(fileName);
@@ -1336,7 +1306,7 @@ public class ImportReplay extends PlainImporterBase
 			assertTrue("File finished received", fileFinished);
 			assertTrue("All Files finished received", allFilesFinished);
 
-			assertEquals("Count of layers",2,  _theLayers.size());
+			assertEquals("Count of layers", 2, _theLayers.size());
 
 			// area of coverage
 			MWC.GenericData.WorldArea area = _theLayers.elementAt(0).getBounds();
