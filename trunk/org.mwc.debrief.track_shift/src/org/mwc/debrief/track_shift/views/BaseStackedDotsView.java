@@ -308,7 +308,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			{
 				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
 					return;
-				
 
 				// double-check our label is still in the right place
 				double xVal = _linePlot.getRangeAxis().getLowerBound()  ;
@@ -325,8 +324,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				String dateVal = _df.format(newDate);
 				String theMessage =  " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
-				
-				_myChart.setTitle(theMessage);
 			}
 		});
 
