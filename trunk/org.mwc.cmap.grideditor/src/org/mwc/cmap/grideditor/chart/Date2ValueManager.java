@@ -108,7 +108,7 @@ public class Date2ValueManager implements ChartDataManager {
 					try {
 						undoSupport.getOperationHistory().execute(update, null, null);
 					} catch (ExecutionException e) {
-						throw new RuntimeException("Can't set the timestamp of :" + finalTime + //
+						throw new RuntimeException("[Chart]Can't set the timestamp of :" + finalTime + //
 								" and/or value: " + finalY + //
 								" for item " + item.getDomainItem(), e);
 					}

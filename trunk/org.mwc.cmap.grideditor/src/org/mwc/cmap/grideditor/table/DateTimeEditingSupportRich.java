@@ -63,7 +63,7 @@ public class DateTimeEditingSupportRich extends EditingSupport {
 			try {
 				myUndoSupport.getOperationHistory().execute(update, null, null);
 			} catch (ExecutionException e) {
-				throw new RuntimeException("Can't set the timestamp of :" + valueImpl + //
+				throw new RuntimeException("[Table]Can't set the timestamp of :" + valueImpl + //
 						" for item " + dataItem, e);
 			}
 		}
