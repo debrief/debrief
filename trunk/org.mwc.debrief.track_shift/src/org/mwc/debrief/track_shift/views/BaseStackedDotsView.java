@@ -7,8 +7,10 @@ import java.awt.Frame;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -34,7 +36,10 @@ import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.event.ChartProgressEvent;
+import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -224,7 +229,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 
 		// first create the x (time) axis
-		SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
+		final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 		_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 		final DateAxis xAxis = new CachedTickDateAxis("");
@@ -257,6 +262,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 
+		_linePlot.setDomainCrosshairVisible(true);
+		_linePlot.setRangeCrosshairVisible(true);
+		_linePlot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
+		_linePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
+		_linePlot.setDomainCrosshairStroke(new BasicStroke(1));
+		_linePlot.setRangeCrosshairStroke(new BasicStroke(1));
+		
 		// give them a high contrast backdrop
 		_dotPlot.setBackgroundPaint(Color.black);
 		_linePlot.setBackgroundPaint(Color.black);
@@ -272,12 +284,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
 
-		// try to fix the space for the dates (so we're not recalculating them so
-		// often - it was causing a 'memory race' type of thingy)
-		// AxisSpace space = new AxisSpace();
-		// space.setLeft(50);
-		// _combined.setFixedDomainAxisSpace(space);
-
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
 
@@ -289,17 +295,22 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		plotHolder.setMouseZoomable(true, true);
 		plotHolder.setDisplayToolTips(true);
 
-		// _myChart.addChartMouseListener(new ChartMouseListener(){
-		// public void chartMouseClicked(ChartMouseEvent arg0)
-		// {
-		// System.err.println(arg0);
-		// }
-		//
-		// @Override
-		// public void chartMouseMoved(ChartMouseEvent arg0)
-		// {
-		// System.out.println(arg0);
-		// }});
+		_myChart.addProgressListener(new ChartProgressListener()
+		{
+			public void chartProgress(ChartProgressEvent cpe)
+			{
+				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
+					return;
+
+				String numA = MWC.Utilities.TextFormatting.GeneralFormat
+						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
+				
+				Date newDate = new Date((long)_linePlot.getDomainCrosshairValue());
+				String dateVal = _df.format(newDate);
+				
+				_myChart.setTitle(getType() + " error [" + dateVal + "," + numA + "]");
+			}
+		});
 
 		// and insert into the panel
 		plotControl.add(plotHolder, BorderLayout.CENTER);
@@ -316,38 +327,42 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			@Override
 			public void mouseMoved(MouseEvent e)
 			{
-//				Point pt = e.getPoint();
-//				// suspend this development.  we need to sort out which plot the mouse is over
-//				int mouseX = pt.y;
-//				int mouseY = pt.x;
-//				Point2D p = plotHolder
-//						.translateScreenToJava2D(new Point(mouseX, mouseY));
-//				System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX + ", y = "
-//						+ mouseY);
-//				// Rectangle2D plotArea = chartPanel.getScreenDataArea();
-//
-//				CombinedDomainXYPlot comb = (CombinedDomainXYPlot) _dotPlot.getParent();
-//				// XYPlot thisPlot = comb.findSubplot(comb.getParent().getp, p);
-//
-//				Component comp = plotHolder.getComponentAt(pt);
-//				ChartEntity entity = plotHolder.getEntityForPoint(mouseX, mouseY);
-//				System.err.println("comp:" + comp + "// entity:" + entity);
-//
-//				Rectangle2D plotArea = plotHolder.getChartRenderingInfo().getPlotInfo()
-//						.getDataArea();
-//				ValueAxis domainAxis = _dotPlot.getDomainAxis();
-//				RectangleEdge domainAxisEdge = _dotPlot.getDomainAxisEdge();
-//				ValueAxis rangeAxis = _dotPlot.getRangeAxis();
-//				RectangleEdge rangeAxisEdge = _dotPlot.getRangeAxisEdge();
-//
-//				if (domainAxis != null)
-//				{
-//					double chartX = domainAxis.java2DToValue(p.getX(), plotArea,
-//							domainAxisEdge);
-//					double chartY = rangeAxis.java2DToValue(p.getY(), plotArea,
-//							rangeAxisEdge);
-//					System.out.println("Chart: x = " + chartX + ", y = " + chartY);
-//				}
+				// Point pt = e.getPoint();
+				// // suspend this development. we need to sort out which plot the mouse
+				// is over
+				// int mouseX = pt.y;
+				// int mouseY = pt.x;
+				// Point2D p = plotHolder
+				// .translateScreenToJava2D(new Point(mouseX, mouseY));
+				// System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX +
+				// ", y = "
+				// + mouseY);
+				// // Rectangle2D plotArea = chartPanel.getScreenDataArea();
+				//
+				// CombinedDomainXYPlot comb = (CombinedDomainXYPlot)
+				// _dotPlot.getParent();
+				// // XYPlot thisPlot = comb.findSubplot(comb.getParent().getp, p);
+				//
+				// Component comp = plotHolder.getComponentAt(pt);
+				// ChartEntity entity = plotHolder.getEntityForPoint(mouseX, mouseY);
+				// System.err.println("comp:" + comp + "// entity:" + entity);
+				//
+				// Rectangle2D plotArea =
+				// plotHolder.getChartRenderingInfo().getPlotInfo()
+				// .getDataArea();
+				// ValueAxis domainAxis = _dotPlot.getDomainAxis();
+				// RectangleEdge domainAxisEdge = _dotPlot.getDomainAxisEdge();
+				// ValueAxis rangeAxis = _dotPlot.getRangeAxis();
+				// RectangleEdge rangeAxisEdge = _dotPlot.getRangeAxisEdge();
+				//
+				// if (domainAxis != null)
+				// {
+				// double chartX = domainAxis.java2DToValue(p.getX(), plotArea,
+				// domainAxisEdge);
+				// double chartY = rangeAxis.java2DToValue(p.getY(), plotArea,
+				// rangeAxisEdge);
+				// System.out.println("Chart: x = " + chartX + ", y = " + chartY);
+				// }
 			}
 		});
 

@@ -1,5 +1,6 @@
 package org.mwc.cmap.xyplot.views;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,7 +10,10 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
@@ -44,6 +48,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.event.ChartProgressEvent;
+import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
@@ -437,7 +443,7 @@ public class XYPlotView extends ViewPart
 		}
 	}
 
-	private void fillThePlot(String title, String units,
+	private void fillThePlot(final String title, String units,
 			formattingOperation theFormatter, AbstractSeriesDataset dataset)
 	{
 
@@ -551,6 +557,32 @@ public class XYPlotView extends ViewPart
 
 		// and insert into the panel
 		_plotControl.add(_chartInPanel, BorderLayout.CENTER);
+		
+		_thePlot.setDomainCrosshairVisible(true);
+		_thePlot.setRangeCrosshairVisible(true);
+		_thePlot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
+		_thePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
+		_thePlot.setDomainCrosshairStroke(new BasicStroke(1));
+		_thePlot.setRangeCrosshairStroke(new BasicStroke(1));
+		
+		_thePlotArea.addProgressListener(new ChartProgressListener()
+		{
+			public void chartProgress(ChartProgressEvent cpe)
+			{
+				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
+					return;
+
+				String numA = MWC.Utilities.TextFormatting.GeneralFormat
+						.formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
+				
+				Date newDate = new Date((long)_thePlot.getDomainCrosshairValue());
+				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
+				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
+				String dateVal = _df.format(newDate);
+				
+				_thePlotArea.setTitle(title + " [" + dateVal + "," + numA + "]");
+			}
+		});
 
 		// ////////////////////////////////////////////////////
 		// put the time series into the plot
