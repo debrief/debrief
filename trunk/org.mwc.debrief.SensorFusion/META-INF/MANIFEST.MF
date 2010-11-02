@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SensorFusion
+Bundle-SymbolicName: org.mwc.debrief.SensorFusion; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.mwc.debrief.sensorfusion.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.core;bundle-version="1.0.117",
+ org.mwc.cmap.legacy;bundle-version="1.0.99",
+ org.mwc.debrief.legacy;bundle-version="1.0.151"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
