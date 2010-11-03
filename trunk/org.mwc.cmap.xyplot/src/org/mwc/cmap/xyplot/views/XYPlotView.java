@@ -12,9 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.TimeZone;
-import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -23,10 +21,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
@@ -62,6 +56,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.xyplot.XYPlotPlugin;
 
@@ -154,51 +149,6 @@ public class XYPlotView extends ViewPart
 	 * the data we're storing
 	 */
 	private AbstractSeriesDataset _dataset;
-
-	protected final class SelectionHelper implements ISelectionProvider
-	{
-		private Vector<ISelectionChangedListener> _selectionListeners;
-
-		public void addSelectionChangedListener(ISelectionChangedListener listener)
-		{
-			if (_selectionListeners == null)
-				_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
-
-			// see if we don't already contain it..
-			if (!_selectionListeners.contains(listener))
-				_selectionListeners.add(listener);
-		}
-
-		public ISelection getSelection()
-		{
-			return null;
-		}
-
-		public void removeSelectionChangedListener(
-				ISelectionChangedListener listener)
-		{
-			_selectionListeners.remove(listener);
-		}
-
-		public void setSelection(ISelection selection)
-		{
-		}
-
-		public void fireNewSelection(ISelection data)
-		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
-			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
-					.iterator(); stepper.hasNext();)
-			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
-						.next();
-				if (thisL != null)
-				{
-					thisL.selectionChanged(sEvent);
-				}
-			}
-		}
-	}
 
 	/**
 	 * resize the data to fill the window
