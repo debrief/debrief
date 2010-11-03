@@ -1513,7 +1513,16 @@ public class LayerManagerView extends ViewPart
 			if (pw.getEditable() instanceof Layers)
 				processNewLayers(pw.getEditable());
 			else
+			{
 				_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
+				
+				// aah. it appears there's  a bug :
+				// (https://bugs.eclipse.org/bugs/show_bug.cgi?id=174818) 
+				// with the SWT implementation of setSelection - the reveal 
+				// parameter gets ignored. let's force the issue
+				if(_followSelectionToggle.isChecked())
+					_treeViewer.reveal(sel);
+			}
 		}
 
 	}
