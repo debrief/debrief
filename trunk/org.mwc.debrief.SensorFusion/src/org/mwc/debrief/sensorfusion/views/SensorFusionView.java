@@ -18,9 +18,14 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -42,6 +47,8 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.preferences.SelectionHelper;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.sensorfusion.views.DataSupport.SensorSeries;
 import org.mwc.debrief.sensorfusion.views.DataSupport.TacticalSeries;
@@ -49,8 +56,10 @@ import org.mwc.debrief.sensorfusion.views.DataSupport.TacticalSeries;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.WatchableList;
 
-public class SensorFusionView extends ViewPart
+public class SensorFusionView extends ViewPart implements ISelectionProvider
 {
+
+	private static final String CHART_NAME = "Bearing data";
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -82,6 +91,13 @@ public class SensorFusionView extends ViewPart
 	private Action mergeTracks;
 
 	private TimeSeriesCollection _currentData;
+
+	private Vector<ISelectionChangedListener> _selectionListeners;
+
+	/**
+	 * helper - handle the selection a little better
+	 */
+	private SelectionHelper _selectionHelper;
 
 	/**
 	 * The constructor.
@@ -172,17 +188,22 @@ public class SensorFusionView extends ViewPart
 		contributeToActionBars();
 		setupListeners();
 
+		// and the selection provider bits
+		_selectionHelper = new SelectionHelper();
+		getSite().setSelectionProvider(_selectionHelper);
+
 		parent.setLayout(new FillLayout());
 
 		// ok, let's mockup the UI
-		_myChart = DataSupport.createChart(DataSupport.createDataset());
+		_myChart = DataSupport.createChart(null);
 
-		resetData();
+		// resetData();
 
 		_myChartFrame = new ChartComposite(parent, SWT.NONE, _myChart, true);
 		_myChartFrame.setDisplayToolTips(true);
 		_myChartFrame.setHorizontalAxisTrace(false);
 		_myChartFrame.setVerticalAxisTrace(false);
+		_myChart.setTitle(CHART_NAME);
 
 		_myChartFrame.addChartMouseListener(new ChartMouseListener()
 		{
@@ -236,7 +257,13 @@ public class SensorFusionView extends ViewPart
 
 	protected void updatedSelection()
 	{
+		//
 		mergeTracks.setEnabled(_selectedTracks.size() > 1);
+
+		// and provide the selection object
+		StructuredSelection trackSelection = new StructuredSelection(
+				_selectedTracks);
+		setSelection(trackSelection);
 	}
 
 	private void hookContextMenu()
@@ -287,7 +314,18 @@ public class SensorFusionView extends ViewPart
 		{
 			public void run()
 			{
-				resetData();
+				_myChart.setTitle(CHART_NAME + "(Loading)");
+				Runnable doIt = new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+						resetData();
+			//			_myChart.setTitle(CHART_NAME);
+					}
+				};
+				Display.getCurrent().asyncExec(doIt);
 			}
 		};
 		resetData.setText("Reset data");
@@ -296,7 +334,17 @@ public class SensorFusionView extends ViewPart
 		{
 			public void run()
 			{
-				resetPlot();
+				Runnable doIt = new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+						resetPlot();
+					}
+				};
+				Display.getCurrent().asyncExec(doIt);
+
 			}
 		};
 		clearPlot.setText("clearData");
@@ -344,7 +392,7 @@ public class SensorFusionView extends ViewPart
 
 		// clear our list
 		_selectedTracks.removeAllElements();
-		
+
 		// store our new one
 		_selectedTracks.add(newSeries);
 
@@ -376,10 +424,12 @@ public class SensorFusionView extends ViewPart
 		XYPlot plot = _myChart.getXYPlot();
 		_plotRenderer = new XYLineAndShapeRenderer()
 		{
-			
-			
-			
+
 			private BasicStroke thickStroke;
+			int _lastSeriesNum = -1;
+			TacticalSeries _lastSeries = null;
+			boolean _isSensor;
+			private boolean _isSelected;
 
 			@Override
 			public XYItemRendererState initialise(Graphics2D g2,
@@ -388,7 +438,7 @@ public class SensorFusionView extends ViewPart
 			{
 				// reset our local copy
 				_lastSeriesNum = -1;
-				
+
 				return super.initialise(g2, dataArea, plot, data, info);
 			}
 
@@ -401,25 +451,14 @@ public class SensorFusionView extends ViewPart
 			@Override
 			public Boolean getSeriesShapesVisible(int series)
 			{
-				Boolean res = false;
-				// if (showSymbols.isChecked())
-				// if (_theData != null)
-				// {
-				// TacticalSeries theSeries = (TacticalSeries) _theData
-				// .getSeries(series);
-				// res = theSeries.isSelected();
-				// // TimeSeries theSeries = _theData.getSeries(series);
-				// // res = (theSeries instanceof SensorSeries);
-				// }
-				return res;
+				return _lastSeries.getVisible();
 			}
 
 			@Override
 			public Paint getItemPaint(int row, int column)
 			{
 				Paint res;
-				boolean isSensor = _selectedTracks.contains(lastSeries);
-				if (isSensor)
+				if (_isSelected)
 					res = Color.BLACK;
 				else
 					res = super.getItemPaint(row, column);
@@ -430,11 +469,9 @@ public class SensorFusionView extends ViewPart
 			public Stroke getItemStroke(int row, int column)
 			{
 				Stroke res;
-				// Boolean isSensor = (theSeries instanceof DataSupport.SensorSeries);
-				boolean isSensor =(lastSeries instanceof DataSupport.SensorSeries);
-				if (!isSensor)
+				if (!_isSensor)
 				{
-					if(thickStroke == null)
+					if (thickStroke == null)
 						thickStroke = new BasicStroke(4);
 					res = thickStroke;
 				}
@@ -442,9 +479,6 @@ public class SensorFusionView extends ViewPart
 					res = super.getItemStroke(row, column);
 				return res;
 			}
-			
-			int _lastSeriesNum = -1;
-			TacticalSeries lastSeries = null;
 
 			@Override
 			public void drawItem(Graphics2D g2, XYItemRendererState state,
@@ -452,13 +486,16 @@ public class SensorFusionView extends ViewPart
 					ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset,
 					int series, int item, CrosshairState crosshairState, int pass)
 			{
-				if(series != _lastSeriesNum)
+				if (series != _lastSeriesNum)
 				{
 					TimeSeriesCollection tData = (TimeSeriesCollection) dataset;
 					_lastSeriesNum = series;
-					 lastSeries = (TacticalSeries) tData.getSeries(series);
+					_lastSeries = (TacticalSeries) tData.getSeries(series);
+					_isSensor = (_lastSeries instanceof SensorSeries);
+					_isSelected = _selectedTracks.contains(_lastSeries);
+
 				}
-				
+
 				super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis,
 						dataset, series, item, crosshairState, pass);
 			}
@@ -477,5 +514,28 @@ public class SensorFusionView extends ViewPart
 	 */
 	public void setFocus()
 	{
+	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionHelper.addSelectionChangedListener(listener);
+	}
+
+	@Override
+	public ISelection getSelection()
+	{
+		return _selectionHelper.getSelection();
+	}
+
+	@Override
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionHelper.removeSelectionChangedListener(listener);
+	}
+
+	@Override
+	public void setSelection(ISelection selection)
+	{
+		_selectionHelper.fireNewSelection(selection);
 	}
 }

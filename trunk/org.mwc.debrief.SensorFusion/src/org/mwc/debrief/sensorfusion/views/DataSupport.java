@@ -13,7 +13,6 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.ui.RectangleInsets;
 
 public class DataSupport
 {
@@ -44,7 +43,6 @@ public class DataSupport
 		plot.setBackgroundPaint(Color.lightGray);
 		plot.setDomainGridlinePaint(Color.white);
 		plot.setRangeGridlinePaint(Color.white);
-		plot.setAxisOffset(new RectangleInsets(5.0, 5.0, 5.0, 5.0));
 		plot.setDomainCrosshairVisible(false);
 		plot.setRangeCrosshairVisible(false);
 
@@ -65,15 +63,24 @@ public class DataSupport
 
 	public static class TacticalSeries extends TimeSeries
 	{
-		private Object _subject;
+		protected Object _subject;
+		private boolean _amVisible;
 
 		public TacticalSeries(String name, Object subject)
 		{
 			super(name);
 			_subject = subject;
+			if(Math.random() > 0.5)
+				_amVisible = true;
+			else
+				_amVisible = false;
 		}
-
-
+		
+		public boolean getVisible()
+		{
+			return _amVisible;
+		}
+		
 		/**
 		 * 
 		 */
