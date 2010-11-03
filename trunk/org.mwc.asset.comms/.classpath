@@ -5,5 +5,10 @@
 	<classpathentry kind="lib" path="libs/smackx.jar"/>
 	<classpathentry kind="lib" path="libs/smackx-debug.jar"/>
 	<classpathentry kind="lib" path="libs/smackx-jingle.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/asm-3.2.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/kryo-1.02.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/kryonet-1.02.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/minlog-1.2.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/reflectasm-0.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
