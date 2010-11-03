@@ -70,7 +70,7 @@ public class TestOne implements MessageListener
 		XMPPConnection.DEBUG_ENABLED = true;
 
 		// Enter your login information here
-		c.login("ian", "elwood");
+		c.login("ian", "asset");
 		
 		c.doRoom();
 
