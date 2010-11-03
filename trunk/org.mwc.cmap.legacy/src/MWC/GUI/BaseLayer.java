@@ -124,7 +124,6 @@
 // Initial revision
 //
 
-
 package MWC.GUI;
 
 import java.beans.IntrospectionException;
@@ -133,9 +132,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 /**
- * this class is a collection of objects which
- * may be plotted to a Chart
- *
+ * this class is a collection of objects which may be plotted to a Chart
+ * 
  * @version $Revision: 1.10 $
  * @see Plottables
  * @see Plottable
@@ -143,286 +141,314 @@ import java.util.Enumeration;
 public class BaseLayer extends Plottables implements Layer
 {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
 
-  /**
-   * store the serial version of the file
-   */
-  static final long serialVersionUID = -4744521439513494065L;
+	/**
+	 * store the serial version of the file
+	 */
+	static final long serialVersionUID = -4744521439513494065L;
 
-  /**
-   * our editor
-   */
-  transient protected Editable.EditorType _myEditor;
+	/**
+	 * our editor
+	 */
+	transient protected Editable.EditorType _myEditor;
 
-  /**
-   * whether this layer is a candidate for being buffered when plotted
-   * i.e. is it likely to contain very complex data (such as VPF plots)
-   */
-  private boolean _bufferMe = false;
+	/**
+	 * whether this layer is a candidate for being buffered when plotted i.e. is
+	 * it likely to contain very complex data (such as VPF plots)
+	 */
+	private boolean _bufferMe = false;
 
-  /**
-   * the width to draw this line
-   */
-  private int _lineWidth;
+	/**
+	 * the width to draw this line
+	 */
+	private int _lineWidth;
 
-  /**
-   * property change support for the base layer
-   */
-  private transient java.beans.PropertyChangeSupport _pSupport;
+	/**
+	 * property change support for the base layer
+	 */
+	private transient java.beans.PropertyChangeSupport _pSupport;
 
-  /** whether my children have their own order
-   * 
-   */
-	private final  boolean _orderedChildren;
+	/**
+	 * whether my children have their own order
+	 * 
+	 */
+	private final boolean _orderedChildren;
 
+	/**
+	 * the name of the visibility change event
+	 */
+	final public static String VISIBILITY_CHANGE = "VISIBILITY_CHANGE";
 
-  /**
-   * the name of the visibility change event
-   */
-  final public static String VISIBILITY_CHANGE = "VISIBILITY_CHANGE";
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/**
+	 * create a base layer
+	 */
+	public BaseLayer()
+	{
+		this(false);
+	}
 
-  /**
-   * create a base layer
-   */
-  public BaseLayer()
-  {
-  	this(false);
-  }
-  
-  /** indicate whether our children have a native order
-   * 
-   * @param orderedChildren
-   */
-  public BaseLayer(boolean orderedChildren)
-  {
-  	_orderedChildren = orderedChildren;
-  	
-    // initialise the property change support
-    _pSupport = new java.beans.PropertyChangeSupport(this);
-  }
+	/**
+	 * indicate whether our children have a native order
+	 * 
+	 * @param orderedChildren
+	 */
+	public BaseLayer(boolean orderedChildren)
+	{
+		_orderedChildren = orderedChildren;
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+		// initialise the property change support
+		_pSupport = new java.beans.PropertyChangeSupport(this);
+	}
 
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
 
-  public void append(Layer other)
-  {
-    if (other instanceof BaseLayer)
-    {
-      BaseLayer bl = (BaseLayer) other;
-      super.append(bl);
-    }
-  }
+	public void append(Layer other)
+	{
+		if (other instanceof BaseLayer)
+		{
+			BaseLayer bl = (BaseLayer) other;
+			super.append(bl);
+		}
+	}
 
-  /**
-   * find out whether this layer is a candidate for being buffered (could it contain
-   * very complex data which is worth keeping in a buffer, instead of painting it
-   * fresh each time)
-   */
-  public boolean isBuffered()
-  {
-  	// we were getting wierd fuzzy outlines for double-buffered plot items. Experiment with not double-buffering
-    return _bufferMe;
-  }
+	/**
+	 * find out whether this layer is a candidate for being buffered (could it
+	 * contain very complex data which is worth keeping in a buffer, instead of
+	 * painting it fresh each time)
+	 */
+	public boolean isBuffered()
+	{
+		// we were getting wierd fuzzy outlines for double-buffered plot items.
+		// Experiment with not double-buffering
+		return _bufferMe;
+	}
 
-  /**
-   * specify whether this layer is a candidate for being buffered by the graphics engine
-   */
-  public void setBuffered(boolean bufferMe)
-  {
-    this._bufferMe = bufferMe;
-  }
+	/**
+	 * specify whether this layer is a candidate for being buffered by the
+	 * graphics engine
+	 */
+	public void setBuffered(boolean bufferMe)
+	{
+		this._bufferMe = bufferMe;
+	}
 
-  public boolean hasEditor()
-  {
-    return true;
-  }
+	public boolean hasEditor()
+	{
+		return true;
+	}
 
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new LayerInfo(this);
+	public Editable.EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new LayerInfo(this);
 
-    return _myEditor;
-  }
+		return _myEditor;
+	}
 
-  /**
-   * paint this list to the canvas
-   */
-  public void paint(CanvasType dest)
-  {
-    // ok, sort out the thickness
-    float oldThick = dest.getLineWidth();
-    dest.setLineWidth(_lineWidth);
+	/**
+	 * paint this list to the canvas
+	 */
+	public void paint(CanvasType dest)
+	{
+		// ok, sort out the thickness
+		float oldThick = dest.getLineWidth();
+		dest.setLineWidth(_lineWidth);
 
-    // get the plottables to do the painting
-    super.paint(dest);
+		// get the plottables to do the painting
+		super.paint(dest);
 
-    // and restort
-    dest.setLineWidth((int) oldThick);
-  }
+		// and restort
+		dest.setLineWidth((int) oldThick);
+	}
 
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 * 
+	 * @return
+	 */
+	public int getLineThickness()
+	{
+		return _lineWidth;
+	}
 
-  /**
-   * the line thickness (convenience wrapper around width)
-   *
-   * @return
-   */
-  public int getLineThickness()
-  {
-    return _lineWidth;
-  }
-
-  /**
-   * the line thickness (convenience wrapper around width)
-   */
-  public void setLineThickness(int val)
-  {
-    _lineWidth = val;
-  }
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 */
+	public void setLineThickness(int val)
+	{
+		_lineWidth = val;
+	}
 
 	public Enumeration<Editable> elements()
-  {
-    return super.elements();
-  }
+	{
+		return super.elements();
+	}
 
-  //////////////////////////////////////////////////
-  // property change support
-  //////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	// property change support
+	// ////////////////////////////////////////////////
 
-  /**
-   * add a new listener
-   *
-   * @param listener
-   */
-  public void addPropertyChangeListener(java.beans.PropertyChangeListener listener,
-                                        String event)
-  {
-    _pSupport.addPropertyChangeListener(event, listener);
-  }
+	/**
+	 * add a new listener
+	 * 
+	 * @param listener
+	 */
+	public void addPropertyChangeListener(
+			java.beans.PropertyChangeListener listener, String event)
+	{
+		_pSupport.addPropertyChangeListener(event, listener);
+	}
 
-  /**
-   * remove this listener
-   *
-   * @param listener
-   */
-  public void removePropertyChangeListener(java.beans.PropertyChangeListener listener, String event)
-  {
-    _pSupport.removePropertyChangeListener(event, listener);
-  }
+	/**
+	 * remove this listener
+	 * 
+	 * @param listener
+	 */
+	public void removePropertyChangeListener(
+			java.beans.PropertyChangeListener listener, String event)
+	{
+		_pSupport.removePropertyChangeListener(event, listener);
+	}
 
-  //////////////////////////////////////////////////
-  // override the set vis method, so we can fire our event
-  //////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	// override the set vis method, so we can fire our event
+	// ////////////////////////////////////////////////
 
-  /**
-   * set the visible flag for this layer
-   */
-  public void setVisible(boolean visible)
-  {
-    super.setVisible(visible);
+	/**
+	 * set the visible flag for this layer
+	 */
+	public void setVisible(boolean visible)
+	{
+		super.setVisible(visible);
 
-    // and now fire the event
-    _pSupport.firePropertyChange(VISIBILITY_CHANGE, !visible, visible);
-  }
+		// and now fire the event
+		_pSupport.firePropertyChange(VISIBILITY_CHANGE, !visible, visible);
+	}
 
+	@FireReformatted
+	public void hideChildren()
+	{
+		doHideChildren(true);
+	}
 
-  public void exportShape()
-  {
-    MWC.Utilities.ReaderWriter.ImportManager.exportThis(";;Layer: " + getName());
+	@FireReformatted
+	public void revealChildren()
+	{
+		doHideChildren(false);
+	}
 
-    // go through the layer, exporting each plottable, if it will.
-    Enumeration<Editable> enumer = this.elements();
-    while (enumer.hasMoreElements())
-    {
-    	Editable pl = (Editable) enumer.nextElement();
-      if (pl instanceof Exportable)
-      {
-        Exportable e = (Exportable) pl;
-        e.exportThis();
-      }
-    }
-  }
+	private void doHideChildren(boolean b)
+	{
+		Enumeration<Editable> iter = this.elements();
+		while (iter.hasMoreElements())
+		{
+			Plottable thisE = (Plottable) iter.nextElement();
+			thisE.setVisible(!b);
+		}
+	}
 
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public class LayerInfo extends Editable.EditorType
-  {
+	public void exportShape()
+	{
+		MWC.Utilities.ReaderWriter.ImportManager
+				.exportThis(";;Layer: " + getName());
 
-    public LayerInfo(BaseLayer data)
-    {
-      super(data, data.getName(), "");
-    }
+		// go through the layer, exporting each plottable, if it will.
+		Enumeration<Editable> enumer = this.elements();
+		while (enumer.hasMoreElements())
+		{
+			Editable pl = (Editable) enumer.nextElement();
+			if (pl instanceof Exportable)
+			{
+				Exportable e = (Exportable) pl;
+				e.exportThis();
+			}
+		}
+	}
 
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        PropertyDescriptor[] res = {
-          prop("Visible", "the Layer visibility", VISIBILITY),
-          prop("Name", "the name of the Layer", FORMAT),
-          prop("LineThickness", "the thickness of lines in this layer", FORMAT),
-        };
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class LayerInfo extends Editable.EditorType
+	{
 
-        res[2].setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+		public LayerInfo(BaseLayer data)
+		{
+			super(data, data.getName(), "");
+		}
 
-        return res;
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						prop("Visible", "the Layer visibility", VISIBILITY),
+						prop("Name", "the name of the Layer", FORMAT),
+						prop("LineThickness", "the thickness of lines in this layer",
+								FORMAT), };
 
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
+				res[2]
+						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
 
+				return res;
 
-    @SuppressWarnings("unchecked")
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+
+		@SuppressWarnings("unchecked")
 		public MethodDescriptor[] getMethodDescriptors()
-    {
-      // just add the reset color field first
-      Class c = Layer.class;
-      MethodDescriptor mds[] = {
-        method(c, "exportShape", null, "Export Shape")
-      };
-      return mds;
-    }
+		{
+			// just add the reset color field first
+			Class c = BaseLayer.class;
+			MethodDescriptor mds[] =
+			{ method(c, "exportShape", null, "Export Shape"),
+					method(c, "hideChildren", null, "Hide all children"),
+					method(c, "revealChildren", null, "Reveal all children") };
+			return mds;
+		}
 
-  }
+	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class BaseLayerTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class BaseLayerTest extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public BaseLayerTest(String val)
-    {
-      super(val);
-    }
+		public BaseLayerTest(String val)
+		{
+			super(val);
+		}
 
-    public void testMyParams()
-    {
-      MWC.GUI.Editable ed = new BaseLayer();
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+		public void testMyParams()
+		{
+			MWC.GUI.Editable ed = new BaseLayer();
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
 
-  /** determine whether my children have their own order that should be used rather than just their name.
-   * 
-   * @return yes/no.
-   */
-  public boolean hasOrderedChildren()
+	/**
+	 * determine whether my children have their own order that should be used
+	 * rather than just their name.
+	 * 
+	 * @return yes/no.
+	 */
+	public boolean hasOrderedChildren()
 	{
 		return _orderedChildren;
 	}

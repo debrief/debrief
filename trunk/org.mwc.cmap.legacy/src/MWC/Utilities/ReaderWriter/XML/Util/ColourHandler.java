@@ -148,6 +148,9 @@ abstract public class ColourHandler extends MWCXMLReader
                                   String name)
   {
 
+  	if(color == null)
+  		return;
+  	
     // have the colours been specified?
     checkColours();
 
@@ -187,7 +190,8 @@ abstract public class ColourHandler extends MWCXMLReader
    */
   public static void exportColour(java.awt.Color color, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
   {
-    exportColour(color, parent, doc, "colour");
+  	if(color != null)
+  		exportColour(color, parent, doc, "colour");
   }
 
 }
