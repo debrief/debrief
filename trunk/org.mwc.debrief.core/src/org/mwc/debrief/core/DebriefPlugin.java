@@ -32,6 +32,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	public  static final String PLUGIN_NAME = "org.mwc.debrief.core";
 	
 	public static final String DEBRIEF_EDITOR = "org.mwc.debrief.PlotEditor";
+	public static final String SENSOR_FUSION = "org.mwc.debrief.SensorFusion";
+
 	// The shared instance.
 	private static DebriefPlugin plugin;
 
