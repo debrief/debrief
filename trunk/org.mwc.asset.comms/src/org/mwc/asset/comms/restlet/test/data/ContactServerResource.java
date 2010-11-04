@@ -1,15 +1,8 @@
 package org.mwc.asset.comms.restlet.test.data;
 
-import org.json.JSONObject;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -18,12 +11,6 @@ import org.restlet.resource.ServerResource;
 public class ContactServerResource extends ServerResource implements
 		ContactResource
 {
-
-	public ContactServerResource()
-	{
-//		getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-	//	getVariants().add(new Variant(MediaType.));
-	}
 	
 	private static volatile Contact contact = new Contact("Scott", "Tiger",
 			new Address("10 bd Google", null, "20010", "Mountain View", "USA"), 40);
