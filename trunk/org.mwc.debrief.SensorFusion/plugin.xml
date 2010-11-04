@@ -8,7 +8,7 @@
             class="org.mwc.debrief.sensorfusion.views.SensorFusionView"
             icon="icons/merge.gif"
             id="org.mwc.debrief.SensorFusion"
-            name="Sensor Fusion Workshop">
+            name="Bulk Sensor Manager">
       </view>
    </extension>
 </plugin>
