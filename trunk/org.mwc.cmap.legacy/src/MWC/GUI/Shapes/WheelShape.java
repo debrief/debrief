@@ -102,414 +102,259 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
 /**
- * Class representing a cart-wheel type shape - drawn with inner and outer radiuses, with
- * spokes at 60 degree intervals
+ * Class representing a cart-wheel type shape - drawn with inner and outer
+ * radiuses, with spokes at 60 degree intervals
  */
 public class WheelShape extends PlainShape implements Editable
 {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-
-  // keep track of versions
-  static final long serialVersionUID = 1;
-
-  /**
-   * the area covered by this Wheel
-   */
-  private WorldArea _theArea;
-
-  /**
-   * the centre of this Wheel
-   */
-  private WorldLocation _theCentre;
-
-  /**
-   * the outer radius of the wheel (in degs)
-   */
-  private WorldDistance _theOuterRadius;
-
-  /**
-   * the inner radius of the  wheel (in degs)
-   */
-  private WorldDistance _theInnerRadius;
-
-
-  /**
-   * the size of each spoke (in degs)
-   */
-  private int _theSpokeSize = 60;
-  
-  /**
-   * our editor
-   */
-  transient private Editable.EditorType _myEditor;
-
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-
-
-  /**
-   * Normal constructor for object
-   *
-   * @param theCentre      the centre of the wheel
-   * @param theInnerRadius the inner radius of the wheel, in yds
-   * @param theOuterRadius the outer radius of the wheel, in yds
-   * @param theColor       the colour to plot the wheel
-   */
-  public WheelShape(WorldLocation theCentre, double theInnerRadius, double theOuterRadius)
-  {
-  	this(theCentre, new WorldDistance(theInnerRadius, WorldDistance.YARDS),
-  			new WorldDistance(theOuterRadius, WorldDistance.YARDS));
-  }
-
-  /**
-   * Normal constructor for object
-   *
-   * @param theCentre      the centre of the wheel
-   * @param theInnerRadius the inner radius of the wheel, in yds
-   * @param theOuterRadius the outer radius of the wheel, in yds
-   * @param theColor       the colour to plot the wheel
-   */
-  public WheelShape(WorldLocation theCentre, WorldDistance theInnerRadius, WorldDistance theOuterRadius)
-  {
-    super(0, 1, "Wheel");
-
-    // store the values
-    _theCentre = theCentre;
-    _theInnerRadius = theInnerRadius;
-    _theOuterRadius = theOuterRadius;
-
-    // store the corners of the area,
-    calcPoints();
-
-    setName("Wheel");
-  }
-
-  /** default constructor
-   */
-  //  public WheelShape(){
-  //    // scrap, in case we are serializing
-  //    _theArea = null;
-  //  }
-
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-
-  /**
-   * paint the object
-   *
-   * @param dest the destination
-   */
-  public void paint(CanvasType dest)
-  {
-    // are we visible?
-    if (!getVisible())
-      return;
-    // set the colour, if we know it
-    if (this.getColor() != null)
-      dest.setColor(this.getColor());
-
-    double spoke_separation = _theSpokeSize;
-    int arcs = 180;
-
-    dest.setColor(getColor());
-
-    MWC.Algorithms.PlainProjection _proj = dest.getProjection();
-
-    // sort out the centre in screen coords
-    Point centre = new Point(_proj.toScreen(_theCentre));
-
-    // sort out the range in screen coords
-    WorldLocation outerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
-    WorldLocation innerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0), _theInnerRadius.getValueIn(WorldDistance.DEGS), 0));
-    Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
-    Point screenInnerEdge = new Point(_proj.toScreen(innerEdge));
-    int dx = screenOuterEdge.x - centre.x;
-    int dy = screenOuterEdge.y - centre.y;
-    int outerRadius = (int) Math.sqrt(dx * dx + dy * dy);
-
-    dx = screenInnerEdge.x - centre.x;
-    dy = screenInnerEdge.y - centre.y;
-    int innerRadius = (int) Math.sqrt(dx * dx + dy * dy);
-
-    // check that the axis is in the correct direction (we may be in relative projection)
-    int axis = (int) MWC.Algorithms.Conversions.Rads2Degs(Math.atan2(dx, -dy));
-
-    // now the centre stalk
-    double axisRads = MWC.Algorithms.Conversions.Degs2Rads(0);
-    Point edge = new Point((int) ((double) outerRadius * Math.sin(axisRads)),
-                           -(int) ((double) outerRadius * Math.cos(axisRads)));
-    edge.translate(centre.x, centre.y);
-    dest.drawLine(centre.x, centre.y, edge.x, edge.y);
-
-    // now draw the spokes, working out either side from the axis
-    double thisSpoke = spoke_separation; // on the axis
-    double spokeRads1 = 0;
-    double spokeRads2 = 0;
-    Point edge1 = new Point();
-    Point edge2 = new Point();
-
-    while (thisSpoke <= arcs)
-    {
-      // find the left/right angles in rads
-      spokeRads1 = MWC.Algorithms.Conversions.Degs2Rads(axis - thisSpoke);
-      spokeRads2 = MWC.Algorithms.Conversions.Degs2Rads(axis + thisSpoke);
-      // calculate the offset produced by this angle
-      edge1.setLocation((int) ((double) outerRadius * Math.sin(spokeRads1)),
-                        -(int) ((double) outerRadius * Math.cos(spokeRads1)));
-      edge2.setLocation((int) ((double) outerRadius * Math.sin(spokeRads2)),
-                        -(int) ((double) outerRadius * Math.cos(spokeRads2)));
-      // add this to the centre
-      edge1.translate(centre.x, centre.y);
-      edge2.translate(centre.x, centre.y);
-      // draw the line
-      dest.drawLine(centre.x, centre.y, edge1.x, edge1.y);
-      dest.drawLine(centre.x, centre.y, edge2.x, edge2.y);
-      // move on to the next spoke
-      thisSpoke += spoke_separation;
-    }
-
-    // now the inner and outer range rings
-    double ring_separation = outerRadius - innerRadius;
-    int thisRadius = innerRadius;
-    Point origin = new Point();
-
-    // draw the ovals
-    for (int i = 0; i < 2; i++)
-    {
-      origin.setLocation(centre);
-
-      // shift the centre point to the TL corner of the area
-      origin.translate(-thisRadius, -thisRadius);
-
-      // draw in the arc itself
-      dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
-
-      // move on to the next radius
-      thisRadius += ring_separation;
-    }
-
-
-  }
-
-  /**
-   * get the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
-   */
-  public Collection<WorldLocation> getDataPoints()
-  {
-    return null;
-  }
-
-
-  /**
-   * calculate some convenience values based on the radius
-   * and centre of the Wheel
-   */
-  protected void calcPoints()
-  {
-    // create our area
-    _theArea = new WorldArea(_theCentre, _theCentre);
-
-    // create & extend to top left
-    WorldLocation other = _theCentre.add(new WorldVector(0, _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
-    other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
-    _theArea.extend(other);
-
-    // create & extend to bottom right
-    other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
-    other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
-    _theArea.extend(other);
-  }
-
-  public MWC.GenericData.WorldArea getBounds()
-  {
-    return _theArea;
-  }
-
-  /**
-   * get the range from the indicated world location -
-   * making this abstract allows for individual shapes
-   * to have 'hit-spots' in various locations.
-   */
-  public double rangeFrom(WorldLocation point)
-  {
-    double res = _theCentre.rangeFrom(point);
-
-    return res;
-  }
-
-
-  /**
-   * set the centre location of the Wheel
-   */
-  public void setCentre(WorldLocation centre)
-  {
-    // inform our listeners
-    firePropertyChange("Location", _theCentre, centre);
-    // make the change
-    _theCentre = centre;
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
-
-  }
-
-  /**
-   * return the centre of the Wheel
-   *
-   * @return the centre of the Wheel
-   */
-  public WorldLocation getCentre()
-  {
-    return _theCentre;
-  }
-
-  /**
-   * get the inner radius of the Wheel
-   *
-   * @return radius in yards
-   */
-  public WorldDistance getRadiusInner()
-  {
-  return  _theInnerRadius;
-  }
-
-  /**
-   * get the outer radius of the Wheel
-   *
-   * @return radius in yards
-   */
-  public WorldDistance getRadiusOuter()
-  {
-    return _theOuterRadius;
-  }
-
-  /**
-   * set the inner radius of the wheel
-   *
-   * @param val the new radius (in degrees)
-   */
-  public void setRadiusInner(WorldDistance val)
-  {
-    _theInnerRadius = val;
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
-    
-  }
-
-  /**
-   * set the outer radius of the wheel
-   *
-   * @param val the new radius (in degrees)
-   */
-  public void setRadiusOuter(WorldDistance val)
-  {
-    _theOuterRadius = val;
-    
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
-
-  }
-
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new WheelInfo(this, this.getName());
-
-    return _myEditor;
-  }
-
-  /**
-   * get the 'anchor point' for any labels attached to
-   * this shape
-   */
-  public MWC.GenericData.WorldLocation getAnchor()
-  {
-    return _theCentre;
-  }
-
-  //////////////////////////////////////////
-  // convenience functions which pass calls back to parent
-  //////////////////////////////////////////
-  public void setWheelColor(Color val)
-  {
-    super.setColor(val);
-  }
-
-  public Color getWheelColor()
-  {
-    return super.getColor();
-  }
-
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public class WheelInfo extends Editable.EditorType
-  {
-
-    public WheelInfo(WheelShape data,
-                     String theName)
-    {
-      super(data, theName, "");
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        PropertyDescriptor[] res = {
-          prop("RadiusInner", "the Inner radius of the wheel (yds)"),
-          prop("SpokeSize", "the arc covered by each spoke (degs)"),
-          prop("RadiusOuter", "the Outer radius of the wheel (yds)"),
-          prop("Centre", "the centre of the Wheel")
-        };
-
-        return res;
-
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class WheelTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public WheelTest(String val)
-    {
-      super(val);
-    }
-
-    public void testMyParams()
-    {
-      MWC.GUI.Editable ed = new WheelShape(new WorldLocation(2d, 2d, 2d), 2d, 2d);
-      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+	// ////////////////////////////////////////////////
+	// member variables
+	// ////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class WheelInfo extends Editable.EditorType
+	{
+
+		public WheelInfo(WheelShape data, String theName)
+		{
+			super(data, theName, "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						prop("RadiusInner", "the Inner radius of the wheel (yds)"),
+						prop("SpokeSize", "the arc covered by each spoke (degs)"),
+						prop("EmptyInner",
+								"whether to keep the inner circle clear of spokes"),
+						prop("RadiusOuter", "the Outer radius of the wheel (yds)"),
+						prop("Centre", "the centre of the Wheel") };
+
+				return res;
+
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class WheelTest extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public WheelTest(String val)
+		{
+			super(val);
+		}
+
+		public void testMyParams()
+		{
+			MWC.GUI.Editable ed = new WheelShape(new WorldLocation(2d, 2d, 2d), 2d,
+					2d);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	// keep track of versions
+	static final long serialVersionUID = 1;
+
+	/**
+	 * the area covered by this Wheel
+	 */
+	private WorldArea _theArea;
+
+	/**
+	 * the centre of this Wheel
+	 */
+	private WorldLocation _theCentre;
+
+	/**
+	 * whether to keep the inner circle clear of spokes
+	 * 
+	 */
+	private boolean _emptyInner = false;
+
+	/**
+	 * the outer radius of the wheel (in degs)
+	 */
+	private WorldDistance _theOuterRadius;
+
+	/**
+	 * the inner radius of the wheel (in degs)
+	 */
+	private WorldDistance _theInnerRadius;
+
+	/**
+	 * the size of each spoke (in degs)
+	 */
+	private int _theSpokeSize = 60;
+
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor;
+
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
+
+	/**
+	 * Normal constructor for object
+	 * 
+	 * @param theCentre
+	 *          the centre of the wheel
+	 * @param theInnerRadius
+	 *          the inner radius of the wheel, in yds
+	 * @param theOuterRadius
+	 *          the outer radius of the wheel, in yds
+	 * @param theColor
+	 *          the colour to plot the wheel
+	 */
+	public WheelShape(WorldLocation theCentre, double theInnerRadius,
+			double theOuterRadius)
+	{
+		this(theCentre, new WorldDistance(theInnerRadius, WorldDistance.YARDS),
+				new WorldDistance(theOuterRadius, WorldDistance.YARDS));
+	}
+
+	/**
+	 * Normal constructor for object
+	 * 
+	 * @param theCentre
+	 *          the centre of the wheel
+	 * @param theInnerRadius
+	 *          the inner radius of the wheel, in yds
+	 * @param theOuterRadius
+	 *          the outer radius of the wheel, in yds
+	 * @param theColor
+	 *          the colour to plot the wheel
+	 */
+	public WheelShape(WorldLocation theCentre, WorldDistance theInnerRadius,
+			WorldDistance theOuterRadius)
+	{
+		super(0, 1, "Wheel");
+
+		// store the values
+		_theCentre = theCentre;
+		_theInnerRadius = theInnerRadius;
+		_theOuterRadius = theOuterRadius;
+
+		// store the corners of the area,
+		calcPoints();
+
+		setName("Wheel");
+	}
+
+	/**
+	 * default constructor
+	 */
+	// public WheelShape(){
+	// // scrap, in case we are serializing
+	// _theArea = null;
+	// }
+
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
+
+	/**
+	 * calculate some convenience values based on the radius and centre of the
+	 * Wheel
+	 */
+	protected void calcPoints()
+	{
+		// create our area
+		_theArea = new WorldArea(_theCentre, _theCentre);
+
+		// create & extend to top left
+		WorldLocation other = _theCentre.add(new WorldVector(0, _theOuterRadius
+				.getValueIn(WorldDistance.DEGS), 0));
+		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+				_theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
+		_theArea.extend(other);
+
+		// create & extend to bottom right
+		other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
+				.Degs2Rads(180), _theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
+		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+				_theOuterRadius.getValueIn(WorldDistance.DEGS), 0));
+		_theArea.extend(other);
+	}
+
+	/**
+	 * get the 'anchor point' for any labels attached to this shape
+	 */
+	public MWC.GenericData.WorldLocation getAnchor()
+	{
+		return _theCentre;
+	}
+
+	@Override
+	public MWC.GenericData.WorldArea getBounds()
+	{
+		return _theArea;
+	}
+
+	/**
+	 * return the centre of the Wheel
+	 * 
+	 * @return the centre of the Wheel
+	 */
+	public WorldLocation getCentre()
+	{
+		return _theCentre;
+	}
+
+	/**
+	 * get the shape as a series of WorldLocation points. Joined up, these form a
+	 * representation of the shape
+	 */
+	@Override
+	public Collection<WorldLocation> getDataPoints()
+	{
+		return null;
+	}
+
+	public Editable.EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new WheelInfo(this, this.getName());
+
+		return _myEditor;
+	}
+
+	/**
+	 * get the inner radius of the Wheel
+	 * 
+	 * @return radius in yards
+	 */
+	public WorldDistance getRadiusInner()
+	{
+		return _theInnerRadius;
+	}
+
+	/**
+	 * get the outer radius of the Wheel
+	 * 
+	 * @return radius in yards
+	 */
+	public WorldDistance getRadiusOuter()
+	{
+		return _theOuterRadius;
+	}
 
 	/**
 	 * @return Returns the _theSpokeSize.
@@ -519,33 +364,240 @@ public class WheelShape extends PlainShape implements Editable
 		return new SteppingBoundedInteger(_theSpokeSize, 5, 180, 5);
 	}
 
+	public Color getWheelColor()
+	{
+		return super.getColor();
+	}
+
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	public boolean isEmptyInner()
+	{
+		return _emptyInner;
+	}
+
 	/**
-	 * @param spokeSize The _theSpokeSize to set.
+	 * paint the object
+	 * 
+	 * @param dest
+	 *          the destination
+	 */
+	@Override
+	public void paint(CanvasType dest)
+	{
+		// are we visible?
+		if (!getVisible())
+			return;
+		// set the colour, if we know it
+		if (this.getColor() != null)
+			dest.setColor(this.getColor());
+
+		double spoke_separation = _theSpokeSize;
+		int arcs = 180;
+
+		dest.setColor(getColor());
+
+		MWC.Algorithms.PlainProjection _proj = dest.getProjection();
+
+		// sort out the centre in screen coords
+		Point centre = new Point(_proj.toScreen(_theCentre));
+
+		// sort out the range in screen coords
+		WorldLocation outerEdge = _theCentre.add(new WorldVector(
+				MWC.Algorithms.Conversions.Degs2Rads(0), _theOuterRadius
+						.getValueIn(WorldDistance.DEGS), 0));
+		WorldLocation innerEdge = _theCentre.add(new WorldVector(
+				MWC.Algorithms.Conversions.Degs2Rads(0), _theInnerRadius
+						.getValueIn(WorldDistance.DEGS), 0));
+		Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
+		Point screenInnerEdge = new Point(_proj.toScreen(innerEdge));
+		int dx = screenOuterEdge.x - centre.x;
+		int dy = screenOuterEdge.y - centre.y;
+		int outerRadius = (int) Math.sqrt(dx * dx + dy * dy);
+
+		dx = screenInnerEdge.x - centre.x;
+		dy = screenInnerEdge.y - centre.y;
+		int innerRadius = (int) Math.sqrt(dx * dx + dy * dy);
+
+		// check that the axis is in the correct direction (we may be in relative
+		// projection)
+		int axis = (int) MWC.Algorithms.Conversions.Rads2Degs(Math.atan2(dx, -dy));
+
+		// now draw the spokes, working out either side from the axis
+		double thisSpoke = 0; // on the axis
+		double spokeRads1 = 0;
+		double spokeRads2 = 0;
+		Point edge1 = new Point();
+		Point edge2 = new Point();
+		Point inner1 = new Point();
+		Point inner2 = new Point();
+
+		inner1.setLocation(centre);
+		inner2.setLocation(centre);
+
+		while (thisSpoke <= arcs)
+		{
+			// find the left/right angles in rads
+			spokeRads1 = MWC.Algorithms.Conversions.Degs2Rads(axis - thisSpoke);
+			spokeRads2 = MWC.Algorithms.Conversions.Degs2Rads(axis + thisSpoke);
+			// calculate the offset produced by this angle
+			edge1.setLocation((int) (outerRadius * Math.sin(spokeRads1)),
+					-(int) (outerRadius * Math.cos(spokeRads1)));
+			edge2.setLocation((int) (outerRadius * Math.sin(spokeRads2)),
+					-(int) (outerRadius * Math.cos(spokeRads2)));
+
+			if (isEmptyInner())
+			{
+				// calculate the offset produced by this angle
+				inner1.setLocation((int) (innerRadius * Math.sin(spokeRads1)),
+						-(int) (innerRadius * Math.cos(spokeRads1)));
+				inner2.setLocation((int) (innerRadius * Math.sin(spokeRads2)),
+						-(int) (innerRadius * Math.cos(spokeRads2)));
+				inner1.translate(centre.x, centre.y);
+				inner2.translate(centre.x, centre.y);
+			}
+
+			// add this to the centre
+			edge1.translate(centre.x, centre.y);
+			edge2.translate(centre.x, centre.y);
+
+
+			// draw the line
+			dest.drawLine(inner1.x, inner1.y, edge1.x, edge1.y);
+			dest.drawLine(inner2.x, inner2.y, edge2.x, edge2.y);
+			// move on to the next spoke
+			thisSpoke += spoke_separation;
+		}
+
+		// now the inner and outer range rings
+		double ring_separation = outerRadius - innerRadius;
+		int thisRadius = innerRadius;
+		Point origin = new Point();
+
+		// draw the ovals
+		for (int i = 0; i < 2; i++)
+		{
+			origin.setLocation(centre);
+
+			// shift the centre point to the TL corner of the area
+			origin.translate(-thisRadius, -thisRadius);
+
+			// draw in the arc itself
+			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
+
+			// move on to the next radius
+			thisRadius += ring_separation;
+		}
+
+	}
+
+	/**
+	 * get the range from the indicated world location - making this abstract
+	 * allows for individual shapes to have 'hit-spots' in various locations.
+	 */
+	@Override
+	public double rangeFrom(WorldLocation point)
+	{
+		double res = _theCentre.rangeFrom(point);
+
+		return res;
+	}
+
+	/**
+	 * set the centre location of the Wheel
+	 */
+	public void setCentre(WorldLocation centre)
+	{
+		// inform our listeners
+		firePropertyChange("Location", _theCentre, centre);
+		// make the change
+		_theCentre = centre;
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
+
+	}
+
+	public void setEmptyInner(boolean emptyInner)
+	{
+		_emptyInner = emptyInner;
+	}
+
+	/**
+	 * set the inner radius of the wheel
+	 * 
+	 * @param val
+	 *          the new radius (in degrees)
+	 */
+	public void setRadiusInner(WorldDistance val)
+	{
+		_theInnerRadius = val;
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
+
+	}
+
+	/**
+	 * set the outer radius of the wheel
+	 * 
+	 * @param val
+	 *          the new radius (in degrees)
+	 */
+	public void setRadiusOuter(WorldDistance val)
+	{
+		_theOuterRadius = val;
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
+
+	}
+
+	/**
+	 * @param spokeSize
+	 *          The _theSpokeSize to set.
 	 */
 	public void setSpokeSize(SteppingBoundedInteger spokeSize)
 	{
 		_theSpokeSize = spokeSize.getCurrent();
-		
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
 
 	}
-	
+
+	// ////////////////////////////////////////
+	// convenience functions which pass calls back to parent
+	// ////////////////////////////////////////
+	public void setWheelColor(Color val)
+	{
+		super.setColor(val);
+	}
 
 	public void shift(WorldVector vector)
 	{
 		WorldLocation oldCentre = getCentre();
 		WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
-		
-    // and calc the new summary data
-    calcPoints();
-    
-    // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
 
-	}	
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
+
+	}
 }

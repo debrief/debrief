@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.129"
+<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.130"
 	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
 
 	<runtime>
@@ -204,6 +204,12 @@
 			<action class="org.mwc.debrief.core.creators.shapes.InsertCircle"
 				icon="icons/circle.gif" id="org.mwc.debrief.core.creators.shapes.InsertCircle"
 				label="&amp;Circle" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertWheel"
+				icon="icons/wheel.png" id="org.mwc.debrief.core.creators.shapes.InsertWheel"
+				label="&amp;Wheel" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
 			<action class="org.mwc.debrief.core.creators.shapes.InsertPolygon"
