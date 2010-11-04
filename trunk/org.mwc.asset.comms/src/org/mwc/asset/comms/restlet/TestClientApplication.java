@@ -1,8 +1,12 @@
 package org.mwc.asset.comms.restlet;
 
+import java.io.IOException;
+
 import org.mwc.asset.comms.restlet.test.data.Contact;
 import org.mwc.asset.comms.restlet.test.data.ContactResource;
+import org.restlet.data.MediaType;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 public class TestClientApplication
 {
@@ -39,7 +43,7 @@ public class TestClientApplication
 		}
 		
 		
-		int NUM = 100;
+		int NUM = 10;
 		for(int i=0;i<NUM;i++)
 		{
 			// make the change
@@ -59,7 +63,21 @@ public class TestClientApplication
 			System.out.println("     nage: " + contact.getAge());
 		}
 		
-		
+ 
+		try
+		{
+			cr.get(MediaType.APPLICATION_JSON).write(System.out);
+		}
+		catch (ResourceException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
