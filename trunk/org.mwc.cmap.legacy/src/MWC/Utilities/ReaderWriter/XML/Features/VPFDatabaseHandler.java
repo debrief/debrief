@@ -12,6 +12,7 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 import org.w3c.dom.Element;
 
 import MWC.GUI.Editable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.VPF.CoverageLayer;
 import MWC.GUI.VPF.DebriefFeatureWarehouse;
 import MWC.GUI.VPF.LibraryLayer;
@@ -26,6 +27,8 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 {
 
 	private static final String _myType = "vpf_database";
+
+	private static ToolParent _myParent;
 
 	boolean _isVisible;
 
@@ -96,8 +99,9 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 			if (lib == null)
 			{
-				MWC.Utilities.Errors.Trace.trace("Unable to find VPF library for:"
-						+ name);
+				if (_myParent != null)
+					_myParent.logError(ToolParent.ERROR,
+							"Unable to find VPF library for:" + name, null);
 				return;
 			}
 
@@ -119,7 +123,9 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 		}
 		else
 		{
-			MWC.Utilities.Errors.Trace.trace("VPF Library paths not set");
+			if (_myParent != null)
+				_myParent.logError(ToolParent.ERROR,
+						"VPF Library paths not set", null);
 		}
 	}
 
@@ -163,6 +169,11 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 		}
 
 		parent.appendChild(coast);
+	}
+
+	public static void initialise(ToolParent toolParent)
+	{
+		_myParent = toolParent;
 	}
 
 }
