@@ -2,6 +2,8 @@ package org.mwc.asset.comms.restlet;
 
 import java.io.File;
 
+import org.mwc.asset.comms.restlet.data.ParticipantServerResource;
+import org.mwc.asset.comms.restlet.data.ScenarioServerResource;
 import org.mwc.asset.comms.restlet.test.data.ContactServerResource;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -42,6 +44,8 @@ public class TestServerApplication extends Application {
                 .createFileReference(warDir));
         router.attachDefault(dir);
         router.attach("/contacts/{user}", ContactServerResource.class);
+        router.attach("/scenario/{user}", ScenarioServerResource.class);
+        router.attach("/participant/{user}", ParticipantServerResource.class);
 
         return router;
     }

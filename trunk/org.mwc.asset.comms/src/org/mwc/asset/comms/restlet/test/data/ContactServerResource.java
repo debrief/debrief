@@ -32,13 +32,4 @@ public class ContactServerResource extends ServerResource implements
 	{
 		ContactServerResource.contact = contact;
 	}
-
-//	@Get
-//	public Representation getJson() throws ResourceException
-//	{
-//		// get Profile object matching the request
-//		JSONObject jsonProfile = new JSONObject(contact);
-//		getResponse().setStatus(Status.SUCCESS_OK);
-//		return new JsonRepresentation(jsonProfile);
-//	}
 }
