@@ -120,8 +120,8 @@ public class OpticLookupSensor extends LookupSensor
 	 *          current time
 	 * @return the set of lookup parameters applicable to this sensor
 	 */
-	protected LookupSensor.LastTargetContact parametersFor(ParticipantType ownship,
-			ParticipantType target, ScenarioType scenario, EnvironmentType environment,
+	protected LookupSensor.LastTargetContact parametersFor(NetworkParticipant ownship,
+			NetworkParticipant target, ScenarioType scenario, EnvironmentType environment,
 			long time)
 	{
 		LookupSensor.LastTargetContact res = new LookupSensor.LastTargetContact();
@@ -204,7 +204,7 @@ public class OpticLookupSensor extends LookupSensor
 	 * @param environment
 	 * @return
 	 */
-	protected WorldDistance calculateRP(ParticipantType ownship, ParticipantType target,
+	protected WorldDistance calculateRP(NetworkParticipant ownship, NetworkParticipant target,
 			ScenarioType scenario, EnvironmentType environment, long time,
 			LookupSensor.LastTargetContact params)
 	{
@@ -710,9 +710,9 @@ public class OpticLookupSensor extends LookupSensor
 			// ok, try to check that the data got loaded.
 			Integer[] participants = scen.getListOfParticipants();
 
-			ParticipantType partA = scen.getThisParticipant(participants[0].intValue());
-			ParticipantType partB = scen.getThisParticipant(participants[1].intValue());
-			ParticipantType part;
+			NetworkParticipant partA = scen.getThisParticipant(participants[0].intValue());
+			NetworkParticipant partB = scen.getThisParticipant(participants[1].intValue());
+			NetworkParticipant part;
 			if (partA instanceof Helo)
 				part = partA;
 			else

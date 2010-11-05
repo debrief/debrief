@@ -1,6 +1,6 @@
 package ASSET.Models.Decision.Movement;
 
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.Models.Decision.*;
 import ASSET.Models.Detection.*;
 import ASSET.Models.Movement.SimpleDemandedStatus;
@@ -127,7 +127,7 @@ public class Evade extends CoreDecision implements java.io.Serializable
 				_evading = true;
 
 				// get teh target
-				ParticipantType target = monitor.getThisParticipant(_myTarget
+				NetworkParticipant target = monitor.getThisParticipant(_myTarget
 						.intValue());
 
 				// what's his bearing rate?

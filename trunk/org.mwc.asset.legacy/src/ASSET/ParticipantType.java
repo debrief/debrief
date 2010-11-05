@@ -9,7 +9,7 @@ import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.Status;
 
-public interface ParticipantType extends ParticipantDetectedListener, SensorDataProvider
+public interface ParticipantType extends ParticipantDetectedListener, SensorDataProvider, NetworkParticipant
 {
 
   public void addParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
@@ -31,16 +31,6 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
    * @param listener the listener to add/remove
    */
   public void removeParticipantDecidedListener(ASSET.Participants.ParticipantDecidedListener listener);
-
-  /**
-   * the status of this participant
-   */
-  public Status getStatus();
-
-  /**
-   * the name of this participant
-   */
-  public String getName();
 
   /**
    * the name of this participant
@@ -67,11 +57,6 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
    */
   public void doDetection(long oldtime, long newTime, ASSET.ScenarioType scenario);
 
-
-  /**
-   * get the id of this participant
-   */
-  public int getId();
 
   /**
    * reset, to go back to the initial state
@@ -142,16 +127,6 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
    * add a sensor to this participant
    */
   public void addSensor(ASSET.Models.SensorType sensor);
-
-  /**
-   * return what this participant is currently doing
-   */
-  public String getActivity();
-
-  /**
-   * return the category of the target
-   */
-  public Category getCategory();
 
   /**
    * set the category

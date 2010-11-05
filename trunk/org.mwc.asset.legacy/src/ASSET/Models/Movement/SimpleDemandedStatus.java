@@ -6,136 +6,154 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldDistance;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Ian.Mayo
- * Date: 19-Aug-2003
- * Time: 14:51:58
- * To change this template use Options | File Templates.
+ * Created by IntelliJ IDEA. User: Ian.Mayo Date: 19-Aug-2003 Time: 14:51:58 To
+ * change this template use Options | File Templates.
  */
 public class SimpleDemandedStatus extends DemandedStatus
 {
-  /**********************************************************************
-   * member variables
-   *********************************************************************/
+	/**********************************************************************
+	 * member variables
+	 *********************************************************************/
 
-  /** demanded course (degs)
-   *
-   */
-  private double _course;
+	/**
+	 * demanded course (degs)
+	 * 
+	 */
+	private double _course;
 
-  /** demanded height (to use if we don't have a location value)
-   *
-   */
-  private double _height;
+	/**
+	 * demanded height (to use if we don't have a location value)
+	 * 
+	 */
+	private double _height;
 
-  /** demanded speed (m/sec)
-   *
-   */
-  private double _speed;
+	/**
+	 * demanded speed (m/sec)
+	 * 
+	 */
+	private double _speed;
 
-  /**********************************************************************
-   * constructor
-   *********************************************************************/
-  public SimpleDemandedStatus(final long id, final long time)
-  {
-    super(id, time);
-  }
+	/**********************************************************************
+	 * constructor
+	 *********************************************************************/
+	public SimpleDemandedStatus(final long id, final long time)
+	{
+		super(id, time);
+	}
 
-  /** make demanded status follow indicated status (so we are in a steady state)
-   *
-   * @param time the current time
-   * @param status the participant status to preserve
-   */
-  public SimpleDemandedStatus(final long time, final Status status)
-  {
-    this(status.getId(), time);
-    setCourse(status.getCourse());
-    setSpeed(status.getSpeed().getValueIn(WorldSpeed.M_sec));
-    setHeight(-status.getLocation().getDepth());
-  }
+	public String toString()
+	{
+		String res = "";
 
-  /** copy constructor - to take a copy of a demanded status
-   *
-   */
-  public SimpleDemandedStatus(long time,
-                              SimpleDemandedStatus original)
-  {
-    this(original.getId(), time);
-    // now the others
-    this._course = original._course;
-    this._height = original._height;
-    setSpeed(original.getSpeed());
-  }
+		res += "[t:" + super.getTime() + " crse:" + (int) this.getCourse()
+				+ " spd:" + (int) this.getSpeed() + " ht:" + (int) this.getHeight() + "]";
+		return res;
+	}
 
+	/**
+	 * make demanded status follow indicated status (so we are in a steady state)
+	 * 
+	 * @param time
+	 *          the current time
+	 * @param status
+	 *          the participant status to preserve
+	 */
+	public SimpleDemandedStatus(final long time, final Status status)
+	{
+		this(status.getId(), time);
+		setCourse(status.getCourse());
+		setSpeed(status.getSpeed().getValueIn(WorldSpeed.M_sec));
+		setHeight(-status.getLocation().getDepth());
+	}
 
-  /** set the course (degs)
-   *
-   */
-  public void setCourse(double degs)
-  {
-    while (degs < 0)
-      degs += 360;
+	/**
+	 * copy constructor - to take a copy of a demanded status
+	 * 
+	 */
+	public SimpleDemandedStatus(long time, SimpleDemandedStatus original)
+	{
+		this(original.getId(), time);
+		// now the others
+		this._course = original._course;
+		this._height = original._height;
+		setSpeed(original.getSpeed());
+	}
 
-    while (degs >= 360)
-      degs -= 360;
+	/**
+	 * set the course (degs)
+	 * 
+	 */
+	public void setCourse(double degs)
+	{
+		while (degs < 0)
+			degs += 360;
 
-    _course = degs;
-  }
+		while (degs >= 360)
+			degs -= 360;
 
-  /** get the course (degs)
-   *
-   */
-  public double getCourse()
-  {
-    return _course;
-  }
+		_course = degs;
+	}
 
+	/**
+	 * get the course (degs)
+	 * 
+	 */
+	public double getCourse()
+	{
+		return _course;
+	}
 
-  /** get the height (m)
-   *
-   */
-  public double getHeight()
-  {
-    return _height;
-  }
+	/**
+	 * get the height (m)
+	 * 
+	 */
+	public double getHeight()
+	{
+		return _height;
+	}
 
-  /** set the height
-   *
-   */
-  public void setHeight(final double val)
-  {
-    _height = val;
-  }
+	/**
+	 * set the height
+	 * 
+	 */
+	public void setHeight(final double val)
+	{
+		_height = val;
+	}
 
-  /** set the height using object
-   *
-   */
-  public void setHeight(WorldDistance height)
-  {
-    _height = height.getValueIn(WorldDistance.METRES);
-  }
+	/**
+	 * set the height using object
+	 * 
+	 */
+	public void setHeight(WorldDistance height)
+	{
+		_height = height.getValueIn(WorldDistance.METRES);
+	}
 
-  /** set the speed (m_sec)
-   *
-   */
-  public void setSpeed(double m_sec)
-  {
-    _speed = m_sec;
-  }
+	/**
+	 * set the speed (m_sec)
+	 * 
+	 */
+	public void setSpeed(double m_sec)
+	{
+		_speed = m_sec;
+	}
 
-  /** setter which takes world speed param
-   *
-   */
-  public void setSpeed(WorldSpeed spd)
-  {
-    _speed = spd.getValueIn(WorldSpeed.M_sec);
-  }
+	/**
+	 * setter which takes world speed param
+	 * 
+	 */
+	public void setSpeed(WorldSpeed spd)
+	{
+		_speed = spd.getValueIn(WorldSpeed.M_sec);
+	}
 
-  /** get the speed (m_sec)
-   *
-   */
-  public double getSpeed()
-  {
-    return _speed;
-  }
+	/**
+	 * get the speed (m_sec)
+	 * 
+	 */
+	public double getSpeed()
+	{
+		return _speed;
+	}
 }

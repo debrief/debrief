@@ -9,7 +9,7 @@ import ASSET.Scenario.*;
 import MWC.GUI.*;
 import MWC.GenericData.Duration;
 
-public interface ScenarioType extends ScenarioActivityMonitor
+public interface ScenarioType extends ScenarioActivityMonitor, NetworkScenario
 {
 
 

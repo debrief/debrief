@@ -1,5 +1,6 @@
 package ASSET.Util.XML.Vessels;
 
+import ASSET.NetworkParticipant;
 import ASSET.Models.MovementType;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
 
@@ -208,7 +209,7 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
   /** extra method provided to allow child classes to interrupt the participant
    * creation process
    */
-  void finishParticipant(ASSET.ParticipantType newPart)
+  void finishParticipant(NetworkParticipant newPart)
   {
   }
 

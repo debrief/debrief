@@ -455,7 +455,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 
 	// allow an 'overview' test, just to check if it is worth all of the above
 	// processing
-	abstract protected boolean canDetectThisType(ASSET.ParticipantType ownship,
+	abstract protected boolean canDetectThisType(NetworkParticipant ownship,
 			ASSET.ParticipantType other, EnvironmentType env);
 
 	/**

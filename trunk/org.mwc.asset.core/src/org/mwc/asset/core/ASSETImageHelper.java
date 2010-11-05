@@ -3,7 +3,7 @@ package org.mwc.asset.core;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.GUI.Workbench.Plotters.*;
 import ASSET.Models.*;
 import ASSET.Participants.Category.Force;
@@ -30,7 +30,7 @@ public class ASSETImageHelper implements ViewLabelImageHelper
 		else if (subject instanceof ScenarioParticipantWrapper)
 		{
 			ScenarioParticipantWrapper sw = (ScenarioParticipantWrapper) subject;
-			ParticipantType part = sw.getParticipant();
+			NetworkParticipant part = sw.getParticipant();
 			String force = part.getCategory().getForce();
 			if(force == Force.RED)
 				res = ASSETPlugin.getImageDescriptor("icons/flag_red.png");

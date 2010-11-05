@@ -11,6 +11,7 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
@@ -100,7 +101,7 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 		if (decision instanceof Investigate)
 		{
 			// get my location
-			ParticipantType me = _myScenario.getThisParticipant(myId);
+			NetworkParticipant me = _myScenario.getThisParticipant(myId);
 			Status myStat = me.getStatus();
 			WorldLocation loc = myStat.getLocation();
 
@@ -109,7 +110,7 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 			Integer tgtId = inv.getCurrentTarget();
 			if (tgtId != null)
 			{
-				ParticipantType theTarget = _myScenario.getThisParticipant(tgtId);
+				NetworkParticipant theTarget = _myScenario.getThisParticipant(tgtId);
 				if (theTarget != null)
 				{
 					Status hisStat = theTarget.getStatus();

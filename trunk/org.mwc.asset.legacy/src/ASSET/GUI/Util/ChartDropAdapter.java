@@ -10,6 +10,7 @@ package ASSET.GUI.Util;
 
 import java.io.File;
 
+import ASSET.NetworkParticipant;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GenericData.WorldLocation;
 
@@ -44,7 +45,7 @@ abstract public class ChartDropAdapter implements MWC.GUI.DragDrop.FileDropLocat
   /** a participant has been read in
    * @param newPart the new participant
    */
-  abstract public void addParticipant(ASSET.ParticipantType newPart);
+  abstract public void addParticipant(NetworkParticipant newPart);
 
   /** process this list of file
  * @param files the list of files
@@ -57,7 +58,7 @@ abstract public class ChartDropAdapter implements MWC.GUI.DragDrop.FileDropLocat
       // step through the files
       for (int i = 0; i < files.size(); i++)
       {
-        ASSET.ParticipantType nextPart = null;
+        NetworkParticipant nextPart = null;
 
         // get the next file
         final java.io.File file = (java.io.File) files.elementAt(i);

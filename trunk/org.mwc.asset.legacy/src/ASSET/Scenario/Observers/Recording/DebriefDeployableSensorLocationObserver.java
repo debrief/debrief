@@ -4,7 +4,7 @@ import ASSET.Models.Sensor.DeployableSensor;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Models.SensorType;
 import ASSET.Models.Vessels.SSN;
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.Participants.Category;
 import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.Status;
@@ -122,7 +122,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
         int id = deployableSensor.getHostId();
         if (id != -1)
         {
-          ParticipantType pt = _myScenario.getThisParticipant(id);
+          NetworkParticipant pt = _myScenario.getThisParticipant(id);
           WorldLocation loc = pt.getStatus().getLocation();
           loc = deployableSensor.getLocation(loc);
 

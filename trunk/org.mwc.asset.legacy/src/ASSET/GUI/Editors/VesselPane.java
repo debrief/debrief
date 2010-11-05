@@ -4,6 +4,7 @@ import java.awt.*;
 
 import javax.swing.BorderFactory;
 
+import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
 import ASSET.Participants.Status;
@@ -214,7 +215,7 @@ public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
   /** constructor for editable details of a set of Layers
    * @param data the Layers themselves
    */
-    public DetectionViewerHolder(final ASSET.ParticipantType data)
+    public DetectionViewerHolder(final NetworkParticipant data)
     {
       super(data, data.getName(), "View ");
     }

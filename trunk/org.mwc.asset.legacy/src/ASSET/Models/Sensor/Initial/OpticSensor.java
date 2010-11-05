@@ -1,5 +1,6 @@
 package ASSET.Models.Sensor.Initial;
 
+import ASSET.NetworkParticipant;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
@@ -113,7 +114,7 @@ public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
 
 
   // allow an 'overview' test, just to check if it is worth all of the above processing
-  protected boolean canDetectThisType(final ASSET.ParticipantType ownship,
+  protected boolean canDetectThisType(final NetworkParticipant ownship,
                                       final ASSET.ParticipantType other, EnvironmentType env)
   {
     boolean res = false;
@@ -216,7 +217,7 @@ public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
   }
 
 
-  protected double getRD(ASSET.ParticipantType host, ASSET.ParticipantType target)
+  protected double getRD(NetworkParticipant host, NetworkParticipant target)
   {
     return 2;
   }

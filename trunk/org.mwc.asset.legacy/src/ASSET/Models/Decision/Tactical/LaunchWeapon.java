@@ -22,6 +22,7 @@ import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Movement.SurfaceMovementCharacteristics;
 import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
@@ -836,8 +837,8 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
       final Float brg = new Float(2.1f);
 
       final CoreSensor sensor = new ASSET.Models.Sensor.Initial.OpticSensor(12);
-      final ASSET.ParticipantType host = new ASSET.Models.Vessels.SSK(12);
-      final ASSET.ParticipantType target = new ASSET.Models.Vessels.Surface(22);
+      final NetworkParticipant host = new ASSET.Models.Vessels.SSK(12);
+      final NetworkParticipant target = new ASSET.Models.Vessels.Surface(22);
 
       final DetectionEvent de = new DetectionEvent(0,
                                                    host.getId(),
@@ -892,8 +893,8 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
       final Float brg = new Float(2.1f);
 
       final CoreSensor sensor = new ASSET.Models.Sensor.Initial.OpticSensor(12);
-      final ASSET.ParticipantType host = new ASSET.Models.Vessels.SSK(12);
-      final ASSET.ParticipantType target = new ASSET.Models.Vessels.Surface(22);
+      final NetworkParticipant host = new ASSET.Models.Vessels.SSK(12);
+      final NetworkParticipant target = new ASSET.Models.Vessels.Surface(22);
 
       final DetectionEvent de = new DetectionEvent(0,
                                                    host.getId(), null,

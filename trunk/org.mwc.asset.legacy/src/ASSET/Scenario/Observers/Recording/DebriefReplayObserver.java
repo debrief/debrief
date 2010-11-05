@@ -9,6 +9,7 @@ package ASSET.Scenario.Observers.Recording;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 import MWC.GUI.Editable;
@@ -86,7 +87,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 
   static public String writeDetailsToBuffer(final MWC.GenericData.WorldLocation loc,
                                             final ASSET.Participants.Status stat,
-                                            final ASSET.ParticipantType pt,
+                                            final NetworkParticipant pt,
                                             long newTime)
   {
 
@@ -219,7 +220,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * @param activity a description of the current activity
    * @param dtg      the dtg at which the description was recorded
    */
-  protected void writeThisDecisionDetail(ParticipantType pt, String activity, long dtg)
+  protected void writeThisDecisionDetail(NetworkParticipant pt, String activity, long dtg)
   {
     //To change body of implemented methods use File | Settings | File Templates.
     String msg = ";NARRATIVE2: " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg) + " " + wrapName(pt.getName()) + " DECISION " + activity + System.getProperty("line.separator");

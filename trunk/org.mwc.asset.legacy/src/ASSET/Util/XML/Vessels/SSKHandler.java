@@ -9,6 +9,7 @@ package ASSET.Util.XML.Vessels;
  * @version 1.0
  */
 
+import ASSET.NetworkParticipant;
 import ASSET.Models.Vessels.SSK;
 
 abstract public class SSKHandler extends ParticipantHandler
@@ -56,7 +57,7 @@ abstract public class SSKHandler extends ParticipantHandler
    * extra method provided to allow child classes to interrupt the participant
    * creation process
    */
-  protected void finishParticipant(final ASSET.ParticipantType newPart)
+  protected void finishParticipant(final NetworkParticipant newPart)
   {
     final ASSET.Models.Vessels.SSK thisVessel = (SSK) newPart;
     thisVessel.setChargeRate(_myChargeRate);

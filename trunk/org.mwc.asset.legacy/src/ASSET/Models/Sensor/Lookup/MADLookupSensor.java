@@ -78,8 +78,8 @@ public class MADLookupSensor extends LookupSensor
    * @param time        current time
    * @return the set of lookup parameters applicable to this sensor
    */
-  protected LastTargetContact parametersFor(ParticipantType ownship,
-                                            ParticipantType target,
+  protected LastTargetContact parametersFor(NetworkParticipant ownship,
+                                            NetworkParticipant target,
                                             ScenarioType scenario,
                                             EnvironmentType environment,
                                             long time)
@@ -120,7 +120,7 @@ public class MADLookupSensor extends LookupSensor
    * @param env
    * @return
    */
-  protected boolean canDetectThisType(ParticipantType ownship, ParticipantType target, EnvironmentType env)
+  protected boolean canDetectThisType(NetworkParticipant ownship, ParticipantType target, EnvironmentType env)
   {
     // first sort out the environment
     MADEnvironment lookups = env.getMADEnvironment();
@@ -183,7 +183,7 @@ public class MADLookupSensor extends LookupSensor
    * @param environment
    * @return
    */
-  protected WorldDistance calculateRP(ParticipantType ownship, ParticipantType target,
+  protected WorldDistance calculateRP(NetworkParticipant ownship, NetworkParticipant target,
                                       ScenarioType scenario, EnvironmentType environment,
                                       long time, LastTargetContact params)
   {
@@ -568,9 +568,9 @@ public class MADLookupSensor extends LookupSensor
       // ok, try to check that the data got loaded.
       Integer[] participants = scen.getListOfParticipants();
 
-      ParticipantType partA = scen.getThisParticipant(participants[0].intValue());
-      ParticipantType partB = scen.getThisParticipant(participants[1].intValue());
-      ParticipantType part;
+      NetworkParticipant partA = scen.getThisParticipant(participants[0].intValue());
+      NetworkParticipant partB = scen.getThisParticipant(participants[1].intValue());
+      NetworkParticipant part;
       if (partA instanceof Helo)
         part = partA;
       else

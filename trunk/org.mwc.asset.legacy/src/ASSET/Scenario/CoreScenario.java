@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
@@ -1014,7 +1015,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       final java.util.Iterator<ParticipantType> iter = _completeParticipantList.values().iterator();
       while (iter.hasNext())
       {
-        final ParticipantType pt = (ParticipantType) iter.next();
+        final NetworkParticipant pt = (NetworkParticipant) iter.next();
         // how far away is it?
         final double rng_degs = pt.getStatus().getLocation().rangeFrom(loc);
         final double rng_yds = MWC.Algorithms.Conversions.Degs2Yds(rng_degs);
@@ -1324,7 +1325,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       sc3.setName("participant 3");
 
       // re-retrieve this scenario to check we're getting the correct one
-      final ParticipantType sc2a = srv.getThisParticipant(s2);
+      final NetworkParticipant sc2a = srv.getThisParticipant(s2);
       assertEquals("correct name", sc2a.getName(), "participant 2");
 
       // check we can remove a participant
@@ -1336,7 +1337,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       assertEquals("check participant removed", len - 1, srv.getListOfParticipants().length);
 
       // check invalid scenario indices
-      ParticipantType dd = srv.getThisParticipant(1000);
+      NetworkParticipant dd = srv.getThisParticipant(1000);
       assertEquals("invalid index", dd, null);
       dd = srv.getThisParticipant(0);
       assertEquals("invalid index", dd, null);

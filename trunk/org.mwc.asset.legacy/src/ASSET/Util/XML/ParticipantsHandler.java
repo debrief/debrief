@@ -9,6 +9,7 @@ package ASSET.Util.XML;
  * @version 1.0
  */
 
+import ASSET.NetworkParticipant;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
 import ASSET.Util.XML.Vessels.*;
 import org.w3c.dom.Element;
@@ -120,7 +121,7 @@ public class ParticipantsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
     for (int i = 0; i < parts.length; i++)
     {
-      final ASSET.ParticipantType next = scenario.getThisParticipant(parts[i].intValue());
+      final NetworkParticipant next = scenario.getThisParticipant(parts[i].intValue());
 
       // see what type it is
       if (next instanceof ASSET.Models.Vessels.SSK)

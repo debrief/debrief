@@ -1,5 +1,6 @@
 package ASSET.Models.Decision.Movement;
 
+import ASSET.NetworkParticipant;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
@@ -690,7 +691,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
 			stat.setSpeed(new WorldSpeed(4, WorldSpeed.M_sec));
 
 			// create the host
-			final ASSET.ParticipantType host = new ASSET.Models.Vessels.Surface(12);
+			final NetworkParticipant host = new ASSET.Models.Vessels.Surface(12);
 			final CoreSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(
 					22);
 

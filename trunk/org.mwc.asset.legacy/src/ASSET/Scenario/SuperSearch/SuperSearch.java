@@ -9,6 +9,7 @@ package ASSET.Scenario.SuperSearch;
  * @version 1.0
  */
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Util.MonteCarlo.XMLVarianceList;
 
@@ -217,7 +218,7 @@ public class SuperSearch {
   /** build a single target, at the indicated location
    *
    */
-  protected ASSET.ParticipantType buildTarget(final MWC.GenericData.WorldLocation origin,
+  protected NetworkParticipant buildTarget(final MWC.GenericData.WorldLocation origin,
                                             final XMLVarianceList xl)
   {
 
@@ -249,9 +250,9 @@ public class SuperSearch {
 	//////////////////////////////////////////////
 	//	clone items, using "Serializable" interface
 	/////////////////////////////////////////////////
-	static public ParticipantType cloneThis(final ParticipantType item)
+	static public NetworkParticipant cloneThis(final NetworkParticipant item)
 	{
-		ParticipantType res = null;
+		NetworkParticipant res = null;
 		try{
 			final java.io.ByteArrayOutputStream bas = new java.io.ByteArrayOutputStream();
 			final java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(bas);
@@ -278,7 +279,7 @@ public class SuperSearch {
 
 			if(oj instanceof ParticipantType)
 			{
-				res = (ParticipantType)oj;
+				res = (NetworkParticipant)oj;
 			}
 		}
 		catch(Exception e)

@@ -10,6 +10,7 @@ import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.HighLevelDemandedStatus;
 import ASSET.Models.Movement.SimpleDemandedStatus;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
@@ -172,7 +173,7 @@ public class CSVTrackObserver
    * @param activity a description of the current activity
    * @param dtg      the dtg at which the description was recorded
    */
-  protected void writeThisDecisionDetail(ParticipantType pt, String activity, long dtg)
+  protected void writeThisDecisionDetail(NetworkParticipant pt, String activity, long dtg)
   {
     //To change body of implemented methods use File | Settings | File Templates.
   }

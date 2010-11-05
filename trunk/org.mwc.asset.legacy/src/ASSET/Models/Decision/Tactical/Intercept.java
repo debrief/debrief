@@ -13,7 +13,7 @@ import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Movement.SurfaceMovementCharacteristics;
 import ASSET.Models.Sensor.Lookup.OpticLookupSensor;
 import ASSET.Models.Vessels.Surface;
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
@@ -166,7 +166,7 @@ public class Intercept extends CoreDecision implements java.io.Serializable
 		if (targetDetection != null)
 		{
 			// yes, calc the course to it
-			ParticipantType pt = monitor.getThisParticipant(targetDetection
+			NetworkParticipant pt = monitor.getThisParticipant(targetDetection
 					.getTarget());
 			Status tgtStat = pt.getStatus();
 			res = calculateInterceptCourseFor(status, tgtStat, time);

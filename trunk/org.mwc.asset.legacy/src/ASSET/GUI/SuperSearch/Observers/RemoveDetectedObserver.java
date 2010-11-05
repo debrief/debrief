@@ -11,7 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Vector;
 
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
@@ -73,7 +73,7 @@ public class RemoveDetectedObserver extends
 
 	private void ditchHim(final int tgt)
 	{
-		ParticipantType thisPart = getScenario().getThisParticipant(tgt);
+		NetworkParticipant thisPart = getScenario().getThisParticipant(tgt);
 		if (thisPart == null)
 			return;
 		Status hisStat = thisPart.getStatus();

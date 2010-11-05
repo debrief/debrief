@@ -3,6 +3,7 @@ package ASSET.Models.Decision.Tactical;
 import java.util.HashMap;
 import java.util.Vector;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.TargetType;
@@ -278,7 +279,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		{
 			// NO, GENERATE INTERCEPT BEARING
 			// yes, calc the course to it
-			ParticipantType pt = monitor.getThisParticipant(validDetection
+			NetworkParticipant pt = monitor.getThisParticipant(validDetection
 					.getTarget());
 
 			// just check the participant is still live!!
@@ -505,14 +506,14 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			// watched platform.
 
 			// find a matching participant
-			ParticipantType watched = null;
+			NetworkParticipant watched = null;
 
 			Integer[] parts = monitor.getListOfParticipants();
 			for (int i = 0; i < parts.length; i++)
 			{
 				int thisId = parts[i];
 
-				ParticipantType thisPart = monitor.getThisParticipant(thisId);
+				NetworkParticipant thisPart = monitor.getThisParticipant(thisId);
 				if (_watchType.matches(thisPart.getCategory()))
 				{
 					watched = thisPart;
@@ -523,7 +524,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			if (watched != null)
 			{
 				// find tgt log
-				ParticipantType tgt = monitor.getThisParticipant(de.getTarget());
+				NetworkParticipant tgt = monitor.getThisParticipant(de.getTarget());
 				WorldLocation tgtLoc = tgt.getStatus().getLocation();
 
 				// and the location of who I'm defending

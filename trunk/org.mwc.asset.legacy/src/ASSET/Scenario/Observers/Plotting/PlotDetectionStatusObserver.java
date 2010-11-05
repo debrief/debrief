@@ -14,6 +14,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
@@ -185,7 +186,7 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 			Integer thisP = parts[i];
 
 			// sort out where he is
-			ParticipantType part = _myScenario.getThisParticipant(thisP);
+			NetworkParticipant part = _myScenario.getThisParticipant(thisP);
 			WorldLocation loc = part.getStatus().getLocation();
 			Point pt = dest.toScreen(loc);
 

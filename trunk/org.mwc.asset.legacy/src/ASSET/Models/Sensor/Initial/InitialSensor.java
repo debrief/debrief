@@ -13,6 +13,7 @@ import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
+import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -190,8 +191,8 @@ abstract public class InitialSensor extends CoreSensor
                                           WorldLocation host,
                                           double absBearingDegs);
 
-  abstract protected double getRD(ASSET.ParticipantType host,
-                                  ASSET.ParticipantType target);
+  abstract protected double getRD(NetworkParticipant host,
+                                  NetworkParticipant target);
 
   abstract protected double getDI(double courseDegs,
                                   double absBearingDegs);

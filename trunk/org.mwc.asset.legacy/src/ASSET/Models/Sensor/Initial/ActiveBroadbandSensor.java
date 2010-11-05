@@ -8,6 +8,7 @@ package ASSET.Models.Sensor.Initial;
 
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.SensorType;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
@@ -50,7 +51,7 @@ public class ActiveBroadbandSensor extends BroadbandSensor implements SensorType
   }
 
   // allow an 'overview' test, just to check if it is worth all of the above processing
-  protected boolean canDetectThisType(ParticipantType ownship,
+  protected boolean canDetectThisType(NetworkParticipant ownship,
                                       ParticipantType other, EnvironmentType env)
   {
     return other.radiatesThisNoise(EnvironmentType.BROADBAND_PASSIVE);

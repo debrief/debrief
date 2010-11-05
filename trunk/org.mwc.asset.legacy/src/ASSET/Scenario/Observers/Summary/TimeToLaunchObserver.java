@@ -7,7 +7,7 @@
 package ASSET.Scenario.Observers.Summary;
 
 import ASSET.Models.Decision.TargetType;
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.Participants.Category;
 import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.Scenario.Observers.CoreObserver;
@@ -189,7 +189,7 @@ public class TimeToLaunchObserver extends CoreObserver implements ScenarioObserv
   public void newParticipant(int index)
   {
     // get the participant
-    ParticipantType pt = _myScenario.getThisParticipant(index);
+    NetworkParticipant pt = _myScenario.getThisParticipant(index);
 
     // get it's type
     Category theCat = pt.getCategory();

@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
@@ -727,14 +728,14 @@ public class ProximityObserver extends CoreObserver implements
 		final Iterator<ParticipantType> thisV = _watchVessels.iterator();
 		while (thisV.hasNext())
 		{
-			final ASSET.ParticipantType thisWatch = (ASSET.ParticipantType) thisV
+			final NetworkParticipant thisWatch = (NetworkParticipant) thisV
 					.next();
 
 			// and through our target vessels
 			final Iterator<ParticipantType> thisW = _targetVessels.iterator();
 			while (thisW.hasNext())
 			{
-				final ASSET.ParticipantType thisTarget = (ASSET.ParticipantType) thisW
+				final NetworkParticipant thisTarget = (NetworkParticipant) thisW
 						.next();
 
 				// check they're not the same vessel

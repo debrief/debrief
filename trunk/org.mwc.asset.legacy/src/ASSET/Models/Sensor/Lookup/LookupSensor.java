@@ -10,6 +10,7 @@ import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Models.Vessels.Surface;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
@@ -446,8 +447,8 @@ public abstract class LookupSensor extends CoreSensor
 	 *          current time
 	 * @return the set of lookup parameters applicable to this sensor
 	 */
-	protected abstract LastTargetContact parametersFor(ParticipantType ownship,
-			ParticipantType target, ScenarioType scenario, EnvironmentType environment,
+	protected abstract LastTargetContact parametersFor(NetworkParticipant ownship,
+			NetworkParticipant target, ScenarioType scenario, EnvironmentType environment,
 			long time);
 
 	/**
@@ -459,8 +460,8 @@ public abstract class LookupSensor extends CoreSensor
 	 * @param environment
 	 * @return
 	 */
-	abstract protected WorldDistance calculateRP(ParticipantType ownship,
-			ParticipantType target, ScenarioType scenario, EnvironmentType environment,
+	abstract protected WorldDistance calculateRP(NetworkParticipant ownship,
+			NetworkParticipant target, ScenarioType scenario, EnvironmentType environment,
 			long time, LastTargetContact params);
 
 	public WorldDistance getEstimatedRange()
@@ -482,7 +483,7 @@ public abstract class LookupSensor extends CoreSensor
 	 * @param env
 	 * @return
 	 */
-	protected boolean canDetectThisType(ParticipantType ownship, ParticipantType target,
+	protected boolean canDetectThisType(NetworkParticipant ownship, ParticipantType target,
 			EnvironmentType env)
 	{
 		double height = -target.getStatus().getLocation().getDepth();
@@ -1235,15 +1236,15 @@ public abstract class LookupSensor extends CoreSensor
 
 		// allow an 'overview' test, just to check if it is worth all of the above
 		// processing
-		protected boolean canDetectThisType(ParticipantType ownship, ParticipantType other,
+		protected boolean canDetectThisType(NetworkParticipant ownship, ParticipantType other,
 				EnvironmentType env)
 		{
 			return true; // To change body of implemented methods use File | Settings
 										// | File Templates.
 		}
 
-		protected LastTargetContact parametersFor(ParticipantType ownship,
-				ParticipantType target, ScenarioType scenario, EnvironmentType environment,
+		protected LastTargetContact parametersFor(NetworkParticipant ownship,
+				NetworkParticipant target, ScenarioType scenario, EnvironmentType environment,
 				long time)
 		{
 			LastTargetContact res = new LastTargetContact();
@@ -1252,7 +1253,7 @@ public abstract class LookupSensor extends CoreSensor
 			return res;
 		}
 
-		protected WorldDistance calculateRP(ParticipantType ownship, ParticipantType target,
+		protected WorldDistance calculateRP(NetworkParticipant ownship, NetworkParticipant target,
 				ScenarioType scenario, EnvironmentType environment, long time,
 				LastTargetContact params)
 		{

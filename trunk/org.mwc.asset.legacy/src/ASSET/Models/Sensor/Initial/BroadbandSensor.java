@@ -9,6 +9,7 @@ package ASSET.Models.Sensor.Initial;
  * @version 1.0
  */
 
+import ASSET.NetworkParticipant;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Util.SupportTesting;
@@ -99,7 +100,7 @@ public class BroadbandSensor extends InitialSensor
   }
 
   // allow an 'overview' test, just to check if it is worth all of the above processing
-  protected boolean canDetectThisType(ASSET.ParticipantType ownship,
+  protected boolean canDetectThisType(NetworkParticipant ownship,
                                       final ASSET.ParticipantType other, EnvironmentType env)
   {
     return other.radiatesThisNoise(getMedium());
@@ -157,7 +158,7 @@ public class BroadbandSensor extends InitialSensor
     return new WorldDistance(1000, WorldDistance.YARDS);
   }
 
-  protected double getRD(ASSET.ParticipantType host, ASSET.ParticipantType target)
+  protected double getRD(NetworkParticipant host, NetworkParticipant target)
   {
     return 2;
   }

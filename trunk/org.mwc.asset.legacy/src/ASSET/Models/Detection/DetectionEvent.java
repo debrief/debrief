@@ -16,7 +16,7 @@ package ASSET.Models.Detection;
 import java.io.Serializable;
 
 import ASSET.Models.SensorType;
-import ASSET.ParticipantType;
+import ASSET.NetworkParticipant;
 import ASSET.Participants.Category;
 import MWC.GUI.Properties.AbstractPropertyEditor;
 import MWC.GenericData.WorldDistance;
@@ -169,7 +169,7 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
                         final Category target_type,
                         final Float speedKts,
                         final Float course,
-                        final ParticipantType target)
+                        final NetworkParticipant target)
   {
 
   	
@@ -219,7 +219,7 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
                         final Category target_type,
                         final WorldSpeed speed,
                         final Float course,
-                        final ParticipantType target,
+                        final NetworkParticipant target,
                         final int detectionState)
   {
 

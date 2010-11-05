@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
@@ -68,7 +69,7 @@ public class TypedCookieSensor extends CoreSensor
 	}
 
 	@Override
-	protected boolean canDetectThisType(ParticipantType ownship,
+	protected boolean canDetectThisType(NetworkParticipant ownship,
 			ParticipantType other, EnvironmentType env)
 	{
 		return true;

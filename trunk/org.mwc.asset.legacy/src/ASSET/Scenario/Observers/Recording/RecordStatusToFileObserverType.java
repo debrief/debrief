@@ -7,6 +7,7 @@ import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Movement.HeloMovementCharacteristics;
 import ASSET.Models.Sensor.Initial.OpticSensor;
 import ASSET.Models.Vessels.SSN;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 import ASSET.Participants.Status;
@@ -126,7 +127,7 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
    * @param activity a description of the current activity
    * @param dtg      the dtg at which the description was recorded
    */
-  abstract protected void writeThisDecisionDetail(ParticipantType pt, String activity, long dtg);
+  abstract protected void writeThisDecisionDetail(NetworkParticipant pt, String activity, long dtg);
 
   /**
    * the scenario has stepped forward
@@ -398,7 +399,7 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
           _positionDetailsWritten = true;
         }
 
-        protected void writeThisDecisionDetail(ParticipantType pt, String activity, long dtg)
+        protected void writeThisDecisionDetail(NetworkParticipant pt, String activity, long dtg)
         {
           _decisionDetailsWritten = true;
         }

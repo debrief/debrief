@@ -16,6 +16,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
 import ASSET.Models.Sensor.SensorList;
@@ -49,9 +50,9 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   }
 
 
-  static public ASSET.ParticipantType readThis(final java.io.File file)
+  static public NetworkParticipant readThis(final java.io.File file)
   {
-    ASSET.ParticipantType res = null;
+    NetworkParticipant res = null;
     try
     {
       final java.io.FileInputStream str = new java.io.FileInputStream(file);

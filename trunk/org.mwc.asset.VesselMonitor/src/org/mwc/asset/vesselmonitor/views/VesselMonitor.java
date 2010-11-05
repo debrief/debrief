@@ -10,6 +10,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
@@ -240,7 +241,7 @@ public class VesselMonitor extends ViewPart
 	/**
 	 * @param part
 	 */
-	private void updateName(final ParticipantType part)
+	private void updateName(final NetworkParticipant part)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{

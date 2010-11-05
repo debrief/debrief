@@ -16,6 +16,7 @@ import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Mediums.NarrowbandRadNoise;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Models.Vessels.Surface;
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
@@ -224,7 +225,7 @@ public class NarrowbandSensor extends InitialSensor
   }
 
   // allow an 'overview' test, just to check if it is worth all of the above processing
-  protected boolean canDetectThisType(ASSET.ParticipantType ownship,
+  protected boolean canDetectThisType(NetworkParticipant ownship,
                                       final ASSET.ParticipantType other, EnvironmentType env)
   {
     return other.radiatesThisNoise(getMedium());
@@ -265,7 +266,7 @@ public class NarrowbandSensor extends InitialSensor
     return new WorldDistance(1000, WorldDistance.YARDS);
   }
 
-  protected double getRD(ASSET.ParticipantType host, ASSET.ParticipantType target)
+  protected double getRD(NetworkParticipant host, NetworkParticipant target)
   {
     return 2;
   }

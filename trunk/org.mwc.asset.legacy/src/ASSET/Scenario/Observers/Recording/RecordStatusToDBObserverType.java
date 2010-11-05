@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import ASSET.NetworkParticipant;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
@@ -143,7 +144,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	 *          the participant in question
 	 */
 	protected void writeThesePositionDetails(WorldLocation loc, Status stat,
-			ParticipantType pt, long newTime)
+			NetworkParticipant pt, long newTime)
 	{
 		try
 		{
@@ -291,7 +292,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	 * @param dtg
 	 *          the dtg at which the detections were observed
 	 */
-	protected void writeTheseDetectionDetails(ParticipantType pt,
+	protected void writeTheseDetectionDetails(NetworkParticipant pt,
 			DetectionList detections, long dtg)
 	{
 		try
@@ -349,7 +350,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	 * @param dtg
 	 *          the dtg at which the description was recorded
 	 */
-	protected void writeThisDecisionDetail(ParticipantType pt, String activity,
+	protected void writeThisDecisionDetail(NetworkParticipant pt, String activity,
 			long dtg)
 	{
 		try
