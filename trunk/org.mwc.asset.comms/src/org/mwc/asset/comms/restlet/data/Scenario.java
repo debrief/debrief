@@ -3,16 +3,18 @@ package org.mwc.asset.comms.restlet.data;
 public class Scenario
 {
 	final private String _name;
-	public Scenario(String name)
+	final private Integer _id;
+	public Scenario(String name, int id)
 	{
 		_name = name;
+		_id = id;
 	}
 	public String getName()
 	{
 		return _name;
 	}
-	public Integer[] getListOfParticipants()
+	public Integer getId()
 	{
-		return new Integer[]{1,2,3};
+		return _id;
 	}
 }

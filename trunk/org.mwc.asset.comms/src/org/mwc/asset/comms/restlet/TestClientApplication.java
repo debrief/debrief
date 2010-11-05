@@ -1,10 +1,17 @@
 package org.mwc.asset.comms.restlet;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ParticipantResource;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenarioResource;
+import org.mwc.asset.comms.restlet.data.ScenariosResource;
 import org.restlet.resource.ClientResource;
+
+import ASSET.Participants.Category;
 
 public class TestClientApplication
 {
@@ -15,29 +22,44 @@ public class TestClientApplication
 	public static void main(String[] args)
 	{
 
-		ClientResource cr = new ClientResource("http://localhost:8080/scenario/123");
+		ClientResource cr = new ClientResource("http://localhost:8080/scenario");
 		
 		// does it have a scenario?
-		ScenarioResource scenR = cr.wrap(ScenarioResource.class);
-		Scenario scen = scenR.retrieve();
+		ScenariosResource scenR = cr.wrap(ScenariosResource.class);
+		List<Scenario> scen = scenR.retrieve();
+		Scenario scen1 = null;
 		
-		if(scen != null)
+		for (Iterator<Scenario> iterator = scen.iterator(); iterator.hasNext();)
 		{
-			System.out.println("name:" + scen.getName());
-			
-			// have a look at the participants
-			Integer[] parts = scen.getListOfParticipants();
+			Scenario scenario = iterator.next();
+			System.out.println("this scen is:" + scenario.getName());
+			scen1 = scenario;
+		}
+		
+		if(scen1 != null)
+		{
+			ClientResource pa = new ClientResource("http://localhost:8080/scenario/" + scen1.getId() + "/participant");
+			ParticipantsResource partR = pa.wrap(ParticipantsResource.class);
+			List<Participant> parts = partR.retrieve();
 			if(parts != null)
 			{
-				for(int i=0;i<parts.length;i++)
+				Iterator<Participant> iter = parts.iterator();
+				while(iter.hasNext())
 				{
-					Integer thisI = parts[i];
-					System.out.println("this is id:" + thisI);
-					
-					ClientResource pa = new ClientResource("http://localhost:8080/participant/" + thisI);
-					ParticipantResource partR = pa.wrap(ParticipantResource.class);
-					Participant part = partR.retrieve();
-					System.out.println("this name is:" + part.getName());
+					Participant thisP = iter.next();
+					System.out.println("this name is:" + thisP.getName());
+					Category cat = thisP.getCategory();
+					System.out.println("this cat is:" + cat);
+
+//					Integer thisI = thisP.getId();
+//					System.out.println("this is id:" + thisI);
+//					
+//					ClientResource pa = new ClientResource("http://localhost:8080/scenario/" + id + "/participant/" + thisI);
+//					ParticipantResource partR = pa.wrap(ParticipantResource.class);
+//					Participant part = partR.retrieve();
+//					System.out.println("this name is:" + part.getName());
+//					Category cat = part.getCategory();
+//					System.out.println("this cat is:" + cat);
 				}
 			}
 			

@@ -9,18 +9,19 @@ import org.restlet.resource.ServerResource;
 /**
  * The server side implementation of the Restlet resource.
  */
-public class ScenarioServerResource extends ServerResource implements
+public class ScenariosServerResource extends ServerResource implements
 		ScenariosResource
 {
 	
-
 	@Get
 	public List<Scenario> retrieve()
 	{
-		List<Scenario> res = new Vector<Scenario>();
-		res.add(new Scenario("aaa", 1));
-		res.add(new Scenario("bbb", 12));
-		res.add(new Scenario("ccc", 21));
+		Vector<Scenario> res = new Vector<Scenario>();
+		res.add(new Scenario("Scott", 44));
+		res.add(new Scenario("Scott", 22));
+		res.add(new Scenario("Scott", 33));
+		res.add(new Scenario("Scott", 11));
+		
 		return res;
 	}
 }
