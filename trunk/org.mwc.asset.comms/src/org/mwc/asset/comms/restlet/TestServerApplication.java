@@ -2,6 +2,7 @@ package org.mwc.asset.comms.restlet;
 
 import java.io.File;
 
+import org.mwc.asset.comms.restlet.data.DemandedStatusServerResource;
 import org.mwc.asset.comms.restlet.data.ParticipantServerResource;
 import org.mwc.asset.comms.restlet.data.ParticipantsServerResource;
 import org.mwc.asset.comms.restlet.data.ScenarioServerResource;
@@ -48,9 +49,9 @@ public class TestServerApplication extends Application {
         router.attach("/contacts/{user}", ContactServerResource.class);
         router.attach("/scenario", ScenariosServerResource.class);
         router.attach("/scenario/{scenario}", ScenarioServerResource.class);
-        router.attach("/scenario/{scenario}/participant/{participant}", ParticipantServerResource.class);
         router.attach("/scenario/{scenario}/participant", ParticipantsServerResource.class);
-
+        router.attach("/scenario/{scenario}/participant/{participant}", ParticipantServerResource.class);
+        router.attach("/scenario/{scenario}/participant/{participant}/state", DemandedStatusServerResource.class);
         return router;
     }
 

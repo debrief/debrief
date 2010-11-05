@@ -3,15 +3,17 @@ package org.mwc.asset.comms.restlet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mwc.asset.comms.restlet.data.DemandedStatusResource;
 import org.mwc.asset.comms.restlet.data.Participant;
-import org.mwc.asset.comms.restlet.data.ParticipantResource;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
-import org.mwc.asset.comms.restlet.data.ScenarioResource;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
+import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.Category;
+import ASSET.Participants.DemandedStatus;
 
 public class TestClientApplication
 {
@@ -64,6 +66,12 @@ public class TestClientApplication
 			}
 			
 		}
+		// try a put
+		ClientResource pa = new ClientResource("http://localhost:8080/scenario/" + scen1.getId() + "/participant/state");
+		DemandedStatus dem = new SimpleDemandedStatus(12, 3234);
+		Representation rep = pa.put(dem);
+		System.out.println("received:" + rep);
+		
 //			
 //		ContactResource resource = cr.wrap(ContactResource.class);
 //		Contact contact = resource.retrieve();

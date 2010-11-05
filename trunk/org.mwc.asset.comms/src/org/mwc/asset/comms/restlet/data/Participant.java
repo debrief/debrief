@@ -26,4 +26,5 @@ public class Participant
 	{
 		return _category;
 	}
+
 }
