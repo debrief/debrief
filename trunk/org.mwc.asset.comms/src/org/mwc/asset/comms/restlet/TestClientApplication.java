@@ -8,7 +8,6 @@ import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
-import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 import ASSET.Models.Movement.SimpleDemandedStatus;
@@ -66,11 +65,29 @@ public class TestClientApplication
 			}
 			
 		}
+//	ClientResource pa = new ClientResource("http://localhost:8080/scenario/" + id + "/participant/" + thisI);
+//	ParticipantResource partR = pa.wrap(ParticipantResource.class);
+//	Participant part = partR.retrieve();
+	
 		// try a put
-		ClientResource pa = new ClientResource("http://localhost:8080/scenario/" + scen1.getId() + "/participant/state");
-		DemandedStatus dem = new SimpleDemandedStatus(12, 3234);
-		Representation rep = pa.put(dem);
-		System.out.println("received:" + rep);
+		ClientResource pa = new ClientResource("http://localhost:8080/scenario/" + scen1.getId() + "/participant/12/state");
+	  DemandedStatusResource dem =	pa.wrap(DemandedStatusResource.class);
+	  DemandedStatus part = dem.retrieve();
+	  System.out.println("stat:" + part);
+	  
+	  
+	  SimpleDemandedStatus demS = new SimpleDemandedStatus(12, 3234);
+		demS.setCourse(12);
+		demS.setSpeed(44);
+		demS.setHeight(65);
+		
+		dem.store(demS);
+		
+	  part = dem.retrieve();
+	  System.out.println("stat:" + part);
+
+//		Representation rep = pa.put(dem);
+//		System.out.println("received:" + rep);
 		
 //			
 //		ContactResource resource = cr.wrap(ContactResource.class);

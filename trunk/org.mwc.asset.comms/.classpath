@@ -16,5 +16,8 @@
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.codehaus.jettison.jar"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.json.jar"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.restlet.ext.xstream.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.legacy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

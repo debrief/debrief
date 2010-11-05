@@ -3,10 +3,7 @@ package org.mwc.asset.comms.restlet.data;
 import java.util.List;
 import java.util.Vector;
 
-import org.mwc.asset.comms.restlet.test.data.Contact;
-import org.mwc.asset.comms.restlet.test.data.ContactServerResource;
 import org.restlet.resource.Get;
-import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 
 import ASSET.Participants.Category;

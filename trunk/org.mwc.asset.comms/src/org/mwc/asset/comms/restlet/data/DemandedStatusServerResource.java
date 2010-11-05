@@ -15,7 +15,7 @@ public class DemandedStatusServerResource extends ServerResource implements
 		DemandedStatusResource
 {
 
-	private DemandedStatus _thisD;
+	private static DemandedStatus _thisD;
 
 	@Get
 	public DemandedStatus retrieve()
