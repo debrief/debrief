@@ -3,6 +3,7 @@ package org.mwc.debrief.sensorfusion.views;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -14,6 +15,7 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.RectangleInsets;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -55,6 +57,7 @@ public class DataSupport
 
 		XYPlot plot = (XYPlot) chart.getPlot();
 		plot.setBackgroundPaint(Color.lightGray);
+		plot.setAxisOffset(new RectangleInsets(0, 0, 0, 0));
 		plot.setDomainGridlinePaint(Color.white);
 		plot.setRangeGridlinePaint(Color.white);
 		plot.setDomainCrosshairVisible(false);
@@ -83,7 +86,7 @@ public class DataSupport
 		}
 
 		abstract public boolean getVisible();
-		
+
 		abstract public Color getColor();
 
 		/**
@@ -149,13 +152,12 @@ public class DataSupport
 			else
 				return true;
 		}
-		
+
 		@Override
 		public Color getColor()
 		{
 			return _subject.getColor();
 		}
-
 
 		public SensorWrapper getSensor()
 		{
@@ -185,66 +187,67 @@ public class DataSupport
 				+ (int) (Math.random() * 500 * 1000);
 		return delay;
 	}
-//
-//	/**
-//	 * Creates a dataset, consisting of two series of monthly data.
-//	 * 
-//	 * @return The dataset.
-//	 */
-//	public static TimeSeriesCollection createDataset()
-//	{
-//		TimeSeriesCollection dataset = new TimeSeriesCollection();
-//
-//		final long _start = (long) (Math.random() * 1000000);
-//		final long _end = (long) (_start + 12000000 + Math.random() * 100000);
-//
-//		int ctr = 0;
-//
-//		int MAX_TRACKS = 1;
-//		for (int i = 0; i < MAX_TRACKS; i++)
-//		{
-//			final long _step = 60000;
-//			final long _thisStart = _start;
-//			final long _thisEnd = _end;
-//			long _this = _thisStart;
-//
-//			TimeSeries s1 = new TrackSeries("track:" + i, null);
-//			double theVal = Math.random() * 360;
-//			while (_this < _thisEnd)
-//			{
-//				theVal = theVal - 1 + (Math.random() * 2);
-//				s1.add(new FixedMillisecond(_this), theVal);
-//				ctr++;
-//				_this += _step;
-//			}
-//			dataset.addSeries(s1);
-//		}
-//
-//		int MAX_SENSORS = 5;
-//		for (int i = 0; i < MAX_SENSORS; i++)
-//		{
-//			final long _step = stepInterval();
-//			final long _thisStart = _start + delay();
-//			long _thisEnd = _thisStart + duration();
-//			_thisEnd = Math.min(_thisEnd, _end);
-//			long _this = _thisStart;
-//
-//			TimeSeries s1 = new SensorSeries("sensor:" + i, null);
-//			double theVal = Math.random() * 360;
-//			while (_this < _thisEnd)
-//			{
-//				theVal = theVal - 1 + (Math.random() * 2);
-//				s1.add(new FixedMillisecond(_this), theVal);
-//				ctr++;
-//				_this += _step;
-//			}
-//			dataset.addSeries(s1);
-//		}
-//
-//		System.out.println(ctr + " points created");
-//
-//		return dataset;
-//	}
+
+	//
+	// /**
+	// * Creates a dataset, consisting of two series of monthly data.
+	// *
+	// * @return The dataset.
+	// */
+	// public static TimeSeriesCollection createDataset()
+	// {
+	// TimeSeriesCollection dataset = new TimeSeriesCollection();
+	//
+	// final long _start = (long) (Math.random() * 1000000);
+	// final long _end = (long) (_start + 12000000 + Math.random() * 100000);
+	//
+	// int ctr = 0;
+	//
+	// int MAX_TRACKS = 1;
+	// for (int i = 0; i < MAX_TRACKS; i++)
+	// {
+	// final long _step = 60000;
+	// final long _thisStart = _start;
+	// final long _thisEnd = _end;
+	// long _this = _thisStart;
+	//
+	// TimeSeries s1 = new TrackSeries("track:" + i, null);
+	// double theVal = Math.random() * 360;
+	// while (_this < _thisEnd)
+	// {
+	// theVal = theVal - 1 + (Math.random() * 2);
+	// s1.add(new FixedMillisecond(_this), theVal);
+	// ctr++;
+	// _this += _step;
+	// }
+	// dataset.addSeries(s1);
+	// }
+	//
+	// int MAX_SENSORS = 5;
+	// for (int i = 0; i < MAX_SENSORS; i++)
+	// {
+	// final long _step = stepInterval();
+	// final long _thisStart = _start + delay();
+	// long _thisEnd = _thisStart + duration();
+	// _thisEnd = Math.min(_thisEnd, _end);
+	// long _this = _thisStart;
+	//
+	// TimeSeries s1 = new SensorSeries("sensor:" + i, null);
+	// double theVal = Math.random() * 360;
+	// while (_this < _thisEnd)
+	// {
+	// theVal = theVal - 1 + (Math.random() * 2);
+	// s1.add(new FixedMillisecond(_this), theVal);
+	// ctr++;
+	// _this += _step;
+	// }
+	// dataset.addSeries(s1);
+	// }
+	//
+	// System.out.println(ctr + " points created");
+	//
+	// return dataset;
+	// }
 
 	public static void tracksFor(TrackWrapper primary,
 			WatchableList[] secondaries, TimeSeriesCollection newData)
@@ -269,7 +272,7 @@ public class DataSupport
 									thisP.getLocation());
 							double thisVal = MWC.Algorithms.Conversions.Rads2Degs(offset
 									.getBearing());
-							
+
 							thisT.add(create(thisP.getTime(), thisVal, thisP.getColor()));
 						}
 				}
@@ -281,8 +284,10 @@ public class DataSupport
 	}
 
 	public static void sensorDataFor(TrackWrapper primary,
-			TimeSeriesCollection newData)
+			TimeSeriesCollection newData, HashMap<SensorWrapper, SensorSeries> index)
 	{
+
+		index.clear();
 
 		Enumeration<Editable> sensors = primary.getSensors().elements();
 		while (sensors.hasMoreElements())
@@ -290,13 +295,14 @@ public class DataSupport
 			SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
 			SensorSeries series = new SensorSeries(sensor.getName(), sensor);
 			Enumeration<Editable> cuts = sensor.elements();
-			 _previousVal = Double.NaN;
+			_previousVal = Double.NaN;
 
+			index.put(sensor, series);
 			while (cuts.hasMoreElements())
 			{
 				SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
 				double thisVal = scw.getBearing();
-				
+
 				series.add(create(scw.getTime(), thisVal, scw.getColor()));
 
 			}
@@ -305,8 +311,9 @@ public class DataSupport
 				newData.addSeries(series);
 		}
 	}
-	
-	private static ColouredDataItem create(HiResDate hiResDate, double thisVal, Color color)
+
+	private static ColouredDataItem create(HiResDate hiResDate, double thisVal,
+			Color color)
 	{
 
 		if (thisVal < 0)
@@ -323,8 +330,8 @@ public class DataSupport
 			}
 		}
 		_previousVal = thisVal;
-		ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(
-				hiResDate.getDate().getTime()), thisVal, color, connectToPrevious, null);
+		ColouredDataItem cd = new ColouredDataItem(new FixedMillisecond(hiResDate
+				.getDate().getTime()), thisVal, color, connectToPrevious, null);
 
 		return cd;
 	}

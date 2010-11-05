@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.jfree.chart.axis.ValueAxis;
@@ -19,6 +20,7 @@ import org.jfree.data.xy.XYDataset;
 import org.mwc.debrief.sensorfusion.views.DataSupport.SensorSeries;
 import org.mwc.debrief.sensorfusion.views.DataSupport.TacticalSeries;
 
+import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.JFreeChart.AttractiveDataItem;
 
 public class FusionPlotRenderer extends XYLineAndShapeRenderer
@@ -39,6 +41,8 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		 * @return
 		 */
 		public boolean useOriginalColors();
+		
+		public HashMap<SensorWrapper, SensorSeries> getIndex();
 	}
 
 	private BasicStroke THICK_STROKE = new BasicStroke(4);

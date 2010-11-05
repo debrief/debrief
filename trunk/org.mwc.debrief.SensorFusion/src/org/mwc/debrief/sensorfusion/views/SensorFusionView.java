@@ -1,6 +1,7 @@
 package org.mwc.debrief.sensorfusion.views;
 
 import java.awt.event.InputEvent;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -9,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -36,6 +38,7 @@ import org.mwc.debrief.sensorfusion.views.FusionPlotRenderer.FusionHelper;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -66,6 +69,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	final private XYLineAndShapeRenderer _plotRenderer;
 
 	final private Vector<SensorSeries> _selectedTracks;
+	final private HashMap<SensorWrapper, SensorSeries> _trackIndex;
 
 	private Layers _currentLayers;
 
@@ -80,6 +84,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	 */
 	protected DataListener _layerListener;
 
+	protected ISelectionChangedListener _selectionChangeListener;
+
 	/**
 	 * The constructor.
 	 */
@@ -87,13 +93,47 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 		_selectedTracks = new Vector<SensorSeries>(0, 1);
 		_plotRenderer = new FusionPlotRenderer(this);
-
+		_trackIndex = new HashMap<SensorWrapper, SensorSeries>();
+	}
+	
+	private SensorFusionView getMe()
+	{
+		return this;
 	}
 
 	protected void setupListeners()
 	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not us
+						if (part != getMe())
+						{
+							ISelectionProvider iS = (ISelectionProvider) part;
+							iS.addSelectionChangedListener(_selectionChangeListener);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						if (part != getMe())
+						{
+							ISelectionProvider iS = (ISelectionProvider) part;
+							iS.removeSelectionChangedListener(_selectionChangeListener);
+						}
+					}
+				});
+
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -218,7 +258,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			TimeSeriesCollection newData = new TimeSeriesCollection();
 			DataSupport.tracksFor(_primary, secondaries, newData);
 
-			DataSupport.sensorDataFor(_primary, newData);
+			DataSupport.sensorDataFor(_primary, newData, _trackIndex);
 
 			// and now the sensor data
 			_myChartFrame.getChart().getXYPlot().setDataset(newData);
@@ -308,6 +348,45 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 			{
 			}
 		});
+
+		_selectionChangeListener = new ISelectionChangedListener()
+		{
+
+			@SuppressWarnings("unchecked")
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				// right, see what it is
+				ISelection sel = event.getSelection();
+				if (sel instanceof StructuredSelection)
+				{
+					StructuredSelection ss = (StructuredSelection) sel;
+					Iterator eles = ss.iterator();
+					boolean processingThese = false;
+					while (eles.hasNext())
+					{
+						Object datum = eles.next();
+						if (datum instanceof EditableWrapper)
+						{
+							EditableWrapper pw = (EditableWrapper) datum;
+							Editable ed = pw.getEditable();
+							if (ed instanceof SensorWrapper)
+							{
+								if (!processingThese)
+								{
+									processingThese = true;
+									_selectedTracks.removeAllElements();
+									
+								}
+								SensorSeries thisSeries = _trackIndex.get(ed);
+								_selectedTracks.add(thisSeries);
+							}
+						}
+					}
+					if(processingThese)
+						redrawPlot();
+				}
+			}
+		};
 
 	}
 
@@ -444,5 +523,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	public boolean useOriginalColors()
 	{
 		return _useOriginalColors.isChecked();
+	}
+
+	@Override
+	public HashMap<SensorWrapper, SensorSeries> getIndex()
+	{
+		return _trackIndex;
 	}
 }
