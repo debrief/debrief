@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="RB_scenario" xmlns="http://www.mwc.org/asset"
+	ShowSymbol="false" ShowActivity="true" ShowName="false" ShowStatus="true">
+	<StepTime Units="seconds" Value="5" />
+	<Participants>
+		<Surface Name="Tie">
+			<Category Type="FRIGATE" Force="RED" Environment="SURFACE"></Category>
+				<SensorFit><TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" />
+						<DetectionRange Value="3" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
+			<Status Course="18" Fuel="100">
+				<Location>
+					<shortLocation Lat="0.24" Long="0.93"></shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s"></Speed>
+			</Status>
+			<Waterfall Name="Agressive patrol">
+				<Intercept Name="CloseBlue" AllowSpeedchange="true">
+					<TargetType>
+						<Type Name="CARRIER" />
+					</TargetType>
+				</Intercept>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name="f_perf"
+				FuelUsageRate="0">
+				<MinSpeed Value="0" Units="kts" ></MinSpeed>
+				<MaxSpeed Value="50" Units="kts"></MaxSpeed>
+				<AccelerationRate Value="3" Units="kt/s" />
+				<DecelerationRate Value="3" Units="kt/s" />
+				<TurningCircle Value="100" Units="m" />
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Falcon 1">
+			<Category Type="DESTROYER" Force="BLUE" Environment="SURFACE" ></Category>
+			<SensorFit>
+				<TypedCookieSensor DetectionLevel="Detected">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="2" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" ></Type>
+						<DetectionRange Value="10" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+				<TypedCookieSensor DetectionLevel="Identified">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="30" Units="m" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="BLUE"></Type>
+						<DetectionRange Value="500" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="22" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="0.22" Long="0.98"></shortLocation>
+				</Location>
+				<Speed Value="110" Units="kts" />
+			</Status>
+			<Waterfall Name="LX PAtrol">
+				<Investigate Name="Check out reds" DetectionLevel="Identified" CollaborativeSearch="true">
+					<TargetType>
+						<Type Name="RED" />
+					</TargetType>
+					<WatchType>
+						<Type Name="CARRIER" />
+					</WatchType>
+				</Investigate><BearingTrail TrailBearing="315" Name="">
+					<TrailRange Value="400" Units="m" />
+					<AllowableError Value="100" Units="m" />
+					<TargetType>
+						<Type Name="CARRIER" />
+					</TargetType>
+				</BearingTrail>
+				
+				
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name="f_perf"
+				FuelUsageRate="0">
+				<MinSpeed Value="0" Units="kts" ></MinSpeed>
+				<MaxSpeed Value="50" Units="kts"></MaxSpeed>
+				<AccelerationRate Value="3" Units="kt/s" />
+				<DecelerationRate Value="3" Units="kt/s" />
+				<TurningCircle Value="100" Units="m" />
+			</SurfaceMovementCharacteristics>
+
+		</Surface>
+		<Surface Name="Falcon 2">
+			<Category Type="DESTROYER" Force="BLUE" Environment="SURFACE" ></Category>
+			<SensorFit>
+				<TypedCookieSensor DetectionLevel="Detected">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="2" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" ></Type>
+						<DetectionRange Value="10" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+				<TypedCookieSensor DetectionLevel="Identified">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="30" Units="m" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="BLUE"></Type>
+						<DetectionRange Value="500" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="22" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="0.23" Long="0.98"></shortLocation>
+				</Location>
+				<Speed Value="110" Units="kts" />
+			</Status>
+			<Waterfall Name="LX PAtrol">
+				<Investigate Name="Check out reds" DetectionLevel="Identified" CollaborativeSearch="true">
+					<TargetType>
+						<Type Name="RED" />
+					</TargetType>
+					<WatchType>
+						<Type Name="CARRIER" />
+					</WatchType>
+				</Investigate><BearingTrail TrailBearing="45" Name="">
+					<TrailRange Value="400" Units="m" />
+					<AllowableError Value="100" Units="m" />
+					<TargetType>
+						<Type Name="CARRIER" />
+					</TargetType>
+				</BearingTrail>
+				
+				
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name="f_perf"
+				FuelUsageRate="0">
+				<MinSpeed Value="0" Units="kts" ></MinSpeed>
+				<MaxSpeed Value="50" Units="kts"></MaxSpeed>
+				<AccelerationRate Value="3" Units="kt/s" />
+				<DecelerationRate Value="3" Units="kt/s" />
+				<TurningCircle Value="100" Units="m" />
+			</SurfaceMovementCharacteristics>
+
+		</Surface>
+		<Surface Name="BattleStar">
+			<Category Type="CARRIER" Force="BLUE" Environment="SURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="270" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="0.23" Long="0.99"></shortLocation>
+				</Location>
+				<Speed Value="8" Units="kts" />
+			</Status>
+			<Waterfall Name="MerPatrol">
+				<Sequence>
+				<Move Name="Leg 1" Course="280">
+					<Vector Value="2" Units="km" />
+				</Move>
+				<Move Name="Leg 2" Course="260">
+					<Vector Value="2" Units="km" />
+				</Move>
+				</Sequence>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="kts" />
+				<MaxSpeed Value="13" Units="kts" />
+				<AccelerationRate Value="1" Units="kts/s" />
+				<DecelerationRate Value="1" Units="kts/s" />
+				<TurningCircle Value="400" Units="m" />
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
+				<Delta Units="nm" Value="1" />
+				<colour Value="DARK_GREY" />
+			</grid>
+			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
+				Name="World Default" ScaleMax="100000" ScaleStep="50000" Visible="true">
+				<colour Value="GREY" />
+			</scale>
+		</layer>
+	</DebriefLayer>
+</Scenario>
