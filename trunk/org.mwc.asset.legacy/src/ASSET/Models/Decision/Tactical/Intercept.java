@@ -95,37 +95,36 @@ public class Intercept extends CoreDecision implements java.io.Serializable
 
 		SimpleDemandedStatus demStat = null;
 
-		// throw in a particularly coarse can/can't test
+	// throw in a particularly coarse can/can't test
 		if (ownship.getSpeed().getValueIn(WorldSpeed.M_sec) > target.getSpeed()
 				.getValueIn(WorldSpeed.M_sec))
 		{
 			// yes, we're travelling more quickly than him.
 			// yes, a result is roughly possible
-			double oSpd = ownship.getSpeed().getValueIn(WorldSpeed.M_sec);
-			double tSpd = target.getSpeed().getValueIn(WorldSpeed.M_sec);
-			double tCourse = target.getCourse();
-			WorldVector separation = ownship.getLocation().subtract(
-					target.getLocation());
-			// double separation_metres =
-			// MWC.Algorithms.Conversions.Degs2m(separation.getRange());
-			double brg = MWC.Algorithms.Conversions
-					.Rads2Degs(separation.getBearing());
-			if (brg < 0)
-				brg += 360;
-			if (brg > 360)
-				brg -= 360;
+		double oSpd = ownship.getSpeed().getValueIn(WorldSpeed.M_sec);
+		double tSpd = target.getSpeed().getValueIn(WorldSpeed.M_sec);
+		double tCourse = target.getCourse();
+		WorldVector separation = ownship.getLocation().subtract(
+				target.getLocation());
+		// double separation_metres =
+		// MWC.Algorithms.Conversions.Degs2m(separation.getRange());
+		double brg = MWC.Algorithms.Conversions.Rads2Degs(separation.getBearing());
+		if (brg < 0)
+			brg += 360;
+		if (brg > 360)
+			brg -= 360;
 
-			double p1 = Math.toRadians(tCourse - brg);
-			while (p1 > Math.PI)
-				p1 -= 2 * Math.PI;
+		double p1 = Math.toRadians(tCourse - brg);
+		while (p1 > Math.PI)
+			p1 -= 2 * Math.PI;
 
-			double p2 = tSpd * Math.sin(p1) / oSpd;
-			double p3 = Math.asin(p2);
-			double p4 = -Math.toDegrees(p3) + brg + 180;
-			double res = p4 % 360;
+		double p2 = tSpd * Math.sin(p1) / oSpd;
+		double p3 = Math.asin(p2);
+		double p4 = -Math.toDegrees(p3) + brg + 180;
+		double res = p4 % 360;
 
-			demStat = new SimpleDemandedStatus(time, ownship);
-			demStat.setCourse(res);
+		demStat = new SimpleDemandedStatus(time, ownship);
+		demStat.setCourse(res);
 		}
 
 		return demStat;
@@ -525,8 +524,8 @@ public class Intercept extends CoreDecision implements java.io.Serializable
 				{
 					DemandedStatus res = super.decide(status, chars, demStatus,
 							detections, monitor, time); // To change body of overridden
-																					// methods use File | Settings | File
-																					// Templates.
+					// methods use File | Settings | File
+					// Templates.
 					_demStat = res;
 					return res;
 				}
@@ -646,10 +645,9 @@ public class Intercept extends CoreDecision implements java.io.Serializable
 			assertEquals("we haven't detected target", 1, searcher.getNewDetections()
 					.size(), 0);
 			assertNotNull("we haven't received a new demanded status", _demStat);
-			assertEquals(
-					"we haven't reported properly",
-					"searcher behaviour:Intercept:Continuing to intercept:FFTA",
-					searcher.getActivity());
+			assertEquals("we haven't reported properly",
+					"searcher behaviour:Intercept:Continuing to intercept:FFTA", searcher
+							.getActivity());
 
 			// now check we don't try to intercept target travelling too fast
 			searcher.getStatus().setSpeed(new WorldSpeed(2, WorldSpeed.M_sec));
@@ -659,32 +657,33 @@ public class Intercept extends CoreDecision implements java.io.Serializable
 
 			assertEquals("we haven't detected target", 1, searcher.getNewDetections()
 					.size(), 0);
-		//	assertNull("we received a new demanded status", _demStat);
-//			assertEquals("we haven't reported properly", "inactive", searcher
-//					.getActivity());
-//
-//			// ok, allow speed changes and then see if try to intercept
-//			iA.setSpeedChangeAllowed(true);
-//
-//			cs.step();
-//			cs.step();
-//
-//			assertEquals("we haven't detected target", 1, searcher.getNewDetections()
-//					.size(), 0);
-//			assertNotNull("we haven't received a new demanded status", _demStat);
-//
-//			// give us back a proper speed
-//			// now check we don't try to intercept target travelling too fast
-//			searcher.getStatus().setSpeed(new WorldSpeed(18, WorldSpeed.M_sec));
-//
-//			for (int i = 0; i < 30; i++)
-//			{
-//				cs.step();
-//			}
-//			for (int i = 0; i < 30; i++)
-//			{
-//				cs.step();
-//			}
+			// assertNull("we received a new demanded status", _demStat);
+			// assertEquals("we haven't reported properly", "inactive", searcher
+			// .getActivity());
+			//
+			// // ok, allow speed changes and then see if try to intercept
+			// iA.setSpeedChangeAllowed(true);
+			//
+			// cs.step();
+			// cs.step();
+			//
+			// assertEquals("we haven't detected target", 1,
+			// searcher.getNewDetections()
+			// .size(), 0);
+			// assertNotNull("we haven't received a new demanded status", _demStat);
+			//
+			// // give us back a proper speed
+			// // now check we don't try to intercept target travelling too fast
+			// searcher.getStatus().setSpeed(new WorldSpeed(18, WorldSpeed.M_sec));
+			//
+			// for (int i = 0; i < 30; i++)
+			// {
+			// cs.step();
+			// }
+			// for (int i = 0; i < 30; i++)
+			// {
+			// cs.step();
+			// }
 
 		}
 

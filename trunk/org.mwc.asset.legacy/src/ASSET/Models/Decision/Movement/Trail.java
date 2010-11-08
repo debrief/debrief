@@ -9,6 +9,7 @@ import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
+import ASSET.Scenario.ScenarioActivityMonitor;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
@@ -275,7 +276,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
 				res = new SimpleDemandedStatus(time, status);
 
 				// and calculate what we need to do
-				res = getDemanded(time, status, validDetection);
+				res = getDemanded(time, status, validDetection, monitor);
 
 				// do we want to remember valid detections?
 				if (_stayOnBearing != null)
@@ -378,10 +379,11 @@ public class Trail extends CoreDecision implements java.io.Serializable
 
 	/**
 	 * get the course and speed we need to get back on track
+	 * @param monitor 
 	 */
 	protected DemandedStatus getDemanded(long time,
 			ASSET.Participants.Status status,
-			final ASSET.Models.Detection.DetectionEvent detection)
+			final ASSET.Models.Detection.DetectionEvent detection, ScenarioActivityMonitor monitor)
 	{
 		SimpleDemandedStatus res = new SimpleDemandedStatus(time, status);
 

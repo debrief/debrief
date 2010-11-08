@@ -51,6 +51,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static final boolean _speedChangeAllowed = true;
+
 	/**
 	 * the type of target to investigate
 	 */
@@ -288,6 +290,27 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				Status tgtStat = pt.getStatus();
 				res = Intercept.calculateInterceptCourseFor(status, tgtStat, time);
 
+				// did it work?
+				if (res == null)
+				{
+					// no, do we let ourselves change speed?
+					if (_speedChangeAllowed)
+					{
+						Status newStat = new Status(status);
+						newStat.setSpeed(chars.getMaxSpeed());
+
+						// and try again
+						res = Intercept.calculateInterceptCourseFor(newStat, tgtStat, time);
+
+						// did this work?
+						if (res != null)
+						{
+							// yes, just try to increase speed
+							res.setSpeed(chars.getMaxSpeed());
+						}
+					}
+				}
+				
 				// just check we're capable of catching him
 				if (res != null)
 				{
