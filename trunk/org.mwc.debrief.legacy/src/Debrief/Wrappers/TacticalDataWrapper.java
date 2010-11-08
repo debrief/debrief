@@ -465,7 +465,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			{
 				// compare the names
 				final TacticalDataWrapper sw = (TacticalDataWrapper) o;
-				res = sw.getName().compareTo(this.getName());
+				res = this.getName().compareTo(sw.getName());
 			}
 			else
 			{

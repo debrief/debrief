@@ -24,6 +24,7 @@ import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
+import Debrief.Wrappers.Track.SplittableLayer;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
 import Debrief.Wrappers.Track.WormInHoleOffset;
@@ -1169,7 +1170,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public TrackWrapper()
 	{
-		_mySensors = new BaseLayer(true);
+		_mySensors = new SplittableLayer(true);
 		_mySensors.setName("Sensors");
 		_mySolutions = new BaseLayer(true);
 		_mySolutions.setName("Solutions");

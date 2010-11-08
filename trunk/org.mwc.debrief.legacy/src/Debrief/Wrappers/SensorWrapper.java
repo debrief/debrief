@@ -195,6 +195,22 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	{
 		super(title);
 	}
+	
+	/** create a copy of the supplied sensor wrapper
+	 * 
+	 * @param other wrapper to copy
+	 */
+	public SensorWrapper(final SensorWrapper other)
+	{
+		super(other.getName());
+		this.setTrackName(other.getTrackName());
+		this.setHost(other.getHost());
+		this.setColor(other.getColor());
+		this.setVisible(other.getVisible());
+		this.setWormInHole(other.getWormInHole());
+		this.setSensorOffset(other.getSensorOffset());
+		this.setLineThickness(other.getLineThickness());
+	}
 
 	// //////////////////////////////////////
 	// member methods to meet plain wrapper responsibilities
