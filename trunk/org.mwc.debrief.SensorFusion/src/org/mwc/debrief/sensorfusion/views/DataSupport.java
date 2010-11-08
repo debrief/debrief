@@ -303,8 +303,15 @@ public class DataSupport
 				SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
 				double thisVal = scw.getBearing();
 
-				series.add(create(scw.getTime(), thisVal, scw.getColor()));
-
+				// wrap this in a try/catch - in case there are multiple entries
+				try
+				{
+					series.add(create(scw.getTime(), thisVal, scw.getColor()));
+				}
+				catch (Exception e)
+				{
+					// no probs, just ignore the new value
+				}
 			}
 
 			if (!series.isEmpty())
