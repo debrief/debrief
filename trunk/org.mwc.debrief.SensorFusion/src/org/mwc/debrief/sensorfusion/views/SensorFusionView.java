@@ -86,6 +86,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	protected ISelectionChangedListener _selectionChangeListener;
 
+	protected ISelectionProvider _currentProvider;
+
 	/**
 	 * The constructor.
 	 */
@@ -95,7 +97,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_plotRenderer = new FusionPlotRenderer(this);
 		_trackIndex = new HashMap<SensorWrapper, SensorSeries>();
 	}
-	
+
 	private SensorFusionView getMe()
 	{
 		return this;
@@ -114,8 +116,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 						// aah, just check it's not us
 						if (part != getMe())
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
-							iS.addSelectionChangedListener(_selectionChangeListener);
+							startListeningTo((ISelectionProvider) part);
 						}
 					}
 				});
@@ -128,8 +129,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 						// aah, just check it's not is
 						if (part != getMe())
 						{
-							ISelectionProvider iS = (ISelectionProvider) part;
-							iS.removeSelectionChangedListener(_selectionChangeListener);
+							stopListeningTo((ISelectionProvider) part);
 						}
 					}
 				});
@@ -195,9 +195,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 									}
 								};
 
-							_currentLayers = (Layers) part;
-							_currentLayers.addDataModifiedListener(_layerListener);
-							_currentLayers.addDataReformattedListener(_layerListener);
+							startListeningTo((Layers) part);
 						}
 					}
 				});
@@ -210,13 +208,45 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 					{
 						if (part == _currentLayers)
 						{
-							_currentLayers.removeDataModifiedListener(_layerListener);
-							_currentLayers.removeDataReformattedListener(_layerListener);
-							_currentLayers = null;
+							stopListeningTo((Layers) part);
 						}
 					}
 				});
 
+		// ok we're all ready now. just try and see if the current part is valid
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+				.getActivePage());
+
+	}
+
+	protected void startListeningTo(Layers part)
+	{
+		_currentLayers = part;
+		_currentLayers.addDataModifiedListener(_layerListener);
+		_currentLayers.addDataReformattedListener(_layerListener);
+	}
+
+	protected void stopListeningTo(Layers part)
+	{
+		if (_currentLayers != null)
+		{
+			_currentLayers.removeDataModifiedListener(_layerListener);
+			_currentLayers.removeDataReformattedListener(_layerListener);
+		}
+		_currentLayers = null;
+	}
+
+	protected void startListeningTo(ISelectionProvider part)
+	{
+		_currentProvider = part;
+		_currentProvider.addSelectionChangedListener(_selectionChangeListener);
+	}
+
+	protected void stopListeningTo(ISelectionProvider part)
+	{
+		if (_currentProvider != null)
+			_currentProvider.removeSelectionChangedListener(_selectionChangeListener);
+		_currentProvider = null;
 	}
 
 	protected void storeDetails(TrackManager provider, IWorkbenchPart parentPart)
@@ -274,7 +304,6 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 		makeActions();
 		contributeToActionBars();
-		setupListeners();
 
 		// and the selection provider bits
 		_selectionHelper = new SelectionHelper();
@@ -375,19 +404,34 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 								{
 									processingThese = true;
 									_selectedTracks.removeAllElements();
-									
+
 								}
 								SensorSeries thisSeries = _trackIndex.get(ed);
 								_selectedTracks.add(thisSeries);
 							}
 						}
 					}
-					if(processingThese)
+					if (processingThese)
 						redrawPlot();
 				}
 			}
 		};
+		
+		// and sort out the listeners
+		setupListeners();
+		
+		
 
+	}
+
+	@Override
+	public void dispose()
+	{
+		stopListeningTo(_currentProvider);
+		stopListeningTo(_currentLayers);
+		_myPartMonitor.ditch();
+		
+		super.dispose();
 	}
 
 	protected void updatedSelection()
@@ -442,8 +486,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	protected void resetPlot()
 	{
-		_myChartFrame.getChart().getXYPlot().setDataset(null);
-		_myChartFrame.getChart().setTitle("Pending");
+		if (!_myChartFrame.isDisposed())
+		{
+			_myChartFrame.getChart().getXYPlot().setDataset(null);
+			_myChartFrame.getChart().setTitle("Pending");
+		}
 	}
 
 	// protected void resetData()
