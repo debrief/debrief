@@ -60,15 +60,27 @@
 				</TargetType>
 			</Watch>
 		</PlotInvestigationSubjectObserver>
-		<PlotSensorObserver Name="merlin rings" Active="true">
+		<PlotSensorObserver Name="red rings" Active="true">
 			<Target>
 				<TargetType>
-					<Type Name="OILER" />
+					<Type Name="CARRIER" />
 				</TargetType>
 			</Target>
 			<Watch>
 				<TargetType>
-					<Type Name="MPA" />
+					<Type Name="RED" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+		<PlotSensorObserver Name="blue rings" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
 				</TargetType>
 			</Watch>
 		</PlotSensorObserver>

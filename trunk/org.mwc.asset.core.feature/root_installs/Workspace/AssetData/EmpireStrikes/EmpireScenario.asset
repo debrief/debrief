@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_scenario" xmlns="http://www.mwc.org/asset"
 	ShowSymbol="false" ShowActivity="true" ShowName="false" ShowStatus="true">
-	<StepTime Units="seconds" Value="5" />
+	<StepTime Units="seconds" Value="10" />
 	<Participants>
 		<Surface Name="Tie">
 			<Category Type="FRIGATE" Force="RED" Environment="SURFACE"></Category>
@@ -13,7 +13,7 @@
 				</TypedCookieSensor></SensorFit>
 			<Status Course="18" Fuel="100">
 				<Location>
-					<shortLocation Lat="0.24" Long="0.93"></shortLocation>
+					<shortLocation Lat="0.24" Long="0.91"></shortLocation>
 				</Location>
 				<Speed Value="0.0" Units="m/s"></Speed>
 			</Status>
@@ -27,9 +27,9 @@
 			<SurfaceMovementCharacteristics Name="f_perf"
 				FuelUsageRate="0">
 				<MinSpeed Value="0" Units="kts" ></MinSpeed>
-				<MaxSpeed Value="50" Units="kts"></MaxSpeed>
-				<AccelerationRate Value="3" Units="kt/s" />
-				<DecelerationRate Value="3" Units="kt/s" />
+				<MaxSpeed Value="40" Units="kts"></MaxSpeed>
+				<AccelerationRate Value="0.5" Units="kt/s" />
+				<DecelerationRate Value="3" Units="kt/s" ></DecelerationRate>
 				<TurningCircle Value="100" Units="m" />
 			</SurfaceMovementCharacteristics>
 		</Surface>
@@ -64,7 +64,7 @@
 				<Speed Value="110" Units="kts" />
 			</Status>
 			<Waterfall Name="LX PAtrol">
-				<Investigate Name="Check out reds" DetectionLevel="Identified" CollaborativeSearch="true">
+				<Investigate Name="Check out reds" DetectionLevel="Identified" CollaborativeSearch="true" IsActive="false">
 					<TargetType>
 						<Type Name="RED" />
 					</TargetType>
@@ -85,7 +85,7 @@
 				FuelUsageRate="0">
 				<MinSpeed Value="0" Units="kts" ></MinSpeed>
 				<MaxSpeed Value="50" Units="kts"></MaxSpeed>
-				<AccelerationRate Value="3" Units="kt/s" />
+				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="3" Units="kt/s" />
 				<TurningCircle Value="100" Units="m" />
 			</SurfaceMovementCharacteristics>
@@ -143,7 +143,7 @@
 				FuelUsageRate="0">
 				<MinSpeed Value="0" Units="kts" ></MinSpeed>
 				<MaxSpeed Value="50" Units="kts"></MaxSpeed>
-				<AccelerationRate Value="3" Units="kt/s" />
+				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="3" Units="kt/s" />
 				<TurningCircle Value="100" Units="m" />
 			</SurfaceMovementCharacteristics>
