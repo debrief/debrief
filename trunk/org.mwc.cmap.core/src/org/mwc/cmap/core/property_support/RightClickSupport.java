@@ -373,12 +373,15 @@ public class RightClickSupport
 		for (int cnta = 0; cnta < a.length; cnta++)
 		{
 			MethodDescriptor thisP = a[cnta];
-			for (int cntb = 0; cntb < b.length; cntb++)
+			if (b != null)
 			{
-				MethodDescriptor thatP = b[cntb];
-				if (thisP.getDisplayName().equals(thatP.getDisplayName()))
+				for (int cntb = 0; cntb < b.length; cntb++)
 				{
-					res.add(thisP);
+					MethodDescriptor thatP = b[cntb];
+					if (thisP.getDisplayName().equals(thatP.getDisplayName()))
+					{
+						res.add(thisP);
+					}
 				}
 			}
 		}
@@ -744,9 +747,10 @@ public class RightClickSupport
 					{
 						try
 						{
-							// hey, since this is a radio button, we get two events when the 
-							// selection changes - one for the value being unset, and the other
-							// for the value being set.  So just fire for the new value (the
+							// hey, since this is a radio button, we get two events when the
+							// selection changes - one for the value being unset, and the
+							// other
+							// for the value being set. So just fire for the new value (the
 							// one that's checked)
 							if (isChecked())
 							{
@@ -1099,8 +1103,7 @@ public class RightClickSupport
 			}
 			catch (IntrospectionException e)
 			{
-				CorePlugin.logError(Status.ERROR,
-						"Whilst doing tests", e);
+				CorePlugin.logError(Status.ERROR, "Whilst doing tests", e);
 				assertTrue("threw some error", false);
 			}
 		}
