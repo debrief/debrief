@@ -35,17 +35,17 @@ public class SensorsPlottable extends BasePlottable
 		{
 			SensorList bl = (SensorList) getModel();
 			Collection<SensorType> coll = bl.getSensors();
-			res = new SensorWrapper(coll.iterator());
+			res = new SensorPlottableWrapper(coll.iterator());
 		}
 
 		return res;
 	}
 	
-	public static final class SensorWrapper implements java.util.Enumeration<Editable>
+	public static final class SensorPlottableWrapper implements java.util.Enumeration<Editable>
 	{
 		private final Iterator<SensorType> _val;
 
-		public SensorWrapper(final Iterator<SensorType> iterator)
+		public SensorPlottableWrapper(final Iterator<SensorType> iterator)
 		{
 			_val = iterator;
 		}
