@@ -22,11 +22,11 @@
 	</context>		
 	<context id="TrackShifting">
 		<description>This panel displays bearing errors between tracks with sensor data </description>
-		<topic href="html/legacy/sensor_data.html#BulkSensorData" label="How to manage bulk sensor data"/>
+		<topic href="html/legacy/formatting_data.html#track_shifting" label="How to shift-tracks"/>
 	</context>		
 	<context id="BulkSensorData">
 		<description>This panel shows offers tools to ease the task of managing lots of sensor data</description>
-		<topic href="html/legacy/analysing_data.html#the_tote_area" label="Analysing track data"/>
+		<topic href="html/legacy/sensor_data.html#BulkSensorData" label="How to manage bulk sensor data"/>
 	</context>		
 	<context id="TrackTote">
 		<description>This panel shows data calculated from the current state of the primary and secondary tracs</description>

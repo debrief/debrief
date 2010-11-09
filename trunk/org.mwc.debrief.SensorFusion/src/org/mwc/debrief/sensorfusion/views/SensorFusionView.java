@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -328,6 +329,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		// declare our context sensitive help
 		CorePlugin.declareContextHelp(parent, 
 				"org.mwc.debrief.help.BulkSensorData");
+		
 
 		
 		parent.setLayout(new FillLayout());
@@ -478,6 +480,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(_useOriginalColors);
 		bars.getToolBarManager().add(_doSplit);
+		// and the help link
+		bars.getToolBarManager().add(new Separator());
+		bars.getToolBarManager().add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData", null, this));
 	}
 
 	private void makeActions()
