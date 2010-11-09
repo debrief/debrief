@@ -1833,7 +1833,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		res.append(_myFormat.format(theTime));
 
 		DecimalFormat microsFormat = new DecimalFormat("000000");
-		DecimalFormat millisFormat = new DecimalFormat("000");
+	//	DecimalFormat millisFormat = new DecimalFormat("000");
 
 		// do we have micros?
 		if (micros % 1000 > 0)
@@ -1845,19 +1845,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		else
 		{
 			// do we have millis?
-			if (micros % 1000000 > 0)
-			{
-				// yes, convert the value to millis
-
-				long millis = micros = (micros % 1000000) / 1000;
-
-				res.append(".");
-				res.append(millisFormat.format(millis));
-			}
-			else
-			{
-				// just use the normal output
-			}
+//			if (micros % 1000000 > 0)
+//			{
+//				// yes, convert the value to millis
+//
+//				long millis = micros = (micros % 1000000) / 1000;
+//
+//				res.append(".");
+//				res.append(millisFormat.format(millis));
+//			}
+//			else
+//			{
+//				// just use the normal output
+//			}
 		}
 
 		return res.toString();
