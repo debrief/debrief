@@ -325,6 +325,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_selectionHelper = new SelectionHelper();
 		getSite().setSelectionProvider(_selectionHelper);
 
+		// declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, 
+				"org.mwc.debrief.help.BulkSensorData");
+
+		
 		parent.setLayout(new FillLayout());
 
 		// ok, let's mockup the UI

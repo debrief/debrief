@@ -117,19 +117,19 @@ public class SplittableLayer extends BaseLayer
 				}
 			}
 
-			// we've looped through, now do the tidying
-			Iterator<SensorWrapper> ditches = toDitch.iterator();
-			while (ditches.hasNext())
-			{
-				SensorWrapper sensorWrapper = (SensorWrapper) ditches.next();
-				this.removeElement(sensorWrapper);
-			}
-			Iterator<SensorWrapper> adds = toAdd.iterator();
-			while (adds.hasNext())
-			{
-				SensorWrapper sensorWrapper = (SensorWrapper) adds.next();
-				this.add(sensorWrapper);
-			}
+		}
+		// we've looped through, now do the tidying
+		Iterator<SensorWrapper> ditches = toDitch.iterator();
+		while (ditches.hasNext())
+		{
+			SensorWrapper sensorWrapper = (SensorWrapper) ditches.next();
+			this.removeElement(sensorWrapper);
+		}
+		Iterator<SensorWrapper> adds = toAdd.iterator();
+		while (adds.hasNext())
+		{
+			SensorWrapper sensorWrapper = (SensorWrapper) adds.next();
+			this.add(sensorWrapper);
 		}
 
 	}
