@@ -5251,6 +5251,82 @@ Platform C,-551</screen></para>
                             </listitem>
                         </itemizedlist></para>
                 </sect2>
+                <sect2 id="BulkSensorData">
+                    <title>Managing high volumes of sensor data</title>
+                    <sect3>
+                        <title>Introduction</title>
+                        <para>Modern command systems produce high volumes of sensor data, and a
+                            command system that just uses a 3-digit track counter can easily go
+                            'around' the clock when allocating track numbers to contacts.</para>
+                        <para>Debrief provides capabilities to both ease the challenge of deciding
+                            which sensor data is related to a specific target, and to automatically
+                            split a single sensor track in multiple tracks when they clearly relate
+                            to different targets.</para>
+                    </sect3>
+                    <sect3>
+                        <title>Filter sensor data of interest</title>
+                        <para>With lots of sensor data it can be increasingly difficult to determine
+                            which tracks should be made visible - the plot below shows just 12
+                            visible tracks - it's possible to have many hundreds of tracks..</para>
+                        <para>
+                            <screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/LotsOfTracks.png" width="100%"/>
+                                    </imageobject>
+                                </mediaobject>
+                            </screenshot>
+                        </para>
+                        <para>The new <guilabel>Bulk Sensor Manager</guilabel> offers an opportunity
+                            to determine which sensor data has a direction near to one of the other
+                            tracks currently loaded in Debrief.  Before opening the Bulk Sensor
+                            Manager it's worth telling Debrief which is your 'ownship' track, and
+                            which are the tracks of interest.  Do this by marking tracks as primary
+                            and secondary in the Track Tote (see <xref linkend="assigning_tracks"
+                            />).   Once you have a primary track set, select <guilabel>Bulk Sensor
+                                Manager</guilabel> from the <guilabel>Window/Show View</guilabel>
+                            menu. You'll see a plot like the one below:<screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/BulkSensorManager.png"
+                                            width="100%"/>
+                                    </imageobject>
+                                </mediaobject>
+                            </screenshot></para>
+                        <para>As you'll see, the view shows multiple series of track data.
+                            Currently visible tracks are displayed in bold lines (the thick green
+                            line in the screenshot) - so, you'll typically be trying to determine
+                            which blocks of sensor data are close to/similar to target tracks.
+                            Sensor data is shown with symbols if it's visible in the plot (see the
+                            pink line near the centre-left of the image).  Clicking on a block of
+                            sensor data in the view also selects that sensor data in the Layer
+                            Manager (though on occasion you need to expand the
+                                <guilabel>Sensors</guilabel> folder in the Layer Manager.  As blocks
+                            of sensor data are selected, they are shown in black in the view.
+                            Tracks can be multiple-selected with the <keysym>&lt;ctrl></keysym>
+                            key.</para>
+                        <para>Also note that whilst by default comes up with a unique color/symbol
+                            combination for each block of sensor data, you can click on the 'Show
+                            original colours' palette icon at the top of the view.  This will switch
+                            the Bulk Sensor Manager to using the sensor data color as configured via
+                            the sensor manager. </para>
+                    </sect3>
+                    <sect3>
+                        <title>Automatically split sensor tracks</title>
+                        <para>For data from a command system that frequently 'wraps around' the
+                            track counter, when the data is read in Debrief will mistakenly assume
+                            that the data is all for the same contact: so the data will show as a
+                            continuous series to the left of the chart, then there'll be a jump over
+                            to were that track number is used again against another contact on the
+                            right hand side.</para>
+                        <para>Debrief offers a tool automatically split sensor data - the scissors
+                            icon at the top of the Bulk Sensor Manager offers 'Auto-split sensor
+                            segments'.  It will pass through all of the sensor tracks in the primary
+                            track, and if there is a jump of more than 15 seconds Debrief splits the
+                            successive data into a new tracks.  The original and new tracks are then
+                            renamed with a "_1", "_2" suffix.</para>
+                    </sect3>
+                </sect2>
                 <sect2 id="manage_ambiguous">
                     <title>Managing ambiguous data</title>
                     <para>Whilst hull-mounted sensor typically produce a single bearing to their
