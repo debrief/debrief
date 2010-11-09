@@ -42,7 +42,6 @@ import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
-import Debrief.Wrappers.TacticalDataWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -244,16 +243,17 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			// is this one we can watch?
 			if (thisE instanceof WatchableList)
 			{
+
+				// NOTE: we used to exclude sensor data from this calc,
+				// now that we're enlightened we include it - cool.
 				// aaah, is this a sensorwrapper or tmawrapper?
-				if (thisE instanceof TacticalDataWrapper)
-				{
-					duffItemFound = true;
-				}
-				else
-				{
-					// cool, go for it
-					candidates.add(thisE);
-				}
+				// if (thisE instanceof TacticalDataWrapper)
+				// {
+				// duffItemFound = true;
+				// }
+				// else
+				// cool, go for it
+				candidates.add(thisE);
 			}
 			else
 				duffItemFound = true;
@@ -282,7 +282,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 						IWorkbench wb = PlatformUI.getWorkbench();
 						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 						IWorkbenchPage page = win.getActivePage();
-						
+
 						IEditorPart editor = page.getActiveEditor();
 
 						// get ready for the start/end times
@@ -304,51 +304,15 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 										title, message);
 								return;
 							}
-							
-							// have a go at determining the plot id
-							TimeProvider tp = (TimeProvider) editor.getAdapter(TimeProvider.class);
-							String thePlotId = null;
-							if(tp != null)
-							{
-								thePlotId = tp.getId();
-							}
-
-							IAdaptable timeC = (IAdaptable) timeRef.getView(true);
-
-							// that's it, now get the data
-							TimePeriod period = (TimePeriod) timeC
-									.getAdapter(TimePeriod.class);
-							if (period == null)
-							{
-								CorePlugin
-										.logError(
-												Status.ERROR,
-												"TimeController view no longer provides TimePeriod adapter",
-												null);
-								return;
-							}
-							
-							startTime = period.getStartDTG();
-							endTime = period.getEndDTG();
-
-							if ((startTime.greaterThan(endTime))
-									|| (startTime.equals(endTime)))
-							{
-								String title = "XY Plot";
-								String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
-								MessageDialog.openError(Display.getCurrent().getActiveShell(),
-										title, message);
-								return;
-							}
 
 							// ok, sort out what we're plotting
 							// find out what the user wants to view
 							ShowTimeVariablePlot3.CalculationHolder theHolder = getChoice();
-							
+
 							// did user cancel?
-							if(theHolder == null)
+							if (theHolder == null)
 								return;
-							
+
 							// retrieve the necessary input data
 							toteCalculation myOperation = theHolder._theCalc;
 
@@ -397,6 +361,54 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								theTracks.add((WatchableList) thisS);
 							}
 
+							// ///////////////////////////////////
+							// NOW for the time range
+							// ///////////////////////////////////
+
+							// have a go at determining the plot id
+							TimeProvider tp = (TimeProvider) editor
+									.getAdapter(TimeProvider.class);
+							String thePlotId = null;
+							if (tp != null)
+							{
+								thePlotId = tp.getId();
+							}
+
+							IAdaptable timeC = (IAdaptable) timeRef.getView(true);
+
+							// that's it, now get the data
+							TimePeriod period = (TimePeriod) timeC
+									.getAdapter(TimePeriod.class);
+							if (period == null)
+							{
+								CorePlugin
+										.logError(
+												Status.ERROR,
+												"TimeController view no longer provides TimePeriod adapter",
+												null);
+								return;
+							}
+
+							startTime = period.getStartDTG();
+							endTime = period.getEndDTG();
+
+							if ((startTime.greaterThan(endTime))
+									|| (startTime.equals(endTime)))
+							{
+								String title = "XY Plot";
+								String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
+								MessageDialog.openError(Display.getCurrent().getActiveShell(),
+										title, message);
+								return;
+							}
+
+							// aah. does the primary track have it's own time period?
+							if (thePrimary.getStartDTG() != null)
+								startTime = thePrimary.getStartDTG();
+
+							if (thePrimary.getEndDTG() != null)
+								endTime = thePrimary.getEndDTG();
+
 							// right, now for the data
 							AbstractSeriesDataset ds = ShowTimeVariablePlot3.getDataSeries(
 									thePrimary, theHolder, theTracks, startTime, endTime, null);
@@ -405,7 +417,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							IViewReference plotRef = page.findViewReference(plotId, theTitle);
 							XYPlotView plotter = (XYPlotView) plotRef.getView(true);
 							plotter.showPlot(theTitle, ds, myOperation.toString() + " ("
-									+ myOperation.getUnits() + ")", theHolder._theFormatter, thePlotId);
+									+ myOperation.getUnits() + ")", theHolder._theFormatter,
+									thePlotId);
 						}
 						catch (PartInitException e)
 						{
