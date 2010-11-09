@@ -38,6 +38,8 @@ import org.mwc.debrief.sensorfusion.views.FusionPlotRenderer.FusionHelper;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.SplittableLayer;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -88,6 +90,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	protected ISelectionProvider _currentProvider;
 
+	private Action _doSplit;
+
 	/**
 	 * The constructor.
 	 */
@@ -116,6 +120,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 						// aah, just check it's not us
 						if (part != getMe())
 						{
+							if(_currentProvider != null)
+								stopListeningTo(_currentProvider);
+							
 							startListeningTo((ISelectionProvider) part);
 						}
 					}
@@ -185,6 +192,8 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 									@Override
 									public void dataModified(Layers theData, Layer changedLayer)
 									{
+										// redo the data
+										recalculateData();
 									}
 
 									@Override
@@ -195,6 +204,11 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 									}
 								};
 
+							// ok, stop listening to the current one
+							if (_currentLayers != null)
+								stopListeningTo(_currentLayers);
+
+							// and start listening to the new one
 							startListeningTo((Layers) part);
 						}
 					}
@@ -224,6 +238,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_currentLayers = part;
 		_currentLayers.addDataModifiedListener(_layerListener);
 		_currentLayers.addDataReformattedListener(_layerListener);
+		_currentLayers.addDataExtendedListener(_layerListener);
 	}
 
 	protected void stopListeningTo(Layers part)
@@ -232,6 +247,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		{
 			_currentLayers.removeDataModifiedListener(_layerListener);
 			_currentLayers.removeDataReformattedListener(_layerListener);
+			_currentLayers.removeDataExtendedListener(_layerListener);
 		}
 		_currentLayers = null;
 	}
@@ -416,11 +432,9 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				}
 			}
 		};
-		
+
 		// and sort out the listeners
 		setupListeners();
-		
-		
 
 	}
 
@@ -430,7 +444,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		stopListeningTo(_currentProvider);
 		stopListeningTo(_currentLayers);
 		_myPartMonitor.ditch();
-		
+
 		super.dispose();
 	}
 
@@ -458,11 +472,12 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	{
 		IActionBars bars = getViewSite().getActionBars();
 		bars.getToolBarManager().add(_useOriginalColors);
+		bars.getToolBarManager().add(_doSplit);
 	}
 
 	private void makeActions()
 	{
-		_useOriginalColors = new Action("Original colors", SWT.TOGGLE)
+		_useOriginalColors = new Action("Plot tracks using original colors", SWT.TOGGLE)
 		{
 			@Override
 			public void run()
@@ -474,6 +489,39 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		};
 		_useOriginalColors.setImageDescriptor(Activator
 				.getImageDescriptor("icons/ColorPalette.png"));
+
+		_doSplit = new Action("Auto-split sensor segments", SWT.NONE)
+		{
+			@Override
+			public void run()
+			{
+				// we don't need to do any fancy processing. If we trigger redraw,
+				// it will pick up the new value
+				splitTracks();
+			}
+
+		};
+		_doSplit.setImageDescriptor(Activator
+				.getImageDescriptor("icons/scissors.png"));
+	}
+
+	protected void splitTracks()
+	{
+		// ok, go get the primary track
+		if (_trackData != null)
+		{
+			TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
+			BaseLayer sensors = primary.getSensors();
+			if (sensors instanceof SplittableLayer)
+			{
+				SplittableLayer youSplitter = (SplittableLayer) sensors;
+				youSplitter.AutoSplitTracks();
+
+				// ok, fire off a layers extended event to share the good news
+				if (_currentLayers != null)
+					_currentLayers.fireModified(primary);
+			}
+		}
 	}
 
 	protected void redrawPlot()

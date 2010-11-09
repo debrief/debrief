@@ -57,7 +57,7 @@ public class SplittableLayer extends BaseLayer
 			SensorWrapper thisWrapper = (SensorWrapper) iter.nextElement();
 
 			// get ready to store these items
-			Vector<SensorWrapper> childLayers = new Vector<SensorWrapper>();
+			final Vector<SensorWrapper> childLayers = new Vector<SensorWrapper>();
 
 			SensorWrapper newTarget = new SensorWrapper(thisWrapper);
 			childLayers.add(newTarget);
@@ -67,7 +67,7 @@ public class SplittableLayer extends BaseLayer
 			Enumeration<Editable> theseCuts = thisWrapper.elements();
 			while (theseCuts.hasMoreElements())
 			{
-				SensorContactWrapper thisCut = (SensorContactWrapper) theseCuts
+				final SensorContactWrapper thisCut = (SensorContactWrapper) theseCuts
 						.nextElement();
 
 				// do we have a last one
