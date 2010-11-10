@@ -547,6 +547,12 @@ public class XYPlotView extends ViewPart
 				String dateVal = _df.format(newDate);
 				String theMessage =  " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
+				
+				// aah, now we have to add and then remove the annotation in order
+				// for the new text value to be displayed. Watch and learn...
+				_thePlot.removeAnnotation(annot);
+				_thePlot.addAnnotation(annot);
+				
 			}
 		});
 

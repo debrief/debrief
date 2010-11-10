@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Mon Aug 02 14:30:21 BST 2010" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Mon Aug 02 11:18:50 BST 2010"/>
+<plot Created="Tue Nov 09 13:15:41 GMT 2010" Name="Debrief Plot" PlotId="1289308489415">
+<details Text="Saved with Debrief version dated Tue Nov 09 13:14:22 GMT 2010"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineThickness="2" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
-<sensor LineThickness="1" Name="SENSOR_A" TrackName="NONSUCH" Visible="true" WormInHole="false">
+<sensor LineThickness="1" Name="SENSOR_A_1" TrackName="NONSUCH" Visible="true" WormInHole="false">
 <colour Value="BLUE"/>
-<Offset Units="yds" Value="0.000"/>
+<Offset Units="yds" Value="0.0000000"/>
 <sensor_contact AmbiguousBearing="59.300" Bearing="300.800" Dtg="090722 041522" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0415" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <colour Value="GREEN"/>
 </sensor_contact>
@@ -21,34 +21,10 @@
 <sensor_contact AmbiguousBearing="60.000" Bearing="300.000" Dtg="090722 042036" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0420" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <colour Value="GREEN"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="60.800" Bearing="299.300" Dtg="090722 042312" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0423" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="GREEN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="61.300" Bearing="298.800" Dtg="090722 042535" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0425" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="YELLOW"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="61.300" Bearing="298.800" Dtg="090722 042711" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0427" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="YELLOW"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="61.800" Bearing="298.300" Dtg="090722 042918" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0429" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="BROWN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="62.000" Bearing="298.000" Dtg="090722 043134" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0431" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="BROWN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="62.300" Bearing="298.134" Dtg="090722 043409" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0434" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="BROWN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="62.300" Bearing="297.800" Dtg="090722 043557" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0435" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="BROWN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="62.500" Bearing="297.500" Dtg="090722 043756" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0437" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="BROWN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="63.000" Bearing="297.000" Dtg="090722 044000" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0440" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
-<colour Value="BROWN"/>
-</sensor_contact>
-<sensor_contact AmbiguousBearing="63.500" Bearing="296.500" Dtg="090722 044127" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0441" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
+</sensor>
+<sensor LineThickness="1" Name="SENSOR_A_2" TrackName="NONSUCH" Visible="true" WormInHole="false">
+<colour Value="BLUE"/>
+<Offset Units="yds" Value="0.0000000"/>
 <sensor_contact AmbiguousBearing="63.600" Bearing="296.200" Dtg="090722 044232" Frequency="49.960" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0442" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="63.700" Bearing="295.800" Dtg="090722 044312" Frequency="50.060" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0443" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="64.500" Bearing="295.500" Dtg="090722 044319" Frequency="50.060" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0443" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
@@ -5111,7 +5087,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" Name="TMA_220415.22" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" Symbol="Submarine" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="TMA_220415.22" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
 <RelativeTMASegment BaseFrequency="0.000" CourseDegs="224.495" HostTrack="NONSUCH" LineStyle="Solid" Name="220415.22" Visible="true">
@@ -5147,7 +5123,7 @@
 </fix>
 <Speed Units="kts" Value="4.947"/>
 <Offset BearingDegs="300.800">
-<Range Units="degs" Value="0.033"/>
+<Range Units="degs" Value="0.0330000"/>
 </Offset>
 </RelativeTMASegment>
 <TrackSegment LineStyle="Dotted" Name="infill_1559" PlotRelative="true" Visible="true">
@@ -5203,7 +5179,7 @@
 </fix>
 <Speed Units="kts" Value="4.964"/>
 <Offset BearingDegs="-62.219">
-<Range Units="degs" Value="0.031"/>
+<Range Units="degs" Value="0.0310000"/>
 </Offset>
 </RelativeTMASegment>
 <TrackSegment LineStyle="Dotted" Name="infill_1559" PlotRelative="true" Visible="true">
@@ -5439,7 +5415,7 @@
 </fix>
 <Speed Units="kts" Value="4.005"/>
 <Offset BearingDegs="-69.379">
-<Range Units="degs" Value="0.031"/>
+<Range Units="degs" Value="0.0310000"/>
 </Offset>
 </RelativeTMASegment>
 <SegmentList/>
