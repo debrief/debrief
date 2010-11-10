@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Time-Variable plot
 Bundle-SymbolicName: org.mwc.cmap.xyplot; singleton:=true
-Bundle-Version: 1.0.26
+Bundle-Version: 1.0.27
 Bundle-ClassPath: XYPlot.jar
 Bundle-Activator: org.mwc.cmap.xyplot.XYPlotPlugin
 Bundle-Vendor: MWC
