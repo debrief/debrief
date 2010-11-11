@@ -17,7 +17,7 @@ public class MouseClickProblemDemo extends ApplicationFrame
 
 	/**
 	 * 
-	 */
+	 */	
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -43,12 +43,12 @@ public class MouseClickProblemDemo extends ApplicationFrame
 		dataset.addSeries(s1);
 
 		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				"Mouse click listener demo", // title
-				"Date", // x-axis label
-				"Price Per Unit", // y-axis label
+				"[Alt]-click to switch orientation", // title
+				"Time axis", // x-axis label
+				"Value axis", // y-axis label
 				dataset, // data
-				true, // create legend?
-				true, // generate tooltips?
+				false, // create legend?
+				false, // generate tooltips?
 				false // generate URLs?
 				);
 		
