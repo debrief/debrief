@@ -45,7 +45,7 @@ public class DataSupport
 	public static JFreeChart createChart(XYDataset dataset)
 	{
 
-		JFreeChart chart = ChartFactory.createTimeSeriesChart("Bearing Fusion", // title
+		JFreeChart chart = ChartFactory.createTimeSeriesChart("Bearing Management", // title
 				"Time", // x-axis label
 				"Bearing", // y-axis label
 				dataset, // data
