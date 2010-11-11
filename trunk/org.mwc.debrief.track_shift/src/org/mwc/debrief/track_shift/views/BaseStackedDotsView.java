@@ -324,6 +324,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				String dateVal = _df.format(newDate);
 				String theMessage =  " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
+				
+				_linePlot.removeAnnotation(annot);
+				_linePlot.addAnnotation(annot);
 			}
 		});
 
@@ -578,7 +581,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * the track has been moved, update the dots
 	 */
 	void updateStackedDots(boolean updateDoublets)
-	{
+	{	
 
 		// update the current datasets
 		updateData(updateDoublets);
