@@ -6,7 +6,7 @@
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.sensorfusion.views.SensorFusionView"
-            icon="icons/merge.gif"
+            icon="icons/merge.png"
             id="org.mwc.debrief.SensorFusion"
             name="Bulk Sensor Manager">
       </view>

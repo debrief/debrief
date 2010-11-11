@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -62,6 +63,8 @@ public class DataSupport
 		plot.setRangeGridlinePaint(Color.white);
 		plot.setDomainCrosshairVisible(false);
 		plot.setRangeCrosshairVisible(false);
+		
+		plot.setOrientation(PlotOrientation.HORIZONTAL);
 
 		XYItemRenderer r = plot.getRenderer();
 		if (r instanceof XYLineAndShapeRenderer)
