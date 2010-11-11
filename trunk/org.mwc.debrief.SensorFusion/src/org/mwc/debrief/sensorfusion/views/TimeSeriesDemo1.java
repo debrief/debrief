@@ -9,9 +9,9 @@ package org.mwc.debrief.sensorfusion.views;
 
 import java.text.SimpleDateFormat;
 
-import javax.swing.JPanel;
-
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -23,7 +23,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 
 /**
  * An example of a time series chart.  For the most part, default settings are
@@ -48,8 +47,20 @@ public class TimeSeriesDemo1 extends ApplicationFrame {
      */
     public TimeSeriesDemo1(String title) {
         super(title);
-        JPanel chartPanel = createDemoPanel();
+				System.out.println("prepped");
+        ChartPanel chartPanel = createDemoPanel();
         chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+        
+        chartPanel.addChartMouseListener(new ChartMouseListener()
+				{
+					public void chartMouseMoved(ChartMouseEvent arg0)
+					{
+					}
+					public void chartMouseClicked(ChartMouseEvent arg0)
+					{
+						System.out.println("clicked");
+					}
+				});
         setContentPane(chartPanel);
         
      
@@ -274,7 +285,7 @@ public class TimeSeriesDemo1 extends ApplicationFrame {
      *
      * @return A panel.
      */
-    public static JPanel createDemoPanel() {
+    public static ChartPanel createDemoPanel() {
         JFreeChart chart = createChart(createDataset());
         return new ChartPanel(chart);
     }
