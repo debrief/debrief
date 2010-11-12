@@ -46,7 +46,8 @@ public class SimpleDemandedStatus extends DemandedStatus
 		String res = "";
 
 		res += "[t:" + super.getTime() + " crse:" + (int) this.getCourse()
-				+ " spd:" + (int) this.getSpeed() + " ht:" + (int) this.getHeight() + "]";
+				+ " spd:" + (int) this.getSpeed() + " ht:" + (int) this.getHeight()
+				+ "]";
 		return res;
 	}
 
@@ -62,8 +63,10 @@ public class SimpleDemandedStatus extends DemandedStatus
 	{
 		this(status.getId(), time);
 		setCourse(status.getCourse());
-		setSpeed(status.getSpeed().getValueIn(WorldSpeed.M_sec));
-		setHeight(-status.getLocation().getDepth());
+		if (status.getSpeed() != null)
+			setSpeed(status.getSpeed().getValueIn(WorldSpeed.M_sec));
+		if (status.getLocation() != null)
+			setHeight(-status.getLocation().getDepth());
 	}
 
 	/**
