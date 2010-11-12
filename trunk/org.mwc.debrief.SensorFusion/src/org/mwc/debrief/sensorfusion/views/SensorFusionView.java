@@ -338,7 +338,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		JFreeChart myChart = DataSupport.createChart(null);
 		myChart.setTitle(CHART_NAME);
 		myChart.getXYPlot().setRenderer(_plotRenderer);
-
+		
 		// and the chart frame
 		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, true);
 		_myChartFrame.setDisplayToolTips(false);

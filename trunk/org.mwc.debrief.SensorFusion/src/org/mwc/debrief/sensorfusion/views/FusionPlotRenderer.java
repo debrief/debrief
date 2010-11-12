@@ -4,12 +4,17 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Vector;
 
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.entity.EntityCollection;
+import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.CrosshairState;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
@@ -73,9 +78,42 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	@Override
 	public Boolean getSeriesShapesVisible(int series)
 	{
-		return _series.getVisible();
+		return  _series.getVisible();
 	}
 
+	/** note: this method has been generated to correct the mistaken JFreeChart
+	 * implementation that breaks whtn in PlotOrientation.Horizontal.
+	 */
+	protected void addEntity(EntityCollection entities, Shape area,
+			XYDataset dataset, int series, int item, double entityX,
+			double entityY) {
+		if (!getItemCreateEntity(series, item)) {
+			return;
+		}
+		Shape hotspot = area;
+		if (hotspot == null) {
+			double r = getDefaultEntityRadius();
+			double w = r * 2;
+			// NOTE: the JFreeChart problem is in the next line, it tries
+			// to switch the X & Y when in horizontal mode, but the X and Y
+			// values have already been transposed.
+			hotspot = new Ellipse2D.Double(entityX - r, entityY - r, w, w);
+		}
+
+		String tip = null;
+		XYToolTipGenerator generator = getToolTipGenerator(series, item);
+		if (generator != null) {
+			tip = generator.generateToolTip(dataset, series, item);
+		}
+		String url = null;
+		if (getURLGenerator() != null) {
+			url = getURLGenerator().generateURL(dataset, series, item);
+		}
+		XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
+				item, tip, url);
+		entities.add(entity);
+	}
+	
 	@Override
 	public Paint getItemPaint(int row, int column)
 	{

@@ -74,6 +74,7 @@ public class DataSupport
 			renderer.setBaseShapesFilled(true);
 		}
 
+
 		DateAxis axis = (DateAxis) plot.getDomainAxis();
 		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm.ss"));
 
