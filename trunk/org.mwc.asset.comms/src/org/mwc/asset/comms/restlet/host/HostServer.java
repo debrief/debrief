@@ -43,11 +43,11 @@ public class HostServer extends Application {
         Directory dir = new Directory(getContext(), LocalReference
                 .createFileReference(warDir));
         router.attachDefault(dir);
-        router.attach("/scenario", ScenariosHandler.class);
-        router.attach("/scenario/{scenario}", ScenarioServerResource.class);
-        router.attach("/scenario/{scenario}/participant", ParticipantsHandler.class);
-        router.attach("/scenario/{scenario}/participant/{participant}", ParticipantServerResource.class);
-        router.attach("/scenario/{scenario}/participant/{participant}/state", StatusHandler.class);
+        router.attach("/v1/scenario", ScenariosHandler.class);
+        router.attach("/v1/scenario/{scenario}/listener", ScenarioListenerHandler.class);
+        router.attach("/v1/scenario/{scenario}/listener/{listener}", ScenarioListenerHandler.class);
+        router.attach("/v1/scenario/{scenario}/participant", ParticipantsHandler.class);
+        router.attach("/v1/scenario/{scenario}/participant/{participant}/state", StatusHandler.class);
         return router;
     }
 
