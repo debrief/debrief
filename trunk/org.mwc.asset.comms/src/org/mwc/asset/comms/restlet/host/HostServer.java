@@ -2,9 +2,7 @@ package org.mwc.asset.comms.restlet.host;
 
 import java.io.File;
 
-import org.mwc.asset.comms.restlet.data.DemandedStatusServerResource;
-import org.mwc.asset.comms.restlet.data.ParticipantServerResource;
-import org.mwc.asset.comms.restlet.data.ScenarioServerResource;
+import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -13,9 +11,11 @@ import org.restlet.data.Protocol;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 
-public class HostServer extends Application {
+abstract public class HostServer extends Application implements HostProvider {
 
-    /**
+		abstract public ASSETHost getHost();
+	
+		/**
      * When launched as a standalone application.
      * 
      * @param args
@@ -25,7 +25,14 @@ public class HostServer extends Application {
         Component component = new Component();
         component.getClients().add(Protocol.FILE);
         component.getServers().add(Protocol.HTTP, 8080);
-        component.getDefaultHost().attach(new HostServer());
+        component.getDefaultHost().attach(new HostServer(){
+
+        	MockHost host = new MockHost();
+					@Override
+					public ASSETHost getHost()
+					{
+						return host;
+					}});
         component.start();
     }
 
@@ -50,5 +57,6 @@ public class HostServer extends Application {
         router.attach("/v1/scenario/{scenario}/participant/{participant}/state", StatusHandler.class);
         return router;
     }
+
 
 }

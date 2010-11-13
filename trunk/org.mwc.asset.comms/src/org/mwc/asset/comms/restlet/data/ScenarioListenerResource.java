@@ -11,7 +11,7 @@ import org.restlet.resource.Post;
 public interface ScenarioListenerResource
 {
 	@Post
-	public int accept(URL listener);
+	public int accept(String listener);
 
 	@Delete
 	public void remove();
