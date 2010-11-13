@@ -10,5 +10,5 @@ public interface ScenarioStateResource {
 //	@Post
 //	public void accept(String event, long time, String description);
 	@Post
-	public void accept(String event);
+	public void accept(int event, String val2);
 }

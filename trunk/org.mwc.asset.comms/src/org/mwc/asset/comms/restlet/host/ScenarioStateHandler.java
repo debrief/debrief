@@ -18,10 +18,12 @@ public class ScenarioStateHandler extends ServerResource implements
 	// }
 
 	@Override
-	public void accept(String event)
+	public void accept(int event, String val2)
 	{
+		// this may just work: {'int':'2','String':"bark"}
+		
 		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
-		host.getGuest().newScenarioStatus(0, "svent type", 0, event);
+		host.getGuest().newScenarioStatus(0, "event type", 0,"" + event);
 	}
 
 }
