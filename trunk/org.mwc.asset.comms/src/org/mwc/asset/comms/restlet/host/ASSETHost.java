@@ -7,10 +7,20 @@ import org.mwc.asset.comms.restlet.data.Scenario;
 
 import ASSET.Participants.DemandedStatus;
 
+/** methods exposed by object capable of acting as ASSET Host in networked simulation
+ * 
+ * @author ianmayo
+ *
+ */
 public interface ASSETHost
 {
+	
 	public interface HostProvider
 	{
+		/** get the host object
+		 * 
+		 * @return
+		 */
 		public ASSETHost getHost();
 	}
 	
@@ -23,16 +33,31 @@ public interface ASSETHost
 	public int newScenarioListener(int scenario, URL url);
 	
 	/** somebody wants to stop listening to us
-	 * 
+	 * @param scenario subject scenario
 	 * @param listenerId
 	 */
-	public void deleteListener(int listenerId);
+	public void deleteScenarioListener(int scenario, int listenerId);
 
 	/** get a list of scenarios we know about
 	 * 
 	 * @return
 	 */
 	public Vector<Scenario> getScenarios();
+	
+	/** somebody new wants to listen to us
+	 * 
+	 * @param scenario
+	 * @param url
+	 * @return
+	 */
+	public int newParticipantListener(int scenario, int participant, URL url);
+	
+	/** somebody wants to stop listening to us
+	 * @param scenarioId TODO
+	 * @param listenerId
+	 */
+	public void deleteParticipantListener(int scenarioId, int listenerId);
+
 
 	/** find out the current status of this participant
 	 * 

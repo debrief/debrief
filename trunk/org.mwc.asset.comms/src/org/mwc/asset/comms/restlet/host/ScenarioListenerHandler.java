@@ -14,9 +14,6 @@ public class ScenarioListenerHandler extends ServerResource implements
 		ScenarioListenerResource
 {
 
-	static HashMap<Integer, URL> _myListeners;
-	static int ctr = 0;
-
 	@Override
 	public int accept(String listenerTxt)
 	{
@@ -25,8 +22,6 @@ public class ScenarioListenerHandler extends ServerResource implements
 		try
 		{
 			listener = new URL(listenerTxt);
-			_myListeners.put(++ctr, listener);
-
 			ASSETHost.HostProvider host = (HostProvider) getApplication();
 			String scen = (String) getRequest().getAttributes().get("scenario");
 			int scenario = Integer.parseInt(scen);
@@ -44,11 +39,14 @@ public class ScenarioListenerHandler extends ServerResource implements
 	public void remove()
 	{
 		Map<String, Object> attrs = this.getRequestAttributes();
+		Object thisS = attrs.get("scenario");
 		Object thisP = attrs.get("listener");
+		int theScenario = Integer.parseInt((String) thisS);
 		int theId = Integer.parseInt((String) thisP);
+		
 
 		ASSETHost.HostProvider host = (HostProvider) getApplication();
-		host.getHost().deleteListener(theId);
+		host.getHost().deleteScenarioListener(theScenario, theId);
 	}
 
 }

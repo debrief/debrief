@@ -17,9 +17,11 @@ class MockHost implements ASSETHost
 {
 	HashMap<Integer, URL> _scenarioListeners = new HashMap<Integer, URL>();
 	int _scenarioCounter = 1;
+	HashMap<String, URL> _participantListeners = new HashMap<String, URL>();
+	int _participantCounter = 1;
 
 	@Override
-	public void deleteListener(int listenerId)
+	public void deleteScenarioListener(int scenario, int listenerId)
 	{
 		_scenarioListeners.remove(listenerId);
 	}
@@ -60,6 +62,18 @@ class MockHost implements ASSETHost
 	{
 		System.out.println("in scenario:" + scenario + " participant:"
 				+ participant + "new state is:" + demState);
+	}
+
+	@Override
+	public void deleteParticipantListener(int scenarioId, int listenerId)
+	{
+	}
+
+	@Override
+	public int newParticipantListener(int scenario, int participant, URL url)
+	{
+		_participantListeners.put(scenario + "-" + participant, url);
+		return _participantCounter++;
 	}
 
 }
