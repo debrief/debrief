@@ -2,7 +2,6 @@ package org.mwc.asset.comms.restlet.host;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.mwc.asset.comms.restlet.data.ScenarioListenerResource;

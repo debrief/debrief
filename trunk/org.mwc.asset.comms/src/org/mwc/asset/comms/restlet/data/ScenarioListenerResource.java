@@ -1,7 +1,5 @@
 package org.mwc.asset.comms.restlet.data;
 
-import java.net.URL;
-
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
 

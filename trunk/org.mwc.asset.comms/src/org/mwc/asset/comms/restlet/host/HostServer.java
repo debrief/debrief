@@ -15,7 +15,9 @@ abstract public class HostServer extends Application implements HostProvider {
 
 		abstract public ASSETHost getHost();
 	
-		/**
+
+		
+    /**
      * When launched as a standalone application.
      * 
      * @param args

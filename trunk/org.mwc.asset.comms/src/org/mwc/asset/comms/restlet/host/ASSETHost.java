@@ -14,7 +14,11 @@ import ASSET.Participants.DemandedStatus;
  */
 public interface ASSETHost
 {
-	
+	/** how to get at the host object
+	 * 
+	 * @author ianmayo
+	 *
+	 */
 	public interface HostProvider
 	{
 		/** get the host object

@@ -17,7 +17,7 @@ class MockHost implements ASSETHost
 {
 	HashMap<Integer, URL> _scenarioListeners = new HashMap<Integer, URL>();
 	int _scenarioCounter = 1;
-	HashMap<String, URL> _participantListeners = new HashMap<String, URL>();
+	HashMap<Integer, URL> _participantListeners = new HashMap<Integer, URL>();
 	int _participantCounter = 1;
 
 	@Override
@@ -29,8 +29,8 @@ class MockHost implements ASSETHost
 	@Override
 	public int newScenarioListener(int scenario, URL url)
 	{
-		_scenarioListeners.put(scenario, url);
-		return _scenarioCounter++;
+		_scenarioListeners.put(++_scenarioCounter, url);
+		return _scenarioCounter;
 	}
 
 	@Override
@@ -67,13 +67,14 @@ class MockHost implements ASSETHost
 	@Override
 	public void deleteParticipantListener(int scenarioId, int listenerId)
 	{
+		_participantListeners.remove(_participantCounter);
 	}
 
 	@Override
 	public int newParticipantListener(int scenario, int participant, URL url)
 	{
-		_participantListeners.put(scenario + "-" + participant, url);
-		return _participantCounter++;
+		_participantListeners.put(++_participantCounter, url);
+		return _participantCounter;
 	}
 
 }

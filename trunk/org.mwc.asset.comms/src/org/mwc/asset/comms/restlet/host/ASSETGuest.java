@@ -20,16 +20,16 @@ public interface ASSETGuest
 		}
 		
 		/** something has changed in the scenario
-		 * 
+		 * @param scenario TODO
 		 * @param msg
 		 */
-		public void newScenarioStatus(String event, long time, String description);
+		public void newScenarioStatus(int scenario, String event, long time, String description);
 		
 		/** someone we are listening to has moved
 		 * 
 		 * @param newState
 		 */
 		public void newParticipantState(Status newState);
-		
+
 		
 }
