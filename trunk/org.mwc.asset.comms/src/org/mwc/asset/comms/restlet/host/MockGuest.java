@@ -13,7 +13,7 @@ public class MockGuest implements ASSETGuest
 	}
 
 	@Override
-	public void newScenarioStatus(long time, String description)
+	public void newScenarioStatus(long time,String eventName, String description)
 	{
 		Date date = new Date(time);
 		System.out.println("at:" + date.toString() + " got:" + description);

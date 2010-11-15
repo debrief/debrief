@@ -7,7 +7,9 @@ import junit.framework.TestCase;
 
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenarioListenerResource;
+import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
+import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.ASSETHost;
 import org.mwc.asset.comms.restlet.host.GuestServer;
@@ -19,7 +21,6 @@ import org.restlet.resource.ClientResource;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
-import ASSET.Scenario.ScenarioSteppedListener;
 
 public class CommsTest extends TestCase
 {
@@ -104,9 +105,10 @@ public class CommsTest extends TestCase
 	private long _time = -1;
 	private String _msg = null;
 
-	public void testHosting()
+	public void testHosting() throws Exception
 	{
 		final CoreScenario scen = new CoreScenario();
+		scen.setScenarioStepTime(5000);
 		final TestHost _host = new TestHost(scen);
 
 		Component hostComp = null;
@@ -171,9 +173,9 @@ public class CommsTest extends TestCase
 		{
 
 			@Override
-			public void newScenarioStatus(long time, String description)
+			public void newScenarioStatus(long time, String eventName, String description)
 			{
-				super.newScenarioStatus(time, description);
+				super.newScenarioStatus(time,eventName, description);
 				_time = time;
 				_msg = description;
 			}
@@ -192,7 +194,7 @@ public class CommsTest extends TestCase
 		try
 		{
 			guestComp = GuestServer.go(guest);
-			assertNotNull("component returned", hostComp);
+			assertNotNull("component returned", guestComp);
 		}
 		catch (Exception e)
 		{
@@ -219,9 +221,69 @@ public class CommsTest extends TestCase
 		scen.step();
 
 		// fire an event
-		assertTrue("time should be set", -1 != _time);
+		assertEquals("time should be set", 0, _time);
 		assertNotNull("msg should be set", _msg);
 
+		scen.step();
+
+		// fire an event
+		assertEquals("time should be set", 5000, _time);
+		assertNotNull("msg should be set", _msg);
+		
+		GuestServer.finish(guestComp);
+		HostServer.finish(hostComp);
+		
 	}
+	
+	public void testGuest()
+	{
+
+		// fire up the client
+		Component guestComp = null;
+		final ASSETGuest _guest = new MockGuest()
+		{
+
+			@Override
+			public void newScenarioStatus(long time,String eventName, String description)
+			{
+				super.newScenarioStatus(time,eventName, description);
+				_time = time;
+				_msg = description;
+			}
+		};
+		// fire up the server
+		GuestServer guest = new GuestServer()
+		{
+
+			@Override
+			public ASSETGuest getGuest()
+			{
+				return _guest;
+			}
+		};
+
+		try
+		{
+			guestComp = GuestServer.go(guest);
+			assertNotNull("component returned", guestComp);
+		}
+		catch (Exception e)
+		{
+			fail("exception thrown from client go");
+			e.printStackTrace();
+		}
+
+		assertTrue("comp started", guestComp.isStarted());		
+
+		ClientResource cr = new ClientResource("http://localhost:8081/v1/scenario/" + 434 + "/event");
+		ScenarioStateResource ssr =  cr.wrap(ScenarioStateResource.class);
+		ScenarioEvent event = new ScenarioEvent("type", "descr", 12, 1200);
+		ssr.accept(event);
+		
+		
+	}
+	
+	
+	
 
 }

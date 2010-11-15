@@ -1,6 +1,7 @@
 package org.mwc.asset.comms.restlet.host;
 
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
+import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest.GuestProvider;
 
 public class ScenarioStateHandler extends ASSETResource implements
@@ -17,12 +18,11 @@ public class ScenarioStateHandler extends ASSETResource implements
 	// }
 
 	@Override
-	public void accept(long event, String val2)
+	public void accept(ScenarioEvent event)
 	{
 		// this may just work: {'int':'2','String':"bark"}
 		
 		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
-		host.getGuest().newScenarioStatus(0, "" + event);
+		host.getGuest().newScenarioStatus(event.time, event.eventName, event.description);
 	}
-
 }

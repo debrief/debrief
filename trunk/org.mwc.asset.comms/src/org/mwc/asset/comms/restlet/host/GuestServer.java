@@ -50,6 +50,11 @@ abstract public class GuestServer extends Application implements GuestProvider
 		};
 		GuestServer.go(guestS);
 	}
+	
+	public String getRootPath()
+	{
+		return super.getRoot().toString();
+	}
 
 	@Override
 	public Restlet createInboundRoot()

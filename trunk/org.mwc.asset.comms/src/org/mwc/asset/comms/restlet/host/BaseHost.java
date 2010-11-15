@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
+import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.resource.ClientResource;
@@ -98,15 +99,12 @@ abstract public class BaseHost implements ASSETHost
 			for (Iterator<URL> url = _myURLs.values().iterator(); url.hasNext();)
 			{
 				URL thisURL = url.next();
-				// find some data
+				// fire some data
 				ClientResource cr = new ClientResource(thisURL.toString());
-				List<Preference<MediaType>> type = cr.getClientInfo().getAcceptedMediaTypes();
-				cr.getClientInfo().getAcceptedMediaTypes().add(
-						new Preference<MediaType>(MediaType.APPLICATION_XML));
 
 				// does it have a scenario?
 				ScenarioStateResource scenR = cr.wrap(ScenarioStateResource.class);
-				scenR.accept(newTime, msg);
+				scenR.accept(new ScenarioEvent(msg, "unknown", newTime, 0));
 			}
 		}
 	}
