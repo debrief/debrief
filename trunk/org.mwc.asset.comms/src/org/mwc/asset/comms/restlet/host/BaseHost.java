@@ -3,12 +3,12 @@ package org.mwc.asset.comms.restlet.host;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.mwc.asset.comms.restlet.data.AssetEvent;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.restlet.resource.ClientResource;
 
 import ASSET.ScenarioType;
+import ASSET.Scenario.ParticipantsChangedListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 
 abstract public class BaseHost implements ASSETHost
@@ -56,33 +56,49 @@ abstract public class BaseHost implements ASSETHost
 
 		return thisList.add(url);
 	}
-	
-	public static class ScenarioSteppedList extends BaseListenerList implements ScenarioSteppedListener
+
+	/**
+	 * holder for events of our own special type
+	 * 
+	 * @author ianmayo
+	 * 
+	 */
+	public static class ScenarioSteppedList extends
+			BaseListenerList<ScenarioEvent> implements ScenarioSteppedListener, ParticipantsChangedListener
 	{
 
 		@Override
 		public void restart(ScenarioType scenario)
 		{
-
-			AssetEvent event = new ScenarioEvent("Restart", "unknown", 0, 0);
-			fireEvent(event);
+			fireEvent(new ScenarioEvent("Restart", "unknown", 0, 0));
 		}
 
 		@Override
 		public void step(ScenarioType scenario, long newTime)
 		{
-			AssetEvent event = new ScenarioEvent("Step", "unknown", newTime, 0);
-			fireEvent(event);
+			fireEvent(new ScenarioEvent("Step", "unknown", newTime, 0));
 		}
 
-		protected void fireThisEvent(URL dest, AssetEvent event)
+		protected void fireThisEvent(URL dest, ScenarioEvent event)
 		{
 			// fire some data
 			ClientResource cr = new ClientResource(dest.toString());
 
 			// does it have a scenario?
 			ScenarioStateResource scenR = cr.wrap(ScenarioStateResource.class);
-			scenR.accept((ScenarioEvent) event);
+			scenR.accept(event);
+		}
+
+		@Override
+		public void newParticipant(int index)
+		{
+			fireEvent(new ScenarioEvent("Joined", "Participant:" + index + " joined", 0, 0));
+		}
+
+		@Override
+		public void participantRemoved(int index)
+		{
+			fireEvent(new ScenarioEvent("Left", "Participant:" + index + " left", 0, 0));
 		}
 
 	}

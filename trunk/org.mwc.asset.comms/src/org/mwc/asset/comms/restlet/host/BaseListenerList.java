@@ -17,7 +17,7 @@ import org.restlet.resource.ResourceException;
  * @author ianmayo
  *
  */
-abstract public class BaseListenerList
+abstract public class BaseListenerList<EventType extends AssetEvent>
 {
 	HashMap<Integer, URL> _myURLs = new HashMap<Integer, URL>();
 	int ctr = 0;
@@ -52,10 +52,19 @@ abstract public class BaseListenerList
 		_myURLs.remove(id);
 	}
 	
-	abstract protected void fireThisEvent(URL dest, AssetEvent event);
+	/** fire an event to the specified URL
+	 * 
+	 * @param dest
+	 * @param event
+	 */
+	abstract protected void fireThisEvent(URL dest, EventType event);
 
 
-	protected void fireEvent(AssetEvent event)
+	/** fire the supplied event to my listeners
+	 * 
+	 * @param event
+	 */
+	protected void fireEvent(EventType event)
 	{
 		Vector<URL> toDitch = null;
 

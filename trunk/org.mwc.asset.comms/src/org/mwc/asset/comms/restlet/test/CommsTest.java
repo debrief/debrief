@@ -96,7 +96,6 @@ public class CommsTest extends TestCase
 		@Override
 		public int newScenarioListener(int scenario, URL url)
 		{
-
 			int res = super.newScenarioListener(scenario, url);
 			return res;
 		}
