@@ -7,17 +7,16 @@ import org.restlet.resource.Post;
  */
 public interface ScenarioStateResource {
 
-	public static class ScenarioEvent{
+	public static class ScenarioEvent extends AssetEvent{
 		final public String eventName;
 		final public String description;
-		final public long time;
 		final public int scenarioId;
 
 		public ScenarioEvent(String eName, String desc, long t, int s)
 		{
+			super(t);
 			eventName = eName;
 			description = desc;
-			time = t;
 			scenarioId = s;
 		}
 	}

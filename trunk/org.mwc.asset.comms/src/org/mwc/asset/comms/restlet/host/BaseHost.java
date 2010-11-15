@@ -2,14 +2,11 @@ package org.mwc.asset.comms.restlet.host;
 
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
 
+import org.mwc.asset.comms.restlet.data.AssetEvent;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioSteppedListener;
@@ -59,93 +56,34 @@ abstract public class BaseHost implements ASSETHost
 
 		return thisList.add(url);
 	}
-
-	public static class ScenarioSteppedList implements ScenarioSteppedListener
+	
+	public static class ScenarioSteppedList extends BaseListenerList implements ScenarioSteppedListener
 	{
-		HashMap<Integer, URL> _myURLs = new HashMap<Integer, URL>();
-		int ctr = 0;
-
-		public int size()
-		{
-			return _myURLs.size();
-		}
-
-		public int add(URL url)
-		{
-			_myURLs.put(++ctr, url);
-
-			return ctr;
-		}
-
-		public void remove(int id)
-		{
-			_myURLs.remove(id);
-		}
 
 		@Override
 		public void restart(ScenarioType scenario)
 		{
-			fireEvent("Restart", 0);
+
+			AssetEvent event = new ScenarioEvent("Restart", "unknown", 0, 0);
+			fireEvent(event);
 		}
 
 		@Override
 		public void step(ScenarioType scenario, long newTime)
 		{
-			fireEvent("Step", newTime);
+			AssetEvent event = new ScenarioEvent("Step", "unknown", newTime, 0);
+			fireEvent(event);
 		}
 
-		private void fireEvent(String msg, long newTime)
+		protected void fireThisEvent(URL dest, AssetEvent event)
 		{
-			Vector<URL> toDitch = null;
+			// fire some data
+			ClientResource cr = new ClientResource(dest.toString());
 
-			for (Iterator<URL> url = _myURLs.values().iterator(); url.hasNext();)
-			{
-				URL thisURL = url.next();
-				// fire some data
-				ClientResource cr = new ClientResource(thisURL.toString());
-
-				// does it have a scenario?
-				ScenarioStateResource scenR = cr.wrap(ScenarioStateResource.class);
-				try
-				{
-					scenR.accept(new ScenarioEvent(msg, "unknown", newTime, 0));
-				}
-				catch (ResourceException re)
-				{
-					if (re.getStatus().getCode() == 1001)
-					{
-						if (toDitch == null)
-							toDitch = new Vector<URL>();
-						toDitch.add(thisURL);
-					}
-					else
-						re.printStackTrace();
-				}
-			}
-
-			// ok, are we ditching any?
-			if (toDitch != null)
-			{
-				// yup, work through them
-				for (Iterator<URL> iterator = toDitch.iterator(); iterator.hasNext();)
-				{
-					URL thisURL = (URL) iterator.next();
-
-					Set<Integer> mine = _myURLs.keySet();
-					for (Iterator<Integer> iterator2 = mine.iterator(); iterator2.hasNext();)
-					{
-						Integer thisId = (Integer) iterator2.next();
-						if (_myURLs.get(thisId).equals(thisURL))
-						{
-							_myURLs.remove(thisId);
-						}
-					}
-				}
-				
-				// and close.
-				toDitch.removeAllElements();
-			}
+			// does it have a scenario?
+			ScenarioStateResource scenR = cr.wrap(ScenarioStateResource.class);
+			scenR.accept((ScenarioEvent) event);
 		}
-	}
 
+	}
 }
