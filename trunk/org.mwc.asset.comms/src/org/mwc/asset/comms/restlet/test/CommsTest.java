@@ -230,8 +230,31 @@ public class CommsTest extends TestCase
 		assertEquals("time should be set", 5000, _time);
 		assertNotNull("msg should be set", _msg);
 		
+		
+		
+		// ok, stop the guest and see what happens
+		GuestServer.finish(guestComp);
+		_msg = null;
+		
+		scen.step();
+
+		// fire an event
+		assertEquals("time should be same", 5000, _time);
+		assertNull("msg should be blank", _msg);
+		
+		// and restart
+		guestComp = GuestServer.go(guest);
+		
+		///////////////////////////////////
+		// and do some tidying
+		///////////////////////////////////
+		
+		assertTrue("guest still running", guestComp.isStarted());
+		assertTrue("host still running", hostComp.isStarted());
 		GuestServer.finish(guestComp);
 		HostServer.finish(hostComp);
+		assertTrue("guest not running", guestComp.isStopped());
+		assertTrue("host not running", hostComp.isStopped());
 		
 	}
 	
