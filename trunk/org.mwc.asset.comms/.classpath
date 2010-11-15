@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="/contribs/kryonet-1.02/kryonet-1.02.jar"/>
 	<classpathentry kind="lib" path="/contribs/kryonet-1.02/minlog-1.2.jar"/>
 	<classpathentry kind="lib" path="/contribs/kryonet-1.02/reflectasm-0.8.jar"/>
-	<classpathentry kind="lib" path="libs/RestLet/lib/org.restlet.jar" sourcepath="docs/restlet_src"/>
+	<classpathentry kind="lib" path="libs/RestLet/lib/org.restlet.jar" sourcepath="docs/src"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.restlet.ext.json.jar"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/com.thoughtworks.xstream.jar"/>
 	<classpathentry kind="lib" path="libs/RestLet/lib/org.codehaus.jettison.jar"/>
@@ -19,5 +19,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
