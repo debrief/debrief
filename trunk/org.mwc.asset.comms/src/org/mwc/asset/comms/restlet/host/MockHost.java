@@ -4,7 +4,6 @@
 package org.mwc.asset.comms.restlet.host;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.Scenario;
@@ -13,27 +12,8 @@ import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 
-class MockHost implements ASSETHost
+public class MockHost extends BaseHost
 {
-	HashMap<Integer, URL> _scenarioListeners = new HashMap<Integer, URL>();
-	int _scenarioCounter = 1;
-	HashMap<Integer, URL> _participantListeners = new HashMap<Integer, URL>();
-	int _participantCounter = 1;
-
-	@Override
-	public void deleteScenarioListener(int scenario, int listenerId)
-	{
-		_scenarioListeners.remove(listenerId);
-	}
-
-
-	@Override
-	public int newScenarioListener(int scenario, URL url)
-	{
-		_scenarioListeners.put(++_scenarioCounter, url);
-		return _scenarioCounter;
-	}
-
 	@Override
 	public Vector<Scenario> getScenarios()
 	{
@@ -74,7 +54,7 @@ class MockHost implements ASSETHost
 	@Override
 	public int newParticipantListener(int scenario, int participant, URL url)
 	{
-		_participantListeners.put(++_participantCounter, url);
+		_participantListeners.put(_participantCounter++, url);
 		return _participantCounter;
 	}
 
