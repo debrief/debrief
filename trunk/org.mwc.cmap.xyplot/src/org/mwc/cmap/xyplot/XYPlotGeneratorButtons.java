@@ -400,11 +400,14 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							}
 
 							// aah. does the primary track have it's own time period?
-							if (thePrimary.getStartDTG() != null)
-								startTime = thePrimary.getStartDTG();
+							if (thePrimary != null)
+							{
+								if (thePrimary.getStartDTG() != null)
+									startTime = thePrimary.getStartDTG();
 
-							if (thePrimary.getEndDTG() != null)
-								endTime = thePrimary.getEndDTG();
+								if (thePrimary.getEndDTG() != null)
+									endTime = thePrimary.getEndDTG();
+							}
 
 							// right, now for the data
 							AbstractSeriesDataset ds = ShowTimeVariablePlot3.getDataSeries(
