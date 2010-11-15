@@ -78,7 +78,7 @@ abstract public class HostServer extends Application implements HostProvider
 		router.attach("/v1/scenario/{scenario}/participant",
 				ParticipantsHandler.class);
 		router.attach("/v1/scenario/{scenario}/participant/{participant}/state",
-				StatusHandler.class);
+				DemStatusHandler.class);
 		return router;
 	}
 

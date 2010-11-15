@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.AssetEvent;
+import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 /** class that maintains a list of REST listeners URLS, ditching entries from the list if/when
@@ -54,10 +55,10 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	
 	/** fire an event to the specified URL
 	 * 
-	 * @param dest
+	 * @param client
 	 * @param event
 	 */
-	abstract protected void fireThisEvent(URL dest, EventType event);
+	abstract protected void fireThisEvent(ClientResource client, EventType event);
 
 
 	/** fire the supplied event to my listeners
@@ -74,7 +75,8 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 
 			try
 			{
-				fireThisEvent(thisURL, event);
+				ClientResource client = new ClientResource(thisURL.toString());
+				fireThisEvent(client, event);
 			}
 			catch (ResourceException re)
 			{

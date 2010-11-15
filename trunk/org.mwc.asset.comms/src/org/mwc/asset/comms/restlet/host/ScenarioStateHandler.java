@@ -1,7 +1,6 @@
 package org.mwc.asset.comms.restlet.host;
 
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
-import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest.GuestProvider;
 
 public class ScenarioStateHandler extends ASSETResource implements

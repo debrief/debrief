@@ -1,31 +1,16 @@
 package org.mwc.asset.comms.restlet.host;
 
-import org.mwc.asset.comms.restlet.data.DemandedStatusResource;
-import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
-import org.restlet.resource.Get;
-import org.restlet.resource.Put;
+import org.mwc.asset.comms.restlet.data.StatusResource;
+import org.restlet.resource.Post;
 
-import ASSET.Participants.DemandedStatus;
+import ASSET.Participants.Status;
 
 public class StatusHandler extends ASSETResource implements
-		DemandedStatusResource
+		StatusResource
 {
 
-	@Get
-	public DemandedStatus retrieve()
+	@Post
+	public void accept(Status status)
 	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
-
-		return host.getDemandedStatus(getScenarioId(), getParticipantId());
-		
-	}
-
-	@Put
-	public void store(DemandedStatus demState)
-	{
-		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
-		ASSETHost host = hostP.getHost();
-		host.setDemandedStatus(getScenarioId(), getParticipantId(), demState);
 	}
 }

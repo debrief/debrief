@@ -4,10 +4,14 @@ import java.net.URL;
 import java.util.HashMap;
 
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
+import org.mwc.asset.comms.restlet.data.StatusResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
+import org.mwc.asset.comms.restlet.data.StatusResource.MovedEvent;
 import org.restlet.resource.ClientResource;
 
 import ASSET.ScenarioType;
+import ASSET.Participants.ParticipantMovedListener;
+import ASSET.Participants.Status;
 import ASSET.Scenario.ParticipantsChangedListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 
@@ -42,21 +46,47 @@ abstract public class BaseHost implements ASSETHost
 	public void deleteScenarioListener(int scenarioId, int listenerId)
 	{
 		// are we already listening to this scenario?
-		ScenarioSteppedList thisList = getSteppedListFor(scenarioId);
-		if (thisList != null)
-		{
-			thisList.remove(listenerId);
-		}
+		getSteppedListFor(scenarioId).remove(listenerId);
 	}
 
 	@Override
 	public int newScenarioListener(int scenarioId, URL url)
 	{
-		ScenarioSteppedList thisList = getSteppedListFor(scenarioId);
-
-		return thisList.add(url);
+		return getSteppedListFor(scenarioId).add(url);
 	}
 
+
+	/**
+	 * holder for events of our own special type
+	 * 
+	 * @author ianmayo
+	 * 
+	 */
+	public static class ParticipantMovedList extends
+			BaseListenerList<MovedEvent> implements ParticipantMovedListener
+	{
+
+		@Override
+		public void restart(ScenarioType scenario)
+		{
+		}
+
+		protected void fireThisEvent(ClientResource client, MovedEvent event)
+		{
+			// does it have a scenario?
+			StatusResource scenR = client.wrap(StatusResource.class);
+			scenR.accept(event._status);
+		}
+
+
+		@Override
+		public void moved(Status newStatus)
+		{
+			fireEvent(new MovedEvent( newStatus));
+		}
+
+	}
+	
 	/**
 	 * holder for events of our own special type
 	 * 
@@ -79,13 +109,10 @@ abstract public class BaseHost implements ASSETHost
 			fireEvent(new ScenarioEvent("Step", "unknown", newTime, 0));
 		}
 
-		protected void fireThisEvent(URL dest, ScenarioEvent event)
+		protected void fireThisEvent(ClientResource client, ScenarioEvent event)
 		{
-			// fire some data
-			ClientResource cr = new ClientResource(dest.toString());
-
 			// does it have a scenario?
-			ScenarioStateResource scenR = cr.wrap(ScenarioStateResource.class);
+			ScenarioStateResource scenR = client.wrap(ScenarioStateResource.class);
 			scenR.accept(event);
 		}
 
