@@ -26,6 +26,7 @@ class MockHost implements ASSETHost
 		_scenarioListeners.remove(listenerId);
 	}
 
+
 	@Override
 	public int newScenarioListener(int scenario, URL url)
 	{

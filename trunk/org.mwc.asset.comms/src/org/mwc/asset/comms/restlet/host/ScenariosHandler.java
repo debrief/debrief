@@ -7,9 +7,8 @@ import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
 
-public class ScenariosHandler extends ServerResource implements
+public class ScenariosHandler extends ASSETResource implements
 		ScenariosResource
 {
 	

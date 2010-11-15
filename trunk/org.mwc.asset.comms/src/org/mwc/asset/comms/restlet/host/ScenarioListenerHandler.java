@@ -7,11 +7,11 @@ import java.util.Map;
 import org.mwc.asset.comms.restlet.data.ScenarioListenerResource;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.restlet.data.Status;
-import org.restlet.resource.ServerResource;
 
-public class ScenarioListenerHandler extends ServerResource implements
+public class ScenarioListenerHandler extends ASSETResource implements
 		ScenarioListenerResource
 {
+
 
 	@Override
 	public int accept(String listenerTxt)
@@ -22,9 +22,7 @@ public class ScenarioListenerHandler extends ServerResource implements
 		{
 			listener = new URL(listenerTxt);
 			ASSETHost.HostProvider host = (HostProvider) getApplication();
-			String scen = (String) getRequest().getAttributes().get("scenario");
-			int scenario = Integer.parseInt(scen);
-			res = host.getHost().newScenarioListener(scenario, listener);
+			res = host.getHost().newScenarioListener(getScenarioId(), listener);
 
 		}
 		catch (MalformedURLException e)
@@ -38,14 +36,12 @@ public class ScenarioListenerHandler extends ServerResource implements
 	public void remove()
 	{
 		Map<String, Object> attrs = this.getRequestAttributes();
-		Object thisS = attrs.get("scenario");
 		Object thisP = attrs.get("listener");
-		int theScenario = Integer.parseInt((String) thisS);
 		int theId = Integer.parseInt((String) thisP);
 		
 
 		ASSETHost.HostProvider host = (HostProvider) getApplication();
-		host.getHost().deleteScenarioListener(theScenario, theId);
+		host.getHost().deleteScenarioListener(getScenarioId(), theId);
 	}
 
 }

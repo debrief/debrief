@@ -6,11 +6,10 @@ import java.util.Vector;
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
 
 import ASSET.Participants.Category;
 
-public class ParticipantsHandler extends ServerResource implements
+public class ParticipantsHandler extends ASSETResource implements
 		ParticipantsResource
 {
 	
