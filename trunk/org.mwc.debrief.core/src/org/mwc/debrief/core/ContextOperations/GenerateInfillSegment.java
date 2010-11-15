@@ -109,6 +109,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 		private final Layer _parentTrack;
 		private Vector<TrackSegment> _infills;
 		private final Editable[] _segments;
+		
+		int segCtr = 1;
 
 		public GenerateInfillOperation(String title, Editable[] segments,
 				Layers theLayers, Layer parentTrack)
@@ -180,15 +182,23 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 				// aah, but, no but, are there points in the segment
 				if (newSeg.getData().size() > 0)
 				{
-					// add the track segment to the parent track
-					_parentTrack.add(newSeg);
-
-					// and remember it
-					_infills.add(newSeg);
+					storeSegment(newSeg);
 				}
 			}
 
 			return res;
+		}
+
+		private void storeSegment(TrackSegment newSeg)
+		{
+			// correct the name
+			newSeg.setName(newSeg.getName() + "_" + segCtr++);
+			
+			// add the track segment to the parent track
+			_parentTrack.add(newSeg);
+
+			// and remember it
+			_infills.add(newSeg);
 		}
 
 		@Override
