@@ -12,16 +12,30 @@ import java.util.Vector;
 import org.mwc.asset.comms.restlet.data.AssetEvent;
 import org.restlet.resource.ResourceException;
 
+/** class that maintains a list of REST listeners URLS, ditching entries from the list if/when
+ * they fail to respond
+ * @author ianmayo
+ *
+ */
 abstract public class BaseListenerList
 {
 	HashMap<Integer, URL> _myURLs = new HashMap<Integer, URL>();
 	int ctr = 0;
 
+	/** how many listeners are there? (mostly for debug)
+	 * 
+	 * @return
+	 */
 	public int size()
 	{
 		return _myURLs.size();
 	}
 
+	/** store this listener
+	 * 
+	 * @param url
+	 * @return the unique index provided to this listener
+	 */
 	public int add(URL url)
 	{
 		_myURLs.put(++ctr, url);
@@ -29,6 +43,10 @@ abstract public class BaseListenerList
 		return ctr;
 	}
 
+	/** ditch this listener
+	 * 
+	 * @param id
+	 */
 	public void remove(int id)
 	{
 		_myURLs.remove(id);
