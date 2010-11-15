@@ -147,10 +147,15 @@ package Debrief.Wrappers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Iterator;
+import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.MessageProvider;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
@@ -316,6 +321,23 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 			// and tell the contact about us
 			scw.setSensor(this);
+		}
+	}
+	
+	public final void append(Layer theLayer)
+	{
+		if(theLayer instanceof SensorWrapper)
+		{
+			SensorWrapper other = (SensorWrapper) theLayer;
+			SortedSet<Editable> otherC = other._myContacts;
+			for (Iterator<Editable> iterator = otherC.iterator(); iterator.hasNext();)
+			{
+				SensorContactWrapper thisC = (SensorContactWrapper) iterator.next();
+				this.add(thisC);
+			}
+			
+			// and clear him out...
+			otherC.clear();
 		}
 	}
 
@@ -1007,5 +1029,36 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
 
 		return newS;
+	}
+
+	/**
+	 * perform a merge of the supplied tracks.
+	 * 
+	 * @param target
+	 *          the final recipient of the other items
+	 * @param theLayers
+	 * @param parent
+	 *          the parent tracks for the supplied items
+	 * @param subjects
+	 *          the actual selected items
+	 * @return sufficient information to undo the merge
+	 */
+	public static int mergeSensors(final Editable targetE, Layers theLayers,
+			final Layer parent, final Editable[] subjects)
+	{
+		SensorWrapper target = (SensorWrapper) targetE;
+		
+		for (int i = 0; i < subjects.length; i++)
+		{
+			SensorWrapper sensor = (SensorWrapper) subjects[i];
+			if(sensor != target)
+			{
+				// ok, append the items in this layer to the target
+				target.append(sensor);
+				parent.removeElement(sensor);
+			}
+		}	
+
+		return MessageProvider.OK;
 	}
 }

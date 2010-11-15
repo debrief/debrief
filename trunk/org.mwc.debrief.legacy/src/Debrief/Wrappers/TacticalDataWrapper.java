@@ -437,7 +437,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * @param layer
 	 *          parameter for append
 	 */
-	public final void append(final MWC.GUI.Layer layer)
+	public void append(final MWC.GUI.Layer layer)
 	{
 		// don't bother
 	}
