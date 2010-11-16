@@ -1,5 +1,6 @@
 package org.mwc.asset.comms.restlet.data;
 
+import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 
 
@@ -13,6 +14,10 @@ public class Participant
 		_name = name;
 		_id = id;
 		_category = category;
+	}
+	public Participant(ParticipantType thisP)
+	{
+		this(thisP.getName(), thisP.getId(), thisP.getCategory());
 	}
 	public String getName()
 	{

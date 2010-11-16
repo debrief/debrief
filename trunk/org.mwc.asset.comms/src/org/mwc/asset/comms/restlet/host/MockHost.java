@@ -4,11 +4,14 @@
 package org.mwc.asset.comms.restlet.host;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Vector;
 
+import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Scenario;
 
 import ASSET.Models.Movement.SimpleDemandedStatus;
+import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 
@@ -26,6 +29,8 @@ public class MockHost extends BaseHost
 		return res;
 	}
 
+	
+	
 	@Override
 	public DemandedStatus getDemandedStatus(int scenario, int participant)
 	{
@@ -46,16 +51,35 @@ public class MockHost extends BaseHost
 	}
 
 	@Override
-	public void deleteParticipantListener(int scenarioId, int listenerId)
+	public void deleteParticipantListener(int scenarioId, int participantId, int listenerId)
 	{
-		_participantListeners.remove(_participantCounter);
+	 ParticipantList thisPList = this.getParticipantListFor(scenarioId, participantId);
+	 thisPList.getMovement().remove(listenerId);
 	}
 
 	@Override
-	public int newParticipantListener(int scenario, int participant, URL url)
+	public int newParticipantListener(int scenarioId, int participantId, URL url)
 	{
-		_participantListeners.put(_participantCounter++, url);
-		return _participantCounter;
+		 ParticipantList thisPList = this.getParticipantListFor(scenarioId, participantId);
+		 return thisPList.getMovement().add(url);
+	}
+
+
+
+	@Override
+	public List<Participant> getParticipantsFor(int scenarioId)
+	{
+		List<Participant> theParts = new Vector<Participant>();
+		Category theCat = new Category(Category.Force.BLUE, Category.Environment.SURFACE,
+				Category.Type.FRIGATE);
+		theParts.add(new Participant("aba", 12, theCat));
+		theParts.add(new Participant("BBB", 31, new Category(Category.Force.RED, Category.Environment.SURFACE,
+				Category.Type.FRIGATE)));
+		theParts.add(new Participant("CCC", 15, new Category(Category.Force.GREEN, Category.Environment.SURFACE,
+				Category.Type.FRIGATE)));
+		theParts.add(new Participant("ddd", 18, new Category(Category.Force.BLUE, Category.Environment.AIRBORNE,
+				Category.Type.FRIGATE)));
+		return theParts;
 	}
 
 }

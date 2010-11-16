@@ -1,8 +1,10 @@
 package org.mwc.asset.comms.restlet.host;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Vector;
 
+import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Scenario;
 
 import ASSET.Participants.DemandedStatus;
@@ -48,19 +50,21 @@ public interface ASSETHost
 	 */
 	public Vector<Scenario> getScenarios();
 	
+	public List<Participant> getParticipantsFor(int scenarioId);
+	
 	/** somebody new wants to listen to us
 	 * 
 	 * @param scenario
 	 * @param url
 	 * @return
 	 */
-	public int newParticipantListener(int scenario, int participant, URL url);
+	public int newParticipantListener(int scenarioId, int participantId, URL url);
 	
 	/** somebody wants to stop listening to us
 	 * @param scenarioId TODO
 	 * @param listenerId
 	 */
-	public void deleteParticipantListener(int scenarioId, int listenerId);
+	public void deleteParticipantListener(int scenarioId, int participantId, int listenerId);
 
 
 	/** find out the current status of this participant
