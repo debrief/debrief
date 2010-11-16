@@ -3,11 +3,13 @@
  */
 package org.mwc.asset.comms.restlet.host;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Scenario;
+import org.mwc.asset.comms.restlet.data.Sensor;
 
 import ASSET.ScenarioType;
 import ASSET.Models.Movement.SimpleDemandedStatus;
@@ -68,6 +70,29 @@ public class MockHost extends BaseHost
 		theParts.add(new Participant("ddd", 18, new Category(Category.Force.BLUE, Category.Environment.AIRBORNE,
 				Category.Type.FRIGATE)));
 		return theParts;
+	}
+
+	@Override
+	public void deleteParticipantDecisionListener(int scenarioId,
+			int participantId, int theId)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int newParticipantDecisionListener(int scenarioId, int participantId,
+			URL listener)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public List<Sensor> getSensorsFor(int scenarioId, int participantId)
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

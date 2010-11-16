@@ -7,6 +7,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
+
 abstract public class GuestServer extends Application implements GuestProvider
 {
 
@@ -61,6 +62,10 @@ abstract public class GuestServer extends Application implements GuestProvider
 				ScenarioStateHandler.class);
 		router.attach("/v1/scenario/{scenario}/participant/{participant}/status",
 				StatusHandler.class);
+		router.attach("/v1/scenario/{scenario}/participant/{participant}/decision",
+				DecisionHandler.class);
+		router.attach("/v1/scenario/{scenario}/participant/{participant}/detection",
+				DetectionHandler.class);
 		return router;
 	}
 

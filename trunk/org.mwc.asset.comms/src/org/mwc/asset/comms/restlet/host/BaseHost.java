@@ -1,20 +1,33 @@
 package org.mwc.asset.comms.restlet.host;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.AssetEvent;
+import org.mwc.asset.comms.restlet.data.DecisionResource;
+import org.mwc.asset.comms.restlet.data.DetectionResource;
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
+import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.StatusResource;
+import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
+import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.data.StatusResource.MovedEvent;
 import org.restlet.resource.ClientResource;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
+import ASSET.Models.SensorType;
+import ASSET.Models.Detection.DetectionList;
+import ASSET.Models.Sensor.SensorList;
+import ASSET.Participants.DemandedStatus;
+import ASSET.Participants.ParticipantDecidedListener;
+import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ParticipantsChangedListener;
@@ -25,6 +38,86 @@ abstract public class BaseHost implements ASSETHost
 
 	private HashMap<Integer, ScenarioSteppedList> _stepListeners;
 	private HashMap<Integer, HashMap<Integer, ParticipantList>> _participantListeners;
+
+	@Override
+	public void deleteParticipantDetectionListener(int scenarioId,
+			int participantId, int listenerId)
+	{
+		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
+				participantId);
+		ParticipantDetectedList detector = thisPList.getDetection();
+		detector.remove(listenerId);
+
+		// do we have any movement listeners?
+		if (detector.size() == 0)
+		{
+			// nope, better register
+			getScenario(scenarioId).getThisParticipant(participantId)
+					.removeParticipantDetectedListener(detector);
+		}
+
+	}
+
+	@Override
+	public int newParticipantDetectionListener(int scenarioId, int participantId,
+			URL listener)
+	{
+		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
+				participantId);
+
+		ParticipantDetectedList detector = thisPList.getDetection();
+
+		// do we have any movement listeners?
+		if (detector.size() == 0)
+		{
+			// nope, better register
+			getScenario(scenarioId).getThisParticipant(participantId)
+					.addParticipantDetectedListener(detector);
+		}
+
+		int listId = detector.add(listener);
+		return listId;
+	}
+
+	@Override
+	public void deleteParticipantDecisionListener(int scenarioId,
+			int participantId, int listenerId)
+	{
+		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
+				participantId);
+		ParticipantDecidedList decider = thisPList.getDecision();
+		decider.remove(listenerId);
+
+		// do we have any movement listeners?
+		if (decider.size() == 0)
+		{
+			// nope, better register
+			getScenario(scenarioId).getThisParticipant(participantId)
+					.removeParticipantDecidedListener(decider);
+		}
+
+	}
+
+	@Override
+	public int newParticipantDecisionListener(int scenarioId, int participantId,
+			URL listener)
+	{
+		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
+				participantId);
+
+		ParticipantDecidedList decider = thisPList.getDecision();
+
+		// do we have any movement listeners?
+		if (decider.size() == 0)
+		{
+			// nope, better register
+			getScenario(scenarioId).getThisParticipant(participantId)
+					.addParticipantDecidedListener(decider);
+		}
+
+		int listId = decider.add(listener);
+		return listId;
+	}
 
 	@Override
 	public List<Participant> getParticipantsFor(int scenarioId)
@@ -41,6 +134,26 @@ abstract public class BaseHost implements ASSETHost
 		return res;
 	}
 
+	@Override
+	public List<Sensor> getSensorsFor(int scenarioId, int participantId)
+	{
+		ParticipantType thisP = getScenario(scenarioId).getThisParticipant(
+				participantId);
+
+		List<Sensor> res = new Vector<Sensor>();
+		SensorList sensors = thisP.getSensorFit();
+		Collection<SensorType> iter = sensors.getSensors();
+		for (Iterator<SensorType> iterator = iter.iterator(); iterator.hasNext();)
+		{
+			SensorType thisS = (SensorType) iterator.next();
+			Sensor newS = new Sensor(thisS);
+			res.add(newS);
+
+		}
+
+		return res;
+	}
+
 	/**
 	 * get the specified block of listeners
 	 * 
@@ -48,7 +161,8 @@ abstract public class BaseHost implements ASSETHost
 	 * @param participantId
 	 * @return
 	 */
-	public ParticipantList getParticipantListFor(int scenarioId, int participantId)
+	protected ParticipantList getParticipantListFor(int scenarioId,
+			int participantId)
 	{
 		// are we already listening to this scenario?
 		if (_participantListeners == null)
@@ -69,7 +183,7 @@ abstract public class BaseHost implements ASSETHost
 		if (thisPList == null)
 		{
 			thisPList = new ParticipantList();
-			thisSList.put(scenarioId, thisPList);
+			thisSList.put(participantId, thisPList);
 		}
 
 		return thisPList;
@@ -82,14 +196,15 @@ abstract public class BaseHost implements ASSETHost
 	{
 		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
 				participantId);
-		thisPList.getMovement().remove(listenerId);
-		
+		ParticipantMovedList mover = thisPList.getMovement();
+		mover.remove(listenerId);
+
 		// do we have any movement listeners?
-		if (thisPList.getMovement().size() == 0)
+		if (mover.size() == 0)
 		{
 			// nope, better register
 			getScenario(scenarioId).getThisParticipant(participantId)
-					.removeParticipantMovedListener(thisPList.getMovement());
+					.removeParticipantMovedListener(mover);
 		}
 
 	}
@@ -100,15 +215,17 @@ abstract public class BaseHost implements ASSETHost
 		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
 				participantId);
 
+		ParticipantMovedList mover = thisPList.getMovement();
+
 		// do we have any movement listeners?
-		if (thisPList.getMovement().size() == 0)
+		if (mover.size() == 0)
 		{
 			// nope, better register
 			getScenario(scenarioId).getThisParticipant(participantId)
-					.addParticipantMovedListener(thisPList.getMovement());
+					.addParticipantMovedListener(mover);
 		}
 
-		int listId = thisPList.getMovement().add(url);
+		int listId = mover.add(url);
 		return listId;
 	}
 
@@ -225,10 +342,19 @@ abstract public class BaseHost implements ASSETHost
 	public static class ParticipantList
 	{
 		final private ParticipantMovedList _movement;
+		final private ParticipantDecidedList _decision;
+		final private ParticipantDetectedList _detection;
 
 		public ParticipantList()
 		{
 			_movement = new ParticipantMovedList();
+			_decision = new ParticipantDecidedList();
+			_detection = new ParticipantDetectedList();
+		}
+
+		public ParticipantDetectedList getDetection()
+		{
+			return _detection;
 		}
 
 		public ParticipantMovedList getMovement()
@@ -236,6 +362,71 @@ abstract public class BaseHost implements ASSETHost
 			return _movement;
 		}
 
+		public ParticipantDecidedList getDecision()
+		{
+			return _decision;
+		}
+
 	}
 
+	/**
+	 * holder for events of our own special type
+	 * 
+	 * @author ianmayo
+	 * 
+	 */
+	public static class ParticipantDecidedList extends
+			BaseListenerList<DecidedEvent> implements ParticipantDecidedListener
+	{
+
+		@Override
+		public void restart(ScenarioType scenario)
+		{
+			// ignore, we learn about this via the scenaro steppers
+		}
+
+		protected void fireThisEvent(ClientResource client, DecidedEvent event)
+		{
+			// does it have a scenario?
+			DecisionResource scenR = client.wrap(DecisionResource.class);
+			scenR.accept(event);
+		}
+
+		@Override
+		public void newDecision(String description, DemandedStatus demStatus)
+		{
+			fireEvent(new DecidedEvent(demStatus, description));
+		}
+
+	}
+
+	/**
+	 * holder for events of our own special type
+	 * 
+	 * @author ianmayo
+	 * 
+	 */
+	public static class ParticipantDetectedList extends
+			BaseListenerList<DetectionEvent> implements ParticipantDetectedListener
+	{
+
+		protected void fireThisEvent(ClientResource client, DetectionEvent event)
+		{
+			// does it have a scenario?
+			DetectionResource scenR = client.wrap(DetectionResource.class);
+			scenR.accept(event);
+		}
+
+		@Override
+		public void newDetections(DetectionList detections)
+		{
+			fireEvent(new DetectionResource.DetectionEvent(detections));
+		}
+
+		@Override
+		public void restart(ScenarioType scenario)
+		{
+		}
+
+	}
 }

@@ -17,6 +17,13 @@ public abstract class ASSETResource extends ServerResource
 		return scenario;
 	}
 
+	public int getSensorId()
+	{
+		String sens = (String) getRequest().getAttributes().get("sensor");
+		int sensor = Integer.parseInt(sens);
+		return sensor;
+	}
+
 	public int getParticipantId()
 	{
 		String part = (String) getRequest().getAttributes().get("participant");

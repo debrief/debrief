@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Scenario;
+import org.mwc.asset.comms.restlet.data.Sensor;
 
 import ASSET.ScenarioType;
 import ASSET.Participants.DemandedStatus;
@@ -92,4 +93,50 @@ public interface ASSETHost
 	 */
 	public void setDemandedStatus(int scenario, int participant,
 			DemandedStatus demState);
+
+	/** someone wants to listen to new decisions
+	 * 
+	 * @param scenarioId
+	 * @param participantId
+	 * @param listener
+	 * @return
+	 */
+	public int newParticipantDecisionListener(int scenarioId, int participantId,
+			URL listener);
+
+	/** someone wants to stop listening to new decisions
+	 * 
+	 * @param scenarioId
+	 * @param participantId
+	 * @param theId
+	 */
+	public void deleteParticipantDecisionListener(int scenarioId,
+			int participantId, int theId);
+
+	/** retrive the sensors for this participant
+	 * 
+	 * @param scenarioId
+	 * @param participantId
+	 * @return the list
+	 */
+	public List<Sensor> getSensorsFor(int scenarioId, int participantId);
+
+	/** a new detection listener for this sensor
+	 * 
+	 * @param scenarioId
+	 * @param participantId
+	 * @param listener
+	 * @return
+	 */
+	public int newParticipantDetectionListener(int scenarioId, int participantId,
+			URL listener);
+
+	/** ditch this detection listener
+	 *  
+	 * @param scenarioId
+	 * @param participantId
+	 * @param sensorId
+	 */
+	public void deleteParticipantDetectionListener(int scenarioId,
+			int participantId, int sensorId);
 }
