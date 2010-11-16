@@ -24,11 +24,11 @@ public class DemandedStatusServerResource extends ServerResource implements
 	}
 
 	@Put
-	public void store(DemandedStatus demState)
+	public void store(final DemandedStatus demState)
 	{
-		Map<String, Object> attrs = this.getRequestAttributes();
-		Object thisS = attrs.get("scenario");
-		Object thisP = attrs.get("participant");
+		final Map<String, Object> attrs = this.getRequestAttributes();
+		final Object thisS = attrs.get("scenario");
+		final Object thisP = attrs.get("participant");
 		_thisD = demState;
 		System.out.println("redirect " + thisS + ", " + thisP + " to:" + demState);
 	}

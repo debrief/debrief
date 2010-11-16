@@ -14,7 +14,7 @@ public interface DetectionResource
 	{
 		final public DetectionList _list;
 
-		public DetectionEvent(DetectionList list)
+		public DetectionEvent(final DetectionList list)
 		{
 			super(-1);
 			_list = list;

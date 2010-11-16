@@ -5,14 +5,17 @@ import org.restlet.resource.Post;
 /**
  * The resource associated to a contact.
  */
-public interface ScenarioStateResource {
+public interface ScenarioStateResource
+{
 
-	public static class ScenarioEvent extends AssetEvent{
-		final public String eventName;
+	public static class ScenarioEvent extends AssetEvent
+	{
 		final public String description;
+		final public String eventName;
 		final public int scenarioId;
 
-		public ScenarioEvent(String eName, String desc, long t, int s)
+		public ScenarioEvent(final String eName, final String desc, final long t,
+				final int s)
 		{
 			super(t);
 			eventName = eName;
@@ -20,10 +23,10 @@ public interface ScenarioStateResource {
 			scenarioId = s;
 		}
 	}
-	
-//	@Post
-//	public void accept(String event, long time, String description);
+
+	// @Post
+	// public void accept(String event, long time, String description);
 	@Post
 	public void accept(ScenarioEvent event);
-	
+
 }

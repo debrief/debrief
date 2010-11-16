@@ -7,17 +7,20 @@ import ASSET.Participants.Status;
 /**
  * The resource associated to a contact.
  */
-public interface StatusResource {
-	
-	public static class MovedEvent extends AssetEvent{
+public interface StatusResource
+{
+
+	public static class MovedEvent extends AssetEvent
+	{
 		final public Status _status;
 
-		public MovedEvent(Status status)
+		public MovedEvent(final Status status)
 		{
 			super(status.getTime());
 			_status = status;
 		}
 	}
-    @Post
-    public void accept(Status status);
+
+	@Post
+	public void accept(Status status);
 }

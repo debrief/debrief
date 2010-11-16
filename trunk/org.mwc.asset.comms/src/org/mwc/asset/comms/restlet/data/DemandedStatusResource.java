@@ -8,11 +8,12 @@ import ASSET.Participants.DemandedStatus;
 /**
  * The resource associated to a contact.
  */
-public interface DemandedStatusResource {
+public interface DemandedStatusResource
+{
 
-    @Get
-    public DemandedStatus retrieve();
+	@Get
+	public DemandedStatus retrieve();
 
-    @Put
-    public void store(DemandedStatus newState);
+	@Put
+	public void store(DemandedStatus newState);
 }

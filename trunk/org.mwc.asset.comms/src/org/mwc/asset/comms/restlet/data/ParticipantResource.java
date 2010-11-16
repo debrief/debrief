@@ -5,8 +5,9 @@ import org.restlet.resource.Get;
 /**
  * The resource associated to a contact.
  */
-public interface ParticipantResource {
+public interface ParticipantResource
+{
 
-    @Get
-    public Participant retrieve();
+	@Get
+	public Participant retrieve();
 }

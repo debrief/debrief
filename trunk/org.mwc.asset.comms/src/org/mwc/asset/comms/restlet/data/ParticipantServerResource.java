@@ -16,17 +16,17 @@ public class ParticipantServerResource extends ServerResource implements
 			new Category(Category.Force.BLUE, Category.Environment.SURFACE,
 					Category.Type.FRIGATE));
 
-	
-	
 	@Get
 	public Participant retrieve()
 	{
 		// do we have an id?
-		Object theS = super.getRequestAttributes().get("scenario");
-		Object theP = super.getRequestAttributes().get("participant");
-		if(theS != null)
+		final Object theS = super.getRequestAttributes().get("scenario");
+		final Object theP = super.getRequestAttributes().get("participant");
+		if (theS != null)
+		{
 			System.out.println("scen is:" + theS + " part is:" + theP);
+		}
 		return _scenario;
 	}
-	
+
 }

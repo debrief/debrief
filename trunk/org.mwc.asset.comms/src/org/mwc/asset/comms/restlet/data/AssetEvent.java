@@ -10,7 +10,8 @@ public class AssetEvent
 	public static final String LEFT = "LEFT";
 
 	final public long time;
-	public AssetEvent(long timeVal)
+
+	public AssetEvent(final long timeVal)
 	{
 		time = timeVal;
 	}

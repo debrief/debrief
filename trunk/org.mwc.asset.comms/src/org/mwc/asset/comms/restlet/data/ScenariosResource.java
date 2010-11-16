@@ -7,8 +7,9 @@ import org.restlet.resource.Get;
 /**
  * The resource associated to a contact.
  */
-public interface ScenariosResource {
+public interface ScenariosResource
+{
 
-    @Get
-    public List<Scenario> retrieve();
+	@Get
+	public List<Scenario> retrieve();
 }

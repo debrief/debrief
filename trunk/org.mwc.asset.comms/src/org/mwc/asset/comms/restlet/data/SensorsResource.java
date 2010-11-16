@@ -7,8 +7,9 @@ import org.restlet.resource.Get;
 /**
  * The resource associated to a contact.
  */
-public interface SensorsResource {
+public interface SensorsResource
+{
 
-    @Get
-    public List<Sensor> retrieve();
+	@Get
+	public List<Sensor> retrieve();
 }
