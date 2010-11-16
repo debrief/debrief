@@ -59,8 +59,8 @@ abstract public class GuestServer extends Application implements GuestProvider
 		getConnectorService().getClientProtocols().add(Protocol.FILE);
 		router.attach("/v1/scenario/{scenario}/event",
 				ScenarioStateHandler.class);
-//		router.attach("/v1/scenario/{scenario}/participant/{participant}/state",
-//				StatusHandler.class);
+		router.attach("/v1/scenario/{scenario}/participant/{participant}/status",
+				StatusHandler.class);
 		return router;
 	}
 

@@ -6,7 +6,7 @@ import org.restlet.resource.Post;
 /**
  * The resource associated to a contact.
  */
-public interface ScenarioListenerResource
+public interface ListenerResource
 {
 	@Post
 	public int accept(String listener);

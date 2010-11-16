@@ -2,14 +2,18 @@ package org.mwc.asset.comms.restlet.host;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.AssetEvent;
+import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.StatusResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.data.StatusResource.MovedEvent;
 import org.restlet.resource.ClientResource;
 
+import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
@@ -20,9 +24,25 @@ abstract public class BaseHost implements ASSETHost
 {
 
 	private HashMap<Integer, ScenarioSteppedList> _stepListeners;
-	private HashMap<Integer, HashMap<Integer,  ParticipantList>> _participantListeners;
+	private HashMap<Integer, HashMap<Integer, ParticipantList>> _participantListeners;
 
-	/** get the specified block of listeners 
+	@Override
+	public List<Participant> getParticipantsFor(int scenarioId)
+	{
+		Vector<Participant> res = new Vector<Participant>();
+		Integer[] parts = getScenario(scenarioId).getListOfParticipants();
+		for (int i = 0; i < parts.length; i++)
+		{
+			ParticipantType thisP = getScenario(scenarioId).getThisParticipant(
+					parts[i]);
+			Participant newP = new Participant(thisP);
+			res.add(newP);
+		}
+		return res;
+	}
+
+	/**
+	 * get the specified block of listeners
 	 * 
 	 * @param scenarioId
 	 * @param participantId
@@ -35,14 +55,14 @@ abstract public class BaseHost implements ASSETHost
 		{
 			_participantListeners = new HashMap<Integer, HashMap<Integer, ParticipantList>>();
 		}
-		
-		HashMap<Integer, ParticipantList> thisSList = _participantListeners.get(scenarioId);
+
+		HashMap<Integer, ParticipantList> thisSList = _participantListeners
+				.get(scenarioId);
 		if (thisSList == null)
 		{
 			thisSList = new HashMap<Integer, ParticipantList>();
 			_participantListeners.put(scenarioId, thisSList);
 		}
-		
 
 		ParticipantList thisPList = thisSList.get(participantId);
 
@@ -53,9 +73,45 @@ abstract public class BaseHost implements ASSETHost
 		}
 
 		return thisPList;
-		
+
 	}
-	
+
+	@Override
+	public void deleteParticipantListener(int scenarioId, int participantId,
+			int listenerId)
+	{
+		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
+				participantId);
+		thisPList.getMovement().remove(listenerId);
+		
+		// do we have any movement listeners?
+		if (thisPList.getMovement().size() == 0)
+		{
+			// nope, better register
+			getScenario(scenarioId).getThisParticipant(participantId)
+					.removeParticipantMovedListener(thisPList.getMovement());
+		}
+
+	}
+
+	@Override
+	public int newParticipantListener(int scenarioId, int participantId, URL url)
+	{
+		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
+				participantId);
+
+		// do we have any movement listeners?
+		if (thisPList.getMovement().size() == 0)
+		{
+			// nope, better register
+			getScenario(scenarioId).getThisParticipant(participantId)
+					.addParticipantMovedListener(thisPList.getMovement());
+		}
+
+		int listId = thisPList.getMovement().add(url);
+		return listId;
+	}
+
 	public ScenarioSteppedList getSteppedListFor(int scenarioId)
 	{
 		// are we already listening to this scenario?
@@ -88,6 +144,7 @@ abstract public class BaseHost implements ASSETHost
 	{
 		return getSteppedListFor(scenarioId).add(url);
 	}
+
 	/**
 	 * holder for events of our own special type
 	 * 
@@ -130,7 +187,6 @@ abstract public class BaseHost implements ASSETHost
 			ParticipantsChangedListener
 	{
 
-
 		@Override
 		public void restart(ScenarioType scenario)
 		{
@@ -153,19 +209,18 @@ abstract public class BaseHost implements ASSETHost
 		@Override
 		public void newParticipant(int index)
 		{
-			fireEvent(new ScenarioEvent(AssetEvent.JOINED, "Participant:" + index + " joined",
-					0, 0));
+			fireEvent(new ScenarioEvent(AssetEvent.JOINED, "Participant:" + index
+					+ " joined", 0, 0));
 		}
 
 		@Override
 		public void participantRemoved(int index)
 		{
-			fireEvent(new ScenarioEvent(AssetEvent.LEFT, "Participant:" + index + " left", 0,
-					0));
+			fireEvent(new ScenarioEvent(AssetEvent.LEFT, "Participant:" + index
+					+ " left", 0, 0));
 		}
 
 	}
-	
 
 	public static class ParticipantList
 	{
@@ -180,8 +235,7 @@ abstract public class BaseHost implements ASSETHost
 		{
 			return _movement;
 		}
-		
-	}
 
+	}
 
 }

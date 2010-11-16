@@ -4,14 +4,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import org.mwc.asset.comms.restlet.data.ScenarioListenerResource;
+import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.restlet.data.Status;
 
 public class ParticipantListenerHandler extends ASSETResource implements
-		ScenarioListenerResource
+		ListenerResource
 {
-
 
 	@Override
 	public int accept(String listenerTxt)
@@ -22,7 +21,8 @@ public class ParticipantListenerHandler extends ASSETResource implements
 		{
 			listener = new URL(listenerTxt);
 			ASSETHost.HostProvider host = (HostProvider) getApplication();
-			res = host.getHost().newParticipantListener(getScenarioId(),getParticipantId(), listener);
+			res = host.getHost().newParticipantListener(getScenarioId(),
+					getParticipantId(), listener);
 
 		}
 		catch (MalformedURLException e)
@@ -38,10 +38,10 @@ public class ParticipantListenerHandler extends ASSETResource implements
 		Map<String, Object> attrs = this.getRequestAttributes();
 		Object thisP = attrs.get("listener");
 		int theId = Integer.parseInt((String) thisP);
-		
 
 		ASSETHost.HostProvider host = (HostProvider) getApplication();
-		host.getHost().deleteScenarioListener(getScenarioId(), theId);
+		host.getHost().deleteParticipantListener(getScenarioId(),
+				getParticipantId(), theId);
 	}
 
 }

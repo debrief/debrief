@@ -1,21 +1,21 @@
 package org.mwc.asset.comms.restlet.test;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
 import junit.framework.TestCase;
 
 import org.mwc.asset.comms.restlet.data.AssetEvent;
+import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
-import org.mwc.asset.comms.restlet.data.ScenarioListenerResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.ASSETHost;
+import org.mwc.asset.comms.restlet.host.BaseHost;
 import org.mwc.asset.comms.restlet.host.GuestServer;
 import org.mwc.asset.comms.restlet.host.HostServer;
 import org.mwc.asset.comms.restlet.host.MockGuest;
@@ -23,12 +23,16 @@ import org.mwc.asset.comms.restlet.host.MockHost;
 import org.restlet.Component;
 import org.restlet.resource.ClientResource;
 
-import ASSET.ParticipantType;
 import ASSET.ScenarioType;
+import ASSET.Models.SensorType;
 import ASSET.Models.Movement.SurfaceMovementCharacteristics;
+import ASSET.Models.Sensor.Cookie.PlainCookieSensor;
 import ASSET.Models.Vessels.Surface;
+import ASSET.Participants.Category;
+import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
@@ -87,9 +91,15 @@ public class CommsTest extends TestCase
 
 	}
 
-	public class TestHost extends MockHost
+	public class TestHost extends BaseHost
 	{
 		final ScenarioType _myScenario;
+
+		@Override
+		public ScenarioType getScenario(int scenarioId)
+		{
+			return _myScenario;
+		}
 
 		public TestHost(ScenarioType scenario)
 		{
@@ -97,41 +107,95 @@ public class CommsTest extends TestCase
 			_myScenario.addScenarioSteppedListener(getSteppedListFor(434));
 			_myScenario.addParticipantsChangedListener(getSteppedListFor(434));
 		}
-				
 
 		@Override
-		public List<Participant> getParticipantsFor(int scenarioId)
+		public DemandedStatus getDemandedStatus(int scenario, int participant)
 		{
-			Vector<Participant> res = new Vector<Participant>();
-			Integer[] parts = _myScenario.getListOfParticipants();
-			for (int i = 0; i < parts.length; i++)
-			{
-				ParticipantType thisP = _myScenario.getThisParticipant(parts[i]);
-				Participant newP = new Participant(thisP);
-				res.add(newP);
-			}
-			return res;
-		}
-
-
-
-		@Override
-		public void deleteScenarioListener(int scenario, int listenerId)
-		{
-			super.deleteScenarioListener(scenario, listenerId);
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		@Override
-		public int newScenarioListener(int scenario, URL url)
+		public Vector<Scenario> getScenarios()
 		{
-			int res = super.newScenarioListener(scenario, url);
+			Vector<Scenario> res = new Vector(0,1);
+			res.add(new Scenario(_myScenario.getName(), 434));
 			return res;
+		}
+
+		@Override
+		public void setDemandedStatus(int scenario, int participant,
+				DemandedStatus demState)
+		{
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
 	private long _time = -1;
 	private String _msg = null;
 	protected String _name;
+	protected Status _pState;
+
+	public void testGuest() throws Exception
+	{
+	
+		// fire up the client
+		Component guestComp = null;
+		final ASSETGuest _guest = new MockGuest()
+		{
+	
+			@Override
+			public void newParticipantState(int scenarioId, int participantId,
+					Status newState)
+			{
+				super.newParticipantState(scenarioId, participantId, newState);
+				_pState = newState;
+			}
+	
+			@Override
+			public void newScenarioStatus(long time, String eventName,
+					String description)
+			{
+				super.newScenarioStatus(time, eventName, description);
+				_time = time;
+				_msg = description;
+			}
+		};
+		// fire up the server
+		GuestServer guest = new GuestServer()
+		{
+	
+			@Override
+			public ASSETGuest getGuest()
+			{
+				return _guest;
+			}
+		};
+	
+		try
+		{
+			guestComp = GuestServer.go(guest);
+			assertNotNull("component returned", guestComp);
+		}
+		catch (Exception e)
+		{
+			fail("exception thrown from client go");
+			e.printStackTrace();
+		}
+	
+		assertTrue("comp started", guestComp.isStarted());
+	
+		ClientResource cr = new ClientResource("http://localhost:8081/v1/scenario/"
+				+ 434 + "/event");
+		ScenarioStateResource ssr = cr.wrap(ScenarioStateResource.class);
+		ScenarioEvent event = new ScenarioEvent("type", "descr", 12, 1200);
+		ssr.accept(event);
+		
+		// kill the guest, so we can do other tests
+		GuestServer.finish(guestComp);
+	
+	}
 
 	public void testHosting() throws Exception
 	{
@@ -170,7 +234,7 @@ public class CommsTest extends TestCase
 		// does it have a scenario?
 		ScenariosResource scenR = cr.wrap(ScenariosResource.class);
 		List<Scenario> sList = scenR.retrieve();
-		assertEquals("right num of scenarios", 4, sList.size());
+		assertEquals("right num of scenarios", 1, sList.size());
 
 		// start listening to the first one
 		int id = sList.get(0).getId();
@@ -181,7 +245,7 @@ public class CommsTest extends TestCase
 
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/listener");
-		ScenarioListenerResource sl = cr.wrap(ScenarioListenerResource.class);
+		ListenerResource sl = cr.wrap(ListenerResource.class);
 		int newId = sl.accept("http://google.com");
 
 		// did it work?
@@ -191,7 +255,7 @@ public class CommsTest extends TestCase
 		// and ditch the dummy listener
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/listener/" + newId);
-		sl = cr.wrap(ScenarioListenerResource.class);
+		sl = cr.wrap(ListenerResource.class);
 		sl.remove();
 		assertEquals("ditched listener", 0, _host.getSteppedListFor(434).size());
 
@@ -201,9 +265,10 @@ public class CommsTest extends TestCase
 		{
 
 			@Override
-			public void newParticipantState(Status newState)
+			public void newParticipantState(int scenarioId, int participantId, Status newState)
 			{
-				super.newParticipantState(newState);
+				super.newParticipantState(scenarioId, participantId, newState);
+				_pState = newState;
 			}
 
 			@Override
@@ -234,8 +299,8 @@ public class CommsTest extends TestCase
 		}
 		catch (Exception e)
 		{
-			fail("exception thrown from server go");
 			e.printStackTrace();
+			fail("exception thrown from server go");
 		}
 
 		assertTrue("comp started", guestComp.isStarted());
@@ -243,7 +308,7 @@ public class CommsTest extends TestCase
 		// right, now try to register it.
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/listener");
-		sl = cr.wrap(ScenarioListenerResource.class);
+		sl = cr.wrap(ListenerResource.class);
 		newId = sl.accept("http://localhost:8081/v1/scenario/" + 434 + "/event");
 
 		// did it work?
@@ -270,12 +335,14 @@ public class CommsTest extends TestCase
 		// mess with some participants
 		// ////////////////////////////////
 		_msg = null;
-		Status newStat = new Status(12, 333);
-		newStat.setLocation(new WorldLocation(2, 3, 4));
-		newStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-		Surface surf = new Surface(222, newStat, null, "big surf");
-		surf.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
-		scen.addParticipant(222, surf);
+		Status newStat1 = new Status(12, 333);
+		newStat1.setLocation(new WorldLocation(2, 3, 4));
+		newStat1.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+		Category newCat2 = new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE);
+		Surface surf2 = new Surface(222, newStat1, null, "big surf");
+		surf2.setCategory(newCat2);
+		surf2.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
+		scen.addParticipant(222, surf2);
 
 		assertNotNull("msg should not be blank", _msg);
 		assertEquals("time should be same", 0, _time);
@@ -289,7 +356,7 @@ public class CommsTest extends TestCase
 		assertTrue("msg should show joined", _name.indexOf(AssetEvent.LEFT)>-1);
 		
 		// go on, stick it back in...
-		scen.addParticipant(222, surf);
+		scen.addParticipant(222, surf2);
 
 		// ////////////////////////////////
 		// hmm, what about the participant list?
@@ -301,7 +368,66 @@ public class CommsTest extends TestCase
 		
 		// hmm, how did we get on?
 		assertNotNull("got list", partList);
-		assertEquals("list right size", 4, partList.size());
+		assertEquals("list right size", 1, partList.size());
+		Participant partOne = partList.get(0);
+		assertEquals("right name", "big surf", partOne.getName());
+		assertEquals("right id", 222, partOne.getId(),0);
+		assertEquals("right category", newCat2, partOne.getCategory());
+		
+		// ////////////////////////////////
+		// see what happens about movement
+		// ////////////////////////////////
+		// right, now try to register it.
+		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
+				+ "/participant/222/listener");
+		sl = cr.wrap(ListenerResource.class);
+		newId = sl.accept("http://localhost:8081/v1/scenario/" + 434 + "/participant/" + 222 + "/status");
+		
+		// is the listener registered?
+
+		
+		// check we're starting with clean slate
+		assertNull("empty status", _pState);
+		
+		// do a step
+		scen.step();
+		assertNotNull("status there", _pState);
+		
+		assertTrue("status has changed", !_pState.equals(newStat1));
+		
+		// check we can remove ourselves
+		_pState = null;
+		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
+				+ "/participant/222/listener/" + newId);
+		sl = cr.wrap(ListenerResource.class);
+	  sl.remove();
+		
+		// do a step, hopefully we won't hear about it
+		scen.step();
+		
+		assertNull("not heard anything", _pState);
+		
+		
+
+		// ////////////////////////////////
+		// see what happens about decisions
+		// ////////////////////////////////
+
+		
+		
+		// ////////////////////////////////
+		// go on, stick in another participant (look at detections)
+		// ////////////////////////////////
+		Status newStat = new Status(12, 333);
+		newStat.setLocation(new WorldLocation(2, 3, 4));
+		newStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+		Category newCat = new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FRIGATE);
+		Surface surf = new Surface(111, newStat, null, "big surf2");
+		surf.setCategory(newCat);
+		surf.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
+		scen.addParticipant(111, surf);
+		SensorType mySensor = new PlainCookieSensor(54, new WorldDistance(12000, WorldDistance.DEGS));
+		surf.addSensor(mySensor);
 		
 		
 		// ////////////////////////////////
@@ -329,55 +455,6 @@ public class CommsTest extends TestCase
 		HostServer.finish(hostComp);
 		assertTrue("guest not running", guestComp.isStopped());
 		assertTrue("host not running", hostComp.isStopped());
-
-	}
-
-	public void testGuest()
-	{
-
-		// fire up the client
-		Component guestComp = null;
-		final ASSETGuest _guest = new MockGuest()
-		{
-
-			@Override
-			public void newScenarioStatus(long time, String eventName,
-					String description)
-			{
-				super.newScenarioStatus(time, eventName, description);
-				_time = time;
-				_msg = description;
-			}
-		};
-		// fire up the server
-		GuestServer guest = new GuestServer()
-		{
-
-			@Override
-			public ASSETGuest getGuest()
-			{
-				return _guest;
-			}
-		};
-
-		try
-		{
-			guestComp = GuestServer.go(guest);
-			assertNotNull("component returned", guestComp);
-		}
-		catch (Exception e)
-		{
-			fail("exception thrown from client go");
-			e.printStackTrace();
-		}
-
-		assertTrue("comp started", guestComp.isStarted());
-
-		ClientResource cr = new ClientResource("http://localhost:8081/v1/scenario/"
-				+ 434 + "/event");
-		ScenarioStateResource ssr = cr.wrap(ScenarioStateResource.class);
-		ScenarioEvent event = new ScenarioEvent("type", "descr", 12, 1200);
-		ssr.accept(event);
 
 	}
 

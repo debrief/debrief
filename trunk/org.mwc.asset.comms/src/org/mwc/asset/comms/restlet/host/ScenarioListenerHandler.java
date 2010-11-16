@@ -4,12 +4,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import org.mwc.asset.comms.restlet.data.ScenarioListenerResource;
+import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.restlet.data.Status;
 
 public class ScenarioListenerHandler extends ASSETResource implements
-		ScenarioListenerResource
+		ListenerResource
 {
 
 

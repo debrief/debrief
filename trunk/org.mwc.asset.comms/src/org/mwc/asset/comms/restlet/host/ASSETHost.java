@@ -7,6 +7,7 @@ import java.util.Vector;
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Scenario;
 
+import ASSET.ScenarioType;
 import ASSET.Participants.DemandedStatus;
 
 /** methods exposed by object capable of acting as ASSET Host in networked simulation
@@ -30,6 +31,14 @@ public interface ASSETHost
 		public ASSETHost getHost();
 	}
 	
+	
+	/** get hold of the specified scenario
+	 * 
+	 * @param scenarioId
+	 * @return
+	 */
+	public ScenarioType getScenario(int scenarioId);
+
 	/** somebody new wants to listen to us
 	 * 
 	 * @param scenario

@@ -3,13 +3,13 @@
  */
 package org.mwc.asset.comms.restlet.host;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Scenario;
 
+import ASSET.ScenarioType;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
@@ -29,7 +29,9 @@ public class MockHost extends BaseHost
 		return res;
 	}
 
-	
+	public ScenarioType getScenario(int scenarioId){
+		return null;
+	}
 	
 	@Override
 	public DemandedStatus getDemandedStatus(int scenario, int participant)
@@ -48,20 +50,6 @@ public class MockHost extends BaseHost
 	{
 		System.out.println("in scenario:" + scenario + " participant:"
 				+ participant + "new state is:" + demState);
-	}
-
-	@Override
-	public void deleteParticipantListener(int scenarioId, int participantId, int listenerId)
-	{
-	 ParticipantList thisPList = this.getParticipantListFor(scenarioId, participantId);
-	 thisPList.getMovement().remove(listenerId);
-	}
-
-	@Override
-	public int newParticipantListener(int scenarioId, int participantId, URL url)
-	{
-		 ParticipantList thisPList = this.getParticipantListFor(scenarioId, participantId);
-		 return thisPList.getMovement().add(url);
 	}
 
 
