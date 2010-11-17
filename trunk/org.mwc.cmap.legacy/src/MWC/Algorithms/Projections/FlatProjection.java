@@ -10,7 +10,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.PlainProjection.PlainProjectionInfo;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
