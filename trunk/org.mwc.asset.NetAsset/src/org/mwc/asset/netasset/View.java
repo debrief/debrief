@@ -11,11 +11,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.asset.netasset.view.HolderPane;
 
 public class View extends ViewPart {
 	public static final String ID = "org.mwc.asset.NetAsset.view";
 
 	private TableViewer viewer;
+
+	private HolderPane _control;
 
 	/**
 	 * The content provider class is responsible for providing objects to the
@@ -57,17 +60,18 @@ public class View extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setInput(getViewSite());
+		_control = new HolderPane(parent, SWT.NONE);
+//		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+//				| SWT.V_SCROLL);
+//		viewer.setContentProvider(new ViewContentProvider());
+//		viewer.setLabelProvider(new ViewLabelProvider());
+//		viewer.setInput(getViewSite());
 	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-		viewer.getControl().setFocus();
+	//	viewer.getControl().setFocus();
 	}
 }
