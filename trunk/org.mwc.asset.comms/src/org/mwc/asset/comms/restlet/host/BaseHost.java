@@ -1,6 +1,6 @@
 package org.mwc.asset.comms.restlet.host;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,7 +36,14 @@ import ASSET.Scenario.ScenarioSteppedListener;
 abstract public class BaseHost implements ASSETHost
 {
 
+	/** people listening to a scenario
+	 * 
+	 */
 	private HashMap<Integer, ScenarioSteppedList> _stepListeners;
+	
+	/** people listening to a particular participant
+	 * 
+	 */
 	private HashMap<Integer, HashMap<Integer, ParticipantList>> _participantListeners;
 
 	@Override
@@ -60,7 +67,7 @@ abstract public class BaseHost implements ASSETHost
 
 	@Override
 	public int newParticipantDetectionListener(int scenarioId, int participantId,
-			URL listener)
+			URI listener)
 	{
 		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
 				participantId);
@@ -100,7 +107,7 @@ abstract public class BaseHost implements ASSETHost
 
 	@Override
 	public int newParticipantDecisionListener(int scenarioId, int participantId,
-			URL listener)
+			URI listener)
 	{
 		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
 				participantId);
@@ -210,7 +217,7 @@ abstract public class BaseHost implements ASSETHost
 	}
 
 	@Override
-	public int newParticipantListener(int scenarioId, int participantId, URL url)
+	public int newParticipantListener(int scenarioId, int participantId, URI url)
 	{
 		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
 				participantId);
@@ -257,7 +264,7 @@ abstract public class BaseHost implements ASSETHost
 	}
 
 	@Override
-	public int newScenarioListener(int scenarioId, URL url)
+	public int newScenarioListener(int scenarioId, URI url)
 	{
 		return getSteppedListFor(scenarioId).add(url);
 	}

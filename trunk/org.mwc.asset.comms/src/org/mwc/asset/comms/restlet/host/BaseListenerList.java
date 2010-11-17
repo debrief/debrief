@@ -3,7 +3,7 @@
  */
 package org.mwc.asset.comms.restlet.host;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -13,14 +13,14 @@ import org.mwc.asset.comms.restlet.data.AssetEvent;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
-/** class that maintains a list of REST listeners URLS, ditching entries from the list if/when
+/** class that maintains a list of REST listeners URIS, ditching entries from the list if/when
  * they fail to respond
  * @author ianmayo
  *
  */
 abstract public class BaseListenerList<EventType extends AssetEvent>
 {
-	HashMap<Integer, URL> _myURLs = new HashMap<Integer, URL>();
+	HashMap<Integer, URI> _myURIs = new HashMap<Integer, URI>();
 	int ctr = 0;
 
 	/** how many listeners are there? (mostly for debug)
@@ -29,7 +29,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 */
 	public int size()
 	{
-		return _myURLs.size();
+		return _myURIs.size();
 	}
 
 	/** store this listener
@@ -37,9 +37,9 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 * @param url
 	 * @return the unique index provided to this listener
 	 */
-	public int add(URL url)
+	public int add(URI url)
 	{
-		_myURLs.put(++ctr, url);
+		_myURIs.put(++ctr, url);
 
 		return ctr;
 	}
@@ -50,10 +50,10 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 */
 	public void remove(int id)
 	{
-		_myURLs.remove(id);
+		_myURIs.remove(id);
 	}
 	
-	/** fire an event to the specified URL
+	/** fire an event to the specified URI
 	 * 
 	 * @param client
 	 * @param event
@@ -67,15 +67,15 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 */
 	protected void fireEvent(EventType event)
 	{
-		Vector<URL> toDitch = null;
+		Vector<URI> toDitch = null;
 
-		for (Iterator<URL> url = _myURLs.values().iterator(); url.hasNext();)
+		for (Iterator<URI> url = _myURIs.values().iterator(); url.hasNext();)
 		{
-			URL thisURL = url.next();
+			URI thisURI = url.next();
 
 			try
 			{
-				ClientResource client = new ClientResource(thisURL.toString());
+				ClientResource client = new ClientResource(thisURI.toString());
 				fireThisEvent(client, event);
 			}
 			catch (ResourceException re)
@@ -83,8 +83,8 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 				if (re.getStatus().getCode() == 1001)
 				{
 					if (toDitch == null)
-						toDitch = new Vector<URL>();
-					toDitch.add(thisURL);
+						toDitch = new Vector<URI>();
+					toDitch.add(thisURI);
 				}
 				else
 					re.printStackTrace();
@@ -95,18 +95,18 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 		if (toDitch != null)
 		{
 			// yup, work through them
-			for (Iterator<URL> iterator = toDitch.iterator(); iterator.hasNext();)
+			for (Iterator<URI> iterator = toDitch.iterator(); iterator.hasNext();)
 			{
-				URL thisURL = (URL) iterator.next();
+				URI thisURI = (URI) iterator.next();
 
-				Set<Integer> mine = _myURLs.keySet();
+				Set<Integer> mine = _myURIs.keySet();
 				for (Iterator<Integer> iterator2 = mine.iterator(); iterator2
 						.hasNext();)
 				{
 					Integer thisId = (Integer) iterator2.next();
-					if (_myURLs.get(thisId).equals(thisURL))
+					if (_myURIs.get(thisId).equals(thisURI))
 					{
-						_myURLs.remove(thisId);
+						_myURIs.remove(thisId);
 					}
 				}
 			}

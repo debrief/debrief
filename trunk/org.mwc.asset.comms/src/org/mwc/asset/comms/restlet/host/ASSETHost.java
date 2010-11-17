@@ -1,6 +1,6 @@
 package org.mwc.asset.comms.restlet.host;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Vector;
 
@@ -46,7 +46,7 @@ public interface ASSETHost
 	 * @param url
 	 * @return
 	 */
-	public int newScenarioListener(int scenario, URL url);
+	public int newScenarioListener(int scenario, URI url);
 	
 	/** somebody wants to stop listening to us
 	 * @param scenario subject scenario
@@ -68,7 +68,7 @@ public interface ASSETHost
 	 * @param url
 	 * @return
 	 */
-	public int newParticipantListener(int scenarioId, int participantId, URL url);
+	public int newParticipantListener(int scenarioId, int participantId, URI url);
 	
 	/** somebody wants to stop listening to us
 	 * @param scenarioId TODO
@@ -102,7 +102,7 @@ public interface ASSETHost
 	 * @return
 	 */
 	public int newParticipantDecisionListener(int scenarioId, int participantId,
-			URL listener);
+			URI listener);
 
 	/** someone wants to stop listening to new decisions
 	 * 
@@ -129,7 +129,7 @@ public interface ASSETHost
 	 * @return
 	 */
 	public int newParticipantDetectionListener(int scenarioId, int participantId,
-			URL listener);
+			URI listener);
 
 	/** ditch this detection listener
 	 *  

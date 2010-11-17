@@ -1,7 +1,7 @@
 package org.mwc.asset.comms.restlet.host;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.mwc.asset.comms.restlet.data.ListenerResource;
@@ -15,17 +15,17 @@ public class DetectionListenerHandler extends ASSETResource implements
 	@Override
 	public int accept(String listenerTxt)
 	{
-		URL listener;
+		URI listener;
 		int res = 0;
 		try
 		{
-			listener = new URL(listenerTxt);
+			listener = new URI(listenerTxt);
 			ASSETHost.HostProvider host = (HostProvider) getApplication();
 			res = host.getHost().newParticipantDetectionListener(getScenarioId(),
 					getParticipantId(), listener);
 
 		}
-		catch (MalformedURLException e)
+		catch (URISyntaxException e)
 		{
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
 		}

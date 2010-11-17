@@ -1,8 +1,6 @@
 package org.mwc.asset.comms.xmpp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 
 import org.jivesoftware.smack.Chat;
@@ -63,9 +61,6 @@ public class TestOne implements MessageListener
 		// declare variables
 
 		TestOne c = new TestOne();
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String msg;
-
 		// turn on the enhanced debugger
 		XMPPConnection.DEBUG_ENABLED = true;
 

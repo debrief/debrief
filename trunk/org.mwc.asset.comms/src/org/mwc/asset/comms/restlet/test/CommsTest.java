@@ -22,7 +22,6 @@ import org.mwc.asset.comms.restlet.host.ASSETHost;
 import org.mwc.asset.comms.restlet.host.BaseHost;
 import org.mwc.asset.comms.restlet.host.GuestServer;
 import org.mwc.asset.comms.restlet.host.HostServer;
-import org.mwc.asset.comms.restlet.host.MockGuest;
 import org.restlet.Component;
 import org.restlet.resource.ClientResource;
 
@@ -100,7 +99,7 @@ public class CommsTest extends TestCase
 
 	}
 
-	public class TestHost extends BaseHost
+	public static class TestHost extends BaseHost
 	{
 		final ScenarioType _myScenario;
 
@@ -156,14 +155,13 @@ public class CommsTest extends TestCase
 
 		// fire up the client
 		Component guestComp = null;
-		final ASSETGuest _guest = new MockGuest()
+		final ASSETGuest _guest = new ASSETGuest()
 		{
 
 			@Override
 			public void newParticipantState(int scenarioId, int participantId,
 					Status newState)
 			{
-				super.newParticipantState(scenarioId, participantId, newState);
 				_pState = newState;
 			}
 
@@ -171,9 +169,22 @@ public class CommsTest extends TestCase
 			public void newScenarioStatus(long time, String eventName,
 					String description)
 			{
-				super.newScenarioStatus(time, eventName, description);
 				_time = time;
 				_msg = description;
+			}
+
+			@Override
+			public void newParticipantDecision(int scenarioId, int participantId,
+					DecidedEvent event)
+			{
+				_dEvent = event;
+			}
+
+			@Override
+			public void newParticipantDetection(int scenarioId, int participantId,
+					DetectionEvent event)
+			{
+				_detEvent = event;
 			}
 		};
 		// fire up the server
@@ -516,11 +527,23 @@ public class CommsTest extends TestCase
 		// ok, have a step
 		assertNull("empty detection list", _detEvent);
 		
+		//do step
 		scen.step();
 		
 		assertNotNull("have a detection", _detEvent);
 		assertEquals("have correct num of detections",1,  _detEvent._list.size());
 		
+		_detEvent = null;
+		
+		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
+				+ "/participant/111/detectionListener/" + newId);
+		sl = cr.wrap(ListenerResource.class);
+		sl.remove();
+
+		// and step again
+		scen.step();
+		
+		assertNull("have a detection", _detEvent);
 
 		// ////////////////////////////////
 		// ok, stop the guest and see what happens
