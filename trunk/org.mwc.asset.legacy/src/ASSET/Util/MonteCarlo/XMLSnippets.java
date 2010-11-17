@@ -76,7 +76,6 @@ public final class XMLSnippets
 		final int len = _mySnippets.size();
 		final int rndIndex = (int) (ASSET.Util.RandomGenerator.nextRandom() * len);
 
-		Node nextS = _mySnippets.get(rndIndex);
 		final Element res = (Element) _mySnippets.get(rndIndex);
 
 		return res;

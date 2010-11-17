@@ -8,14 +8,13 @@
  */
 package ASSET.Util.MonteCarlo;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import ASSET.Server.MonteCarlo.Components.Choice;
 import ASSET.Util.RandomGenerator;
-
-import java.util.Vector;
-import java.util.Iterator;
 
 public final class XMLChoice implements XMLOperation
 {

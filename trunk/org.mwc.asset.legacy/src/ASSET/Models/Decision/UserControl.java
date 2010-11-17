@@ -17,7 +17,9 @@ public class UserControl extends CoreDecision implements java.io.Serializable
 {
 
 
-  /**
+  public static final String NAME = "User Control";
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -57,7 +59,7 @@ public class UserControl extends CoreDecision implements java.io.Serializable
    */
   public UserControl(final double defaultCourse, final WorldSpeed defaultSpeed, final WorldDistance defaultDepth)
   {
-    super("User Control");
+    super(NAME);
     _demandedCourse = defaultCourse;
     _demandedSpeed = defaultSpeed;
     _demandedDepth = defaultDepth;
@@ -269,7 +271,7 @@ public class UserControl extends CoreDecision implements java.io.Serializable
      */
     public UserControlInfo(final UserControl data)
     {
-      super(data, data.getName(), "User Control");
+      super(data, data.getName(), NAME);
     }
 
     /**
