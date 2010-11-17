@@ -88,7 +88,6 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 		return doExecute(monitor, info, false);
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		final List<IStatus> result = new java.util.ArrayList<IStatus>(size());
