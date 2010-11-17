@@ -168,7 +168,7 @@ abstract public class BaseHost implements ASSETHost
 	 * @param participantId
 	 * @return
 	 */
-	protected ParticipantList getParticipantListFor(int scenarioId,
+	private ParticipantList getParticipantListFor(int scenarioId,
 			int participantId)
 	{
 		// are we already listening to this scenario?
@@ -275,7 +275,7 @@ abstract public class BaseHost implements ASSETHost
 	 * @author ianmayo
 	 * 
 	 */
-	public static class ParticipantMovedList extends BaseListenerList<MovedEvent>
+	private static class ParticipantMovedList extends BaseListenerList<MovedEvent>
 			implements ParticipantMovedListener
 	{
 
@@ -346,7 +346,7 @@ abstract public class BaseHost implements ASSETHost
 
 	}
 
-	public static class ParticipantList
+	private static class ParticipantList
 	{
 		final private ParticipantMovedList _movement;
 		final private ParticipantDecidedList _decision;
@@ -382,7 +382,7 @@ abstract public class BaseHost implements ASSETHost
 	 * @author ianmayo
 	 * 
 	 */
-	public static class ParticipantDecidedList extends
+	private static class ParticipantDecidedList extends
 			BaseListenerList<DecidedEvent> implements ParticipantDecidedListener
 	{
 
@@ -413,7 +413,7 @@ abstract public class BaseHost implements ASSETHost
 	 * @author ianmayo
 	 * 
 	 */
-	public static class ParticipantDetectedList extends
+	private static class ParticipantDetectedList extends
 			BaseListenerList<DetectionEvent> implements ParticipantDetectedListener
 	{
 

@@ -20,7 +20,7 @@ import org.restlet.resource.ResourceException;
  */
 abstract public class BaseListenerList<EventType extends AssetEvent>
 {
-	HashMap<Integer, URI> _myURIs = new HashMap<Integer, URI>();
+	private HashMap<Integer, URI> _myURIs = new HashMap<Integer, URI>();
 	int ctr = 0;
 
 	/** how many listeners are there? (mostly for debug)
@@ -37,7 +37,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 * @param url
 	 * @return the unique index provided to this listener
 	 */
-	public int add(URI url)
+	protected int add(URI url)
 	{
 		_myURIs.put(++ctr, url);
 
@@ -48,7 +48,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	 * 
 	 * @param id
 	 */
-	public void remove(int id)
+	protected void remove(int id)
 	{
 		_myURIs.remove(id);
 	}

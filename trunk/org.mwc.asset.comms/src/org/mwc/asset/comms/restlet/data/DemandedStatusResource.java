@@ -11,9 +11,6 @@ import ASSET.Participants.DemandedStatus;
 public interface DemandedStatusResource
 {
 
-	@Get
-	public DemandedStatus retrieve();
-
 	@Put
 	public void store(DemandedStatus newState);
 }

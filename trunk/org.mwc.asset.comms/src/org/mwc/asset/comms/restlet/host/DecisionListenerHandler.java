@@ -1,6 +1,5 @@
 package org.mwc.asset.comms.restlet.host;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;

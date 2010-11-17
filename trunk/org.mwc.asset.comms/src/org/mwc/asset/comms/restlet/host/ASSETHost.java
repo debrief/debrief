@@ -23,7 +23,7 @@ public interface ASSETHost
 	 * @author ianmayo
 	 *
 	 */
-	public interface HostProvider
+	interface HostProvider
 	{
 		/** get the host object
 		 * 

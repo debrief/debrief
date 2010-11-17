@@ -14,7 +14,7 @@ import ASSET.Participants.Status;
  */
 public interface ASSETGuest
 {
-	public interface GuestProvider
+	interface GuestProvider
 	{
 		/**
 		 * get the host object

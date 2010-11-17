@@ -11,7 +11,7 @@ public class AssetEvent
 
 	final public long time;
 
-	public AssetEvent(final long timeVal)
+	protected AssetEvent(final long timeVal)
 	{
 		time = timeVal;
 	}
