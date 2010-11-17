@@ -483,6 +483,7 @@ public class CommsTest extends TestCase
 		assertNotNull("decision there", _dEvent);
 		assertTrue("right decision model", _dEvent._activity.indexOf(UserControl.NAME) > -1);
 		assertTrue("right decision", _dEvent._activity.indexOf("TESTS") > -1);
+		assertNotNull("has status", _dEvent._status);
 		
 		// ok, get ready to stop listening
 		_dEvent = null;
