@@ -296,7 +296,7 @@ public class Category implements java.io.Serializable
 	 * @author ianmayo
 	 * 
 	 */
-	public static class CommsTest extends TestCase
+	public static class EqualityTest extends TestCase
 	{
 		public void testEquals()
 		{
