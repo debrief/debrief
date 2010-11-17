@@ -6,6 +6,7 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import org.mwc.asset.comms.restlet.data.AssetEvent;
+import org.mwc.asset.comms.restlet.data.DemandedStatusResource;
 import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
@@ -46,6 +47,8 @@ import MWC.GenericData.WorldSpeed;
 
 public class CommsTest extends TestCase
 {
+
+	public static DemandedStatus _demStat;
 
 	protected void setUp() throws Exception
 	{
@@ -135,8 +138,7 @@ public class CommsTest extends TestCase
 		public void setDemandedStatus(int scenario, int participant,
 				DemandedStatus demState)
 		{
-			// TODO Auto-generated method stub
-
+			_demStat = demState;
 		}
 
 
@@ -491,7 +493,24 @@ public class CommsTest extends TestCase
 		sl.remove();
 
 		assertNull("decision still empty there", _dEvent);
-
+		
+		// ////////////////////////////////
+		// and demanded status
+		// ////////////////////////////////
+		assertNull("dem stat empty", _demStat);
+		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
+				+ "/participant/222/state");
+		DemandedStatusResource des = cr.wrap(DemandedStatusResource.class);
+		SimpleDemandedStatus newDemStat = new SimpleDemandedStatus(12,333);
+		newDemStat.setCourse(145);
+		newDemStat.setSpeed(54);
+		des.store(newDemStat );
+		assertNotNull("dem stat populated", _demStat);
+		SimpleDemandedStatus sds = (SimpleDemandedStatus) _demStat;
+		assertEquals("correct course", 145, sds.getCourse(), 0.5);
+		assertEquals("correct speed", 54, sds.getSpeed(), 0.5);
+		
+		
 		// ////////////////////////////////
 		// go on, stick in another participant (look at detections)
 		// ////////////////////////////////
@@ -551,10 +570,12 @@ public class CommsTest extends TestCase
 		GuestServer.finish(guestComp);
 		_msg = null;
 
+		long oldTime = _time;
+		
 		scen.step();
 
 		// fire an event
-		assertEquals("time should be same", 25000, _time);
+		assertEquals("time should be same", oldTime, _time);
 		assertNull("msg should be blank", _msg);
 
 		// and restart
