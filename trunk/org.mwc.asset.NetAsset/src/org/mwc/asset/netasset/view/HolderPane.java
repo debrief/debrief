@@ -1,19 +1,25 @@
 package org.mwc.asset.netasset.view;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
+
+import com.swtdesigner.SWTResourceManager;
 
 public class HolderPane extends Composite
 {
 	private Text demCourse;
 	private Text demSpeed;
 	private Text demDepth;
+	private Button newState;
 
 	/**
 	 * Create the composite.
@@ -30,6 +36,16 @@ public class HolderPane extends Composite
 		
 		Group group = new Group(composite, SWT.NONE);
 		group.setSize(76, 83);
+		group.setLayout(new RowLayout(SWT.HORIZONTAL));
+		
+		Label lblTime = new Label(group, SWT.CENTER);
+		lblTime.setText("Time:");
+		
+		Label label_3 = new Label(group, SWT.NONE);
+		label_3.setFont(SWTResourceManager.getFont("Courier New", 14, SWT.BOLD));
+		label_3.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+		label_3.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		label_3.setText("00:00:00 ");
 		
 		Group state = new Group(composite, SWT.NONE);
 		state.setLayout(new GridLayout(3, false));
@@ -87,11 +103,15 @@ public class HolderPane extends Composite
 		label_1.setBounds(0, 0, 59, 14);
 		label_1.setText("New Label");
 		
-		Button newState = new Button(state, SWT.NONE);
+		newState = new Button(state, SWT.NONE);
 		newState.setBounds(0, 0, 94, 30);
 		newState.setText("Submit");
 		
 		Composite composite_1 = new Composite(this, SWT.NONE);
+		composite_1.setLayoutData(new RowData(212, 296));
+		composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
+		
+		List logList = new List(composite_1, SWT.BORDER);
 
 	}
 
