@@ -34,6 +34,8 @@ public class HolderPane extends Composite
 	private Button newState;
 	private List logList;
 	private Button connectBtn;
+	private Group grpState;
+	private Group grpTime;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -95,14 +97,25 @@ public class HolderPane extends Composite
 		String item = toStringLikeThis(time, "HHmm:ss") + " " + type + " " + desc;
 		logList.add(item, 0);
 	}
-	
+
 	public void addConnectListener(SelectionListener listener)
 	{
 		connectBtn.addSelectionListener(listener);
 	}
+
 	public void removeConnectListener(SelectionListener listener)
 	{
 		connectBtn.removeSelectionListener(listener);
+	}
+
+	public void setTimeEnabled(boolean val)
+	{
+		grpTime.setEnabled(val);
+	}
+
+	public void setStateEnabled(boolean val)
+	{
+		grpState.setEnabled(val);
 	}
 
 	/**
@@ -121,14 +134,15 @@ public class HolderPane extends Composite
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
-		
-		 connectBtn = new Button(composite, SWT.NONE);
+
+		connectBtn = new Button(composite, SWT.NONE);
 		connectBtn.setText("Connect");
 
-		Group grpTime = new Group(composite, SWT.NONE);
+		grpTime = new Group(composite, SWT.NONE);
 		grpTime.setText("Time");
 		grpTime.setSize(76, 83);
 		grpTime.setLayout(new RowLayout(SWT.VERTICAL));
+		grpTime.setEnabled(false);
 
 		Label label_3 = new Label(grpTime, SWT.CENTER);
 		label_3.setLayoutData(new RowData(140, SWT.DEFAULT));
@@ -160,64 +174,65 @@ public class HolderPane extends Composite
 		slowerBtn = new Button(composite_2, SWT.CENTER);
 		slowerBtn.setText("--");
 
-		Group state = new Group(composite, SWT.NONE);
-		state.setText("State");
-		state.setLayout(new GridLayout(3, false));
+		grpState = new Group(composite, SWT.NONE);
+		grpState.setText("State");
+		grpState.setLayout(new GridLayout(3, false));
+		grpState.setEnabled(false);
 
-		Label lblProperty = new Label(state, SWT.NONE);
+		Label lblProperty = new Label(grpState, SWT.NONE);
 		lblProperty.setText("Property");
 
-		Label lblDemanded = new Label(state, SWT.NONE);
+		Label lblDemanded = new Label(grpState, SWT.NONE);
 		lblDemanded.setText("Demanded");
 
-		Label lblActual = new Label(state, SWT.NONE);
+		Label lblActual = new Label(grpState, SWT.NONE);
 		lblActual.setText("Actual");
 
-		Label lblCourse = new Label(state, SWT.NONE);
+		Label lblCourse = new Label(grpState, SWT.NONE);
 		lblCourse.setBounds(0, 0, 59, 14);
 		lblCourse.setText("Course");
 
-		demCourse = new Text(state, SWT.BORDER);
+		demCourse = new Text(grpState, SWT.BORDER);
 		demCourse.setText("000");
 		demCourse.setBounds(0, 0, 8, 19);
 
-		actCourse = new Label(state, SWT.NONE);
+		actCourse = new Label(grpState, SWT.NONE);
 		actCourse.setBounds(0, 0, 59, 14);
 		actCourse.setText("000");
 
-		Label lblSpeed = new Label(state, SWT.NONE);
+		Label lblSpeed = new Label(grpState, SWT.NONE);
 		lblSpeed.setBounds(0, 0, 59, 14);
 		lblSpeed.setText("Speed");
 
-		demSpeed = new Text(state, SWT.BORDER);
+		demSpeed = new Text(grpState, SWT.BORDER);
 		demSpeed.setText("000");
 		demSpeed.setBounds(0, 0, 8, 19);
 
-		actSpeed = new Label(state, SWT.NONE);
+		actSpeed = new Label(grpState, SWT.NONE);
 		actSpeed.setSize(59, 14);
 		actSpeed.setText("000");
 
-		Label lblDepth = new Label(state, SWT.NONE);
+		Label lblDepth = new Label(grpState, SWT.NONE);
 		lblDepth.setBounds(0, 0, 59, 14);
 		lblDepth.setText("Depth");
 
-		demDepth = new Text(state, SWT.BORDER);
+		demDepth = new Text(grpState, SWT.BORDER);
 		demDepth.setText("000");
 		demDepth.setSize(8, 19);
 
-		actDepth = new Label(state, SWT.NONE);
+		actDepth = new Label(grpState, SWT.NONE);
 		actDepth.setBounds(0, 0, 59, 14);
 		actDepth.setText("000");
 
-		Label label = new Label(state, SWT.NONE);
+		Label label = new Label(grpState, SWT.NONE);
 		label.setBounds(0, 0, 59, 14);
 		label.setText("New Label");
 
-		Label label_1 = new Label(state, SWT.NONE);
+		Label label_1 = new Label(grpState, SWT.NONE);
 		label_1.setBounds(0, 0, 59, 14);
 		label_1.setText("New Label");
 
-		newState = new Button(state, SWT.NONE);
+		newState = new Button(grpState, SWT.NONE);
 		newState.setBounds(0, 0, 94, 30);
 		newState.setText("Submit");
 
