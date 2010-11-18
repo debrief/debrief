@@ -1,7 +1,17 @@
 package org.mwc.asset.comms.restlet.data;
 
-public class Scenario
+import java.io.Serializable;
+
+
+public class Scenario implements Serializable
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	final private Integer _id;
 	final private String _name;
 
