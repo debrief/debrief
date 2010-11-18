@@ -33,6 +33,7 @@ public class HolderPane extends Composite
 	private Label actDepth;
 	private Button newState;
 	private List logList;
+	private Button connectBtn;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -94,6 +95,15 @@ public class HolderPane extends Composite
 		String item = toStringLikeThis(time, "HHmm:ss") + " " + type + " " + desc;
 		logList.add(item, 0);
 	}
+	
+	public void addConnectListener(SelectionListener listener)
+	{
+		connectBtn.addSelectionListener(listener);
+	}
+	public void removeConnectListener(SelectionListener listener)
+	{
+		connectBtn.removeSelectionListener(listener);
+	}
 
 	/**
 	 * Create the composite.
@@ -108,6 +118,9 @@ public class HolderPane extends Composite
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
+		
+		 connectBtn = new Button(composite, SWT.NONE);
+		connectBtn.setText("Connect");
 
 		Group grpTime = new Group(composite, SWT.NONE);
 		grpTime.setText("Time");
@@ -217,6 +230,11 @@ public class HolderPane extends Composite
 	protected void checkSubclass()
 	{
 		// Disable the check that prevents subclassing of SWT components
+	}
+
+	public void addTimeListener(SelectionAdapter listener)
+	{
+		playBtn.addSelectionListener(listener);
 	}
 
 }

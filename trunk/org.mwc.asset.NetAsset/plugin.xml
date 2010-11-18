@@ -23,7 +23,7 @@
          point="org.eclipse.ui.views">
       <view
             name="View"
-            class="org.mwc.asset.netasset.View"
+            class="org.mwc.asset.netasset.NetAssetView"
             id="org.mwc.asset.NetAsset.view">
       </view>
    </extension>
