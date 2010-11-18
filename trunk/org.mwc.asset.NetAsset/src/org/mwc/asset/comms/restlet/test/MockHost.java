@@ -30,6 +30,9 @@ public class MockHost extends BaseHost
 		_myScenario.setName("Scenario_" + ++_ctr);
 		_myScenario.setScenarioStepTime(60 * 1000);
 		_myScenario.setStepTime(2 * 1000);
+		
+		_myScenario.addScenarioSteppedListener(getSteppedListFor(SCENARIO_ID));
+		_myScenario.addParticipantsChangedListener(getSteppedListFor(SCENARIO_ID));
 
 		Wander wander = new Wander("just wander around");
 		wander.setOrigin(new WorldLocation(0.05, 0.04, 0));

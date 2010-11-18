@@ -75,6 +75,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 
 			try
 			{
+				System.out.println("£££ about to fire to:" + thisURI);
 				ClientResource client = new ClientResource(thisURI.toString());
 				fireThisEvent(client, event);
 			}

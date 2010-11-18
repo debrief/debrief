@@ -1,5 +1,6 @@
 package org.mwc.asset.netasset.model;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.mwc.asset.comms.restlet.data.ListenerResource;
@@ -9,7 +10,8 @@ import org.mwc.asset.comms.restlet.data.ScenariosResource;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.GuestServer;
 import org.mwc.asset.comms.restlet.test.MockHost;
-import org.restlet.Restlet;
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 public class RestSupport
@@ -67,27 +69,47 @@ public class RestSupport
 				e.printStackTrace();
 			}
 
+		/**
+		 * give the server time to get started
+		 * 
+		 */
+		try
+		{
+			while (guestS.isStopped())
+			{
+				System.out.println("give it a few secs....");
+				Thread.currentThread().wait(500);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+
 		// start listening to time events
 		// right, now try to register it.
 		cr = new ClientResource("http://localhost:8080/v1/scenario/"
 				+ MockHost.SCENARIO_ID + "/listener");
-		ListenerResource lr = cr.wrap(ListenerResource.class);
-		_scenarioListenerId = lr.accept("http://localhost:8081/v1/scenario/"
-				+ MockHost.SCENARIO_ID + "/event");
+		String theAddress = "http://localhost:8081/v1/scenario/"
+				+ MockHost.SCENARIO_ID + "/event";
+		System.out.println("providing listener for" + theAddress);
+		Representation rep = cr.post(theAddress, MediaType.TEXT_PLAIN);
+		// ListenerResource lr = cr.wrap(ListenerResource.class);
+		// _scenarioListenerId = lr.accept(theAddress);
 
 		return res;
 	}
 
 	public void doDisconnect()
 	{
-		if (_scenarioListenerId != NULL_INT)
-		{
-			ClientResource cr = new ClientResource(
-					"http://localhost:8080/v1/scenario/" + MockHost.SCENARIO_ID
-							+ "/listener/" + _scenarioListenerId);
-			ListenerResource lr = cr.wrap(ListenerResource.class);
-			lr.remove();
-		}
+		// if (_scenarioListenerId != NULL_INT)
+		// {
+		// ClientResource cr = new ClientResource(
+		// "http://localhost:8080/v1/scenario/" + MockHost.SCENARIO_ID
+		// + "/listener/" + _scenarioListenerId);
+		// ListenerResource lr = cr.wrap(ListenerResource.class);
+		// lr.remove();
+		// }
 	}
 
 	public void play(boolean play)

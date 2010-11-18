@@ -41,7 +41,6 @@ import MWC.GenericData.WorldDistance;
 abstract public class BaseHost implements ASSETHost
 {
 
-
 	/**
 	 * people listening to a scenario
 	 * 
@@ -186,7 +185,6 @@ abstract public class BaseHost implements ASSETHost
 		return res;
 	}
 
-
 	@Override
 	public DemandedStatus getDemandedStatus(int scenario, int participant)
 	{
@@ -199,25 +197,26 @@ abstract public class BaseHost implements ASSETHost
 			DemandedStatus demState)
 	{
 		// what's the current model
-		ParticipantType thisP = getScenario(scenario).getThisParticipant(participant);
+		ParticipantType thisP = getScenario(scenario).getThisParticipant(
+				participant);
 		DecisionType curModel = thisP.getDecisionModel();
 		UserControl userC = null;
-		if(curModel instanceof UserControl)
+		if (curModel instanceof UserControl)
 		{
 			userC = (UserControl) curModel;
 		}
 		else
 		{
-			userC = new UserControl(0,null,null);
+			userC = new UserControl(0, null, null);
 			thisP.setDecisionModel(userC);
 		}
-		
+
 		SimpleDemandedStatus sds = (SimpleDemandedStatus) demState;
 		userC.setCourse(sds.getCourse());
 		userC.setSpeed(sds.getSpeedVal());
 		userC.setDepth(new WorldDistance(-sds.getHeight(), WorldDistance.METRES));
 	}
-	
+
 	/**
 	 * get the specified block of listeners
 	 * 
@@ -384,7 +383,15 @@ abstract public class BaseHost implements ASSETHost
 		{
 			// does it have a scenario?
 			ScenarioEventResource scenR = client.wrap(ScenarioEventResource.class);
-			scenR.accept(event);
+			try
+			{
+				System.out.println("%%% about to fire at:" + client);
+				scenR.accept(event);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 		@Override

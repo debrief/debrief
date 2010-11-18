@@ -36,6 +36,7 @@ public class HolderPane extends Composite
 	private Button connectBtn;
 	private Group grpState;
 	private Group grpTime;
+	private Label lblTime;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -117,6 +118,13 @@ public class HolderPane extends Composite
 	{
 		grpState.setEnabled(val);
 	}
+	
+
+	public void setTime(String string)
+	{
+		lblTime.setText(string);
+	}
+
 
 	/**
 	 * Create the composite.
@@ -154,12 +162,12 @@ public class HolderPane extends Composite
 		grpTime.setLayout(new RowLayout(SWT.VERTICAL));
 		grpTime.setEnabled(false);
 
-		Label label_3 = new Label(grpTime, SWT.CENTER);
-		label_3.setLayoutData(new RowData(140, SWT.DEFAULT));
-		label_3.setFont(SWTResourceManager.getFont("Courier New", 14, SWT.BOLD));
-		label_3.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
-		label_3.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-		label_3.setText("00:00:00 ");
+		lblTime = new Label(grpTime, SWT.CENTER);
+		lblTime.setLayoutData(new RowData(140, SWT.DEFAULT));
+		lblTime.setFont(SWTResourceManager.getFont("Courier New", 14, SWT.BOLD));
+		lblTime.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+		lblTime.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+		lblTime.setText("00/00/00 00:00:00");
 
 		Composite composite_2 = new Composite(grpTime, SWT.NONE);
 		composite_2.setLayout(new RowLayout(SWT.HORIZONTAL));

@@ -8,7 +8,7 @@ import org.restlet.resource.Post;
  */
 public interface ListenerResource
 {
-	@Post
+	@Post("text/plain")
 	public int accept(String listener);
 
 	@Delete

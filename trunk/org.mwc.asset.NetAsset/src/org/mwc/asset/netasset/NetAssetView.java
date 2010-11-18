@@ -16,8 +16,10 @@ import org.mwc.asset.netasset.model.RestSupport;
 import org.mwc.asset.netasset.view.HolderPane;
 
 import ASSET.Participants.Status;
+import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
-public class NetAssetView extends ViewPart implements ASSETGuest {
+public class NetAssetView extends ViewPart implements ASSETGuest
+{
 	public static final String ID = "org.mwc.asset.NetAsset.NetAssetView";
 
 	private HolderPane _control;
@@ -28,20 +30,20 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 	{
 		_myModel = new RestSupport(this);
 	}
-	
-	
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent)
+	{
 		_control = new HolderPane(parent, SWT.NONE);
 		_control.setActCourse("12.3");
 		_control.setActSpeed("2.3");
 		_control.setActDepth("1.3");
-		
+
 		_control.logEvent(new Date().getTime(), "Event", "Start");
-		
+
 		_control.addConnectListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -49,16 +51,18 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 				super.widgetSelected(e);
 				Button btn = (Button) e.widget;
 				final boolean doIt = btn.getSelection();
-				new Thread(){
+				new Thread()
+				{
 
 					@Override
 					public void run()
 					{
-						if(doIt)
-						doConnect();
+						if (doIt)
+							doConnect();
 						else
 							doDisconnect();
-					}}.run();
+					}
+				}.run();
 			}
 		});
 		_control.addSubmitListener(new SelectionAdapter()
@@ -69,30 +73,27 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 				doSubmit();
 			}
 		});
-		_control.addTimeListener(new SelectionAdapter(){
+		_control.addTimeListener(new SelectionAdapter()
+		{
 
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				Button widget = (Button) e.widget;
 				doPlay(widget.getSelection());
-			}});
-		
-
+			}
+		});
 
 	}
 
-	
 	protected void doPlay(boolean play)
 	{
 		_myModel.play(play);
 	}
 
-
 	protected void doSubmit()
 	{
 	}
-
 
 	protected void doConnect()
 	{
@@ -107,51 +108,61 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 		_control.setStateEnabled(false);
 	}
 
-
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void setFocus() {
+	public void setFocus()
+	{
 	}
-
 
 	@Override
 	public void newParticipantDecision(int scenarioId, int participantId,
 			DecidedEvent event)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void newParticipantDetection(int scenarioId, int participantId,
 			DetectionEvent event)
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void newParticipantState(int scenarioId, int participantId,
 			Status newState)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-
 	@Override
-	public void newScenarioEvent(final long time, final String eventName, final String description)
+	public void newScenarioEvent(final long time, final String eventName,
+			final String description)
 	{
-		Display.getCurrent().asyncExec(new Runnable(){
-
-			@Override
-			public void run()
+		System.out.println("message at:" + time + " type:" + eventName + " desc:"
+				+ description);
+		Display dThread = Display.getDefault();
+		if (dThread != null)
+			dThread.asyncExec(new Runnable()
 			{
-				_control.logEvent(time, eventName, description);
-			}});
+
+				@Override
+				public void run()
+				{
+					if (eventName.equals("Step"))
+						_control.setTime(FullFormatDateTime.toString(time));
+					else
+						_control.logEvent(time, eventName, description);
+				}
+			});
+		else
+		{
+			System.out.println("dThread missing");
+		}
 	}
 
 }
