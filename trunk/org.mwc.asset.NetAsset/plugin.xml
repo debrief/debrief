@@ -24,7 +24,7 @@
       <view
             name="View"
             class="org.mwc.asset.netasset.NetAssetView"
-            id="org.mwc.asset.NetAsset.view">
+            id="org.mwc.asset.NetAsset.NetAssetView">
       </view>
    </extension>
    <extension

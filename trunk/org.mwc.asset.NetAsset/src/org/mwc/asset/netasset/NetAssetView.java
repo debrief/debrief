@@ -11,7 +11,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.netasset.view.HolderPane;
 
 public class NetAssetView extends ViewPart {
-	public static final String ID = "org.mwc.asset.NetAsset.view";
+	public static final String ID = "org.mwc.asset.NetAsset.NetAssetView";
 
 	private HolderPane _control;
 

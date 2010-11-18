@@ -3,5 +3,17 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/kryo-1.02.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/kryonet-1.02.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/asm-3.2.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/minlog-1.2.jar"/>
+	<classpathentry kind="lib" path="/contribs/kryonet-1.02/reflectasm-0.8.jar"/>
+	<classpathentry kind="lib" path="libs/smack.jar"/>
+	<classpathentry kind="lib" path="libs/smackx.jar"/>
+	<classpathentry kind="lib" path="libs/restlet/com.thoughtworks.xstream.jar"/>
+	<classpathentry kind="lib" path="libs/restlet/org.codehaus.jettison.jar"/>
+	<classpathentry kind="lib" path="libs/restlet/org.restlet.ext.xml.jar"/>
+	<classpathentry kind="lib" path="libs/restlet/org.restlet.ext.xstream.jar"/>
+	<classpathentry kind="lib" path="libs/restlet/org.restlet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
