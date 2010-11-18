@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
+import org.mwc.asset.comms.restlet.test.MockHost;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -48,27 +49,7 @@ abstract public class HostServer extends Application implements HostProvider
 		Restlet host = new HostServer()
 		{
 
-			ASSETHost host = new BaseHost(){
-				public DemandedStatus getDemandedStatus(int scenario, int participant)
-				{
-					return null;
-				}
-				public ScenarioType getScenario(int scenarioId)
-				{
-					return null;
-				}
-				public Vector<Scenario> getScenarios()
-				{
-					return null;
-				}
-				public void setDemandedStatus(int scenario, int participant,
-						DemandedStatus demState)
-				{
-				}
-				@Override
-				public void setScenarioStatus(int scenarioId, String newState)
-				{
-				}};
+			ASSETHost host = new MockHost();
 
 			@Override
 			public ASSETHost getHost()

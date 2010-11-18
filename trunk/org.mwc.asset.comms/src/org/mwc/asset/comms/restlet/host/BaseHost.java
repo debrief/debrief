@@ -23,8 +23,11 @@ import org.restlet.resource.ClientResource;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
+import ASSET.Models.DecisionType;
 import ASSET.Models.SensorType;
+import ASSET.Models.Decision.UserControl;
 import ASSET.Models.Detection.DetectionList;
+import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.ParticipantDecidedListener;
@@ -33,37 +36,39 @@ import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ParticipantsChangedListener;
 import ASSET.Scenario.ScenarioSteppedListener;
+import MWC.GenericData.WorldDistance;
 
 abstract public class BaseHost implements ASSETHost
 {
 
-	/** people listening to a scenario
+
+	/**
+	 * people listening to a scenario
 	 * 
 	 */
 	private HashMap<Integer, ScenarioSteppedList> _stepListeners;
-	
-	/** people listening to a particular participant
+
+	/**
+	 * people listening to a particular participant
 	 * 
 	 */
 	private HashMap<Integer, HashMap<Integer, ParticipantList>> _participantListeners;
 
-	
-	
 	@Override
 	public void setScenarioStatus(int scenarioId, final String newState)
 	{
 		ScenarioType scen = getScenario(scenarioId);
-		if(newState == ScenarioStateResource.START)
+		if (newState == ScenarioStateResource.START)
 			scen.start();
-		else if(newState == ScenarioStateResource.STOP)
+		else if (newState == ScenarioStateResource.STOP)
 			scen.pause();
-		else if(newState == ScenarioStateResource.FASTER)
+		else if (newState == ScenarioStateResource.FASTER)
 			System.err.println("faster not supported");
-		else if(newState == ScenarioStateResource.SLOWER)
+		else if (newState == ScenarioStateResource.SLOWER)
 			System.err.println("slower not supported");
 		else
 			System.err.println("UNSUPPORTED METHOD");
-	
+
 	}
 
 	@Override
@@ -181,6 +186,38 @@ abstract public class BaseHost implements ASSETHost
 		return res;
 	}
 
+
+	@Override
+	public DemandedStatus getDemandedStatus(int scenario, int participant)
+	{
+		return getScenario(scenario).getThisParticipant(participant)
+				.getDemandedStatus();
+	}
+
+	@Override
+	public void setDemandedStatus(int scenario, int participant,
+			DemandedStatus demState)
+	{
+		// what's the current model
+		ParticipantType thisP = getScenario(scenario).getThisParticipant(participant);
+		DecisionType curModel = thisP.getDecisionModel();
+		UserControl userC = null;
+		if(curModel instanceof UserControl)
+		{
+			userC = (UserControl) curModel;
+		}
+		else
+		{
+			userC = new UserControl(0,null,null);
+			thisP.setDecisionModel(userC);
+		}
+		
+		SimpleDemandedStatus sds = (SimpleDemandedStatus) demState;
+		userC.setCourse(sds.getCourse());
+		userC.setSpeed(sds.getSpeedVal());
+		userC.setDepth(new WorldDistance(-sds.getHeight(), WorldDistance.METRES));
+	}
+	
 	/**
 	 * get the specified block of listeners
 	 * 
@@ -295,8 +332,8 @@ abstract public class BaseHost implements ASSETHost
 	 * @author ianmayo
 	 * 
 	 */
-	private static class ParticipantMovedList extends BaseListenerList<MovedEvent>
-			implements ParticipantMovedListener
+	private static class ParticipantMovedList extends
+			BaseListenerList<MovedEvent> implements ParticipantMovedListener
 	{
 
 		@Override
