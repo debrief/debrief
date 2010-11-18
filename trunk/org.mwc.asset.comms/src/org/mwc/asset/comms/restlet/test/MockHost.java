@@ -2,8 +2,6 @@ package org.mwc.asset.comms.restlet.test;
 
 import java.util.Vector;
 
-import javax.media.Duration;
-
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.host.BaseHost;
 
