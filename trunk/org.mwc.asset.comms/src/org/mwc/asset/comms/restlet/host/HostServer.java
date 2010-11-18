@@ -1,8 +1,5 @@
 package org.mwc.asset.comms.restlet.host;
 
-import java.util.Vector;
-
-import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.mwc.asset.comms.restlet.test.MockHost;
 import org.restlet.Application;
@@ -10,9 +7,6 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
-
-import ASSET.ScenarioType;
-import ASSET.Participants.DemandedStatus;
 
 abstract public class HostServer extends Application implements HostProvider
 {
