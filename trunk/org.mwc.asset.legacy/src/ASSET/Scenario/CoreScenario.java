@@ -471,9 +471,9 @@ public class CoreScenario implements ScenarioType, ISimulation
   }
 
   /**
-   * set the size of the time step (or zero to run to completion)
+   * set the size of the time delay (or zero to run to completion)
    *
-   * @param step_size to step forward at each step (or zero to run)
+   * @param step_size time to pause before step (or zero to run)
    */
   public void setStepTime(Duration step_size)
   {
@@ -489,9 +489,9 @@ public class CoreScenario implements ScenarioType, ISimulation
   }
 
   /**
-   * set the size of the time step (or zero to run to completion)
+   * set the size of the time delay (or zero to run to completion)
    *
-   * @param step_size millis to step forward at each step (or zero to run)
+   * @param step_size millis to pause before step (or zero to run)
    */
   public void setStepTime(final int step_size)
   {

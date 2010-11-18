@@ -96,16 +96,16 @@ public interface ScenarioType extends ScenarioActivityMonitor, NetworkScenario
   int getStepTime();
 
   /**
-   * set the size of the time step (or zero to run to completion)
+   * set the size of the time delay (or zero to run to completion)
    *
-   * @param step_size millis to step forward at each step (or zero to run)
+   * @param step_size time to pause before step (or zero to run)
    */
   void setStepTime(int step_size);
 
   /**
-   * set the size of the time step (or zero to run to completion)
+   * set the size of the time delay (or zero to run to completion)
    *
-   * @param step_size to step forward at each step (or zero to run)
+   * @param step_size time to pause before step (or zero to run)
    */
   void setStepTime(Duration step_size);
 
