@@ -12,6 +12,10 @@ public interface DetectionResource
 
 	public static class DetectionEvent extends AssetEvent
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final public DetectionList _list;
 
 		public DetectionEvent(final DetectionList list)

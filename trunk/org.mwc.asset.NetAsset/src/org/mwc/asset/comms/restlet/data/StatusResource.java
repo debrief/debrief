@@ -12,6 +12,10 @@ public interface StatusResource
 
 	public static class MovedEvent extends AssetEvent
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final public Status _status;
 
 		public MovedEvent(final Status status)

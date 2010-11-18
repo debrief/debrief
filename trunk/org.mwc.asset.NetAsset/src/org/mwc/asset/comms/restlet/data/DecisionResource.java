@@ -12,6 +12,10 @@ public interface DecisionResource
 
 	public static class DecidedEvent extends AssetEvent
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final public String _activity;
 		final public DemandedStatus _status;
 
