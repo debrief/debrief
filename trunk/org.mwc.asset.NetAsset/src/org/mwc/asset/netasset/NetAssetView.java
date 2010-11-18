@@ -212,8 +212,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	public void newScenarioEvent(final long time, final String eventName,
 			final String description)
 	{
-		System.out.println("message at:" + time + " type:" + eventName + " desc:"
-				+ description);
 		Display dThread = Display.getDefault();
 		if (dThread != null)
 			dThread.asyncExec(new Runnable()

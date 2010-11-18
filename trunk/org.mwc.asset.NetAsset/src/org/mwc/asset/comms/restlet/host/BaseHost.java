@@ -16,6 +16,7 @@ import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.StatusResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
+import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
@@ -28,7 +29,6 @@ import ASSET.Models.DecisionType;
 import ASSET.Models.SensorType;
 import ASSET.Models.Decision.UserControl;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.ParticipantDecidedListener;
@@ -38,6 +38,7 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.ParticipantsChangedListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldSpeed;
 
 abstract public class BaseHost implements ASSETHost
 {
@@ -195,7 +196,7 @@ abstract public class BaseHost implements ASSETHost
 
 	@Override
 	public void setDemandedStatus(int scenario, int participant,
-			DemandedStatus demState)
+			NetDemStatus demState)
 	{
 		// what's the current model
 		ParticipantType thisP = getScenario(scenario).getThisParticipant(
@@ -212,10 +213,9 @@ abstract public class BaseHost implements ASSETHost
 			thisP.setDecisionModel(userC);
 		}
 
-		SimpleDemandedStatus sds = (SimpleDemandedStatus) demState;
-		userC.setCourse(sds.getCourse());
-		userC.setSpeed(sds.getSpeedVal());
-		userC.setDepth(new WorldDistance(-sds.getHeight(), WorldDistance.METRES));
+		userC.setCourse(demState.course);
+		userC.setSpeed(new WorldSpeed( demState.speed,WorldSpeed.Kts));
+		userC.setDepth(new WorldDistance(demState.depth, WorldDistance.METRES));
 	}
 
 	/**
@@ -386,9 +386,7 @@ abstract public class BaseHost implements ASSETHost
 			ScenarioEventResource scenR = client.wrap(ScenarioEventResource.class);
 			try
 			{
-				System.out.println("%%% about to fire at:" + client);
 				scenR.accept(event);
-				client.release();
 			}
 			catch (Exception e)
 			{

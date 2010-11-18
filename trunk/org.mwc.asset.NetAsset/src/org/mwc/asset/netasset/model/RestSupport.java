@@ -1,6 +1,8 @@
 package org.mwc.asset.netasset.model;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mwc.asset.comms.restlet.data.DemandedStatusResource;
 import org.mwc.asset.comms.restlet.data.ListenerResource;
@@ -8,13 +10,11 @@ import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
+import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.GuestServer;
 import org.restlet.resource.ClientResource;
-
-import ASSET.Models.Movement.SimpleDemandedStatus;
-import MWC.GenericData.WorldSpeed;
 
 public class RestSupport
 {
@@ -86,6 +86,9 @@ public class RestSupport
 					return _myGuest;
 				}
 			};
+			Logger logger = this.guestS.getLogger();
+			logger.setLevel(Level.WARNING);
+
 		}
 
 		if (guestS.isStopped())
@@ -170,8 +173,8 @@ public class RestSupport
 		// ////////////////////////////////
 		// hmm, what about the participant list?
 		// ////////////////////////////////
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/" + _scenarioId
-				+ "/participant");
+		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+				+ _scenarioId + "/participant");
 		ParticipantsResource pr = cr.wrap(ParticipantsResource.class);
 		ParticipantsList partList = pr.retrieve();
 
@@ -194,8 +197,9 @@ public class RestSupport
 	{
 		// create the new state listener
 		// right, now try to register it.
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/" + _scenarioId
-				+ "/participant/" + _partId + "/listener/" + _partListenerId);
+		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+				+ _scenarioId + "/participant/" + _partId + "/listener/"
+				+ _partListenerId);
 		ListenerResource sl = cr.wrap(ListenerResource.class);
 		sl.remove();
 		cr.release();
@@ -203,16 +207,15 @@ public class RestSupport
 
 	public void doDemStatus(double courseDegs, double speedKts, double depthM)
 	{
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/" + _scenarioId
-				+ "/participant/" + _partId + "/demState");
+		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+				+ _scenarioId + "/participant/" + _partId + "/demState");
 		DemandedStatusResource sl = cr.wrap(DemandedStatusResource.class);
-		SimpleDemandedStatus newStat = new SimpleDemandedStatus(23, 0);
-		newStat.setCourse(courseDegs);
-		newStat.setSpeed(new WorldSpeed(speedKts, WorldSpeed.Kts));
-		newStat.setHeight(-depthM);
-		try{
-		sl.store(newStat);
-		}catch(Exception e)
+		NetDemStatus newStat = new NetDemStatus(courseDegs, speedKts, depthM);
+		try
+		{
+			sl.store(newStat);
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

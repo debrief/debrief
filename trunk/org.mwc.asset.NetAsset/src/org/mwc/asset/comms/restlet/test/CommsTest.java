@@ -16,6 +16,7 @@ import org.mwc.asset.comms.restlet.data.ScenariosResource;
 import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.SensorsResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
+import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
 import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
@@ -49,7 +50,7 @@ import MWC.GenericData.WorldSpeed;
 public class CommsTest extends TestCase
 {
 
-	public static DemandedStatus _demStat;
+	public static NetDemStatus _demStat;
 	public static String _scenarioState;
 
 	protected void setUp() throws Exception
@@ -147,7 +148,7 @@ public class CommsTest extends TestCase
 
 		@Override
 		public void setDemandedStatus(int scenario, int participant,
-				DemandedStatus demState)
+				NetDemStatus demState)
 		{
 			_demStat = demState;
 		}
@@ -525,14 +526,12 @@ public class CommsTest extends TestCase
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
 				+ "/participant/222/demState");
 		DemandedStatusResource des = cr.wrap(DemandedStatusResource.class);
-		SimpleDemandedStatus newDemStat = new SimpleDemandedStatus(12,333);
-		newDemStat.setCourse(145);
-		newDemStat.setSpeed(54);
+		NetDemStatus newDemStat = new NetDemStatus(145,54, 0);
 		des.store(newDemStat );
 		assertNotNull("dem stat populated", _demStat);
-		SimpleDemandedStatus sds = (SimpleDemandedStatus) _demStat;
-		assertEquals("correct course", 145, sds.getCourse(), 0.5);
-		assertEquals("correct speed", 54, sds.getSpeed(), 0.5);
+		NetDemStatus sds = (NetDemStatus) _demStat;
+		assertEquals("correct course", 145, sds.course, 0.5);
+		assertEquals("correct speed", 54, sds.speed, 0.5);
 		
 		
 		// ////////////////////////////////

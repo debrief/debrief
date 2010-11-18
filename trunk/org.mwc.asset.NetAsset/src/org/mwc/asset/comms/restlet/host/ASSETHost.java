@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.mwc.asset.comms.restlet.data.Sensor;
+import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 
@@ -91,7 +92,7 @@ public interface ASSETHost
 	 * @param demState
 	 */
 	public void setDemandedStatus(int scenario, int participant,
-			DemandedStatus demState);
+			NetDemStatus demState);
 
 	/** someone wants to listen to new decisions
 	 * 

@@ -11,6 +11,7 @@ import ASSET.Models.Vessels.Surface;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
+import MWC.GenericData.WorldAcceleration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -48,7 +49,8 @@ public class MockHost extends BaseHost
 		Surface _platform1 = new Surface(PLAT1_ID, curStat, demStat, "Platform One");
 		_platform1.setDecisionModel(wander);
 		_platform1.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
-
+		_platform1.getMovementChars().setAccelRate(new WorldAcceleration(0.2,WorldAcceleration.Kts_sec));
+		
 		Status otherStat = new Status(curStat);
 		otherStat.setLocation(new WorldLocation(0.1, 0.2, 0));
 		otherStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));

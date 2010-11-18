@@ -77,6 +77,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 			{
 				ClientResource client = new ClientResource(thisURI.toString());
 				fireThisEvent(client, event);
+				client.release();
 			}
 			catch (ResourceException re)
 			{
