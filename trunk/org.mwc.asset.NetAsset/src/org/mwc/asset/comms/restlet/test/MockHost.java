@@ -1,8 +1,7 @@
 package org.mwc.asset.comms.restlet.test;
 
-import java.util.Vector;
-
 import org.mwc.asset.comms.restlet.data.Scenario;
+import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.mwc.asset.comms.restlet.host.BaseHost;
 
 import ASSET.ScenarioType;
@@ -64,9 +63,9 @@ public class MockHost extends BaseHost
 	}
 
 	@Override
-	public Vector<Scenario> getScenarios()
+	public ScenarioList getScenarios()
 	{
-		Vector<Scenario> res = new Vector<Scenario>(0,1);
+		ScenarioList res = new ScenarioList();
 		res.add(new Scenario(_myScenario.getName(), SCENARIO_ID));
 		return res;
 	}

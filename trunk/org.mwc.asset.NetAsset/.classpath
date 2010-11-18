@@ -14,6 +14,7 @@
 	<classpathentry kind="lib" path="libs/restlet/org.codehaus.jettison.jar"/>
 	<classpathentry kind="lib" path="libs/restlet/org.restlet.ext.xml.jar"/>
 	<classpathentry kind="lib" path="libs/restlet/org.restlet.ext.xstream.jar"/>
-	<classpathentry kind="lib" path="libs/restlet/org.restlet.jar"/>
+	<classpathentry kind="lib" path="libs/restlet/org.restlet.jar" sourcepath="docs/restlet_src"/>
+	<classpathentry kind="lib" path="libs/restlet/org.json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

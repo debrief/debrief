@@ -2,11 +2,10 @@ package org.mwc.asset.comms.restlet.host;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Vector;
 
 import org.mwc.asset.comms.restlet.data.Participant;
-import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.Sensor;
+import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 
 import ASSET.ScenarioType;
 import ASSET.Participants.DemandedStatus;
@@ -58,7 +57,7 @@ public interface ASSETHost
 	 * 
 	 * @return
 	 */
-	public Vector<Scenario> getScenarios();
+	public ScenarioList getScenarios();
 	
 	public List<Participant> getParticipantsFor(int scenarioId);
 	

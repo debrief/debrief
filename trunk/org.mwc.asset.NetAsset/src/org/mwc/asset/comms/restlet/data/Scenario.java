@@ -1,11 +1,21 @@
 package org.mwc.asset.comms.restlet.data;
 
 import java.io.Serializable;
+import java.util.Vector;
 
 
 public class Scenario implements Serializable
 {
+	public static class ScenarioList extends Vector<Scenario> implements Serializable
+	{
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+	}
+	
 	/**
 	 * 
 	 */

@@ -7,7 +7,8 @@ Bundle-Activator: org.mwc.asset.netasset.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.asset.legacy;bundle-version="1.0.20",
- org.mwc.cmap.legacy;bundle-version="1.0.103"
+ org.mwc.cmap.legacy;bundle-version="1.0.103",
+ org.junit4;bundle-version="4.5.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: libs/restlet/org.restlet.jar,

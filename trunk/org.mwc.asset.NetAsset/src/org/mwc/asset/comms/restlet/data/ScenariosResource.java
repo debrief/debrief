@@ -1,7 +1,7 @@
 package org.mwc.asset.comms.restlet.data;
 
-import java.util.List;
 
+import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.restlet.resource.Get;
 
 /**
@@ -11,5 +11,5 @@ public interface ScenariosResource
 {
 
 	@Get
-	public List<Scenario> retrieve();
+	public ScenarioList retrieve();
 }

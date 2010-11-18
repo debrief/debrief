@@ -47,13 +47,13 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 			public void widgetSelected(SelectionEvent e)
 			{
 				super.widgetSelected(e);
-				Display.getCurrent().asyncExec(new Runnable(){
+				new Thread(){
 
 					@Override
 					public void run()
 					{
 						doConnect();
-					}});
+					}}.run();
 			}
 		});
 		_control.addSubmitListener(new SelectionAdapter()
@@ -137,10 +137,15 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 
 
 	@Override
-	public void newScenarioEvent(long time, String eventName, String description)
+	public void newScenarioEvent(final long time, final String eventName, final String description)
 	{
-		// TODO Auto-generated method stub
-		
+		Display.getCurrent().asyncExec(new Runnable(){
+
+			@Override
+			public void run()
+			{
+				_control.logEvent(time, eventName, description);
+			}});
 	}
 
 }

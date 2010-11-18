@@ -1,8 +1,8 @@
 package org.mwc.asset.comms.restlet.data;
 
-import java.util.List;
 import java.util.Vector;
 
+import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
@@ -14,9 +14,9 @@ public class ScenariosServerResource extends ServerResource implements
 {
 
 	@Get
-	public List<Scenario> retrieve()
+	public ScenarioList retrieve()
 	{
-		final Vector<Scenario> res = new Vector<Scenario>();
+		final ScenarioList res = new ScenarioList();
 		res.add(new Scenario("Scott", 44));
 		res.add(new Scenario("Scott", 22));
 		res.add(new Scenario("Scott", 33));

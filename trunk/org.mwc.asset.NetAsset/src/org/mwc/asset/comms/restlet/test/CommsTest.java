@@ -1,7 +1,6 @@
 package org.mwc.asset.comms.restlet.test;
 
 import java.util.List;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -18,6 +17,7 @@ import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.SensorsResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.ASSETHost;
@@ -138,9 +138,9 @@ public class CommsTest extends TestCase
 		}
 
 		@Override
-		public Vector<Scenario> getScenarios()
+		public ScenarioList getScenarios()
 		{
-			Vector<Scenario> res = new Vector<Scenario>(0, 1);
+			ScenarioList res = new ScenarioList();
 			res.add(new Scenario(_myScenario.getName(), 434));
 			return res;
 		}

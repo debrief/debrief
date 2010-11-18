@@ -1,10 +1,7 @@
 package org.mwc.asset.comms.restlet.host;
 
-import java.util.List;
-import java.util.Vector;
-
-import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
+import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
 import org.restlet.resource.Get;
 
@@ -13,12 +10,12 @@ public class ScenariosHandler extends ASSETResource implements
 {
 	
 	@Get
-	public List<Scenario> retrieve()
+	public ScenarioList retrieve()
 	{
 		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
 		ASSETHost host = hostP.getHost();
 		
-		Vector<Scenario> res = host.getScenarios();
+		ScenarioList res = host.getScenarios();
 		
 		return res;
 	}
