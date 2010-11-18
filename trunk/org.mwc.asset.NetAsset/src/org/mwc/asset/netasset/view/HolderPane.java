@@ -113,8 +113,11 @@ public class HolderPane extends Composite
 	 */
 	public HolderPane(Composite parent, int style)
 	{
-		super(parent, style);
-		setLayout(new RowLayout(SWT.HORIZONTAL));
+		super(parent, SWT.BORDER);
+		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
+		rowLayout.wrap = false;
+		rowLayout.fill = true;
+		setLayout(rowLayout);
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
@@ -218,11 +221,11 @@ public class HolderPane extends Composite
 		newState.setBounds(0, 0, 94, 30);
 		newState.setText("Submit");
 
-		Composite composite_1 = new Composite(this, SWT.NONE);
-		composite_1.setLayoutData(new RowData(212, 296));
+		Composite composite_1 = new Composite(this, SWT.BORDER);
+		composite_1.setLayoutData(new RowData(200, SWT.DEFAULT));
 		composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		logList = new List(composite_1, SWT.BORDER);
+		logList = new List(composite_1, SWT.BORDER | SWT.V_SCROLL);
 
 	}
 
