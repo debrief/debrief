@@ -8,7 +8,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.asset.comms.restlet.host.ASSETHost;
+import org.mwc.asset.comms.restlet.host.HostServer;
+import org.mwc.asset.comms.restlet.test.MockHost;
 import org.mwc.asset.netasset.view.HolderPane;
+import org.restlet.Restlet;
 
 public class NetAssetView extends ViewPart {
 	public static final String ID = "org.mwc.asset.NetAsset.NetAssetView";
@@ -51,6 +55,9 @@ public class NetAssetView extends ViewPart {
 				Button widget = (Button) e.widget;
 				doPlay(widget.getSelection());
 			}});
+		
+
+
 	}
 
 	

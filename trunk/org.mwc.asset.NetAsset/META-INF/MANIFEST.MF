@@ -10,3 +10,5 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.legacy;bundle-version="1.0.103"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: libs/restlet/org.restlet.jar,
+ .

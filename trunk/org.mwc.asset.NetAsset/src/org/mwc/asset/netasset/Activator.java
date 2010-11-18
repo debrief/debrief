@@ -2,7 +2,11 @@ package org.mwc.asset.netasset;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.asset.comms.restlet.host.ASSETHost;
+import org.mwc.asset.comms.restlet.host.HostServer;
+import org.mwc.asset.comms.restlet.test.MockHost;
 import org.osgi.framework.BundleContext;
+import org.restlet.Restlet;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -28,6 +32,28 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		
+		// do the host
+		Restlet host = new HostServer()
+		{
+
+			ASSETHost host = new MockHost();
+
+			@Override
+			public ASSETHost getHost()
+			{
+				return host;
+			}
+		};
+		try
+		{
+			HostServer.go(host);
+		}
+		catch (Exception e1)
+		{
+			e1.printStackTrace();
+		}
 	}
 
 	/*
