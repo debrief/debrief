@@ -20,7 +20,7 @@ public class MockHost extends BaseHost
 	CoreScenario _myScenario;
 	private static int _ctr = 0;
 
-	public static int SCENARIO_ID = 512;
+	protected static int SCENARIO_ID = 512;
 	public static int PLAT1_ID = 33;
 	public static int PLAT2_ID = 44;
 

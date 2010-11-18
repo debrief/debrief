@@ -1,6 +1,7 @@
 package org.mwc.asset.comms.restlet.data;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Vector;
 
 import org.restlet.resource.Get;
 
@@ -9,7 +10,17 @@ import org.restlet.resource.Get;
  */
 public interface ParticipantsResource
 {
+	
+	public static class ParticipantsList extends Vector<Participant> implements Serializable
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+	}
 
 	@Get
-	public List<Participant> retrieve();
+	public ParticipantsList retrieve();
 }

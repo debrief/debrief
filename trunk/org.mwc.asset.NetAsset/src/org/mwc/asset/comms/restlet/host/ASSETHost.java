@@ -3,8 +3,8 @@ package org.mwc.asset.comms.restlet.host;
 import java.net.URI;
 import java.util.List;
 
-import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.Sensor;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 
 import ASSET.ScenarioType;
@@ -59,7 +59,7 @@ public interface ASSETHost
 	 */
 	public ScenarioList getScenarios();
 	
-	public List<Participant> getParticipantsFor(int scenarioId);
+	public ParticipantsList getParticipantsFor(int scenarioId);
 	
 	/** somebody new wants to listen to us
 	 * 

@@ -9,7 +9,7 @@ import org.restlet.resource.Post;
 public interface ListenerResource
 {
 	@Post("text/plain")
-	public int accept(String listener);
+	public Integer accept(String listener);
 
 	@Delete
 	public void remove();

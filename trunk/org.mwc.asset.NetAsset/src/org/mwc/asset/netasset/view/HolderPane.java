@@ -38,6 +38,8 @@ public class HolderPane extends Composite
 	private Group grpTime;
 	private Label lblTime;
 	private Button fasterBtn;
+	private Composite composite_3;
+	private Button controlBtn;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -100,6 +102,15 @@ public class HolderPane extends Composite
 		logList.add(item, 0);
 	}
 
+	public void addTakeControlListener(SelectionListener listener)
+	{
+		controlBtn.addSelectionListener(listener);
+	}
+
+	public void removeControlListener(SelectionListener listener)
+	{
+		controlBtn.removeSelectionListener(listener);
+	}
 	public void addConnectListener(SelectionListener listener)
 	{
 		connectBtn.addSelectionListener(listener);
@@ -109,6 +120,7 @@ public class HolderPane extends Composite
 	{
 		connectBtn.removeSelectionListener(listener);
 	}
+
 
 	public void setTimeEnabled(boolean val)
 	{
@@ -143,8 +155,11 @@ public class HolderPane extends Composite
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
+		
+		composite_3 = new Composite(composite, SWT.NONE);
+		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		connectBtn = new Button(composite, SWT.TOGGLE);
+		connectBtn = new Button(composite_3, SWT.TOGGLE);
 		connectBtn.setText("Connect");
 		connectBtn.addSelectionListener(new SelectionAdapter()
 		{
@@ -154,6 +169,19 @@ public class HolderPane extends Composite
 					connectBtn.setText("Disconect");
 				else
 					connectBtn.setText("Connect");
+			}
+		});
+		
+		 controlBtn = new Button(composite_3, SWT.TOGGLE);
+		controlBtn.setText("Control");
+		controlBtn.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				if(connectBtn.getText().equals("Control"))
+					connectBtn.setText("Release");
+				else
+					connectBtn.setText("Control");
 			}
 		});
 
@@ -279,5 +307,4 @@ public class HolderPane extends Composite
 		slowerBtn.addSelectionListener(listener);
 		fasterBtn.addSelectionListener(listener);
 	}
-
 }

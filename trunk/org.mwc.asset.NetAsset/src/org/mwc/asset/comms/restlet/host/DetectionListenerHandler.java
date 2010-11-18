@@ -13,7 +13,7 @@ public class DetectionListenerHandler extends ASSETResource implements
 {
 
 	@Override
-	public int accept(String listenerTxt)
+	public Integer accept(String listenerTxt)
 	{
 		URI listener;
 		int res = 0;

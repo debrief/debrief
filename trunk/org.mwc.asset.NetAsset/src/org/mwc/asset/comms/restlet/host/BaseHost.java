@@ -17,6 +17,7 @@ import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.StatusResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.data.StatusResource.MovedEvent;
 import org.restlet.resource.ClientResource;
@@ -151,9 +152,9 @@ abstract public class BaseHost implements ASSETHost
 	}
 
 	@Override
-	public List<Participant> getParticipantsFor(int scenarioId)
+	public ParticipantsList getParticipantsFor(int scenarioId)
 	{
-		Vector<Participant> res = new Vector<Participant>();
+		ParticipantsList res = new ParticipantsList();
 		Integer[] parts = getScenario(scenarioId).getListOfParticipants();
 		for (int i = 0; i < parts.length; i++)
 		{

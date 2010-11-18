@@ -65,6 +65,24 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				}.run();
 			}
 		});
+		_control.addTakeControlListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(final SelectionEvent e)
+			{
+				new Thread()
+				{
+					@Override
+					public void run()
+					{
+						Button btn = (Button) e.widget;
+						doTakeControl(btn.getSelection());
+					}
+				}.run();
+
+			}
+		});
 		_control.addSubmitListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -96,6 +114,14 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			}
 		});
 
+	}
+
+	protected void doTakeControl(boolean take)
+	{
+		if (take)
+			_myModel.doTakeControl();
+		else
+			_myModel.doReleaseControl();
 	}
 
 	protected void doGoFaster(boolean faster)

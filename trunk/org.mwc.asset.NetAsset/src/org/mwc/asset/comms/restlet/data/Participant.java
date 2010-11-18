@@ -1,10 +1,16 @@
 package org.mwc.asset.comms.restlet.data;
 
+import java.io.Serializable;
+
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
 
-public class Participant
+public class Participant implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	final private Category _category;
 	final private Integer _id;
 	final private String _name;
