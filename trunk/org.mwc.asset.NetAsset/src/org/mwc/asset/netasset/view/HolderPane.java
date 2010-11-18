@@ -37,6 +37,7 @@ public class HolderPane extends Composite
 	private Group grpState;
 	private Group grpTime;
 	private Label lblTime;
+	private Button fasterBtn;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -158,16 +159,16 @@ public class HolderPane extends Composite
 
 		grpTime = new Group(composite, SWT.NONE);
 		grpTime.setText("Time");
-		grpTime.setSize(76, 83);
+		grpTime.setSize(90, 83);
 		grpTime.setLayout(new RowLayout(SWT.VERTICAL));
 		grpTime.setEnabled(false);
 
 		lblTime = new Label(grpTime, SWT.CENTER);
-		lblTime.setLayoutData(new RowData(140, SWT.DEFAULT));
+		lblTime.setLayoutData(new RowData(166, SWT.DEFAULT));
 		lblTime.setFont(SWTResourceManager.getFont("Courier New", 14, SWT.BOLD));
 		lblTime.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		lblTime.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-		lblTime.setText("00/00/00 00:00:00");
+		lblTime.setText("00/0000/00 00:00:00");
 
 		Composite composite_2 = new Composite(grpTime, SWT.NONE);
 		composite_2.setLayout(new RowLayout(SWT.HORIZONTAL));
@@ -186,7 +187,7 @@ public class HolderPane extends Composite
 		});
 		playBtn.setText(">");
 
-		Button fasterBtn = new Button(composite_2, SWT.NONE);
+		 fasterBtn = new Button(composite_2, SWT.NONE);
 		fasterBtn.setText("++");
 
 		slowerBtn = new Button(composite_2, SWT.CENTER);
@@ -268,9 +269,15 @@ public class HolderPane extends Composite
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	public void addTimeListener(SelectionAdapter listener)
+	public void addTimeListener(SelectionListener listener)
 	{
 		playBtn.addSelectionListener(listener);
+	}
+
+	public void addTimeSpeedListener(SelectionListener listener)
+	{
+		slowerBtn.addSelectionListener(listener);
+		fasterBtn.addSelectionListener(listener);
 	}
 
 }

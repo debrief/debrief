@@ -83,7 +83,24 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				doPlay(widget.getSelection());
 			}
 		});
+		_control.addTimeSpeedListener(new SelectionAdapter()
+		{
 
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				Button btn = (Button) e.widget;
+
+				doGoFaster(btn.getText().equals("++"));
+				super.widgetSelected(e);
+			}
+		});
+
+	}
+
+	protected void doGoFaster(boolean faster)
+	{
+		_myModel.doGoFaster(faster);
 	}
 
 	protected void doPlay(boolean play)

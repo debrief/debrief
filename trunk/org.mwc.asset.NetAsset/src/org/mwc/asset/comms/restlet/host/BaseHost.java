@@ -62,9 +62,9 @@ abstract public class BaseHost implements ASSETHost
 		else if (newState.equals(ScenarioStateResource.STOP))
 			scen.pause();
 		else if (newState.equals(ScenarioStateResource.FASTER))
-			System.err.println("faster not supported");
+			scen.setStepTime(scen.getStepTime() / 2);
 		else if (newState.equals(ScenarioStateResource.SLOWER))
-			System.err.println("slower not supported");
+			scen.setStepTime(scen.getStepTime() * 2);
 		else
 			System.err.println("UNSUPPORTED METHOD");
 
@@ -387,6 +387,7 @@ abstract public class BaseHost implements ASSETHost
 			{
 				System.out.println("%%% about to fire at:" + client);
 				scenR.accept(event);
+				client.release();
 			}
 			catch (Exception e)
 			{

@@ -1,9 +1,7 @@
 package org.mwc.asset.netasset.model;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
@@ -112,7 +110,7 @@ public class RestSupport
 		// }
 	}
 
-	public void play(boolean play)
+	private void changeState(String theState)
 	{
 		// find some data
 		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
@@ -120,13 +118,30 @@ public class RestSupport
 
 		// does it have a scenario?
 		ScenarioStateResource scenR = cr.wrap(ScenarioStateResource.class);
+		scenR.store(theState);
+		
+	}
+	
+	public void play(boolean play)
+	{
 		String theState;
 		if (play)
 			theState = ScenarioStateResource.START;
 		else
 			theState = ScenarioStateResource.STOP;
 
-		scenR.store(theState);
+		changeState(theState);
+	}
+
+	public void doGoFaster(boolean faster)
+	{
+		String theState;
+		if (faster)
+			theState = ScenarioStateResource.FASTER;
+		else
+			theState = ScenarioStateResource.SLOWER;
+
+		changeState(theState);
 	}
 
 }
