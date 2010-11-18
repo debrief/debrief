@@ -808,8 +808,9 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		if (_participantMovedListeners != null)
 		{
-			final Iterator<ParticipantMovedListener> it = _participantMovedListeners
-					.iterator();
+			List<ParticipantMovedListener> syncL = Collections
+					.synchronizedList(_participantMovedListeners);
+			final Iterator<ParticipantMovedListener> it = syncL.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantMovedListener pml = it.next();
