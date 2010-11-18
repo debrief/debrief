@@ -16,6 +16,7 @@ import org.mwc.asset.netasset.model.RestSupport;
 import org.mwc.asset.netasset.view.HolderPane;
 
 import ASSET.Participants.Status;
+import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class NetAssetView extends ViewPart implements ASSETGuest
@@ -88,8 +89,17 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			public void widgetSelected(SelectionEvent e)
 			{
 				super.widgetSelected(e);
-				doSubmit();
+				new Thread()
+				{
+					@Override
+					public void run()
+					{
+						doSubmit(_control.getDemCourse(), _control.getDemSpeed(), _control
+								.getDemDepth());
+					}
+				}.run();
 			}
+
 		});
 		_control.addTimeListener(new SelectionAdapter()
 		{
@@ -122,6 +132,9 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			_myModel.doTakeControl();
 		else
 			_myModel.doReleaseControl();
+		
+		_control.setStateEnabled(take);
+
 	}
 
 	protected void doGoFaster(boolean faster)
@@ -134,8 +147,12 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		_myModel.play(play);
 	}
 
-	protected void doSubmit()
+	protected void doSubmit(String courseTxt, String speedTxt, String depthTxt)
 	{
+		double courseDegs = Double.parseDouble(courseTxt);
+		double speedKts = Double.parseDouble(speedTxt);
+		double depthM = Double.parseDouble(depthTxt);
+		_myModel.doDemStatus(courseDegs, speedKts, depthM);
 	}
 
 	protected void doConnect()
@@ -176,10 +193,19 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	@Override
 	public void newParticipantState(int scenarioId, int participantId,
-			Status newState)
+			final Status newState)
 	{
-		// TODO Auto-generated method stub
-
+		Display dThread = Display.getDefault();
+		if (dThread != null)
+			dThread.asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					_control.setActCourse("" + ((int)newState.getCourse()));
+					_control.setActSpeed("" + (int)(newState.getSpeed().getValueIn(WorldSpeed.Kts)));
+					_control.setActDepth("" + ((int)newState.getLocation().getDepth()));
+				}
+			});
 	}
 
 	@Override

@@ -26,7 +26,7 @@ abstract public class DemandedStatus
 	/**
 	 * the set of demanded vessel states (using lazy instantiation)
 	 */
-	private Status.States _myStates = null;
+	private transient Status.States _myStates = null;
 
 	/**
 	 * time this status message recorded
@@ -41,7 +41,7 @@ abstract public class DemandedStatus
 	/**
 	 * a list of demanded sensor states
 	 */
-	private Vector<DemandedSensorStatus> _sensorStates = null;
+	private transient Vector<DemandedSensorStatus> _sensorStates = null;
 
 	// //////////////////////////////////////////////////////////////////////
 	// constructor

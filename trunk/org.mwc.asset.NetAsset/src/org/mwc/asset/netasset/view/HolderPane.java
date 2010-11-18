@@ -178,10 +178,10 @@ public class HolderPane extends Composite
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if(connectBtn.getText().equals("Control"))
-					connectBtn.setText("Release");
+				if(controlBtn.getText().equals("Control"))
+					controlBtn.setText("Release");
 				else
-					connectBtn.setText("Control");
+					controlBtn.setText("Control");
 			}
 		});
 

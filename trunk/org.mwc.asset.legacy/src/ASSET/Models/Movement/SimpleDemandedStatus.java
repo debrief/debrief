@@ -1,5 +1,7 @@
 package ASSET.Models.Movement;
 
+import java.io.Serializable;
+
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import MWC.GenericData.WorldSpeed;
@@ -9,8 +11,13 @@ import MWC.GenericData.WorldDistance;
  * Created by IntelliJ IDEA. User: Ian.Mayo Date: 19-Aug-2003 Time: 14:51:58 To
  * change this template use Options | File Templates.
  */
-public class SimpleDemandedStatus extends DemandedStatus
+public class SimpleDemandedStatus extends DemandedStatus implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**********************************************************************
 	 * member variables
 	 *********************************************************************/
