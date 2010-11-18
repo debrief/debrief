@@ -2,6 +2,8 @@ package org.mwc.asset.comms.restlet.test;
 
 import java.util.Vector;
 
+import javax.media.Duration;
+
 import org.mwc.asset.comms.restlet.data.Scenario;
 import org.mwc.asset.comms.restlet.host.BaseHost;
 
@@ -28,6 +30,8 @@ public class MockHost extends BaseHost
 	{
 		_myScenario = new CoreScenario();
 		_myScenario.setName("Scenario_" + ++_ctr);
+		_myScenario.setScenarioStepTime(60 * 1000);
+		_myScenario.setStepTime(5 * 1000);
 
 		Wander wander = new Wander("just wander around");
 		wander.setOrigin(new WorldLocation(0.05, 0.04, 0));
