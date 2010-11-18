@@ -31,7 +31,7 @@ public class SimpleDemandedStatus extends DemandedStatus
 	 * demanded speed (m/sec)
 	 * 
 	 */
-	private double _speed;
+	private WorldSpeed _speed;
 
 	/**********************************************************************
 	 * constructor
@@ -139,7 +139,7 @@ public class SimpleDemandedStatus extends DemandedStatus
 	 */
 	public void setSpeed(double m_sec)
 	{
-		_speed = m_sec;
+		_speed = new WorldSpeed( m_sec, WorldSpeed.M_sec);
 	}
 
 	/**
@@ -148,15 +148,24 @@ public class SimpleDemandedStatus extends DemandedStatus
 	 */
 	public void setSpeed(WorldSpeed spd)
 	{
-		_speed = spd.getValueIn(WorldSpeed.M_sec);
+		_speed = spd;
 	}
 
+	/** the speed (with units)
+	 * 
+	 * @return
+	 */
+	public WorldSpeed getSpeedVal()
+	{
+		return _speed;
+	}
+	
 	/**
 	 * get the speed (m_sec)
 	 * 
 	 */
 	public double getSpeed()
 	{
-		return _speed;
+		return _speed.getValueIn(WorldSpeed.M_sec);
 	}
 }
