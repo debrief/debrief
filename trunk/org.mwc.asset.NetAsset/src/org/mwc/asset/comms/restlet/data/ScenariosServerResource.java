@@ -1,7 +1,5 @@
 package org.mwc.asset.comms.restlet.data;
 
-import java.util.Vector;
-
 import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;

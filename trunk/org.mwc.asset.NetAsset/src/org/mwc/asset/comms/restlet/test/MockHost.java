@@ -13,6 +13,7 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
 public class MockHost extends BaseHost
 {
@@ -28,7 +29,7 @@ public class MockHost extends BaseHost
 		_myScenario = new CoreScenario();
 		_myScenario.setName("Scenario_" + ++_ctr);
 		_myScenario.setScenarioStepTime(60 * 1000);
-		_myScenario.setStepTime(5 * 1000);
+		_myScenario.setStepTime(2 * 1000);
 
 		Wander wander = new Wander("just wander around");
 		wander.setOrigin(new WorldLocation(0.05, 0.04, 0));
@@ -39,6 +40,7 @@ public class MockHost extends BaseHost
 		
 		Status curStat = new Status(12, 0);
 		curStat.setLocation(new WorldLocation(0, 0, 0));
+		curStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
 		DemandedStatus demStat = null;
 		Surface _platform1 = new Surface(PLAT1_ID, curStat, demStat, "Platform One");
 		_platform1.setDecisionModel(wander);
@@ -46,6 +48,7 @@ public class MockHost extends BaseHost
 
 		Status otherStat = new Status(curStat);
 		otherStat.setLocation(new WorldLocation(0.1, 0.2, 0));
+		otherStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
 		Surface _platform2 = new Surface(PLAT2_ID, otherStat, demStat,
 				"Platform One");
 		_platform2.setDecisionModel(wander2);

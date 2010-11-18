@@ -58,13 +58,13 @@ abstract public class BaseHost implements ASSETHost
 	public void setScenarioStatus(int scenarioId, final String newState)
 	{
 		ScenarioType scen = getScenario(scenarioId);
-		if (newState == ScenarioStateResource.START)
+		if (newState.equals(ScenarioStateResource.START))
 			scen.start();
-		else if (newState == ScenarioStateResource.STOP)
+		else if (newState.equals(ScenarioStateResource.STOP))
 			scen.pause();
-		else if (newState == ScenarioStateResource.FASTER)
+		else if (newState.equals(ScenarioStateResource.FASTER))
 			System.err.println("faster not supported");
-		else if (newState == ScenarioStateResource.SLOWER)
+		else if (newState.equals(ScenarioStateResource.SLOWER))
 			System.err.println("slower not supported");
 		else
 			System.err.println("UNSUPPORTED METHOD");

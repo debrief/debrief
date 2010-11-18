@@ -80,10 +80,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 	
 	protected void doPlay(boolean play)
 	{
-		if(play)
-			System.out.println("playing");
-		else
-			System.out.println("stopping");
+		_myModel.play(play);
 	}
 
 
@@ -95,10 +92,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 	protected void doConnect()
 	{
 		boolean worked = _myModel.doConnect();
-//		if(worked)
-//			_control.setEnabled(true);
-//		else
-//			_control.setEnabled(false);
+		_control.setTimeEnabled(worked);
 	}
 
 
