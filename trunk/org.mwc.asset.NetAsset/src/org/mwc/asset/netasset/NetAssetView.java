@@ -47,12 +47,17 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 			public void widgetSelected(SelectionEvent e)
 			{
 				super.widgetSelected(e);
+				Button btn = (Button) e.widget;
+				final boolean doIt = btn.getSelection();
 				new Thread(){
 
 					@Override
 					public void run()
 					{
+						if(doIt)
 						doConnect();
+						else
+							doDisconnect();
 					}}.run();
 			}
 		});
@@ -93,6 +98,13 @@ public class NetAssetView extends ViewPart implements ASSETGuest {
 	{
 		boolean worked = _myModel.doConnect();
 		_control.setTimeEnabled(worked);
+	}
+
+	protected void doDisconnect()
+	{
+		_myModel.doDisconnect();
+		_control.setTimeEnabled(false);
+		_control.setStateEnabled(false);
 	}
 
 

@@ -3,8 +3,15 @@
  */
 package org.mwc.asset.comms.restlet.data;
 
-public class AssetEvent
+import java.io.Serializable;
+
+public class AssetEvent implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String JOINED = "JOINED";
 
 	public static final String LEFT = "LEFT";

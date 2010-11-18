@@ -8,8 +8,12 @@ import org.restlet.resource.Post;
 public interface ScenarioEventResource
 {
 
-	public static class ScenarioEvent extends AssetEvent
+	public static class ScenarioEvent extends AssetEvent 
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		final public String description;
 		final public String eventName;
 		final public int scenarioId;

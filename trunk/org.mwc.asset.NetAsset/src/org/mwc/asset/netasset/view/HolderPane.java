@@ -135,8 +135,18 @@ public class HolderPane extends Composite
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
 
-		connectBtn = new Button(composite, SWT.NONE);
+		connectBtn = new Button(composite, SWT.TOGGLE);
 		connectBtn.setText("Connect");
+		connectBtn.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				if(connectBtn.getText().equals("Connect"))
+					connectBtn.setText("Disconect");
+				else
+					connectBtn.setText("Connect");
+			}
+		});
 
 		grpTime = new Group(composite, SWT.NONE);
 		grpTime.setText("Time");
