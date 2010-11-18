@@ -11,13 +11,14 @@ import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
 import org.mwc.asset.comms.restlet.data.Scenario;
+import org.mwc.asset.comms.restlet.data.ScenarioEventResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.ScenariosResource;
 import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.SensorsResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
-import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
+import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.ASSETHost;
 import org.mwc.asset.comms.restlet.host.BaseHost;
@@ -49,6 +50,7 @@ public class CommsTest extends TestCase
 {
 
 	public static DemandedStatus _demStat;
+	public static String _scenarioState;
 
 	protected void setUp() throws Exception
 	{
@@ -105,6 +107,15 @@ public class CommsTest extends TestCase
 	public static class TestHost extends BaseHost
 	{
 		final ScenarioType _myScenario;
+
+
+
+		@Override
+		public void setScenarioStatus(int scenarioId, String newState)
+		{
+			_scenarioState = newState;
+			super.setScenarioStatus(scenarioId, newState);
+		}
 
 		@Override
 		public ScenarioType getScenario(int scenarioId)
@@ -168,7 +179,7 @@ public class CommsTest extends TestCase
 			}
 
 			@Override
-			public void newScenarioStatus(long time, String eventName,
+			public void newScenarioEvent(long time, String eventName,
 					String description)
 			{
 				_time = time;
@@ -215,7 +226,7 @@ public class CommsTest extends TestCase
 
 		ClientResource cr = new ClientResource("http://localhost:8081/v1/scenario/"
 				+ 434 + "/event");
-		ScenarioStateResource ssr = cr.wrap(ScenarioStateResource.class);
+		ScenarioEventResource ssr = cr.wrap(ScenarioEventResource.class);
 		ScenarioEvent event = new ScenarioEvent("type", "descr", 12, 1200);
 		ssr.accept(event);
 
@@ -286,6 +297,18 @@ public class CommsTest extends TestCase
 		sl.remove();
 		assertEquals("ditched listener", 0, _host.getSteppedListFor(434).size());
 
+
+		assertNull("state empty", _scenarioState);
+		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
+				+ "/state");
+		ScenarioStateResource sss = cr.wrap(ScenarioStateResource.class);
+		sss.store(ScenarioStateResource.START);
+		assertNotNull("state not empty", _scenarioState);
+		assertEquals("correct new state",ScenarioStateResource.START, _scenarioState);
+		sss.store(ScenarioStateResource.SLOWER);
+		assertEquals("correct new state",ScenarioStateResource.SLOWER, _scenarioState);
+
+		
 		// fire up the client
 		Component guestComp = null;
 		final ASSETGuest _guest = new ASSETGuest()
@@ -299,7 +322,7 @@ public class CommsTest extends TestCase
 			}
 
 			@Override
-			public void newScenarioStatus(long time, String eventName,
+			public void newScenarioEvent(long time, String eventName,
 					String description)
 			{
 				_time = time;
@@ -500,7 +523,7 @@ public class CommsTest extends TestCase
 		// ////////////////////////////////
 		assertNull("dem stat empty", _demStat);
 		cr = new ClientResource("http://localhost:8080/v1/scenario/" + id
-				+ "/participant/222/state");
+				+ "/participant/222/demState");
 		DemandedStatusResource des = cr.wrap(DemandedStatusResource.class);
 		SimpleDemandedStatus newDemStat = new SimpleDemandedStatus(12,333);
 		newDemStat.setCourse(145);

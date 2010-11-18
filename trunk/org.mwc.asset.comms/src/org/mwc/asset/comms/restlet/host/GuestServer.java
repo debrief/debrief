@@ -58,7 +58,7 @@ abstract public class GuestServer extends Application implements GuestProvider
 						Status newState)
 				{
 				}
-				public void newScenarioStatus(long time, String eventName,
+				public void newScenarioEvent(long time, String eventName,
 						String description)
 				{
 				}};
@@ -79,7 +79,7 @@ abstract public class GuestServer extends Application implements GuestProvider
 		Router router = new Router(getContext());
 		getConnectorService().getClientProtocols().add(Protocol.FILE);
 		router.attach("/v1/scenario/{scenario}/event",
-				ScenarioStateHandler.class);
+				ScenarioEventHandler.class);
 		router.attach("/v1/scenario/{scenario}/participant/{participant}/status",
 				StatusHandler.class);
 		router.attach("/v1/scenario/{scenario}/participant/{participant}/decision",

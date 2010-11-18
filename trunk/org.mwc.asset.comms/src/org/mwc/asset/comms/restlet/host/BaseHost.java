@@ -11,12 +11,13 @@ import org.mwc.asset.comms.restlet.data.AssetEvent;
 import org.mwc.asset.comms.restlet.data.DecisionResource;
 import org.mwc.asset.comms.restlet.data.DetectionResource;
 import org.mwc.asset.comms.restlet.data.Participant;
+import org.mwc.asset.comms.restlet.data.ScenarioEventResource;
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
 import org.mwc.asset.comms.restlet.data.Sensor;
 import org.mwc.asset.comms.restlet.data.StatusResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
-import org.mwc.asset.comms.restlet.data.ScenarioStateResource.ScenarioEvent;
+import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.data.StatusResource.MovedEvent;
 import org.restlet.resource.ClientResource;
 
@@ -45,6 +46,25 @@ abstract public class BaseHost implements ASSETHost
 	 * 
 	 */
 	private HashMap<Integer, HashMap<Integer, ParticipantList>> _participantListeners;
+
+	
+	
+	@Override
+	public void setScenarioStatus(int scenarioId, final String newState)
+	{
+		ScenarioType scen = getScenario(scenarioId);
+		if(newState == ScenarioStateResource.START)
+			scen.start();
+		else if(newState == ScenarioStateResource.STOP)
+			scen.pause();
+		else if(newState == ScenarioStateResource.FASTER)
+			System.err.println("faster not supported");
+		else if(newState == ScenarioStateResource.SLOWER)
+			System.err.println("slower not supported");
+		else
+			System.err.println("UNSUPPORTED METHOD");
+	
+	}
 
 	@Override
 	public void deleteParticipantDetectionListener(int scenarioId,
@@ -326,7 +346,7 @@ abstract public class BaseHost implements ASSETHost
 		protected void fireThisEvent(ClientResource client, ScenarioEvent event)
 		{
 			// does it have a scenario?
-			ScenarioStateResource scenR = client.wrap(ScenarioStateResource.class);
+			ScenarioEventResource scenR = client.wrap(ScenarioEventResource.class);
 			scenR.accept(event);
 		}
 

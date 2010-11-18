@@ -139,4 +139,11 @@ public interface ASSETHost
 	 */
 	public void deleteParticipantDetectionListener(int scenarioId,
 			int participantId, int sensorId);
+
+	/** somebody wants to change how this scenario is running
+	 * 
+	 * @param scenarioId
+	 * @param newState
+	 */
+	public void setScenarioStatus(int scenarioId, String newState);
 }

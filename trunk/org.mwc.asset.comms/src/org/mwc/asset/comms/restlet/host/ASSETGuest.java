@@ -30,7 +30,7 @@ public interface ASSETGuest
 	 * @param description2
 	 * @param msg
 	 */
-	public void newScenarioStatus(long time, String eventName, String description);
+	public void newScenarioEvent(long time, String eventName, String description);
 
 	/**
 	 * someone we are listening to has moved

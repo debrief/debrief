@@ -1,6 +1,6 @@
 package org.mwc.asset.comms.restlet.data;
 
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 
 /**
  * The resource associated to a contact.
@@ -8,25 +8,11 @@ import org.restlet.resource.Post;
 public interface ScenarioStateResource
 {
 
-	public static class ScenarioEvent extends AssetEvent
-	{
-		final public String description;
-		final public String eventName;
-		final public int scenarioId;
-
-		public ScenarioEvent(final String eName, final String desc, final long t,
-				final int s)
-		{
-			super(t);
-			eventName = eName;
-			description = desc;
-			scenarioId = s;
-		}
-	}
-
-	// @Post
-	// public void accept(String event, long time, String description);
-	@Post
-	public void accept(ScenarioEvent event);
-
+	public final static String START = "Start";
+	public final static String STOP = "Stop";
+	public final static String FASTER = "Faster";
+	public final static String SLOWER = "Slower";
+	
+	@Put
+	public void store(String newState);
 }

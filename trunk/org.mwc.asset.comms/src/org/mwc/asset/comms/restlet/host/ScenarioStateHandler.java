@@ -1,15 +1,18 @@
 package org.mwc.asset.comms.restlet.host;
 
 import org.mwc.asset.comms.restlet.data.ScenarioStateResource;
-import org.mwc.asset.comms.restlet.host.ASSETGuest.GuestProvider;
+import org.mwc.asset.comms.restlet.host.ASSETHost.HostProvider;
+import org.restlet.resource.Put;
 
 public class ScenarioStateHandler extends ASSETResource implements
 		ScenarioStateResource
 {
-	@Override
-	public void accept(ScenarioEvent event)
+
+	@Put
+	public void store(String newState)
 	{
-		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();
-		host.getGuest().newScenarioStatus(event.time, event.eventName, event.description);
+		ASSETHost.HostProvider hostP = (HostProvider) getApplication();
+		ASSETHost host = hostP.getHost();
+		host.setScenarioStatus(getScenarioId(),newState);
 	}
 }

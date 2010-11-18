@@ -64,6 +64,10 @@ abstract public class HostServer extends Application implements HostProvider
 				public void setDemandedStatus(int scenario, int participant,
 						DemandedStatus demState)
 				{
+				}
+				@Override
+				public void setScenarioStatus(int scenarioId, String newState)
+				{
 				}};
 
 			@Override
@@ -82,13 +86,15 @@ abstract public class HostServer extends Application implements HostProvider
 		getConnectorService().getClientProtocols().add(Protocol.FILE);
 
 		router.attach("/v1/scenario", ScenariosHandler.class);
+		router.attach("/v1/scenario/{scenario}/state",
+				ScenarioStateHandler.class);
 		router.attach("/v1/scenario/{scenario}/listener",
 				ScenarioListenerHandler.class);
 		router.attach("/v1/scenario/{scenario}/listener/{listener}",
 				ScenarioListenerHandler.class);
 		router.attach("/v1/scenario/{scenario}/participant",
 				ParticipantsHandler.class);
-		router.attach("/v1/scenario/{scenario}/participant/{participant}/state",
+		router.attach("/v1/scenario/{scenario}/participant/{participant}/demState",
 				DemStatusHandler.class);
 		router.attach("/v1/scenario/{scenario}/participant/{participant}/listener",
 				ParticipantListenerHandler.class);
