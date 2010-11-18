@@ -1,59 +1,16 @@
 package org.mwc.asset.netasset;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
+import java.util.Date;
+
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.netasset.view.HolderPane;
 
 public class View extends ViewPart {
 	public static final String ID = "org.mwc.asset.NetAsset.view";
 
-	private TableViewer viewer;
-
 	private HolderPane _control;
-
-	/**
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
-	 */
-	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
-
-		public void dispose() {
-		}
-
-		public Object[] getElements(Object parent) {
-			return new String[] { "One", "Two", "Three" };
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			return getText(obj);
-		}
-
-		public Image getColumnImage(Object obj, int index) {
-			return getImage(obj);
-		}
-
-		public Image getImage(Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(
-					ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -61,11 +18,12 @@ public class View extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		_control = new HolderPane(parent, SWT.NONE);
-//		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-//				| SWT.V_SCROLL);
-//		viewer.setContentProvider(new ViewContentProvider());
-//		viewer.setLabelProvider(new ViewLabelProvider());
-//		viewer.setInput(getViewSite());
+		_control.setActCourse("12.3");
+		_control.setActSpeed("2.3");
+		_control.setActDepth("1.3");
+		
+		_control.logEvent(new Date().getTime(), "Event", "Start");
+		
 	}
 
 	/**
