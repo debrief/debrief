@@ -7,18 +7,29 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.comms.restlet.host.ASSETHost;
-import org.mwc.asset.comms.restlet.host.HostServer;
-import org.mwc.asset.comms.restlet.test.MockHost;
+import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
+import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.host.ASSETGuest;
+import org.mwc.asset.netasset.model.RestSupport;
 import org.mwc.asset.netasset.view.HolderPane;
-import org.restlet.Restlet;
 
-public class NetAssetView extends ViewPart {
+import ASSET.Participants.Status;
+
+public class NetAssetView extends ViewPart implements ASSETGuest {
 	public static final String ID = "org.mwc.asset.NetAsset.NetAssetView";
 
 	private HolderPane _control;
 
+	private RestSupport _myModel;
+
+	public NetAssetView()
+	{
+		_myModel = new RestSupport(this);
+	}
+	
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -36,7 +47,13 @@ public class NetAssetView extends ViewPart {
 			public void widgetSelected(SelectionEvent e)
 			{
 				super.widgetSelected(e);
-				doConnect();
+				Display.getCurrent().asyncExec(new Runnable(){
+
+					@Override
+					public void run()
+					{
+						doConnect();
+					}});
 			}
 		});
 		_control.addSubmitListener(new SelectionAdapter()
@@ -77,6 +94,11 @@ public class NetAssetView extends ViewPart {
 
 	protected void doConnect()
 	{
+		boolean worked = _myModel.doConnect();
+//		if(worked)
+//			_control.setEnabled(true);
+//		else
+//			_control.setEnabled(false);
 	}
 
 
@@ -84,6 +106,41 @@ public class NetAssetView extends ViewPart {
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
+	}
+
+
+	@Override
+	public void newParticipantDecision(int scenarioId, int participantId,
+			DecidedEvent event)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void newParticipantDetection(int scenarioId, int participantId,
+			DetectionEvent event)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void newParticipantState(int scenarioId, int participantId,
+			Status newState)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void newScenarioEvent(long time, String eventName, String description)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }
