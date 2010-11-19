@@ -6,11 +6,13 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.mwc.asset.netasset.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.asset.legacy;bundle-version="1.0.20",
- org.mwc.cmap.legacy;bundle-version="1.0.103",
+ org.mwc.asset.legacy,
+ org.mwc.cmap.legacy,
  org.junit4;bundle-version="4.5.0",
- org.mwc.cmap.plotViewer;bundle-version="1.0.43",
- org.mwc.debrief.legacy;bundle-version="1.0.157"
+ org.mwc.cmap.plotViewer,
+ org.mwc.debrief.legacy,
+ org.mwc.debrief.core,
+ org.mwc.cmap.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: libs/restlet/org.restlet.jar,

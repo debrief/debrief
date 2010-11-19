@@ -1,6 +1,8 @@
 package org.mwc.asset.netasset;
 
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -15,13 +17,24 @@ import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.netasset.model.RestSupport;
 import org.mwc.asset.netasset.view.HolderPane;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import ASSET.Participants.Status;
+import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
@@ -37,8 +50,12 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	private Layers _myLayers;
 
 	private TrackWrapper _myTrack;
+	
+	private HiResDate _time;
 
-	private SWTChart theChart;
+	private SWTChart _myChart;
+
+	private SnailHighlighter _myHighlighter;
 
 	public NetAssetView()
 	{
@@ -140,14 +157,46 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		});
 
 	}
-
+	
 	private void doPlot(Composite plotContainer)
 	{
 		_myLayers = new Layers();
 		_myTrack = new TrackWrapper();
 		_myTrack.setName("Ian");
 		_myLayers.addThisLayer(_myTrack);
-		 theChart = new SWTChart(_myLayers, plotContainer)
+		
+		 final TrackDataProvider provider = new TrackDataProvider()
+		{
+			public void removeTrackShiftListener(TrackShiftListener listener)
+			{
+			}
+			public void removeTrackDataListener(TrackDataListener listener)
+			{
+			}
+			public WatchableList[] getSecondaryTracks()
+			{
+				return new WatchableList[]{};
+			}
+			public WatchableList getPrimaryTrack()
+			{
+				return _myTrack;
+			}
+			public void fireTracksChanged()
+			{
+			}
+			public void fireTrackShift(TrackWrapper target)
+			{
+			}
+			public void addTrackShiftListener(TrackShiftListener listener)
+			{
+			}
+			public void addTrackDataListener(TrackDataListener listener)
+			{
+			}
+		};
+		_myHighlighter = new SnailHighlighter(provider);
+
+		 _myChart = new SWTChart(_myLayers, plotContainer)
 		{
 
 			/**
@@ -159,9 +208,86 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			public void chartFireSelectionChanged(ISelection sel)
 			{
 			}
-		};
-	}
+			
 
+			/**
+			 * @param thisLayer
+			 * @param dest
+			 */
+			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
+			{
+				try
+				{
+					// get the current time
+					HiResDate tNow = _time;
+
+					// do we know the time?
+					// if (tNow != null)
+					if (true)
+					{
+						// yes. cool, get plotting
+						_myHighlighter.paintThisLayer(thisLayer,
+								dest, tNow);
+
+						// ok, now sort out the highlight
+
+						// right, what are the watchables
+						final Vector<Plottable> watchables = SnailPainter
+								.getWatchables(thisLayer);
+
+						// cycle through them
+						final Enumeration<Plottable> watches = watchables.elements();
+						while (watches.hasMoreElements())
+						{
+							final WatchableList list = (WatchableList) watches.nextElement();
+							// is the primary an instance of layer (with it's
+							// own line
+							// thickness?)
+							if (list instanceof Layer)
+							{
+								final Layer ly = (Layer) list;
+								int thickness = ly.getLineThickness();
+								dest.setLineWidth(thickness);
+							}
+
+							// ok, clear the nearest items
+							if (tNow != null)
+							{
+								Watchable[] wList = list.getNearestTo(tNow);
+								Watchable watch = null;
+								if (wList.length > 0)
+									watch = wList[0];
+
+								if (watch != null)
+								{
+//									// aah, is this the primary?
+//									boolean isPrimary = (list == provider
+//											.getPrimaryTrack());
+
+									// plot it
+							//		_layerPainterManager.getCurrentHighlighter().highlightIt(
+							//				dest.getProjection(), dest, list, watch, isPrimary);
+								}
+							} // whether we have a current time...
+						}
+					}
+				}
+				catch (Exception e)
+				{
+				}
+			
+			}
+		};
+		
+		Layer misc = new BaseLayer();
+		misc.setName("Misc");
+		_myLayers.addThisLayer(misc);
+		GridPainter grid = new GridPainter();
+		grid.setName("1Nm Grid");
+		grid.setDelta(new WorldDistance(1, WorldDistance.NM));
+	
+	}
+ 
 	protected void doTakeControl(boolean take)
 	{
 		if (take)
@@ -242,11 +368,11 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 							+ (int) (newState.getSpeed().getValueIn(WorldSpeed.Kts)));
 					_control.setActDepth("" + ((int) newState.getLocation().getDepth()));
 					
-					Fix theFix = new Fix(new HiResDate(newState.getTime()), newState.getLocation(), newState.getCourse(), newState.getSpeed().getValueIn(WorldSpeed.Kts));
+					Fix theFix = new Fix(new HiResDate(newState.getTime()), newState.getLocation(),MWC.Algorithms.Conversions.Degs2Rads(newState.getCourse()), newState.getSpeed().getValueIn(WorldSpeed.ft_sec/3));
 					FixWrapper newFix = new FixWrapper(theFix );
 					_myTrack.add(newFix);
 					_myLayers.fireExtended(newFix, _myTrack);
-					theChart.rescale();
+					_myChart.rescale();
 				}
 			});
 	}
@@ -255,6 +381,9 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	public void newScenarioEvent(final long time, final String eventName,
 			final String description)
 	{
+		if(time != 0)
+		{
+			_time = new HiResDate(time);
 		Display dThread = Display.getDefault();
 		if (dThread != null)
 			dThread.asyncExec(new Runnable()
@@ -274,5 +403,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			System.out.println("dThread missing");
 		}
 	}
-
+	}
 }
+	

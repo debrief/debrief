@@ -317,7 +317,7 @@ public class HolderPane extends Composite
 					.add(3)
 					.add(composite, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.add(3)
-					.add(plotContainer, GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+					.add(plotContainer, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -325,7 +325,9 @@ public class HolderPane extends Composite
 				.add(groupLayout.createSequentialGroup()
 					.add(3)
 					.add(groupLayout.createParallelGroup(GroupLayout.LEADING)
-						.add(plotContainer, GroupLayout.PREFERRED_SIZE, 435, GroupLayout.PREFERRED_SIZE)
+						.add(groupLayout.createSequentialGroup()
+							.add(plotContainer, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
+							.add(16))
 						.add(composite, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 		);
 		setLayout(groupLayout);
