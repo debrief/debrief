@@ -42,29 +42,6 @@ public class Activator extends AbstractUIPlugin
 		super.start(context);
 		plugin = this;
 
-		// do the host
-		Restlet host = new HostServer()
-		{
-
-			ASSETHost host = new MockHost();
-
-			@Override
-			public ASSETHost getHost()
-			{
-				return host;
-			}
-		};
-		Logger logger = host.getLogger();
-		logger.setLevel(Level.WARNING);
-
-		try
-		{
-			HostServer.go(host);
-		}
-		catch (Exception e1)
-		{
-			e1.printStackTrace();
-		}
 	}
 
 	/*

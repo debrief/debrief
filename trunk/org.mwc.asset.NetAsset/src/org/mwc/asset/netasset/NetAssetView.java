@@ -15,7 +15,9 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
-import org.mwc.asset.netasset.model.RestSupport;
+import org.mwc.asset.comms.restlet.test.MockHost;
+import org.mwc.asset.netasset.model.RestGuest;
+import org.mwc.asset.netasset.model.RestHost;
 import org.mwc.asset.netasset.view.HolderPane;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
@@ -45,7 +47,8 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	private HolderPane _control;
 
-	private RestSupport _myModel;
+	private RestGuest _myModel;
+	private RestHost _myHosting;
 
 	private Layers _myLayers;
 
@@ -59,7 +62,8 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	public NetAssetView()
 	{
-		_myModel = new RestSupport(this);
+		_myModel = new RestGuest(this);
+		_myHosting = new RestHost();
 	}
 
 	/**
@@ -98,6 +102,21 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				}.run();
 			}
 		});
+		
+		_control.addSelfHostListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				Button btn = (Button) e.widget;
+				if(btn.getSelection())
+					_myHosting.startHosting(new MockHost());
+				else
+					_myHosting.stopHosting();
+			}
+		});
+		
 		_control.addTakeControlListener(new SelectionAdapter()
 		{
 

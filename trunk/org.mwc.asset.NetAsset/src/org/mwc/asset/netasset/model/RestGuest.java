@@ -19,9 +19,10 @@ import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.GuestServer;
+import org.restlet.Component;
 import org.restlet.resource.ClientResource;
 
-public class RestSupport
+public class RestGuest
 {
 
 	private int NULL_INT = -1;
@@ -33,7 +34,7 @@ public class RestSupport
 	private int _partListenerId;
 	private String _root;
 
-	public RestSupport(ASSETGuest guest)
+	public RestGuest(ASSETGuest guest)
 	{
 		_myGuest = guest;
 	}
@@ -76,7 +77,7 @@ public class RestSupport
 		// start listening to time events
 		// right, now try to register it.
 		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId + "/listener");
-		String theAddress = getLocalName() +  "/v1/scenario/" + _scenarioId
+		String theAddress = getLocalName() + "/v1/scenario/" + _scenarioId
 				+ "/event";
 		System.out.println("providing listener for" + theAddress);
 		// Representation rep = cr.post(theAddress, MediaType.TEXT_PLAIN);
@@ -206,9 +207,9 @@ public class RestSupport
 		cr.release();
 	}
 
-	String _localName = null;
+	static String _localName = null;
 
-	private String getLocalName()
+	public static String getLocalName()
 	{
 		if (_localName == null)
 		{

@@ -26,6 +26,12 @@
             class="org.mwc.asset.netasset.NetAssetView"
             id="org.mwc.asset.NetAsset.NetAssetView">
       </view>
+      <view
+            category="org.mwc.asset.core.simulation.category"
+            class="org.mwc.asset.netasset.NetControl"
+            id="org.mwc.asset.NetAsset.NetControl"
+            name="View">
+      </view>
    </extension>
    <extension
          id="product"

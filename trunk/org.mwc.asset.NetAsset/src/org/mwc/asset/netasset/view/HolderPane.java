@@ -45,6 +45,7 @@ public class HolderPane extends Composite
 	private Button controlBtn;
 	private Group grpDetections;
 	private Composite plotContainer;
+	private Button btnSelfHost;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -107,6 +108,16 @@ public class HolderPane extends Composite
 		logList.add(item, 0);
 	}
 
+	public void addSelfHostListener(SelectionListener listener)
+	{
+		btnSelfHost.addSelectionListener(listener);
+	}
+
+	public void removeSelfHostListener(SelectionListener listener)
+	{
+		btnSelfHost.removeSelectionListener(listener);
+	}
+
 	public void addTakeControlListener(SelectionListener listener)
 	{
 		controlBtn.addSelectionListener(listener);
@@ -116,6 +127,7 @@ public class HolderPane extends Composite
 	{
 		controlBtn.removeSelectionListener(listener);
 	}
+
 	public void addConnectListener(SelectionListener listener)
 	{
 		connectBtn.addSelectionListener(listener);
@@ -126,7 +138,6 @@ public class HolderPane extends Composite
 		connectBtn.removeSelectionListener(listener);
 	}
 
-
 	public void setTimeEnabled(boolean val)
 	{
 		grpTime.setEnabled(val);
@@ -136,7 +147,6 @@ public class HolderPane extends Composite
 	{
 		grpState.setEnabled(val);
 	}
-	
 
 	public void setTime(String string)
 	{
@@ -147,7 +157,7 @@ public class HolderPane extends Composite
 	{
 		return plotContainer;
 	}
-	
+
 	/**
 	 * Create the composite.
 	 * 
@@ -160,7 +170,7 @@ public class HolderPane extends Composite
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
-		
+
 		composite_3 = new Composite(composite, SWT.NONE);
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -170,20 +180,23 @@ public class HolderPane extends Composite
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if(connectBtn.getText().equals(CONNECT))
+				if (connectBtn.getText().equals(CONNECT))
 					connectBtn.setText("Disconect");
 				else
 					connectBtn.setText(CONNECT);
 			}
 		});
-		
-		 controlBtn = new Button(composite_3, SWT.TOGGLE);
+
+		controlBtn = new Button(composite_3, SWT.TOGGLE);
 		controlBtn.setText(CONTROL);
+
+		btnSelfHost = new Button(composite_3, SWT.CHECK);
+		btnSelfHost.setText("Self host");
 		controlBtn.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if(controlBtn.getText().equals(CONTROL))
+				if (controlBtn.getText().equals(CONTROL))
 					controlBtn.setText("Release");
 				else
 					controlBtn.setText(CONTROL);
@@ -220,7 +233,7 @@ public class HolderPane extends Composite
 		});
 		playBtn.setText(">");
 
-		 fasterBtn = new Button(composite_2, SWT.NONE);
+		fasterBtn = new Button(composite_2, SWT.NONE);
 		fasterBtn.setText("++");
 
 		slowerBtn = new Button(composite_2, SWT.CENTER);
@@ -287,49 +300,42 @@ public class HolderPane extends Composite
 		newState = new Button(grpState, SWT.NONE);
 		newState.setBounds(0, 0, 94, 30);
 		newState.setText("Submit");
-		
+
 		grpDetections = new Group(composite, SWT.NONE);
 		grpDetections.setLayoutData(new RowData(210, 153));
 		grpDetections.setText("Detections");
-		
-				logList = new List(grpDetections, SWT.BORDER | SWT.V_SCROLL);
-				GroupLayout gl_grpDetections = new GroupLayout(grpDetections);
-				gl_grpDetections.setHorizontalGroup(
-					gl_grpDetections.createParallelGroup(GroupLayout.LEADING)
-						.add(gl_grpDetections.createSequentialGroup()
-							.add(logList, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				);
-				gl_grpDetections.setVerticalGroup(
-					gl_grpDetections.createParallelGroup(GroupLayout.LEADING)
-						.add(gl_grpDetections.createSequentialGroup()
-							.add(logList, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(29, Short.MAX_VALUE))
-				);
-				grpDetections.setLayout(gl_grpDetections);
+
+		logList = new List(grpDetections, SWT.BORDER | SWT.V_SCROLL);
+		GroupLayout gl_grpDetections = new GroupLayout(grpDetections);
+		gl_grpDetections.setHorizontalGroup(gl_grpDetections.createParallelGroup(
+				GroupLayout.LEADING).add(
+				gl_grpDetections.createSequentialGroup().add(logList,
+						GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+		gl_grpDetections.setVerticalGroup(gl_grpDetections.createParallelGroup(
+				GroupLayout.LEADING).add(
+				gl_grpDetections.createSequentialGroup().add(logList,
+						GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(29, Short.MAX_VALUE)));
+		grpDetections.setLayout(gl_grpDetections);
 
 		plotContainer = new Composite(this, SWT.BORDER);
 		plotContainer.setLayout(new FillLayout(SWT.HORIZONTAL));
 		GroupLayout groupLayout = new GroupLayout(this);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(GroupLayout.LEADING)
-				.add(groupLayout.createSequentialGroup()
-					.add(3)
-					.add(composite, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.add(3)
-					.add(plotContainer, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
-					.addContainerGap())
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(GroupLayout.LEADING)
-				.add(groupLayout.createSequentialGroup()
-					.add(3)
-					.add(groupLayout.createParallelGroup(GroupLayout.LEADING)
-						.add(groupLayout.createSequentialGroup()
-							.add(plotContainer, GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
-							.add(16))
-						.add(composite, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-		);
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(
+				GroupLayout.LEADING).add(
+				groupLayout.createSequentialGroup().add(3).add(composite,
+						GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+						GroupLayout.PREFERRED_SIZE).add(3).add(plotContainer,
+						GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE).addContainerGap()));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(
+				GroupLayout.LEADING).add(
+				groupLayout.createSequentialGroup().add(3).add(
+						groupLayout.createParallelGroup(GroupLayout.LEADING).add(
+								groupLayout.createSequentialGroup().add(plotContainer,
+										GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE).add(16))
+								.add(composite, GroupLayout.PREFERRED_SIZE,
+										GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))));
 		setLayout(groupLayout);
 
 	}
