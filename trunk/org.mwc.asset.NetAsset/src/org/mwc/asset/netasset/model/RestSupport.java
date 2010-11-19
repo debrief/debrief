@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.asset.comms.restlet.data.DemandedStatusResource;
 import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
@@ -39,7 +42,16 @@ public class RestSupport
 	public boolean doConnect()
 	{
 		// find some data
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario");
+		String theRoot = "http://localhost:8080";
+		
+
+    InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(),
+        "Connect to ASSET Server", "Enter URL", theRoot, null);
+    if (dlg.open() == Window.OK) {
+    	theRoot = dlg.getValue();
+    }
+		
+		ClientResource cr = new ClientResource(theRoot + "/v1/scenario");
 
 		// does it have a scenario?
 		ScenariosResource scenR = cr.wrap(ScenariosResource.class);
