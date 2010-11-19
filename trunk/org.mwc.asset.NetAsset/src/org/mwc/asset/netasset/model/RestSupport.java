@@ -1,5 +1,7 @@
 package org.mwc.asset.netasset.model;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,15 +45,15 @@ public class RestSupport
 	public boolean doConnect()
 	{
 		// find some data
-		 _root = "http://localhost:8080";
-		
+		_root = "http://localhost:8080";
 
-    InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(),
-        "Connect to ASSET Server", "Enter URL", _root, null);
-    if (dlg.open() == Window.OK) {
-    	_root = dlg.getValue();
-    }
-		
+		InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(),
+				"Connect to ASSET Server", "Enter URL", _root, null);
+		if (dlg.open() == Window.OK)
+		{
+			_root = dlg.getValue();
+		}
+
 		ClientResource cr = new ClientResource(_root + "/v1/scenario");
 
 		// does it have a scenario?
@@ -69,12 +71,11 @@ public class RestSupport
 				+ _scenarioId);
 
 		// get scenario going
-		startMyServer();
+		createMyServer();
 
 		// start listening to time events
 		// right, now try to register it.
-		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
-				+ "/listener");
+		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId + "/listener");
 		String theAddress = "http://localhost:8081/v1/scenario/" + _scenarioId
 				+ "/event";
 		System.out.println("providing listener for" + theAddress);
@@ -86,7 +87,7 @@ public class RestSupport
 		return res;
 	}
 
-	private void startMyServer()
+	private void createMyServer()
 	{
 		// ok, register ourselves as a listener
 		if (guestS == null)
@@ -130,15 +131,17 @@ public class RestSupport
 		{
 			e.printStackTrace();
 		}
+		
+		GuestServer it = guestS;
+		
 	}
 
 	public void doDisconnect()
 	{
 		if (_scenarioListenerId != NULL_INT)
 		{
-			ClientResource cr = new ClientResource(
-					_root + "/v1/scenario/" + _scenarioId + "/listener/"
-							+ _scenarioListenerId);
+			ClientResource cr = new ClientResource(_root + "/v1/scenario/"
+					+ _scenarioId + "/listener/" + _scenarioListenerId);
 			ListenerResource lr = cr.wrap(ListenerResource.class);
 			lr.remove();
 			cr.release();
@@ -201,9 +204,24 @@ public class RestSupport
 		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
 				+ "/participant/" + _partId + "/listener");
 		ListenerResource sl = cr.wrap(ListenerResource.class);
-		_partListenerId = sl.accept("http://localhost:8081/v1/scenario/"
-				+ _scenarioId + "/participant/" + _partId + "/status");
+		_partListenerId = sl.accept(getLocalName() + "/v1/scenario/" + _scenarioId
+				+ "/participant/" + _partId + "/status");
 		cr.release();
+	}
+
+	private String getLocalName()
+	{
+		InetAddress addr = null;
+		try
+		{
+			addr = InetAddress.getLocalHost();
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
+    String hostname = "http://" +  addr.getHostName() + "/8080";
+		return hostname;
 	}
 
 	public void doReleaseControl()
