@@ -13,17 +13,20 @@ import org.mwc.asset.comms.restlet.data.AssetEvent;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
-/** class that maintains a list of REST listeners URIS, ditching entries from the list if/when
- * they fail to respond
+/**
+ * class that maintains a list of REST listeners URIS, ditching entries from the
+ * list if/when they fail to respond
+ * 
  * @author ianmayo
- *
+ * 
  */
 abstract public class BaseListenerList<EventType extends AssetEvent>
 {
 	private HashMap<Integer, URI> _myURIs = new HashMap<Integer, URI>();
 	int ctr = 0;
 
-	/** how many listeners are there? (mostly for debug)
+	/**
+	 * how many listeners are there? (mostly for debug)
 	 * 
 	 * @return
 	 */
@@ -32,7 +35,8 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 		return _myURIs.size();
 	}
 
-	/** store this listener
+	/**
+	 * store this listener
 	 * 
 	 * @param url
 	 * @return the unique index provided to this listener
@@ -44,7 +48,8 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 		return ctr;
 	}
 
-	/** ditch this listener
+	/**
+	 * ditch this listener
 	 * 
 	 * @param id
 	 */
@@ -52,16 +57,17 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 	{
 		_myURIs.remove(id);
 	}
-	
-	/** fire an event to the specified URI
+
+	/**
+	 * fire an event to the specified URI
 	 * 
 	 * @param client
 	 * @param event
 	 */
 	abstract protected void fireThisEvent(ClientResource client, EventType event);
 
-
-	/** fire the supplied event to my listeners
+	/**
+	 * fire the supplied event to my listeners
 	 * 
 	 * @param event
 	 */
@@ -75,6 +81,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 
 			try
 			{
+				System.out.println("about to send to " + thisURI.toString());
 				ClientResource client = new ClientResource(thisURI.toString());
 				fireThisEvent(client, event);
 				client.release();
@@ -90,6 +97,11 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 				else
 					re.printStackTrace();
 			}
+			catch (Exception e)
+			{
+				System.out.println("failed trying to sent to " + thisURI.toString());
+				e.printStackTrace();
+			}
 		}
 
 		// ok, are we ditching any?
@@ -101,8 +113,7 @@ abstract public class BaseListenerList<EventType extends AssetEvent>
 				URI thisURI = (URI) iterator.next();
 
 				Set<Integer> mine = _myURIs.keySet();
-				for (Iterator<Integer> iterator2 = mine.iterator(); iterator2
-						.hasNext();)
+				for (Iterator<Integer> iterator2 = mine.iterator(); iterator2.hasNext();)
 				{
 					Integer thisId = (Integer) iterator2.next();
 					if (_myURIs.get(thisId).equals(thisURI))

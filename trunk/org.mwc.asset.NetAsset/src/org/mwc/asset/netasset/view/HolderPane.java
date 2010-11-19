@@ -198,7 +198,7 @@ public class HolderPane extends Composite
 
 		lblTime = new Label(grpTime, SWT.CENTER);
 		lblTime.setLayoutData(new RowData(166, SWT.DEFAULT));
-		lblTime.setFont(SWTResourceManager.getFont("Courier New", 14, SWT.BOLD));
+		lblTime.setFont(SWTResourceManager.getFont("Courier", 10, SWT.BOLD));
 		lblTime.setBackground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		lblTime.setForeground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		lblTime.setText("00/0000/00 00:00:00");
