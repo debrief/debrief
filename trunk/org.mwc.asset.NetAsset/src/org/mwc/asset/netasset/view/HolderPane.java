@@ -12,6 +12,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.grouplayout.GroupLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -23,6 +24,8 @@ import com.swtdesigner.SWTResourceManager;
 
 public class HolderPane extends Composite
 {
+	private static final String CONTROL = "Control";
+	private static final String CONNECT = " Connect ";
 	private Text demCourse;
 	private Text demSpeed;
 	private Text demDepth;
@@ -40,6 +43,8 @@ public class HolderPane extends Composite
 	private Button fasterBtn;
 	private Composite composite_3;
 	private Button controlBtn;
+	private Group grpDetections;
+	private Composite plotContainer;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -138,7 +143,11 @@ public class HolderPane extends Composite
 		lblTime.setText(string);
 	}
 
-
+	public Composite getPlotContainer()
+	{
+		return plotContainer;
+	}
+	
 	/**
 	 * Create the composite.
 	 * 
@@ -148,10 +157,6 @@ public class HolderPane extends Composite
 	public HolderPane(Composite parent, int style)
 	{
 		super(parent, SWT.BORDER);
-		RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
-		rowLayout.wrap = false;
-		rowLayout.fill = true;
-		setLayout(rowLayout);
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
@@ -160,28 +165,28 @@ public class HolderPane extends Composite
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		connectBtn = new Button(composite_3, SWT.TOGGLE);
-		connectBtn.setText("Connect");
+		connectBtn.setText(CONNECT);
 		connectBtn.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if(connectBtn.getText().equals("Connect"))
+				if(connectBtn.getText().equals(CONNECT))
 					connectBtn.setText("Disconect");
 				else
-					connectBtn.setText("Connect");
+					connectBtn.setText(CONNECT);
 			}
 		});
 		
 		 controlBtn = new Button(composite_3, SWT.TOGGLE);
-		controlBtn.setText("Control");
+		controlBtn.setText(CONTROL);
 		controlBtn.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				if(controlBtn.getText().equals("Control"))
+				if(controlBtn.getText().equals(CONTROL))
 					controlBtn.setText("Release");
 				else
-					controlBtn.setText("Control");
+					controlBtn.setText(CONTROL);
 			}
 		});
 
@@ -273,21 +278,57 @@ public class HolderPane extends Composite
 
 		Label label = new Label(grpState, SWT.NONE);
 		label.setBounds(0, 0, 59, 14);
-		label.setText("New Label");
+		label.setText("  ");
 
 		Label label_1 = new Label(grpState, SWT.NONE);
 		label_1.setBounds(0, 0, 59, 14);
-		label_1.setText("New Label");
+		label_1.setText("  ");
 
 		newState = new Button(grpState, SWT.NONE);
 		newState.setBounds(0, 0, 94, 30);
 		newState.setText("Submit");
+		
+		grpDetections = new Group(composite, SWT.NONE);
+		grpDetections.setLayoutData(new RowData(210, 153));
+		grpDetections.setText("Detections");
+		
+				logList = new List(grpDetections, SWT.BORDER | SWT.V_SCROLL);
+				GroupLayout gl_grpDetections = new GroupLayout(grpDetections);
+				gl_grpDetections.setHorizontalGroup(
+					gl_grpDetections.createParallelGroup(GroupLayout.LEADING)
+						.add(gl_grpDetections.createSequentialGroup()
+							.add(logList, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				);
+				gl_grpDetections.setVerticalGroup(
+					gl_grpDetections.createParallelGroup(GroupLayout.LEADING)
+						.add(gl_grpDetections.createSequentialGroup()
+							.add(logList, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(29, Short.MAX_VALUE))
+				);
+				grpDetections.setLayout(gl_grpDetections);
 
-		Composite composite_1 = new Composite(this, SWT.BORDER);
-		composite_1.setLayoutData(new RowData(200, SWT.DEFAULT));
-		composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
-
-		logList = new List(composite_1, SWT.BORDER | SWT.V_SCROLL);
+		plotContainer = new Composite(this, SWT.BORDER);
+		plotContainer.setLayout(new FillLayout(SWT.HORIZONTAL));
+		GroupLayout groupLayout = new GroupLayout(this);
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(GroupLayout.LEADING)
+				.add(groupLayout.createSequentialGroup()
+					.add(3)
+					.add(composite, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.add(3)
+					.add(plotContainer, GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(GroupLayout.LEADING)
+				.add(groupLayout.createSequentialGroup()
+					.add(3)
+					.add(groupLayout.createParallelGroup(GroupLayout.LEADING)
+						.add(plotContainer, GroupLayout.PREFERRED_SIZE, 435, GroupLayout.PREFERRED_SIZE)
+						.add(composite, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+		);
+		setLayout(groupLayout);
 
 	}
 

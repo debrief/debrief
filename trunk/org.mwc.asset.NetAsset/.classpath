@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="libs/restlet/org.restlet.jar" sourcepath="docs/restlet_src"/>
 	<classpathentry kind="src" path="libs"/>
 	<classpathentry kind="src" path="bin"/>
+	<classpathentry kind="lib" path="swt-grouplayout.jar" sourcepath="swt-grouplayout.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

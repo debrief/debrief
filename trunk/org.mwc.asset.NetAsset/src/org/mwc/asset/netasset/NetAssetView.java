@@ -2,6 +2,7 @@ package org.mwc.asset.netasset;
 
 import java.util.Date;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -14,9 +15,15 @@ import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.netasset.model.RestSupport;
 import org.mwc.asset.netasset.view.HolderPane;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import ASSET.Participants.Status;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldSpeed;
+import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class NetAssetView extends ViewPart implements ASSETGuest
@@ -26,6 +33,12 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	private HolderPane _control;
 
 	private RestSupport _myModel;
+
+	private Layers _myLayers;
+
+	private TrackWrapper _myTrack;
+
+	private SWTChart theChart;
 
 	public NetAssetView()
 	{
@@ -44,6 +57,8 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		_control.setActDepth("1.3");
 
 		_control.logEvent(new Date().getTime(), "Event", "Start");
+
+		doPlot(_control.getPlotContainer());
 
 		_control.addConnectListener(new SelectionAdapter()
 		{
@@ -126,13 +141,34 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	}
 
+	private void doPlot(Composite plotContainer)
+	{
+		_myLayers = new Layers();
+		_myTrack = new TrackWrapper();
+		_myTrack.setName("Ian");
+		_myLayers.addThisLayer(_myTrack);
+		 theChart = new SWTChart(_myLayers, plotContainer)
+		{
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void chartFireSelectionChanged(ISelection sel)
+			{
+			}
+		};
+	}
+
 	protected void doTakeControl(boolean take)
 	{
 		if (take)
 			_myModel.doTakeControl();
 		else
 			_myModel.doReleaseControl();
-		
+
 		_control.setStateEnabled(take);
 
 	}
@@ -201,9 +237,16 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			{
 				public void run()
 				{
-					_control.setActCourse("" + ((int)newState.getCourse()));
-					_control.setActSpeed("" + (int)(newState.getSpeed().getValueIn(WorldSpeed.Kts)));
-					_control.setActDepth("" + ((int)newState.getLocation().getDepth()));
+					_control.setActCourse("" + ((int) newState.getCourse()));
+					_control.setActSpeed(""
+							+ (int) (newState.getSpeed().getValueIn(WorldSpeed.Kts)));
+					_control.setActDepth("" + ((int) newState.getLocation().getDepth()));
+					
+					Fix theFix = new Fix(new HiResDate(newState.getTime()), newState.getLocation(), newState.getCourse(), newState.getSpeed().getValueIn(WorldSpeed.Kts));
+					FixWrapper newFix = new FixWrapper(theFix );
+					_myTrack.add(newFix);
+					_myLayers.fireExtended(newFix, _myTrack);
+					theChart.rescale();
 				}
 			});
 	}
