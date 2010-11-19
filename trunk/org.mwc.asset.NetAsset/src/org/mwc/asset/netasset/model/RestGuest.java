@@ -2,6 +2,7 @@ package org.mwc.asset.netasset.model;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -119,6 +120,24 @@ public class RestGuest
 				ListenerResource lr = cr.wrap(ListenerResource.class);
 				_scenarioListenerId = lr.accept(theAddress);
 				cr.release();
+
+
+				// get the participants
+				cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
+						+ "/participant");
+				ParticipantsResource partR = cr.wrap(ParticipantsResource.class);
+				try
+				{
+					ParticipantsList pList = partR.retrieve();
+					if (pList != null)
+						_myGuest.setParticipants(_scenarioId, pList);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					res = false;
+				}
+				cr.release();
 			}
 
 		return res;
@@ -217,26 +236,28 @@ public class RestGuest
 		changeState(theState);
 	}
 
-	public void doTakeControl()
+	public void doTakeControl(int index)
 	{
 		// get the participants
 		// ////////////////////////////////
 		// hmm, what about the participant list?
 		// ////////////////////////////////
-		ClientResource cr = new ClientResource(_root + "/v1/scenario/"
-				+ _scenarioId + "/participant");
-		ParticipantsResource pr = cr.wrap(ParticipantsResource.class);
-		ParticipantsList partList = pr.retrieve();
-
-		_myGuest.newScenarioEvent(0, "part", "list is:" + partList);
+		// ClientResource cr = new ClientResource(_root + "/v1/scenario/"
+		// + _scenarioId + "/participant");
+		// ParticipantsResource pr = cr.wrap(ParticipantsResource.class);
+		// ParticipantsList partList = pr.retrieve();
+		//
+		// _myGuest.newScenarioEvent(0, "part", "list is:" + partList);
 
 		// get the id for the first one
-		_partId = partList.get(0).getId();
+		// _partId = partList.get(0).getId();
+
+		_partId = index;
 
 		// create the new state listener
 		// right, now try to register it.
-		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
-				+ "/participant/" + _partId + "/listener");
+		ClientResource cr = new ClientResource(_root + "/v1/scenario/"
+				+ _scenarioId + "/participant/" + _partId + "/listener");
 		ListenerResource sl = cr.wrap(ListenerResource.class);
 		_partListenerId = sl.accept(getGuestName() + "/v1/scenario/" + _scenarioId
 				+ "/participant/" + _partId + "/status");
@@ -263,7 +284,7 @@ public class RestGuest
 		return _localName;
 	}
 
-	public void doReleaseControl()
+	public void doReleaseControl(int index)
 	{
 		// create the new state listener
 		// right, now try to register it.

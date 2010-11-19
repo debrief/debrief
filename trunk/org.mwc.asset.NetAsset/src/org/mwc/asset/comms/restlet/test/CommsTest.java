@@ -18,6 +18,7 @@ import org.mwc.asset.comms.restlet.data.SensorsResource;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
 import org.mwc.asset.comms.restlet.data.ScenarioEventResource.ScenarioEvent;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
@@ -200,6 +201,13 @@ public class CommsTest extends TestCase
 			{
 				_detEvent = event;
 			}
+
+			@Override
+			public void setParticipants(int scenarioId, ParticipantsList pList)
+			{
+				// TODO Auto-generated method stub
+				
+			}
 		};
 		// fire up the server
 		GuestServer guest = new GuestServer()
@@ -343,6 +351,13 @@ public class CommsTest extends TestCase
 					 DetectionEvent event)
 			{
 				_detEvent = event;
+			}
+
+			@Override
+			public void setParticipants(int scenarioId, ParticipantsList pList)
+			{
+				// TODO Auto-generated method stub
+				
 			}
 		};
 		// fire up the server

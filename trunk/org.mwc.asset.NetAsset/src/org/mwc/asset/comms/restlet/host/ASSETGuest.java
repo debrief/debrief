@@ -2,6 +2,7 @@ package org.mwc.asset.comms.restlet.host;
 
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 
 import ASSET.Participants.Status;
 
@@ -66,5 +67,12 @@ public interface ASSETGuest
 
 	public void newParticipantDecision(int scenarioId, int participantId,
 	DecidedEvent event);
+
+	/** find out what participants are in the scenario
+	 * 
+	 * @param scenarioId
+	 * @param pList
+	 */
+	public void setParticipants(int scenarioId, ParticipantsList pList);
 
 }

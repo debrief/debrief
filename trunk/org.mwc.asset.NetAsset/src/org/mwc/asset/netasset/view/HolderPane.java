@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
 import com.swtdesigner.SWTResourceManager;
+import org.eclipse.swt.widgets.Combo;
 
 public class HolderPane extends Composite
 {
@@ -47,6 +48,7 @@ public class HolderPane extends Composite
 	private Group grpDetections;
 	private Composite plotContainer;
 	private Button btnSelfHost;
+	private Combo partList;
 
 	static private String toStringLikeThis(long theVal, String thePattern)
 	{
@@ -158,9 +160,21 @@ public class HolderPane extends Composite
 	{
 		return plotContainer;
 	}
+
 	public void setConnectPhrase(String phrase)
 	{
 		connectBtn.setText(phrase);
+	}
+
+	public void setParticipantList(String[] items)
+	{
+		partList.setItems(items);
+		partList.clearSelection();
+	}
+
+	public String getSelectedParticipant()
+	{
+		return partList.getItems()[partList.getSelectionIndex()];
 	}
 
 	/**
@@ -177,16 +191,31 @@ public class HolderPane extends Composite
 		composite.setLayout(new RowLayout(SWT.VERTICAL));
 
 		composite_3 = new Composite(composite, SWT.NONE);
-		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
+		composite_3.setLayout(new GridLayout(2, false));
 
 		connectBtn = new Button(composite_3, SWT.NONE);
 		connectBtn.setText(CONNECT);
 
-		controlBtn = new Button(composite_3, SWT.TOGGLE);
-		controlBtn.setText(CONTROL);
-
 		btnSelfHost = new Button(composite_3, SWT.CHECK);
 		btnSelfHost.setText("Self host");
+
+		partList = new Combo(composite_3, SWT.NONE);
+		partList.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				super.widgetSelected(e);
+				int theIndex = partList.getSelectionIndex();
+				controlBtn.setEnabled(theIndex != -1);
+			}
+		});
+		partList.add("111111 AAAAAAAAAA");
+
+		controlBtn = new Button(composite_3, SWT.TOGGLE);
+		controlBtn.setText(CONTROL);
+		controlBtn.setEnabled(false);
 		controlBtn.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)

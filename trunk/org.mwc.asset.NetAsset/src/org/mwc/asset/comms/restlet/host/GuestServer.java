@@ -2,6 +2,7 @@ package org.mwc.asset.comms.restlet.host;
 
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.host.ASSETGuest.GuestProvider;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -61,6 +62,12 @@ abstract public class GuestServer extends Application implements GuestProvider
 				public void newScenarioEvent(long time, String eventName,
 						String description)
 				{
+				}
+				@Override
+				public void setParticipants(int scenarioId, ParticipantsList pList)
+				{
+					// TODO Auto-generated method stub
+					
 				}};
 
 			@Override

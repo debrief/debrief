@@ -2,6 +2,7 @@ package org.mwc.asset.netasset;
 
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.jface.viewers.ISelection;
@@ -12,8 +13,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.asset.comms.restlet.data.Participant;
 import org.mwc.asset.comms.restlet.data.DecisionResource.DecidedEvent;
 import org.mwc.asset.comms.restlet.data.DetectionResource.DetectionEvent;
+import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.test.MockHost;
 import org.mwc.asset.netasset.model.RestGuest;
@@ -80,7 +83,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		_control.logEvent(new Date().getTime(), "Event", "Start");
 
 		doPlot(_control.getPlotContainer());
-
+		
 		_control.addConnectListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -130,7 +133,9 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 					public void run()
 					{
 						Button btn = (Button) e.widget;
-						doTakeControl(btn.getSelection());
+						String selection = _control.getSelectedParticipant();
+					  int index = getIdFor(selection);
+						doTakeControl(btn.getSelection(), index);
 					}
 				}.run();
 
@@ -314,12 +319,12 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	}
 
-	protected void doTakeControl(boolean take)
+	protected void doTakeControl(boolean take, int index)
 	{
 		if (take)
-			_myModel.doTakeControl();
+			_myModel.doTakeControl(index);
 		else
-			_myModel.doReleaseControl();
+			_myModel.doReleaseControl(index);
 
 		_control.setStateEnabled(take);
 
@@ -435,5 +440,38 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				System.out.println("dThread missing");
 			}
 		}
+	}
+
+	@Override
+	public void setParticipants(int scenarioId, ParticipantsList pList)
+	{
+		final String[] items = new String[pList.size()];
+		Iterator<Participant> iter = pList.iterator();
+		int ctr = 0;
+		while (iter.hasNext())
+		{
+			Participant nextP = iter.next();
+			// NOTE - THE FORMATTING OF THE NEXT LINE IS IMPORTANT, see getIdFor
+			String thisItem =  nextP.getId() + " " +  nextP.getName();
+			items[ctr++] = thisItem;
+		}
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				_control.setParticipantList(items);
+			}
+		});
+	}
+	
+
+	protected static int getIdFor(String selection)
+	{
+		int firstSpace = selection.indexOf(" ");
+		String subStr = selection.substring(0, firstSpace);
+		int res = Integer.parseInt(subStr);
+		return res;
 	}
 }
