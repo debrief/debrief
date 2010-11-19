@@ -53,7 +53,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	private Layers _myLayers;
 
 	private TrackWrapper _myTrack;
-	
+
 	private HiResDate _time;
 
 	private SWTChart _myChart;
@@ -87,14 +87,15 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			{
 				super.widgetSelected(e);
 				Button btn = (Button) e.widget;
-				final boolean doIt = btn.getSelection();
+				final String btnName = btn.getText();
+				final boolean doConnect = (btnName == HolderPane.CONNECT);
 				new Thread()
 				{
 
 					@Override
 					public void run()
 					{
-						if (doIt)
+						if (doConnect)
 							doConnect();
 						else
 							doDisconnect();
@@ -102,7 +103,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				}.run();
 			}
 		});
-		
+
 		_control.addSelfHostListener(new SelectionAdapter()
 		{
 
@@ -110,13 +111,13 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			public void widgetSelected(SelectionEvent e)
 			{
 				Button btn = (Button) e.widget;
-				if(btn.getSelection())
+				if (btn.getSelection())
 					_myHosting.startHosting(new MockHost());
 				else
 					_myHosting.stopHosting();
 			}
 		});
-		
+
 		_control.addTakeControlListener(new SelectionAdapter()
 		{
 
@@ -176,46 +177,54 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		});
 
 	}
-	
+
 	private void doPlot(Composite plotContainer)
 	{
 		_myLayers = new Layers();
 		_myTrack = new TrackWrapper();
 		_myTrack.setName("Ian");
 		_myLayers.addThisLayer(_myTrack);
-		
-		 final TrackDataProvider provider = new TrackDataProvider()
+
+		final TrackDataProvider provider = new TrackDataProvider()
 		{
 			public void removeTrackShiftListener(TrackShiftListener listener)
 			{
 			}
+
 			public void removeTrackDataListener(TrackDataListener listener)
 			{
 			}
+
 			public WatchableList[] getSecondaryTracks()
 			{
-				return new WatchableList[]{};
+				return new WatchableList[]
+				{};
 			}
+
 			public WatchableList getPrimaryTrack()
 			{
 				return _myTrack;
 			}
+
 			public void fireTracksChanged()
 			{
 			}
+
 			public void fireTrackShift(TrackWrapper target)
 			{
 			}
+
 			public void addTrackShiftListener(TrackShiftListener listener)
 			{
 			}
+
 			public void addTrackDataListener(TrackDataListener listener)
 			{
 			}
 		};
 		_myHighlighter = new SnailHighlighter(provider);
 
-		 _myChart = new SWTChart(_myLayers, plotContainer)
+		_myChart = new SWTChart(_myLayers, plotContainer)
 		{
 
 			/**
@@ -227,7 +236,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			public void chartFireSelectionChanged(ISelection sel)
 			{
 			}
-			
 
 			/**
 			 * @param thisLayer
@@ -245,8 +253,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 					if (true)
 					{
 						// yes. cool, get plotting
-						_myHighlighter.paintThisLayer(thisLayer,
-								dest, tNow);
+						_myHighlighter.paintThisLayer(thisLayer, dest, tNow);
 
 						// ok, now sort out the highlight
 
@@ -279,13 +286,13 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 								if (watch != null)
 								{
-//									// aah, is this the primary?
-//									boolean isPrimary = (list == provider
-//											.getPrimaryTrack());
+									// // aah, is this the primary?
+									// boolean isPrimary = (list == provider
+									// .getPrimaryTrack());
 
 									// plot it
-							//		_layerPainterManager.getCurrentHighlighter().highlightIt(
-							//				dest.getProjection(), dest, list, watch, isPrimary);
+									// _layerPainterManager.getCurrentHighlighter().highlightIt(
+									// dest.getProjection(), dest, list, watch, isPrimary);
 								}
 							} // whether we have a current time...
 						}
@@ -294,19 +301,19 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				catch (Exception e)
 				{
 				}
-			
+
 			}
 		};
-		
+
 		Layer misc = new BaseLayer();
 		misc.setName("Misc");
 		_myLayers.addThisLayer(misc);
 		GridPainter grid = new GridPainter();
 		grid.setName("1Nm Grid");
 		grid.setDelta(new WorldDistance(1, WorldDistance.NM));
-	
+
 	}
- 
+
 	protected void doTakeControl(boolean take)
 	{
 		if (take)
@@ -339,6 +346,8 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	protected void doConnect()
 	{
 		boolean worked = _myModel.doConnect();
+		if (worked)
+			_control.setConnectPhrase(HolderPane.DISCONNECT);
 		_control.setTimeEnabled(worked);
 	}
 
@@ -347,6 +356,7 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		_myModel.doDisconnect();
 		_control.setTimeEnabled(false);
 		_control.setStateEnabled(false);
+		_control.setConnectPhrase(HolderPane.CONNECT);
 	}
 
 	/**
@@ -386,9 +396,12 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 					_control.setActSpeed(""
 							+ (int) (newState.getSpeed().getValueIn(WorldSpeed.Kts)));
 					_control.setActDepth("" + ((int) newState.getLocation().getDepth()));
-					
-					Fix theFix = new Fix(new HiResDate(newState.getTime()), newState.getLocation(),MWC.Algorithms.Conversions.Degs2Rads(newState.getCourse()), newState.getSpeed().getValueIn(WorldSpeed.ft_sec/3));
-					FixWrapper newFix = new FixWrapper(theFix );
+
+					Fix theFix = new Fix(new HiResDate(newState.getTime()), newState
+							.getLocation(), MWC.Algorithms.Conversions.Degs2Rads(newState
+							.getCourse()), newState.getSpeed().getValueIn(
+							WorldSpeed.ft_sec / 3));
+					FixWrapper newFix = new FixWrapper(theFix);
 					_myTrack.add(newFix);
 					_myLayers.fireExtended(newFix, _myTrack);
 					_myChart.rescale();
@@ -400,28 +413,27 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	public void newScenarioEvent(final long time, final String eventName,
 			final String description)
 	{
-		if(time != 0)
+		if (time != 0)
 		{
 			_time = new HiResDate(time);
-		Display dThread = Display.getDefault();
-		if (dThread != null)
-			dThread.asyncExec(new Runnable()
-			{
-
-				@Override
-				public void run()
+			Display dThread = Display.getDefault();
+			if (dThread != null)
+				dThread.asyncExec(new Runnable()
 				{
-					if (eventName.equals("Step"))
-						_control.setTime(FullFormatDateTime.toString(time));
-					else
-						_control.logEvent(time, eventName, description);
-				}
-			});
-		else
-		{
-			System.out.println("dThread missing");
+
+					@Override
+					public void run()
+					{
+						if (eventName.equals("Step"))
+							_control.setTime(FullFormatDateTime.toString(time));
+						else
+							_control.logEvent(time, eventName, description);
+					}
+				});
+			else
+			{
+				System.out.println("dThread missing");
+			}
 		}
 	}
-	}
 }
-	

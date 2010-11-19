@@ -1,15 +1,8 @@
 package org.mwc.asset.netasset;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.asset.comms.restlet.host.ASSETHost;
-import org.mwc.asset.comms.restlet.host.HostServer;
-import org.mwc.asset.comms.restlet.test.MockHost;
 import org.osgi.framework.BundleContext;
-import org.restlet.Restlet;
 
 /**
  * The activator class controls the plug-in life cycle

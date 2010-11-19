@@ -10,12 +10,20 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.RowData;
+import com.swtdesigner.SWTResourceManager;
 
 public class ControlPane extends Composite
 {
 	private Button btnHosting;
 	private List _theList;
 	private Label lblScenario;
+	private Label lblHostName;
+	
+	public void setHostName(String name)
+	{
+		lblHostName.setText(name);
+	}
 	
 	public void setScenarioName(String name)
 	{
@@ -78,8 +86,10 @@ public class ControlPane extends Composite
 		btnHosting = new Button(grpControl, SWT.CHECK);
 		btnHosting.setText("Hosting");
 		
-		Label lblpending = new Label(grpControl, SWT.RIGHT);
-		lblpending.setText("[pending]");
+		 lblHostName = new Label(grpControl, SWT.RIGHT);
+		 lblHostName.setFont(SWTResourceManager.getFont("Lucida Grande", 8, SWT.NORMAL));
+		 lblHostName.setLayoutData(new RowData(112, SWT.DEFAULT));
+		lblHostName.setText("[pending]");
 		
 		 _theList = new List(grpListeners, SWT.BORDER);
 		GroupLayout gl_grpListeners = new GroupLayout(grpListeners);

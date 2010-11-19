@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.mwc.asset.comms.restlet.data.DemandedStatusResource;
 import org.mwc.asset.comms.restlet.data.ListenerResource;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource;
@@ -19,8 +22,9 @@ import org.mwc.asset.comms.restlet.data.DemandedStatusResource.NetDemStatus;
 import org.mwc.asset.comms.restlet.data.ParticipantsResource.ParticipantsList;
 import org.mwc.asset.comms.restlet.host.ASSETGuest;
 import org.mwc.asset.comms.restlet.host.GuestServer;
-import org.restlet.Component;
+import org.mwc.cmap.core.CorePlugin;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 public class RestGuest
 {
@@ -39,12 +43,24 @@ public class RestGuest
 		_myGuest = guest;
 	}
 
+	protected static void showMessage(String txt, String title)
+	{
+		MessageBox mb = new MessageBox(Display.getDefault().getActiveShell(),
+				SWT.NONE);
+		mb.setText(title);
+		mb.setMessage(txt);
+		mb.open();
+	}
+
 	/**
 	 * connect to a server
 	 * 
 	 */
 	public boolean doConnect()
 	{
+
+		boolean res = false;
+
 		// find some data
 		_root = "http://localhost:8080";
 
@@ -59,31 +75,51 @@ public class RestGuest
 
 		// does it have a scenario?
 		ScenariosResource scenR = cr.wrap(ScenariosResource.class);
-		List<Scenario> sList = scenR.retrieve();
-		boolean res = (sList != null);
+		List<Scenario> sList = null;
+		try
+		{
+			sList = scenR.retrieve();
+		}
+		catch (ResourceException e)
+		{
+			if (e.getStatus().getCode() == 1001)
+			{
+				showMessage("Target server not responding", "Connect to ASSET server");
+				CorePlugin.logError(Status.ERROR,
+						"Failed to connect to NetAsset server", e);
+			}
+			else
+				CorePlugin.logError(Status.ERROR, "Unknown connection error", e);
 
-		if (res)
-			_myGuest.newScenarioEvent(0, "Setup", "scenarios found:" + sList.size());
-		else
-			_myGuest.newScenarioEvent(0, "Setup", "scenarios not found");
+		}
+		if (sList != null)
+			if (sList.size() > 0)
+			{
 
-		_scenarioId = sList.get(0).getId();
-		_myGuest.newScenarioEvent(0, "Setup", "Listening to scenario:"
-				+ _scenarioId);
+				res = true;
 
-		// get scenario going
-		createMyServer();
+				_myGuest
+						.newScenarioEvent(0, "Setup", "scenarios found:" + sList.size());
 
-		// start listening to time events
-		// right, now try to register it.
-		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId + "/listener");
-		String theAddress = getLocalName() + "/v1/scenario/" + _scenarioId
-				+ "/event";
-		System.out.println("providing listener for" + theAddress);
-		// Representation rep = cr.post(theAddress, MediaType.TEXT_PLAIN);
-		ListenerResource lr = cr.wrap(ListenerResource.class);
-		_scenarioListenerId = lr.accept(theAddress);
-		cr.release();
+				_scenarioId = sList.get(0).getId();
+				_myGuest.newScenarioEvent(0, "Setup", "Listening to scenario:"
+						+ _scenarioId);
+
+				// get scenario going
+				createMyServer();
+
+				// start listening to time events
+				// right, now try to register it.
+				cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
+						+ "/listener");
+				String theAddress = getGuestName() + "/v1/scenario/" + _scenarioId
+						+ "/event";
+				System.out.println("providing listener for" + theAddress);
+				// Representation rep = cr.post(theAddress, MediaType.TEXT_PLAIN);
+				ListenerResource lr = cr.wrap(ListenerResource.class);
+				_scenarioListenerId = lr.accept(theAddress);
+				cr.release();
+			}
 
 		return res;
 	}
@@ -202,14 +238,14 @@ public class RestGuest
 		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
 				+ "/participant/" + _partId + "/listener");
 		ListenerResource sl = cr.wrap(ListenerResource.class);
-		_partListenerId = sl.accept(getLocalName() + "/v1/scenario/" + _scenarioId
+		_partListenerId = sl.accept(getGuestName() + "/v1/scenario/" + _scenarioId
 				+ "/participant/" + _partId + "/status");
 		cr.release();
 	}
 
 	static String _localName = null;
 
-	public static String getLocalName()
+	public static String getGuestName()
 	{
 		if (_localName == null)
 		{

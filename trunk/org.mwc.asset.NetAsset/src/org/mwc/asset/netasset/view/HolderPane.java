@@ -25,7 +25,8 @@ import com.swtdesigner.SWTResourceManager;
 public class HolderPane extends Composite
 {
 	private static final String CONTROL = "Control";
-	private static final String CONNECT = " Connect ";
+	public static final String CONNECT = " Connect ";
+	public static final String DISCONNECT = "Disconnect";
 	private Text demCourse;
 	private Text demSpeed;
 	private Text demDepth;
@@ -157,6 +158,10 @@ public class HolderPane extends Composite
 	{
 		return plotContainer;
 	}
+	public void setConnectPhrase(String phrase)
+	{
+		connectBtn.setText(phrase);
+	}
 
 	/**
 	 * Create the composite.
@@ -174,18 +179,8 @@ public class HolderPane extends Composite
 		composite_3 = new Composite(composite, SWT.NONE);
 		composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		connectBtn = new Button(composite_3, SWT.TOGGLE);
+		connectBtn = new Button(composite_3, SWT.NONE);
 		connectBtn.setText(CONNECT);
-		connectBtn.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (connectBtn.getText().equals(CONNECT))
-					connectBtn.setText("Disconect");
-				else
-					connectBtn.setText(CONNECT);
-			}
-		});
 
 		controlBtn = new Button(composite_3, SWT.TOGGLE);
 		controlBtn.setText(CONTROL);

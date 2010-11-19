@@ -1,17 +1,15 @@
 package org.mwc.asset.netasset;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
+import java.net.URI;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.comms.restlet.data.Scenario;
-import org.mwc.asset.comms.restlet.data.Scenario.ScenarioList;
-import org.mwc.asset.comms.restlet.host.BaseHost;
-import org.mwc.asset.netasset.model.RestGuest;
 import org.mwc.asset.netasset.model.RestHost;
 import org.mwc.asset.netasset.view.ControlPane;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -26,27 +24,30 @@ public class NetControl extends ViewPart
 	private ControlPane _myView;
 	private RestHost _myHosting;
 
-	private BaseHost _myHost;
-
 	public NetControl()
 	{
-		_myHosting = new RestHost();
-		_myHost = new BaseHost()
+		_myHosting = new RestHost()
 		{
-			public ScenarioType getScenario(int scenarioId)
+
+			@Override
+			public void deleteScenarioListener(int scenarioId, int listenerId)
 			{
-				return _myScenario;
+				super.deleteScenarioListener(scenarioId, listenerId);
 			}
 
 			@Override
-			public ScenarioList getScenarios()
+			public int newScenarioListener(int scenarioId, final URI url)
 			{
-				ScenarioList res = new ScenarioList();
-				if (_myScenario != null)
+				Display.getDefault().asyncExec(new Runnable()
 				{
-					res.add(new Scenario(_myScenario.getName(), 1));
-				}
-				return res;
+
+					@Override
+					public void run()
+					{
+						_myView.getList().add(url.toString());
+					}
+				});
+				return super.newScenarioListener(scenarioId, url);
 			}
 		};
 	}
@@ -64,9 +65,15 @@ public class NetControl extends ViewPart
 			{
 				Button btn = (Button) e.widget;
 				if (btn.getSelection())
-					_myHosting.startHosting(_myHost);
+				{
+					_myHosting.startHosting(_myHosting);
+					_myView.setHostName(RestHost.getHostName());
+				}
 				else
+				{
 					_myHosting.stopHosting();
+					_myView.setHostName("[pending]");
+				}
 			}
 
 		});
@@ -93,20 +100,20 @@ public class NetControl extends ViewPart
 					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
-						ScenarioType iS = (ScenarioType) parentPart;
+						ScenarioType iS = (ScenarioType) instance;
 						if (iS != _myScenario)
 						{
 							setScenario(iS);
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
+					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
-						ScenarioType iS = (ScenarioType) parentPart;
+						ScenarioType iS = (ScenarioType) instance;
 						if (iS == _myScenario)
 						{
 							setScenario(null);
@@ -119,12 +126,36 @@ public class NetControl extends ViewPart
 				.getActivePage());
 	}
 
+	protected void clearScenario()
+	{
+		if (_myScenario != null)
+		{
+			_myHosting.clearScenario();
+			Display.getDefault().asyncExec(new Runnable()
+			{
+
+				@Override
+				public void run()
+				{
+					_myView.setScenarioName("pending");
+				}
+			});
+		}
+		_myScenario = null;
+	}
+
 	protected void setScenario(ScenarioType iS)
 	{
 		_myScenario = iS;
-		if (_myScenario != null)
-			_myView.setScenarioName(iS.getName());
-		else
-			_myView.setScenarioName("pending");
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				_myView.setScenarioName(_myScenario.getName());
+			}
+		});
+		_myHosting.setScenario(_myScenario, (int) Math.random() * 1000);
 	}
 }
