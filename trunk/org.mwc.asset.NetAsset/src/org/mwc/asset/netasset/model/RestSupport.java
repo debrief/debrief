@@ -29,6 +29,7 @@ public class RestSupport
 	private GuestServer guestS;
 	private int _partId;
 	private int _partListenerId;
+	private String _root;
 
 	public RestSupport(ASSETGuest guest)
 	{
@@ -42,16 +43,16 @@ public class RestSupport
 	public boolean doConnect()
 	{
 		// find some data
-		String theRoot = "http://localhost:8080";
+		 _root = "http://localhost:8080";
 		
 
     InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(),
-        "Connect to ASSET Server", "Enter URL", theRoot, null);
+        "Connect to ASSET Server", "Enter URL", _root, null);
     if (dlg.open() == Window.OK) {
-    	theRoot = dlg.getValue();
+    	_root = dlg.getValue();
     }
 		
-		ClientResource cr = new ClientResource(theRoot + "/v1/scenario");
+		ClientResource cr = new ClientResource(_root + "/v1/scenario");
 
 		// does it have a scenario?
 		ScenariosResource scenR = cr.wrap(ScenariosResource.class);
@@ -72,7 +73,7 @@ public class RestSupport
 
 		// start listening to time events
 		// right, now try to register it.
-		cr = new ClientResource("http://localhost:8080/v1/scenario/" + _scenarioId
+		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
 				+ "/listener");
 		String theAddress = "http://localhost:8081/v1/scenario/" + _scenarioId
 				+ "/event";
@@ -136,7 +137,7 @@ public class RestSupport
 		if (_scenarioListenerId != NULL_INT)
 		{
 			ClientResource cr = new ClientResource(
-					"http://localhost:8080/v1/scenario/" + _scenarioId + "/listener/"
+					_root + "/v1/scenario/" + _scenarioId + "/listener/"
 							+ _scenarioListenerId);
 			ListenerResource lr = cr.wrap(ListenerResource.class);
 			lr.remove();
@@ -147,7 +148,7 @@ public class RestSupport
 	private void changeState(String theState)
 	{
 		// find some data
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+		ClientResource cr = new ClientResource(_root + "/v1/scenario/"
 				+ _scenarioId + "/state");
 
 		// does it have a scenario?
@@ -185,7 +186,7 @@ public class RestSupport
 		// ////////////////////////////////
 		// hmm, what about the participant list?
 		// ////////////////////////////////
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+		ClientResource cr = new ClientResource(_root + "/v1/scenario/"
 				+ _scenarioId + "/participant");
 		ParticipantsResource pr = cr.wrap(ParticipantsResource.class);
 		ParticipantsList partList = pr.retrieve();
@@ -197,7 +198,7 @@ public class RestSupport
 
 		// create the new state listener
 		// right, now try to register it.
-		cr = new ClientResource("http://localhost:8080/v1/scenario/" + _scenarioId
+		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId
 				+ "/participant/" + _partId + "/listener");
 		ListenerResource sl = cr.wrap(ListenerResource.class);
 		_partListenerId = sl.accept("http://localhost:8081/v1/scenario/"
@@ -209,7 +210,7 @@ public class RestSupport
 	{
 		// create the new state listener
 		// right, now try to register it.
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+		ClientResource cr = new ClientResource(_root + "/v1/scenario/"
 				+ _scenarioId + "/participant/" + _partId + "/listener/"
 				+ _partListenerId);
 		ListenerResource sl = cr.wrap(ListenerResource.class);
@@ -219,7 +220,7 @@ public class RestSupport
 
 	public void doDemStatus(double courseDegs, double speedKts, double depthM)
 	{
-		ClientResource cr = new ClientResource("http://localhost:8080/v1/scenario/"
+		ClientResource cr = new ClientResource(_root + "/v1/scenario/"
 				+ _scenarioId + "/participant/" + _partId + "/demState");
 		DemandedStatusResource sl = cr.wrap(DemandedStatusResource.class);
 		NetDemStatus newStat = new NetDemStatus(courseDegs, speedKts, depthM);
