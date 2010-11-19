@@ -76,7 +76,7 @@ public class RestSupport
 		// start listening to time events
 		// right, now try to register it.
 		cr = new ClientResource(_root + "/v1/scenario/" + _scenarioId + "/listener");
-		String theAddress = "http://localhost:8081/v1/scenario/" + _scenarioId
+		String theAddress = getLocalName() +  "/v1/scenario/" + _scenarioId
 				+ "/event";
 		System.out.println("providing listener for" + theAddress);
 		// Representation rep = cr.post(theAddress, MediaType.TEXT_PLAIN);
@@ -131,9 +131,6 @@ public class RestSupport
 		{
 			e.printStackTrace();
 		}
-		
-		GuestServer it = guestS;
-		
 	}
 
 	public void doDisconnect()
@@ -209,19 +206,24 @@ public class RestSupport
 		cr.release();
 	}
 
+	String _localName = null;
+
 	private String getLocalName()
 	{
-		InetAddress addr = null;
-		try
+		if (_localName == null)
 		{
-			addr = InetAddress.getLocalHost();
+			InetAddress addr = null;
+			try
+			{
+				addr = InetAddress.getLocalHost();
+			}
+			catch (UnknownHostException e)
+			{
+				e.printStackTrace();
+			}
+			_localName = "http://" + addr.getHostAddress() + "/8081";
 		}
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
-		}
-    String hostname = "http://" +  addr.getHostName() + "/8080";
-		return hostname;
+		return _localName;
 	}
 
 	public void doReleaseControl()
