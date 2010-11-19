@@ -221,7 +221,7 @@ public class RestSupport
 			{
 				e.printStackTrace();
 			}
-			_localName = "http://" + addr.getHostAddress() + "/8081";
+			_localName = "http://" + addr.getHostAddress() + ":8081";
 		}
 		return _localName;
 	}
