@@ -22,6 +22,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Layers.NeedsWrappingInLayerManager;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
@@ -81,6 +82,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			}
 		}
 	}
+
+	/**
+	 * someone to share life's troubles with
+	 * 
+	 */
+	private static ToolParent _myParent;
 
 	/**
 		 * 
@@ -171,6 +178,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		System.arraycopy(oneElements, 0, allElements, 0, oneUse);
 		System.arraycopy(twoElements, 0, allElements, oneUse, twoUse);
 
+		if (_myParent != null)
+		{
+			_myParent.logError(ToolParent.INFO, "extracted " + oneElements.length
+					+ " fixes from first segment", null);
+			_myParent.logError(ToolParent.INFO, "extracted " + twoElements.length
+					+ " fixes from second segment", null);
+		}
+
 		// generate the location spline
 		double[] times = new double[allElements.length];
 		double[] lats = new double[allElements.length];
@@ -194,6 +209,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
 		long tEnd = trackTwo.startDTG().getDate().getTime();
 
+		if (_myParent != null)
+		{
+			_myParent
+					.logError(ToolParent.INFO, " using time delta of " + tDelta
+							+ " millis based on times of first two items in second segment",
+							null);
+		}
+
 		// remember the last point on the first track, in case we're generating a
 		// relative solution
 		FixWrapper origin = oneElements[oneElements.length - 1];
@@ -207,12 +230,19 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			final double thisLat = latSpline.interpolate(tNow);
 			final double thisLong = longSpline.interpolate(tNow);
 			final double thisDepth = depthSpline.interpolate(tNow);
-			
+
 			// create the new location
 			WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
-			Fix newFix = null;
+			if (_myParent != null)
+			{
+				if (newLocation == null)
+
+					_myParent.logError(ToolParent.ERROR,
+							" created null location at time " + tNow + "(" + new Date(tNow)
+									+ ")", null);
+			}
 
 			WorldVector offset = newLocation.subtract(origin.getLocation());
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
@@ -220,8 +250,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			double thisCourseRads = offset.getBearing();
 
 			// and now the speed
-			final double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-					.getValueIn(WorldDistance.YARDS);
+			final double distYds = new WorldDistance(offset.getRange(),
+					WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
 			final double spdYps = distYds / timeSecs;
 			final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
 
@@ -249,7 +279,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
 
 			// create the fix
-			newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
+			Fix newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
 					theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
 
 			FixWrapper fw = new FixWrapper(newFix);
@@ -512,6 +542,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	public Editable.EditorType getInfo()
 	{
 		return new TrackSegmentInfo(this);
+	}
+
+	/**
+	 * learn about the shared trouble reporter...
+	 * 
+	 * @param toolParent
+	 */
+	public static void initialise(ToolParent toolParent)
+	{
+		_myParent = toolParent;
 	}
 
 	/**

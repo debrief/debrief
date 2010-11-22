@@ -45,6 +45,7 @@ import org.osgi.framework.BundleContext;
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Tools.Palette.CreateTOPO;
@@ -177,8 +178,12 @@ public class CorePlugin extends AbstractUIPlugin
 		// and the old error logger
 		Trace.initialise(_toolParent);
 		
+		// the VPF database may wish to announce some kind of warning 
+		// if it can't find it's data
 		VPFDatabaseHandler.initialise(_toolParent);
 
+    // there again, the track wrapper may have problems when it's 
+		TrackSegment.initialise(_toolParent);
 	}
 
 	/**

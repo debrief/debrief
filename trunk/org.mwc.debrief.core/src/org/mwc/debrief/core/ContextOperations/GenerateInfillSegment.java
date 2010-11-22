@@ -136,7 +136,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
 				// join them
 				res = fillSegments(trackOne, trackTwo);
-
+				
 				// did it work?
 				if (res != null)
 					break;
