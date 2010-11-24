@@ -57,13 +57,30 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	final private String _rangeTitle;
 	final private String _bearingTitle;
 
-	protected RangeBearingPage(ISelection selection, String pageName,
+	public RangeBearingPage(ISelection selection, String pageName,
 			String pageDescription, String rangeTitle,String bearingTitle)
 	{
 		super(selection, NAME, pageName, pageDescription, "images/grid_wizard.gif",
 				false);
 		_rangeTitle = rangeTitle;
 		_bearingTitle = bearingTitle;
+	}
+	
+	public void setData(WorldDistance range, double bearing)
+	{
+		createMe();
+		_myWrapper.setRange(range);
+		_myWrapper.setBearing(bearing);
+	}
+	
+	public WorldDistance getRange()
+	{
+		return _myWrapper.getRange();
+	}
+	
+	public double getBearingDegs()
+	{
+		return _myWrapper.getBearing();
 	}
 
 	protected PropertyDescriptor[] getPropertyDescriptors()

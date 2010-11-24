@@ -73,6 +73,10 @@ public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
     {
       String val = (String) p1;
       setAsText(val);
+    }else if(p1 instanceof Integer)
+    {
+    	Integer index = (Integer) p1;
+			setAsText(getTags()[index ]);
     }
   }
 

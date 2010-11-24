@@ -91,6 +91,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -134,6 +135,12 @@ public final class TMAContactWrapper extends
 	 * vector representing the target location
 	 */
 	WorldVector _targetPosVector = null;
+
+	/**
+	 * safe copy of the rane - so we can store it with the units
+	 * 
+	 */
+	WorldDistance _myRange = null;
 
 	/**
 	 * the depth estimate for the target
@@ -193,7 +200,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * the symbol to use to plot the target location
 	 */
-	String _theSymbol;
+	private String _theSymbol;
 
 	/**
 	 * whether to show the target vector
@@ -990,11 +997,17 @@ public final class TMAContactWrapper extends
 
 	public WorldDistance getRange()
 	{
-		return new WorldDistance(_targetPosVector.getRange(), WorldDistance.DEGS);
+		WorldDistance res;
+		if (_myRange != null)
+			res = _myRange;
+		else
+			res = new WorldDistance(_targetPosVector.getRange(), WorldDistance.DEGS);
+		return res;
 	}
 
 	public void setRange(WorldDistance val)
 	{
+		_myRange = val;
 		_targetPosVector.setValues(_targetPosVector.getBearing(), val
 				.getValueIn(WorldDistance.DEGS), _targetPosVector.getDepth());
 	}
@@ -1004,9 +1017,9 @@ public final class TMAContactWrapper extends
 		return _targetPosVector.getBearing();
 	}
 
-	public void setBearing(double val)
+	public void setBearing(double valRads)
 	{
-		_targetPosVector.setValues(val, _targetPosVector.getRange(),
+		_targetPosVector.setValues(valRads, _targetPosVector.getRange(),
 				_targetPosVector.getDepth());
 	}
 
@@ -1106,6 +1119,9 @@ public final class TMAContactWrapper extends
 
 	public void setSymbol(String val)
 	{
+		// just check we have a valid symbol
+		if ((val == null) || (val.length() == 0))
+			val = SymbolFactory.SUBMARINE;
 		_theSymbol = val;
 	}
 
@@ -1144,10 +1160,11 @@ public final class TMAContactWrapper extends
 		_targetPosVector = theVector;
 	}
 
-	public void buildSetTargetState(double course, double speed, double depth)
+	public void buildSetTargetState(double courseDegs, double speedKts,
+			double depth)
 	{
-		_targetCourseDegs = course;
-		_targetSpeedKts = speed;
+		_targetCourseDegs = courseDegs;
+		_targetSpeedKts = speedKts;
 		_targetDepth = depth;
 	}
 

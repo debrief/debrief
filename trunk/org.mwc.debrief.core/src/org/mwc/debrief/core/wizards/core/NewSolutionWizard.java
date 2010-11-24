@@ -1,12 +1,20 @@
 package org.mwc.debrief.core.wizards.core;
 
+import java.awt.Color;
+
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
+import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 
+import Debrief.ReaderWriter.XML.Tactical.TMAContactHandler;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 
 public class NewSolutionWizard extends Wizard
 {
@@ -18,6 +26,7 @@ public class NewSolutionWizard extends Wizard
 	private EnterStringPage namePage;
 	private EnterDTGPage datePage;
 	private RangeBearingPage rangePage;
+	private EnterSolutionPage solutionPage;
 
 	public NewSolutionWizard(HiResDate tNow, TrackWrapper track, TMAWrapper tma)
 	{
@@ -49,32 +58,16 @@ public class NewSolutionWizard extends Wizard
 
 		// now for the easy fields
 		// ok, we need to let the user enter the solution wrapper name
-		rangePage = new RangeBearingPage(
-				null,
-				"The solution must be placed inside a named block of solutions, please provide a name",
-				"a one-word phrase for this block of ellipses",
+		rangePage = new RangeBearingPage(null, "Add new solution",
+				"You must now specify the range/bearing to the target",
 				"range from ownship to centre of ellipse",
 				"bearing from ownship centre of ellipse (degs)");
 		addPage(rangePage);
 
-		// ok, also let the user choose a time
-
-		// selectOffsetPage = new SelectOffsetPage(null);
-		//
-		// // initialise the sensor offset
-		// DataItem di = (DataItem) selectOffsetPage.createMe();
-		// di._bearing = _brgDegs;
-		// if(_range != null)
-		// di._range = _range;
-		//        
-		// addPage(selectOffsetPage);
-		//                      
-		// enterSolutionPage = new EnterSolutionPage(null);
-		// SolutionDataItem d2 = (SolutionDataItem) enterSolutionPage.createMe();
-		// d2._course = _initalCourse;
-		// d2._speed = _initialSpeed;
-		//           
-		// addPage(enterSolutionPage);
+		solutionPage = new EnterSolutionPage(null,
+				"You may also wish to enter an initial solution\n"
+						+ "This will be stored in the ellipse label");
+		addPage(solutionPage);
 	}
 
 	public boolean performFinish()
@@ -88,6 +81,11 @@ public class NewSolutionWizard extends Wizard
 		return super.getPage(name);
 	}
 
+	/**
+	 * get either the new solution wrapper, or the one passed in
+	 * 
+	 * @return
+	 */
 	public TMAWrapper getSolutionWrapper()
 	{
 		if (_tma == null)
@@ -95,13 +93,36 @@ public class NewSolutionWizard extends Wizard
 			{
 				_tma = new TMAWrapper(namePage.getString());
 			}
+
+		// make the wrapper visible, so the new data can be seen
+		_tma.setVisible(true);
+
 		return _tma;
 	}
 
+	/**
+	 * provide the solution created here
+	 * 
+	 * @return a new solution
+	 */
 	public TMAContactWrapper getSolution()
 	{
 		TMAContactWrapper tw = new TMAContactWrapper();
+		
+		SolutionDataItem sol = (SolutionDataItem) solutionPage.getEditable();
+		tw.buildSetTargetState(sol.getCourse(), sol.getSpeed().getValueIn(WorldSpeed.Kts), 0);
+		tw.buildSetEllipse(0, new WorldDistance(1, WorldDistance.NM), new WorldDistance(1, WorldDistance.NM));
+		double brgRads = MWC.Algorithms.Conversions.Degs2Rads(rangePage
+				.getBearingDegs());
+		tw.buildSetVector( new WorldVector(brgRads,rangePage.getRange(), null));
+		
+		tw.setTMATrack(_tma);
 		tw.setDTG(datePage.getDate());
+		tw.setColor(Color.red);
+		
+
+		String lblStr = sol.getSpeed().toString() + sol.getCourse() + "Degs";
+		tw.setLabel(lblStr);
 		return tw;
 	}
 

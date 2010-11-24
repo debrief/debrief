@@ -124,7 +124,9 @@ public class SymbolFactory
   // member variables
   //////////////////////////////////////////////////
 
-  public static final String DEFAULT_SYMBOL_TYPE = "S";
+  public static final String SUBMARINE = "Submarine";
+
+	public static final String DEFAULT_SYMBOL_TYPE = "S";
 
   /**
    */
@@ -337,7 +339,7 @@ public class SymbolFactory
       vessels.put("Aircraft", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
       vessels.put("ScaledVessel", MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym.class);
       vessels.put("ScaledSubmarine", MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym.class);
-      vessels.put("Submarine", MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub.class);
+      vessels.put(SUBMARINE, MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub.class);
       vessels.put("Missile", MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
       vessels.put("Torpedo", MWC.GUI.Shapes.Symbols.Vessels.TorpedoSym.class);
       vessels.put("Carrier", MWC.GUI.Shapes.Symbols.Vessels.AircraftCarrierSym.class);
@@ -362,7 +364,7 @@ public class SymbolFactory
       _theVesselIds = new java.util.HashMap<String, String>();
       _theVesselIds.put("Helicopter", "H");
       _theVesselIds.put("Aircraft", "A");
-      _theVesselIds.put("Submarine", "S");
+      _theVesselIds.put(SUBMARINE, "S");
       _theVesselIds.put("Torpedo", "P");
       _theVesselIds.put("Carrier", "C");
       _theVesselIds.put("Cruiser", "U");

@@ -6,6 +6,7 @@
 package MWC.Utilities.TextFormatting;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
@@ -13,12 +14,19 @@ public class FullFormatDateTime
 {
 
   
-  static public String toString(long theVal)
+  public static final String FULL_FORMAT = "dd/MMM/yy HH:mm:ss";
+
+	static public String toString(long theVal)
   {
 		return toStringLikeThis(theVal, 
-														"dd/MMM/yy HH:mm:ss");
+														FULL_FORMAT);
   }
-  
+
+	static public long fromString(String theStr) throws ParseException
+	{
+		return fromStringLikeThis(theStr, FULL_FORMAT);
+	}
+	
 	static public String toShortString(long theVal)
 	{
 		return toStringLikeThis(theVal, 
@@ -30,7 +38,6 @@ public class FullFormatDateTime
 		return toStringLikeThis(theVal,
 														"HHmm:ss");
 	}
-
 
 	static public String toStringLikeThis(long theVal,
 																				String thePattern)
@@ -45,9 +52,20 @@ public class FullFormatDateTime
 
     return res;
 	}
-	
+
+
+	static protected long fromStringLikeThis(String theTxt,
+																				String thePattern) throws ParseException
+	{
+    DateFormat df = new SimpleDateFormat(thePattern);    
+    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    long res = df.parse(theTxt).getTime();
+
+    return res;
+	}
+
   static public String getExample(){
-    return "dd/MMM/yy HH:mm:ss";
+    return FULL_FORMAT;
   }
 }
 
