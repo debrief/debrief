@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
@@ -105,6 +106,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	private Button _enabledBtn;
 
 	private final boolean _optional;
+
+	private ModifyListener _txtModifiedListener;
 
 	/**
 	 * Constructor for SampleNewWizardPage.
@@ -216,6 +219,16 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
 	}
 
+	/** allocate a text modified listners
+	 * @param listener 
+	 * 
+	 */
+	public void addModifiedListener(ModifyListener listener)
+	{
+		_txtModifiedListener = listener;
+	}
+	
+	
 	/**
 	 * ok, create an instance of the thing we're editing
 	 * 
@@ -376,6 +389,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
 				// and now for the editor bit.
 				final Control newEditor = thisProp.createEditor(container);
+				
 				if (newEditor != null)
 				{
 					// get the current value, so we can initialise the editor
@@ -390,6 +404,11 @@ abstract public class CoreEditableWizardPage extends WizardPage
 						{
 							Text txtEditor = (Text) newEditor;
 							txtEditor.setText(currentVal.toString());
+							
+							// do we have a modified listener?
+							if(_txtModifiedListener != null)
+								txtEditor.addModifyListener(_txtModifiedListener);
+							
 						}
 						else
 						{
