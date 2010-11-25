@@ -64,24 +64,6 @@ abstract public class TMAContactHandler extends
 
 	public TMAContactHandler()
   {
-    // <!ELEMENT tma_solution (colour?, centre?)>
-    //	Dtg CDATA #REQUIRED
-    //	Bearing CDATA #REQUIRED
-    //	Range CDATA #REQUIRED
-    //	Visible (TRUE | FALSE) "TRUE"
-    //	Label CDATA #REQUIRED
-    //	LabelShowing (TRUE | FALSE) "TRUE"
-    //	LineShowing (TRUE | FALSE) "TRUE"
-    //	EllipseShowing (TRUE | FALSE) "TRUE"
-    //	SymbolShowing (TRUE | FALSE) "TRUE"
-    //	LabelLocation (Top | Left | Bottom | Centre | Right) "Left"
-    //	Course CDATA #REQUIRED
-    //	Speed CDATA #REQUIRED
-    //	Depth CDATA #REQUIRED
-    //	Orientation CDATA #REQUIRED
-    //	Maxima CDATA #REQUIRED
-    //	Minima CDATA #REQUIRED
-
     // inform our parent what type of class we are
     super(MY_NAME);
 

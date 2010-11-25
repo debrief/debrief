@@ -335,7 +335,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 							.getValueIn(WorldDistance.YARDS));
 
 			double bearingRads = interp
-					.interp(_last.getBearing(), _next.getBearing());
+					.interp(_last.getBearingRads(), _next.getBearingRads());
 			bearingDegs = MWC.Algorithms.Conversions.Rads2Degs(bearingRads);
 		}
 

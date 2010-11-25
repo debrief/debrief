@@ -1012,12 +1012,22 @@ public final class TMAContactWrapper extends
 				.getValueIn(WorldDistance.DEGS), _targetPosVector.getDepth());
 	}
 
-	public double getBearing()
+	public double getBearingRads()
 	{
 		return _targetPosVector.getBearing();
 	}
+	
+	public double getBearing()
+	{
+		return MWC.Algorithms.Conversions.Rads2Degs(getBearingRads());
+	}
+	
+	public void setBearing(double val)
+	{
+		setBearingRads(MWC.Algorithms.Conversions.Degs2Rads(val));
+	}
 
-	public void setBearing(double valRads)
+	public void setBearingRads(double valRads)
 	{
 		_targetPosVector.setValues(valRads, _targetPosVector.getRange(),
 				_targetPosVector.getDepth());
@@ -1241,7 +1251,7 @@ public final class TMAContactWrapper extends
 					// has origin
 					final PropertyDescriptor[] res2 =
 					{ prop("Range", "range to centre of solution", SPATIAL),
-							prop("Bearing", "bearing to centre of solution", SPATIAL) };
+							prop("Bearing", "bearing to centre of solution (degs)", SPATIAL) };
 					res1 = res2;
 				}
 				else
