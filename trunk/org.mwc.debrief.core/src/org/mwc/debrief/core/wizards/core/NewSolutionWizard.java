@@ -7,7 +7,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 
-import Debrief.ReaderWriter.XML.Tactical.TMAContactHandler;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -27,6 +26,7 @@ public class NewSolutionWizard extends Wizard
 	private EnterDTGPage datePage;
 	private RangeBearingPage rangePage;
 	private EnterSolutionPage solutionPage;
+	private SelectColorPage colorPage;
 
 	public NewSolutionWizard(HiResDate tNow, TrackWrapper track, TMAWrapper tma)
 	{
@@ -68,6 +68,15 @@ public class NewSolutionWizard extends Wizard
 				"You may also wish to enter an initial solution\n"
 						+ "This will be stored in the ellipse label");
 		addPage(solutionPage);
+		
+		// ok, we need to let the user enter the solution wrapper name
+		colorPage = new SelectColorPage(
+				null,
+				Color.RED,
+				"You may now format the new ellipse",
+				"The color for this new ellipse");
+		addPage(namePage);
+
 	}
 
 	public boolean performFinish()
@@ -118,7 +127,7 @@ public class NewSolutionWizard extends Wizard
 		
 		tw.setTMATrack(_tma);
 		tw.setDTG(datePage.getDate());
-		tw.setColor(Color.red);
+		tw.setColor(colorPage.getColor());
 		
 
 		String lblStr = sol.getSpeed().toString() + sol.getCourse() + "Degs";
