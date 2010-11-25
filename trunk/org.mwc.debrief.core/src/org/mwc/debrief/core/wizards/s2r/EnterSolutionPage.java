@@ -52,9 +52,9 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 	SolutionDataItem _myWrapper;
   
   Text secondNameText;
-  public EnterSolutionPage(ISelection selection, String pageDescription) {
-		super(selection, NAME, "Set solution",
-				pageDescription, "images/grid_wizard.gif", false);
+  public EnterSolutionPage(ISelection selection,String pageTitle, String pageDescription, String imagePath) {
+		super(selection, NAME, pageTitle,
+				pageDescription, imagePath, false);
 		
 		_myWrapper = new SolutionDataItem();
   }

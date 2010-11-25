@@ -44,9 +44,9 @@ public class EnterStringPage extends CoreEditableWizardPage
 	private String _startName;
 	private String _fieldExplanation;
   
-  protected EnterStringPage(ISelection selection, String startName, String pageExplanation, String fieldExplanation) {
-		super(selection, NAME, "Get name",
-				pageExplanation, "images/grid_wizard.gif", false);
+  protected EnterStringPage(ISelection selection, String startName, String pageTitle, String pageExplanation, String fieldExplanation, String imagePath) {
+		super(selection, NAME, pageTitle,
+				pageExplanation, imagePath, false);
 		_startName = startName;
 		_fieldExplanation = fieldExplanation;
   }

@@ -15,16 +15,16 @@ public class SelectColorPage extends CoreEditableWizardPage
 	public static class DataItem implements Editable
 	{
 
-		Color color;
+		Color _myColor;
 		
 		public Color getColor()
 		{
-			return color;
+			return _myColor;
 		}
 
 		public void setColor(Color color)
 		{
-			this.color = color;
+			this._myColor = color;
 		}
 
 		public EditorType getInfo()
@@ -36,7 +36,6 @@ public class SelectColorPage extends CoreEditableWizardPage
 		{
 			return null;
 		}
-
 
 		public boolean hasEditor()
 		{
@@ -51,9 +50,9 @@ public class SelectColorPage extends CoreEditableWizardPage
 	private Color _startColor;
 	private String _fieldExplanation;
   
-  protected SelectColorPage(ISelection selection, Color startColor, String pageExplanation, String fieldExplanation) {
-		super(selection, NAME, "SOME_TEXT",
-				pageExplanation, "images/grid_wizard.gif", false);
+  protected SelectColorPage(ISelection selection, Color startColor,String pageTitle, String pageExplanation, String fieldExplanation, String imagePath) {
+		super(selection, NAME, pageTitle,
+				pageExplanation, imagePath, false);
 		_startColor = startColor;
 		_fieldExplanation = fieldExplanation;
   }
@@ -66,7 +65,7 @@ public class SelectColorPage extends CoreEditableWizardPage
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
 		PropertyDescriptor[] descriptors = {
-				prop("Name", _fieldExplanation, getEditable())
+				prop("Color", _fieldExplanation, getEditable())
 		};
 		return descriptors;
 	}
@@ -84,7 +83,10 @@ public class SelectColorPage extends CoreEditableWizardPage
 
 	public Color getColor()
 	{
-		return _myWrapper.getColor();
+		Color res = Color.red;
+		if(_myWrapper.getColor() != null)
+			res = _myWrapper.getColor();
+		return res;
 	}
 
 }

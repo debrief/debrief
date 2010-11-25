@@ -10,6 +10,7 @@ import MWC.GenericData.WorldSpeed;
 
 public class TMAFromSensorWizard extends Wizard
 {
+	private static final String PAGE_TITLE = "Generate TMA segment";
 	RangeBearingPage selectOffsetPage;
 	EnterSolutionPage enterSolutionPage;
 	private double _brgDegs;
@@ -28,19 +29,21 @@ public class TMAFromSensorWizard extends Wizard
 
 	public void addPages()
 	{
+		final String imagePath = "images/grid_wizard.gif";
 
 		// now for the easy fields
 		// ok, we need to let the user enter the solution wrapper name
-		selectOffsetPage = new RangeBearingPage(null, "Create TMA leg",
+		selectOffsetPage = new RangeBearingPage(null, PAGE_TITLE,
 				"Now specify the offset to the track start",
 				"range from ownship to start of track",
-				"bearing from ownship to start of track");
+				"bearing from ownship to start of track", imagePath);
 
 		selectOffsetPage.setData(_range, _brgDegs);
 
 		addPage(selectOffsetPage);
 
-		enterSolutionPage = new EnterSolutionPage(null, "This page lets you enter an initial solution");
+		enterSolutionPage = new EnterSolutionPage(null, PAGE_TITLE,
+				"This page lets you enter an initial solution", imagePath);
 		SolutionDataItem d2 = (SolutionDataItem) enterSolutionPage.createMe();
 		d2._course = _initalCourse;
 		d2._speed = _initialSpeed;

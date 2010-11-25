@@ -58,9 +58,9 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	final private String _bearingTitle;
 
 	public RangeBearingPage(ISelection selection, String pageName,
-			String pageDescription, String rangeTitle,String bearingTitle)
+			String pageDescription, String rangeTitle,String bearingTitle, String imagePath)
 	{
-		super(selection, NAME, pageName, pageDescription, "images/grid_wizard.gif",
+		super(selection, NAME, pageName, pageDescription, imagePath,
 				false);
 		_rangeTitle = rangeTitle;
 		_bearingTitle = bearingTitle;

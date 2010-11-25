@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.mwc.debrief.core.wizards.MessageWizardPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 
@@ -17,6 +18,7 @@ import MWC.GenericData.WorldVector;
 
 public class NewSolutionWizard extends Wizard
 {
+	private static final String PAGE_TITLE = "New solution";
 	// SelectOffsetPage selectOffsetPage;
 	// EnterSolutionPage enterSolutionPage;
 	private HiResDate _tNow;
@@ -37,45 +39,52 @@ public class NewSolutionWizard extends Wizard
 
 	public void addPages()
 	{
+		final String imagePath = "images/grid_wizard.gif";
+
 		// do we know the solution wrapper?
 		if (_track != null)
 		{
 			// ok, we need to let the user enter the solution wrapper name
 			namePage = new EnterStringPage(
 					null,
-					"[new solution name]",
+					"[new block name]",
+					PAGE_TITLE,
 					"The solution must be placed inside a named block of solutions, please provide a name",
-					"a one-word phrase for this block of ellipses");
+					"a one-word phrase for this block of ellipses",
+					imagePath);
 			addPage(namePage);
 		}
 
 		// ok, now sort out the time
-		datePage = new EnterDTGPage(null, _tNow,
-				"We must now choose the time for the solution",
-				"Date-time for this ellipse");
+		datePage = new EnterDTGPage(null, _tNow, PAGE_TITLE,
+				"Choose the time for the solution", "Date-time for this ellipse", imagePath);
 		// ok, we need to let the user enter the solution wrapper name
 		addPage(datePage);
 
 		// now for the easy fields
 		// ok, we need to let the user enter the solution wrapper name
-		rangePage = new RangeBearingPage(null, "Add new solution",
-				"You must now specify the range/bearing to the target",
+		rangePage = new RangeBearingPage(null, PAGE_TITLE,
+				"Specify the range/bearing to the target",
 				"range from ownship to centre of ellipse",
-				"bearing from ownship centre of ellipse (degs)");
+				"bearing from ownship centre of ellipse (degs)", imagePath);
 		addPage(rangePage);
 
-		solutionPage = new EnterSolutionPage(null,
-				"You may also wish to enter an initial solution\n"
-						+ "This will be stored in the ellipse label");
+		solutionPage = new EnterSolutionPage(null, PAGE_TITLE,
+				"Enter an initial solution\n"
+						+ "This will be stored in the ellipse label", imagePath);
 		addPage(solutionPage);
-		
+
 		// ok, we need to let the user enter the solution wrapper name
-		colorPage = new SelectColorPage(
-				null,
-				Color.RED,
-				"You may now format the new ellipse",
-				"The color for this new ellipse");
-		addPage(namePage);
+		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
+				"Now format the new ellipse", "The color for this new ellipse", imagePath);
+		addPage(colorPage);
+
+		String message = "The solution will now be added to the specified track, \n"
+				+ "and provided with a default ellipse size - which you \n"
+				+ "may wish to customise";
+		MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
+				PAGE_TITLE, "Steps complete", message,  imagePath);
+		addPage(messagePage);
 
 	}
 
@@ -117,18 +126,20 @@ public class NewSolutionWizard extends Wizard
 	public TMAContactWrapper getSolution()
 	{
 		TMAContactWrapper tw = new TMAContactWrapper();
-		
+
 		SolutionDataItem sol = (SolutionDataItem) solutionPage.getEditable();
-		tw.buildSetTargetState(sol.getCourse(), sol.getSpeed().getValueIn(WorldSpeed.Kts), 0);
-		tw.buildSetEllipse(0, new WorldDistance(1, WorldDistance.NM), new WorldDistance(1, WorldDistance.NM));
+		tw.buildSetTargetState(sol.getCourse(), sol.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0);
+		tw.buildSetEllipse(0, new WorldDistance(1, WorldDistance.NM),
+				new WorldDistance(1, WorldDistance.NM));
 		double brgRads = MWC.Algorithms.Conversions.Degs2Rads(rangePage
 				.getBearingDegs());
-		tw.buildSetVector( new WorldVector(brgRads,rangePage.getRange(), null));
-		
+		tw.buildSetVector(new WorldVector(brgRads, rangePage.getRange(), null));
+		tw.setRange(rangePage.getRange());
+
 		tw.setTMATrack(_tma);
 		tw.setDTG(datePage.getDate());
 		tw.setColor(colorPage.getColor());
-		
 
 		String lblStr = sol.getSpeed().toString() + sol.getCourse() + "Degs";
 		tw.setLabel(lblStr);

@@ -15,18 +15,19 @@ import MWC.Utilities.TextFormatting.FullFormatDateTime;
 public class EnterDTGPage extends EnterStringPage implements ModifyListener
 {
 	protected EnterDTGPage(ISelection selection, HiResDate startDate,
-			String pageExplanation, String fieldExplanation)
+			String pageTitle, String pageExplanation, String fieldExplanation, String imagePath)
 	{
 		super(selection,
-				FullFormatDateTime.toString(startDate.getDate().getTime()),
-				pageExplanation, fieldExplanation);
-		
+				FullFormatDateTime.toString(startDate.getDate().getTime()), pageTitle,
+				pageExplanation, fieldExplanation, imagePath);
+
 		// tell the editor we're listening for modifications
 		super.addModifiedListener(this);
 
 	}
 
-	/** sort out our answer
+	/**
+	 * sort out our answer
 	 * 
 	 * @return
 	 */
@@ -40,7 +41,8 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 		}
 		catch (ParseException e)
 		{
-			CorePlugin.logError(Status.ERROR, "Parsing this text:" + super.getString(), e);
+			CorePlugin.logError(Status.ERROR, "Parsing this text:"
+					+ super.getString(), e);
 		}
 		return res;
 	}
@@ -49,9 +51,9 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 	public void modifyText(ModifyEvent e)
 	{
 		// ok, check we can parse it
-		Text text  = (Text) e.widget;
+		Text text = (Text) e.widget;
 		String val = text.getText();
-		
+
 		try
 		{
 			// do a trial conversion, just to check it's valid
@@ -61,7 +63,7 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 		{
 			// invalid - try to stop it!!!
 			super.setErrorMessage("Date not formatted correctly");
-			
+
 		}
 	}
 
