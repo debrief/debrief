@@ -15,7 +15,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegment;
-import org.mwc.debrief.core.ContextOperations.GenerateTMASolution;
+import org.mwc.debrief.core.ContextOperations.GenerateTUASolution;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.MergeContacts;
@@ -167,7 +167,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
 		RightClickSupport.addRightClickGenerator(new GroupTracks());
 		RightClickSupport.addRightClickGenerator(new GenerateTMASegment());
-		RightClickSupport.addRightClickGenerator(new GenerateTMASolution());
+		RightClickSupport.addRightClickGenerator(new GenerateTUASolution());
 
 		// and the Replay importer/exporter (used to export items from the
 		// layer-manager)

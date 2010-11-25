@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -36,7 +37,7 @@ import MWC.GenericData.HiResDate;
  * @author ian.mayo
  * 
  */
-public class GenerateTMASolution implements RightClickContextItemGenerator
+public class GenerateTUASolution implements RightClickContextItemGenerator
 {
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,7 +145,7 @@ public class GenerateTMASolution implements RightClickContextItemGenerator
 			{
 				final TrackWrapper tw = (TrackWrapper) onlyOne;
 				// cool wrap it in an action.
-				_myAction = new Action("Generate TMA Ellipse for this track")
+				_myAction = new Action("Generate TUA Ellipse for this track")
 				{
 					@Override
 					public void run()
@@ -159,7 +160,7 @@ public class GenerateTMASolution implements RightClickContextItemGenerator
 			{
 				final TMAWrapper tw = (TMAWrapper) onlyOne;
 				// cool wrap it in an action.
-				_myAction = new Action("Generate TMA Ellipse within this group")
+				_myAction = new Action("Generate TUA Ellipse within this group")
 				{
 					@Override
 					public void run()
@@ -182,12 +183,15 @@ public class GenerateTMASolution implements RightClickContextItemGenerator
 	 * 
 	 * @param theLayers
 	 * @param wizard
+	 * @param helpContext 
 	 */
 	private void runOperation(final Layers theLayers,
 			NewSolutionWizard wizard)
 	{
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
+		TrayDialog.setDialogHelpAvailable(true);
+		dialog.setHelpAvailable(true);
 		dialog.create();
 		dialog.open();
 

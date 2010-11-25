@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.core.wizards.core.RangeBearingPage;
+import org.mwc.cmap.core.wizards.RangeBearingPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;

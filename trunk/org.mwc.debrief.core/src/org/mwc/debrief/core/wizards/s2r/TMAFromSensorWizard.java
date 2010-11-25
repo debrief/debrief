@@ -2,7 +2,7 @@ package org.mwc.debrief.core.wizards.s2r;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.mwc.debrief.core.wizards.core.RangeBearingPage;
+import org.mwc.cmap.core.wizards.RangeBearingPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 
 import MWC.GenericData.WorldDistance;
@@ -31,19 +31,21 @@ public class TMAFromSensorWizard extends Wizard
 	{
 		final String imagePath = "images/grid_wizard.gif";
 
+		String helpContext = null;
+		
 		// now for the easy fields
 		// ok, we need to let the user enter the solution wrapper name
 		selectOffsetPage = new RangeBearingPage(null, PAGE_TITLE,
 				"Now specify the offset to the track start",
 				"range from ownship to start of track",
-				"bearing from ownship to start of track", imagePath);
+				"bearing from ownship to start of track", imagePath, helpContext );
 
 		selectOffsetPage.setData(_range, _brgDegs);
 
 		addPage(selectOffsetPage);
 
 		enterSolutionPage = new EnterSolutionPage(null, PAGE_TITLE,
-				"This page lets you enter an initial solution", imagePath);
+				"This page lets you enter an initial solution", imagePath, helpContext);
 		SolutionDataItem d2 = (SolutionDataItem) enterSolutionPage.createMe();
 		d2._course = _initalCourse;
 		d2._speed = _initialSpeed;

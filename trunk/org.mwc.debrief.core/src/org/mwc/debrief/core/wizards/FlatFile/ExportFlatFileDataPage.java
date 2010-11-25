@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.debrief.core.wizards.CoreEditableWizardPage;
+import org.mwc.cmap.core.wizards.CoreEditableWizardPage;
 
 import MWC.GUI.Editable;
 
@@ -58,11 +58,11 @@ public class ExportFlatFileDataPage extends CoreEditableWizardPage
 
 	Text secondNameText;
 
-	protected ExportFlatFileDataPage(ISelection selection)
+	protected ExportFlatFileDataPage(ISelection selection, String helpContext)
 	{
 		super(selection, NAME, "Export to flat file data",
 				"This page lets you enter further details to support the flat file export",
-				"images/grid_wizard.gif", false);
+				"images/grid_wizard.gif", helpContext, false);
 
 		_myWrapper = new ExportDataItem();
 	}

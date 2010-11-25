@@ -29,6 +29,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.wizards.CoastWizardPage;
+import org.mwc.cmap.core.wizards.ETOPOWizardPage;
+import org.mwc.cmap.core.wizards.FilenameWizardPage;
+import org.mwc.cmap.core.wizards.GridWizardPage;
+import org.mwc.cmap.core.wizards.ScaleWizardPage;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 

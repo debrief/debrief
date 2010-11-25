@@ -4,7 +4,12 @@ import java.awt.Color;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.mwc.debrief.core.wizards.MessageWizardPage;
+import org.mwc.cmap.core.wizards.EnterDTGPage;
+import org.mwc.cmap.core.wizards.EnterRangePage;
+import org.mwc.cmap.core.wizards.EnterStringPage;
+import org.mwc.cmap.core.wizards.MessageWizardPage;
+import org.mwc.cmap.core.wizards.RangeBearingPage;
+import org.mwc.cmap.core.wizards.SelectColorPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 
@@ -41,6 +46,7 @@ public class NewSolutionWizard extends Wizard
 	public void addPages()
 	{
 		final String imagePath = "images/NewEllipse.png";
+		final String helpContext = "org.mwc.debrief.help.TUA_Data";
 
 		// do we know the solution wrapper?
 		if (_track != null)
@@ -49,7 +55,7 @@ public class NewSolutionWizard extends Wizard
 			namePage = new EnterStringPage(null, "NameHere", PAGE_TITLE,
 					"The ellipse created to represent your solution must be placed\n"
 							+ "inside a named block, please provide a name",
-					"a one-word phrase for this block of ellipses", imagePath);
+					"a one-word phrase for this block of ellipses", imagePath, helpContext);
 			addPage(namePage);
 		}
 
@@ -57,7 +63,7 @@ public class NewSolutionWizard extends Wizard
 		datePage = new EnterDTGPage(null, _tNow, PAGE_TITLE,
 				"Choose the time for the solution\n"
 						+ "Note: this time is taken from the Time Slider",
-				"Date-time for this ellipse", imagePath);
+				"Date-time for this ellipse", imagePath, helpContext);
 		// ok, we need to let the user enter the solution wrapper name
 		addPage(datePage);
 
@@ -66,24 +72,24 @@ public class NewSolutionWizard extends Wizard
 		rngBearingPage = new RangeBearingPage(null, PAGE_TITLE,
 				"Specify the range/bearing to the solution",
 				"range from ownship to centre of ellipse",
-				"bearing from ownship to centre of ellipse (degs)", imagePath);
+				"bearing from ownship to centre of ellipse (degs)", imagePath, helpContext);
 		addPage(rngBearingPage);
 
 		solutionPage = new EnterSolutionPage(null, PAGE_TITLE,
 				"Enter an initial solution\n"
-						+ "This will be stored in the ellipse label", imagePath);
+						+ "This will be stored in the ellipse label", imagePath, helpContext);
 		addPage(solutionPage);
 
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
 				"Now format the new ellipse", "The color for this new ellipse",
-				imagePath);
+				imagePath, helpContext);
 		addPage(colorPage);
 
 		WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
 		rangePage = new EnterRangePage(null, PAGE_TITLE,
 				"Now specify the size of ellipse",
-				"initial size (radius) for  ellipse", defaultWidth, imagePath);
+				"initial size (radius) for  ellipse", defaultWidth, imagePath, helpContext);
 		addPage(rangePage);
 
 		String message = "The solution will now be added to the specified track, \n"

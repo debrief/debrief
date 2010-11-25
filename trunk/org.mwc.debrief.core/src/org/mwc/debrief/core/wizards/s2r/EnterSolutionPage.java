@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.debrief.core.wizards.CoreEditableWizardPage;
+import org.mwc.cmap.core.wizards.CoreEditableWizardPage;
 
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldSpeed;
@@ -52,9 +52,9 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 	SolutionDataItem _myWrapper;
   
   Text secondNameText;
-  public EnterSolutionPage(ISelection selection,String pageTitle, String pageDescription, String imagePath) {
+  public EnterSolutionPage(ISelection selection,String pageTitle, String pageDescription, String imagePath, String helpContext) {
 		super(selection, NAME, pageTitle,
-				pageDescription, imagePath, false);
+				pageDescription, imagePath, helpContext, false);
 		
 		_myWrapper = new SolutionDataItem();
   }
