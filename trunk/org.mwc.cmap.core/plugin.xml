@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.core"
    name="CMap Core Resources Plug-in"
-   version="1.0.120"
+   version="1.0.121"
    provider-name="MWC"
    class="org.mwc.cmap.core.CorePlugin">
 
@@ -37,6 +37,7 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.eclipse.help"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.2"/>
    </requires>
    
 

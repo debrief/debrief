@@ -27,7 +27,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
@@ -36,7 +35,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
@@ -614,7 +612,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 * @return
 	 */
 	public static Action createOpenHelpAction(final String target,
-			String description, final ViewPart host)
+			String description, final IViewPart host)
 	{
 		// sort out the description
 		if (description == null)
@@ -622,7 +620,7 @@ public class CorePlugin extends AbstractUIPlugin
 
 		Action res = new Action(description, Action.AS_PUSH_BUTTON)
 		{
-			public void runWithEvent(Event event)
+			public void run()
 			{
 				host.getViewSite().getWorkbenchWindow().getWorkbench().getHelpSystem()
 						.displayHelp(target);
