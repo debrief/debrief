@@ -385,7 +385,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 			{
 				// cool, insert the items
 				label = new Label(container, SWT.NONE);
-				label.setText(thisProp.getDisplayName());
+				label.setText(thisProp.getDisplayName() + ":");
 
 				// and now for the editor bit.
 				final Control newEditor = thisProp.createEditor(container);

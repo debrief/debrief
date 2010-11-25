@@ -204,8 +204,6 @@ public class GenerateTMASolution implements RightClickContextItemGenerator
 			// ok, stick it on the buffer
 			runIt(convertToTrack1);
 		}
-		else
-			System.err.println("user cancelled");
 	}
 
 
