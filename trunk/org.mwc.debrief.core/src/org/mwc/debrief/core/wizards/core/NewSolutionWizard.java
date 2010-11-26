@@ -53,6 +53,7 @@ public class NewSolutionWizard extends Wizard
 		{
 			// ok, we need to let the user enter the solution wrapper name
 			namePage = new EnterStringPage(null, "NameHere", PAGE_TITLE,
+					"This wizard will lead you through creating a new TUA Ellipse.\n" +
 					"The ellipse created to represent your solution must be placed\n"
 							+ "inside a named block, please provide a name",
 					"a one-word phrase for this block of ellipses", imagePath, helpContext);
