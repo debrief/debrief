@@ -9,6 +9,7 @@ import org.mwc.debrief.core.editors.painters.SnailHighlighter.drawSWTHighLight;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.HostedList;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -79,6 +80,17 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight,
 						// get the next contact
 						final PlottableWrapperWithTimeAndOverrideableColor scw = (PlottableWrapperWithTimeAndOverrideableColor) cons
 								.next();
+
+						// ahhh, there's a problem with ellipses, they only normally
+						// know their offset from the track when they've been painted
+						// by a 'normal' painter. So, explicitly tell them where
+						// they're centred from
+						if (scw instanceof TMAContactWrapper)
+						{
+							TMAContactWrapper tma = (TMAContactWrapper) scw;
+							tma.locateEllipseCentre(hostTrack);
+
+						}
 
 						// sort out the area for this tua
 						final WorldArea wa = scw.getBounds();

@@ -231,6 +231,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -382,32 +383,40 @@ public class SnailPainter extends TotePainter
 						final TrackWrapper trw = (TrackWrapper) thisLayer;
 
 						// first plot the sensors
-						final Enumeration<Editable> sensors = trw.getSensors().elements();
-						if (sensors != null)
+						BaseLayer sensorsLayer = trw.getSensors();
+						if (sensorsLayer.getVisible())
 						{
-							while (sensors.hasMoreElements())
+							final Enumeration<Editable> sensors = sensorsLayer.elements();
+							if (sensors != null)
 							{
-								final SensorWrapper sw = (SensorWrapper) sensors.nextElement();
-								// just check if it's visible
-								if (sw.getVisible())
+								while (sensors.hasMoreElements())
 								{
-									res.add(sw);
+									final SensorWrapper sw = (SensorWrapper) sensors
+											.nextElement();
+									// just check if it's visible
+									if (sw.getVisible())
+									{
+										res.add(sw);
+									}
 								}
 							}
 						}
 
 						// now the TMA solutons
-						final Enumeration<Editable> solutions = trw.getSolutions()
-								.elements();
-						if (solutions != null)
+						BaseLayer tuaLayer = trw.getSolutions();
+						if (tuaLayer.getVisible())
 						{
-							while (solutions.hasMoreElements())
+							final Enumeration<Editable> solutions = tuaLayer.elements();
+							if (solutions != null)
 							{
-								final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
-								// just check if it's visible
-								if (sw.getVisible())
+								while (solutions.hasMoreElements())
 								{
-									res.add(sw);
+									final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
+									// just check if it's visible
+									if (sw.getVisible())
+									{
+										res.add(sw);
+									}
 								}
 							}
 						}

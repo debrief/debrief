@@ -95,6 +95,7 @@ import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -471,6 +472,25 @@ public final class TMAContactWrapper extends
 	{
 		// DUFF METHOD TO MEET INTERFACE REQUIREMENTS
 	}
+	
+	/** let the ellipse position itself relative to the parent track.
+	 * We've refactored this code out of the paint method, since when
+	 * we plot ellipses in snail mode first, they won't have had
+	 * the ellipse safely configured
+	 * 
+	 * @param track
+	 */
+	public WorldLocation locateEllipseCentre(WatchableList track)
+	{
+		// do we need an origin
+		final WorldLocation centre = getCentre(track);
+
+		// update the centre of the ellipse - we need to use it elsewhere (range
+		// from calcs)
+		_theEllipse.setCentre(centre);
+
+		return centre;
+	}
 
 	/**
 	 * paint this object to the specified canvas
@@ -497,10 +517,7 @@ public final class TMAContactWrapper extends
 			return;
 		}
 
-		// do we need an origin
-		final WorldLocation centre = getCentre(track);
-
-		TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
+			TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
 				track.getStartDTG(), track.getEndDTG());
 		if (!parentPeriod.contains(this.getTime()))
 		{
@@ -508,6 +525,8 @@ public final class TMAContactWrapper extends
 			return;
 		}
 
+		WorldLocation centre =locateEllipseCentre(track);
+		
 		// ok, we have the centre - convert it to a point
 		final Point centrePt = new Point(dest.toScreen(centre));
 
@@ -516,10 +535,6 @@ public final class TMAContactWrapper extends
 		{
 			return;
 		}
-
-		// update the centre of the ellipse - we need to use it elsewhere (range
-		// from calcs)
-		_theEllipse.setCentre(centre);
 
 		// and convert to screen coords
 		final WorldLocation theFarEnd = getSensorEnd(track);
