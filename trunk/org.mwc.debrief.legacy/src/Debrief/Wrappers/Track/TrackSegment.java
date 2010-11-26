@@ -211,15 +211,25 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		if (_myParent != null)
 		{
-			_myParent
-					.logError(ToolParent.INFO, " using time delta of " + tDelta
-							+ " millis based on times of first two items in second segment",
-							null);
+			_myParent.logError(ToolParent.INFO, " using time delta of " + tDelta
+					/ 1000 + " secs based on times of first two items in second segment",
+					null);
 		}
 
 		// remember the last point on the first track, in case we're generating a
 		// relative solution
 		FixWrapper origin = oneElements[oneElements.length - 1];
+
+		if (_myParent != null)
+		{
+			if (origin.getLocation() == null)
+				_myParent.logError(ToolParent.INFO,
+						"origin element has empty location", null);
+			else
+				_myParent.logError(ToolParent.INFO,
+						"origin element has valid location", null);
+		}
+
 		boolean first = true;
 
 		// get going then! Note, we go past the end of the required data,
@@ -238,7 +248,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			if (_myParent != null)
 			{
 				if (newLocation == null)
-
 					_myParent.logError(ToolParent.ERROR,
 							" created null location at time " + tNow + "(" + new Date(tNow)
 									+ ")", null);
