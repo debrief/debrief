@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
+import junit.framework.TestCase;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
@@ -205,9 +207,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		CubicSpline depthSpline = new CubicSpline(times, depths);
 
 		// what's the interval?
-		long tDelta = getTimeDelta(trackTwo);
+		long tDelta = twoElements[1].getDateTimeGroup().getDate().getTime()
+				- twoElements[0].getDateTimeGroup().getDate().getTime();
 		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
 		long tEnd = trackTwo.startDTG().getDate().getTime();
+
+		// just check it's achievable
+		if (tDelta == 0)
+			throw new RuntimeException(
+					"cannot generate infill when calculated step time is zero");
 
 		if (_myParent != null)
 		{
@@ -349,14 +357,34 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 *          how many elements to use
 	 * @return the subset
 	 */
-	private FixWrapper[] getFirstElementsFrom(TrackSegment trackTwo, int twoUse)
+	private static FixWrapper[] getFirstElementsFrom(TrackSegment trackTwo,
+			int num)
 	{
-		FixWrapper[] res = new FixWrapper[twoUse];
+		FixWrapper[] res = new FixWrapper[num];
+
+		HiResDate lastDate = null;
+		int ctr = 0;
 
 		Enumeration<Editable> items = trackTwo.elements();
-		for (int i = 0; i < twoUse; i++)
+		for (int i = 0; i < trackTwo.size(); i++)
 		{
-			res[i] = (FixWrapper) items.nextElement();
+			FixWrapper next = (FixWrapper) items.nextElement();
+			HiResDate thisDate = next.getDateTimeGroup();
+			if (lastDate != null)
+			{
+				// ok, is this a new date
+				if (thisDate.equals(lastDate))
+				{
+					// skip this cycle
+					continue;
+				}
+			}
+			lastDate = thisDate;
+
+			res[ctr++] = next;
+
+			if (ctr == num)
+				break;
 		}
 
 		return res;
@@ -367,44 +395,47 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param trackOne
 	 *          the segment to get the data from
-	 * @param oneUse
+	 * @param num
 	 *          how many elements to use
 	 * @return the subset
 	 */
-	private FixWrapper[] getLastElementsFrom(TrackSegment trackOne, int oneUse)
+	private static FixWrapper[] getLastElementsFrom(TrackSegment trackOne, int num)
 	{
-		FixWrapper[] res = new FixWrapper[oneUse];
-		int theLen = trackOne.size();
-		int firstIndex = theLen - oneUse;
+		FixWrapper[] res = new FixWrapper[num];
 
-		Enumeration<Editable> items = trackOne.elements();
-		for (int i = 0; i < trackOne.size(); i++)
+		// right, careful here, we can't use points at the same time
+		Object[] data = trackOne.getData().toArray();
+		int theLen = data.length;
+		HiResDate lastDate = null;
+		int ctr = 0;
+		for (int i = theLen - 1; i >= 0; i--)
 		{
-			FixWrapper thisItem = (FixWrapper) items.nextElement();
-			if (i >= firstIndex)
-				res[i - firstIndex] = thisItem;
+			FixWrapper fix = (FixWrapper) data[i];
+			if (lastDate != null)
+			{
+				// is this the same date?
+				HiResDate thisDate = fix.getDateTimeGroup();
+				if (thisDate.equals(lastDate))
+				{
+					// ok, can't use it - skip to next cycle
+					continue;
+				}
+			}
+
+			lastDate = fix.getDateTimeGroup();
+
+			// ok, we must be ok
+			res[res.length - ++ctr] = fix;
+
+			// are we done?
+			if (ctr == num)
+				break;
+
 		}
 
 		return res;
 	}
 
-	/**
-	 * find the time between the first two entries in this track
-	 * 
-	 * @param segment
-	 *          the segment we're looking at
-	 * @return
-	 */
-	private static final long getTimeDelta(TrackSegment segment)
-	{
-		Enumeration<Editable> someIt = segment.elements();
-		FixWrapper first = (FixWrapper) someIt.nextElement();
-		FixWrapper second = (FixWrapper) someIt.nextElement();
-
-		long timeDelta = (second.getDateTimeGroup().getDate().getTime() - first
-				.getDateTimeGroup().getDate().getTime());
-		return timeDelta;
-	}
 
 	@Override
 	public void add(final Editable item)
@@ -1021,6 +1052,62 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		newTrack.add(this);
 
 		return newTrack;
+	}
+
+	public static class testListMgt extends TestCase
+	{
+		public void testLast()
+		{
+			TrackSegment ts0 = new TrackSegment();
+			FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(1000),
+					new WorldLocation(1, 2, 3), 1, 2));
+			FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(2000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(3000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(4000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			ts0.addFix(newFix1);
+			ts0.addFix(newFix2);
+			ts0.addFix(newFix3);
+			ts0.addFix(newFix4);
+
+			TrackSegment ts1 = new TrackSegment();
+			FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(15000),
+					new WorldLocation(1, 2, 3), 1, 2));
+			FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(16000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(17000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(18000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			ts1.addFix(newFix5);
+			ts1.addFix(newFix6);
+			ts1.addFix(newFix7);
+			ts1.addFix(newFix8);
+
+			TrackSegment newS = new TrackSegment(ts0, ts1);
+			assertEquals("got lots of points", 10, newS.size());
+
+			// cause the monster problem
+			newFix6.setDateTimeGroup(new HiResDate(15000));
+
+			// try the mini algorithm first
+			FixWrapper[] items = getLastElementsFrom(ts1, 2);
+			assertTrue("times should not be the same ",
+					items[0].getDateTimeGroup() != items[1].getDateTimeGroup());
+
+			try
+			{
+				newS = new TrackSegment(ts0, ts1);
+				assertEquals("got lots of points", 5, newS.size());
+			}
+			catch (RuntimeException re)
+			{
+				fail("runtime exception thrown!!!");
+			}
+
+		}
 	}
 
 }
