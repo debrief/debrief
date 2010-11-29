@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Nov 09 13:15:41 GMT 2010" Name="Debrief Plot" PlotId="1289308489415">
-<details Text="Saved with Debrief version dated Tue Nov 09 13:14:22 GMT 2010"/>
+<plot Created="Mon Nov 29 09:46:11 GMT 2010" Name="Debrief Plot" PlotId="1289308489415">
+<details Text="Saved with Debrief version dated Fri Nov 26 08:55:56 GMT 2010"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="true" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
 <sensor LineThickness="1" Name="SENSOR_A_1" TrackName="NONSUCH" Visible="true" WormInHole="false">
 <colour Value="BLUE"/>
-<Offset Units="yds" Value="0.0000000"/>
+<Offset Units="m" Value="-300.0000000"/>
 <sensor_contact AmbiguousBearing="59.300" Bearing="300.800" Dtg="090722 041522" Frequency="49.920" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0415" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
 <colour Value="GREEN"/>
 </sensor_contact>
@@ -24,7 +24,7 @@
 </sensor>
 <sensor LineThickness="1" Name="SENSOR_A_2" TrackName="NONSUCH" Visible="true" WormInHole="false">
 <colour Value="BLUE"/>
-<Offset Units="yds" Value="0.0000000"/>
+<Offset Units="m" Value="-400.0000000"/>
 <sensor_contact AmbiguousBearing="63.600" Bearing="296.200" Dtg="090722 044232" Frequency="49.960" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0442" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="63.700" Bearing="295.800" Dtg="090722 044312" Frequency="50.060" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0443" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
 <sensor_contact AmbiguousBearing="64.500" Bearing="295.500" Dtg="090722 044319" Frequency="50.060" HasAmbiguousBearing="false" HasFrequency="true" Label=" 0443" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true"/>
@@ -128,6 +128,15 @@
 <colour Value="PURPLE"/>
 </sensor_contact>
 </sensor>
+<tma BearingLineVisible="true" LabelsVisible="true" LineThickness="1" Name="NameHere" TrackName="NONSUCH" Visible="true">
+<colour Value="YELLOW"/>
+<tma_solution Bearing="12.000" Course="12.000" Depth="0.000" Dtg="090722 042028" EllipseShowing="true" Label="21.0 kts12.0Degs" LabelLocation="Centre" LabelShowing="true" Orientation="0.000" Speed="21.000" Symbol="Submarine" SymbolShowing="false" Visible="true">
+<colour Value="RED"/>
+<Range Units="nm" Value="2.0000000"/>
+<Maxima Units="nm" Value="1.0000000"/>
+<Minima Units="nm" Value="1.0000000"/>
+</tma_solution>
+</tma>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="true" Visible="true">
 <fix Course="259.280" Dtg="090722 035004" Label="0350" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.830" SymbolShowing="false" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -5126,17 +5135,17 @@
 <Range Units="degs" Value="0.0330000"/>
 </Offset>
 </RelativeTMASegment>
-<TrackSegment LineStyle="Dotted" Name="infill_1559" PlotRelative="true" Visible="true">
-<fix Course="239.993" Dtg="090722 042528" Label="0425" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.745" SymbolShowing="true" Visible="true">
+<TrackSegment LineStyle="Dotted" Name="infill_1259_1" PlotRelative="true" Visible="true">
+<fix Course="243.014" Dtg="090722 042528" Label="0425" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.936" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9844103" Long="29.9340670"/>
+<shortLocation Depth="30.980" Lat="4.9843253" Long="29.9342047"/>
 </centre>
 </fix>
-<fix Course="238.752" Dtg="090722 042744" Label="0427" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.363" SymbolShowing="true" Visible="true">
+<fix Course="240.423" Dtg="090722 042744" Label="0427" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.454" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9826013" Long="29.9309227"/>
+<shortLocation Depth="30.980" Lat="4.9826293" Long="29.9308615"/>
 </centre>
 </fix>
 </TrackSegment>
@@ -5182,41 +5191,41 @@
 <Range Units="degs" Value="0.0310000"/>
 </Offset>
 </RelativeTMASegment>
-<TrackSegment LineStyle="Dotted" Name="infill_1559" PlotRelative="true" Visible="true">
-<fix Course="236.988" Dtg="090722 044119" Label="0441" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.079" SymbolShowing="true" Visible="true">
+<TrackSegment LineStyle="Dotted" Name="infill_1259_2" PlotRelative="true" Visible="true">
+<fix Course="236.184" Dtg="090722 044119" Label="0441" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.019" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9718387" Long="29.9147083"/>
+<shortLocation Depth="30.980" Lat="4.9719054" Long="29.9145812"/>
 </centre>
 </fix>
-<fix Course="236.840" Dtg="090722 044238" Label="0442" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.448" SymbolShowing="true" Visible="true">
+<fix Course="235.912" Dtg="090722 044238" Label="0442" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.375" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9704281" Long="29.9125290"/>
+<shortLocation Depth="30.980" Lat="4.9704767" Long="29.9124403"/>
 </centre>
 </fix>
-<fix Course="236.295" Dtg="090722 044357" Label="0443" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.340" SymbolShowing="true" Visible="true">
+<fix Course="235.338" Dtg="090722 044357" Label="0443" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.268" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9689381" Long="29.9102400"/>
+<shortLocation Depth="30.980" Lat="4.9689650" Long="29.9101980"/>
 </centre>
 </fix>
-<fix Course="235.220" Dtg="090722 044516" Label="0445" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.758" SymbolShowing="true" Visible="true">
+<fix Course="234.328" Dtg="090722 044516" Label="0445" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.699" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9674484" Long="29.9079983"/>
+<shortLocation Depth="30.980" Lat="4.9674531" Long="29.9080033"/>
 </centre>
 </fix>
-<fix Course="233.183" Dtg="090722 044635" Label="0446" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.707" SymbolShowing="true" Visible="true">
+<fix Course="232.504" Dtg="090722 044635" Label="0446" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.672" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9660385" Long="29.9059605"/>
+<shortLocation Depth="30.980" Lat="4.9660244" Long="29.9060054"/>
 </centre>
 </fix>
-<fix Course="229.227" Dtg="090722 044754" Label="0447" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.318" SymbolShowing="true" Visible="true">
+<fix Course="229.054" Dtg="090722 044754" Label="0447" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.312" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="30.980" Lat="4.9647877" Long="29.9042833"/>
+<shortLocation Depth="30.980" Lat="4.9647616" Long="29.9043533"/>
 </centre>
 </fix>
 </TrackSegment>
@@ -5423,10 +5432,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="30.980" Lat="5.0000000" Long="29.8737112"/>
+<shortLocation Depth="30.980" Lat="4.9959250" Long="29.8966721"/>
 </tl>
 <br>
-<shortLocation Depth="30.980" Lat="4.9211105" Long="30.0000000"/>
+<shortLocation Depth="30.980" Lat="4.9467303" Long="29.9878956"/>
 </br>
 </projection>
 <gui>
@@ -5443,7 +5452,7 @@
 <property Name="BLUE" Value="64"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="090722 042628.244"/>
+<property Name="CurrentTime" Value="090722 042028.244"/>
 <property Name="NumRings" Value="3"/>
 <property Name="Toolbox_Start_Time" Value="090722 035548.345"/>
 <property Name="PointSize" Value="5"/>

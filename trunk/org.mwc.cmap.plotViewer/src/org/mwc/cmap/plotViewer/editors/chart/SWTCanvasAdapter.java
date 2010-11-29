@@ -567,13 +567,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		if (_theDest == null)
 			return;
 
-		// check that the points are vaguely plottable
-		if ((Math.abs(x1) > 9000) || (Math.abs(y1) > 9000) || (Math.abs(x2) > 9000)
-				|| (Math.abs(y2) > 9000))
-		{
-			return;
-		}
-
 		// Decide whether to anti-alias this line
 		final float thisWid = this.getLineWidth();
 		final boolean doAntiAlias = SWTCanvasAdapter.antiAliasThisLine(thisWid);
@@ -587,7 +580,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		// ok, may as well go for it now..
 		if (!_theDest.isDisposed())
-			_theDest.drawLine(x1, y1, x2, y2);
+		{
+			int xmin,ymin,xmax, ymax;
+			xmin = ymin = 0;
+			xmax = this.getSize().width;
+			ymax = this.getSize().height;
+			SWTClipper.drawLine(_theDest, x1, y1, x2, y2, xmin, xmax, ymin, ymax);
+		}
 	}
 
 	public final void semiFillPolygon(final int[] xPoints, final int[] yPoints,
@@ -608,7 +607,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		}
 	}
-	
+
 	/**
 	 * draw a filled polygon
 	 * 
@@ -914,7 +913,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// painting oval - occasionally happens in first pass", false);
 
 	}
-	
+
 	public final void semiFillArc(final int x, final int y, final int width,
 			final int height, final int startAngle, final int arcAngle)
 	{
@@ -1029,7 +1028,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		// fillOff();
 	}
-	
+
 	public final void semiFillRect(final int x, final int y, final int wid,
 			final int height)
 	{
@@ -1043,7 +1042,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			_theDest.setAlpha(45);
 			_theDest.fillRectangle(x, y, wid, height);
 			_theDest.setAlpha(255);
-
 
 			// now, the fill only fills in the provided rectangle. we also have
 			// to
