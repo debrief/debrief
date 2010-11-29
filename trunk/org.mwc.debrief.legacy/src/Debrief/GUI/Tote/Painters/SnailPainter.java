@@ -782,11 +782,7 @@ public class SnailPainter extends TotePainter
 			if (list instanceof Layer)
 			{
 				final Layer ly = (Layer) list;
-				if (dest instanceof Graphics2D)
-				{
-					final Graphics2D g2 = (Graphics2D) dest;
-					g2.setStroke(new BasicStroke(ly.getLineThickness()));
-				}
+				dest.setStroke(new BasicStroke(ly.getLineThickness()));
 			}
 
 			// ok, clear the nearest items

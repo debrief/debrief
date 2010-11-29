@@ -365,7 +365,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				entryTxt += "\n and more...";
 			}
-
 			NarrativeEntry ne = new NarrativeEntry(title, "type_" + (int) (Math.random() * 5),
 					new HiResDate(newDate.getTime() + i * 10000, 0), entryTxt);
 

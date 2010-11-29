@@ -229,7 +229,7 @@ public class rangeCalc extends plainCalc
 			_myUnits = _prefsProvider
 					.getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
 
-			if (_myUnits == "")
+			if (_myUnits.equals(""))
 				_myUnits = null;
 		}
 		else

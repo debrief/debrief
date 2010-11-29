@@ -259,7 +259,7 @@ abstract public class Session implements Serializable, Observer
     _fileName = theName;
 
     // and use it as the name
-    if (theName != NewSession.DEFAULT_NAME)
+    if (theName.equals(NewSession.DEFAULT_NAME))
       setName(theName);
 
   }

@@ -28,7 +28,7 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
     // store local data
 
     // see if we have an old directory to retrieve
-    if(_lastDirectory == "")
+    if(_lastDirectory.equals(""))
     {
       String val = getParent().getProperty("XML_Directory");
       if(val != null)

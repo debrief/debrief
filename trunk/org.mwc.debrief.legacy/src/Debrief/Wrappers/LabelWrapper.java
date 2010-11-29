@@ -849,7 +849,6 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 			// remember the size of the symbol
 			final double scale = _theShape.getScaleVal();
 			// replace our symbol with this new one
-			_theShape = null;
 			_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
 			if (_theShape == null)
 			{

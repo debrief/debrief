@@ -723,7 +723,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * @author ianmayo
 	 * 
 	 */
-	protected class LinearInterpolator
+	protected static class LinearInterpolator
 	{
 
 		private double _startTime;

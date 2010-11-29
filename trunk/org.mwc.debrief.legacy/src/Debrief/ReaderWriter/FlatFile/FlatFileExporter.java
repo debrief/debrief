@@ -576,16 +576,26 @@ public class FlatFileExporter
 		private void dumpToFile(String str, String filename)
 		{
 			File outFile = new File(filename);
-			FileWriter out;
+			FileWriter out = null;
 			try
 			{
 				out = new FileWriter(outFile);
 				out.write(str);
-				out.close();
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					out.close();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 

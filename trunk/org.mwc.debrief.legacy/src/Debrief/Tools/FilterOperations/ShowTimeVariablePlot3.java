@@ -652,7 +652,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			if (ss != null)
 			{
 				// remember the default color for this series
-				Color seriesColor = Color.CYAN;
+				Color seriesColor;
 
 				// ok, now collate the data
 				Series thisSeries = null;
@@ -787,8 +787,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 								// find the fix on the primary track which is nearest in
 								// time to this one (if we need to)
-								Watchable[] nearList = new Watchable[]
-								{ null };
+								Watchable[] nearList;
 
 								// temp switch on interpolation
 								Boolean oldInterp = null;

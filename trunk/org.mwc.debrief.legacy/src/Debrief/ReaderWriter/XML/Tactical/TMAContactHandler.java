@@ -9,6 +9,15 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import java.awt.Color;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Enumeration;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
+
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
@@ -19,19 +28,10 @@ import MWC.GUI.Layers;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
-
-import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Enumeration;
 
 abstract public class TMAContactHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -51,7 +51,7 @@ abstract public class TMAContactHandler extends
 	/**
 	 * the parameters to build up
 	 */
-	double _theBearing = 0d;
+	double _theBearingDegs = 0d;
 	WorldDistance _theRange = null;
 	WorldLocation _theOrigin = null;
 	double _course = 0d;
@@ -96,7 +96,7 @@ abstract public class TMAContactHandler extends
     {
       public void setValue(String name, double value)
       {
-        _theBearing = value;
+        _theBearingDegs = value;
       }
     });
 
@@ -265,14 +265,13 @@ abstract public class TMAContactHandler extends
 			_thisSolution.buildSetOrigin(_theOrigin);
 
 			// and reset the vector
-			_thisSolution.buildSetVector(null);
+			_thisSolution.buildSetVector(0d,null,0d);
 		}
 		else
 		{
 			// aah, it's relative - build up the vector
-			WorldVector theVector = new WorldVector(MWC.Algorithms.Conversions
-					.Degs2Rads(_theBearing), _theRange.getValueIn(WorldDistance.DEGS), 0);
-			_thisSolution.buildSetVector(theVector);
+			double theDepth = 0;
+			_thisSolution.buildSetVector(_theBearingDegs, _theRange, theDepth);
 
 			// and reset the position
 			_thisSolution.buildSetOrigin(null);
@@ -330,9 +329,7 @@ abstract public class TMAContactHandler extends
 		else
 		{
 			// so, relative - output it
-			WorldVector vector = contact.buildGetVector();
-			eFix.setAttribute("Bearing", writeThis(MWC.Algorithms.Conversions
-					.Rads2Degs(vector.getBearing())));
+			eFix.setAttribute("Bearing", writeThis(contact.getBearing()));
 
 			// don't do range by hand, automate it
 			WorldDistanceHandler.exportDistance(RANGE, contact.getRange(), eFix, doc);

@@ -122,7 +122,7 @@ public final class NarrativeHandler extends
 			// we don't already have a narrative, create a new one (with the correct name)
 			
 			// ok, do we have the right name?
-			if (_myNarrative.getName() != ImportReplay.NARRATIVE_LAYER)
+			if (_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
 			{
 				_myNarrative.setName(ImportReplay.NARRATIVE_LAYER);
 			}

@@ -393,7 +393,7 @@ public final class ReformatFixes implements FilterOperation
       {
         validItems = thisList.getItemsBetween(_start_time, _end_time);
       }
-      else if(position_type == ReformatFixes.ONLY_VISIBLE)
+      else if(position_type.equals(ReformatFixes.ONLY_VISIBLE))
       {
         // ah-ha!  SPECIAL PROCESSING, if this item is a TrackWrapper
         if(thisList instanceof TrackWrapper)
@@ -443,7 +443,7 @@ public final class ReformatFixes implements FilterOperation
     // iterate through the list of objects
     for(int i = 0; i < theObjects.size(); i++)
     {
-      HashMap<String, SetterHolder> propertiesForThisObject = new HashMap<String, SetterHolder>();
+      HashMap<String, SetterHolder> propertiesForThisObject;
 
       WatchableList thisObject = theObjects.elementAt(i);
 

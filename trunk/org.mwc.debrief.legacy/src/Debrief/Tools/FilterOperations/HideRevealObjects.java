@@ -207,7 +207,7 @@ public final class HideRevealObjects implements FilterOperation
   ///////////////////////////////////////////////////////
   // store action information
   ///////////////////////////////////////////////////////
-  final class HideRevealAction implements Action
+  final static class HideRevealAction implements Action
   {
     private final Vector<ItemEdit> _valuesChanged;
     private final boolean _hideIt;

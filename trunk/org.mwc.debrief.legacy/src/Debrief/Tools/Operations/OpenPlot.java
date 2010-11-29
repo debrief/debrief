@@ -28,7 +28,7 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
     // store local data
 
     // see if we have an old directory to retrieve
-    if(_lastDirectory == "")
+    if(_lastDirectory.equals(""))
     {
       String val = getParent().getProperty("DPL_Directory");
       if(val != null)

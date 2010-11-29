@@ -245,9 +245,9 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 			assertEquals("correct color", Color.white, tc.getColor());
 			assertEquals("correct symbol", "Submarine", tc.getSymbol());
 			assertEquals("correct range", MWC.Algorithms.Conversions.Yds2Degs(12000),
-					tc.buildGetVector().getRange(), 0.001d);
+					tc.getRange().getValueIn(WorldDistance.DEGS), 0.001d);
 			assertEquals("correct bearing", MWC.Algorithms.Conversions
-					.Degs2Rads(124.5), tc.buildGetVector().getBearing(), 0.001d);
+					.Degs2Rads(124.5), tc.getBearingRads(), 0.001d);
 			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
 			assertEquals("correct orientation", 45, tc.getEllipse().getOrientation(),
 					0.0001d);
@@ -295,9 +295,9 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 			assertEquals("correct color", Color.white, tc.getColor());
 			assertEquals("correct symbol", "Submarine", tc.getSymbol());
 			assertEquals("correct range", MWC.Algorithms.Conversions.Yds2Degs(12000),
-					tc.buildGetVector().getRange(), 0.001d);
+					tc.getRange().getValueIn(WorldDistance.DEGS), 0.001d);
 			assertEquals("correct bearing", MWC.Algorithms.Conversions
-					.Degs2Rads(124.5), tc.buildGetVector().getBearing(), 0.001d);
+					.Degs2Rads(124.5), tc.getBearingRads(), 0.001d);
 			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
 			assertEquals("correct orientation", 0, tc.getEllipse().getOrientation(),
 					0.0001d);

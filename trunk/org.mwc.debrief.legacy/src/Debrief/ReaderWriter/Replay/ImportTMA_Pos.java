@@ -325,8 +325,8 @@ public final class ImportTMA_Pos implements PlainLineImporter
 			assertEquals("correct symbol", "Submarine", tc.getSymbol());
 			assertNotNull("correct origin", tc.buildGetOrigin());
 			assertEquals("correct range", Conversions.Yds2Degs(0), tc
-					.buildGetVector().getRange(), 0.001d);
-			assertEquals("correct bearing", 0, tc.buildGetVector().getBearing(),
+					.getRange().getValueIn(WorldDistance.YARDS), 0.001d);
+			assertEquals("correct bearing", 0, tc.getBearing(),
 					0.001d);
 			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
 			assertEquals("correct orientation", 0, tc.getEllipse().getOrientation(),

@@ -70,7 +70,7 @@ public class ImportKML
 		// is this our current layer?
 		if (lastLayer != null)
 		{
-			if (lastLayer.getName() == trackName)
+			if (lastLayer.getName().equals(trackName))
 			{
 				// sorted
 			}

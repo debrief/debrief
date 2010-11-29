@@ -60,7 +60,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		{
 			// start off with the parent
 			PropertyDescriptor[] parent = super.getPropertyDescriptors();
-			PropertyDescriptor[] mine = null;
+			PropertyDescriptor[] mine;
 
 			try
 			{

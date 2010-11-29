@@ -137,9 +137,13 @@ import java.io.File;
 
 import javax.swing.SwingUtilities;
 
-import Debrief.GUI.Frames.*;
-import MWC.GUI.*;
-import MWC.GUI.Tools.*;
+import Debrief.GUI.Frames.Application;
+import Debrief.GUI.Frames.Session;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 /** command to import a file (initially just Replay) into Debrief.
  * The data used to implement the command is stored as a command,
@@ -204,7 +208,7 @@ public final class ImportData2 extends PlainTool {
     ImportAction res = null;
 
     // see if we have an old directory to retrieve
-    if(_lastDirectory == "")
+    if(_lastDirectory.equals(""))
     {
       String val = getParent().getProperty("REP_Directory");
       if(val != null)

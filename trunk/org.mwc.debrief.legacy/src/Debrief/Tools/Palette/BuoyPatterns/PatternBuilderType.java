@@ -296,7 +296,6 @@ abstract public class PatternBuilderType implements MWC.GUI.Editable
       // remember the size of the symbol
       double scale = _theShape.getScaleVal();
       // replace our symbol with this new one
-      _theShape = null;
       _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
       _theShape.setColor(this.getColor());
 

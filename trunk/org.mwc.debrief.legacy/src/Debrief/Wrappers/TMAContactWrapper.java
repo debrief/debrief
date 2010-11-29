@@ -133,15 +133,16 @@ public final class TMAContactWrapper extends
 	HiResDate _DTG;
 
 	/**
-	 * vector representing the target location
-	 */
-	WorldVector _targetPosVector = null;
-
-	/**
-	 * safe copy of the rane - so we can store it with the units
+	 * bearing to target
 	 * 
 	 */
-	WorldDistance _myRange = null;
+	double _targetBrgRads = 0;
+
+	/**
+	 * range to target
+	 * 
+	 */
+	WorldDistance _targetRange = null;
 
 	/**
 	 * the depth estimate for the target
@@ -260,9 +261,9 @@ public final class TMAContactWrapper extends
 		_parentTrackName = trackName;
 		_DTG = DTG;
 		_targetDepth = depthMetres;
-		_targetPosVector = new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(bearingDegs), MWC.Algorithms.Conversions.Yds2Degs(rangeYds),
-				0);
+
+		_targetBrgRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
+		_targetRange = new WorldDistance(rangeYds, WorldDistance.YARDS);
 
 		// now the course/speed
 		_targetCourseDegs = courseDegs;
@@ -273,7 +274,7 @@ public final class TMAContactWrapper extends
 		setColor(color);
 		setVisible(true);
 		setLabelVisible(true);
-		setLabelLocation(new Integer(LocationPropertyEditor.CENTRE));
+		setLabelLocation(Integer.valueOf(LocationPropertyEditor.CENTRE));
 		// setLineVisible(true);
 		setEllipseVisible(true);
 		setVectorVisible(false);
@@ -352,10 +353,12 @@ public final class TMAContactWrapper extends
 			if (wa != null)
 			{
 				// check we have an offset
-				if (_targetPosVector != null)
+				if (_targetRange != null)
 				{
+					WorldVector targetPosVector = new WorldVector(_targetBrgRads,
+							_targetRange, null);
 					// yes, add it to the origin
-					origin = wa.getLocation().add(_targetPosVector);
+					origin = wa.getLocation().add(targetPosVector);
 				}
 			}
 		}
@@ -472,11 +475,11 @@ public final class TMAContactWrapper extends
 	{
 		// DUFF METHOD TO MEET INTERFACE REQUIREMENTS
 	}
-	
-	/** let the ellipse position itself relative to the parent track.
-	 * We've refactored this code out of the paint method, since when
-	 * we plot ellipses in snail mode first, they won't have had
-	 * the ellipse safely configured
+
+	/**
+	 * let the ellipse position itself relative to the parent track. We've
+	 * refactored this code out of the paint method, since when we plot ellipses
+	 * in snail mode first, they won't have had the ellipse safely configured
 	 * 
 	 * @param track
 	 */
@@ -517,7 +520,7 @@ public final class TMAContactWrapper extends
 			return;
 		}
 
-			TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
+		TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
 				track.getStartDTG(), track.getEndDTG());
 		if (!parentPeriod.contains(this.getTime()))
 		{
@@ -525,16 +528,10 @@ public final class TMAContactWrapper extends
 			return;
 		}
 
-		WorldLocation centre =locateEllipseCentre(track);
-		
+		WorldLocation centre = locateEllipseCentre(track);
+
 		// ok, we have the centre - convert it to a point
 		final Point centrePt = new Point(dest.toScreen(centre));
-
-		// have we got sufficient data to plot?
-		if (centrePt == null)
-		{
-			return;
-		}
 
 		// and convert to screen coords
 		final WorldLocation theFarEnd = getSensorEnd(track);
@@ -723,7 +720,7 @@ public final class TMAContactWrapper extends
 	 */
 	public final void setLineVisible(final boolean val)
 	{
-		_showLine = new Boolean(val);
+		_showLine = Boolean.valueOf(val);
 	}
 
 	/**
@@ -1012,31 +1009,24 @@ public final class TMAContactWrapper extends
 
 	public WorldDistance getRange()
 	{
-		WorldDistance res;
-		if (_myRange != null)
-			res = _myRange;
-		else
-			res = new WorldDistance(_targetPosVector.getRange(), WorldDistance.DEGS);
-		return res;
+		return _targetRange;
 	}
 
 	public void setRange(WorldDistance val)
 	{
-		_myRange = val;
-		_targetPosVector.setValues(_targetPosVector.getBearing(), val
-				.getValueIn(WorldDistance.DEGS), _targetPosVector.getDepth());
+		_targetRange = val;
 	}
 
 	public double getBearingRads()
 	{
-		return _targetPosVector.getBearing();
+		return _targetBrgRads;
 	}
-	
+
 	public double getBearing()
 	{
 		return MWC.Algorithms.Conversions.Rads2Degs(getBearingRads());
 	}
-	
+
 	public void setBearing(double val)
 	{
 		setBearingRads(MWC.Algorithms.Conversions.Degs2Rads(val));
@@ -1044,8 +1034,7 @@ public final class TMAContactWrapper extends
 
 	public void setBearingRads(double valRads)
 	{
-		_targetPosVector.setValues(valRads, _targetPosVector.getRange(),
-				_targetPosVector.getDepth());
+		_targetBrgRads = valRads;
 	}
 
 	/**
@@ -1150,11 +1139,6 @@ public final class TMAContactWrapper extends
 		_theSymbol = val;
 	}
 
-	public WorldVector buildGetVector()
-	{
-		return _targetPosVector;
-	}
-
 	public EllipseShape buildGetEllipse()
 	{
 		return _theEllipse;
@@ -1178,11 +1162,6 @@ public final class TMAContactWrapper extends
 
 		// and get on with the normal processing
 		_theEllipse.setCentre(origin);
-	}
-
-	public void buildSetVector(WorldVector theVector)
-	{
-		_targetPosVector = theVector;
 	}
 
 	public void buildSetTargetState(double courseDegs, double speedKts,
@@ -1210,6 +1189,8 @@ public final class TMAContactWrapper extends
 	public final class TMAContactInfo extends MWC.GUI.Editable.EditorType
 	{
 
+		private static final String SOLUTION = "Solution";
+
 		/**
 		 * constructor for editable details of a set of Layers
 		 * 
@@ -1218,7 +1199,7 @@ public final class TMAContactWrapper extends
 		 */
 		public TMAContactInfo(final TMAContactWrapper data)
 		{
-			super(data, data.getName(), "Solution");
+			super(data, data.getName(), SOLUTION);
 		}
 
 		/**
@@ -1233,30 +1214,37 @@ public final class TMAContactWrapper extends
 			{
 				PropertyDescriptor[] res =
 				{
-						prop("Label", "the label for this data item"),
-						prop("Visible", "whether this solution is visible"),
+						prop("Label", "the label for this data item", EditorType.FORMAT),
+						prop("Visible", "whether this solution is visible",
+								EditorType.FORMAT),
 						prop("LabelVisible",
-								"whether the label for this solution is visible"),
+								"whether the label for this solution is visible",
+								EditorType.FORMAT),
 						prop(
 								"LineVisible",
-								"whether the bearing line (from ownship track to solution centre) for this solution is visible"),
+								"whether the bearing line (from ownship track to solution centre) for this solution is visible",
+								EditorType.FORMAT),
 						prop("EllipseVisible",
-								"whether the ellipse for this solution is visible"),
+								"whether the ellipse for this solution is visible",
+								EditorType.FORMAT),
 						prop("SymbolVisible",
-								"whether the ellipse for this solution is visible"),
+								"whether the symbol for this solution is visible",
+								EditorType.FORMAT),
 						prop("VectorVisible",
-								"whether the target vector for this solution is visible"),
-						prop("Color", "the color for this solution"),
+								"whether the target vector for this solution is visible",
+								EditorType.FORMAT),
+						prop("Color", "the color for this solution", EditorType.FORMAT),
 						longProp("Symbol", "the symbol to use for this solution",
-								SymbolFactoryPropertyEditor.class),
+								SymbolFactoryPropertyEditor.class, EditorType.FORMAT),
 						longProp("LabelLocation", "the label location",
-								MWC.GUI.Properties.LocationPropertyEditor.class),
-						prop("Maxima", "the maxima for the ellipse", SPATIAL),
-						prop("Minima", "the minima for the ellipse", SPATIAL),
-						prop("Orientation", "the minima for the ellipse", SPATIAL),
-						prop("TargetCourse", "the course of the solution", SPATIAL),
-						prop("TargetSpeed", "the speed of the solution", SPATIAL),
-						prop("Depth", "the depth of the solution", SPATIAL) };
+								MWC.GUI.Properties.LocationPropertyEditor.class,
+								EditorType.FORMAT),
+						prop("Maxima", "the maxima for the ellipse", SOLUTION),
+						prop("Minima", "the minima for the ellipse", SOLUTION),
+						prop("Orientation", "the minima for the ellipse", SOLUTION),
+						prop("TargetCourse", "the course of the solution", SOLUTION),
+						prop("TargetSpeed", "the speed of the solution", SOLUTION),
+						prop("Depth", "the depth of the solution", SOLUTION) };
 
 				// see if we need to add rng/brg or origin data
 				TMAContactWrapper tc = (TMAContactWrapper) getData();
@@ -1313,11 +1301,11 @@ public final class TMAContactWrapper extends
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 
-	static public final class testSensorContact extends junit.framework.TestCase
+	static public final class TestSensorContact extends junit.framework.TestCase
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public testSensorContact(final String val)
+		public TestSensorContact(final String val)
 		{
 			super(val);
 		}
@@ -1365,8 +1353,8 @@ public final class TMAContactWrapper extends
 			assertEquals("correct track name", ed_rel._parentTrackName, "blank track");
 			assertEquals("correct DTG", ed_rel._DTG, theDTG);
 			assertEquals("correct origin", ed_rel._theEllipse.getCentre(), null);
-			assertEquals("correct range", MWC.Algorithms.Conversions
-					.Degs2Yds(ed_rel._targetPosVector.getRange()), 3000, 0.001);
+			assertEquals("correct range", 3000, ed_rel._targetRange
+					.getValueIn(WorldDistance.YARDS), 0.001);
 			assertEquals("correct bearing", ed_rel._targetCourseDegs, 5d, 0.001);
 			assertEquals("right course", ed_rel._targetCourseDegs, 5d, 0.001);
 			assertEquals("right course", ed_rel.getCourse(),
@@ -1425,18 +1413,16 @@ public final class TMAContactWrapper extends
 			double dist = MWC.Algorithms.Conversions.Degs2Yds(ed.rangeFrom(origin));
 			assertEquals("find nearest from origin", dist, 0d, 0.001);
 
-			// test from on the ellipse itself
-			WorldLocation outerPoint = ed.getLocation().add(
-					new WorldVector(MWC.Algorithms.Conversions.Rads2Degs(0),
-							MWC.Algorithms.Conversions.Yds2Degs(50), 0d));
-			double rngDegs = ed.rangeFrom(outerPoint);
-			dist = MWC.Algorithms.Conversions.Degs2Yds(rngDegs);
-			// todo: check shape of ellipse, because the next test is unnecessarily
-			// failing
-			// super.assertEquals("find nearest from edge", 0d, dist, 0.001);
-
 		}
 
+	}
+
+	public void buildSetVector(double theBearingDegs, WorldDistance theRange,
+			double theDepth)
+	{
+		_targetBrgRads = MWC.Algorithms.Conversions.Degs2Rads(theBearingDegs);
+		_targetRange = theRange;
+		_targetDepth = theDepth;
 	}
 
 }

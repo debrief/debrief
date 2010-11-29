@@ -252,7 +252,8 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
+public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
+		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
 		MWC.GenericData.Watchable, DraggableItem, HasDraggableComponents,
 		DoNotHighlightMe
 {
@@ -469,7 +470,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 	}
 
 	public final String toString()
-	{		
+	{
 		return _theShape.getName() + ":" + _theLabel.getString();
 	}
 
@@ -660,7 +661,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 					res = Long.parseLong(appThreshold);
 					// convert to micros
 					res *= 1000000;
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
 					MWC.Utilities.Errors.Trace.trace(e,
 							"Retrieving step threshold from properties");
@@ -677,7 +679,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 
 		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[]
 		{};
-		
 
 		// special case, have we been asked for an invalid time period?
 		if (DTG == TimePeriod.INVALID_DATE)
@@ -685,7 +686,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 			// yes, just return ourselves
 			return new Watchable[]
 			{ this };
-		} else
+		}
+		else
 		{
 			// do we know about time?
 			if (this.getStartDTG() != null)
@@ -698,12 +700,14 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 						// yes, it's within our time period
 						res = new MWC.GenericData.Watchable[]
 						{ this };
-					} else
+					}
+					else
 					{
 						// no, it's outside our time period
 						// - just return our default res
 					}
-				} else
+				}
+				else
 				{
 					// no end value, see if we are within time threshold of
 					// supplied time
@@ -720,7 +724,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 						res = new MWC.GenericData.Watchable[]
 						{};
 				}
-			} else
+			}
+			else
 			{
 				// so, we don't have a start time.
 				// are we also missing the end time?
@@ -800,8 +805,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 
 	}
 
-	public final java.util.Collection<Editable> getItemsBetween(final HiResDate start,
-			final HiResDate end)
+	public final java.util.Collection<Editable> getItemsBetween(
+			final HiResDate start, final HiResDate end)
 	{
 		java.util.Vector<Editable> res = null;
 
@@ -844,7 +849,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 				// no start time, just return ourselves anyway.
 				res = new Vector<Editable>(0, 1);
 				res.addElement(this);
-			} else
+			}
+			else
 			{
 				// use the start time as a centre time
 				if ((myStart.greaterThanOrEqualTo(start))
@@ -852,7 +858,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 				{
 					res = new Vector<Editable>(0, 1);
 					res.addElement(this);
-				} else
+				}
+				else
 				{
 					// no, it's outside the period
 				}
@@ -927,16 +934,12 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 		{
 			// get our shape back
 			final ShapeWrapper sp = (ShapeWrapper) super.getData();
-			final MWC.GUI.Shapes.PlainShape ps = sp._theShape;
-			if (sp instanceof MWC.GUI.Editable)
+			final MWC.GUI.Editable et = (MWC.GUI.Editable) sp;
+			if (et.hasEditor() == true)
 			{
-				final MWC.GUI.Editable et = (MWC.GUI.Editable) ps;
-				if (et.hasEditor() == true)
-				{
-					final BeanInfo[] res =
-					{ et.getInfo() };
-					return res;
-				}
+				final BeanInfo[] res =
+				{ et.getInfo() };
+				return res;
 			}
 
 			return null;
@@ -980,7 +983,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 
 				return myRes;
 
-			} catch (IntrospectionException e)
+			}
+			catch (IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();

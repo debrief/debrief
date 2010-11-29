@@ -37,7 +37,7 @@ public final class Redo extends PlainTool
   ///////////////////////////////////////////////////////
   // store action information
   ///////////////////////////////////////////////////////
-  final class RedoAction implements Action{
+  final static class RedoAction implements Action{
     /** the buffer we are 'doing'
      */
     final UndoBuffer _theBuffer;

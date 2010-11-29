@@ -1664,7 +1664,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			Point cursorPt, LocationConstruct currentNearest)
 	{
 		// initialise thisDist, since we're going to be over-writing it
-		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
+		WorldDistance thisDist;
 
 		// cycle through the track segments
 		final Collection<Editable> segments = _thePositions.getData();
@@ -3258,7 +3258,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// remember the size of the symbol
 			final double scale = _theSnailShape.getScaleVal();
 			// replace our symbol with this new one
-			_theSnailShape = null;
 			_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
 			_theSnailShape.setColor(this.getColor());
 

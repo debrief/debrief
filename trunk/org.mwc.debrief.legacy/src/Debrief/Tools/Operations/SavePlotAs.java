@@ -32,7 +32,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
     _theSession = theSession;
 
     // see if we have an old directory to retrieve
-    if(_lastDirectory == "")
+    if(_lastDirectory.equals(""))
     {
       String val = getParent().getProperty("DPL_Directory");
       if(val != null)
@@ -87,7 +87,7 @@ public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
   ///////////////////////////////////////////////////////
   // store action information
   ///////////////////////////////////////////////////////
-  protected final class SavePlotAction implements Action{
+  protected final static class SavePlotAction implements Action{
     /** store the name of the session we have saved
      */
     final String _theSessionName;

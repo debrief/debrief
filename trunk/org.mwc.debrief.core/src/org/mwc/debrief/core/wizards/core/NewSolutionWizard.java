@@ -19,7 +19,6 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldVector;
 
 public class NewSolutionWizard extends Wizard
 {
@@ -56,7 +55,8 @@ public class NewSolutionWizard extends Wizard
 					"This wizard will lead you through creating a new TUA Ellipse.\n" +
 					"The ellipse created to represent your solution must be placed\n"
 							+ "inside a named block, please provide a name",
-					"a one-word phrase for this block of ellipses", imagePath, helpContext);
+					"a one-word phrase for this block of ellipses", imagePath,
+					helpContext);
 			addPage(namePage);
 		}
 
@@ -73,12 +73,14 @@ public class NewSolutionWizard extends Wizard
 		rngBearingPage = new RangeBearingPage(null, PAGE_TITLE,
 				"Specify the range/bearing to the solution",
 				"range from ownship to centre of ellipse",
-				"bearing from ownship to centre of ellipse (degs)", imagePath, helpContext);
+				"bearing from ownship to centre of ellipse (degs)", imagePath,
+				helpContext);
 		addPage(rngBearingPage);
 
 		solutionPage = new EnterSolutionPage(null, PAGE_TITLE,
 				"Enter an initial solution\n"
-						+ "This will be stored in the ellipse label", imagePath, helpContext);
+						+ "This will be stored in the ellipse label", imagePath,
+				helpContext);
 		addPage(solutionPage);
 
 		// ok, we need to let the user enter the solution wrapper name
@@ -90,7 +92,8 @@ public class NewSolutionWizard extends Wizard
 		WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
 		rangePage = new EnterRangePage(null, PAGE_TITLE,
 				"Now specify the size of ellipse",
-				"initial size (radius) for  ellipse", defaultWidth, imagePath, helpContext);
+				"initial size (radius) for  ellipse", defaultWidth, imagePath,
+				helpContext);
 		addPage(rangePage);
 
 		String message = "The solution will now be added to the specified track, \n"
@@ -148,9 +151,8 @@ public class NewSolutionWizard extends Wizard
 		tw.buildSetEllipse(0, radius, radius);
 		double brgRads = MWC.Algorithms.Conversions.Degs2Rads(rngBearingPage
 				.getBearingDegs());
-		tw
-				.buildSetVector(new WorldVector(brgRads, rngBearingPage.getRange(),
-						null));
+		tw.buildSetVector(brgRads, rngBearingPage.getRange(),
+						0);
 		tw.setRange(rngBearingPage.getRange());
 
 		tw.setTMATrack(_tma);
