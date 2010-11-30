@@ -1,7 +1,7 @@
 <project name="headless-build" default="build">
 
 	<!--sets the path of the properties file-->
-	<property file="/Users/ianmayo/dev/cmap_64/org.mwc.debrief.build/build_release_osx.properties" />
+	<property file="/Users/ianmayo/dev/Debrief/org.mwc.debrief.build/build_release_osx.properties" />
 
 	<fileset id="features" dir="../">
 		<include name="org.mwc.cmap.combined.feature/**" />
@@ -55,7 +55,7 @@
 
 	<target name="copy-jre">
 		<copy todir="${buildDirectory}/tmp/${archivePrefix}/jre">
-			<fileset dir="${path2jre}" includes="**" />
+			<fileset dir="${path2winjre}" includes="**" />
 		</copy>
 	</target>
 
