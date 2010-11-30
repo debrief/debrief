@@ -112,123 +112,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			{
 				final TrackWrapper primary = tmpPrimary;
 
-				Action viewPlot = new Action("View Sensor Range plot")
-				{
-					public void run()
-					{
-
-						IWorkbench wb = PlatformUI.getWorkbench();
-						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-						IWorkbenchPage page = win.getActivePage();
-
-						IEditorPart editor = page.getActiveEditor();
-
-						// get ready for the start/end times
-						HiResDate startTime, endTime;
-
-						try
-						{
-
-							// right, we need the time controller if we're going to get the
-							// times
-							String timeId = "org.mwc.cmap.TimeController.views.TimeController";
-							IViewReference timeRef = page.findViewReference(timeId);
-
-							if (timeRef == null)
-							{
-								String title = "XY Plot";
-								String message = "Time Controller is not open. Please open time-controller and select a time period";
-								MessageDialog.openError(Display.getCurrent().getActiveShell(),
-										title, message);
-								return;
-							}
-
-							// ////////////////////////////////////////////////
-							// sort out the title
-							// ////////////////////////////////////////////////
-							// get the title to use
-							String theTitle = "Sensor Range vs Time plot";
-
-							// and the plot itself
-							String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
-							page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
-
-							// ///////////////////////////////////
-							// NOW for the time range
-							// ///////////////////////////////////
-
-							// have a go at determining the plot id
-							TimeProvider tp = (TimeProvider) editor
-									.getAdapter(TimeProvider.class);
-							String thePlotId = null;
-							if (tp != null)
-							{
-								thePlotId = tp.getId();
-							}
-
-							IAdaptable timeC = (IAdaptable) timeRef.getView(true);
-
-							// that's it, now get the data
-							TimePeriod period = (TimePeriod) timeC
-									.getAdapter(TimePeriod.class);
-							if (period == null)
-							{
-								CorePlugin
-										.logError(
-												Status.ERROR,
-												"TimeController view no longer provides TimePeriod adapter",
-												null);
-								return;
-							}
-
-							startTime = period.getStartDTG();
-							endTime = period.getEndDTG();
-
-							if ((startTime.greaterThan(endTime))
-									|| (startTime.equals(endTime)))
-							{
-								String title = "XY Plot";
-								String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
-								MessageDialog.openError(Display.getCurrent().getActiveShell(),
-										title, message);
-								return;
-							}
-
-							// aah. does the primary track have it's own time period?
-							if (primary != null)
-							{
-								if (primary.getStartDTG() != null)
-									startTime = primary.getStartDTG();
-
-								if (primary.getEndDTG() != null)
-									endTime = primary.getEndDTG();
-							}
-
-							formattingOperation formatter = new formattingOperation()
-							{
-								public void format(final XYPlot thePlot)
-								{
-									NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
-									theAxis.setInverted(true);
-								}
-							};
-
-							// right, now for the data
-							AbstractSeriesDataset ds = getDataSeries(primary, candidates,
-									startTime, endTime);
-
-							// ok, try to retrieve the view
-							IViewReference plotRef = page.findViewReference(plotId, theTitle);
-							XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-							plotter.showPlot(theTitle, ds, "Range (m)", formatter, thePlotId);
-						}
-						catch (PartInitException e)
-						{
-							e.printStackTrace();
-						}
-
-					}
-				};
+				// ok, create the action
+				Action viewPlot = getAction(candidates, primary);
 
 				// ok - set the image descriptor
 				viewPlot.setImageDescriptor(DebriefPlugin
@@ -238,6 +123,134 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				parent.add(viewPlot);
 			}
 		}
+	}
+
+	/** wrap the action generation bits in a convenience method (suitable for overring in tests)
+	 * 
+	 * @param candidates the sensors to measure the range from
+	 * @param primary the track to measure to
+	 * @return
+	 */
+	protected Action getAction(final Vector<SensorWrapper> candidates,
+			final TrackWrapper primary)
+	{
+		return new Action("View Sensor Range plot")
+		{
+			public void run()
+			{
+
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				IWorkbenchPage page = win.getActivePage();
+
+				IEditorPart editor = page.getActiveEditor();
+
+				// get ready for the start/end times
+				HiResDate startTime, endTime;
+
+				try
+				{
+
+					// right, we need the time controller if we're going to get the
+					// times
+					String timeId = "org.mwc.cmap.TimeController.views.TimeController";
+					IViewReference timeRef = page.findViewReference(timeId);
+
+					if (timeRef == null)
+					{
+						String title = "XY Plot";
+						String message = "Time Controller is not open. Please open time-controller and select a time period";
+						MessageDialog.openError(Display.getCurrent().getActiveShell(),
+								title, message);
+						return;
+					}
+
+					// ////////////////////////////////////////////////
+					// sort out the title
+					// ////////////////////////////////////////////////
+					// get the title to use
+					String theTitle = "Sensor Range vs Time plot";
+
+					// and the plot itself
+					String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
+					page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
+
+					// ///////////////////////////////////
+					// NOW for the time range
+					// ///////////////////////////////////
+
+					// have a go at determining the plot id
+					TimeProvider tp = (TimeProvider) editor
+							.getAdapter(TimeProvider.class);
+					String thePlotId = null;
+					if (tp != null)
+					{
+						thePlotId = tp.getId();
+					}
+
+					IAdaptable timeC = (IAdaptable) timeRef.getView(true);
+
+					// that's it, now get the data
+					TimePeriod period = (TimePeriod) timeC
+							.getAdapter(TimePeriod.class);
+					if (period == null)
+					{
+						CorePlugin
+								.logError(
+										Status.ERROR,
+										"TimeController view no longer provides TimePeriod adapter",
+										null);
+						return;
+					}
+
+					startTime = period.getStartDTG();
+					endTime = period.getEndDTG();
+
+					if ((startTime.greaterThan(endTime))
+							|| (startTime.equals(endTime)))
+					{
+						String title = "XY Plot";
+						String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
+						MessageDialog.openError(Display.getCurrent().getActiveShell(),
+								title, message);
+						return;
+					}
+
+					// aah. does the primary track have it's own time period?
+					if (primary != null)
+					{
+						if (primary.getStartDTG() != null)
+							startTime = primary.getStartDTG();
+
+						if (primary.getEndDTG() != null)
+							endTime = primary.getEndDTG();
+					}
+
+					formattingOperation formatter = new formattingOperation()
+					{
+						public void format(final XYPlot thePlot)
+						{
+							NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
+							theAxis.setInverted(true);
+						}
+					};
+
+					// right, now for the data
+					AbstractSeriesDataset ds = getDataSeries(primary, candidates,
+							startTime, endTime);
+
+					// ok, try to retrieve the view
+					IViewReference plotRef = page.findViewReference(plotId, theTitle);
+					XYPlotView plotter = (XYPlotView) plotRef.getView(true);
+					plotter.showPlot(theTitle, ds, "Range (m)", formatter, thePlotId);
+				}
+				catch (PartInitException e)
+				{
+					e.printStackTrace();
+				}
+
+			}
+		};
 	}
 
 	/**
@@ -399,6 +412,9 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 	public static class TestCalcs extends TestCase
 	{
+		protected Vector<SensorWrapper> _candidates;
+		protected TrackWrapper _primary;
+
 		public void testIt()
 		{
 			TrackWrapper ownship = new TrackWrapper();
@@ -479,7 +495,14 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				target.add(scw);
 			}
 
-			GenerateSensorRangePlot plot = new GenerateSensorRangePlot();
+			GenerateSensorRangePlot plot = new GenerateSensorRangePlot(){
+				protected Action getAction(Vector<SensorWrapper> candidates,
+						TrackWrapper primary)
+				{
+					_candidates = candidates;
+					_primary = primary;
+					return new Action("some"){};
+				}};
 			Editable[] subjects = new Editable[2];
 			subjects[0] = sw;
 			subjects[1] = target;
@@ -493,6 +516,10 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			IContributionItem secondOne = parent.getItems()[1];
 			assertNotNull("got menu item back", secondOne);
 			assertTrue("got menu item", secondOne instanceof ActionContributionItem);
+			
+			// check items got set
+			assertNotNull(_candidates);
+			assertEquals(1, _candidates.size());
 		}
 
 		private static FixWrapper getFix(long time, WorldLocation loc,
