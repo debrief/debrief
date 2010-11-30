@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.135"
+<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.136"
 	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
 
 	<runtime>
@@ -68,6 +68,7 @@
 		<import plugin="org.eclipse.platform" />
 		<import plugin="org.eclipse.core.filesystem" />
 		<import plugin="org.eclipse.ui.intro.universal" />
+  <import plugin="org.mwc.cmap.xyplot" version="1.0.28"/>
 
 	</requires>
 	<extension-point id="DebriefPlotLoader" name="Plot Loader"
