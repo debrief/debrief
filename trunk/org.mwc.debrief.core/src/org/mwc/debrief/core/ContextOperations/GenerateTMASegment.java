@@ -169,9 +169,14 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 						double courseDegs = 0;
 						WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
+						// just check we have some kind of range
+						WorldDistance theDist = firstContact.getRange();
+						if (theDist == null)
+							theDist = new WorldDistance(6, WorldDistance.NM);
+
 						// get the supporting data
 						TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact
-								.getBearing(), firstContact.getRange(), DEFAULT_TARGET_COURSE,
+								.getBearing(), theDist, DEFAULT_TARGET_COURSE,
 								DEFAULT_TARGET_SPEED);
 						WizardDialog dialog = new WizardDialog(Display.getCurrent()
 								.getActiveShell(), wizard);

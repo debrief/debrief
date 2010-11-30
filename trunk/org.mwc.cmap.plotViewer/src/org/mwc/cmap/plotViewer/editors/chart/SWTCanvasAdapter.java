@@ -938,6 +938,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// initialise the background color
 		if (!_theDest.isDisposed())
 			_theDest.setBackground(_theDest.getBackground());
+		
+		// and update the size
+		this.setScreenSize(new Dimension(_theDest.getClipping().width,_theDest.getClipping().height));
+//		._theSize = _theDest.getClipping();
 
 		// set the thickness
 		// final BasicStroke bs = new BasicStroke(_lineWidth);
