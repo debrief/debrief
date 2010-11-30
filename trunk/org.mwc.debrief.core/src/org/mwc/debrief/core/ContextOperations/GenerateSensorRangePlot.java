@@ -11,6 +11,8 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -51,6 +53,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.TacticalData.Fix;
 
 /**
@@ -58,6 +61,8 @@ import MWC.TacticalData.Fix;
  */
 public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 {
+	
+	
 
 	/**
 	 * add items to the popup menu (if suitable tracks are selected)
@@ -254,7 +259,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 * @see WatchableList#getItemsBetween(HiResDate start,HiResDate end)
 	 * @see TimeSeriesCollection#addSeries(BasicTimeSeries series)
 	 */
-	public static AbstractSeriesDataset getDataSeries(
+	private static TimeSeriesCollection getDataSeries(
 			final WatchableList primaryTrack, final Vector<SensorWrapper> theSensors,
 			HiResDate start_time, HiResDate end_time)
 	{
@@ -349,8 +354,9 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 						// produce the new calculated value
 						WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
-						range = thisPrimary.getLocation().rangeFrom(
-								thisSecondary.getCalculatedOrigin(null), range);
+						WorldLocation trackLoc = thisPrimary.getLocation();
+						WorldLocation sensorLoc = thisSecondary.getCalculatedOrigin(null);
+						range = trackLoc.rangeFrom(sensorLoc, range);
 						double thisVal = range.getValueIn(WorldDistance.METRES);
 
 						// ////////////////////////////////////////////////
@@ -395,47 +401,113 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	{
 		public void testIt()
 		{
-			SensorWrapper sw = new SensorWrapper("s1");
-			for(int i=0;i<5;i++)
+			TrackWrapper ownship = new TrackWrapper();
+			ownship.setName("ownship");
+			for (int i = 0; i < 35; i++)
 			{
-				SensorContactWrapper scw = getContact(i * 5000, new WorldLocation(i,2,0), sw);
+				FixWrapper scw = getFix(i * 4000, new WorldLocation(1, i, 0), ownship);
+				ownship.add(scw);
+			}
+
+			SensorWrapper sw = new SensorWrapper("s1");
+			sw.setHost(ownship);
+			for (int i = 0; i < 5; i++)
+			{
+				SensorContactWrapper scw = getContact(i * 5000, sw);
 				sw.add(scw);
 			}
-			
-			TrackWrapper track = new TrackWrapper();
-			track.setName("trackA");
-			
-			for(int i=0;i<5;i++)
+			SensorWrapper s2 = new SensorWrapper("s12");
+			s2.setHost(ownship);
+			for (int i = 0; i < 7; i++)
 			{
-				FixWrapper scw = getFix(i * 5000, new WorldLocation(1,i,0), track);
-				track.add(scw);
+				SensorContactWrapper scw = getContact(i * 6000, s2);
+				s2.add(scw);
 			}
-			
+
+			TrackWrapper target = new TrackWrapper();
+			target.setName("target");
+
+			for (int i = 0; i < 25; i++)
+			{
+				FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), target);
+				target.add(scw);
+			}
+
+			Vector<SensorWrapper> sensors = new Vector<SensorWrapper>();
+			sensors.add(sw);
+			sensors.add(s2);
+			HiResDate start_time = target.getStartDTG();
+			HiResDate end_time = target.getEndDTG();
+			TimeSeriesCollection data = GenerateSensorRangePlot.getDataSeries(target,
+					sensors, start_time, end_time);
+
+			assertNotNull("got dataset", data);
+			assertEquals("got correct num of series", 2, data.getSeriesCount());
+			TimeSeries first = data.getSeries(0);
+			assertNotNull("got first series", first);
+			assertEquals("got data", 5, first.getItemCount());
+			TimeSeries second = data.getSeries(1);
+			assertNotNull("got second series", second);
+			assertEquals("got data", 7, second.getItemCount());
+		}
+
+		public void testMenu()
+		{
+			TrackWrapper ownship = new TrackWrapper();
+			ownship.setName("trackA");
+			for (int i = 0; i < 5; i++)
+			{
+				FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), ownship);
+				ownship.add(scw);
+			}
+
+			SensorWrapper sw = new SensorWrapper("s1");
+			sw.setHost(ownship);
+			sw.setSensorOffset(new ArrayLength(200));
+			for (int i = 0; i < 5; i++)
+			{
+				SensorContactWrapper scw = getContact(i * 5000, sw);
+				sw.add(scw);
+			}
+
+			TrackWrapper target = new TrackWrapper();
+			target.setName("trackB");
+
+			for (int i = 0; i < 5; i++)
+			{
+				FixWrapper scw = getFix(i * 5000, new WorldLocation(1, i, 0), target);
+				target.add(scw);
+			}
+
 			GenerateSensorRangePlot plot = new GenerateSensorRangePlot();
 			Editable[] subjects = new Editable[2];
 			subjects[0] = sw;
-			subjects[1] = track;
+			subjects[1] = target;
 			IMenuManager parent = new MenuManager();
 			plot.generate(parent, null, null, subjects);
-			
+
 			assertNotNull("got menu back", parent);
+			IContributionItem firstOne = parent.getItems()[0];
+			assertNotNull("got menu item back", firstOne);
+			assertTrue("got separator", firstOne instanceof Separator);
+			IContributionItem secondOne = parent.getItems()[1];
+			assertNotNull("got menu item back", secondOne);
+			assertTrue("got menu item", secondOne instanceof ActionContributionItem);
 		}
-		
-		private static FixWrapper getFix(long time,
-				WorldLocation loc, TrackWrapper track)
+
+		private static FixWrapper getFix(long time, WorldLocation loc,
+				TrackWrapper track)
 		{
 			Fix theFix = new Fix(new HiResDate(time), loc, 0, 0);
 			FixWrapper res = new FixWrapper(theFix);
 			res.setTrackWrapper(track);
 			return res;
 		}
-		
-		private static SensorContactWrapper getContact(long time,
-				WorldLocation loc, SensorWrapper host)
+
+		private static SensorContactWrapper getContact(long time, SensorWrapper host)
 		{
 			SensorContactWrapper res = new SensorContactWrapper();
 			res.setDTG(new HiResDate(time));
-			res.setOrigin(loc);
 			res.setSensor(host);
 			return res;
 		}
