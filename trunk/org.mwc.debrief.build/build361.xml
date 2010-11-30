@@ -1,15 +1,18 @@
 <project default="main">
 	<property file="build361.properties"/>
 	<target name="main">
+
+	<!--	<property name="eclipse.home" value="${user.home}/Applications/eclipse-rcp-helios-SR1-macosx-cocoa-x86_64" />  -->
+		
 		<property name="baseLocation" value="${eclipse.home}"/>
 		<!-- by default, check for deltapack co-located with eclipse -->
 		<property name="deltapack" value="${eclipse.home}/deltapack/eclipse"/>
 
 		<!-- Check that we have a deltapack -->
 		<available property="haveDeltaPack" file="${deltapack}"/>
-		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property." />
+		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property from|${deltapack}|${eclipse.pdebuild.home}." />
 			
-		<property name="builder" value="${basedir}" />
+		<property name="builder" value="../deploy/scrap" />
 		<property name="buildDirectory" value="${basedir}/buildDirectory"/>
 		<property name="pluginPath" value="${basedir}/..${path.separator}${deltapack}" />
 		<property name="buildTempFolder" value="${buildDirectory}" />
