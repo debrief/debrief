@@ -61,8 +61,6 @@ import MWC.TacticalData.Fix;
  */
 public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 {
-	
-	
 
 	/**
 	 * add items to the popup menu (if suitable tracks are selected)
@@ -92,7 +90,14 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			}
 			else if (thisE instanceof TrackWrapper)
 			{
-				tmpPrimary = (TrackWrapper) thisE;
+				// aah, have we already got a primary?
+				if (tmpPrimary == null)
+					tmpPrimary = (TrackWrapper) thisE;
+				else
+				{
+					// can't do it for two target tracks - drop out
+					duffItemFound = true;
+				}
 			}
 			else
 				duffItemFound = true;
@@ -125,10 +130,14 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 		}
 	}
 
-	/** wrap the action generation bits in a convenience method (suitable for overring in tests)
+	/**
+	 * wrap the action generation bits in a convenience method (suitable for
+	 * overring in tests)
 	 * 
-	 * @param candidates the sensors to measure the range from
-	 * @param primary the track to measure to
+	 * @param candidates
+	 *          the sensors to measure the range from
+	 * @param primary
+	 *          the track to measure to
 	 * @return
 	 */
 	protected Action getAction(final Vector<SensorWrapper> candidates,
@@ -191,23 +200,19 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					IAdaptable timeC = (IAdaptable) timeRef.getView(true);
 
 					// that's it, now get the data
-					TimePeriod period = (TimePeriod) timeC
-							.getAdapter(TimePeriod.class);
+					TimePeriod period = (TimePeriod) timeC.getAdapter(TimePeriod.class);
 					if (period == null)
 					{
-						CorePlugin
-								.logError(
-										Status.ERROR,
-										"TimeController view no longer provides TimePeriod adapter",
-										null);
+						CorePlugin.logError(Status.ERROR,
+								"TimeController view no longer provides TimePeriod adapter",
+								null);
 						return;
 					}
 
 					startTime = period.getStartDTG();
 					endTime = period.getEndDTG();
 
-					if ((startTime.greaterThan(endTime))
-							|| (startTime.equals(endTime)))
+					if ((startTime.greaterThan(endTime)) || (startTime.equals(endTime)))
 					{
 						String title = "XY Plot";
 						String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
@@ -381,7 +386,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						// FixedMicroSecond
 						ColouredDataItem newItem = new ColouredDataItem(
 								new FixedMillisecond(thisSecondary.getDTG().getDate().getTime()),
-								thisVal, thisColor, false, null);
+								thisVal, thisColor, true, null);
 
 						thisSeries.add(newItem);
 					} // whether this point is visible
@@ -397,6 +402,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				// did we find anything?
 				if (thisSeries != null)
 				{
+					System.err.println("created:" + ser.getItemCount() + " pts");
 					theSeriesCollection.addSeries(thisSeries);
 				}
 
@@ -495,14 +501,18 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				target.add(scw);
 			}
 
-			GenerateSensorRangePlot plot = new GenerateSensorRangePlot(){
+			GenerateSensorRangePlot plot = new GenerateSensorRangePlot()
+			{
 				protected Action getAction(Vector<SensorWrapper> candidates,
 						TrackWrapper primary)
 				{
 					_candidates = candidates;
 					_primary = primary;
-					return new Action("some"){};
-				}};
+					return new Action("some")
+					{
+					};
+				}
+			};
 			Editable[] subjects = new Editable[2];
 			subjects[0] = sw;
 			subjects[1] = target;
@@ -516,7 +526,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			IContributionItem secondOne = parent.getItems()[1];
 			assertNotNull("got menu item back", secondOne);
 			assertTrue("got menu item", secondOne instanceof ActionContributionItem);
-			
+
 			// check items got set
 			assertNotNull(_candidates);
 			assertEquals(1, _candidates.size());
