@@ -47,7 +47,6 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 		return res;
 	}
 
-	@Override
 	public void modifyText(ModifyEvent e)
 	{
 		// ok, check we can parse it

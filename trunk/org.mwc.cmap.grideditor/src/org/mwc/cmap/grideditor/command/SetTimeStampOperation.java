@@ -68,7 +68,6 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 			myTimeStamp = item.getDTG();
 		}
 
-		@Override
 		public boolean isCompatible(OperationEnvironment environment) {
 			return myTimeStamp.equals(environment.getSubject().getDTG());
 		}

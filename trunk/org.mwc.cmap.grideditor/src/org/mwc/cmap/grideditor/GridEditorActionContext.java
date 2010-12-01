@@ -89,17 +89,14 @@ public class GridEditorActionContext extends ActionContext {
 
 		public static final Listener NULL = new Listener() {
 
-			@Override
 			public void tableInputChanged() {
 				//
 			}
 
-			@Override
 			public void selectionChanged() {
 				//
 			}
 
-			@Override
 			public void chartInputChanged() {
 				//
 			}

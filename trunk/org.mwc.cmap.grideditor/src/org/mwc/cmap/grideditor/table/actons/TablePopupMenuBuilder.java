@@ -19,7 +19,6 @@ public class TablePopupMenuBuilder {
 		myMenuManager.setRemoveAllWhenShown(true);
 		myMenuManager.addMenuListener(new IMenuListener() {
 
-			@Override
 			public void menuAboutToShow(IMenuManager manager) {
 				myActionGroup.fillContextMenu(manager);
 			}

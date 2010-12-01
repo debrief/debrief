@@ -45,7 +45,6 @@ public class SimControllerUI extends Composite {
 		myStartButton.setEnabled(false);
 		myStartButton.addListener(SWT.Selection, new Listener() {
 
-			@Override
 			public void handleEvent(Event event) {
 				mySimulationQue.startQue(listener);
 			}

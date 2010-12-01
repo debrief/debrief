@@ -17,7 +17,6 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 		myStorageValue = myUnitsSet.convert(units, myStorageUnits, value);
 	}
 
-	@Override
 	public UnitsSet getUnitsSet() {
 		return myUnitsSet;
 	}
@@ -26,7 +25,6 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 		return myStorageValue;
 	}
 	
-	@Override
 	public double getValueIn(UnitsSet.Unit units) {
 		return myUnitsSet.convert(myStorageUnits, units, myStorageValue);
 	}

@@ -31,7 +31,6 @@ public class BackedTimeSeriesDataItem extends TimeSeriesDataItem implements Back
 		return super.clone();
 	}
 	
-	@Override
 	public double getXValue() {
 		return getPeriod().getFirstMillisecond(); //or any 
 	}

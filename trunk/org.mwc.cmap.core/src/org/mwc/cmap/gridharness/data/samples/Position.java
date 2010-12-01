@@ -89,7 +89,6 @@ public class Position implements TimeStampedDataItem {
 		this._speed = _speed;
 	}
 
-	@Override
 	public void setDTG(HiResDate newTime) {
 		this._myTime = newTime;
 	}

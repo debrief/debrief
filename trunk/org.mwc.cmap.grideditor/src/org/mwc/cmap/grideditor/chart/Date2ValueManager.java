@@ -40,22 +40,18 @@ public class Date2ValueManager implements ChartDataManager {
 		myDuplicatesWorkaround = new TimeSeriesWithDuplicates("the-only");
 	}
 
-	@Override
 	public XYDataset getXYDataSet() {
 		return myDuplicatesWorkaround.getDataSet();
 	}
 
-	@Override
 	public GriddableItemDescriptor getDescriptor() {
 		return myDescriptor;
 	}
 
-	@Override
 	public String getChartTitle() {
 		return myTitle;
 	}
 
-	@Override
 	public void setInput(GriddableSeries input) {
 		myInput = input;
 		for (TimeStampedDataItem nextItem : input.getItems()) {
@@ -64,14 +60,12 @@ public class Date2ValueManager implements ChartDataManager {
 		}
 	}
 
-	@Override
 	public ValueAxis createXAxis() {
 		DateAxis result = new DateAxis(null);
 		result.setTimeZone(TimeSeriesWithDuplicates.getDefaultTimeZone());
 		return result;
 	}
 
-	@Override
 	public ValueAxis createYAxis() {
 		NumberAxis result = new NumberAxis(null);
 		result.setAutoRangeIncludesZero(false);
@@ -90,7 +84,6 @@ public class Date2ValueManager implements ChartDataManager {
 		myDuplicatesWorkaround.removeDomainItem(deletedItem);
 	}
 
-	@Override
 	public void attach(JFreeChartComposite chartPanel) {
 		final GridEditorUndoSupport undoSupport = chartPanel.getActionContext().getUndoSupport();
 		if (undoSupport != null) {
@@ -118,7 +111,6 @@ public class Date2ValueManager implements ChartDataManager {
 		}
 	}
 
-	@Override
 	public void detach(JFreeChartComposite chartPanel) {
 		if (myDragTracker != null) {
 			chartPanel.removeChartMouseListener(myDragTracker);

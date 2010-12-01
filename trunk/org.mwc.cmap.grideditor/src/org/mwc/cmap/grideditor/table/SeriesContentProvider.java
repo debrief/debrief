@@ -17,7 +17,6 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 
 	private TableRefresher myTableRefresher;
 
-	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		ColumnViewer columnViewer = (ColumnViewer) viewer;
 		if (newInput == myInput) {
@@ -34,13 +33,11 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 		}
 	}
 
-	@Override
 	public void dispose() {
 		disposeRefresher();
 		myInput = null;
 	}
 
-	@Override
 	public Object[] getElements(Object inputElement) {
 		if (inputElement != myInput) {
 			return NOTHING;
@@ -72,7 +69,6 @@ public class SeriesContentProvider implements IStructuredContentProvider {
 			myData.addPropertyChangeListener(this);
 		}
 
-		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (myColumnViewer.getControl().isDisposed()) {
 				dispose();

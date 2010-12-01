@@ -24,7 +24,6 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage impl
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
 	}
 
-	@Override
 	public void init(IWorkbench workbench) {
 		//
 	}

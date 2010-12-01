@@ -80,7 +80,6 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		return holder;
 	}
 
-	@Override
 	public Control getLastControl() {
 		return _myCombo;
 	}

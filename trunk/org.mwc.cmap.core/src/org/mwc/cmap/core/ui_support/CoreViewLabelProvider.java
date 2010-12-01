@@ -242,7 +242,6 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		return thisW.getClass() + " " + thisW.getColor();
 	}
 
-	@Override
 	public Image getColumnImage(final Object element, final int columnIndex) {
 		Image res = null;
 		if (columnIndex == 0)
@@ -268,7 +267,6 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		return res;
 	}
 
-	@Override
 	public String getColumnText(final Object element, final int columnIndex) {
 		String res = null;
 		if (columnIndex == 0)

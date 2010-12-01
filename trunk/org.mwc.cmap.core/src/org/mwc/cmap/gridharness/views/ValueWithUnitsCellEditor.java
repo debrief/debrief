@@ -40,7 +40,6 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 		return createControl(parent, _textTip, _comboTip);
 	}
 	
-	@Override
 	public Control getLastControl() {
 		return _myCombo;
 	}

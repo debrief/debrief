@@ -1187,48 +1187,41 @@ public class ImportReplay extends PlainImporterBase
 			ImportReplay.initialise(new ToolParent()
 			{
 
-				@Override
 				public void addActionToBuffer(Action theAction)
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				@Override
 				public Map<String, String> getPropertiesLike(String pattern)
 				{
 					// TODO Auto-generated method stub
 					return null;
 				}
 
-				@Override
 				public String getProperty(String name)
 				{
 					return ImportReplay.IMPORT_AS_OTG;
 				}
 
-				@Override
 				public void restoreCursor()
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				@Override
 				public void setCursor(int theCursor)
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				@Override
 				public void setProperty(String name, String value)
 				{
 					// TODO Auto-generated method stub
 
 				}
 
-				@Override
 				public void logError(int status, String text, Exception e)
 				{
 					// TODO Auto-generated method stub

@@ -154,7 +154,6 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	private ScenarioRunningListener _runListener;
 	private PropertyChangeSupport _pSupport;
 
-	@Override
 	public void addStoppedListener(PropertyChangeListener listener)
 	{
 		if (_runListener == null)
@@ -162,33 +161,27 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 			_runListener = new ScenarioRunningListener()
 			{
 
-				@Override
 				public void finished(long elapsedTime, String reason)
 				{
 					_pSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED, elapsedTime, reason);
 				}
 
-				@Override
 				public void newScenarioStepTime(int val)
 				{
 				}
 
-				@Override
 				public void newStepTime(int val)
 				{
 				}
 
-				@Override
 				public void paused()
 				{
 				}
 
-				@Override
 				public void restart(ScenarioType scenario)
 				{
 				}
 
-				@Override
 				public void started()
 				{
 				}
@@ -201,7 +194,6 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 		_pSupport.addPropertyChangeListener(TimeManager.LiveScenario.FINISHED, listener);
 	}
 
-	@Override
 	public void removeStoppedListener(PropertyChangeListener listener)
 	{
 		if(_pSupport != null)

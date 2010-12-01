@@ -30,7 +30,6 @@ class ChartComponentImpl implements GriddableItemChartComponent {
 		return myDescriptor;
 	}
 
-	@Override
 	public double getDoubleValue(TimeStampedDataItem dataItem) {
 		Number value;
 		if (myDescriptor.getType().isPrimitive()) {

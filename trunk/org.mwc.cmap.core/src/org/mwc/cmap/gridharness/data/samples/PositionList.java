@@ -40,12 +40,10 @@ public class PositionList implements GriddableSeries {
 		_pSupport = new PropertyChangeSupport(this);
 	}
 
-	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		_pSupport.addPropertyChangeListener(listener);
 	}
 
-	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		_pSupport.removePropertyChangeListener(listener);
 	}
@@ -59,18 +57,15 @@ public class PositionList implements GriddableSeries {
 		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, thisP);
 	}
 
-	@Override
 	public void insertItem(TimeStampedDataItem subject) {
 		insertItemAt(subject, getItems().size());
 	}
 
-	@Override
 	public void insertItemAt(TimeStampedDataItem subject, int index) {
 		_myData.add(index, subject);
 		_pSupport.firePropertyChange(PROPERTY_ADDED, index, subject);
 	}
 
-	@Override
 	public void deleteItem(TimeStampedDataItem subject) {
 		int index = _myData.indexOf(subject);
 		if (index < 0) {
@@ -80,12 +75,10 @@ public class PositionList implements GriddableSeries {
 		_pSupport.firePropertyChange(PROPERTY_DELETED, index, subject);
 	}
 
-	@Override
 	public void fireModified(TimeStampedDataItem subject) {
 		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, subject);
 	}
 
-	@Override
 	public GriddableItemDescriptor[] getAttributes() {
 		if (_myAttributes == null) {
 			_myAttributes = new GriddableItemDescriptor[5];
@@ -103,17 +96,14 @@ public class PositionList implements GriddableSeries {
 		return _myAttributes;
 	}
 
-	@Override
 	public List<TimeStampedDataItem> getItems() {
 		return _myDataRO;
 	}
 
-	@Override
 	public String getName() {
 		return _myName;
 	}
 
-	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item) {
 		if (false == item instanceof Position) {
 			throw new IllegalArgumentException("I am expecting the Position's, don't know how to copy " + item);
@@ -155,7 +145,6 @@ public class PositionList implements GriddableSeries {
 		return res;
 	}
 
-	@Override
 	public void setOnlyShowVisibleItems(boolean val)
 	{
 		// TODO Auto-generated method stub

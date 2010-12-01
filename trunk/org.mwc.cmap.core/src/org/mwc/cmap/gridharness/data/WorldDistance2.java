@@ -54,7 +54,6 @@ public class WorldDistance2 extends AbstractValueInUnits {
 		setValues(value, units);
 	}
 	
-	@Override
 	public WorldDistance2 makeCopy() {
 		return new WorldDistance2(this);
 	}

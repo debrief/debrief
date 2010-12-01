@@ -92,7 +92,6 @@ public class SexagesimalSupport {
 			return new Sexagesimal(degrees, minutes, seconds, hemi);
 		}
 
-		@Override
 		public String getExampleString()
 		{
 			return "_DD_MM_MMM";
@@ -149,7 +148,6 @@ public class SexagesimalSupport {
 			return new Sexagesimal(degrees, minutes, seconds, hemi);
 		}
 
-		@Override
 		public String getExampleString()
 		{
 			return "_DD_MM_SS_SSS";

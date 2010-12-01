@@ -112,7 +112,6 @@ public class SimulationTable
 		myTableCursor.addListener(SWT.Selection, new Listener()
 		{
 
-			@Override
 			public void handleEvent(Event event)
 			{
 				getTable().setSelection(myTableCursor.getRow());
@@ -275,7 +274,6 @@ public class SimulationTable
 			menuItem.addListener(SWT.Selection, new Listener()
 			{
 
-				@Override
 				public void handleEvent(Event event)
 				{
 					columnDescriptor.setVisible(!columnDescriptor.isVisible());
@@ -333,7 +331,6 @@ public class SimulationTable
 					new Listener()
 					{
 
-						@Override
 						public void handleEvent(Event event)
 						{
 							myColumnsResizer.fitTableWidth();
@@ -435,7 +432,6 @@ public class SimulationTable
 			getTableColumn().addListener(SWT.Selection, new Listener()
 			{
 
-				@Override
 				public void handleEvent(Event event)
 				{
 					myViewerSorter.setColumn(getTableColumn());
@@ -493,13 +489,11 @@ public class SimulationTable
 			myAttributeListener = new PropertyChangeListener()
 			{
 
-				@Override
 				public void propertyChange(PropertyChangeEvent evt)
 				{
 					Display.getDefault().asyncExec(new Runnable()
 					{
 
-						@Override
 						public void run()
 						{
 							if (isDisposed())
@@ -514,7 +508,6 @@ public class SimulationTable
 			myStateListener = new PropertyChangeListener()
 			{
 
-				@Override
 				public void propertyChange(PropertyChangeEvent evt)
 				{
 					// is it one of ours?
@@ -572,7 +565,6 @@ public class SimulationTable
 			Display.getDefault().asyncExec(new Runnable()
 			{
 
-				@Override
 				public void run()
 				{
 					updateRow();
@@ -719,12 +711,12 @@ public class SimulationTable
 				if (value1 instanceof Comparable<?>
 						&& value1.getClass().isInstance(value2))
 				{
-					result = ((Comparable) value1).compareTo(value2);
+					result = ((Comparable<Object>) value1).compareTo(value2);
 				}
 				else if (value2 instanceof Comparable<?>
 						&& value2.getClass().isInstance(value1))
 				{
-					result = -((Comparable) value2).compareTo(value1);
+					result = -((Comparable<Object>) value2).compareTo(value1);
 				}
 				else
 				{

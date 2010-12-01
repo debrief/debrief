@@ -40,14 +40,12 @@ public abstract class DataPointsDragTracker implements
 		myDragSubject = new DragSubject();
 	}
 
-	@Override
 	public void chartMouseClicked(ChartMouseEvent event)
 	{
 		myDragSubject.setSubject(event.getEntity());
 		myChartPanel.redrawCanvas();
 	}
 
-	@Override
 	public void chartMouseMoved(ChartMouseEvent event)
 	{
 		if (!myDragSubject.isEmpty())
@@ -101,7 +99,6 @@ public abstract class DataPointsDragTracker implements
 		}
 	}
 
-	@Override
 	public void chartMouseReleased(ChartMouseEvent event)
 	{
 		if (!myDragSubject.isEmpty() && myDragSubject.getLastDomainPoint() != null)
@@ -215,9 +212,9 @@ public abstract class DataPointsDragTracker implements
 			return myLastDomainPoint;
 		}
 
+		@SuppressWarnings("rawtypes")
 		private BackedChartItem extractBackedChartItem(XYItemEntity xyEntity)
 		{
-			@SuppressWarnings("unchecked")
 			Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
 					xyEntity.getSeriesIndex());
 			if (xyEntity.getDataset() instanceof XYSeriesCollection)

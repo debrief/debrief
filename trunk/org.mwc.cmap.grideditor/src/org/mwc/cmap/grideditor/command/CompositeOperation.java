@@ -30,13 +30,11 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 		addContext(enclosingUndoContext);
 	}
 
-	@Override
 	public void add(IUndoableOperation operation) {
 		checkNotExecuted();
 		myOperations.add(operation);
 	}
 
-	@Override
 	public void remove(IUndoableOperation operation) {
 		checkNotExecuted();
 		myOperations.remove(operation);

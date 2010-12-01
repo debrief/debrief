@@ -234,13 +234,11 @@ public class BriefFormatLocation implements PlainFormatLocation
 
   }
 
-	@Override
 	public String convertToString(WorldLocation theLocation)
 	{
 		return toString(theLocation);
 	}
 
-	@Override
 	public String getExampleString()
 	{
 		return "short location";

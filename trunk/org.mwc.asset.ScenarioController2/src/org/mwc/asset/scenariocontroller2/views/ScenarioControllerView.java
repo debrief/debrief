@@ -180,7 +180,6 @@ public class ScenarioControllerView extends ViewPart implements
 		};
 		_newScenarioListener = new NewScenarioListener()
 		{
-			@Override
 			public void newScenario(ScenarioType oldScenario, ScenarioType newScenario)
 			{
 				_timeManager.setCurrentScenario(newScenario);
@@ -272,7 +271,6 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 			}
 
-			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				if (_myUI.getScenarioTabs().getSelectionIndex() == 0)
@@ -317,7 +315,6 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 			}
 
-			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				// ok, do the gen
@@ -328,12 +325,10 @@ public class ScenarioControllerView extends ViewPart implements
 		_myUI.getRunBtn().addSelectionListener(new SelectionListener()
 		{
 
-			@Override
 			public void widgetDefaultSelected(SelectionEvent e)
 			{
 			}
 
-			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				doMultiRunOperation();
@@ -387,13 +382,11 @@ public class ScenarioControllerView extends ViewPart implements
 
 		}
 
-		@Override
 		public void beginTask(String name, int totalWork)
 		{
 			monitor.beginTask(name, totalWork);
 		}
 
-		@Override
 		public void worked(int work)
 		{
 			monitor.worked(work);
@@ -504,7 +497,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
@@ -710,7 +703,6 @@ public class ScenarioControllerView extends ViewPart implements
 		// if we're trying to show a view whilst its still being defined.
 		Runnable doIt = new Runnable()
 		{
-			@Override
 			public void run()
 			{
 				activateMe();
@@ -1256,7 +1248,7 @@ public class ScenarioControllerView extends ViewPart implements
 				return "Pending plot";
 			}
 
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("rawtypes")
 			public Object getAdapter(Class adapter)
 			{
 				return null;
@@ -1418,7 +1410,6 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 	}
 
-	@Override
 	public void addStoppedListener(PropertyChangeListener listener)
 	{
 		if (_scenStopSupport == null)
@@ -1426,7 +1417,6 @@ public class ScenarioControllerView extends ViewPart implements
 		_scenStopSupport.addPropertyChangeListener(listener);
 	}
 
-	@Override
 	public void removeStoppedListener(PropertyChangeListener listener)
 	{
 		if (_scenStopSupport != null)

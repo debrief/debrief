@@ -41,18 +41,15 @@ public class GridEditorActionGroup extends ActionGroup {
 		super.setContext(context);
 		getContext().setListener(new GridEditorActionContext.Listener() {
 
-			@Override
 			public void tableInputChanged() {
 				myView.refreshUndoContext();
 				contextChanged();
 			}
 
-			@Override
 			public void selectionChanged() {
 				contextChanged();
 			}
 
-			@Override
 			public void chartInputChanged() {
 				contextChanged();
 			}
@@ -103,7 +100,7 @@ public class GridEditorActionGroup extends ActionGroup {
 			// create an array of the items being edited
 			Editable[] items = new Editable[sel.size()];
 			int index = 0;
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("rawtypes")
 			Iterator iter = sel.iterator();
 			while(iter.hasNext())
 			{

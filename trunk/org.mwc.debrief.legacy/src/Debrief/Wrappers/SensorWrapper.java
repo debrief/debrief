@@ -945,13 +945,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		ts.testValues();
 	}
 
-	@Override
 	public Editable getSampleGriddable()
 	{
 		return this.elements().nextElement();
 	}
 
-	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
 	{
 		if (false == item instanceof SensorContactWrapper)

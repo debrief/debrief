@@ -84,4 +84,9 @@ public abstract class AbstractItemsInterpolator implements ItemsInterpolator {
 		return dataItem.getDTG().getDate().getTime();
 	}
 
+	public boolean canInterpolate(TimeStampedDataItem item)
+	{
+		return false;
+	}
+
 }

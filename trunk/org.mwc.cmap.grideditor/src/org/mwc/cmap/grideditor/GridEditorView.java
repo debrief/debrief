@@ -99,7 +99,6 @@ public class GridEditorView extends ViewPart
 			mySelectionListener = new ISelectionListener()
 			{
 
-				@Override
 				public void selectionChanged(IWorkbenchPart part, ISelection selection)
 				{
 					if (part == GridEditorView.this)

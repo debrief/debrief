@@ -53,7 +53,6 @@ public class GridEditorTable extends Composite
 		myTableViewer.addSelectionChangedListener(new ISelectionChangedListener()
 		{
 
-			@Override
 			public void selectionChanged(SelectionChangedEvent event)
 			{
 				myActionContext.setSelection(myTableViewer.getSelection());
@@ -67,7 +66,6 @@ public class GridEditorTable extends Composite
 
 			private int myComputedHeight = -1;
 
-			@Override
 			public void handleEvent(Event event)
 			{
 				if (myComputedHeight < 0)

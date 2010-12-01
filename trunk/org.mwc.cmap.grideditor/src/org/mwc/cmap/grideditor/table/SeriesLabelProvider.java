@@ -12,7 +12,6 @@ public class SeriesLabelProvider extends LabelProvider implements ITableLabelPro
 		myTableModel = tableModel;
 	}
 
-	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		TableModel.ColumnBase column = myTableModel.getColumnData(columnIndex);
 		if (column == null) {
@@ -22,7 +21,6 @@ public class SeriesLabelProvider extends LabelProvider implements ITableLabelPro
 		return column.getLabelProvider(element).getText(element);
 	}
 
-	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}

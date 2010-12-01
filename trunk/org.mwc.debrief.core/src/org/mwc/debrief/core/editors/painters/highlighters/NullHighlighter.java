@@ -8,7 +8,6 @@ import MWC.GenericData.WatchableList;
 public class NullHighlighter implements SWTPlotHighlighter
 {
 
-	@Override
 	public void highlightIt(PlainProjection proj, CanvasType dest,
 			WatchableList list, Watchable watch, boolean isPrimary)
 	{
@@ -25,19 +24,16 @@ public class NullHighlighter implements SWTPlotHighlighter
 		return getName();
 	}
 
-	@Override
 	public EditorType getInfo()
 	{
 		return null;
 	}
 
-	@Override
 	public String getName()
 	{
 		return "Highlight off";
 	}
 
-	@Override
 	public boolean hasEditor()
 	{
 		return false;

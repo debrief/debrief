@@ -26,7 +26,6 @@ public interface EnvironmentState {
 
 	public static final EnvironmentState ALWAYS_COMPATIBLE = new EnvironmentState() {
 
-		@Override
 		public boolean isCompatible(OperationEnvironment environment) {
 			return true;
 		}
@@ -43,7 +42,6 @@ public interface EnvironmentState {
 			myItemsCountBefore = environment.getSeries().getItems().size();
 		}
 
-		@Override
 		public boolean isCompatible(OperationEnvironment environment) {
 			return myItemsCountBefore == environment.getSeries().getItems().size();
 		}
@@ -75,7 +73,6 @@ public interface EnvironmentState {
 			myActualPosition = position;
 		}
 
-		@Override
 		public boolean isCompatible(OperationEnvironment environment) {
 			return myActualPosition == environment.getSeries().getItems().indexOf(myItem);
 		}

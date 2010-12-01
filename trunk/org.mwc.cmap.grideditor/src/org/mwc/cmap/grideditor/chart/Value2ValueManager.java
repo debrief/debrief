@@ -39,12 +39,10 @@ public class Value2ValueManager implements ChartDataManager {
 		return myInput;
 	}
 
-	@Override
 	public ValueAxis createXAxis() {
 		return createNumberAxis();
 	}
 
-	@Override
 	public ValueAxis createYAxis() {
 		return createNumberAxis();
 	}
@@ -55,27 +53,22 @@ public class Value2ValueManager implements ChartDataManager {
 		return result;
 	}
 
-	@Override
 	public String getChartTitle() {
 		return myTitle;
 	}
 
-	@Override
 	public GriddableItemDescriptor getDescriptor() {
 		return myDescriptor;
 	}
 
-	@Override
 	public XYDataset getXYDataSet() {
 		return myDataSet;
 	}
 
-	@Override
 	public void handleItemAdded(int index, TimeStampedDataItem addedItem) {
 		mySeries.insertAt(index, createChartItem(addedItem));
 	}
 
-	@Override
 	public void handleItemChanged(TimeStampedDataItem changedItem) {
 		int index = myInput.getItems().indexOf(changedItem);
 		if (index < 0) {
@@ -99,12 +92,10 @@ public class Value2ValueManager implements ChartDataManager {
 		}
 	}
 
-	@Override
 	public void handleItemDeleted(int oldIndex, TimeStampedDataItem deletedItem) {
 		mySeries.remove(oldIndex);
 	}
 
-	@Override
 	public void setInput(GriddableSeries input) {
 		myInput = input;
 		int index = 0;
@@ -114,12 +105,10 @@ public class Value2ValueManager implements ChartDataManager {
 		}
 	}
 
-	@Override
 	public void attach(JFreeChartComposite chartPanel) {
 		//
 	}
 
-	@Override
 	public void detach(JFreeChartComposite chartPanel) {
 		//
 	}

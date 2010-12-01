@@ -622,7 +622,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * @see
 	 * org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;

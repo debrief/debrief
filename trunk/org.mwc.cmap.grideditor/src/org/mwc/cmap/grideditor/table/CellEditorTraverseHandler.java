@@ -16,7 +16,6 @@ public class CellEditorTraverseHandler implements TraverseListener {
 		myActuallyEdited = actuallyEdited;
 	}
 
-	@Override
 	public void keyTraversed(TraverseEvent e) {
 		if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
 			ColumnViewer viewer = myActivateOnTab.getColumnViewer();

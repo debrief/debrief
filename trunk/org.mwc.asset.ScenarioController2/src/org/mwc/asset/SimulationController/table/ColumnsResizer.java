@@ -24,7 +24,6 @@ public class ColumnsResizer {
 		myFixedColumnsWidth = fixedColumnsWidth;
 		myTable.addListener(SWT.Resize, new Listener() {
 
-			@Override
 			public void handleEvent(Event event) {
 				if (mySizeDatas != null) {
 					doResize(true, fitOnResize);

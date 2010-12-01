@@ -31,7 +31,6 @@ public abstract class MultiControlFocusHandler implements FocusListener {
 		}
 	}
 
-	@Override
 	public void focusGained(FocusEvent e) {
 		if (myDeferredDeactivate != null) {
 			myDeferredDeactivate.cancel();
@@ -39,7 +38,6 @@ public abstract class MultiControlFocusHandler implements FocusListener {
 		myDeferredDeactivate = null;
 	}
 
-	@Override
 	public void focusLost(final FocusEvent e) {
 		myDeferredDeactivate = new CancellableRunnable() {
 
@@ -59,7 +57,6 @@ public abstract class MultiControlFocusHandler implements FocusListener {
 			myIsCancelled = true;
 		}
 
-		@Override
 		public final void run() {
 			if (!myIsCancelled) {
 				doRun();

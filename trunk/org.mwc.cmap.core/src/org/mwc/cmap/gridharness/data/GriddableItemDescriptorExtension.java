@@ -18,8 +18,7 @@ public class GriddableItemDescriptorExtension extends GriddableItemDescriptor im
 		return mySampleString;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}

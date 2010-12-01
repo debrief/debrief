@@ -235,8 +235,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
         getSupport().addPropertyChangeListener(property, listener);
     }
 
-    @Override
-		public void firePropertyChange(String propertyChanged, Object oldValue,
+    public void firePropertyChange(String propertyChanged, Object oldValue,
 				Object newValue)
 		{
     	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);

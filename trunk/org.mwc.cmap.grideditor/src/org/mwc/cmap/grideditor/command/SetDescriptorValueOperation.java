@@ -79,7 +79,6 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 			myValue = BeanUtil.getItemValue(item, descriptor);
 		}
 
-		@Override
 		public boolean isCompatible(OperationEnvironment environment) {
 			return safeEquals(myValue, BeanUtil.getItemValue(environment.getSubject(), environment.getDescriptor()));
 		}

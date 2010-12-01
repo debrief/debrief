@@ -68,7 +68,6 @@ public class GriddableWrapper implements GriddableSeries
 		_item = item;
 	}
 
-	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		if (_item.getEditable() instanceof SupportsPropertyListeners)
@@ -79,7 +78,6 @@ public class GriddableWrapper implements GriddableSeries
 		}
 	}
 
-	@Override
 	public void deleteItem(TimeStampedDataItem subject)
 	{
 		GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
@@ -108,7 +106,6 @@ public class GriddableWrapper implements GriddableSeries
 		_item.getLayers().fireExtended(null, _item.getTopLevelLayer());
 	}
 
-	@Override
 	public void fireModified(TimeStampedDataItem subject)
 	{
 		if (_item.getEditable() instanceof SupportsPropertyListeners)
@@ -143,7 +140,6 @@ public class GriddableWrapper implements GriddableSeries
 
 	}
 
-	@Override
 	public GriddableItemDescriptor[] getAttributes()
 	{
 		if (_myAttributes == null)
@@ -198,7 +194,6 @@ public class GriddableWrapper implements GriddableSeries
 		return _myAttributes;
 	}
 
-	@Override
 	public List<TimeStampedDataItem> getItems()
 	{
 		List<TimeStampedDataItem> list = null;
@@ -234,7 +229,6 @@ public class GriddableWrapper implements GriddableSeries
 		return list;
 	}
 
-	@Override
 	public String getName()
 	{
 		return _item.getEditable().getName();
@@ -250,7 +244,6 @@ public class GriddableWrapper implements GriddableSeries
 		return _item;
 	}
 
-	@Override
 	public void insertItem(TimeStampedDataItem subject)
 	{
 		GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
@@ -260,7 +253,6 @@ public class GriddableWrapper implements GriddableSeries
 		fireExtended(GriddableSeries.PROPERTY_ADDED, subject);
 	}
 
-	@Override
 	public void insertItemAt(TimeStampedDataItem subject, int index)
 	{
 		// we don't need to worry about the order of the item,
@@ -268,14 +260,12 @@ public class GriddableWrapper implements GriddableSeries
 		insertItem(subject);
 	}
 
-	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
 	{
 		GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 		return gs.makeCopy(item);
 	}
 
-	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener)
 	{
 		if (_item.getEditable() instanceof SupportsPropertyListeners)

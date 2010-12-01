@@ -60,7 +60,6 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 
 		TraverseListener enterEscapeTraverseHandler = new TraverseListener() {
 
-			@Override
 			public void keyTraversed(TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 					e.doit = false;
@@ -84,7 +83,6 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 		return panel;
 	}
 
-	@Override
 	public Control getLastControl() {
 		return myLongitude.getControl();
 	}

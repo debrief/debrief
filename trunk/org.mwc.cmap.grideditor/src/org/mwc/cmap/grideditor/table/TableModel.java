@@ -408,17 +408,14 @@ public class TableModel {
 			myColumnIndex = columnIndex;
 		}
 
-		@Override
 		public int getColumnIndex() {
 			return myColumnIndex;
 		}
 
-		@Override
 		public ColumnViewer getColumnViewer() {
 			return myViewer;
 		}
 
-		@Override
 		public Object getElementToEdit(Object actuallyEdited) {
 			return actuallyEdited;
 		}
@@ -435,17 +432,14 @@ public class TableModel {
 			myCreateOnDemand = createOnDemand;
 		}
 
-		@Override
 		public int getColumnIndex() {
 			return DateTimeColumn.DATE_TIME_COLUMN_INDEX;
 		}
 
-		@Override
 		public ColumnViewer getColumnViewer() {
 			return myViewer;
 		}
 
-		@Override
 		public Object getElementToEdit(Object actuallyEdited) {
 			if (getColumnViewer().getInput() instanceof GriddableSeries && actuallyEdited instanceof TimeStampedDataItem) {
 				GriddableSeries series = (GriddableSeries) getColumnViewer().getInput();

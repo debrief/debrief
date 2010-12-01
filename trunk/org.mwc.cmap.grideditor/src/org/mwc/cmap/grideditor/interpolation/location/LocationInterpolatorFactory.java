@@ -12,8 +12,7 @@ import MWC.GenericData.WorldLocation;
 
 public class LocationInterpolatorFactory implements IAdapterFactory, ItemsInterpolatorFactory {
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (false == adaptableObject instanceof GriddableItemDescriptorExtension) {
 			return null;
@@ -28,13 +27,11 @@ public class LocationInterpolatorFactory implements IAdapterFactory, ItemsInterp
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class[] { ItemsInterpolatorFactory.class };
 	}
 
-	@Override
 	public ItemsInterpolator createItemsInterpolator(GriddableItemDescriptor descriptor, TimeStampedDataItem... baseItems) {
 		if (baseItems.length == 2) {
 			return new LinearLocationInterpolator(descriptor, baseItems);

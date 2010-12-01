@@ -199,7 +199,6 @@ public class GridEditorUI extends Composite
 			}
 		}
 
-		@Override
 		public void propertyChange(PropertyChangeEvent evt)
 		{
 			if (myChartInput == null)

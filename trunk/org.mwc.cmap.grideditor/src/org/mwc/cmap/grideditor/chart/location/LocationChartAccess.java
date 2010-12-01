@@ -21,8 +21,7 @@ import MWC.GenericData.WorldLocation;
 
 public class LocationChartAccess implements IAdapterFactory {
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (false == adaptableObject instanceof GriddableItemDescriptorExtension) {
 			return null;
@@ -37,8 +36,7 @@ public class LocationChartAccess implements IAdapterFactory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@SuppressWarnings("rawtypes")
 	public Class[] getAdapterList() {
 		return new Class[] { ChartDataManager.class };
 	}
@@ -90,7 +88,6 @@ public class LocationChartAccess implements IAdapterFactory {
 		private static GriddableItemChartComponent createLatitudeAccessor(final GriddableItemDescriptor descriptor) {
 			return new GriddableItemChartComponent() {
 
-				@Override
 				public double getDoubleValue(TimeStampedDataItem dataItem) {
 					WorldLocation location = BeanUtil.getItemValue(dataItem, descriptor, WorldLocation.class);
 					return location == null ? 0 : location.getLat();
@@ -101,7 +98,6 @@ public class LocationChartAccess implements IAdapterFactory {
 		private static GriddableItemChartComponent createLongitudeAccessor(final GriddableItemDescriptor descriptor) {
 			return new GriddableItemChartComponent() {
 
-				@Override
 				public double getDoubleValue(TimeStampedDataItem dataItem) {
 					WorldLocation location = BeanUtil.getItemValue(dataItem, descriptor, WorldLocation.class);
 					return location == null ? 0 : location.getLong();

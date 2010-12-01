@@ -32,7 +32,6 @@ class CubicItemsInterpolator extends AbstractItemsInterpolator {
 		return true;
 	}
 
-	@Override
 	public Object getInterpolatedValue(TimeStampedDataItem item) {
 		if (!canInterpolate(item)) {
 			throw new IllegalStateException("I told you I can't interpolate item: " + item);

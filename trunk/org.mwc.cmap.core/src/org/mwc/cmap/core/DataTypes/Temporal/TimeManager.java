@@ -170,7 +170,6 @@ public class TimeManager implements ControllableTime, TimeProvider
 
 
 
-	@Override
 	public String getId()
 	{
 		return _myId;

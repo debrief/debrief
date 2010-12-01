@@ -60,25 +60,21 @@ public class Attribute implements IAttribute
 
 	}
 
-	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		_pSupport.addPropertyChangeListener(listener);
 	}
 
-	@Override
 	public String getName()
 	{
 		return _name;
 	}
 
-	@Override
 	public Vector<DataDoublet> getHistoricValues(Object index)
 	{
 		return _myHelper.getValuesFor(index);
 	}
 
-	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(listener);
@@ -94,13 +90,11 @@ public class Attribute implements IAttribute
 		_myHelper.newData(index, time, newValue);
 	}
 
-	@Override
 	public DataDoublet getCurrent(Object index)
 	{
 		return _myHelper.getCurrent(index);
 	}
 
-	@Override
 	public boolean isSignificant()
 	{
 		return _isSignificant;
@@ -193,7 +187,6 @@ public class Attribute implements IAttribute
 
 	}
 
-	@Override
 	public String getUnits()
 	{
 		return _units;

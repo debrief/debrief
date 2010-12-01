@@ -130,7 +130,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 
 	protected static class XMLParticipantDropHandler extends XMLFileDropHandler
 	{
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public XMLParticipantDropHandler(String[] elementTypes, Class[] targetTypes)
 		{
 			super(elementTypes, targetTypes);

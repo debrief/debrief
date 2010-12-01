@@ -283,7 +283,6 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	}
 
-	@Override
 	public void exportThisPlottable(Plottable plottable, Element parent,
 			Document doc)
 	{

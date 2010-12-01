@@ -64,7 +64,6 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 		throw new ParseException("There should be hemisphere: " + (forLongitudeNotLatitude ? " (W/E)" : " (N/S)") + ": " + text, 0);
 	}
 
-	@Override
 	public String convertToString(WorldLocation theLocation)
 	{
 		Sexagesimal theLat = parseDouble(theLocation.getLat());

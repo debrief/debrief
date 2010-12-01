@@ -45,7 +45,6 @@ public class WorldSpeed2 extends AbstractValueInUnits {
 		setValues(value, units);
 	}
 
-	@Override
 	public WorldSpeed2 makeCopy() {
 		return new WorldSpeed2(this);
 	}

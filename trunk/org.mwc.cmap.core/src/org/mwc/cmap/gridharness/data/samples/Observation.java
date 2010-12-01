@@ -62,7 +62,6 @@ public class Observation implements TimeStampedDataItem {
 		this._range = _range;
 	}
 
-	@Override
 	public void setDTG(HiResDate newTime) {
 		this._myTime = newTime;
 	}

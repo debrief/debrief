@@ -15,7 +15,6 @@ public class BackedXYDataItem extends XYDataItem implements BackedChartItem {
 		myDomainItem = domainItem;
 	}
 
-	@Override
 	public TimeStampedDataItem getDomainItem() {
 		return myDomainItem;
 	}

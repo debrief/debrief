@@ -1311,13 +1311,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		tm.testMyParams();
 	}
 
-	@Override
 	public HiResDate getDTG()
 	{
 		return _theFix.getTime();
 	}
 
-	@Override
 	public void setDTG(final HiResDate date)
 	{
 		_theFix.setTime(date);

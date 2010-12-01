@@ -65,7 +65,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
-			@Override
 			public void selectionChanged(SelectionChangedEvent event)
 			{
 				// right, see what it is

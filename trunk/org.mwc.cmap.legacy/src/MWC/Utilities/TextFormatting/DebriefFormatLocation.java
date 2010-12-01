@@ -91,13 +91,11 @@ public class DebriefFormatLocation implements PlainFormatLocation
 
   }
 
-	@Override
 	public String convertToString(WorldLocation theLocation)
 	{
 		return toString(theLocation);
 	}
 
-	@Override
 	public String getExampleString()
 	{
 		return "Debrief format";

@@ -73,7 +73,6 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		startWatching();
 	}
 
-	@Override
 	public void restart(Object origin, boolean fireUpdate)
 	{
 		if (_myScenario != null)
@@ -82,7 +81,6 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		}
 	}
 
-	@Override
 	public void run(Object origin, boolean fireUpdate)
 	{
 		if (_myScenario != null)
@@ -91,7 +89,6 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		}
 	}
 
-	@Override
 	public void step(Object origin, boolean fireUpdate)
 	{
 		if (_myScenario != null)
@@ -100,7 +97,6 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		}
 	}
 
-	@Override
 	public void stop(Object origin, boolean fireUpdate)
 	{
 		if (_myScenario != null)
@@ -110,7 +106,6 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 	}
 
 
-	@Override
 	public void pause(Object origin, boolean fireUpdate)
 	{
 		if (_myScenario != null)
@@ -219,19 +214,16 @@ public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		// ignore, we don't handle this
 	}
 
-	@Override
 	public void restart(ScenarioType scenario)
 	{
 
 	}
 
-	@Override
 	public void step(ScenarioType scenario, long newTime)
 	{
 		setTime(scenario, new HiResDate(newTime), true);
 	}
 
-	@Override
 	public String getId()
 	{
 		return _myId;

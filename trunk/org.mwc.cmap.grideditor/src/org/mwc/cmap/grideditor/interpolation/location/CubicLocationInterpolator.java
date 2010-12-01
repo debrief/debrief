@@ -31,12 +31,10 @@ public class CubicLocationInterpolator extends AbstractLocationInterpolator {
 		myLongitudeWorker = new CubicSpline(millisecs.clone(), longitudes);
 	}
 
-	@Override
 	public boolean canInterpolate(TimeStampedDataItem item) {
 		return myLatitudeWorker != null && myLongitudeWorker != null;
 	}
 
-	@Override
 	public Object getInterpolatedValue(TimeStampedDataItem item) {
 		double millis = extractMillis(item);
 		double latitude = myLatitudeWorker.interpolate(millis);
