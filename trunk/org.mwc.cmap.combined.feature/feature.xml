@@ -181,6 +181,14 @@ Library.
       <discovery label="Debrief Home Page" url="http://www.debrief.info"/>
    </url>
 
+   <includes
+         id="org.eclipse.rcp"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.platform"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.ui"/>

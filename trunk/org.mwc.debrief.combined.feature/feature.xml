@@ -181,6 +181,14 @@ Library.
       <discovery label="Debrief Home Page" url="http://www.debrief.info"/>
    </url>
 
+   <includes
+         id="org.eclipse.equinox.p2.user.ui"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.jdt"
+         version="0.0.0"/>
+
    <plugin
          id="org.mwc.debrief.core"
          download-size="0"
