@@ -6,7 +6,7 @@
 		
 		<property name="baseLocation" value="${eclipse.home}"/>
 		<!-- by default, check for deltapack co-located with eclipse -->
-		<property name="deltapack" value="${eclipse.home}/deltapack/eclipse"/>
+		<property name="deltapack" value="${eclipse.home}/deltapack"/>
 
 		<!-- Check that we have a deltapack -->
 		<available property="haveDeltaPack" file="${deltapack}"/>
