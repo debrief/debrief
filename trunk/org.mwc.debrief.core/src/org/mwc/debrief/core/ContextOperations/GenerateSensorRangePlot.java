@@ -25,8 +25,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
@@ -46,7 +44,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.JFreeChart.ColouredDataItem;
-import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -231,14 +228,6 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 							endTime = primary.getEndDTG();
 					}
 
-					formattingOperation formatter = new formattingOperation()
-					{
-						public void format(final XYPlot thePlot)
-						{
-							NumberAxis theAxis = (NumberAxis) thePlot.getRangeAxis();
-							theAxis.setInverted(true);
-						}
-					};
 
 					// right, now for the data
 					AbstractSeriesDataset ds = getDataSeries(primary, candidates,
@@ -247,7 +236,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					// ok, try to retrieve the view
 					IViewReference plotRef = page.findViewReference(plotId, theTitle);
 					XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-					plotter.showPlot(theTitle, ds, "Range (m)", formatter, thePlotId);
+					plotter.showPlot(theTitle, ds, "Range (m)", null, thePlotId);
 				}
 				catch (PartInitException e)
 				{
