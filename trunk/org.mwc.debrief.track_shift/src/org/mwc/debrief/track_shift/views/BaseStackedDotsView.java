@@ -336,13 +336,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		plotControl.addMouseMotionListener(new MouseMotionListener()
 		{
 
-			@Override
 			public void mouseDragged(MouseEvent e)
 			{
 				// ignore
 			}
 
-			@Override
 			public void mouseMoved(MouseEvent e)
 			{
 				// Point pt = e.getPoint();
@@ -712,7 +710,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							_myTrackDataListener = new TrackDataListener()
 							{
 
-								@Override
 								public void tracksUpdated(WatchableList primary,
 										WatchableList[] secondaries)
 								{

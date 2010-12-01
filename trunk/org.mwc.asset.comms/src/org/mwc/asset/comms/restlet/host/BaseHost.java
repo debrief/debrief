@@ -54,7 +54,6 @@ abstract public class BaseHost implements ASSETHost
 	 */
 	private HashMap<Integer, HashMap<Integer, ParticipantList>> _participantListeners;
 
-	@Override
 	public void setScenarioStatus(int scenarioId, final String newState)
 	{
 		ScenarioType scen = getScenario(scenarioId);
@@ -71,7 +70,6 @@ abstract public class BaseHost implements ASSETHost
 
 	}
 
-	@Override
 	public void deleteParticipantDetectionListener(int scenarioId,
 			int participantId, int listenerId)
 	{
@@ -90,7 +88,6 @@ abstract public class BaseHost implements ASSETHost
 
 	}
 
-	@Override
 	public int newParticipantDetectionListener(int scenarioId, int participantId,
 			URI listener)
 	{
@@ -111,7 +108,6 @@ abstract public class BaseHost implements ASSETHost
 		return listId;
 	}
 
-	@Override
 	public void deleteParticipantDecisionListener(int scenarioId,
 			int participantId, int listenerId)
 	{
@@ -130,7 +126,6 @@ abstract public class BaseHost implements ASSETHost
 
 	}
 
-	@Override
 	public int newParticipantDecisionListener(int scenarioId, int participantId,
 			URI listener)
 	{
@@ -151,7 +146,6 @@ abstract public class BaseHost implements ASSETHost
 		return listId;
 	}
 
-	@Override
 	public List<Participant> getParticipantsFor(int scenarioId)
 	{
 		Vector<Participant> res = new Vector<Participant>();
@@ -166,7 +160,6 @@ abstract public class BaseHost implements ASSETHost
 		return res;
 	}
 
-	@Override
 	public List<Sensor> getSensorsFor(int scenarioId, int participantId)
 	{
 		ParticipantType thisP = getScenario(scenarioId).getThisParticipant(
@@ -187,14 +180,12 @@ abstract public class BaseHost implements ASSETHost
 	}
 
 
-	@Override
 	public DemandedStatus getDemandedStatus(int scenario, int participant)
 	{
 		return getScenario(scenario).getThisParticipant(participant)
 				.getDemandedStatus();
 	}
 
-	@Override
 	public void setDemandedStatus(int scenario, int participant,
 			DemandedStatus demState)
 	{
@@ -254,7 +245,6 @@ abstract public class BaseHost implements ASSETHost
 
 	}
 
-	@Override
 	public void deleteParticipantListener(int scenarioId, int participantId,
 			int listenerId)
 	{
@@ -273,7 +263,6 @@ abstract public class BaseHost implements ASSETHost
 
 	}
 
-	@Override
 	public int newParticipantListener(int scenarioId, int participantId, URI url)
 	{
 		ParticipantList thisPList = this.getParticipantListFor(scenarioId,
@@ -320,7 +309,6 @@ abstract public class BaseHost implements ASSETHost
 		getSteppedListFor(scenarioId).remove(listenerId);
 	}
 
-	@Override
 	public int newScenarioListener(int scenarioId, URI url)
 	{
 		return getSteppedListFor(scenarioId).add(url);
@@ -336,7 +324,6 @@ abstract public class BaseHost implements ASSETHost
 			BaseListenerList<MovedEvent> implements ParticipantMovedListener
 	{
 
-		@Override
 		public void restart(ScenarioType scenario)
 		{
 			// ignore, we learn about this via the scenaro steppers
@@ -349,7 +336,6 @@ abstract public class BaseHost implements ASSETHost
 			scenR.accept(event._status);
 		}
 
-		@Override
 		public void moved(Status newStatus)
 		{
 			fireEvent(new MovedEvent(newStatus));
@@ -368,13 +354,11 @@ abstract public class BaseHost implements ASSETHost
 			ParticipantsChangedListener
 	{
 
-		@Override
 		public void restart(ScenarioType scenario)
 		{
 			fireEvent(new ScenarioEvent("Restart", "unknown", 0, 0));
 		}
 
-		@Override
 		public void step(ScenarioType scenario, long newTime)
 		{
 			fireEvent(new ScenarioEvent("Step", "unknown", newTime, 0));
@@ -387,14 +371,12 @@ abstract public class BaseHost implements ASSETHost
 			scenR.accept(event);
 		}
 
-		@Override
 		public void newParticipant(int index)
 		{
 			fireEvent(new ScenarioEvent(AssetEvent.JOINED, "Participant:" + index
 					+ " joined", 0, 0));
 		}
 
-		@Override
 		public void participantRemoved(int index)
 		{
 			fireEvent(new ScenarioEvent(AssetEvent.LEFT, "Participant:" + index
@@ -443,7 +425,6 @@ abstract public class BaseHost implements ASSETHost
 			BaseListenerList<DecidedEvent> implements ParticipantDecidedListener
 	{
 
-		@Override
 		public void restart(ScenarioType scenario)
 		{
 			// ignore, we learn about this via the scenaro steppers
@@ -456,7 +437,6 @@ abstract public class BaseHost implements ASSETHost
 			scenR.accept(event);
 		}
 
-		@Override
 		public void newDecision(String description, DemandedStatus demStatus)
 		{
 			fireEvent(new DecidedEvent(demStatus, description));
@@ -481,13 +461,11 @@ abstract public class BaseHost implements ASSETHost
 			scenR.accept(event);
 		}
 
-		@Override
 		public void newDetections(DetectionList detections)
 		{
 			fireEvent(new DetectionResource.DetectionEvent(detections));
 		}
 
-		@Override
 		public void restart(ScenarioType scenario)
 		{
 		}

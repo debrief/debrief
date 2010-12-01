@@ -198,26 +198,22 @@ public class TypedCookieSensor extends CoreSensor
 		dl.add(detection);
 	}
 
-	@Override
 	public WorldDistance getEstimatedRange()
 	{
 		return null;
 	}
 
-	@Override
 	public int getMedium()
 	{
 		return 0;
 	}
 
-	@Override
 	public void update(DemandedStatus myDemandedStatus, Status myStatus,
 			long newTime)
 	{
 		// don't bother, nothing to do here
 	}
 
-	@Override
 	public EditorType getInfo()
 	{
 		if (_myEditor == null)
@@ -225,13 +221,11 @@ public class TypedCookieSensor extends CoreSensor
 		return _myEditor;
 	}
 
-	@Override
 	public boolean hasEditor()
 	{
 		return true;
 	}
 
-	@Override
 	public String getVersion()
 	{
 		return "$Date: 2010-01-19 15:34:14 +0100  $";

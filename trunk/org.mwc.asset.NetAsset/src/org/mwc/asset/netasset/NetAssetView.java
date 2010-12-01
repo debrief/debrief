@@ -371,7 +371,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 	{
 	}
 
-	@Override
 	public void newParticipantDecision(int scenarioId, int participantId,
 			DecidedEvent event)
 	{
@@ -379,7 +378,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	}
 
-	@Override
 	public void newParticipantDetection(int scenarioId, int participantId,
 			DetectionEvent event)
 	{
@@ -387,7 +385,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 
 	}
 
-	@Override
 	public void newParticipantState(int scenarioId, int participantId,
 			final Status newState)
 	{
@@ -414,7 +411,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 			});
 	}
 
-	@Override
 	public void newScenarioEvent(final long time, final String eventName,
 			final String description)
 	{
@@ -426,7 +422,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 				dThread.asyncExec(new Runnable()
 				{
 
-					@Override
 					public void run()
 					{
 						if (eventName.equals("Step"))
@@ -442,7 +437,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		}
 	}
 
-	@Override
 	public void setParticipants(int scenarioId, ParticipantsList pList)
 	{
 		final String[] items = new String[pList.size()];
@@ -458,7 +452,6 @@ public class NetAssetView extends ViewPart implements ASSETGuest
 		Display.getDefault().asyncExec(new Runnable()
 		{
 
-			@Override
 			public void run()
 			{
 				_control.setParticipantList(items);

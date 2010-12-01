@@ -67,33 +67,27 @@ public class ScenarioStatusObserver extends
   	// create a fresh runner for each scenario
   	ScenarioRunningListener runner = new ScenarioRunningListener(){
 
-			@Override
 			public void finished(long elapsedTime, String reason)
 			{
 				getAttributeHelper().newData(scenario, elapsedTime, ISimulation.COMPLETE);
 			}
 
-			@Override
 			public void newScenarioStepTime(int val)
 			{
 			}
 
-			@Override
 			public void newStepTime(int val)
 			{
 			}
 
-			@Override
 			public void paused()
 			{
 			}
 
-			@Override
 			public void restart(ScenarioType scenario)
 			{
 			}
 
-			@Override
 			public void started()
 			{
 				System.out.println("STARTED");
@@ -234,8 +228,7 @@ public class ScenarioStatusObserver extends
     }
   }
 
-  @Override
-	public DataDoublet getCurrent(Object index)
+  public DataDoublet getCurrent(Object index)
 	{
   	// do we know about this object yet?
   	Object val = getAttributeHelper().getCurrent(index);
@@ -249,20 +242,17 @@ public class ScenarioStatusObserver extends
 		return getAttributeHelper().getCurrent(index);
 	}
 
-  @Override
-	public Vector<DataDoublet> getHistoricValues(Object index)
+  public Vector<DataDoublet> getHistoricValues(Object index)
 	{
 		return getAttributeHelper().getValuesFor(index);
 	}
 
-	@Override
 	public boolean isSignificant()
 	{
 		return true;
 	}
 
 
-	@Override
 	public String getUnits()
 	{
 		

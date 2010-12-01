@@ -997,7 +997,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 		static public class MatchDetectionLevel implements InvestigatePattern
 		{
 
-			@Override
 			public boolean invComplete(DetectionEvent validDetection,
 					int detectionLevel)
 			{
@@ -1007,12 +1006,10 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				return res;
 			}
 
-			@Override
 			public void newTarget(int target)
 			{
 			}
 
-			@Override
 			public SimpleDemandedStatus amendDemStatus(SimpleDemandedStatus res,
 					Status status, Status tgtStat)
 			{
@@ -1144,7 +1141,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					return target;
 				}
 
-				@Override
 				public Integer[] getListOfParticipants()
 				{
 					return null;
@@ -1642,7 +1638,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					return res;
 				}
 
-				@Override
 				public Integer[] getListOfParticipants()
 				{
 					return new Integer[]
@@ -1854,7 +1849,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					return res;
 				}
 
-				@Override
 				public Integer[] getListOfParticipants()
 				{
 					return new Integer[]

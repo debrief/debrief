@@ -117,7 +117,6 @@ public class CommsTest extends TestCase
 			super.setScenarioStatus(scenarioId, newState);
 		}
 
-		@Override
 		public ScenarioType getScenario(int scenarioId)
 		{
 			return _myScenario;
@@ -137,7 +136,6 @@ public class CommsTest extends TestCase
 			return null;
 		}
 
-		@Override
 		public Vector<Scenario> getScenarios()
 		{
 			Vector<Scenario> res = new Vector<Scenario>(0, 1);
@@ -171,14 +169,12 @@ public class CommsTest extends TestCase
 		final ASSETGuest _guest = new ASSETGuest()
 		{
 
-			@Override
 			public void newParticipantState(int scenarioId, int participantId,
 					Status newState)
 			{
 				_pState = newState;
 			}
 
-			@Override
 			public void newScenarioEvent(long time, String eventName,
 					String description)
 			{
@@ -186,14 +182,12 @@ public class CommsTest extends TestCase
 				_msg = description;
 			}
 
-			@Override
 			public void newParticipantDecision(int scenarioId, int participantId,
 					DecidedEvent event)
 			{
 				_dEvent = event;
 			}
 
-			@Override
 			public void newParticipantDetection(int scenarioId, int participantId,
 					DetectionEvent event)
 			{
@@ -314,14 +308,12 @@ public class CommsTest extends TestCase
 		final ASSETGuest _guest = new ASSETGuest()
 		{
 
-			@Override
 			public void newParticipantState(int scenarioId, int participantId,
 					Status newState)
 			{
 				_pState = newState;
 			}
 
-			@Override
 			public void newScenarioEvent(long time, String eventName,
 					String description)
 			{
@@ -330,14 +322,12 @@ public class CommsTest extends TestCase
 				_name = eventName;
 			}
 
-			@Override
 			public void newParticipantDecision(int scenarioId, int participantId,
 					DecidedEvent event)
 			{
 				_dEvent = event;
 			}
 
-			@Override
 			public void newParticipantDetection(int scenarioId, int participantId,
 					 DetectionEvent event)
 			{

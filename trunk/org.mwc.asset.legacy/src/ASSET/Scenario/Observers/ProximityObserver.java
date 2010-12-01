@@ -472,13 +472,11 @@ public class ProximityObserver extends CoreObserver implements
 		return _onlyBatch;
 	}
 
-	@Override
 	public DataDoublet getCurrent(Object index)
 	{
 		return getAttributeHelper().getCurrent(index);
 	}
 
-	@Override
 	public Vector<DataDoublet> getHistoricValues(Object index)
 	{
 		return getAttributeHelper().getValuesFor(index);
@@ -582,7 +580,6 @@ public class ProximityObserver extends CoreObserver implements
 			_batcher.setDirectory(outputDirectory);
 	}
 
-	@Override
 	public boolean isSignificant()
 	{
 		return true;
@@ -757,7 +754,6 @@ public class ProximityObserver extends CoreObserver implements
 		}
 	}
 
-	@Override
 	public String getUnits()
 	{
 		return "degs";

@@ -64,13 +64,11 @@ public class MockHost extends BaseHost
 	}
 
 
-	@Override
 	public ScenarioType getScenario(int scenarioId)
 	{
 		return _myScenario;
 	}
 
-	@Override
 	public ScenarioList getScenarios()
 	{
 		ScenarioList res = new ScenarioList();

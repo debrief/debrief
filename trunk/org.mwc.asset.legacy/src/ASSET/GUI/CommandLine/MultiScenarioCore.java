@@ -498,7 +498,6 @@ public class MultiScenarioCore implements ISimulationQue
 		SupportTesting.callTestMethods(tm);
 	}
 
-	@Override
 	public Vector<IAttribute> getAttributes()
 	{
 		if (_myAttributes == null)
@@ -529,7 +528,6 @@ public class MultiScenarioCore implements ISimulationQue
 		return _myAttributes;
 	}
 
-	@Override
 	public Vector<ISimulation> getSimulations()
 	{
 		Vector<ISimulation> res = new Vector<ISimulation>();
@@ -540,7 +538,6 @@ public class MultiScenarioCore implements ISimulationQue
 		return res;
 	}
 
-	@Override
 	public boolean isRunning()
 	{
 		return false;
@@ -552,12 +549,10 @@ public class MultiScenarioCore implements ISimulationQue
 		nowRun(System.out, System.err, System.in, listener);
 	}
 
-	@Override
 	public void stopQue()
 	{
 	}
 
-	@Override
 	public IAttribute getState()
 	{
 		return _stateObserver;

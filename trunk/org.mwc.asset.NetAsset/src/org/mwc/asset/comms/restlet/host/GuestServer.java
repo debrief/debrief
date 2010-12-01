@@ -63,7 +63,6 @@ abstract public class GuestServer extends Application implements GuestProvider
 						String description)
 				{
 				}
-				@Override
 				public void setParticipants(int scenarioId, ParticipantsList pList)
 				{
 					// TODO Auto-generated method stub

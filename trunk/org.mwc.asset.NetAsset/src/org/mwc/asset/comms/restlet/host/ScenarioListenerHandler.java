@@ -13,7 +13,6 @@ public class ScenarioListenerHandler extends ASSETResource implements
 {
 
 
-	@Override
 	public Integer accept(String listenerTxt)
 	{
 		URI listener;
@@ -32,7 +31,6 @@ public class ScenarioListenerHandler extends ASSETResource implements
 		return res;
 	}
 
-	@Override
 	public void remove()
 	{
 		Map<String, Object> attrs = this.getRequestAttributes();

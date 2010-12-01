@@ -696,7 +696,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		}
 	}
 
-	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
@@ -707,7 +706,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			_selectionListeners.add(listener);
 	}
 
-	@Override
 	public ISelection getSelection()
 	{
 		return null;

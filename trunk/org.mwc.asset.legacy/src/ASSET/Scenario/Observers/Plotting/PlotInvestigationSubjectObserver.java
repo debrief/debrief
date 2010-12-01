@@ -320,7 +320,6 @@ public class PlotInvestigationSubjectObserver extends CoreObserver
 	{
 	}
 
-	@Override
 	public EditorType getInfo()
 	{
 		return null;

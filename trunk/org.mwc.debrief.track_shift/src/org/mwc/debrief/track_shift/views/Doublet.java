@@ -116,7 +116,6 @@ public final class Doublet implements Comparable<Doublet>
 		return calcBearing;
 	}
 
-	@Override
 	public int compareTo(Doublet o)
 	{
 		int res = 0;

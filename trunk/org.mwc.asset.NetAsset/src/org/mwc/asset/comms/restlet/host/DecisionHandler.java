@@ -7,7 +7,6 @@ public class DecisionHandler extends ASSETResource implements
 		DecisionResource
 {
 
-	@Override
 	public void accept(DecidedEvent event)
 	{
 		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();

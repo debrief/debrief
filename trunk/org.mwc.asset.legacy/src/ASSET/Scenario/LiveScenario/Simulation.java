@@ -33,19 +33,16 @@ public abstract class Simulation implements ISimulation
 
 	}
 
-	@Override
 	public String getName()
 	{
 		return _name;
 	}
 
-	@Override
 	public void start()
 	{
 		_isRunning = true;
 	}
 
-	@Override
 	public void stop()
 	{
 		_isRunning = false;
@@ -65,7 +62,6 @@ public abstract class Simulation implements ISimulation
 		return _isRunning;
 	}
 
-	@Override
 	public long getTime()
 	{
 		return _currentTime;

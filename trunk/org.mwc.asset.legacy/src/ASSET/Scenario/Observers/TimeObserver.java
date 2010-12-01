@@ -183,26 +183,22 @@ public class TimeObserver extends
     }
   }
 
-  @Override
-	public DataDoublet getCurrent(Object index)
+  public DataDoublet getCurrent(Object index)
 	{
 		return getAttributeHelper().getCurrent(index);
 	}
 
-  @Override
-	public Vector<DataDoublet> getHistoricValues(Object index)
+  public Vector<DataDoublet> getHistoricValues(Object index)
 	{
 		return getAttributeHelper().getValuesFor(index);
 	}
 
-	@Override
 	public boolean isSignificant()
 	{
 		return true;
 	}
 
 
-	@Override
 	public String getUnits()
 	{
 		

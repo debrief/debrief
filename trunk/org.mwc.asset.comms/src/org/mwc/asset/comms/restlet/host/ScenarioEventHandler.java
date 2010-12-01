@@ -6,7 +6,6 @@ import org.mwc.asset.comms.restlet.host.ASSETGuest.GuestProvider;
 public class ScenarioEventHandler extends ASSETResource implements
 		ScenarioEventResource
 {
-	@Override
 	public void accept(ScenarioEvent event)
 	{
 		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();

@@ -57,35 +57,29 @@ public class SimulationQue implements ISimulationQue
 			CoreScenario scen = (CoreScenario) sim;
 			scen.addScenarioRunningListener(new ScenarioRunningListener(){
 
-				@Override
 				public void finished(long elapsedTime, String reason)
 				{
 					_theState.fireUpdate(sim, elapsedTime, ISimulation.COMPLETE);
 				}
 
-				@Override
 				public void newScenarioStepTime(int val)
 				{
 				}
 
-				@Override
 				public void newStepTime(int val)
 				{
 				}
 
-				@Override
 				public void paused()
 				{
 					_theState.fireUpdate(sim, sim.getTime(), ISimulation.TERMINATED);
 
 				}
 
-				@Override
 				public void restart(ScenarioType scenario)
 				{
 				}
 
-				@Override
 				public void started()
 				{
 					_theState.fireUpdate(sim, sim.getTime(), ISimulation.RUNNING);
@@ -207,7 +201,6 @@ public class SimulationQue implements ISimulationQue
 			_thisSim = thisSim;
 		}
 
-		@Override
 		public void propertyChange(PropertyChangeEvent evt)
 		{
 			DataDoublet data = (DataDoublet) evt.getNewValue();
@@ -286,7 +279,6 @@ public class SimulationQue implements ISimulationQue
 		dumpThis(att2, shortQue.elementAt(1));
 	}
 
-	@Override
 	public IAttribute getState()
 	{
 		return _theState;

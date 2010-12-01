@@ -183,21 +183,18 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 								_layerListener = new DataListener()
 								{
 
-									@Override
 									public void dataExtended(Layers theData)
 									{
 										// redo the data
 										recalculateData();
 									}
 
-									@Override
 									public void dataModified(Layers theData, Layer changedLayer)
 									{
 										// redo the data
 										recalculateData();
 									}
 
-									@Override
 									public void dataReformatted(Layers theData, Layer changedLayer)
 									{
 										// redo the presentation
@@ -395,7 +392,6 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				}
 			}
 
-			@Override
 			public void chartMouseMoved(ChartMouseEvent event)
 			{
 			}
@@ -404,7 +400,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
 
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({ "rawtypes" })
 			public void selectionChanged(SelectionChangedEvent event)
 			{
 				// right, see what it is
@@ -600,37 +596,31 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_selectionHelper.addSelectionChangedListener(listener);
 	}
 
-	@Override
 	public ISelection getSelection()
 	{
 		return _selectionHelper.getSelection();
 	}
 
-	@Override
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		_selectionHelper.removeSelectionChangedListener(listener);
 	}
 
-	@Override
 	public void setSelection(ISelection selection)
 	{
 		_selectionHelper.fireNewSelection(selection);
 	}
 
-	@Override
 	public Vector<SensorSeries> getSelectedItems()
 	{
 		return _selectedTracks;
 	}
 
-	@Override
 	public boolean useOriginalColors()
 	{
 		return _useOriginalColors.isChecked();
 	}
 
-	@Override
 	public HashMap<SensorWrapper, SensorSeries> getIndex()
 	{
 		return _trackIndex;

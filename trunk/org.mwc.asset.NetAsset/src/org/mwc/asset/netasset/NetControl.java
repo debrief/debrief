@@ -41,7 +41,6 @@ public class NetControl extends ViewPart
 				Display.getDefault().asyncExec(new Runnable()
 				{
 
-					@Override
 					public void run()
 					{
 						_myView.getList().add(url.toString());
@@ -96,7 +95,6 @@ public class NetControl extends ViewPart
 				new PartMonitor.ICallback()
 				{
 
-					@Override
 					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
@@ -134,7 +132,6 @@ public class NetControl extends ViewPart
 			Display.getDefault().asyncExec(new Runnable()
 			{
 
-				@Override
 				public void run()
 				{
 					_myView.setScenarioName("pending");
@@ -150,7 +147,6 @@ public class NetControl extends ViewPart
 		Display.getDefault().asyncExec(new Runnable()
 		{
 
-			@Override
 			public void run()
 			{
 				_myView.setScenarioName(_myScenario.getName());

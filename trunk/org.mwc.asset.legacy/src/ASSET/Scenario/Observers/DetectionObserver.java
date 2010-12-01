@@ -598,25 +598,21 @@ public class DetectionObserver extends WatchParticipantObserver implements
 
 	}
 
-	@Override
 	public DataDoublet getCurrent(Object index)
 	{
 		return getAttributeHelper().getCurrent(this.getScenario());
 	}
 
-	@Override
 	public Vector<DataDoublet> getHistoricValues(Object index)
 	{
 		return getAttributeHelper().getValuesFor(this.getScenario());
 	}
 
-	@Override
 	public String getUnits()
 	{
 		return "Count";
 	}
 
-	@Override
 	public boolean isSignificant()
 	{
 		return true;

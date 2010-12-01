@@ -7,7 +7,6 @@ public class DetectionHandler extends ASSETResource implements
 		DetectionResource
 {
 
-	@Override
 	public void accept(DetectionEvent event)
 	{
 		ASSETGuest.GuestProvider host = (GuestProvider) getApplication();

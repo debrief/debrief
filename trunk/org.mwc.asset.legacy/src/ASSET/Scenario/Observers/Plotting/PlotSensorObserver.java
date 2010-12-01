@@ -393,7 +393,6 @@ public class PlotSensorObserver extends DetectionObserver implements
 		}
 	}
 
-	@Override
 	public void step(ScenarioType scenario, long newTime)
 	{
 		_tNow = newTime;

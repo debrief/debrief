@@ -1515,7 +1515,6 @@ public class CoreScenario implements ScenarioType, ISimulation
 		_myBackdrop = layer;
 	}
 
-	@Override
 	public void stop()
 	{
 	}
@@ -1530,7 +1529,6 @@ public class CoreScenario implements ScenarioType, ISimulation
 		_displaySettings.put(key, value);
 	}
 	
-	@Override
 	public String getDisplaySettingFor(final String key)
 	{
 		return _displaySettings.get(key);

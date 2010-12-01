@@ -12,7 +12,6 @@ public class ParticipantListenerHandler extends ASSETResource implements
 		ListenerResource
 {
 
-	@Override
 	public Integer accept(String listenerTxt)
 	{
 		URI listener;
@@ -32,7 +31,6 @@ public class ParticipantListenerHandler extends ASSETResource implements
 		return res;
 	}
 
-	@Override
 	public void remove()
 	{
 		Map<String, Object> attrs = this.getRequestAttributes();

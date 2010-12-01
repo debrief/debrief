@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.13" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.14" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -31,7 +31,7 @@
    <intro introId="org.mwc.debrief.core.intro"/>
 
    <vm>
-      <windows>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
    </vm>
 
    <plugins>
@@ -94,15 +94,15 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.rcp" version="3.5.2.R35x_v20100119-9SA0FxwFnoCU5XxWItFdXXb27BA6"/>
-      <feature id="org.eclipse.platform" version="3.5.2.R35x_v20100210-0800-9hEiFzmFst-TiEn9hNYgDWg1XN8ulH_JvCNGB"/>
-      <feature id="org.eclipse.wst.xml_core.feature" version="3.1.1.v200907161031-7C7OFPiF7RZHKFHgU1LkY6"/>
-      <feature id="org.eclipse.wst.xml_ui.feature" version="3.1.1.v200907161031-7H6FMbDxtkMs9OeLGF98LRhdPKeo"/>
-      <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.1.1.v200906020459-50FR7AkF77f7MESDKEF"/>
-      <feature id="org.mwc.asset.core.feature" version="1.0.20"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.22"/>
       <feature id="org.mwc.asset.help.feature" version="1.0.1"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.96"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.104"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.112"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.128"/>
+      <feature id="org.eclipse.wst.xml_core.feature" version="3.2.2.v201008170029-7C7OFXYF7RZHQHI5PyJwPT"/>
+      <feature id="org.eclipse.wst.xml_ui.feature" version="3.2.2.v201008170029-7H7AFUQDxumQGOpBqffOY2f1qxDZ"/>
+      <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.2.100.v201005241420-50FXNAkF7B77RBgFFBF"/>
+      <feature id="org.eclipse.rcp" version="3.6.1.r361_v20100827-9OArFLdFjY-ThSQXmKvKz0_T"/>
+      <feature id="org.eclipse.platform" version="3.6.1.r361_v20100909-9gF78GrkFqw7GrsZnvz0JWNTeb6fue6896L"/>
    </features>
 
 
