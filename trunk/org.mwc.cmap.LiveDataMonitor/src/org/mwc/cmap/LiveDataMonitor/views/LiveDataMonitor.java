@@ -105,8 +105,6 @@ public class LiveDataMonitor extends ViewPart
 								// add to series in different thread...
 								Display.getDefault().asyncExec(new Runnable()
 								{
-
-									@Override
 									public void run()
 									{
 										_chart.getXYPlot().setDataset(dataset);
@@ -125,7 +123,6 @@ public class LiveDataMonitor extends ViewPart
 							// UI
 							Display.getDefault().syncExec(new Runnable()
 							{
-								@Override
 								public void run()
 								{
 									// are we still open?i
