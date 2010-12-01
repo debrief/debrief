@@ -453,7 +453,7 @@ public class EditableWrapper implements IPropertySource
 		return (_editable instanceof Layer);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	final protected static Class getPropertyClass(PropertyDescriptor thisProp)
 	{
 
