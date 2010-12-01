@@ -1,31 +1,37 @@
 <project default="main">
-	<property file="build361.properties"/>
-	<target name="main">
+	<property file="build361.properties" />
 
-	<!--	<property name="eclipse.home" value="${user.home}/Applications/eclipse-rcp-helios-SR1-macosx-cocoa-x86_64" />  -->
-		
-		<property name="baseLocation" value="${eclipse.home}"/>
+	<target name="clean">
+		<!-- note, the build fails if there's compiled code in the build directory -->
+		<delete dir="${basedir}/buildDirectory" />
+	</target>
+
+	<target name="main" depends="clean">
+
+		<!--	<property name="eclipse.home" value="${user.home}/Applications/eclipse-rcp-helios-SR1-macosx-cocoa-x86_64" />  -->
+
+		<property name="baseLocation" value="${eclipse.home}" />
 		<!-- by default, check for deltapack co-located with eclipse -->
-		<property name="deltapack" value="${eclipse.home}/deltapack"/>
+		<property name="deltapack" value="${eclipse.home}/deltapack" />
 
 		<!-- Check that we have a deltapack -->
-		<available property="haveDeltaPack" file="${deltapack}"/>
+		<available property="haveDeltaPack" file="${deltapack}" />
 		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property from|${deltapack}|${eclipse.pdebuild.home}." />
-			
+
 		<property name="builder" value="../deploy/scrap" />
-		<property name="buildDirectory" value="${basedir}/buildDirectory"/>
+		<property name="buildDirectory" value="${basedir}/buildDirectory" />
 		<property name="pluginPath" value="${basedir}/..${path.separator}${deltapack}" />
-		<property name="buildTempFolder" value="${buildDirectory}" />
-			
+		<property name="buildTempFolder" value="${buildDirectory}/out" />
+
 		<ant antfile="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
 
+		<echo message="about to move the zips..."></echo>
 		<move todir="${basedir}">
-			<fileset dir="${buildDirectory}/${buildLabel}" includes="*.zip"/>
+			<fileset dir="${buildDirectory}/${buildLabel}" includes="*.zip" />
 		</move>
 
 		<!-- refresh the workspace -->
-		<eclipse.convertPath fileSystemPath="${basedir}" property="resourcePath"/>
-		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
+		<eclipse.convertPath fileSystemPath="${basedir}" property="resourcePath" />
+		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite" />
 	</target>
 </project>
-		
