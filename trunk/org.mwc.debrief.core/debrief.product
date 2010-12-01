@@ -34,9 +34,9 @@
    </launcher>
 
    <vm>
-      <linux>java-6-sun-1.6.0.03</linux>
-      <macos>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5</macos>
-      <windows>jre1.6.0_06</windows>
+      <linux include="true">java-6-sun-1.6.0.03</linux>
+      <macos include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5</macos>
+      <windows include="true">jre1.6.0_06</windows>
    </vm>
 
    <license>
@@ -213,10 +213,11 @@ Library.
    </plugins>
 
    <features>
-      <feature id="org.eclipse.rcp" version="3.5.2.R35x_v20100119-9SA0FxwFnoCU5XxWItFdXXb27BA6"/>
-      <feature id="org.eclipse.platform" version="3.5.2.R35x_v20100210-0800-9hEiFzmFst-TiEn9hNYgDWg1XN8ulH_JvCNGB"/>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.111"/>
       <feature id="org.mwc.debrief.combined.feature" version="1.0.127"/>
+      <feature id="org.eclipse.rcp" version="3.6.1.r361_v20100827-9OArFLdFjY-ThSQXmKvKz0_T"/>
+      <feature id="org.eclipse.platform" version="3.6.1.r361_v20100909-9gF78GrkFqw7GrsZnvz0JWNTeb6fue6896L"/>
+      <feature id="org.eclipse.jdt" version="3.6.1.r361_v20100714-0800-7z8XFUSFLFlmgLc5z-Bvrt8-HVkH"/>
    </features>
 
 
