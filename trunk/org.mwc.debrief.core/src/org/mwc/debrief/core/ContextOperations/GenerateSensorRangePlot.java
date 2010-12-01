@@ -140,7 +140,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	protected Action getAction(final Vector<SensorWrapper> candidates,
 			final TrackWrapper primary)
 	{
-		return new Action("View Sensor Range plot")
+		return new Action("View sensor range plot")
 		{
 			public void run()
 			{
