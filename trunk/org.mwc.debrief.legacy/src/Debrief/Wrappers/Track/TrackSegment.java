@@ -253,14 +253,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
 
-			if (_myParent != null)
-			{
-				if (newLocation == null)
-					_myParent.logError(ToolParent.ERROR,
-							" created null location at time " + tNow + "(" + new Date(tNow)
-									+ ")", null);
-			}
-
 			WorldVector offset = newLocation.subtract(origin.getLocation());
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
 			// start off with the course
@@ -1007,7 +999,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	@Override
 	public Editable getSampleGriddable()
 	{
 		HiResDate theTime = new HiResDate(10000000);
@@ -1019,7 +1010,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return res;
 	}
 
-	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
 	{
 		if (false == item instanceof FixWrapper)
@@ -1041,7 +1031,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return result;
 	}
 
-	@Override
 	public Layer wrapMe()
 	{
 		// right, put the segment into a TrackWrapper
