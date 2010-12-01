@@ -130,7 +130,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
- * Swing implementation of a canvas.
+ * SWT implementation of a canvas.
  */
 public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		ExtendedCanvasType
