@@ -41,7 +41,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		_myHelper = findHelperFor(prop, subject);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
 	{
 		EditorHelper res = null;

@@ -28,7 +28,7 @@ public class ArrayLengthHelper extends EditorHelper
 		return res; 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public boolean editsThis(Class target)
 	{
 		return (target == ArrayLength.class);

@@ -153,7 +153,6 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 	{
 	}
 
-	@SuppressWarnings("unchecked")
 	public void dragOver(DropTargetEvent event)
 	{
 		boolean allowDrop = false;
@@ -215,7 +214,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 					StructuredSelection sel = getSelection();
 
 					// cycle through the elements
-					for (Iterator iter = sel.iterator(); iter.hasNext();)
+					for (@SuppressWarnings("rawtypes")
+					Iterator iter = sel.iterator(); iter.hasNext();)
 					{
 						EditableWrapper thisP = (EditableWrapper) iter.next();
 						Editable dragee = thisP.getEditable();
@@ -268,7 +268,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		/**
 		 * the types of object we can drop onto
 		 */
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "rawtypes" })
 		private final Class[] targets;
 
 		/**
@@ -279,7 +279,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		 * @param targetTypes
 		 *          the types of thing we drop onto
 		 */
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public XMLFileDropHandler(String[] elementTypes, Class[] targetTypes)
 		{
 			_elements = elementTypes;
@@ -301,7 +301,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 			return res;
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public boolean canBeDroppedOn(Editable targetElement)
 		{
 			boolean res = false;
@@ -329,7 +329,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 				Layers parent);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void drop(DropTargetEvent event)
 	{
 		// hmm, what type of data are we receiving, is it a file?

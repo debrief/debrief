@@ -15,7 +15,7 @@ public class DoubleHelper extends EditorHelper
 		super(Double.class);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public boolean editsThis(Class target)
 	{
 		return ((target == Double.class) || (target == double.class));

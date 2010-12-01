@@ -462,7 +462,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;

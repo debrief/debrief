@@ -23,7 +23,7 @@ public class BooleanHelper extends EditorHelper
 		return res; 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public boolean editsThis(Class target)
 	{
 		return ((target == Boolean.class) || (target == boolean.class));
