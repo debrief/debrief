@@ -955,6 +955,10 @@ public class XYPlotView extends ViewPart
 	 */
 	public void saveState(IMemento memento)
 	{
+		// check we have some data
+		if(_thePlotArea == null)
+			return;
+		
 		// let our parent go for it first
 		super.saveState(memento);
 
