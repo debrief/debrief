@@ -59,6 +59,7 @@
   <import plugin="org.mwc.cmap.plotViewer"/>
 		<import plugin="org.mwc.cmap.legacy" />
 		<import plugin="org.mwc.debrief.legacy" />
+  <import plugin="org.mwc.cmap.xyplot"/>
 		<import plugin="org.eclipse.core.runtime" />
 		<import plugin="org.eclipse.core.resources" />
 		<import plugin="org.eclipse.ui" />
@@ -68,7 +69,6 @@
 		<import plugin="org.eclipse.platform" />
 		<import plugin="org.eclipse.core.filesystem" />
 		<import plugin="org.eclipse.ui.intro.universal" />
-  <import plugin="org.mwc.cmap.xyplot" version="1.0.28"/>
 
 	</requires>
 	<extension-point id="DebriefPlotLoader" name="Plot Loader"
