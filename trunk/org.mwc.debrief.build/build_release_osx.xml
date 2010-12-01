@@ -18,8 +18,8 @@
 		<delete dir="${buildDirectory}" />
 		<delete dir="${buildDirectory}/../DebriefNG" />
 		<delete dir="${buildDirectory}/../Repository" />
-			<delete file="${buildDirectory}/../DebriefNG.Zip" />
-			<delete file="${buildDirectory}/../Repository.Zip" />
+		<delete file="${buildDirectory}/../DebriefNG.Zip" />
+		<delete file="${buildDirectory}/../Repository.Zip" />
 	</target>
 
 	<target name="init">
@@ -80,6 +80,7 @@
 
 
 	<!--This target defines the run-order of the targets-->
-	<target name="build" depends="clean, init, pde-build, copy-jre, move_dist, zip_dist" />
+	<target name="build" depends="clean, init, pde-build" />
+	<!--, copy-jre, move_dist, zip_dist" /> -->
 
 </project>
