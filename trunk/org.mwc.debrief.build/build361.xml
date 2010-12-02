@@ -8,6 +8,7 @@
 	<property name="deployDest" value="../deploy" />
 	<property name="debriefDest" value="${deployDest}/${archivePrefix}" />
 	<property name="repoDest" value="${deployDest}/Repository" />
+	<property name="osxExe" value="${deployDest}/DebriefNG/DebriefNG.app/Contents/MacOS/DebriefNG" />
 
 	<target name="clean">
 		<!-- note, the build fails if there's compiled code in the build directory -->
@@ -47,11 +48,23 @@
 			<fileset dir="${buildDirectory}/buildRepo" />
 		</copy>
 
+		<!-- if we're on osx, sort out the file permissions -->
+		<antcall target="sortOutExePermissions"></antcall>
+		
 		<!-- refresh the workspace -->
 		<eclipse.convertPath fileSystemPath="${basedir}" property="resourcePath" />
 		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite" />
 
 		<eclipse.convertPath fileSystemPath="${deployDest}" property="deployPath" />
 		<eclipse.refreshLocal resource="${deployPath}" depth="infinite" />
+	</target>
+	
+	<target name="isOSX">
+	    <available file="" property="osx.Present"/>
+	</target>
+	
+	<target name="sortOutExePermissions" depends="isOSX" if="osx.Present">
+		<echo message="this is osx - setting exe permission" ></echo>
+		<chmod file="${osxExe}" perm="ugo+x"/>
 	</target>
 </project>
