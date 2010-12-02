@@ -16,7 +16,7 @@
 
 	<!-- help the ftp task get going-->
 	<property environment="env" />
-	<property name="ftpPassword" value="${env.DebFtpPassword}" /> 
+	<property name="ftpPassword" value="${env.DebFtpPassword}" />
 	<property name="ftpUsername" value="${env.DebFtpUsername}" />
 
 
@@ -82,6 +82,29 @@
 
 	</target>
 
+
+	<target name="docbook_to_internet" depends="docbook_to_eclipse">
+
+		<echo message="About to upload to internet" />
+
+		<fail unless="ftpPassword">Sorry, the ftp isn't set in your environmental variables</fail>
+
+		<!-- take a copy of the index page, we're going to rename it -->
+		<copy file="html/legacy/index.html" tofile="html/legacy/home.html" />
+
+
+		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
+		     folder in the help project.  Tell Ant all about it using Ant/Runtime
+		     preferences page -->
+		<ftp password="${ftpPassword}" depends="true" server="debrief.info" userid="${ftpUsername}" remotedir="/tutorial">
+			<fileset dir="html/legacy" />
+		</ftp>
+
+		<ftp description="overwrite the default index page, so it redirects to the site's home page" password="${ftpPassword}" server="debrief.info" userid="${ftpUsername}" remotedir="/tutorial">
+			<fileset file="lib/index.html" />
+		</ftp>
+
+	</target>
 
 	<target name="docbook_to_pdf" description="Generate html from docbook">
 
@@ -229,17 +252,4 @@
 		</java>
 	</target>
 
-	<target name="upload help to internet">
-
-		<echo message="About to upload to internet" />
-
-		<fail unless="ftpPassword">Sorry, the ftp isn't set in your environmental variables</fail>
-		
-		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
-		     folder in the help project.  Tell Ant all about it using Ant/Runtime
-		     preferences page -->
-		<ftp password="${ftpPassword}"  server="debrief.info" userid="${ftpUsername}" remotedir="/tutorial">
-			<fileset dir="html/legacy" /> 
-		</ftp>
-	</target>
 </project>
