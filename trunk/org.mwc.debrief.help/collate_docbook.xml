@@ -14,10 +14,6 @@
 	<property name="helpDest" value="${helpDir}/html/legacy" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
-	<!-- help the ftp task get going-->
-	<property environment="env" />
-	<property name="ftpPassword" value="${env.DebFtpPassword}" />
-	<property name="ftpUsername" value="${env.DebFtpUsername}" />
 
 
 
@@ -84,6 +80,11 @@
 
 
 	<target name="docbook_to_internet" depends="docbook_to_eclipse">
+
+		<!-- help the ftp task get going-->
+		<property environment="env" />
+		<property name="ftpPassword" value="${env.DebFtpPassword}" />
+		<property name="ftpUsername" value="${env.DebFtpUsername}" />
 
 		<echo message="About to upload to internet" />
 
