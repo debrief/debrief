@@ -60,7 +60,7 @@
 	</target>
 	
 	<target name="isOSX">
-	    <available file="" property="osx.Present"/>
+	    <available file="${osxExe}" property="osx.Present"/>
 	</target>
 	
 	<target name="sortOutExePermissions" depends="isOSX" if="osx.Present">
