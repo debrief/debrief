@@ -17,7 +17,7 @@
                 </orgdiv>
             </affiliation></author>
         <edition>Documentation for Debrief NG</edition>
-        <pubdate>August 2009</pubdate>
+        <pubdate>Winter 2010</pubdate>
         <abstract id="contact_details"><title>Contact details</title><para> Should you wish to learn
                 more about <application>Debrief</application> please contact one of the following:
                     </para><formalpara><title>Debrief Project
@@ -43,6 +43,11 @@
             <postcode>  PO16 8YE</postcode>
             <country>e-mail: ian@planetmayo.com</country>
           </address></para></formalpara></abstract><revhistory><revision>
+                <revnumber>2.3</revnumber>
+                <date>1st December 2010</date>
+                <authorinitials>IM</authorinitials>
+                <revremark>Add guidance for right-click integration, worm in the hole</revremark>
+            </revision><revision>
                 <revnumber>2.2</revnumber>
                 <date>1st July 2009</date>
                 <authorinitials>IM</authorinitials>
@@ -4383,11 +4388,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <sect2 id="TUA_WIZARD">
                     <title>Loading small amounts of TUA data</title>
                     <para>An alternate route to loading TUA data is to use the 'Generate TUA
-                        Ellipse' wizard.  Right-click on a Track or the <guilabel
+                        Ellipse' wizard. Right-click on a Track or the <guilabel
                             >Solutions</guilabel> layer inside a track, and select the respective
-                        menu item.  The time for the ellipse is taken from the Time Controller,
-                        though you may type in any time.  Follow the steps, and when the wizard
-                        closes you will have created your TUA ellipse.  Clearly, if you have lots of
+                        menu item. The time for the ellipse is taken from the Time Controller,
+                        though you may type in any time. Follow the steps, and when the wizard
+                        closes you will have created your TUA ellipse. Clearly, if you have lots of
                         TUAs to load, you're better off by loading the data into Debrief via a
                         data-files as described above.</para>
                 </sect2>
@@ -4911,7 +4916,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                                             <para>Java Virtual Machine</para>
                                         </entry>
                                         <entry>
-                                            <para>JVM 1.4 </para>
+                                            <para>JVM 1.5 </para>
                                         </entry>
                                         <entry>
                                             <para>As new as possible. JVM 1.5 includes significant
@@ -4962,6 +4967,32 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </tgroup>
                         </table>
                     </para>
+                </sect2>
+                <sect2 id="RightClickIntegration">
+                    <title>Implementing 'open with' support for DebriefNG</title>
+                    <para>Since Winter 2010, DebriefNG can be opened by <indexterm
+                                ><primary>Right-clicking</primary></indexterm> on a Debrief data
+                        file (.<xref linkend="replay_file_format">rep</xref> or .<xref
+                            linkend="debrief_file_format">xml</xref>). But, first DebriefNG must be
+                        associated with files of that file-type, via Windows Explorer. Do this as
+                                follows<footnote><para>Note, across the range of versions of MS
+                                Windows a variety of user interface phrases exist. The steps in this
+                                process contain the text that will loosely match that which you'll
+                                see</para></footnote>:<orderedlist><listitem><para>Open Windows
+                                    Explorer</para></listitem><listitem><para>Navigate to a Debrief
+                                        <filename>REP</filename>
+                                    file</para></listitem><listitem><para>Right-click on the file
+                                    and select 'Open With'</para></listitem><listitem><para>Now
+                                    browse to the DebriefNG.exe executable, typically contained in
+                                    the <filename>c:\DebriefNG</filename>. You may also wish to
+                                    select '<guilabel>Always use this
+                                    application</guilabel>'.</para></listitem><listitem><para>Now
+                                    repeat this process for a Debrief <filename>XML</filename> file
+                                    , though there's a chance you don't wish to select '<guilabel
+                                        >Always use this application</guilabel>' - xml files are
+                                    used by a range of applications and you may end up in trouble if
+                                    you're trying to open data files for other applications with
+                                    Debrief.</para></listitem></orderedlist></para>
                 </sect2>
                 <sect2 id="more_directory_structure">
                     <title>Directory Structure</title>

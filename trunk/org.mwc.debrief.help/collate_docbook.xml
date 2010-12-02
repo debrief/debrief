@@ -4,12 +4,8 @@
 	<!-- and the cvs-logging related ones -->
 	<property name="rootDir" value="../" />
 	<property name="contribDir" value="${rootDir}/contribs" />
-	<property name="sourceDir"
-	          value="../"
-	          description="top level directory within which all our sources are stored" />
-	<property name="deployDir"
-	          value="${rootDir}/deploy"
-	          description="where we start building the output set" />
+	<property name="sourceDir" value="../" description="top level directory within which all our sources are stored" />
+	<property name="deployDir" value="${rootDir}/deploy" description="where we start building the output set" />
 	<property name="buildSVNLogDir" value="${deployDir}/svn" />
 
 	<!-- and the docbook/help related bits -->
@@ -17,6 +13,12 @@
 	<property name="helpDir" value="./" />
 	<property name="helpDest" value="${helpDir}/html/legacy" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
+
+	<!-- help the ftp task get going-->
+	<property environment="env" />
+	<property name="ftpPassword" value="${env.DebFtpPassword}" /> 
+	<property name="ftpUsername" value="${env.DebFtpUsername}" />
+
 
 
 	<target name="clear_output" description="ditch the existing output files">
@@ -37,11 +39,7 @@
 
 		<!-- generate the HTML  -->
 		<echo message="Generating HTML" />
-		<java classpath="${contribDir}/saxon6_5_2/saxon.jar"
-		      fork="yes"
-		      dir="${helpDest}"
-		      classname="com.icl.saxon.StyleSheet"
-		      maxmemory="128m">
+		<java classpath="${contribDir}/saxon6_5_2/saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
 			<arg value="../../../org.mwc.debrief.help/docbook/ng_help.xml" />
 			<arg value="../../../org.mwc.debrief.help/docbook/eclipse_html_style.xsl" />
 		</java>
@@ -51,9 +49,9 @@
 		<echo message="Copying HTML" />
 		<copy todir="${helpDest}/" preservelastmodified="yes">
 			<fileset dir="${helpDest}/html/legacy" />
-		</copy> 
+		</copy>
 		<!-- and delete the duff directory (to stop us getting confused... -->
-		<delete dir="${helpDest}/html/legacy" /> 
+		<delete dir="${helpDest}/html/legacy" />
 
 
 		<!-- also copy the images to the target directory -->
@@ -72,56 +70,42 @@
 
 		<!-- make sure the help file gets moved across -->
 		<echo message="Copying stylesheet" />
-		<copy file="${helpDir}/docbook/Header.css"
-		      verbose="true"
-		      failonerror="true"
-		      todir="${helpDest}"
-		      preservelastmodified="yes" />
+		<copy file="${helpDir}/docbook/Header.css" verbose="true" failonerror="true" todir="${helpDest}" preservelastmodified="yes" />
 
 		<!-- try to insert our additional section content -->
 		<echo message="Inserting history" />
 		<antcall target="insert_history_link" />
 
 		<!-- lastly, do the pdf stage-->
-		<antcall target="docbook_to_pdf"></antcall> 
-		
+		<antcall target="docbook_to_pdf">
+		</antcall>
+
 	</target>
 
 
-	<target name="docbook_to_pdf"  description="Generate html from docbook">
+	<target name="docbook_to_pdf" description="Generate html from docbook">
 
-		<property name="fopVersion"
-		          value="fop-0.95"
-		          description="the current version of FOP" />
-		<property name="fopDir"
-		          value="${rootDir}/contribs/${fopVersion}"
-		          description="where the fop libraries are located" />
-		<property name="docName"
-		          value="DebriefNG.pdf"
-		          description="The Debrief document file" />
-		<property name="xml.dir"
-		          value="docbook"
-		          description="where our docbook sources are" />
-		
-		<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs"/>
-		<echo message="Ditching old pdf"/>
-		<delete file="${pdfDestination}/${docName}"/>
+		<property name="fopVersion" value="fop-0.95" description="the current version of FOP" />
+		<property name="fopDir" value="${rootDir}/contribs/${fopVersion}" description="where the fop libraries are located" />
+		<property name="docName" value="DebriefNG.pdf" description="The Debrief document file" />
+		<property name="xml.dir" value="docbook" description="where our docbook sources are" />
 
-		<echo message="ditching old fo document"/>
+		<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs" />
+		<echo message="Ditching old pdf" />
+		<delete file="${pdfDestination}/${docName}" />
+
+		<echo message="ditching old fo document" />
 		<delete file="${rootDir}/org.mwc.debrief.help/docbook/out.fo" />
 
 		<!-- produce the FO file, ready for PDF -->
 		<echo message="going from xml to FO" />
-		<property name="docbook.home"    value="${rootDir}/contribs/docbook-xsl-1.72.0"/>
-		<property name="saxon.dir"       value="${rootDir}/contribs/saxon6_5_2"/>
-		<property name="xml.dir"         value="${helpDir}docbook"/>
-		<property name="fo.dir"          value="fo"/>
-		<xslt style="${xml.dir}/fo_style.xsl"
-		      classpath="${saxon.dir}/saxon.jar"
-		      in="${xml.dir}/ng_help.xml"
-		      out="${xml.dir}/out.fo" />
+		<property name="docbook.home" value="${rootDir}/contribs/docbook-xsl-1.72.0" />
+		<property name="saxon.dir" value="${rootDir}/contribs/saxon6_5_2" />
+		<property name="xml.dir" value="${helpDir}docbook" />
+		<property name="fo.dir" value="fo" />
+		<xslt style="${xml.dir}/fo_style.xsl" classpath="${saxon.dir}/saxon.jar" in="${xml.dir}/ng_help.xml" out="${xml.dir}/out.fo" />
 
-		<echo message="output to fo complete, now going to pdf" />		
+		<echo message="output to fo complete, now going to pdf" />
 
 		<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
 			<classpath>
@@ -134,17 +118,14 @@
 			</classpath>
 		</taskdef>
 
-		<fop format="application/pdf"
-		     basedir="docbook"
-		     fofile="docbook/out.fo"
-		     outfile="docbook/DebriefNG.pdf" />
-		
+		<fop format="application/pdf" basedir="docbook" fofile="docbook/out.fo" outfile="docbook/DebriefNG.pdf" />
+
 		<!-- ditch the fo file, we don't want it in version tracking -->
 		<delete file="docbook/out.fo" failonerror="true" />
 
 		<!-- ok, move the output file to the target directory -->
 		<move file="docbook/DebriefNG.pdf" todir="${pdfDestination}" failonerror="true" />
- 	</target>
+	</target>
 
 	<!-- now, how do we tie the two together? -->
 	<target name="insert_history_link">
@@ -189,15 +170,10 @@
 			<format property="statsvn.start" pattern="yyyy-MM-dd" />
 		</tstamp>
 		<tstamp>
-			<format property="statsvn.stop"
-			        pattern="yyyy-MM-dd"
-			        offset="-60"
-			        unit="day" />
+			<format property="statsvn.stop" pattern="yyyy-MM-dd" offset="-60" unit="day" />
 		</tstamp>
 
-		<exec executable="svn"
-		      dir="${sourceDir}"
-		      output="../deploy/cvs/statcvs.xml">
+		<exec executable="svn" dir="${sourceDir}" output="../deploy/cvs/statcvs.xml">
 			<arg line="log" />
 			<arg line="-v" />
 			<arg line="--xml" />
@@ -208,15 +184,12 @@
 
 	<target name="_log2_format" description="use the stylesheet tidier">
 		<antcall target="_svn_stat_formatter">
-			<param name="svn_stat_outputDir"
-			       value="${buildSVNLogDir}/statcvs/short" />
-			<param name="svn_stat_stylesheet"
-			       value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
-			<param name="svn_stat_outputTitle"
-			       value="Abbreviated change statistics" />
+			<param name="svn_stat_outputDir" value="${buildSVNLogDir}/statcvs/short" />
+			<param name="svn_stat_stylesheet" value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
+			<param name="svn_stat_outputTitle" value="Abbreviated change statistics" />
 		</antcall>
 
-<!--		<antcall target="_svn_stat_formatter">
+		<!--		<antcall target="_svn_stat_formatter">
 			<param name="svn_stat_outputDir"
 			       value="${buildSVNLogDir}/statcvs/long" />
 			<param name="svn_stat_stylesheet"
@@ -226,8 +199,7 @@
 		</antcall> -->
 	</target>
 
-	<target name="_log3_copy"
-	        description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
+	<target name="_log3_copy" description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
 		<copy todir="..\org.mwc.debrief.help\html\history">
 			<fileset dir="${buildSVNLogDir}" />
 		</copy>
@@ -238,7 +210,7 @@
 		<antcall target="_log2_format" />
 		<antcall target="_log3_copy" />
 	</target>
-	
+
 	<target name="_svn_stat_formatter" description="use the stylesheet tidier">
 		<!-- ok, delete the output directory -->
 		<delete dir="${svn_stat_outputDir}" />
@@ -247,9 +219,7 @@
 		<mkdir dir="${svn_stat_outputDir}" />
 
 		<!-- and produce the output -->
-		<java dir="${sourceDir}"
-		      jar="${contribDir}/statsvn-0.3.1/statsvn.jar"
-		      fork="true">
+		<java dir="${sourceDir}" jar="${contribDir}/statsvn-0.3.1/statsvn.jar" fork="true">
 			<env key="LANG" value="en_US" />
 			<jvmarg line="-mx256m" />
 			<arg line="	-output-dir ${svn_stat_outputDir}
@@ -257,5 +227,19 @@
 					deploy/cvs/statcvs.xml 
 				    ${rootDir}" />
 		</java>
+	</target>
+
+	<target name="upload help to internet">
+
+		<echo message="About to upload to internet" />
+
+		<fail unless="ftpPassword">Sorry, the ftp isn't set in your environmental variables</fail>
+		
+		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
+		     folder in the help project.  Tell Ant all about it using Ant/Runtime
+		     preferences page -->
+		<ftp password="${ftpPassword}"  server="debrief.info" userid="${ftpUsername}" remotedir="/tutorial">
+			<fileset dir="html/legacy" /> 
+		</ftp>
 	</target>
 </project>
