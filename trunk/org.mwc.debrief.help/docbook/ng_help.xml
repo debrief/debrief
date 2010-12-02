@@ -4108,7 +4108,7 @@ and so on....</programlisting></para>
         <chapter id="sensor_data">
             <title>Analysing sensor data</title>
             <sect1 id="more_sensor_data">
-                <title id="SensorDataSection">Sensor data</title>
+                <title id="SensorDataSection">Getting your data in</title>
                 <sect2 id="sensor_Data_intro">
                     <title>Introduction</title>
                     <para>As useful as it would appear it is only in the update to <application
@@ -4223,8 +4223,11 @@ Platform C,-551</screen></para>
                                     calculates the position of its far end relative to this
                                     origin</para></listitem></itemizedlist></para>
                 </sect2>
-                <sect2 id="analyse_sensor_data">
-                    <title>Analysing sensor data</title>
+            </sect1>
+            <sect1 id="analyse_sensor_data">
+                <title>Analysing your data</title>
+                <sect2 id="analyse_sensor_data_intro">
+                    <title>Introduction</title>
                     <para>When first loaded, <glossterm linkend="g_sensor">sensor</glossterm> data
                         is not <indexterm><primary>Sensor
                                 Data</primary><secondary>Analysing</secondary></indexterm> made
@@ -4334,6 +4337,21 @@ Platform C,-551</screen></para>
                         multi-select). Once selected, right-click on one of the items and select
                             <guimenuitem>Keep port bearing</guimenuitem> or <guimenuitem>Keep
                             starboard bearing</guimenuitem>.</para>
+                </sect2>
+                <sect2>
+                    <title>Multi tonal frequency analysis</title>
+                    <para>There exists the situation in frequency analysis where multiple tonals are
+                        held, but the analyst would rather use the highest freq tonals. Here's a
+                        strategy for how to manage it,</para>
+                    <para>First, load the bearing sensor data. Edit the sensor cuts (probably in the
+                            <link linkend="GridEditor">grid editor</link>) to include the highest
+                        freq data held, potentially colouring the blocks of cuts according to the
+                        base tonal that they relate to. Go through these blocks of cuts creating a
+                        solution for each block - then setting the base frequency for that solution
+                        to the respective value.</para>
+                    <para>You can now switch individual solution blocks on and off, ensuring the
+                            <link linkend="track_shifting">stacked dots</link> will be working with
+                        the correct data values.</para>
                 </sect2>
             </sect1>
         </chapter>
@@ -4972,8 +4990,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <title>Implementing 'open with' support for DebriefNG</title>
                     <para>Since Winter 2010, DebriefNG can be opened by <indexterm
                                 ><primary>Right-clicking</primary></indexterm> on a Debrief data
-                        file (.<xref linkend="replay_file_format">rep</xref> or .<xref
-                            linkend="debrief_file_format">xml</xref>). But, first DebriefNG must be
+                        file (rep <xref linkend="replay_file_format"/> or xml .<xref
+                            linkend="debrief_file_format"/>). But, first DebriefNG must be
                         associated with files of that file-type, via Windows Explorer. Do this as
                                 follows<footnote><para>Note, across the range of versions of MS
                                 Windows a variety of user interface phrases exist. The steps in this
