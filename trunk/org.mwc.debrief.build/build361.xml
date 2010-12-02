@@ -6,7 +6,8 @@
 
 	<!-- and deploy it to the right place -->
 	<property name="deployDest" value="../deploy" />
-	<property name="debriefDest" value="${deployDest}/${archivePrefix}" />
+	<property name="zipFile" value="DebriefNG-win32.win32.x86.zip" />
+	<property name="debriefDest" value="${deployDest}/${zipFile}" />
 	<property name="repoDest" value="${deployDest}/Repository" />
 	<property name="osxExe" value="${deployDest}/DebriefNG/DebriefNG.app/Contents/MacOS/DebriefNG" />
 
@@ -22,33 +23,63 @@
 		<property name="builder" value="../deploy/${archivePrefix}" />
 
 		<property name="baseLocation" value="${eclipse.home}" />
-
 		<!-- by default, check for deltapack co-located with eclipse -->
-		<available property="haveDeltaPack" file="${eclipse.home}/deltapack" />
-		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot;" />
+		<property name="deltapack" value="${eclipse.home}/deltapack" />
+
+		<!-- Check that we have a deltapack -->
+		<available property="haveDeltaPack" file="${deltapack}" />
+		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property from|${deltapack}|${eclipse.pdebuild.home}." />
 
 		<property name="pluginPath" value="${basedir}/..${path.separator}${deltapack}" />
 		<property name="buildTempFolder" value="${buildDirectory}/tmp" />
 
 		<ant antfile="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
 
+		<echo message="about to move the zips...">
+		</echo>
+
 	</target>
 
-	<target name="deploy" depends="build" description="move compiled bits to deploy folder">
+	<target name="deploy" description="move compiled bits to deploy folder">
 
-		<echo message="about to move the zips..."/>
+		<tstamp>
+			<format property="TODAY_UK" pattern="yyyyMMdd" locale="en,UK" />
+		</tstamp>
+
+		<!-- help the ftp task get going   			remoteTofile="DebriefNG_${TODAY_UK}.zip" -->
+		<property environment="env" />
+		<property name="sfPassword" value="${env.sfPassword}" />
+		<property name="sfUsername" value="${env.sfUsername}" />
+
+		<!-- next, scp the file to the internet
+		<fail unless="${sfUsername}">SourceForge details missing</fail>
+		<fail unless="${sfPassword}">SourceForge details missing</fail> -->
+		
+		<scp file="../deploy/from_cd.bat" password="4pfonmr" todir="ianmayo,debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
+" />
+<!--		<scp file="${debriefDest}/from_cd.bat" todir="${sfUsername}:${sfPassword},debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
+" />  -->
+		<fail />
 
 		<copy todir="${debriefDest}">
-			<fileset dir="${buildDirectory}/out/DebriefNG-win32.win32.x86.zip" />
+			<fileset file="${buildDirectory}/${buildLabel}/${zipFile}" />
 		</copy>
-		
 		<copy todir="${repoDest}">
 			<fileset dir="${buildDirectory}/buildRepo" />
 		</copy>
 
+		<!-- now unzip the dist, just in case anyone wants it that way -->
+		<unzip src="${debriefDest}/${zipFile}" dest="${deployDest}">
+		</unzip>
+
+		<!-- and zip the repo, to help move it -->
+		<zip basedir="${repoDest}" destfile="${deployDest}/repository.zip" />
+
+
 		<!-- if we're on osx, sort out the file permissions -->
-		<antcall target="sortOutExePermissions"></antcall>
-		
+		<antcall target="sortOutExePermissions">
+		</antcall>
+
 		<!-- refresh the workspace -->
 		<eclipse.convertPath fileSystemPath="${basedir}" property="resourcePath" />
 		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite" />
@@ -56,13 +87,14 @@
 		<eclipse.convertPath fileSystemPath="${deployDest}" property="deployPath" />
 		<eclipse.refreshLocal resource="${deployPath}" depth="infinite" />
 	</target>
-	
+
 	<target name="isOSX">
-	    <available file="${osxExe}" property="osx.Present"/>
+		<available file="${osxExe}" property="osx.Present" />
 	</target>
-	
+
 	<target name="sortOutExePermissions" depends="isOSX" if="osx.Present">
-		<echo message="this is osx - setting exe permission" ></echo>
-		<chmod file="${osxExe}" perm="ugo+x"/>
+		<echo message="this is osx - setting exe permission">
+		</echo>
+		<chmod file="${osxExe}" perm="ugo+x" />
 	</target>
 </project>
