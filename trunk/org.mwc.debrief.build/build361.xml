@@ -14,8 +14,9 @@
 	<target name="clean">
 		<!-- note, the build fails if there's compiled code in the build directory -->
 		<delete dir="${basedir}/buildDirectory" />
-		<delete dir="${debriefDest}" />
+		<delete file="${debriefDest}" />
 		<delete dir="${repoDest}" />
+		<delete file="${deployDest}/repository.zip" />
 	</target>
 
 	<target name="build" depends="clean">
@@ -39,14 +40,43 @@
 		</echo>
 
 	</target>
+	
 
 	<target name="deploy" description="move compiled bits to deploy folder">
 
+		<antcall target="move_files_to_deploy_directory" />
+
+		<antcall target="provide_custom_verisons" />
+		
+		<antcall target="sort_out_exe_permissions"/>
+
+		<antcall target="refresh_changed_directories"/>
+
+	</target>
+
+	<target name="uploadToSF">
+
+		<fail message="can't upload, windows exe not present">
+			<condition>
+				<not>
+					<resourcecount count="1">
+						<fileset id="fs" dir="../deploy" includes="${zipFile}" />
+					</resourcecount>
+				</not>
+			</condition>
+		</fail>
+
+		<!-- description="create date-string to name exe at sf.net" -->
 		<tstamp>
 			<format property="TODAY_UK" pattern="yyyyMMdd" locale="en,UK" />
 		</tstamp>
 
-		<!-- help the ftp task get going   			remoteTofile="DebriefNG_${TODAY_UK}.zip" -->
+		<property name="datedDist" value="../deploy/DebriefNG_${TODAY_UK}.zip" />
+
+		<!-- produce a named deliverable -->
+		<move file="${buildDirectory}/${buildLabel}/${zipFile}" tofile="${datedDist}" />
+
+		<!-- help the ftp task get going -->
 		<property environment="env" />
 		<property name="sfPassword" value="${env.sfPassword}" />
 		<property name="sfUsername" value="${env.sfUsername}" />
@@ -54,33 +84,32 @@
 		<!-- next, scp the file to the internet
 		<fail unless="${sfUsername}">SourceForge details missing</fail>
 		<fail unless="${sfPassword}">SourceForge details missing</fail> -->
-		
-		<scp file="../deploy/from_cd.bat" password="${sfPassword}" todir="ianmayo,debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
-" />
-<!--		<scp file="${debriefDest}/from_cd.bat" todir="${sfUsername}:${sfPassword},debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
-" />  -->
-		<fail />
 
+		<scp file="${datedDist}" verbose="true" password="${sfPassword}" todir="ianmayo,debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG" />
+
+		<!-- and put the name back -->
+		<move file="${datedDist}" tofile="${buildDirectory}/${buildLabel}/${zipFile}" />
+	</target>
+
+	<target name="move_files_to_deploy_directory">
 		<copy todir="${debriefDest}">
 			<fileset file="${buildDirectory}/${buildLabel}/${zipFile}" />
 		</copy>
 		<copy todir="${repoDest}">
 			<fileset dir="${buildDirectory}/buildRepo" />
 		</copy>
-
+	</target>
+	
+	<target name="provide_custom_verisons">
 		<!-- now unzip the dist, just in case anyone wants it that way -->
-		<unzip src="${debriefDest}/${zipFile}" dest="${deployDest}">
-		</unzip>
+		<unzip src="${debriefDest}/${zipFile}" dest="${deployDest}"/>
 
 		<!-- and zip the repo, to help move it -->
 		<zip basedir="${repoDest}" destfile="${deployDest}/repository.zip" />
+	</target>
 
-
-		<!-- if we're on osx, sort out the file permissions -->
-		<antcall target="sortOutExePermissions">
-		</antcall>
-
-		<!-- refresh the workspace -->
+	
+	<target name="refresh_changed_directories">
 		<eclipse.convertPath fileSystemPath="${basedir}" property="resourcePath" />
 		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite" />
 
@@ -92,9 +121,8 @@
 		<available file="${osxExe}" property="osx.Present" />
 	</target>
 
-	<target name="sortOutExePermissions" depends="isOSX" if="osx.Present">
-		<echo message="this is osx - setting exe permission">
-		</echo>
+	<target name="sort_out_exe_permissions" depends="isOSX" if="osx.Present">
+		<echo message="this is osx - setting exe permission"/>
 		<chmod file="${osxExe}" perm="ugo+x" />
 	</target>
 </project>
