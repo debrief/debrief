@@ -139,7 +139,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   }
 
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
 	public CoverageLayer(LibrarySelectionTable LST,
                        VPFGraphicWarehouse warehouse,
                        String coverageType,

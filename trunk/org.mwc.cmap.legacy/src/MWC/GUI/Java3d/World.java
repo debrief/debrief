@@ -463,7 +463,7 @@ public class World extends BranchGroup implements PickSelectBehaviour.SelectionL
    *
    * @see WorldMember#doClose
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "rawtypes" })
 	public void doClose()
   {
 

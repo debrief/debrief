@@ -151,10 +151,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
       final Point pBR = new Point(proj.toScreen(br));
       final Rectangle thisArea = new Rectangle(pTL);
       thisArea.add(pBR);
-      if (thisR == null)
-        thisR = thisArea;
-      else
-        thisR.add(thisArea);
+      thisR = thisArea;
 
       // and plot in the line
       contact.paint(null, adaptor, keepItSimple);

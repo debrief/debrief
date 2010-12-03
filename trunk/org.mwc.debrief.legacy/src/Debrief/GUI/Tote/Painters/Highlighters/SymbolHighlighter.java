@@ -71,9 +71,6 @@ public final class SymbolHighlighter implements PlotHighlighter
       // paint this symbol if we haven't already managed to do it
       if(!isPainted)
       {
-        // no symbol, make do with a rectangle
-        Rectangle _areaCovered = null;
-
         int myIntSize = 5;
 
         // set the highlight colour
@@ -92,15 +89,6 @@ public final class SymbolHighlighter implements PlotHighlighter
         int y = tly - myIntSize;
         int wid = (br.x - tlx) + (myIntSize * 2);
         int ht = (br.y - tly) + (myIntSize * 2);
-
-        // represent this area as a rectangle
-        java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
-
-        // keep track of the area covered
-        if(_areaCovered == null)
-          _areaCovered = thisR;
-        else
-          _areaCovered.add(thisR);
 
         // plot the rectangle
         dest.drawRect(x , y, wid, ht);

@@ -219,7 +219,7 @@ public class DDFField {
                 	List<DDFSubfield> theList = (List<DDFSubfield>) obj;
                     for (Iterator<DDFSubfield> it = theList.iterator(); it.hasNext();) 
                     {
-                        DDFSubfield ddfs = (DDFSubfield) it.next();
+                        DDFSubfield ddfs = it.next();
                         buf.append("        " + ddfs.toString() + "\n");
                     }
                 } else {
@@ -236,11 +236,11 @@ public class DDFField {
      * subfield wasn't repeated, it will provide a list containing one
      * object. Will return null if the subfield doesn't exist.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked" })
 		public List<Object> getSubfields(String subfieldName) {
         Object obj = subfields.get(subfieldName);
         if (obj instanceof List) {
-            return (List) obj;
+            return (List<Object>) obj;
         } else if (obj != null) {
             LinkedList<Object> ll = new LinkedList<Object>();
             ll.add(obj);
@@ -255,7 +255,7 @@ public class DDFField {
      * first one off the list for a repeating subfield. Will return
      * null if the subfield doesn't exist.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public DDFSubfield getSubfield(String subfieldName) {
         Object obj = subfields.get(subfieldName);
         if (obj instanceof List) {
@@ -388,7 +388,7 @@ public class DDFField {
             subfields.put(sfName, ddfs);
         } else {
             if (sf instanceof List) {
-                ((List) sf).add(ddfs);
+                ((List<DDFSubfield>) sf).add(ddfs);
             } else {
                 Vector<Object> subList = new Vector<Object>();
                 subList.add(sf);

@@ -86,7 +86,7 @@ public class MouseOverlay extends OverlayBase
             wakeupOn(critter);
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
 				public void processStimulus(Enumeration criteria)
         {
             WakeupOnAWTEvent input = (WakeupOnAWTEvent)criteria.nextElement();

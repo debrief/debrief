@@ -12,7 +12,7 @@ public class ScatteredXYSeries extends XYSeries {
 
 	private transient Method myUpdateBoundsForAddedItemMethod;
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public ScatteredXYSeries(Comparable key) {
 		super(key, false, true);
 	}

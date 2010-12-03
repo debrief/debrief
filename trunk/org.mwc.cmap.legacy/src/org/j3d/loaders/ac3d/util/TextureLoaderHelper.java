@@ -182,7 +182,7 @@ public class TextureLoaderHelper implements ImageObserver {
      *         attempt was unsuccessful.
      */
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 		private static final BufferedImage loadImageWithToolkit(Object source, 
         TextureLoaderHelper instance) {
             

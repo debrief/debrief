@@ -26,7 +26,7 @@ public class CachedTickDateAxis extends DateAxis
 		super(string);
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private List _myTicks;
 
 	/** utility method to clear our cached list (when we know dates have changed)
@@ -37,7 +37,7 @@ public class CachedTickDateAxis extends DateAxis
 		_myTicks = null;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected List refreshTicksVertical(Graphics2D g2, Rectangle2D dataArea,
 			RectangleEdge edge)

@@ -116,11 +116,7 @@ public interface SWTPlotHighlighter extends Editable
 				// represent this area as a rectangle
 				java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
 
-				// keep track of the area covered
-				if (_areaCovered == null)
-					_areaCovered = thisR;
-				else
-					_areaCovered.add(thisR);
+				_areaCovered = thisR;
 
 				// plot the rectangle
 				dest.drawRect(x, y, wid, ht);

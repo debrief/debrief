@@ -933,9 +933,6 @@ public class MWCETOPOLayer extends Layer implements ActionListener
 			Debug.message("basic", getName()
 					+ "|MWCETOPOLayer.prepare(): finished with " + size + " graphics");
 		}
-		else
-			Debug.message("basic", getName()
-					+ "|MWCETOPOLayer.prepare(): finished with null graphics list");
 
 		// Don't forget to project them. Since they are only being
 		// recalled if the projection hase changed, then we need to

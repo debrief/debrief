@@ -110,7 +110,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		return _dest;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public java.util.Enumeration getPainters() {
 		return null;
 	}

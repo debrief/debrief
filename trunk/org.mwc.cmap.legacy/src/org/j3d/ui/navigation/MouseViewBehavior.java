@@ -106,7 +106,7 @@ public class MouseViewBehavior extends Behavior
      *
      * @param why The list of conditions why this was woken
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public void processStimulus(Enumeration why)
     {
 

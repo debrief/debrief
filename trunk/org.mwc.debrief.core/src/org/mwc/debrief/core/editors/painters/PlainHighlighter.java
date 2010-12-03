@@ -5,7 +5,6 @@ package org.mwc.debrief.core.editors.painters;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
 import MWC.GUI.CanvasType;
@@ -36,8 +35,6 @@ public class PlainHighlighter implements TemporalLayerPainter
 		try
 		{
 
-			Rectangle _areaCovered = null;
-
 			// set the highlight colour
 			dest.setColor(_myColor);
 			// get the current area of the watchable
@@ -55,15 +52,6 @@ public class PlainHighlighter implements TemporalLayerPainter
 			int wid = (br.x - tlx) + _mySize * 2;
 			int ht = (br.y - tly) + _mySize * 2;
 
-			// represent this area as a rectangle
-			java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
-
-			// keep track of the area covered
-			if (_areaCovered == null)
-				_areaCovered = thisR;
-			else
-				_areaCovered.add(thisR);
-			
 			boolean lineStyleOverridden = false;
 			
 			// hey, just see if this is an interpolated data item

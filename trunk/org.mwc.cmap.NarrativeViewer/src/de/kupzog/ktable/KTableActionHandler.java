@@ -173,7 +173,7 @@ public class KTableActionHandler {
 						cells.add(valid);
 				}
 			}
-			return (Point[]) cells.toArray(new Point[] {});
+			return cells.toArray(new Point[] {});
 		}
 	}
 
@@ -253,7 +253,7 @@ public class KTableActionHandler {
 			try {
 				m_table.setRedraw(false);
 				m_table.setSelection(new Point[] {}, false);
-				m_table.setSelection((Point[]) sel.toArray(new Point[] {}), false);
+				m_table.setSelection(sel.toArray(new Point[] {}), false);
 			} finally {
 				m_table.setRedraw(true);
 			}
@@ -302,7 +302,7 @@ public class KTableActionHandler {
 						model.setContentAt(col + selection[0].x, row + selection[0].y, cellTexts[row][col]);
 						sel.add(new Point(col + selection[0].x, row + selection[0].y));
 					}
-				m_table.setSelection((Point[]) sel.toArray(new Point[] {}), false);
+				m_table.setSelection(sel.toArray(new Point[] {}), false);
 			} finally {
 				m_table.setRedraw(true);
 			}
@@ -507,7 +507,7 @@ public class KTableActionHandler {
 		return text.toString();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Point sortSelectedCells(Point[] selection) {
 		Arrays.sort(selection, new Comparator() {
 

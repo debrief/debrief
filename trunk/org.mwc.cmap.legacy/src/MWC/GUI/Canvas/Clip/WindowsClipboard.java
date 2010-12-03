@@ -183,7 +183,7 @@ public class WindowsClipboard implements CanvasType{
     public void removePainter(CanvasType.PaintListener listener) {
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({  "rawtypes", "unchecked" })
 		public java.util.Enumeration getPainters() {
       return null;
     }

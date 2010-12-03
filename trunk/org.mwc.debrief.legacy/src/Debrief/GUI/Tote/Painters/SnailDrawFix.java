@@ -191,10 +191,7 @@ public final class SnailDrawFix implements SnailPainter.drawHighLight, Editable
       final Point pBR = new Point(proj.toScreen(br));
       final Rectangle thisArea = new java.awt.Rectangle(pTL);
       thisArea.add(pBR);
-      if(thisR == null)
-        thisR = thisArea;
-      else
-        thisR.add(thisArea);
+      thisR = thisArea;
 
     }
     else

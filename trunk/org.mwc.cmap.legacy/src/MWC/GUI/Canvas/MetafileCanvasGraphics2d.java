@@ -466,7 +466,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		// System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public java.util.Enumeration getPainters()
 	{
 		// System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (getPainters)");
@@ -504,7 +504,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 *          the rendering hints to be set
 	 * @see RenderingHints
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void addRenderingHints(Map hints)
 	{
 		// System.out.println("addRenderingHints");
@@ -1250,7 +1250,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	 * @see #getRenderingHints
 	 * @see RenderingHints
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void setRenderingHints(Map hints)
 	{
 		// System.out.println("setRenderingHints");

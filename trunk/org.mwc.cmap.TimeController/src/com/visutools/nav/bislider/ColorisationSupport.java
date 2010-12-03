@@ -103,15 +103,15 @@ public class ColorisationSupport implements java.io.Serializable {
 	void internFireAsyncNewColors(
     final Object Source_Arg,
     final double[][] ColorArray_Arg) {
-    Vector  v;
+    Vector<ColorisationListener>  v;
     synchronized (this) {
-      v = (Vector)colorisationListeners.clone();
+      v = (Vector<ColorisationListener>)colorisationListeners.clone();
     }
 
     // Fire the event to all listeners.
     int     count  = v.size();
     for (int i = 0; i < count; i++) {
-      ColorisationListener  listener  = (ColorisationListener)v.elementAt(i);
+      ColorisationListener  listener  = v.elementAt(i);
       listener.newColors(new ColorisationEvent(Source_Arg, ColorArray_Arg));
     }
   }// internFireAsyncNewColors()
@@ -127,15 +127,15 @@ public class ColorisationSupport implements java.io.Serializable {
 	public void fireNewColors(Object Source_Arg, double[][] ColorArray_Arg) {
     // Make a copy of the listener object vector so that
     // it cannot be changed while we are firing events.
-    Vector  v;
+    Vector<ColorisationListener>  v;
     synchronized (this) {
-      v = (Vector)colorisationListeners.clone();
+      v = (Vector<ColorisationListener>)colorisationListeners.clone();
     }
 
     // Fire the event to all listeners.
     int     count  = v.size();
     for (int i = 0; i < count; i++) {
-      ColorisationListener  listener  = (ColorisationListener)v.elementAt(i);
+      ColorisationListener  listener  = v.elementAt(i);
       listener.newColors(new ColorisationEvent(Source_Arg, ColorArray_Arg));
     }
   }// fireNewColors()

@@ -1550,7 +1550,7 @@ public class KTable extends Canvas {
 	 * Focusses the given Cell. Assumes that the given cell is in the viewable
 	 * area. Does all neccessary redraws.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void focusCell(int col, int row, int stateMask) {
 		// assure it is a valid cell:
 		Point orig = new Point(col, row);
@@ -1635,7 +1635,7 @@ public class KTable extends Canvas {
 				}
 				// case: SHIFT key pressed
 				if (isRowSelectMode()) {
-					HashMap oldSelection = new HashMap(m_Selection);
+					HashMap<Object, Object> oldSelection = new HashMap<Object, Object>(m_Selection);
 					if (row < m_FocusRow) {
 						// backword selection
 						while (row != m_FocusRow)
@@ -2485,37 +2485,37 @@ public class KTable extends Canvas {
 
 	protected void fireCellSelection(int col, int row, int statemask) {
 		for (int i = 0; i < cellSelectionListeners.size(); i++) {
-			((KTableCellSelectionListener) cellSelectionListeners.get(i)).cellSelected(col, row, statemask);
+			cellSelectionListeners.get(i).cellSelected(col, row, statemask);
 		}
 	}
 
 	protected void fireCellDoubleClicked(int col, int row, int statemask) {
 		for (int i = 0; i < cellDoubleClickListeners.size(); i++) {
-			((KTableCellDoubleClickListener) cellDoubleClickListeners.get(i)).cellDoubleClicked(col, row, statemask);
+			cellDoubleClickListeners.get(i).cellDoubleClicked(col, row, statemask);
 		}
 	}
 
 	protected void fireFixedCellDoubleClicked(int col, int row, int statemask) {
 		for (int i = 0; i < cellDoubleClickListeners.size(); i++) {
-			((KTableCellDoubleClickListener) cellDoubleClickListeners.get(i)).fixedCellDoubleClicked(col, row, statemask);
+			cellDoubleClickListeners.get(i).fixedCellDoubleClicked(col, row, statemask);
 		}
 	}
 
 	protected void fireFixedCellSelection(int col, int row, int statemask) {
 		for (int i = 0; i < cellSelectionListeners.size(); i++) {
-			((KTableCellSelectionListener) cellSelectionListeners.get(i)).fixedCellSelected(col, row, statemask);
+			cellSelectionListeners.get(i).fixedCellSelected(col, row, statemask);
 		}
 	}
 
 	protected void fireColumnResize(int col, int newSize) {
 		for (int i = 0; i < cellResizeListeners.size(); i++) {
-			((KTableCellResizeListener) cellResizeListeners.get(i)).columnResized(col, newSize);
+			cellResizeListeners.get(i).columnResized(col, newSize);
 		}
 	}
 
 	protected void fireRowResize(int row, int newSize) {
 		for (int i = 0; i < cellResizeListeners.size(); i++) {
-			((KTableCellResizeListener) cellResizeListeners.get(i)).rowResized(row, newSize);
+			cellResizeListeners.get(i).rowResized(row, newSize);
 		}
 	}
 
@@ -2852,7 +2852,7 @@ public class KTable extends Canvas {
 			return tmp;
 		}
 
-		return (Point[]) m_Selection.values().toArray(new Point[] {});
+		return m_Selection.values().toArray(new Point[] {});
 	}
 
 	/**

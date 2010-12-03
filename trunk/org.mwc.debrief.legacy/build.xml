@@ -101,8 +101,8 @@
 			<pathelement path="${build.result.folder}/../org.mwc.cmap.legacy_1.0.105/libs/jfreechart-1.0.13.jar"/>
 			<pathelement path="../org.mwc.cmap.legacy/libs/flanagan.jar"/>
 			<pathelement path="${build.result.folder}/../org.mwc.cmap.legacy_1.0.105/libs/flanagan.jar"/>
-			<pathelement path="../../../Applications/eclipse-SDK-3.6.1-macosx-cocoa-x86_64/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
-			<pathelement path="../../../Applications/eclipse-SDK-3.6.1-macosx-cocoa-x86_64/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+			<pathelement path="../../../Applications/eclipse-rcp-helios-SR1-macosx-cocoa-x86_64/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
+			<pathelement path="../../../Applications/eclipse-rcp-helios-SR1-macosx-cocoa-x86_64/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
 		</path>
 		<!-- compile the source code -->
 		<javac destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}" errorProperty="compilation.error.occured"		>
@@ -197,7 +197,6 @@
 		</copy>
 		<copy todir="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.163" failonerror="true" overwrite="true">
 			<fileset dir="${basedir}">
-				<include name="plugin.xml"/>
 				<include name="debrief_legacy.jar"/>
 				<include name="META-INF/"/>
 			</fileset>

@@ -98,14 +98,6 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 			// lastly, get the data
 			Layers theData = theChart.getLayers();
 
-			// hmm, did we get a layer?
-			if (myLayer == null)
-			{
-				// nope, use must have cancelled. Whatever, we haven't got anywhere
-				// to put the new feature anyway...
-				return res;
-			}
-
 			// aah, and the misc layer, in which we will store the shape
 			Layer theLayer = null;
 

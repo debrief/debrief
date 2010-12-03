@@ -146,15 +146,15 @@ public class ContentPainterSupport implements java.io.Serializable {
     Rectangle Rectangle_Arg,
     Rectangle BoundingRectangle_Arg) {
 
-    Vector  Vector1;
+    Vector<ContentPainterListener>  Vector1;
     synchronized (this) {
-      Vector1 = (Vector)ContentPainterListeners.clone();
+      Vector1 = (Vector<ContentPainterListener>)ContentPainterListeners.clone();
     }
 
     // Fire the event to all listeners.
     int     count    = Vector1.size();
     for (int i = 0; i < count; i++) {
-      ContentPainterListener  listener  = (ContentPainterListener)Vector1.elementAt(i);
+      ContentPainterListener  listener  = Vector1.elementAt(i);
       listener.paint(new ContentPainterEvent(Source_Arg, Graphics_Arg, Min_Arg, Max_Arg, Index_Arg, Color_Arg, Rectangle_Arg, BoundingRectangle_Arg));
     }
   } // internFireAsyncPaint()
@@ -185,15 +185,15 @@ public class ContentPainterSupport implements java.io.Serializable {
 
     // Make a copy of the listener object vector so that
     // it cannot be changed while we are firing events.
-    Vector  Vector1;
+    Vector<ContentPainterListener>  Vector1;
     synchronized (this) {
-      Vector1 = (Vector)ContentPainterListeners.clone();
+      Vector1 = (Vector<ContentPainterListener>)ContentPainterListeners.clone();
     }
 
     // Fire the event to all listeners.
     int     count    = Vector1.size();
     for (int i = 0; i < count; i++) {
-      ContentPainterListener  listener  = (ContentPainterListener)Vector1.elementAt(i);
+      ContentPainterListener  listener  = Vector1.elementAt(i);
       listener.paint(new ContentPainterEvent(Source_Arg, Graphics_Arg, Min_Arg, Max_Arg, Index_Arg, Color_Arg, Rectangle_Arg, BoundingRectangle_Arg));
     }
   } // firePaint()

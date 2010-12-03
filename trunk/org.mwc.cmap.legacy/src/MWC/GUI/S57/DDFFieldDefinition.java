@@ -245,7 +245,7 @@ public class DDFFieldDefinition implements DDFConstants {
 
         if (paoSubfieldDefns != null) {
             for (Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); it.hasNext();) {
-                buf.append((DDFSubfieldDefinition) it.next());
+                buf.append(it.next());
             }
         }
 
@@ -256,7 +256,7 @@ public class DDFFieldDefinition implements DDFConstants {
      * Based on the list contained in the string, build a set of
      * subfield definitions.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		protected boolean buildSubfieldDefns(String pszSublist) {
 
         if (pszSublist.charAt(0) == '*') {
@@ -378,7 +378,7 @@ public class DDFFieldDefinition implements DDFConstants {
      * applies a subfield format string to each subfield object. It in
      * turn does final parsing of the subfield formats.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		protected boolean applyFormats(String _formatControls1) {
         String pszFormatList;
         Vector papszFormatItems;
@@ -445,7 +445,7 @@ public class DDFFieldDefinition implements DDFConstants {
                 break;
             }
 
-            if (!((DDFSubfieldDefinition) paoSubfieldDefns.elementAt(iFormatItem)).setFormat(pszPastPrefix)) {
+            if (!paoSubfieldDefns.elementAt(iFormatItem).setFormat(pszPastPrefix)) {
                 Debug.output("DDFFieldDefinition had problem setting format for "
                         + pszPastPrefix);
                 return false;
@@ -471,7 +471,7 @@ public class DDFFieldDefinition implements DDFConstants {
         /* -------------------------------------------------------------------- */
         nFixedWidth = 0;
         for (int i = 0; i < paoSubfieldDefns.size(); i++) {
-            DDFSubfieldDefinition ddfsd = (DDFSubfieldDefinition) paoSubfieldDefns.elementAt(i);
+            DDFSubfieldDefinition ddfsd = paoSubfieldDefns.elementAt(i);
             if (ddfsd.getWidth() == 0) {
                 nFixedWidth = 0;
                 break;
@@ -495,7 +495,7 @@ public class DDFFieldDefinition implements DDFConstants {
         if (paoSubfieldDefns != null) {
             for (Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); pszMnemonic != null
                     && it.hasNext();) {
-                DDFSubfieldDefinition ddfsd = (DDFSubfieldDefinition) it.next();
+                DDFSubfieldDefinition ddfsd = it.next();
                 if (pszMnemonic.equalsIgnoreCase(ddfsd.getName())) {
                     return ddfsd;
                 }
@@ -518,7 +518,7 @@ public class DDFFieldDefinition implements DDFConstants {
             return null;
         }
 
-        return (DDFSubfieldDefinition) paoSubfieldDefns.elementAt(i);
+        return paoSubfieldDefns.elementAt(i);
     }
 
     public static class DataStructCode {

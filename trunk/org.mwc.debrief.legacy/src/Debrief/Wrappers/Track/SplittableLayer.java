@@ -21,7 +21,7 @@ public class SplittableLayer extends BaseLayer
 			super(data);
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first

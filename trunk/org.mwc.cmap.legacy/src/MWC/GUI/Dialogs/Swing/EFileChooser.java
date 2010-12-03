@@ -212,7 +212,7 @@ public class EFileChooser extends JFileChooser
 					{
 						if (this.getPreferredSize().width > combo.getSize().width)
 						{
-							list.setToolTipText((String) comboModel.elementAt(index));
+							list.setToolTipText(comboModel.elementAt(index));
 						}
 						else
 						{
@@ -330,7 +330,7 @@ public class EFileChooser extends JFileChooser
 			{
 				fis = new FileInputStream(dirFile);
 				ois = new ObjectInputStream(fis);
-				comboModel = (Vector) (ois.readObject());
+				comboModel = (Vector<String>) (ois.readObject());
 				ois.close();
 				fis.close();
 			}
@@ -342,7 +342,7 @@ public class EFileChooser extends JFileChooser
 		}
 		else
 		{
-			comboModel = new Vector(10); // we expect about 10 directory entries
+			comboModel = new Vector<String>(10); // we expect about 10 directory entries
 		}
 
 		setMultiSelectionEnabled(false);
@@ -377,7 +377,7 @@ public class EFileChooser extends JFileChooser
 					boolean found = false;
 					for (i = 0; i < comboModel.size(); i++)
 					{
-						String dirname = (String) comboModel.elementAt(i);
+						String dirname = comboModel.elementAt(i);
 						if (dirname.equals(pathname))
 						{
 							found = true;
@@ -1515,7 +1515,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 			FindFilter[] filterArray = new FindFilter[filters.size()];
 			for (int i = 0; i < filterArray.length; i++)
 			{
-				filterArray[i] = (FindFilter) filters.elementAt(i);
+				filterArray[i] = filters.elementAt(i);
 			}
 			return filterArray;
 		}
@@ -2274,7 +2274,7 @@ class FindByContent extends JPanel implements FindFilterFactory
 
 				for (int i = matchMakers.size() - 1; i >= 0; i--)
 				{
-					MatchStream m = (MatchStream) matchMakers.elementAt(i);
+					MatchStream m = matchMakers.elementAt(i);
 					try
 					{
 						m.write(b);

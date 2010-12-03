@@ -43,7 +43,7 @@ public class ParticleSystemManager extends Behavior
        wakeupOn( wakeupCondition );
    }
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings("rawtypes")
 	public void processStimulus(java.util.Enumeration criteria )
    {
        update();

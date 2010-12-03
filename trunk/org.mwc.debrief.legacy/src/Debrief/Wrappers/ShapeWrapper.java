@@ -843,27 +843,18 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		if (!done)
 		{
 
-			// do we have a start time even?
-			if (myStart == null)
+			// use the start time as a centre time
+			if ((myStart.greaterThanOrEqualTo(start))
+					&& (myStart.lessThanOrEqualTo(end)))
 			{
-				// no start time, just return ourselves anyway.
 				res = new Vector<Editable>(0, 1);
 				res.addElement(this);
 			}
 			else
 			{
-				// use the start time as a centre time
-				if ((myStart.greaterThanOrEqualTo(start))
-						&& (myStart.lessThanOrEqualTo(end)))
-				{
-					res = new Vector<Editable>(0, 1);
-					res.addElement(this);
-				}
-				else
-				{
-					// no, it's outside the period
-				}
+				// no, it's outside the period
 			}
+
 		}
 
 		return res;

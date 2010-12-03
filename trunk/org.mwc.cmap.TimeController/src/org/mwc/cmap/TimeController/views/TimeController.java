@@ -2698,7 +2698,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		return res;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter)
 	{

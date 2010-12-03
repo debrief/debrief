@@ -133,7 +133,7 @@ implements java.io.Serializable {
     listeners.removeElement (l);
   }
 
-  @SuppressWarnings("unchecked") void fireTimerEvent () {
+  @SuppressWarnings({ "unchecked", "rawtypes" }) void fireTimerEvent () {
     if (listeners == null) return;
     Vector<TimerListener> l;
     synchronized (this) {

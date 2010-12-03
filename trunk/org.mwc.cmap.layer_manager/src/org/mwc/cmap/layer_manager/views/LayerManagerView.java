@@ -517,7 +517,7 @@ public class LayerManagerView extends ViewPart
 	 * @param adapter
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
@@ -1267,7 +1267,7 @@ public class LayerManagerView extends ViewPart
 	private static Set<Layer> _pendingLayers = new TreeSet<Layer>(
 			new Comparator<Layer>()
 			{
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings({ "unchecked", "rawtypes" })
 				public int compare(Layer arg0, Layer arg1)
 				{
 					int res = 1;
@@ -1421,7 +1421,7 @@ public class LayerManagerView extends ViewPart
 		public void doItTo(Editable item);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	static void applyOperation(IOperateOn operation,
 			IStructuredSelection selection, Layers myLayers)
 	{

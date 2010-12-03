@@ -969,7 +969,7 @@ public class WMFGraphics
   public void removePainter(MWC.GUI.CanvasType.PaintListener listener) {
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
 	public java.util.Enumeration getPainters() {
     return null;
   }

@@ -313,10 +313,6 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// retrieve the necessary input data
 							toteCalculation myOperation = theHolder._theCalc;
 
-							// did it work?
-							if (theHolder == null)
-								return;
-
 							// who is the primary?
 							// declare the primary track (even though we may end up not using
 							// it)

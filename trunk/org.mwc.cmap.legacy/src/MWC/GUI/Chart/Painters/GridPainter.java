@@ -336,14 +336,6 @@ public class GridPainter implements Plottable, Serializable
 		// set the current colour
 		g.setColor(_myColor);
 
-		// create data coordinates from the current corners of the screen
-		WorldLocation checkProjection = new WorldLocation(g
-				.toWorld(new Point(0, 0)));
-
-		// check we have data
-		if (checkProjection == null)
-			return;
-
 		// get the delta in degrees
 		double deltaDegs = _myDelta.getValueIn(WorldDistance.DEGS);
 

@@ -118,7 +118,7 @@ public final class MouseRotateY extends MouseBehavior {
   /** event handler
 	 * @param criteria the event in progress
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public final void processStimulus(Enumeration criteria) {
 		WakeupCriterion wakeup;
 		AWTEvent[] event;

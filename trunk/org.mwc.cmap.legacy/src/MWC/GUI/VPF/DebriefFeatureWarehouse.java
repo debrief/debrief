@@ -182,7 +182,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				Enumeration<FeaturePainter> enumer = _currentFeatures.elements();
 				while (enumer.hasMoreElements())
 				{
-					FeaturePainter fp = (FeaturePainter) enumer.nextElement();
+					FeaturePainter fp = enumer.nextElement();
 					if (fp.getVisible())
 					{
 						String nm = fp.getFeatureType();
@@ -195,7 +195,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				enumer = _currentFeatures.elements();
 				while (enumer.hasMoreElements())
 				{
-					FeaturePainter fp = (FeaturePainter) enumer.nextElement();
+					FeaturePainter fp = enumer.nextElement();
 					if (fp.getVisible())
 					{
 						String nm = fp.getFeatureType();
@@ -277,7 +277,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 			}
 			else
 			{
-				thisFeature = (FeaturePainter) hash.get(featureType);
+				thisFeature = hash.get(featureType);
 			}
 		}
 
@@ -380,7 +380,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * used for coastlines - which aren't tiled. We can't build up the coastline
 	 * into a single large polyline, since it jumps around a little!
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void createEdge(CoverageTable c, EdgeTable edgetable, Vector edgevec,
 			LatLonPoint ll1, LatLonPoint ll2, float dpplat, float dpplon,
 			CoordFloatString coords)
@@ -463,14 +463,14 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * @param featureType
 	 *          the type for this feature
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void createEdge(CoverageTable c, EdgeTable edgetable, Vector edgevec,
 			LatLonPoint ll1, LatLonPoint ll2, float dpplat, float dpplon,
 			CoordFloatString coords, String featureType)
 	{
 
 		// get this feature painter
-		FeaturePainter fp = (FeaturePainter) _currentFeatures.get(featureType);
+		FeaturePainter fp = _currentFeatures.get(featureType);
 
 		// is this feature currently visible?
 		if (!fp.getVisible())
@@ -524,7 +524,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void createText(CoverageTable c, TextTable texttable, Vector textvec,
 			float latitude, float longitude, String text)
 	{
@@ -558,7 +558,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void createText(CoverageTable c, TextTable texttable, Vector textvec,
 			float latitude, float longitude, String text, String featureType)
 	{
@@ -582,7 +582,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	/**
    *
    */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void createArea(CoverageTable covtable, AreaTable areatable,
 			Vector facevec, LatLonPoint ll1, LatLonPoint ll2, float dpplat,
 			float dpplon, boolean doAntarcticaWorkaround)
@@ -594,7 +594,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	/**
 	 * method to convert multiple polylines into a single area
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	private java.awt.Polygon extendArea(Vector ipts, int totalSize,
 			LatLonPoint ll1, LatLonPoint ll2, float dpplat, float dpplon,
 			boolean doAntarcticaWorkaround, MWC.Algorithms.PlainProjection proj)
@@ -668,7 +668,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 	 * @param featureType
 	 *          the type of feature we are plotting
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes" })
 	public void createArea(CoverageTable covtable, AreaTable areatable,
 			Vector facevec, LatLonPoint ll1, LatLonPoint ll2, float dpplat,
 			float dpplon, boolean doAntarcticaWorkaround, String featureType)

@@ -70,7 +70,7 @@ public class InputSelectionPanel extends JPanel
    *
    * @param devs The list of devices to add
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
 	public void setDeviceList(List devs)
   {
     removeAll();
@@ -82,7 +82,7 @@ public class InputSelectionPanel extends JPanel
    *
    * @return A list of the selected devices.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
 	public List getSelectedItems()
   {
 	  return null;

@@ -175,7 +175,7 @@ class ImageGenerator implements ImageConsumer
      *
      * @param props The map of properties for this image
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public void setProperties(Hashtable props)
     {
         properties = props;

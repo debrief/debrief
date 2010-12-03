@@ -403,7 +403,7 @@ public class SwingGrabControl extends JPanel
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
 	public static void main6(String[] args)
   {
     Vector lst = PlugInManager.getPlugInList(null, null, PlugInManager.CODEC);
@@ -430,7 +430,7 @@ public class SwingGrabControl extends JPanel
     fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
 	public static void main(String[] args)
   {
     System.out.println("working");

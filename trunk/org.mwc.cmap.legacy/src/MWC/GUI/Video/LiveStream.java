@@ -309,7 +309,7 @@ public class LiveStream implements PushBufferStream, Runnable {
 	    return controls;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public Object getControl(String controlType) {
        try {
           Class  cls = Class.forName(controlType);

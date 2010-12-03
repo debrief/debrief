@@ -67,8 +67,6 @@ public interface PlotHighlighter extends Editable {
 			// we can't, so we will just have to trap any exceptions it raises
 			try {
 
-				Rectangle _areaCovered = null;
-
 				// set the highlight colour
 				dest.setColor(_myColor);
 				// get the current area of the watchable
@@ -85,15 +83,6 @@ public interface PlotHighlighter extends Editable {
 				int y = tly - _mySize;
 				int wid = (br.x - tlx) + _mySize * 2;
 				int ht = (br.y - tly) + _mySize * 2;
-
-				// represent this area as a rectangle
-				java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
-
-				// keep track of the area covered
-				if (_areaCovered == null)
-					_areaCovered = thisR;
-				else
-					_areaCovered.add(thisR);
 
 				// hmm - implemented plotting the cursor differently if we're
 				// looking at interpolated data

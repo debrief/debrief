@@ -123,7 +123,7 @@ public class UpdateControlBehavior extends Behavior
      *
      * @param conditions The list of conditions satisfied
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public void processStimulus(Enumeration conditions)
     {
         if(updating)

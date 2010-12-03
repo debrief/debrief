@@ -350,7 +350,7 @@ public class NavigationHandler
             wakeupOn(FPSCriterion);
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
 				public void processStimulus( Enumeration criteria )
         {
             frameDuration = System.currentTimeMillis() - startFrameDurationCalc;
