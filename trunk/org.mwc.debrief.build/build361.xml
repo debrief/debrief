@@ -1,4 +1,4 @@
-<project default="deploy">
+<project default="build">
 	<property file="build361.properties" />
 
 	<!-- get it built in the correct place -->
@@ -40,17 +40,17 @@
 		</echo>
 
 	</target>
-	
+
 
 	<target name="deploy" description="move compiled bits to deploy folder">
 
 		<antcall target="move_files_to_deploy_directory" />
 
 		<antcall target="provide_custom_verisons" />
-		
-		<antcall target="sort_out_exe_permissions"/>
 
-		<antcall target="refresh_changed_directories"/>
+		<antcall target="sort_out_exe_permissions" />
+
+		<antcall target="refresh_changed_directories" />
 
 	</target>
 
@@ -92,23 +92,23 @@
 	</target>
 
 	<target name="move_files_to_deploy_directory">
-		<copy todir="${debriefDest}">
+		<copy tofile="${debriefDest}">
 			<fileset file="${buildDirectory}/${buildLabel}/${zipFile}" />
 		</copy>
 		<copy todir="${repoDest}">
 			<fileset dir="${buildDirectory}/buildRepo" />
 		</copy>
 	</target>
-	
+
 	<target name="provide_custom_verisons">
 		<!-- now unzip the dist, just in case anyone wants it that way -->
-		<unzip src="${debriefDest}/${zipFile}" dest="${deployDest}"/>
+		<unzip src="${debriefDest}" dest="${deployDest}" />
 
 		<!-- and zip the repo, to help move it -->
 		<zip basedir="${repoDest}" destfile="${deployDest}/repository.zip" />
 	</target>
 
-	
+
 	<target name="refresh_changed_directories">
 		<eclipse.convertPath fileSystemPath="${basedir}" property="resourcePath" />
 		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite" />
@@ -122,7 +122,27 @@
 	</target>
 
 	<target name="sort_out_exe_permissions" depends="isOSX" if="osx.Present">
-		<echo message="this is osx - setting exe permission"/>
+		<echo message="this is osx - setting exe permission" />
 		<chmod file="${osxExe}" perm="ugo+x" />
 	</target>
+
+	<property name="usbDest" value="/Volumes/USB DISK/" />
+
+	<target name="can_do_usb_copy">
+		<available property="target.exists" file="${usbDest}" />
+	</target>
+
+	<target name="copy_to_usb">
+
+		<echo message="ditching existing versions" />
+		<delete file="${usbDest}/Repository.zip" />
+		<delete dir="${usbDest}/DebriefNG" />
+
+		<echo message="copying new versions" />
+
+		<copy todir="${usbDest}/">
+			<fileset file="${deployDest}/from_cda.bat" />
+		</copy>
+	</target>
+
 </project>
