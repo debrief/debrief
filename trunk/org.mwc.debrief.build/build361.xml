@@ -55,7 +55,7 @@
 		<fail unless="${sfUsername}">SourceForge details missing</fail>
 		<fail unless="${sfPassword}">SourceForge details missing</fail> -->
 		
-		<scp file="../deploy/from_cd.bat" password="4pfonmr" todir="ianmayo,debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
+		<scp file="../deploy/from_cd.bat" password="${sfPassword}" todir="ianmayo,debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
 " />
 <!--		<scp file="${debriefDest}/from_cd.bat" todir="${sfUsername}:${sfPassword},debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG_Spring11
 " />  -->
