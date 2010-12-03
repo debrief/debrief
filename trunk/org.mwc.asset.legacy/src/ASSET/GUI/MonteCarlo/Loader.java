@@ -231,7 +231,7 @@ abstract public class Loader extends SwingCustomEditor
     {
       scenarioTarget.addDropTargetListener(new DropTargetAdapter()
       {
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
 				public void drop(DropTargetDropEvent dtde)
         {
           // see if it's an XML file
@@ -281,7 +281,7 @@ abstract public class Loader extends SwingCustomEditor
     {
       controllerTarget.addDropTargetListener(new DropTargetAdapter()
       {
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
 				public void drop(DropTargetDropEvent dtde)
         {
           // see if it's an XML file

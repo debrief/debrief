@@ -23,18 +23,9 @@ public class SaveScenarioXML extends SaveScenarioAsXML
 
   public void execute()
   {
-    // do we have a filename already?
-    final String fn = null; /** @todo store filename in a scenario */
-
-    if(fn != null)
     {
-      // just re-save the Scenario to the (known) filename
-      this.doSave(fn);
-    }
-    else
-    {
-      // just let the parent do it's normal processing
-      super.execute();
-    }
+			// just let the parent do it's normal processing
+			super.execute();
+		}
   }
 }

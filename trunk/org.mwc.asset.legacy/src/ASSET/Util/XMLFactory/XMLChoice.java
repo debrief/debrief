@@ -39,8 +39,7 @@ public class XMLChoice implements XMLOperation
   /***************************************************************
    *  constructor
    ***************************************************************/
-  @SuppressWarnings("unchecked")
-	public XMLChoice(final Element element)
+  public XMLChoice(final Element element)
   {
     this();
 
@@ -56,12 +55,12 @@ public class XMLChoice implements XMLOperation
       final String thisName = thisE.getAttribute("name");
       final NodeList children = thisE.getChildNodes();
 
-      final List<Element> duplicates = new Vector(0,1);
+      final List<Element> duplicates = new Vector<Element>(0,1);
 
       if(children.getLength() > 0)
       {
         // keep track of the elements to be detached
-        Vector toBeDetached = new Vector(0,1);
+        Vector<Element> toBeDetached = new Vector<Element>(0,1);
 
         // in this first pass, take copies of the children
         for(int j=0;j<children.getLength();j++)
@@ -72,10 +71,10 @@ public class XMLChoice implements XMLOperation
         }
 
         // now pass through again and detach all of the children
-        Iterator iter2 = toBeDetached.iterator();
+        Iterator<Element> iter2 = toBeDetached.iterator();
         while (iter2.hasNext())
         {
-          Element el = (Element) iter2.next();
+          Element el = iter2.next();
           thisE.removeChild(el);
         }
 
@@ -123,7 +122,7 @@ public class XMLChoice implements XMLOperation
    */
   public String getSimpleValue()
   {
-    return (String) _myList.get(_currentVal) ;
+    return _myList.get(_currentVal) ;
   }
 
   /** return the current value of this permutation
@@ -136,7 +135,7 @@ public class XMLChoice implements XMLOperation
     final Iterator<Element> it = ls.iterator();
     while (it.hasNext())
     {
-      final Object o = (Object) it.next();
+      final Object o = it.next();
       res += o.toString();
     }
 

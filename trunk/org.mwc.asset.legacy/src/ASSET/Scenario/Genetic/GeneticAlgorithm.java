@@ -374,7 +374,7 @@ public class GeneticAlgorithm
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
 	public void promote()
   {
     // compare the top performers with the one at the bottom of the stars list

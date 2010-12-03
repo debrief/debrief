@@ -283,7 +283,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
 
       for (final Iterator<ParticipantType> thisT = tracks.iterator(); thisT.hasNext();)
       {
-        final ParticipantType thisParticipant = (ParticipantType) thisT.next();
+        final ParticipantType thisParticipant = thisT.next();
 
         // check this track contains data
         final ASSETParticipant3D t3 = new ASSETParticipant3D(worldHolder.getWorld().getWorldPlottingOptions(),
@@ -339,7 +339,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
 
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("rawtypes")
 	void doDataExtended(Layers theData, final WorldHolder theHolder)
   {
 
@@ -381,7 +381,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
       while (iter.hasNext())
       {
         // create a 3d version of this track
-        final ParticipantType rw = (ParticipantType) iter.next();
+        final ParticipantType rw = iter.next();
 
         // we receive data extended message twice.  Once when the new layer is added (but is still empty),
         // and again once the file has been read in (and the track contains data)
@@ -513,7 +513,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
       final Iterator<StepperListener> it = _theListeners.iterator();
       while (it.hasNext())
       {
-        final StepperListener sl = (StepperListener) it.next();
+        final StepperListener sl = it.next();
         sl.newTime(null, new HiResDate(newTime), null);
       }
     }

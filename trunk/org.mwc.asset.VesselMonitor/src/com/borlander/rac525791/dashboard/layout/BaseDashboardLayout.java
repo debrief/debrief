@@ -35,7 +35,7 @@ public class BaseDashboardLayout extends AbstractHintLayout {
 		return myUiModel.getUISuite(width, height).getPreferredSize();
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public void layout(IFigure container) {
 		ControlUISuite suite = getSuite(container);
 		List children = container.getChildren();

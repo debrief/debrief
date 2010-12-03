@@ -668,7 +668,7 @@ public final class XMLVariance
 			return sourceDocument.lookupPrefix(namespaceURI);
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public Iterator getPrefixes(String namespaceURI)
 		{
 			// not implemented yet
@@ -788,7 +788,7 @@ public final class XMLVariance
 			}
 		}
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings("rawtypes")
 		public Iterator getPrefixes(String namespaceURI)
 		{
 			// not implemented for the example

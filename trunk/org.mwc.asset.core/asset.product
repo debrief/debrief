@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.14" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.15" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -94,15 +94,15 @@
    </plugins>
 
    <features>
-      <feature id="org.mwc.asset.core.feature" version="1.0.22"/>
       <feature id="org.mwc.asset.help.feature" version="1.0.1"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.112"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.128"/>
       <feature id="org.eclipse.wst.xml_core.feature" version="3.2.2.v201008170029-7C7OFXYF7RZHQHI5PyJwPT"/>
       <feature id="org.eclipse.wst.xml_ui.feature" version="3.2.2.v201008170029-7H7AFUQDxumQGOpBqffOY2f1qxDZ"/>
       <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.2.100.v201005241420-50FXNAkF7B77RBgFFBF"/>
       <feature id="org.eclipse.rcp" version="3.6.1.r361_v20100827-9OArFLdFjY-ThSQXmKvKz0_T"/>
       <feature id="org.eclipse.platform" version="3.6.1.r361_v20100909-9gF78GrkFqw7GrsZnvz0JWNTeb6fue6896L"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.23"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.113"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.133"/>
    </features>
 
 

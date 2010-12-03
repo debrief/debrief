@@ -37,7 +37,7 @@ public class RMIDiscovery{
      * 
      * @since 1
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		Class _serviceInterface;
 
     /**
@@ -73,7 +73,7 @@ public class RMIDiscovery{
 
 
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		private RMIDiscovery(final Class serviceInterface,final String serviceName){
         _serviceInterface=serviceInterface;
         _serviceName=serviceName;
@@ -90,7 +90,7 @@ public class RMIDiscovery{
      * @return The discovered server ref.
      * @exception java.rmi.ConnectException
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public static Remote lookup(final Class serviceInterface,final String serviceName)
         throws java.rmi.ConnectException{
         
@@ -106,7 +106,7 @@ public class RMIDiscovery{
      * @return The discovered server ref.
      * @exception java.rmi.ConnectException
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		public static Remote[] lookupAll(final Class serviceInterface,final String serviceName)
         throws java.rmi.ConnectException{
 
@@ -258,7 +258,7 @@ public class RMIDiscovery{
             throw new RuntimeException("Failed to create listener socket in port range "+port+"-"+(port+range));
          }
          final Thread listenerThread=new Thread(){
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("rawtypes")
 						public void run(){
                     
                 try{

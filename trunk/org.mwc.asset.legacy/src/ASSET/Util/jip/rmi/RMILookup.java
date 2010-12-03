@@ -42,7 +42,7 @@ public class RMILookup
     /**
      * Interfaces implemented by RMI server
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		private Class [] _serviceInterface;
 
     /**
@@ -61,7 +61,7 @@ public class RMILookup
         _serviceName=serviceName;
         parseInterfaces();
     }
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 		private void parseInterfaces(){
         final Class c=_service.getClass();
         _serviceInterface=c.getInterfaces();
@@ -133,7 +133,7 @@ public class RMILookup
     /**
      * Create multicast listener then loop listening for valid requests
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 		public void run(){
         try{
             Debug.message("RMI lookup: listening....");
