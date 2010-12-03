@@ -32,7 +32,7 @@ public class ObservationList implements GriddableSeries {
 	@SuppressWarnings("unchecked")
 	public ObservationList(String name, Vector<TimeStampedDataItem> positions) {
 		_myName = name;
-		_myData = (Vector) positions.clone();
+		_myData = (Vector<TimeStampedDataItem>) positions.clone();
 		_myDataRO = Collections.unmodifiableList(_myData);
 		_pSupport = new PropertyChangeSupport(this);
 	}

@@ -1,18 +1,26 @@
 package org.mwc.cmap.core.property_support;
 
-import java.beans.*;
+import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
-import org.eclipse.core.runtime.*;
-import org.eclipse.ui.views.properties.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource;
 import org.mwc.cmap.core.CorePlugin;
 
-import MWC.GUI.*;
+import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
+import MWC.GUI.Griddable;
+import MWC.GUI.GriddableSeriesMarker;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other
@@ -153,6 +161,14 @@ public class EditableWrapper implements IPropertySource
 		}
 
 		return res;
+	}
+	
+	
+
+	@Override
+	public int hashCode()
+	{
+		return _editable.hashCode();
 	}
 
 	public Object getEditableValue()

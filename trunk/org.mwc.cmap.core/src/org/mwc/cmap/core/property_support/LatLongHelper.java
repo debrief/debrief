@@ -61,7 +61,7 @@ public class LatLongHelper extends EditorHelper
 		return res;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean editsThis(Class target)
 	{
 		return (target == WorldLocation.class);
@@ -390,7 +390,7 @@ public class LatLongHelper extends EditorHelper
 			else if (ID_LONG_SEC.equals(propName))
 				_longSec = new String(_origLongSec);
 			else if (ID_LONG_HEM.equals(propName))
-				_longHem = new String(_origLongHem);
+				_longHem = _origLongHem;
 			else if (ID_DEPTH.equals(propName))
 				_depth = new WorldDistance(_origDepth);
 		}

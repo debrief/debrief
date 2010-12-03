@@ -331,7 +331,7 @@ public class PartMonitor implements IPartListener
 			// ok, try some calls (without any listeners)
 			pm.partOpened(new TestPart()
 			{
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings("rawtypes")
 				public Object getAdapter(Class adapter)
 				{
 					return new String("string");
@@ -371,7 +371,7 @@ public class PartMonitor implements IPartListener
 			// fire one of the correct type
 			pm.partOpened(new TestPart()
 			{
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings("rawtypes")
 				public Object getAdapter(Class adapter)
 				{
 					return new String("string");
@@ -414,7 +414,7 @@ public class PartMonitor implements IPartListener
 			// fire the event, just for strings.
 			pm.partOpened(new TestPart()
 					{
-						@SuppressWarnings("unchecked")
+						@SuppressWarnings("rawtypes")
 						public Object getAdapter(Class adapter)
 						{
 							Object res = null;
@@ -439,7 +439,7 @@ public class PartMonitor implements IPartListener
 			// fire one of both classes
 			pm.partOpened(new TestPart()
 			{
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings("rawtypes")
 				public Object getAdapter(Class adapter)
 				{
 					Object res = null;
@@ -471,7 +471,7 @@ public class PartMonitor implements IPartListener
 			// fire both events for both classes
 			pm.partOpened(new TestPart()
 			{
-				@SuppressWarnings("unchecked")
+				@SuppressWarnings("rawtypes")
 				public Object getAdapter(Class adapter)
 				{
 					Object res = null;
@@ -488,7 +488,7 @@ public class PartMonitor implements IPartListener
 			});
 			pm.partClosed(new TestPart()
 					{
-						@SuppressWarnings("unchecked")
+						@SuppressWarnings("rawtypes")
 						public Object getAdapter(Class adapter)
 						{
 							Object res = null;
@@ -563,7 +563,7 @@ public class PartMonitor implements IPartListener
 			{
 			}
 
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("rawtypes")
 			public abstract Object getAdapter(Class adapter);
 
 		}

@@ -42,9 +42,6 @@ public class RightClickPasteAdaptor
 			EditableTransfer transfer = EditableTransfer.getInstance();
 			Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
 
-			if (!(tr instanceof Editable[]))
-				return;
-
 			// see if there is currently a plottable on the clipboard
 			if (tr != null)
 			{

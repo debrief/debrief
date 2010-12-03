@@ -58,12 +58,14 @@ public class DTGHelper extends EditorHelper
 
 		protected HiResDate _originalVal;
 
-		/** name for the date property
+		/**
+		 * name for the date property
 		 * 
 		 */
 		public static String ID_DATE = "Date";
 
-		/** name for the time property
+		/**
+		 * name for the time property
 		 * 
 		 */
 		public static String ID_TIME = "Time";
@@ -72,8 +74,8 @@ public class DTGHelper extends EditorHelper
 
 		static
 		{
-			descriptors = new IPropertyDescriptor[] {
-					new TextPropertyDescriptor(ID_DATE, "date (dd/mmm/yyyy)"),
+			descriptors = new IPropertyDescriptor[]
+			{ new TextPropertyDescriptor(ID_DATE, "date (dd/mmm/yyyy)"),
 					new TextPropertyDescriptor(ID_TIME, "time (hh:mm:ss)"), };
 		}
 
@@ -94,15 +96,15 @@ public class DTGHelper extends EditorHelper
 				_date = _dateFormat.format(dtg.getDate());
 				_time = _longTimeFormat.format(dtg.getDate());
 			}
-			
-			_originalDate = new String( _date);
-			_originalTime = new String(_time);
+
+			_originalDate = _date;
+			_originalTime = _time;
 		}
 
 		protected void firePropertyChanged(String propName)
 		{
 			// Control ctl = (Control)element.getControl();
-			//			
+			//
 			// if (ctl == null) {
 			// // the GUIView is probably hidden in this case
 			// return;
@@ -126,11 +128,11 @@ public class DTGHelper extends EditorHelper
 			if (ID_DATE.equals(propName))
 			{
 				// ok, extract the year component
-				res = new String(_date);
+				res = _date;
 			}
 			if (ID_TIME.equals(propName))
 			{
-				res = new String(_time);
+				res = _time;
 			}
 			return res;
 		}
@@ -141,19 +143,19 @@ public class DTGHelper extends EditorHelper
 			try
 			{
 				long millis = 0;
-				
+
 				// see if they have been set yet
-				if(!_date.equals(UNSET))
+				if (!_date.equals(UNSET))
 				{
 					Date date = _dateFormat.parse(_date);
 					millis += date.getTime();
 				}
-				
-				if(!_time.equals(UNSET))
+
+				if (!_time.equals(UNSET))
 				{
 					// first try with the long format
 					Date time = null;
-					
+
 					try
 					{
 						time = _longTimeFormat.parse(_time);
@@ -162,17 +164,18 @@ public class DTGHelper extends EditorHelper
 					{
 						time = _shortTimeFormat.parse(_time);
 					}
-					
-					if(time != null)
+
+					if (time != null)
 						millis += time.getTime();
 				}
-				
-				if(millis != 0)
+
+				if (millis != 0)
 				{
 					res = new HiResDate(millis, 0);
 				}
-				
-			} catch (ParseException e)
+
+			}
+			catch (ParseException e)
 			{
 				// fall back on the original value
 				CorePlugin.logError(Status.ERROR, "Failed to produce dtg", e);
@@ -189,11 +192,11 @@ public class DTGHelper extends EditorHelper
 			boolean res = false;
 			if (ID_DATE.equals(propName))
 			{
-				res =  !_date.equals(_originalDate);
+				res = !_date.equals(_originalDate);
 			}
 			if (ID_TIME.equals(propName))
 			{
-				res =  !_time.equals(_originalTime);
+				res = !_time.equals(_originalTime);
 			}
 			return res;
 		}
@@ -202,11 +205,11 @@ public class DTGHelper extends EditorHelper
 		{
 			if (ID_DATE.equals(propName))
 			{
-				_date = new String(_originalDate);
+				_date = _originalDate;
 			}
 			if (ID_TIME.equals(propName))
 			{
-				_time = new String(_originalTime);
+				_time = _originalTime;
 			}
 		}
 
@@ -214,11 +217,11 @@ public class DTGHelper extends EditorHelper
 		{
 			if (ID_DATE.equals(propName))
 			{
-				_date = new String((String) value);
+				_date = (String) value;
 			}
 			if (ID_TIME.equals(propName))
 			{
-				_time = new String((String) value);
+				_time = (String) value;
 			}
 			firePropertyChanged((String) propName);
 		}
@@ -226,7 +229,7 @@ public class DTGHelper extends EditorHelper
 		public String toString()
 		{
 			String res;
-			if((_date == UNSET) || (_time == UNSET))
+			if ((_date == UNSET) || (_time == UNSET))
 			{
 				res = "unset";
 			}
@@ -255,7 +258,8 @@ public class DTGHelper extends EditorHelper
 		return null;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings(
+	{ "rawtypes" })
 	public boolean editsThis(Class target)
 	{
 		return (target == HiResDate.class);

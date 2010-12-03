@@ -75,10 +75,8 @@ public class PlottableWrapper extends EditableWrapper
 			PlottableWrapper pw = (PlottableWrapper) arg0;
 			targetPlottable = pw.getPlottable();
 		}
-		else if (arg0 instanceof Plottable)
-		{
+		else
 			targetPlottable = (Plottable) arg0;
-		}
 
 		// right, have we found something to match?
 		if (targetPlottable != null)
@@ -88,5 +86,14 @@ public class PlottableWrapper extends EditableWrapper
 
 		return res;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return _editable.hashCode();
+	}
+	
+	
+	
 
 }
