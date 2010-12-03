@@ -11,18 +11,6 @@
 	<property name="repoDest" value="${deployDest}/Repository" />
 	<property name="osxExe" value="${deployDest}/DebriefNG/DebriefNG.app/Contents/MacOS/DebriefNG" />
 
-	<target name="clean">
-		<!-- note, the build fails if there's compiled code in the build directory -->
-		<delete dir="${basedir}/buildDirectory" />
-		<delete file="${debriefDest}" />
-		<delete dir="${repoDest}" />
-		<delete file="${deployDest}/repository.zip" />
-		<delete dir="${deployDest}/DebriefNG" />
-		
-		<!-- and throw in an update -->
-		<antcall target="refresh_changed_directories"/>
-	</target>
-
 	<target name="build" depends="clean">
 
 		<property name="builder" value="../deploy/${archivePrefix}" />
@@ -43,6 +31,24 @@
 		<echo message="about to move the zips...">
 		</echo>
 
+	</target>
+
+
+
+	<target name="compileDocbook" description="convenience function to compile the user guide">
+		<ant dir="../org.mwc.debrief.help" target="docbook_to_eclipse" antfile="collate_docbook.xml" />
+	</target>
+
+	<target name="clean">
+		<!-- note, the build fails if there's compiled code in the build directory -->
+		<delete dir="${basedir}/buildDirectory" />
+		<delete file="${debriefDest}" />
+		<delete dir="${repoDest}" />
+		<delete file="${deployDest}/repository.zip" />
+		<delete dir="${deployDest}/DebriefNG" />
+
+		<!-- and throw in an update -->
+		<antcall target="refresh_changed_directories" />
 	</target>
 
 
@@ -131,17 +137,17 @@
 	</target>
 
 
-	<target name="copy_to_usb"  depends="deploy">
+	<target name="copy_to_usb" depends="deploy">
 
 		<property name="usbDest" value="/Volumes/USB DISK/" />
 
 		<echo message="ditching existing versions" />
-		<delete file="${usbDest}/Repository.zip"  verbose="true"/>
-		<delete dir="${usbDest}/DebriefNG"  verbose="true"/>
+		<delete file="${usbDest}/Repository.zip" verbose="true" />
+		<delete dir="${usbDest}/DebriefNG" verbose="true" />
 
 		<echo message="copying new versions" />
 
-		<copy todir="${usbDest}/" verbose="true" >
+		<copy todir="${usbDest}/" verbose="true">
 			<fileset file="${deployDest}/Repository.zip" />
 		</copy>
 	</target>
