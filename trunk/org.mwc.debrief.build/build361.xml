@@ -17,6 +17,10 @@
 		<delete file="${debriefDest}" />
 		<delete dir="${repoDest}" />
 		<delete file="${deployDest}/repository.zip" />
+		<delete dir="${deployDest}/DebriefNG" />
+		
+		<!-- and throw in an update -->
+		<antcall target="refresh_changed_directories"/>
 	</target>
 
 	<target name="build" depends="clean">
@@ -126,13 +130,10 @@
 		<chmod file="${osxExe}" perm="ugo+x" />
 	</target>
 
-	<property name="usbDest" value="/Volumes/USB DISK/" />
-
-	<target name="can_do_usb_copy">
-		<available property="target.exists" file="${usbDest}" />
-	</target>
 
 	<target name="copy_to_usb"  depends="deploy">
+
+		<property name="usbDest" value="/Volumes/USB DISK/" />
 
 		<echo message="ditching existing versions" />
 		<delete file="${usbDest}/Repository.zip"  verbose="true"/>
