@@ -46,7 +46,7 @@
 
 		<antcall target="move_files_to_deploy_directory" />
 
-		<antcall target="provide_custom_verisons" />
+		<antcall target="provide_custom_versions" />
 
 		<antcall target="sort_out_exe_permissions" />
 
@@ -100,12 +100,12 @@
 		</copy>
 	</target>
 
-	<target name="provide_custom_verisons">
+	<target name="provide_custom_versions">
 		<!-- now unzip the dist, just in case anyone wants it that way -->
 		<unzip src="${debriefDest}" dest="${deployDest}" />
 
 		<!-- and zip the repo, to help move it -->
-		<zip basedir="${repoDest}" destfile="${deployDest}/repository.zip" />
+		<zip basedir="${repoDest}" destfile="${deployDest}/Repository.zip" />
 	</target>
 
 
@@ -140,8 +140,8 @@
 
 		<echo message="copying new versions" />
 
-		<copy todir="${usbDest}/">
-			<fileset file="${deployDest}/from_cda.bat" />
+		<copy verbose="true" todir="${usbDest}/">
+			<fileset file="${deployDest}/Repository.zip" />
 		</copy>
 	</target>
 
