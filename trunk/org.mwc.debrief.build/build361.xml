@@ -132,15 +132,15 @@
 		<available property="target.exists" file="${usbDest}" />
 	</target>
 
-	<target name="copy_to_usb">
+	<target name="copy_to_usb"  depends="deploy">
 
 		<echo message="ditching existing versions" />
-		<delete file="${usbDest}/Repository.zip" />
-		<delete dir="${usbDest}/DebriefNG" />
+		<delete file="${usbDest}/Repository.zip"  verbose="true"/>
+		<delete dir="${usbDest}/DebriefNG"  verbose="true"/>
 
 		<echo message="copying new versions" />
 
-		<copy verbose="true" todir="${usbDest}/">
+		<copy todir="${usbDest}/" verbose="true" >
 			<fileset file="${deployDest}/Repository.zip" />
 		</copy>
 	</target>
