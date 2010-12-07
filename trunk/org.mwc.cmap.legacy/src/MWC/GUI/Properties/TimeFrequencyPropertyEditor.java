@@ -80,6 +80,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
     {
       "All",
       "1 Secs",
+      "2 Secs",
+      "3 Secs",
       "5 Secs",
       "10 Secs",
       "15 Secs",
@@ -99,6 +101,8 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
     {
       SHOW_ALL_FREQUENCY,
       1 * 1000000l,
+      2 * 1000000l,
+      3 * 1000000l,
       5 * 1000000l,
       10 * 1000000l,
       15 * 1000000l,

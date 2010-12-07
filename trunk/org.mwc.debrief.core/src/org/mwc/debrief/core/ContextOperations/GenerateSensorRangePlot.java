@@ -40,6 +40,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.SplittableLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -49,8 +50,8 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldDistance.ArrayLength;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
 /**
@@ -84,6 +85,25 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			{
 				// cool, go for it
 				candidates.add((SensorWrapper) thisE);
+			}
+			else if (thisE instanceof SplittableLayer)
+			{
+				// aah, this holds children - go through them. It may be the 
+				//  'sensors' layer
+				SplittableLayer layer = (SplittableLayer) thisE;
+				Enumeration<Editable> children = layer.elements();
+				if(children != null)
+				{
+					while(children.hasMoreElements())
+					{
+						Editable thisC = children.nextElement();
+						// is this a sensor wrapper layer?
+						if(thisC instanceof SensorWrapper)
+						{
+							candidates.add((SensorWrapper) thisC);
+						}
+					}
+				}
 			}
 			else if (thisE instanceof TrackWrapper)
 			{
@@ -175,7 +195,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					// sort out the title
 					// ////////////////////////////////////////////////
 					// get the title to use
-					String theTitle = "Sensor Range vs Time plot";
+					String theTitle = "(Sensor) Range to " + primary.getName() + " vs Time plot";
 
 					// and the plot itself
 					String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";

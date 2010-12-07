@@ -51,9 +51,12 @@ public class NewSolutionWizard extends Wizard
 		if (_track != null)
 		{
 			// ok, we need to let the user enter the solution wrapper name
-			namePage = new EnterStringPage(null, "NameHere", PAGE_TITLE,
-					"This wizard will lead you through creating a new TUA Ellipse.\n" +
-					"The ellipse created to represent your solution must be placed\n"
+			namePage = new EnterStringPage(
+					null,
+					"NameHere",
+					PAGE_TITLE,
+					"This wizard will lead you through creating a new TUA Ellipse.\n"
+							+ "The ellipse created to represent your solution must be placed\n"
 							+ "inside a named block, please provide a name",
 					"a one-word phrase for this block of ellipses", imagePath,
 					helpContext);
@@ -145,14 +148,12 @@ public class NewSolutionWizard extends Wizard
 		TMAContactWrapper tw = new TMAContactWrapper();
 
 		SolutionDataItem sol = (SolutionDataItem) solutionPage.getEditable();
-		tw.buildSetTargetState(sol.getCourse(), sol.getSpeed().getValueIn(
-				WorldSpeed.Kts), 0);
+		tw.buildSetTargetState(sol.getCourse(),
+				sol.getSpeed().getValueIn(WorldSpeed.Kts), 0);
 		WorldDistance radius = rangePage.getRange();
 		tw.buildSetEllipse(0, radius, radius);
-		double brgRads = MWC.Algorithms.Conversions.Degs2Rads(rngBearingPage
-				.getBearingDegs());
-		tw.buildSetVector(brgRads, rngBearingPage.getRange(),
-						0);
+		tw.buildSetVector(rngBearingPage.getBearingDegs(),
+				rngBearingPage.getRange(), 0);
 		tw.setRange(rngBearingPage.getRange());
 
 		tw.setTMATrack(_tma);
