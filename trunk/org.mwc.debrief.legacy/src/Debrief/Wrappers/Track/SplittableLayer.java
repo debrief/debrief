@@ -11,6 +11,11 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 
+/** class that includes functionality to split it's children if/when they're more 
+ * than 15 mins from the previous child
+ * @author ianmayo
+ *
+ */
 public class SplittableLayer extends BaseLayer
 {
 	public class SplittableInfo extends BaseLayer.LayerInfo
@@ -41,7 +46,7 @@ public class SplittableLayer extends BaseLayer
 
 	}
 
-	private static final long DELTA_LIMIT = 1000 * 60 * 15; // 30 mins
+	private static final long DELTA_LIMIT = 1000 * 60 * 15; // 15 mins
 
 	@FireExtended
 	public void AutoSplitTracks()
