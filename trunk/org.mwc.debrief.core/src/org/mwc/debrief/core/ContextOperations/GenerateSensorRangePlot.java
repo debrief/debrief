@@ -88,17 +88,17 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			}
 			else if (thisE instanceof SplittableLayer)
 			{
-				// aah, this holds children - go through them. It may be the 
-				//  'sensors' layer
+				// aah, this holds children - go through them. It may be the
+				// 'sensors' layer
 				SplittableLayer layer = (SplittableLayer) thisE;
 				Enumeration<Editable> children = layer.elements();
-				if(children != null)
+				if (children != null)
 				{
-					while(children.hasMoreElements())
+					while (children.hasMoreElements())
 					{
 						Editable thisC = children.nextElement();
 						// is this a sensor wrapper layer?
-						if(thisC instanceof SensorWrapper)
+						if (thisC instanceof SensorWrapper)
 						{
 							candidates.add((SensorWrapper) thisC);
 						}
@@ -194,12 +194,6 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					// ////////////////////////////////////////////////
 					// sort out the title
 					// ////////////////////////////////////////////////
-					// get the title to use
-					String theTitle = "(Sensor) Range to " + primary.getName() + " vs Time plot";
-
-					// and the plot itself
-					String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
-					page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
 					// ///////////////////////////////////
 					// NOW for the time range
@@ -248,15 +242,30 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 							endTime = primary.getEndDTG();
 					}
 
-
 					// right, now for the data
 					AbstractSeriesDataset ds = getDataSeries(primary, candidates,
 							startTime, endTime);
 
-					// ok, try to retrieve the view
-					IViewReference plotRef = page.findViewReference(plotId, theTitle);
-					XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-					plotter.showPlot(theTitle, ds, "Range (m)", null, thePlotId);
+					// aah, did it work?
+					if (ds != null)
+					{ // get the title to use
+						String theTitle = "(Sensor) Range to " + primary.getName()
+								+ " vs Time plot";
+
+						// and the plot itself
+						String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
+						page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
+
+						// ok, try to retrieve the view
+						IViewReference plotRef = page.findViewReference(plotId, theTitle);
+						XYPlotView plotter = (XYPlotView) plotRef.getView(true);
+						plotter.showPlot(theTitle, ds, "Range (m)", null, thePlotId);
+					}
+					else
+					{
+						CorePlugin.showMessage("View sensor range plot", "Sorry, the track and sensor datasets do not overlap");
+
+					}
 				}
 				catch (PartInitException e)
 				{
