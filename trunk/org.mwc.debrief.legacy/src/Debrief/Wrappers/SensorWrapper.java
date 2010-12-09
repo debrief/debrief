@@ -145,6 +145,7 @@
 
 package Debrief.Wrappers;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Iterator;
@@ -184,6 +185,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	private WorldDistance.ArrayLength _sensorOffset = new WorldDistance.ArrayLength(
 			0);
 
+	
 	/**
 	 * the (optional) indicator for whether the centre of this sensor is in a
 	 * straight line fwd/backward of the attack datum, or whether it's a dragged
@@ -492,6 +494,27 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 	}
 
+	
+	/** get the parent's color
+	 * Note: we're wrapping the color paramter with defaultColor
+	 * so that we can provide more understable attribute names
+	 * in property editor
+	 * @return
+	 */
+	public Color getDefaultColor()
+	{
+		return super.getColor();
+	}
+
+	/** just pass the property onto the parent
+	 * 
+	 * @param defaultColor
+	 */
+	public void setDefaultColor(Color defaultColor)
+	{
+		super.setColor(defaultColor);
+	}
+	
 	// ///////////////////////////////////////////
 	// constructor
 	// ///////////////////////////////////////////
@@ -560,6 +583,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		clearChildOffsets();
 	}
 
+	
+	
+	
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
 	// //////////////////////////////////////////////////////////////////////////
@@ -595,7 +621,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 						prop("Name", "the name for this sensor"),
 						prop("Visible", "whether this sensor data is visible"),
 						prop("LineThickness", "the thickness to draw these sensor lines"),
-						prop("Color", "the colour to plot this set of sensor data"),
+						prop("DefaultColor", "the default colour to plot this set of sensor data"),
 						prop("SensorOffset",
 								"the forward/backward offset (m) of this sensor from the attack datum"),
 						prop(

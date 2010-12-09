@@ -60,6 +60,7 @@
 
 package Debrief.Wrappers;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Iterator;
@@ -161,6 +162,28 @@ public final class TMAWrapper extends TacticalDataWrapper
 		return _myEditor;
 	}
 
+
+	
+	/** get the parent's color
+	 * Note: we're wrapping the color paramter with defaultColor
+	 * so that we can provide more understable attribute names
+	 * in property editor
+	 * @return
+	 */
+	public Color getDefaultColor()
+	{
+		return super.getColor();
+	}
+
+	/** just pass the property onto the parent
+	 * 
+	 * @param defaultColor
+	 */
+	public void setDefaultColor(Color defaultColor)
+	{
+		super.setColor(defaultColor);
+	}
+	
 	public boolean getShowBearingLines()
 	{
 		return _showBearingLines;
@@ -511,7 +534,7 @@ public final class TMAWrapper extends TacticalDataWrapper
 						prop("Name", "the name for this tma solution"),
 						prop("Visible", "whether this solution data is visible"),
 						prop("LineThickness", "the thickness to draw these solution lines"),
-						prop("Color", "the colour to plot this set of solution data"),
+						prop("DefaultColor", "the default colour to plot this set of solution data"),
 						prop("ShowBearingLines", "whether to show bearing lines to TUAs"),
 						prop("ShowLabels", "whether to show labels on TUAs") };
 
