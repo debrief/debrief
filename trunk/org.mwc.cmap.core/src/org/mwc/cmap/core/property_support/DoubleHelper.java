@@ -5,6 +5,7 @@ package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 public class DoubleHelper extends EditorHelper
 {
@@ -53,7 +54,9 @@ public class DoubleHelper extends EditorHelper
 
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new TextCellEditor(parent);
+		TextCellEditor res = new TextCellEditor(parent);
+		
+		return res;
 	}
 
 }

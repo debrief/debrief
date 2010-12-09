@@ -430,7 +430,17 @@ abstract public class CoreEditableWizardPage extends WizardPage
 						if (newEditor instanceof Text)
 						{
 							Text txtEditor = (Text) newEditor;
-							txtEditor.setText(currentVal.toString());
+							String currentStr = currentVal.toString();
+							
+							// just check if this is 0.0, in which case
+							// we wish to provid e a little padding
+							if("0.0".equals(currentStr))
+							{
+								currentStr = "0.0   ";
+							}
+							
+							// ok, initialise it
+							txtEditor.setText(currentStr);
 
 							// do we have a modified listener?
 							if (_txtModifiedListener != null)
