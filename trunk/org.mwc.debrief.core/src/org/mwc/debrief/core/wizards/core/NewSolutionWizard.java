@@ -10,8 +10,8 @@ import org.mwc.cmap.core.wizards.EnterStringPage;
 import org.mwc.cmap.core.wizards.MessageWizardPage;
 import org.mwc.cmap.core.wizards.RangeBearingPage;
 import org.mwc.cmap.core.wizards.SelectColorPage;
-import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
-import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
+import org.mwc.debrief.core.wizards.EnterSolutionPage;
+import org.mwc.debrief.core.wizards.EnterSolutionPage.SolutionDataItem;
 
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;

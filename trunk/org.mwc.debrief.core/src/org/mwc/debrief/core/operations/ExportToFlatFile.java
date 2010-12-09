@@ -14,7 +14,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.wizards.FlatFile.FlatFilenameWizardPage;
+import org.mwc.debrief.core.wizards.FlatFilenameWizardPage;
 
 import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
 import MWC.GenericData.TimePeriod;

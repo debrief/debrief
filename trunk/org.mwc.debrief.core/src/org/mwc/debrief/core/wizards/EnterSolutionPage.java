@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.wizards.s2r;
+package org.mwc.debrief.core.wizards;
 
 import java.beans.PropertyDescriptor;
 
@@ -69,7 +69,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 		return descriptors;
 	}
 
-	protected Editable createMe()
+	public Editable createMe()
 	{
 		return _myWrapper;
 	}

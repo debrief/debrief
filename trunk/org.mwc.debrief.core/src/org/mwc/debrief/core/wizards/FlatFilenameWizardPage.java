@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.wizards.FlatFile;
+package org.mwc.debrief.core.wizards;
 
 import java.io.File;
 

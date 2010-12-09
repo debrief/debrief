@@ -3,7 +3,8 @@ package org.mwc.debrief.core.wizards.s2r;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.mwc.cmap.core.wizards.RangeBearingPage;
-import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
+import org.mwc.debrief.core.wizards.EnterSolutionPage;
+import org.mwc.debrief.core.wizards.EnterSolutionPage.SolutionDataItem;
 
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
