@@ -449,8 +449,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.addFix(fw5);
 
 			// check that we're not interpolating
-			assertFalse("interpolating switched off by default", tw
-					.getInterpolatePoints());
+			assertFalse("interpolating switched off by default",
+					tw.getInterpolatePoints());
 
 			// ok, get on with it.
 			Watchable[] list = tw.getNearestTo(new HiResDate(200, 20000));
@@ -922,8 +922,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			if (editable instanceof TrackWrapper)
 			{
 				TrackWrapper tw = (TrackWrapper) editable;
-				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(), tw
-						.getEndDTG());
+				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(),
+						tw.getEndDTG());
 			}
 			else if (editable instanceof TrackSegment)
 			{
@@ -1274,11 +1274,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			seg.setWrapper(this);
 			_thePositions.addSegment((TrackSegment) point);
 			done = true;
+			
+			// hey, sort out the positions
+			sortOutRelativePositions();
 		}
 
 		if (!done)
 		{
-			MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
+			MWC.GUI.Dialogs.DialogFactory.showMessage(
+					"Add point",
 					"Sorry it is not possible to add:" + point.getName() + " to "
 							+ this.getName());
 		}
@@ -2445,6 +2449,75 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
+	 * if we've got a relative track segment, it only learns where its individual
+	 * fixes are once they've been initialised. This is where we do it.
+	 */
+	private void sortOutRelativePositions()
+	{
+		Enumeration<Editable> segments = _thePositions.elements();
+		while (segments.hasMoreElements())
+		{
+			TrackSegment seg = (TrackSegment) segments.nextElement();
+
+			// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
+			// RELATIVE MODE
+			boolean isRelative = seg.getPlotRelative();
+			WorldLocation tmaLastLoc = null;
+			long tmaLastDTG = 0;
+
+			// if it's not a relative track, and it's not visible, we don't
+			// need to
+			// work with ut
+			if (!isRelative)
+				continue;
+
+			final Enumeration<Editable> fixWrappers = seg.elements();
+			while (fixWrappers.hasMoreElements())
+			{
+				final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+
+				// now there's a chance that our fix has forgotten it's parent,
+				// particularly if it's the victim of a
+				// copy/paste operation. Tell it about it's children
+				fw.setTrackWrapper(this);
+
+				// ok, are we in relative?
+				if (isRelative)
+				{
+					long thisTime = fw.getDateTimeGroup().getDate().getTime();
+
+					// ok, is this our first location?
+					if (tmaLastLoc == null)
+					{
+						tmaLastLoc = new WorldLocation(seg.getTrackStart());
+					}
+					else
+					{
+						// calculate a new vector
+						long timeDelta = thisTime - tmaLastDTG;
+						if (lastFix != null)
+						{
+							double speedKts = lastFix.getSpeed();
+							double courseRads = lastFix.getCourse();
+							double depthM = lastFix.getDepth();
+							// use the value of depth as read in from the file
+							tmaLastLoc.setDepth(depthM);
+							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+									courseRads);
+							tmaLastLoc.addToMe(thisVec);
+						}
+					}
+					lastFix = fw;
+					tmaLastDTG = thisTime;
+
+					// dump the location into the fix
+					fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+				}
+			}
+		}
+	}
+
+	/**
 	 * draw this track (we can leave the Positions to draw themselves)
 	 * 
 	 * @param dest
@@ -3487,8 +3560,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
-			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA
-					.getOffset());
+			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1,
+					theTMA.getOffset());
 			RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
 
 			// update the freq's
@@ -3517,8 +3590,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			FixWrapper t1Start = (FixWrapper) p1.first();
 
 			// put the lists back into plottable layers
-			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1, t1Start
-					.getLocation(), null, null);
+			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
+					t1Start.getLocation(), null, null);
 			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null,
 					null);
 
