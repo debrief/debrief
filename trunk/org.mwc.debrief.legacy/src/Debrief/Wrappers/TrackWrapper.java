@@ -73,6 +73,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	// member variables
 	// //////////////////////////////////////
 
+	private static final String SOLUTIONS_LAYER_NAME = "Solutions";
+
+	public static final String SENSORS_LAYER_NAME = "Sensors";
+
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1171,9 +1175,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public TrackWrapper()
 	{
 		_mySensors = new SplittableLayer(true);
-		_mySensors.setName("Sensors");
+		_mySensors.setName(SENSORS_LAYER_NAME);
 		_mySolutions = new BaseLayer(true);
-		_mySolutions.setName("Solutions");
+		_mySolutions.setName(SOLUTIONS_LAYER_NAME);
 
 		// create a property listener for when fixes are moved
 		_locationListener = new PropertyChangeListener()

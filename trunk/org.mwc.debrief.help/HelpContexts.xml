@@ -58,7 +58,11 @@
 		<topic href="html/legacy/tma_data.html#pre_tma_data" label="How to load large volumes of TUAs"/>
 	</context>	
 	
-	
+	<context id="NewSensor">
+		<description>Working with sensor data</description>
+		<topic href="html/legacy/sensor_data.html#sensor_Data_intro" label="Introduction to sensor dtaa"/>
+		<topic href="html/legacy/sensor_data.html#prepare_sensor_data" label="How to get sensor data into Debrief"/>
+	</context>	
 		
 	<context id="LengthPrefs">
 		<description>Stores and manipulates a set of agreed sensor offset distances</description>
