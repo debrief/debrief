@@ -3,9 +3,6 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -26,12 +23,10 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.core.wizards.core.NewSolutionWizard;
+import org.mwc.debrief.core.wizards.core.NewContactWizard;
 
-import Debrief.Wrappers.TMAContactWrapper;
-import Debrief.Wrappers.TMAWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.BaseLayer;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -41,42 +36,22 @@ import MWC.GenericData.HiResDate;
  * @author ian.mayo
  * 
  */
-public class GenerateSensorContact implements RightClickContextItemGenerator
+public class GenerateNewSensorContact implements RightClickContextItemGenerator
 {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		public final void testIWork()
-		{
-
-		}
-	}
-
-	private static class AddSolution extends CMAPOperation
+	private static class AddSensorCut extends CMAPOperation
 	{
 
-		private Layers _layers;
-		private TrackWrapper _track;
-		private TMAWrapper _solutionWrapper;
-		private TMAContactWrapper _solution;
+		final private Layers _layers;
+		final private SensorWrapper _sensorWrapper;
+		final private SensorContactWrapper _contact;
 
-		public AddSolution(Layers layers, TrackWrapper track,
-				TMAWrapper solutionWrapper, TMAContactWrapper solution)
+		public AddSensorCut(Layers layers, SensorWrapper sensorWrapper,
+				SensorContactWrapper contact)
 		{
-			super("Create TMA ellipse");
-			_track = track;
-			_solutionWrapper = solutionWrapper;
-			_solution = solution;
+			super("Create sensor cut");
+			_sensorWrapper = sensorWrapper;
+			_contact = contact;
 			_layers = layers;
 		}
 
@@ -84,42 +59,7 @@ public class GenerateSensorContact implements RightClickContextItemGenerator
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			// do we know the parent track?
-			if (_track != null)
-			{
-				// right, just see if a solution with this name already exists
-				BaseLayer solLayer = _track.getSolutions();
-
-				if (solLayer != null)
-				{
-					Collection<Editable> theSols = solLayer.getData();
-					for (Iterator<Editable> iterator = theSols.iterator(); iterator
-							.hasNext();)
-					{
-						Editable editable = (Editable) iterator.next();
-						TMAWrapper sw = (TMAWrapper) editable;
-						if (sw.getName().equals(_solutionWrapper.getName()))
-						{
-							// remember this solution
-							_solutionWrapper = sw;
-
-							// and forget about the track
-							_track = null;
-							break;
-						}
-					}
-				}
-
-				// did we find an existing solution?
-				if (_track != null)
-				{
-					// nope, in that case add our solution to the track
-					_track.add(_solutionWrapper);
-				}
-			}
-
-			// add the solution to the wrapper
-			_solutionWrapper.add(_solution);
+			_sensorWrapper.add(_contact);
 
 			// sorted, do the update
 			_layers.fireExtended();
@@ -130,20 +70,21 @@ public class GenerateSensorContact implements RightClickContextItemGenerator
 		@Override
 		public boolean canRedo()
 		{
-			return false;
+			return true;
 		}
 
 		@Override
 		public boolean canUndo()
 		{
-			return false;
+			return true;
 		}
 
 		@Override
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			return null;
+			_sensorWrapper.removeElement(_contact);
+			return Status.OK_STATUS;
 		}
 
 	}
@@ -173,32 +114,17 @@ public class GenerateSensorContact implements RightClickContextItemGenerator
 
 			// ok, do I know how to create a TMA segment from this?
 			Editable onlyOne = subjects[0];
-			if (onlyOne instanceof TrackWrapper)
+			if (onlyOne instanceof SensorWrapper)
 			{
-				final TrackWrapper tw = (TrackWrapper) onlyOne;
+				final SensorWrapper tw = (SensorWrapper) onlyOne;
 				// cool wrap it in an action.
-				_myAction = new Action("Generate TUA Ellipse for this track")
+				_myAction = new Action("Generate contact for this sensor")
 				{
 					@Override
 					public void run()
 					{
 						// get the supporting data
-						NewSolutionWizard wizard = new NewSolutionWizard(tNow, tw, null);
-						runOperation(theLayers, wizard);
-					}
-				};
-			}
-			else if (onlyOne instanceof TMAWrapper)
-			{
-				final TMAWrapper tw = (TMAWrapper) onlyOne;
-				// cool wrap it in an action.
-				_myAction = new Action("Generate TUA Ellipse within this group")
-				{
-					@Override
-					public void run()
-					{
-						// get the supporting data
-						NewSolutionWizard wizard = new NewSolutionWizard(tNow, null, tw);
+						NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
 						runOperation(theLayers, wizard);
 					}
 				};
@@ -218,7 +144,7 @@ public class GenerateSensorContact implements RightClickContextItemGenerator
 	 * @param wizard
 	 * @param helpContext
 	 */
-	private void runOperation(final Layers theLayers, NewSolutionWizard wizard)
+	private void runOperation(final Layers theLayers, NewContactWizard wizard)
 	{
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
@@ -230,14 +156,13 @@ public class GenerateSensorContact implements RightClickContextItemGenerator
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
-			TMAWrapper newSolWrapper = wizard.getSolutionWrapper();
-			;
-			TMAContactWrapper newSol = wizard.getSolution();
-			TrackWrapper theTrack = wizard.getTrack();
+			SensorWrapper senWrapper = wizard.getSensorWrapper();
+
+			SensorContactWrapper newCut = wizard.getContact();
 			// ok, go for it.
 			// sort it out as an operation
-			IUndoableOperation convertToTrack1 = new AddSolution(theLayers, theTrack,
-					newSolWrapper, newSol);
+			IUndoableOperation convertToTrack1 = new AddSensorCut(theLayers,
+					senWrapper, newCut);
 
 			// ok, stick it on the buffer
 			runIt(convertToTrack1);

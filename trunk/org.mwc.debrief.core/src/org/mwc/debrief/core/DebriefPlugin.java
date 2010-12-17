@@ -15,6 +15,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateNewSensor;
+import org.mwc.debrief.core.ContextOperations.GenerateNewSensorContact;
 import org.mwc.debrief.core.ContextOperations.GenerateSensorRangePlot;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTUASolution;
@@ -172,6 +173,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new GenerateTUASolution());
 		RightClickSupport.addRightClickGenerator(new GenerateSensorRangePlot());
 		RightClickSupport.addRightClickGenerator(new GenerateNewSensor());
+		RightClickSupport.addRightClickGenerator(new GenerateNewSensorContact());
 
 
 		// and the Replay importer/exporter (used to export items from the
