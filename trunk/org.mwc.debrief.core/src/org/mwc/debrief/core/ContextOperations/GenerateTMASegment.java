@@ -153,6 +153,8 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				{
 					wraps.add((SensorContactWrapper) numer.nextElement());
 				}
+				if(!wraps.isEmpty())
+				{
 				SensorContactWrapper[] items = new SensorContactWrapper[wraps.size()];
 				final SensorContactWrapper[] finalItems = wraps.toArray(items);
 				final SensorContactWrapper firstContact = finalItems[0];
@@ -225,6 +227,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 							System.err.println("user cancelled");
 					}
 				};
+				}; // whether there are any cuts for this sensor
 			}
 		}
 		else
