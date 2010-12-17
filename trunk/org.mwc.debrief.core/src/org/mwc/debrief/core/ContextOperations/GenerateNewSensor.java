@@ -40,7 +40,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 		public AddSensor(Layers layers, Layer parent,
 				SensorWrapper sensor)
 		{
-			super("Create TMA ellipse");
+			super("Create sensor");
 			_parent = parent;
 			_sensorWrapper = sensor;
 			_layers = layers;
@@ -61,7 +61,7 @@ public class GenerateNewSensor implements RightClickContextItemGenerator
 		@Override
 		public boolean canRedo()
 		{
-			return false;
+			return true;
 		}
 
 		@Override
