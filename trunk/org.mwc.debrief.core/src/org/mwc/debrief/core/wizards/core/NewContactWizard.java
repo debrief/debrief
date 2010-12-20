@@ -17,7 +17,7 @@ import MWC.GenericData.WorldDistance;
 
 public class NewContactWizard extends Wizard
 {
-	private static final String PAGE_TITLE = "New solution";
+	private static final String PAGE_TITLE = "New sensor cut";
 	// SelectOffsetPage selectOffsetPage;
 	// EnterSolutionPage enterSolutionPage;
 	private HiResDate _tNow;
@@ -37,12 +37,12 @@ public class NewContactWizard extends Wizard
 
 	public void addPages()
 	{
-		final String imagePath = "images/NewEllipse.png";
-		final String helpContext = "org.mwc.debrief.help.TUA_Data";
+		final String imagePath = "images/NewSensor.png";
+		final String helpContext = "org.mwc.debrief.help.NewSensorContact";
 
 		// ok, provide an intro
 		String introMessage = "This wizard will lead you through creating a new cut\n"
-			+ "for the selected sensor.";
+				+ "for the selected sensor.";
 		MessageWizardPage introPage = new MessageWizardPage("introMessage",
 				PAGE_TITLE, "Introduction", introMessage, imagePath);
 		addPage(introPage);
@@ -58,21 +58,22 @@ public class NewContactWizard extends Wizard
 		// now for the easy fields
 		// ok, we need to let the user enter the solution wrapper name
 		rngBearingPage = new RangeBearingPage(null, PAGE_TITLE,
-				"Specify the range/bearing to the solution",
-				"range from ownship to centre of ellipse",
-				"bearing from ownship to centre of ellipse (degs)", imagePath,
-				helpContext);
+				"Specify the range/bearing to the contact",
+				"range to contact (0.0 if not known)", "bearing to contact (degs)",
+				imagePath, helpContext);
 		addPage(rngBearingPage);
+
+		// set some default data - like zero range
+		rngBearingPage.setData(new WorldDistance(0, WorldDistance.NM), 270);
 
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
-				"Now format the new ellipse", "The color for this new ellipse",
+				"Now format the new sensor cut", "The color for this new sensur cut",
 				imagePath, helpContext);
 		addPage(colorPage);
 
-		String message = "The solution will now be added to the specified track, \n"
-				+ "and provided with the default ellipse size - you\n"
-				+ "can customise the ellipse further in the Properties window";
+		String message = "The sensor cut will now be added to the specified sensor, \n"
+				+ " you " + "can customise the cut further in the Properties window";
 		MessageWizardPage messagePage = new MessageWizardPage("finalMessage",
 				PAGE_TITLE, "Steps complete", message, imagePath);
 		addPage(messagePage);
@@ -111,14 +112,23 @@ public class NewContactWizard extends Wizard
 
 		double brgDegs = rngBearingPage.getBearingDegs();
 		WorldDistance rng = rngBearingPage.getRange();
-		
+
 		tw.setBearing(brgDegs);
-		if(rng != null)
-			tw.setRange(rng);
+		if (rng != null)
+		{
+			// ok, we have a range, check it's not zero
+			if (rng.getValue() != 0d)
+			{
+				// we have valid data - use it
+				tw.setRange(rng);
+			}
+		}
+		// ok, work through the other parameters
 		tw.setSensor(_sensor);
 		tw.setDTG(datePage.getDate());
 		tw.setColor(colorPage.getColor());
-		String label = MWC.Utilities.TextFormatting.FormatRNDateTime.toString(_tNow.getDate().getTime());
+		String label = MWC.Utilities.TextFormatting.FormatRNDateTime.toString(_tNow
+				.getDate().getTime());
 		tw.setLabel(label);
 		return tw;
 	}

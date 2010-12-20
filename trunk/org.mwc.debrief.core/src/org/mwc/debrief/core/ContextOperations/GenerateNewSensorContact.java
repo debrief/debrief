@@ -161,11 +161,11 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 			SensorContactWrapper newCut = wizard.getContact();
 			// ok, go for it.
 			// sort it out as an operation
-			IUndoableOperation convertToTrack1 = new AddSensorCut(theLayers,
+			IUndoableOperation addTheCut = new AddSensorCut(theLayers,
 					senWrapper, newCut);
 
 			// ok, stick it on the buffer
-			runIt(convertToTrack1);
+			runIt(addTheCut);
 		}
 	}
 
