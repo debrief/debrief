@@ -164,6 +164,11 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
   public String getAsText()
   {
     String res = null;
+    
+    // check we have a freq
+    if(_myFreq == null)
+    	return res;
+    
     long[] freqs = getFreqs();
     String[] tags = getTags();
     long current = _myFreq.getMicros();
