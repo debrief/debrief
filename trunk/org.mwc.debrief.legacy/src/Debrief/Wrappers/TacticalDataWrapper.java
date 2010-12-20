@@ -157,6 +157,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		long endTime = this.getEndDTG().getMicros();
 
 		Enumeration<Editable> _cuts = elements();
+		if(!_cuts.hasMoreElements())
+			 return;
+		
 		PlottableWrapperWithTimeAndOverrideableColor _last = (PlottableWrapperWithTimeAndOverrideableColor) _cuts
 				.nextElement();
 
