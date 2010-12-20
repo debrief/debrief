@@ -4204,8 +4204,8 @@ Platform C,-551</screen></para>
                                 </imageobject></mediaobject></screenshot></para>
                     <note>
                         <para>Note, if you haven't got a sensor array offsets file assigned, you can
-                            still enter a value by hand.  But, you do not need to specify the metres
-                            units.  For an array ofset of -400m, just enter -400.</para>
+                            still enter a value by hand. But, you do not need to specify the metres
+                            units. For an array ofset of -400m, just enter -400.</para>
                     </note>
                 </sect2>
                 <sect2 id="prepare_sensor_data">
@@ -4244,19 +4244,44 @@ Platform C,-551</screen></para>
                     <title>View plot of sensor range to target</title>
                     <para>Whilst Debrief makes it easy to view a plot of the range between two
                         vehicles, on occasion you may wish to view a time graph of the range from
-                        the array centre to the target.  This graph can contain the distance from
-                        one or more sensors to a particular target.  Open the graph by
-                        multi-selecting (&lt;ctrl-click>) a series of sensor wrappers and a single
-                        target track (alternately you could select one track plus the 'Sensors' item
-                        of another track if you wish to view a range plot that includes all the
-                        sensors).  If such a combination of objects have been selected in the Layer
-                        Manager, when you right-click on them you are offered the 'View sensor range
-                        plot' menu item:<screenshot><mediaobject><imageobject>
+                        the array centre to the target. This graph can contain the distance from one
+                        or more sensors to a particular target. Open the graph by multi-selecting
+                        (&lt;ctrl-click>) a series of sensor wrappers and a single target track
+                        (alternately you could select one track plus the 'Sensors' item of another
+                        track if you wish to view a range plot that includes all the sensors). If
+                        such a combination of objects have been selected in the Layer Manager, when
+                        you right-click on them you are offered the 'View sensor range plot' menu
+                                    item:<screenshot><mediaobject><imageobject>
                                     <imagedata fileref="figures/ViewSensorPlot.png" width=""/>
                                 </imageobject><caption>Popup menu with a track plus multiple sensor
                                     selected</caption></mediaobject></screenshot></para>
                     <para>Note, the Sensor Range Plot reflects the sensor offset length, plus
-                        whether the 'Worm in the hole' property is set for each sensor. </para>
+                        whether the 'Worm in the hole' (see <xref linkend="SectWormInHole"/> )
+                        property is set for each sensor. <tip><para>On occasion you may wish to view
+                                a sensor range plot of a sensor for which you haven't loaded sensor
+                                data.  That is, you've loaded &amp; displayed hull-mounted sonar
+                                data, but you wish to know the range from the centre of the array to
+                                the target.  Do this as follows:<orderedlist><listitem><para>Add a
+                                            new sensor to ownship, name it, and set the correct
+                                            sensor offset
+                                            distance</para></listitem><listitem><para>Move the time
+                                            controller to the start time of the period for which you
+                                            desire a range
+                                            track</para></listitem><listitem><para>Right-click on
+                                            this new sensor, and select <guilabel>Generate contact
+                                                for this sensor</guilabel>. Accept the default
+                                            values provided - you needn't worry about the range or
+                                            bearing, you're just setting a 'time
+                                        marker'</para></listitem><listitem><para>Now move the time
+                                            controller to the end time of the period you wish a
+                                            graph of</para></listitem><listitem><para>Right-click on
+                                            the sensor and add another
+                                    contact</para></listitem></orderedlist>You've now created a
+                                'dummy' block of towed array cuts. Right-click on the towed-array in
+                                the layer manager, and select 'Resample data at' 1-minute.  You can
+                                now select the towed-array data and the target track, right-click on
+                                select <guilabel>View sensor range plot</guilabel>
+                            </para></tip></para>
                 </sect2>
             </sect1>
             <sect1 id="analyse_sensor_data">
