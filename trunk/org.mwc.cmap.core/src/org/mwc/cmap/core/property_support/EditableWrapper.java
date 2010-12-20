@@ -295,6 +295,10 @@ public class EditableWrapper implements IPropertySource
 					GriddableSeriesMarker series =  (GriddableSeriesMarker) _editable;
 					Editable.EditorType editor = _editable.getInfo();
 					Editable sample = series.getSampleGriddable();
+					// just check we managed to get some sample data
+					if(sample == null)
+						return _myGridDescriptors;
+					
 					Griddable grid = (Griddable) sample.getInfo();
 
 					PropertyDescriptor[] properties = grid.getGriddablePropertyDescriptors();

@@ -3,9 +3,9 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 public class DoubleHelper extends EditorHelper
 {
