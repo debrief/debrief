@@ -148,16 +148,19 @@ package Debrief.Wrappers;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
@@ -185,13 +188,15 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	private WorldDistance.ArrayLength _sensorOffset = new WorldDistance.ArrayLength(
 			0);
 
-	
 	/**
 	 * the (optional) indicator for whether the centre of this sensor is in a
 	 * straight line fwd/backward of the attack datum, or whether it's a dragged
 	 * sensor that follows the track of it's host platform (like a towed array).
 	 */
 	private Boolean _wormInHole = Boolean.FALSE;
+
+	private HiResDate _lastDataFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	// //////////////////////////////////////
 	// constructors
@@ -202,10 +207,12 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	{
 		super(title);
 	}
-	
-	/** create a copy of the supplied sensor wrapper
+
+	/**
+	 * create a copy of the supplied sensor wrapper
 	 * 
-	 * @param other wrapper to copy
+	 * @param other
+	 *          wrapper to copy
 	 */
 	public SensorWrapper(final SensorWrapper other)
 	{
@@ -316,8 +323,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 			// maintain our time period
 			if (_timePeriod == null)
-				_timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(scw
-						.getDTG(), scw.getDTG());
+				_timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(
+						scw.getDTG(), scw.getDTG());
 			else
 				_timePeriod.extend(scw.getDTG());
 
@@ -325,10 +332,10 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			scw.setSensor(this);
 		}
 	}
-	
+
 	public final void append(Layer theLayer)
 	{
-		if(theLayer instanceof SensorWrapper)
+		if (theLayer instanceof SensorWrapper)
 		{
 			SensorWrapper other = (SensorWrapper) theLayer;
 			SortedSet<Editable> otherC = other._myContacts;
@@ -337,7 +344,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 				SensorContactWrapper thisC = (SensorContactWrapper) iterator.next();
 				this.add(thisC);
 			}
-			
+
 			// and clear him out...
 			otherC.clear();
 		}
@@ -358,6 +365,55 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	public final String toString()
 	{
 		return "Sensor:" + getName() + " (" + _myContacts.size() + " items)";
+	}
+
+	/**
+	 * method to allow the setting of data sampling frequencies for the track &
+	 * sensor data
+	 * 
+	 * @return frequency to use
+	 */
+	public final HiResDate getResampleDataAt()
+	{
+		return this._lastDataFrequency;
+	}
+
+	/**
+	 * set the data frequency (in seconds) for the track & sensor data
+	 * 
+	 * @param theVal
+	 *          frequency to use
+	 */
+	@FireExtended
+	public final void setResampleDataAt(final HiResDate theVal)
+	{
+		this._lastDataFrequency = theVal;
+
+		// have a go at trimming the start time to a whole number of intervals
+		final long interval = theVal.getMicros();
+
+		// do we have a start time (we may just be being tested...)
+		if (this.getStartDTG() == null)
+		{
+			return;
+		}
+
+		final long currentStart = this.getStartDTG().getMicros();
+		long startTime = (currentStart / interval) * interval;
+
+		// just check we're in the range
+		if (startTime < currentStart)
+			startTime += interval;
+
+		// just check it's not a barking frequency
+		if (theVal.getDate().getTime() <= 0)
+		{
+			// ignore, we don't need to do anything for a zero or a -1
+		}
+		else
+		{
+			decimate(theVal, startTime);
+		}
 	}
 
 	/**
@@ -494,11 +550,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 	}
 
-	
-	/** get the parent's color
-	 * Note: we're wrapping the color paramter with defaultColor
-	 * so that we can provide more understable attribute names
-	 * in property editor
+	/**
+	 * get the parent's color Note: we're wrapping the color paramter with
+	 * defaultColor so that we can provide more understable attribute names in
+	 * property editor
+	 * 
 	 * @return
 	 */
 	public Color getDefaultColor()
@@ -506,7 +562,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return super.getColor();
 	}
 
-	/** just pass the property onto the parent
+	/**
+	 * just pass the property onto the parent
 	 * 
 	 * @param defaultColor
 	 */
@@ -514,7 +571,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	{
 		super.setColor(defaultColor);
 	}
-	
+
 	// ///////////////////////////////////////////
 	// constructor
 	// ///////////////////////////////////////////
@@ -583,9 +640,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		clearChildOffsets();
 	}
 
-	
-	
-	
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
 	// //////////////////////////////////////////////////////////////////////////
@@ -621,7 +675,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 						prop("Name", "the name for this sensor"),
 						prop("Visible", "whether this sensor data is visible"),
 						prop("LineThickness", "the thickness to draw these sensor lines"),
-						prop("DefaultColor", "the default colour to plot this set of sensor data"),
+						prop("DefaultColor",
+								"the default colour to plot this set of sensor data"),
 						prop("SensorOffset",
 								"the forward/backward offset (m) of this sensor from the attack datum"),
 						prop(
@@ -629,6 +684,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 								"whether the origin of this sensor is offset in straight line, or back along the host track"),
 						longProp("VisibleFrequency",
 								"How frequently to display sensor cuts",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("ResampleDataAt", "the sensor cut sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class) };
 
 				res[2]
@@ -851,8 +908,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
 			nearestPoint = nearest.getCalculatedOrigin(track);
-			tgtLoc = new MWC.GenericData.WorldLocation(2.5, 2.0,
-					0.0);
+			tgtLoc = new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0);
 			assertEquals("test nearer first point", 0,
 					tgtLoc.rangeFrom(nearestPoint), 0.001);
 
@@ -973,7 +1029,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 	public Editable getSampleGriddable()
 	{
-		return this.elements().nextElement();
+		Editable res = null;
+
+		// check we have an item before we edit it
+		Enumeration<Editable> eles = this.elements();
+		if (eles.hasMoreElements())
+			res = eles.nextElement();
+		return res;
 	}
 
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
@@ -1020,16 +1082,17 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		double ambig = 0;
 		if (_last.getHasAmbiguousBearing())
 		{
-			ambig = interp.interp(_last.getAmbiguousBearing(), _next
-					.getAmbiguousBearing());
+			ambig = interp.interp(_last.getAmbiguousBearing(),
+					_next.getAmbiguousBearing());
 		}
 		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
 		// do we have range?
 		WorldDistance theRng = null;
 		if ((_last.getRange() != null) && (_next.getRange() != null))
 		{
-			double rngDegs = interp.interp(_last.getRange().getValueIn(
-					WorldDistance.DEGS), _last.getRange().getValueIn(WorldDistance.DEGS));
+			double rngDegs = interp.interp(
+					_last.getRange().getValueIn(WorldDistance.DEGS), _last.getRange()
+							.getValueIn(WorldDistance.DEGS));
 			theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
 		}
 		// do we have an origin?
@@ -1045,9 +1108,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 		// now, go create the new data item
 		SensorContactWrapper newS = new SensorContactWrapper(_last.getTrackName(),
-				new HiResDate(0, tNow), theRng, brg, ambig, freq, origin, _last
-						.getActualColor(), _last.getName(),
-				_last.getLineStyle().intValue(), _last.getSensorName());
+				new HiResDate(0, tNow), theRng, brg, ambig, freq, origin,
+				_last.getActualColor(), _last.getName(), _last.getLineStyle()
+						.intValue(), _last.getSensorName());
 
 		// sort out the ambiguous data
 		newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
@@ -1071,17 +1134,17 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			final Layer parent, final Editable[] subjects)
 	{
 		SensorWrapper target = (SensorWrapper) targetE;
-		
+
 		for (int i = 0; i < subjects.length; i++)
 		{
 			SensorWrapper sensor = (SensorWrapper) subjects[i];
-			if(sensor != target)
+			if (sensor != target)
 			{
 				// ok, append the items in this layer to the target
 				target.append(sensor);
 				parent.removeElement(sensor);
 			}
-		}	
+		}
 
 		return MessageProvider.OK;
 	}
