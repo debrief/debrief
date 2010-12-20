@@ -149,6 +149,11 @@ public class GriddableWrapper implements GriddableSeries
 					.getEditable();
 
 			Editable sampleItem = series.getSampleGriddable();
+			// just check we've got some sample data
+			if(sampleItem == null)
+				return _myAttributes;
+			
+			
 			EditorType info = sampleItem.getInfo();
 			if (info instanceof Griddable)
 			{
