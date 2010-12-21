@@ -4240,56 +4240,6 @@ Platform C,-551</screen></para>
                                     calculates the position of its far end relative to this
                                     origin</para></listitem></itemizedlist></para>
                 </sect2>
-                <sect2 id="SensorRangePlot">
-                    <title>View plot of sensor range to target</title>
-                    <para>Whilst Debrief makes it easy to view a plot of the range between two
-                        vehicles, on occasion you may wish to view a time graph of the range from
-                        the array centre to the target. This graph can contain the distance from one
-                        or more sensors to a particular target. Open the graph by multi-selecting
-                        (&lt;ctrl-click>) a series of sensor wrappers and a single target track
-                        (alternately you could select one track plus the 'Sensors' item of another
-                        track if you wish to view a range plot that includes all the sensors). If
-                        such a combination of objects have been selected in the Layer Manager, when
-                        you right-click on them you are offered the 'View sensor range plot' menu item:<screenshot>
-                            <mediaobject>
-                                <imageobject>
-                                    <imagedata fileref="figures/ViewSensorPlot.png" width=""/>
-                                </imageobject>
-                                <caption>Popup menu with a track plus multiple sensor
-                                    selected</caption>
-                            </mediaobject>
-                        </screenshot></para>
-                    <para>Note, the Sensor Range Plot reflects the sensor offset length, plus
-                        whether the 'Worm in the hole' (see <xref linkend="SectWormInHole"/> )
-                        property is set for each sensor. <tip>
-                            <para>On occasion you may wish to view a sensor range plot of a sensor
-                                for which you haven't loaded sensor data. That is, you've loaded
-                                &amp; displayed hull-mounted sonar data, but you wish to know the
-                                range from the centre of the array to the target. Do this as follows:<orderedlist>
-                                    <listitem>
-                                        <para>Right-click on the ownship track, select 'Add new
-                                            sensor'</para>
-                                    </listitem>
-                                    <listitem>
-                                        <para>Name the new sensor using the wizard, set the correct
-                                            sensor offset distance (remember it's in degrees, and
-                                            specify negative values to represent a trailing array),
-                                            and mark that it should use a 'worm in the hole'
-                                            algorithm</para>
-                                    </listitem>
-                                    <listitem>
-                                        <para>Now, back to the layer manager - multi-select the new
-                                            sensor, and the target track. Right-click on them and
-                                            select <guilabel>View sensor range
-                                            plot</guilabel>.</para>
-                                    </listitem>
-                                </orderedlist>In this mode of use, the algortihm generates a range
-                                for each calculated position on the target track.  In the normal
-                                mode (where we have sensor data), a range is calculated for each
-                                point at which there's a sensor cut (using interpolation to
-                                determine the position of the target track). </para>
-                        </tip></para>
-                </sect2>
             </sect1>
             <sect1 id="analyse_sensor_data">
                 <title>Analysing your data</title>
@@ -4385,6 +4335,56 @@ Platform C,-551</screen></para>
                             successive data into a new tracks. The original and new tracks are then
                             renamed with a "_1", "_2" suffix.</para>
                     </sect3>
+                </sect2>
+                <sect2 id="SensorRangePlot">
+                    <title>View plot of sensor range to target</title>
+                    <para>Whilst Debrief makes it easy to view a plot of the range between two
+                        vehicles, on occasion you may wish to view a time graph of the range from
+                        the array centre to the target. This graph can contain the distance from one
+                        or more sensors to a particular target. Open the graph by multi-selecting
+                        (&lt;ctrl-click>) a series of sensor wrappers and a single target track
+                        (alternately you could select one track plus the 'Sensors' item of another
+                        track if you wish to view a range plot that includes all the sensors). If
+                        such a combination of objects have been selected in the Layer Manager, when
+                        you right-click on them you are offered the 'View sensor range plot' menu item:<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/ViewSensorPlot.png" width=""/>
+                                </imageobject>
+                                <caption>Popup menu with a track plus multiple sensor
+                                    selected</caption>
+                            </mediaobject>
+                        </screenshot></para>
+                    <para>Note, the Sensor Range Plot reflects the sensor offset length, plus
+                        whether the 'Worm in the hole' (see <xref linkend="SectWormInHole"/> )
+                        property is set for each sensor. <tip>
+                            <para>On occasion you may wish to view a sensor range plot of a sensor
+                                for which you haven't loaded sensor data. That is, you've loaded
+                                &amp; displayed hull-mounted sonar data, but you wish to know the
+                                range from the centre of the array to the target. Do this as follows:<orderedlist>
+                                    <listitem>
+                                        <para>Right-click on the ownship track, select 'Add new
+                                            sensor'</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Name the new sensor using the wizard, set the correct
+                                            sensor offset distance (remember it's in degrees, and
+                                            specify negative values to represent a trailing array),
+                                            and mark that it should use a 'worm in the hole'
+                                            algorithm</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Now, back to the layer manager - multi-select the new
+                                            sensor, and the target track. Right-click on them and
+                                            select <guilabel>View sensor range
+                                            plot</guilabel>.</para>
+                                    </listitem>
+                                </orderedlist>In this mode of use, the algortihm generates a range
+                                for each calculated position on the target track. In the normal mode
+                                (where we have sensor data), a range is calculated for each point at
+                                which there's a sensor cut (using interpolation to determine the
+                                position of the target track). </para>
+                        </tip></para>
                 </sect2>
                 <sect2 id="manage_ambiguous">
                     <title>Managing ambiguous data</title>
