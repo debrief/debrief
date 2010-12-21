@@ -263,7 +263,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					}
 					else
 					{
-						CorePlugin.showMessage("View sensor range plot", "Sorry, the track and sensor datasets do not overlap");
+						CorePlugin.showMessage("View sensor range plot",
+								"Sorry, the track and sensor datasets do not overlap");
 
 					}
 				}
@@ -296,7 +297,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 * @see TimeSeriesCollection#addSeries(BasicTimeSeries series)
 	 */
 	private static TimeSeriesCollection getDataSeries(
-			final WatchableList primaryTrack, final Vector<SensorWrapper> theSensors,
+			final TrackWrapper primaryTrack, final Vector<SensorWrapper> theSensors,
 			HiResDate start_time, HiResDate end_time)
 	{
 
@@ -308,123 +309,202 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 		{
 			SensorWrapper thisSensor = (SensorWrapper) iter.nextElement();
 
-			// ////////////////////////////////////////////////////
-			// step through the track
-			//
-			Collection<Editable> sensorFixes = thisSensor.getItemsBetween(start_time,
-					end_time);
+			// ok, now collate the data
+			TimeSeries thisSeries = new TimeSeries(thisSensor.getName());
 
-			// have we found any?. Hey, listen here. The "getItemsBetween" method may
-			// return
-			// data items, but we may still not be able to do the calc (such as if we
-			// have "NaN" for depth). So
-			// we still do a sanity check at the end of this method to stop us adding
-			// empty data series to the collection.
-			if (sensorFixes != null)
+			// SPECIAL CASE - is this an empty sensor, created just to produce this
+			// plt?
+			if (thisSensor.elements().hasMoreElements())
 			{
-				// ok, now collate the data
-				TimeSeries thisSeries = new TimeSeries(thisSensor.getName());
 
-				// ////////////////////////////////////////////////
-				// CASE 3 - both tracks have time data, relative calc
-				// ////////////////////////////////////////////////
-				// yes, we do have DTG data for this track - hooray!
+				// nope, we have sensor data, calculate a data point for each sensor cut
 
-				// ok, step through the list
-				Iterator<Editable> theseCuts = sensorFixes.iterator();
+				// ////////////////////////////////////////////////////
+				// step through the track
+				//
+				Collection<Editable> sensorFixes = thisSensor.getItemsBetween(
+						start_time, end_time);
 
-				throughThisTrack: while (theseCuts.hasNext())
+				// have we found any?. Hey, listen here. The "getItemsBetween" method
+				// may
+				// return
+				// data items, but we may still not be able to do the calc (such as if
+				// we
+				// have "NaN" for depth). So
+				// we still do a sanity check at the end of this method to stop us
+				// adding
+				// empty data series to the collection.
+				if (sensorFixes != null)
 				{
-					SensorContactWrapper thisSecondary = (SensorContactWrapper) theseCuts
-							.next();
+					// ////////////////////////////////////////////////
+					// CASE 3 - both tracks have time data, relative calc
+					// ////////////////////////////////////////////////
+					// yes, we do have DTG data for this track - hooray!
 
-					Color thisColor = thisSecondary.getColor();
+					// ok, step through the list
+					Iterator<Editable> theseCuts = sensorFixes.iterator();
 
-					// what's the current time?
-					HiResDate currentTime = thisSecondary.getTime();
-
-					// is this fix visible?
-					if (thisSecondary.getVisible())
+					throughThisTrack: while (theseCuts.hasNext())
 					{
-						// the point on the primary track we work with
-						Watchable thisPrimary = null;
+						SensorContactWrapper thisSecondary = (SensorContactWrapper) theseCuts
+								.next();
 
-						// find the fix on the primary track which is nearest in
-						// time to this one (if we need to)
-						Watchable[] nearList;
+						Color thisColor = thisSecondary.getColor();
 
-						// temp switch on interpolation
-						Boolean oldInterp = null;
-						if (primaryTrack instanceof TrackWrapper)
+						// what's the current time?
+						HiResDate currentTime = thisSecondary.getTime();
+
+						// is this fix visible?
+						if (thisSecondary.getVisible())
 						{
-							TrackWrapper tw = (TrackWrapper) primaryTrack;
-							oldInterp = tw.getInterpolatePoints();
-							tw.setInterpolatePoints(true);
-						}
+							// the point on the primary track we work with
+							Watchable thisPrimary = null;
 
-						// find it's nearest point on the primary track
-						nearList = primaryTrack.getNearestTo(currentTime);
+							// find the fix on the primary track which is nearest in
+							// time to this one (if we need to)
+							Watchable[] nearList;
 
-						// and restore the interpolate points setting
-						if (oldInterp != null)
-						{
-							TrackWrapper tw = (TrackWrapper) primaryTrack;
-							tw.setInterpolatePoints(oldInterp.booleanValue());
-						}
+							// temp switch on interpolation
+							Boolean oldInterp = null;
+							if (primaryTrack instanceof TrackWrapper)
+							{
+								TrackWrapper tw = (TrackWrapper) primaryTrack;
+								oldInterp = tw.getInterpolatePoints();
+								tw.setInterpolatePoints(true);
+							}
 
-						// yes. right, we only perform a calc if we have primary data
-						// for this point
-						if (nearList.length == 0)
-						{
-							// drop out, and wait for the next cycle
-							continue throughThisTrack;
-						}
-						else
-						{
-							thisPrimary = nearList[0];
-						}
+							// find it's nearest point on the primary track
+							nearList = primaryTrack.getNearestTo(currentTime);
 
-						// ////////////////////////////////////////////////
-						// NOW PUT IN BIT TO WRAP THROUGH ZERO WHERE APPLICABLE
-						// ////////////////////////////////////////////////
+							// and restore the interpolate points setting
+							if (oldInterp != null)
+							{
+								TrackWrapper tw = (TrackWrapper) primaryTrack;
+								tw.setInterpolatePoints(oldInterp.booleanValue());
+							}
 
-						// produce the new calculated value
-						WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
-						WorldLocation trackLoc = thisPrimary.getLocation();
-						WorldLocation sensorLoc = thisSecondary.getCalculatedOrigin(null);
-						range = trackLoc.rangeFrom(sensorLoc, range);
-						double thisVal = range.getValueIn(WorldDistance.METRES);
+							// yes. right, we only perform a calc if we have primary data
+							// for this point
+							if (nearList.length == 0)
+							{
+								// drop out, and wait for the next cycle
+								continue throughThisTrack;
+							}
+							else
+							{
+								thisPrimary = nearList[0];
+							}
 
-						// ////////////////////////////////////////////////
-						// THANK YOU, WE'RE PLEASED TO RETURN YOU TO YOUR NORMAL PROGRAM
-						// ////////////////////////////////////////////////
+							// ////////////////////////////////////////////////
+							// produce the new calculated value
+							// ////////////////////////////////////////////////
 
-						// HI-RES NOT DONE - FixedMillisecond should be converted some-how
-						// to
-						// FixedMicroSecond
-						ColouredDataItem newItem = new ColouredDataItem(
-								new FixedMillisecond(thisSecondary.getDTG().getDate().getTime()),
-								thisVal, thisColor, true, null);
+							WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
+							WorldLocation trackLoc = thisPrimary.getLocation();
+							WorldLocation sensorLoc = thisSecondary.getCalculatedOrigin(null);
+							range = trackLoc.rangeFrom(sensorLoc, range);
+							double thisVal = range.getValueIn(WorldDistance.METRES);
 
-						thisSeries.add(newItem);
-					} // whether this point is visible
-				} // stepping through this track
+							// ////////////////////////////////////////////////
+							// and create the point
+							// ////////////////////////////////////////////////
 
-				// if the series if empty, set it to null, rather than create one of
-				// empty length
+							// HI-RES NOT DONE - FixedMillisecond should be converted some-how
+							// to
+							// FixedMicroSecond
+							ColouredDataItem newItem = new ColouredDataItem(
+									new FixedMillisecond(thisSecondary.getDTG().getDate()
+											.getTime()), thisVal, thisColor, true, null);
 
-				TimeSeries ser = (TimeSeries) thisSeries;
-				if (ser.getItemCount() == 0)
-					thisSeries = null;
+							thisSeries.add(newItem);
+						} // whether this point is visible
+					} // stepping through this track
 
-				// did we find anything?
-				if (thisSeries != null)
+				} // if this collection actually had data
+
+			}
+			else
+			{
+				// ok, just calculate 'theoretical' sensor locations
+				// ////////////////////////////////////////////////////
+				// step through the track
+				//
+				Collection<Editable> sensorFixes = primaryTrack.getItemsBetween(
+						start_time, end_time);
+
+				// have we found any?. Hey, listen here. The "getItemsBetween" method
+				// may
+				// return
+				// data items, but we may still not be able to do the calc (such as if
+				// we
+				// have "NaN" for depth). So
+				// we still do a sanity check at the end of this method to stop us
+				// adding
+				// empty data series to the collection.
+				if (sensorFixes != null)
 				{
-					System.err.println("created:" + ser.getItemCount() + " pts");
+					// ////////////////////////////////////////////////
+					// CASE 3 - both tracks have time data, relative calc
+					// ////////////////////////////////////////////////
+					// yes, we do have DTG data for this track - hooray!
+
+					// ok, step through the list
+					Iterator<Editable> theseCuts = sensorFixes.iterator();
+
+					while (theseCuts.hasNext())
+					{
+						FixWrapper thisPosition = (FixWrapper) theseCuts.next();
+
+						Color thisColor = thisPosition.getColor();
+
+						// what's the current time?
+						HiResDate currentTime = thisPosition.getTime();
+
+						// is this fix visible?
+						if (thisPosition.getVisible())
+						{
+
+							// ok, now get the sensor
+							WorldLocation sensorLoc = thisSensor.getHost().getBacktraceTo(
+									currentTime, thisSensor.getSensorOffset(),
+									thisSensor.getWormInHole());
+
+							// ////////////////////////////////////////////////
+							// produce the new calculated value
+							// ////////////////////////////////////////////////
+
+							WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
+							WorldLocation trackLoc = thisPosition.getLocation();
+							range = trackLoc.rangeFrom(sensorLoc, range);
+							double thisVal = range.getValueIn(WorldDistance.METRES);
+
+							// ////////////////////////////////////////////////
+							// and create the point
+							// ////////////////////////////////////////////////
+
+							// HI-RES NOT DONE - FixedMillisecond should be converted some-how
+							// to
+							// FixedMicroSecond
+							ColouredDataItem newItem = new ColouredDataItem(
+									new FixedMillisecond(thisPosition.getDTG().getDate()
+											.getTime()), thisVal, thisColor, true, null);
+
+							thisSeries.add(newItem);
+						} // whether this point is visible
+					} // stepping through this track
+
+				} // if this collection actually had data
+
+			}
+
+			// did we find anything?
+			if (thisSeries != null)
+				if (thisSeries.getItemCount() > 0)
+				{
+					CorePlugin.logError(Status.OK, "created:" + thisSeries.getItemCount()
+							+ " pts", null);
 					theSeriesCollection.addSeries(thisSeries);
 				}
-
-			} // if this collection actually had data
 
 		} // looping through the tracks
 
