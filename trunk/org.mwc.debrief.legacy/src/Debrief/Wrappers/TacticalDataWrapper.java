@@ -68,7 +68,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * the track of our host
 	 */
-	protected transient MWC.GenericData.WatchableList _myHost;
+	protected transient TrackWrapper _myHost;
 
 	/**
 	 * manage the start/stop times for this period
@@ -329,7 +329,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * set our host track
 	 */
-	public void setHost(final MWC.GenericData.WatchableList host)
+	public void setHost(final TrackWrapper host)
 	{
 		_myHost = host;
 	}
@@ -337,7 +337,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * set our host track
 	 */
-	public final MWC.GenericData.WatchableList getHost()
+	public final TrackWrapper getHost()
 	{
 		return _myHost;
 	}

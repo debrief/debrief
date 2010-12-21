@@ -162,7 +162,6 @@ import MWC.GUI.MessageProvider;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -632,7 +631,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * override the parent method - since we want to reset the origin for our
 	 * child sensor data items
 	 */
-	public void setHost(WatchableList host)
+	public void setHost(TrackWrapper host)
 	{
 		super.setHost(host);
 
@@ -1148,4 +1147,5 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 		return MessageProvider.OK;
 	}
+
 }

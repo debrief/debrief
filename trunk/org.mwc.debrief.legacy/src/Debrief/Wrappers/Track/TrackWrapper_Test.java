@@ -23,7 +23,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -375,7 +374,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		{
 			private static final long serialVersionUID = 1L;
 
-			public void setHost(WatchableList host)
+			public void setHost(TrackWrapper host)
 			{
 				super.setHost(host);
 				_ctr++;

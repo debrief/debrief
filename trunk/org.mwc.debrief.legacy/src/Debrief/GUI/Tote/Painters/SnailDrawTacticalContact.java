@@ -243,6 +243,6 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
      *
      * @return parent track
      */
-    public WatchableList getHost();
+    public TrackWrapper getHost();
   }
 }
