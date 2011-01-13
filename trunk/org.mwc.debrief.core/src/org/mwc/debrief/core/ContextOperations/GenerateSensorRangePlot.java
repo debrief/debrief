@@ -469,27 +469,37 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 									currentTime, thisSensor.getSensorOffset(),
 									thisSensor.getWormInHole());
 
-							// ////////////////////////////////////////////////
-							// produce the new calculated value
-							// ////////////////////////////////////////////////
+							// ok, is the sensor's parent track 'live' at this time?
+							if (sensorLoc == null)
+							{
+								// don't bother processing this time-stamp any more
+							}
+							else
+							{
 
-							WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
-							WorldLocation trackLoc = thisPosition.getLocation();
-							range = trackLoc.rangeFrom(sensorLoc, range);
-							double thisVal = range.getValueIn(WorldDistance.METRES);
+								// ////////////////////////////////////////////////
+								// produce the new calculated value
+								// ////////////////////////////////////////////////
 
-							// ////////////////////////////////////////////////
-							// and create the point
-							// ////////////////////////////////////////////////
+								WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
+								WorldLocation trackLoc = thisPosition.getLocation();
+								range = trackLoc.rangeFrom(sensorLoc, range);
+								double thisVal = range.getValueIn(WorldDistance.METRES);
 
-							// HI-RES NOT DONE - FixedMillisecond should be converted some-how
-							// to
-							// FixedMicroSecond
-							ColouredDataItem newItem = new ColouredDataItem(
-									new FixedMillisecond(thisPosition.getDTG().getDate()
-											.getTime()), thisVal, thisColor, true, null);
+								// ////////////////////////////////////////////////
+								// and create the point
+								// ////////////////////////////////////////////////
 
-							thisSeries.add(newItem);
+								// HI-RES NOT DONE - FixedMillisecond should be converted
+								// some-how
+								// to
+								// FixedMicroSecond
+								ColouredDataItem newItem = new ColouredDataItem(
+										new FixedMillisecond(thisPosition.getDTG().getDate()
+												.getTime()), thisVal, thisColor, true, null);
+
+								thisSeries.add(newItem);
+							}
 						} // whether this point is visible
 					} // stepping through this track
 
