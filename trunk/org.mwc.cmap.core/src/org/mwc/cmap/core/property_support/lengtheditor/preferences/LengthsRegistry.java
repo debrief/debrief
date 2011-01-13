@@ -83,7 +83,7 @@ public class LengthsRegistry {
 				CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_ErrorOnReading, e);
 			}
 		} catch (FileNotFoundException e) {
-			CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_FileNotFound, e);
+			CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_FileNotFound, null);
 		}
 
 	}
