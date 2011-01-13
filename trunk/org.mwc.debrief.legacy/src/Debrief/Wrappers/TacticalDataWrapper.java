@@ -167,6 +167,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		if (_last == null)
 			return;
 
+		// well, we found our first element - see if there's another one
+		if(!_cuts.hasMoreElements())
+			 return;
+		
 		PlottableWrapperWithTimeAndOverrideableColor _next = (PlottableWrapperWithTimeAndOverrideableColor) _cuts
 				.nextElement();
 
