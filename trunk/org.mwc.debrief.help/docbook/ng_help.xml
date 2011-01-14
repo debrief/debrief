@@ -4367,8 +4367,14 @@ Platform C,-551</screen></para>
                                             sensor'</para>
                                     </listitem>
                                     <listitem>
-                                        <para>Name the new sensor using the wizard, set the correct
-                                            sensor offset distance (remember it's in degrees, and
+                                        <para>Name the new sensor using the wizard, and specify its
+                                        default color</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Now select the new sensor in the layer manager -
+                                        in order that you can edit its properties. In the
+                                        property window set the correct
+                                            sensor offset distance (remember it's in metres, and
                                             specify negative values to represent a trailing array),
                                             and mark that it should use a 'worm in the hole'
                                             algorithm</para>
