@@ -925,12 +925,16 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			// get our shape back
 			final ShapeWrapper sp = (ShapeWrapper) super.getData();
-			final MWC.GUI.Editable et = (MWC.GUI.Editable) sp;
-			if (et.hasEditor() == true)
+			final MWC.GUI.Shapes.PlainShape ps = sp._theShape;
+			if (sp instanceof MWC.GUI.Editable)
 			{
-				final BeanInfo[] res =
-				{ et.getInfo() };
-				return res;
+				final MWC.GUI.Editable et = (MWC.GUI.Editable) ps;
+				if (et.hasEditor() == true)
+				{
+					final BeanInfo[] res =
+					{ et.getInfo() };
+					return res;
+				}
 			}
 
 			return null;
