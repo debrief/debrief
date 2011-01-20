@@ -159,8 +159,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 		// ok, now try to set the image
 		if (imageName != null)
 		{
-			final ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(
-					"org.mwc.debrief.core", imageName);
+			final ImageDescriptor id = CorePlugin.getImageDescriptor(imageName);
 			if (id != null)
 				super.setImageDescriptor(id);
 			else

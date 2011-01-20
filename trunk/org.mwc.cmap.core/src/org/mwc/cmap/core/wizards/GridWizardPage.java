@@ -105,7 +105,7 @@ public class GridWizardPage extends CoreEditableWizardPage
 	public GridWizardPage(ISelection selection)
 	{
 		super(selection, "gridPage", "Add Grid to Plot",
-				"This page adds a grid to your plot", "images/grid_wizard.gif");
+				"This page adds a grid to your plot", "images/grid_wizard.gif", null);
 	}
 
 	@Override

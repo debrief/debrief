@@ -25,7 +25,7 @@ public class CoastWizardPage extends CoreEditableWizardPage
 	{
 		super(selection, "coastPage", "Add Coastline to Plot",
 				"This page adds a low resolution coastline to your plot",
-				"images/coast_wizard.gif");
+				"images/coast_wizard.gif", null);
 	}
 
 	@Override

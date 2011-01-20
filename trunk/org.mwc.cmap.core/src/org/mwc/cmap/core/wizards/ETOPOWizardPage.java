@@ -27,7 +27,7 @@ public class ETOPOWizardPage extends CoreEditableWizardPage {
 				"etopoPage",
 				"Add Gridded depth data",
 				"This page adds a 2-minute resolution gridded depth layer to your plot",
-				"images/etopo_wizard.gif");
+				"images/etopo_wizard.gif", null);
 	}
 
 	@Override
