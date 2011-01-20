@@ -38,6 +38,9 @@
 	<item title="Edit a whole track">
 		<description>Aaah, but how do you edit a track?  Easy, just use the Layer Manager to select it rather than clicking on the plot.  Open the Layer Manager (or select Layer Manager from the Window/Show View drop-down menu).  In the Layer Manager click once on the name of a track, and the whole track's properties will be editable in the Properties View.  The Layer Manager is also useful for selecting non-geographic entities (such as a grid, scale, or background data-set) to be edited.</description>
 	</item>
+	<item title="Re-arrange the views">
+		<description>Now, are you finding it  a bit of pain switching between the Layer Manager and Properties views?  Using your mouse, just click and drag the Properties panel upwards - so it&apos;s on top of the view vertically above it. You can now see the Layer Manager and Properties windows at once.</description>
+	</item>
 	<item title="Edit directly from the plot itself">
 		<description>For some attributes, you don't even need to use the Properties View.  Just right-click on an item on your plot.  The popup menu shows a series of options and commands.  A drop-down menu is shown next to the current item's name.  From this drop-down menu you'll be able to edit all of the item's true/false or 'select one from many' attributes.  Note, if you click on a vehicle position, a drop-down is shown for the parent track as well as the position itself.  Also note, that the right-click menu is shown if you click on an item from the Layer Manager.</description>
 	</item>

@@ -2,7 +2,7 @@
 <compositeCheatsheet name="Getting some data into Debrief NG">
    <taskGroup name="Getting started with Debrief NG" skip="false">
       <intro>
-         This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.  If you wish, you can widen this panel to make the tutorials easier to read.
+         This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.  If you wish, you can widen this &apos;Welcome&apos; panel to make the tutorials easier to read.  You may also find it easier to work through these cheat-sheets if you make the bottom section of this pane taller by dragging the central &apos;grab&apos; bar vertically upwards
       </intro>
       <taskGroup kind="sequence" name="Defining your workspace" skip="false">
          <intro>

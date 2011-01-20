@@ -22,12 +22,12 @@
 		<description>Next, experiment with hiding whole layers:  select one of the tracks in the Layer Manager and try hiding and revealing it.  Note, that you can expand each track to see the series of positions inside it.  Once expanded, you can select a series of point (representing a time-period) to be hidden/revealed.  But hey, there are quicker ways than that - just keep reading.</description>
 	</item>
 	<item title="Show Time Controller">
-		<description>Now we're going to filter the plot to a particular period of time.  Start off by selecting the Time Controller (or opening it if it isn't already visible).  The lower section of the time controller is a pair of sliders used to mark the start and end time of a variety of tasks.  </description>
+		<description>Now we're going to filter the plot to a particular period of time.  Start off by revealing the Time Controller view (or opening it if it isn't already visible).  The lower section of the time controller is a pair of sliders used to mark the start and end time of a variety of tasks.  </description>
 	</item>
 	<item title="Select Filter to Period">
-		<description>Instruct Debrief that we want the plot to be filtered according to the selected time period by selecting "Filter to period" from the Time Controller's drop-down menu.  You'll also see a toggle button representing this action on the Time Controller's toolbar.</description>
+		<description>Instruct Debrief that we want the plot to be filtered according to the selected time period by selecting "Filter to period" from the Time Controller's drop-down menu (the downward facing triangle at the right-hand end of the tools at the top of the Time Controller view).</description>
 	</item>
 	<item title="Trim visible time period">
-		<description>Now, as you drag the start and stop markers, the amount of data visible on the plot will be trimmed.  Nice.</description>
+		<description>Now, as you drag the start and stop markers, the amount of data visible on the plot will be trimmed.  Nice.  The shaded portion between the time-sliders represents the currently visible time period.  You can drag this shaded section to move your &apos;windows&apos; forwards and backwards. Hold down the shift key to lock the period to the line markers </description>
 	</item>
 </cheatsheet>
