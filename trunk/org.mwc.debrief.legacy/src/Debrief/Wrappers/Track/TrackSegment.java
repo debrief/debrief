@@ -224,7 +224,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					null);
 		}
 
-		// remember the last point on the first track, in case we're generating a
+		// remember the last point on the first track, in case we're generating
+		// a
 		// relative solution
 		FixWrapper origin = oneElements[oneElements.length - 1];
 
@@ -241,7 +242,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		boolean first = true;
 
 		// get going then! Note, we go past the end of the required data,
-		// - so that we can generate the correct course and speed for the last DR
+		// - so that we can generate the correct course and speed for the last
+		// DR
 		// entry
 		for (long tNow = tStart; tNow < tEnd + tDelta; tNow += tDelta)
 		{
@@ -294,8 +296,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
 
-			// only add it if we're still in the time period. We generate one position
-			// past the end of the time period in order to set the correct DR course
+			// only add it if we're still in the time period. We generate one
+			// position
+			// past the end of the time period in order to set the correct DR
+			// course
 			// for the last position.
 			if (tNow < tEnd)
 			{
@@ -306,7 +310,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			origin = fw;
 		}
 
-		// aaah, special case. If we are generating a DR track, we need to put the
+		// aaah, special case. If we are generating a DR track, we need to put
+		// the
 		// next course and speed
 		// into the last entry - in order to get a smooth graph.
 
@@ -428,7 +433,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return res;
 	}
 
-
 	@Override
 	public void add(final Editable item)
 	{
@@ -456,8 +460,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		{
 			// tell it about our daddy
 			fix.setTrackWrapper(_myTrack);
-			fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _myTrack
-					.getLocationListener());
+			fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+					_myTrack.getLocationListener());
 		}
 	}
 
@@ -473,7 +477,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// have a look and see if we're a DR track
 		if (this.getPlotRelative())
 		{
-			// right, we've got to make sure our last point is correctly pointing to
+			// right, we've got to make sure our last point is correctly
+			// pointing to
 			// the first point of this new track
 			// - sort it out
 			FixWrapper first = (FixWrapper) enumer.nextElement();
@@ -647,9 +652,26 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	{
 		double res = Plottable.INVALID_RANGE;
 
-		if (getBounds() != null)
-			res = getBounds().rangeFrom(other);
+		// have we got data?
+		WorldLocation firstLoc = this.getTrackStart();
 
+		// do we have a start point?
+		if (firstLoc != null)
+		{
+			// yes, sort range
+			res = firstLoc.rangeFrom(other);
+
+			// and try for the track end
+			Plottable lastP = this.last();
+			// do we have an end point?
+			if (lastP != null)
+			{
+				FixWrapper lastF = (FixWrapper) lastP;
+				WorldLocation lastLoc = lastF.getLocation();
+				double otherRng = lastLoc.rangeFrom(other);
+				res = Math.min(otherRng, res);
+			}
+		}
 		return res;
 	}
 
@@ -710,8 +732,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				final FixWrapper fix = (FixWrapper) iterator.next();
 				fix.setTrackWrapper(_myTrack);
 				// and let the track wrapper listen to location changed events
-				fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, wrapper
-						.getLocationListener());
+				fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+						wrapper.getLocationListener());
 			}
 		}
 	}
@@ -889,7 +911,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				newItems.add(newFix);
 			}
 
-			// right, if it's a relative segment, then we need to shift the offset to
+			// right, if it's a relative segment, then we need to shift the
+			// offset to
 			// reflect the new relationship
 			if (tma instanceof RelativeTMASegment)
 			{
@@ -932,7 +955,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 				Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
 				if (matches.length > 0)
 				{
-					// remember the last position - we;re going to be calculating future
+					// remember the last position - we;re going to be
+					// calculating future
 					// courses and speeds from it
 					lastPositionStored = currentPosition;
 
