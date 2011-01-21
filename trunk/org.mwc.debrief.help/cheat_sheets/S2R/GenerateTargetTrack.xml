@@ -22,13 +22,13 @@
    <item
          title="Generate the TMA segment">
       <description>
-         Next, with the set of data still selected (or reselect it if you&apos;ve lost the selection) we&apos;re going to create a solution based upon it.  When we generate a TMA segment based on sensor data, Debrief creates a track segment of steady course/speed data points, with one data-point at the time of each sensor cut used to generate the segment.  Let&apos;s get on with it.  Now, right click on the selected sensor data and select <b>Generate TMA solution from selected cuts</b>.
+         Next, with the set of data still selected (or reselect it if you&apos;ve lost the selection) we&apos;re going to create a solution based upon it.  When we generate a TMA segment based on sensor data, Debrief creates a track segment of steady course/speed data points, with one data-point at the time of each sensor cut used to generate the segment.  Let&apos;s get on with it.
       </description>
    </item>
    <item
          title="Follow the generate TMA wizard">
       <description>
-         Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with <b>TMA_</b> and the current time.   The solutions have times in their name to make it easier for you to manage them.
+          Now, right click on the selected sensor data and select <b>Generate TMA solution from selected cuts</b>. Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with <b>TMA_</b> and the time of the first cut used.   The solutions have times in their name to make it easier for you to manage them.
       </description>
    </item>
    <item
@@ -53,7 +53,7 @@
          title="Drag the track segment">
       <description>
          You may now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment</b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
-In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
+In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  In some drag modes you can <b>translate</b> a track by clicking on the hotspot at its mid-point.  Have a go at selecting <b>Shear</b> mode and dragging the ends of the track - to optimise the bearing errors.
      </description>
       <subitem
             label="Review bearing residuals.  When you enter drag-track mode, the view Bearing Residuals view is opened for you - so you can track the current residual errors."
@@ -70,14 +70,14 @@ In this view are the 4 drag operation buttons, that control how you drag the tra
    <item
          title="Generate second TMA segment">
       <description>
-         Once you&apos;re happy with the first solution it&apos;s time to move on.   It would appear from the sensor data that the turn is covered by about 13 cuts before a further straight line section of data.
-So, now click on the first sensor cut of the second steady set of bearings - that cut will be highlighted in the <b>Layer Manager</b>. Now scroll down to the end of the data and shift-click the last sensor cut.  We&apos;ve now selected the cuts to be used for the second track segment.  Right click on one of the selected items and select <b>Multiple items/Color/Green</b>.  The cuts will turn green.  Now right-click again on the cuts and click on <b>Generate TMA solution from selected cuts</b>, and complete the wizard once again.
+         Once you&apos;re happy with the first solution it&apos;s time to move on.   It would appear from the sensor data that the turn is represented by about 13 cuts before a further straight line section of data.
+So, on the plot, now click on the first sensor cut of the second steady set of bearings - that cut will be highlighted in the <b>Layer Manager</b>. Now scroll down to the end of the data and shift-click the last sensor cut.  We&apos;ve now selected the cuts to be used for the second track segment.  Right click on one of the selected items and select <b>Multiple items/Color/Green</b>.  The cuts will turn green.  Now right-click again on the cuts and click on <b>Generate TMA solution from selected cuts</b>, and complete the wizard once again.
       </description>
    </item>
    <item
          title="Refine second solution">
       <description>
-         Now, find the new solution in the Layer Manager and set it as the secondary track.  You&apos;ll also have to switch to the track-tote and remove the existing secondary track.  Do this by right-clicking anywhere in the secondary track&apos;s column of data and selecting <b>Remove this track</b>.  Once the new solution is marked as secondary you are able to start dragging/refining this solution.
+         Now, find the new solution in the Layer Manager and set it as the secondary track.   Once the new solution is marked as secondary you are able to start dragging/refining this solution.  Give it a go.
       </description>
    </item>
 </cheatsheet>

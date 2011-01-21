@@ -15,13 +15,13 @@
    <item
          title="Make sensor data visible">
       <description>
-         To keep the plot tidy, sensor data is not shown by default when loaded.  Expand <b>Track:NONSUCH</b> in the <b>Layer Manager</b>, then select <b>Sensor:Sensor_A (52 items)</b>. Once the Sensor A sensor data is selected, click on the tick icon in the toolbar at top of the Layer Manager view, to make the sensor data visible - and it will appear on the plot.
+         To keep the plot tidy, sensor data is not shown by default when loaded.  Expand <b>Track:NONSUCH</b> in the <b>Layer Manager</b>, then open <b>Sensors</b>, then select <b>Sensor:Sensor_A (52 items)</b>. Once the Sensor A sensor data is selected, click on the tick icon in the toolbar at top of the Layer Manager view, to make the sensor data visible - and it will appear on the plot.
       </description>
    </item>
       <item
          title="Resolve ambiguity">
       <description>
-         In our data you can see one bearing fan heading off to the WNW, and the other off towards NNE.  Intelligence tells us (well, Ian H tells us) that the actual contact is off to the NW.  If we open the Time Controller view and drag the time slider back and forth we&apos;ll see the current position highlight moving from top-right to bottom left. Thus, the NW block of sensor data is to the Starboard of the track. Use <b>Click to perform</b> to open the Time Controller.
+         In our data you can see one bearing fan heading off to the WNW, and the other off towards NNE.  Intelligence tells us (well, Ian H tells us) that the actual contact is off to the NW.  If we open the Time Controller view and drag the time slider back and forth we&apos;ll see the current position highlight moving from top-right to bottom left. Thus, the NW block of sensor data is to the Starboard of the track. (Use <b>Click to perform</b> below if you wish,  to open the Time Controller).
       </description>
       <command
             required="false"
@@ -36,8 +36,7 @@
    <item
          title="Open grid editor">
       <description>
-         In this tutoral we&apos;re going to be editing the raw sensor data using the Grid Editor.  So, select <b>Grid Editor</b> from the <b>Window/Show view menu</b> (or click on the link below).  The editor will open to the right-hand side of the plot.
-      </description>
+         In this tutoral we&apos;re going to be editing the raw sensor data using the Grid Editor.  So, select <b>Grid Editor</b> from the <b>Window/Show view menu</b> (or click on the link below).      </description>
       <command
             required="false"
             serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=com.pml.grid.editor)"/>
@@ -90,7 +89,7 @@
          href="/org.mwc.debrief.help/html/legacy/sensor_data.html#SensorOffsetsEditor"
          title="Set array offset">
       <description>
-         We can move on now that we&apos;ve tidied the sensor data.  As you&apos;ll see, the sensor data is ambiguous, as produced by a towed array.  Currently Debrief is plotting the sensor cuts against the attack datum of the platform, but we need to apply an offset for this sensor (-451m in this case).  So, select <b>Sensor:SENSOR_A</b> in the <b>Layer Manager</b>, then open the <b>Properties Window</b> (the click to perform button below will also open it).  In the Properties Window you&apos;ll see the <b>SensorOffset</b> attribute.  This allows you to enter a custom offset or to choose from a set of lengths from a shared datafile (see the Help entry for this item for further details).  Anyway, ignore the shared values and enter -451 metres in this field, click on the Plot, and you&apos;ll see the bearings jump to reflect the change.
+         We can move on now that we&apos;ve tidied the sensor data.  As you&apos;ll see, the sensor data is ambiguous, as produced by a towed array.  Currently Debrief is plotting the sensor cuts against the attack datum of the platform, but we need to apply an offset for this sensor (-451m in this case).   So, select <b>Sensor:SENSOR_A</b> in the <b>Layer Manager</b>, then open the <b>Properties Window</b> (the click to perform button below will also open it).  In the Properties Window you&apos;ll see the <b>SensorOffset</b> attribute.  This allows you to enter a custom offset or to choose from a set of lengths from a shared datafile (see the Help entry for this item for further details).  Anyway, ignore the shared values and enter -451 in this field, click on the Plot, and you&apos;ll see the bearings jump to reflect the change. To see where the current array centre is, switch on <b>Plot Array Centre</b> from the properties for the parent track - you&apos;ll see a cross appear astern of the current submarine location. 
       </description>
       <command
             required="false"
@@ -98,10 +97,9 @@
    </item>
    <item
          href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html#ResamplingData"
-         skip="true"
-         title="Reduce data density">
+         skip="true" title="Reduce data density">
       <description>
-         Whilst it isn&apos;t necessary for this exercise, Debrief does allow you to reduce the density of the sensor data.  If you right-click on <b>Sensor:SENSOR_A</b>, then navigate down into the <b>SENSOR_A</b> sub-menu you will see a <b>Visible Frequency</b> option. Using one of these options will pass through sensor data and hide sensor observations between the specified frequency.  The sensor cuts remain available, and can be made visible again by selecting a smaller visible frequency.
+      Whilst it isn&apos;t necessary for this exercise, Debrief does allow you to reduce the density of the sensor data.  If you right-click on <b>Sensor:SENSOR_A</b>, then navigate down into the <b>SENSOR_A</b> sub-menu you will see a <b>Visible Frequency</b> option. Using one of these options will pass through sensor data and hide sensor observations between the specified frequency.  The sensor cuts remain available, and can be made visible again by selecting a smaller visible frequency.  Note, instead of this you could have resampled the ownship positions and sensor cuts by right-clicking on the parent track and selecting <b>Resample data at</b>.
       </description>
    </item>
 </cheatsheet>
