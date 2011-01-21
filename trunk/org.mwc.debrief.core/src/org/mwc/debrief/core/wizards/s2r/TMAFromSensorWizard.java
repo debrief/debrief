@@ -41,7 +41,12 @@ public class TMAFromSensorWizard extends Wizard
 				"range from ownship to start of track",
 				"bearing from ownship to start of track", imagePath, helpContext );
 
-		selectOffsetPage.setData(_range, _brgDegs);
+		// give ourselves a default range, if we don't have one
+		WorldDistance theRange = _range;
+		if(theRange == null)
+			theRange = new WorldDistance(5, WorldDistance.NM);
+		
+		selectOffsetPage.setData(theRange, _brgDegs);
 
 		addPage(selectOffsetPage);
 
