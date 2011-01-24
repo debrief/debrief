@@ -118,6 +118,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -502,6 +503,12 @@ public class SWTCanvas extends SWTCanvasAdapter
 	public void addMouseListener(MouseListener listener)
 	{
 		_myCanvas.addMouseListener(listener);
+		
+	}
+	
+	public void addMouseWheelListener(MouseWheelListener listener)
+	{
+		_myCanvas.addMouseWheelListener(listener);
 	}
 
 	public Control getCanvas()

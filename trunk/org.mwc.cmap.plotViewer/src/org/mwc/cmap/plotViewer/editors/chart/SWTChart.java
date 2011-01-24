@@ -130,29 +130,56 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
-import java.awt.*;
 import java.awt.Color;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Chart.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
+import MWC.GUI.Tools.Chart.HitTester;
+import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * The Chart is a canvas placed in a panel. the majority of functionality is
@@ -202,6 +229,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	private transient Point _draggedPoint = null;
 
 	private transient PlotMouseDragger _myDragMode;
+	private transient PlotMouseDragger _myAltDragMode = 	new Pan.PanMode();
 
 	/**
 	 * keep a cached copy of the image - to reduce replotting time
@@ -278,6 +306,33 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				doMouseUp(e);
 			}
 		});
+		_theCanvas.addMouseWheelListener(new MouseWheelListener()
+		{
+			@Override
+			public void mouseScrolled(MouseEvent e)
+			{
+				// is ctrl held down?
+				if((e.stateMask & SWT.CONTROL) != 0)
+				{
+	        // set the scale factor
+	        double scale = 1.1;
+
+					// ok, which dir?
+					if(e.count > 0)
+					{
+						scale = 1 / scale;
+					}
+					
+		      // get the projection to refit-itself
+		      getCanvas().getProjection().zoom(scale);
+		      
+		      // and force repaint
+		      update();
+
+				}
+			}
+		});
+		
 
 		// create the tooltip handler
 		_theCanvas.setTooltipHandler(new MWC.GUI.Canvas.BasicTooltipHandler(theLayers));
@@ -701,10 +756,17 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		super.mouseMoved(thisPoint);
 
 		Point swtPoint = new Point(e.x, e.y);
+		
+		final PlotMouseDragger theMode;
+		if(e.button == 2)
+			theMode = _myAltDragMode;
+		else
+			theMode = _myDragMode;
+
 
 		// ok - pass the move event to our drag control (if it's interested...)
-		if (_myDragMode != null)
-			_myDragMode.doMouseMove(swtPoint, JITTER, super.getLayers(), _theCanvas);
+		if (theMode != null)
+			theMode.doMouseMove(swtPoint, JITTER, super.getLayers(), _theCanvas);
 
 		if (_startPoint == null)
 			return;
@@ -715,8 +777,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			_draggedPoint = new Point(e.x, e.y);
 
 			// ok - pass the drag to our drag control
-			if (_myDragMode != null)
-				_myDragMode.doMouseDrag(_draggedPoint, JITTER, super.getLayers(), _theCanvas);
+			if (theMode != null)
+				theMode.doMouseDrag(_draggedPoint, JITTER, super.getLayers(), _theCanvas);
 		}
 	}
 
@@ -725,16 +787,23 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// was this the right-hand button
 		if (e.button != 3)
 		{
+			
+			final PlotMouseDragger theMode;
+			if(e.button == 2)
+				theMode = _myAltDragMode;
+			else
+				theMode = _myDragMode;
+			
 			// ok. did we move at all?
 			if (_draggedPoint != null)
 			{
 				// yes, process the drag
-				if (_myDragMode != null)
+				if (theMode != null)
 				{
-					_myDragMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
+					theMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
 
 					// and restore the mouse mode cursor
-					_theCanvas.getCanvas().setCursor(_myDragMode.getNormalCursor());
+					_theCanvas.getCanvas().setCursor(theMode.getNormalCursor());
 				}
 			}
 			else
@@ -751,7 +820,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				}
 			}
 		}
-
 		_startPoint = null;
 	}
 
@@ -763,9 +831,14 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			_startPoint = new Point(e.x, e.y);
 			_draggedPoint = null;
 
-			if (_myDragMode != null)
-				_myDragMode.mouseDown(_startPoint, _theCanvas, this);
-
+			final PlotMouseDragger theMode;
+			if(e.button == 2)
+				theMode = _myAltDragMode;
+			else
+				theMode = _myDragMode;
+			
+			if (theMode != null)
+				theMode.mouseDown(_startPoint, _theCanvas, this);
 		}
 	}
 
