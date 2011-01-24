@@ -25,7 +25,9 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -49,6 +51,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.cheatsheets.OpenCheatSheetAction;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IGotoMarker;
@@ -949,7 +952,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				md.open();
 
 				// not, we have to do a save-as
-				doSaveAs("Can't store this file-type, please save as Debrief plot-file (*.xml)");
+				doSaveAs("Can't store this file-type, select a target folder, and remember to save as Debrief plot-file (*.xml)");
 			}
 			else
 			{
@@ -1196,6 +1199,42 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	public void doSaveAs(String message)
 	{
+		// do we have a project?
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject[] projects = workspace.getRoot().getProjects();
+		if((projects == null) || (projects.length == 0))
+		{
+			String msg = "Debrief plots are stored in 'Projects'";
+			msg += "\nBut you do not yet have one defined.";
+			msg += "\nPlease follow the 'Generating a project for your data' cheat";
+			msg += "\nsheet, accessed from Help/Cheat Sheets then Debrief/Getting started.";
+			msg += "\nOnce you have created your project, please start the Save process again.";
+			msg += "\nNote: the cheat sheet will open automatically when you close this dialog.";
+			MessageDialog md = new MessageDialog(getEditorSite().getShell(),
+					"Save as", null, msg, MessageDialog.WARNING, new String[]
+					{ "Ok" }, 0);
+			md.open();
+			
+			// try to open the cheat sheet
+			final String CHEAT_ID = "org.mwc.debrief.help.started.generate_project";
+			
+		   Display.getCurrent().asyncExec(new Runnable()
+			{				
+				@Override
+				public void run()
+				{
+				   OpenCheatSheetAction action = new OpenCheatSheetAction(CHEAT_ID);
+				   action.run();
+				}
+			});
+		   
+		  // ok, drop out - we can't do a save anyway
+			return;
+		}
+		
+		
+		// get the workspace
+		
 		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
 		dialog.setTitle("Save Plot As");
 		if (getEditorInput() instanceof FileEditorInput)

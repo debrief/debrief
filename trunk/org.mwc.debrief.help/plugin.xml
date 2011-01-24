@@ -78,7 +78,9 @@
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/FindingYourData.xml"
             id="org.mwc.debrief.help.started.existing_data"
-            name="Linking to existing datafiles"/>                                       
+            name="Linking to existing datafiles"/>   
+            <!--  note, we use the generate_project id when we manually open
+            the cheat sheet in the PlotEditor class -->                                    
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"

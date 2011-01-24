@@ -65,6 +65,7 @@
 		<import plugin="org.eclipse.ui" />
 		<import plugin="org.eclipse.ui.ide" />
 		<import plugin="org.eclipse.core.filesystem" />
+  <import plugin="org.eclipse.ui.cheatsheets" version="3.4.0"/>
 
 	</requires>
 	<extension-point id="DebriefPlotLoader" name="Plot Loader"
