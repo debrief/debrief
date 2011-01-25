@@ -1220,7 +1220,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			
 		   Display.getCurrent().asyncExec(new Runnable()
 			{				
-				@Override
 				public void run()
 				{
 				   OpenCheatSheetAction action = new OpenCheatSheetAction(CHEAT_ID);

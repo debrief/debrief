@@ -308,7 +308,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		});
 		_theCanvas.addMouseWheelListener(new MouseWheelListener()
 		{
-			@Override
 			public void mouseScrolled(MouseEvent e)
 			{
 				// is ctrl held down?
