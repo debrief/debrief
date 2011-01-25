@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="Debrief-specific plugins"
-      version="1.0.146">
+      version="1.0.147">
 
    <description>
       Debrief-specific plugins used by the Debrief Maritime Analysis

@@ -4836,79 +4836,51 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <sect1 id="debrief_feedback">
                 <title>Providing feedback</title>
                 <para>In addition to the <application>Debrief</application> web-site, the
-                        <application>Debrief</application> project makes use of <application
-                        >SourceForge</application>, an online development web-site <indexterm
-                            ><primary>SourceForge</primary><secondary>Providing
-                        Feedback</secondary></indexterm> which provides us with bug-tracking, file
-                    download support, and news groups. <figure id="sf.net_home_page" float="0"
-                            ><title>SourceForge.net home
-                                    page</title><screenshot><mediaobject><imageobject>
-                                    <imagedata fileref="figures/sf_page.png" width="100%"/>
-                                </imageobject></mediaobject></screenshot></figure></para>
-                <para> From the screenshot of the <application>SourceForge.net</application> home
-                    page for <application>Debrief</application> you can see a list of the services
-                    it provides, ranging from discussion forums, through bug and feature-request
-                    trackers, to news lists and file downloads. All of these services are provided
-                    for free, funded by <ulink url="http://valinux.com/">VA Linux Systems</ulink>. </para>
-                <sidebar>
-                    <para>
-                        <guiicon>
-                            <inlinegraphic fileref="figures/sf_logo.png"/>
-                        </guiicon>
-                    </para>
-                    <para>
-                        <application>
-                            <indexterm><primary>SourceForge</primary></indexterm>SourceForge.net
-                        </application>&apos;s mission is to enrich the Open Source community by
-                        providing a centralized place for Open Source Developers to control and
-                        manage Open Source Software Development. </para>
-                    <para>
-                        <application>SourceForge</application> is a free hosting service for Open
-                        Source developers which offers, among other things, a CVS repository,
-                        mailing lists, bug tracking, message forums, task management software, web
-                        site hosting, permanent file archival, full backups, and total web-based
-                        administration. </para>
-                </sidebar>
+                        <application>Debrief</application> project makes use of
+                        <application>SourceForge</application> and
+                        <application>Assembla</application> , online development web-sites <indexterm>
+                        <primary>SourceForge</primary>
+                        <secondary>Providing Feedback</secondary>
+                    </indexterm> that provide us with bug-tracking, file download support, and news
+                    groups. Since 2008, Assembla (<uri>http://www.assembla.com/spaces/Debrief</uri>)
+                    has taken over the bug-reporting and feature requests, with SourceForge just
+                    responsible for downloads.<figure id="sf.net_home_page" float="0">
+                        <title>Debrief's home page at Assembla</title>
+                        <screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/assembla_home.png" width="100%"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot>
+                    </figure></para>
+                <para> From the screenshot of the Assembla home page for
+                        <application>Debrief</application> you can see a list of the services it
+                    provides, ranging from discussion forums, through bug and feature-request
+                    trackers</para>
                 <sect2 id="debrief_bugs">
                     <title>Reporting Bugs</title>
                     <para>To report a bug, or a feature which you believe is behaving incorrectly,
-                        press the <guibutton>Tracker</guibutton> link from the <application
-                            >SourceForge.net</application> homepage <indexterm
-                                ><primary>SourceForge</primary><secondary>Reporting
-                            Bugs</secondary></indexterm> for Debrief. These
-                            <emphasis>Trackers</emphasis> allow registered and anonymous users to
-                        submit items to the lists. The items are then tracked, and provided an
-                        e-mail address was provided, the submitter is kept informed of the progress
-                        of the submission. </para>
-                    <para> The Trackers page provides a list of types of data which may be tracked. </para>
-                    <para>
-                        <figure id="trackers_page" float="0">
-                            <title>SourceForge.net Trackers page</title>
-                            <screenshot>
-                                <mediaobject>
-                                    <imageobject>
-                                        <imagedata fileref="figures/sf_trackers.png" width="100%"/>
-                                    </imageobject>
-                                </mediaobject>
-                            </screenshot>
-                        </figure>
-                    </para>
-                    <para> To report a new bug, click on the <guibutton>Bugs</guibutton> link from
-                        this page. You will be taken to a page (see below) which allows you to both
-                        browse existing bugs and add new ones. To add a new bug, press the
-                            <guibutton>Submit New</guibutton> button, which will take you to the
-                        form used to submit new bug reports. Select the correct categories for the
-                        new bug using the categories provided, then a summary (title) and
-                        description of the bug. The form also requests your e-mail address, this is
-                        most useful since it allows the <link linkend="project_manager">Project
-                            Manager</link> to approach you with any supplementary questions. </para>
+                        you must first register at Assembla.  You can either create a new account,
+                        or login using a number of existing login authorities (including Google and
+                        Yahoo).  Once registered, you can click on the 'New Ticket' button, and
+                        submit a request for a bug-fix or new features. The items are then tracked,
+                        and provided an e-mail address was provided, the submitter is kept informed
+                        of the progress of the submission.</para>
+                    <para>The following screenshot shows the form used to submit bugs.  Don't worry
+                        if you're not quite sure if the bug is actually intended behaviour, or if
+                        you're unsure whether a proposed new feature would 'make the cut'.  Once
+                        your request is emailed it's recorded on the system and an informed
+                        debate/discussion can folllow.  This ensures requests dont fall through the
+                        cracks. </para>
                     <para>
                         <figure id="bug_reporting_page" float="0">
-                            <title>SourceForge.net Bug Reporting page</title>
+                            <title>Assembla Bug Reporting page</title>
                             <screenshot>
                                 <mediaobject>
                                     <imageobject>
-                                        <imagedata fileref="figures/sf_bugs.png" width="100%"/>
+                                        <imagedata fileref="figures/assembla_bugs.png" width="100%"
+                                        />
                                     </imageobject>
                                 </mediaobject>
                             </screenshot>
@@ -4918,15 +4890,6 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         confirmation of the bug-report, followed by an e-mail from the <link
                             linkend="project_manager">Project Manager</link>, normally containing a
                         time-frame for resolution of the bug. </para>
-                    <tip>
-                        <para>If you find yourself frequently submitting bugs via <application
-                                >SourceForge.net</application> (hopefully not) then it may prove
-                            worthwhile to register with <application>SourceForge.net</application>.
-                            Registering gives you your own ID within <application
-                                >SourceForge.net</application>, and gives you a dedicated personal
-                            page which allows you track the progress of all bug-reports and feature
-                            requests submitted. </para>
-                    </tip>
                 </sect2>
                 <sect2 id="debrief_features">
                     <title>Requesting new features</title>
