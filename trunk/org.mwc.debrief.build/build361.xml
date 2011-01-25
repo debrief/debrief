@@ -84,7 +84,7 @@
 		<property name="datedDist" value="../deploy/DebriefNG_${TODAY_UK}.zip" />
 
 		<!-- produce a named deliverable -->
-		<move file="${buildDirectory}/${buildLabel}/${zipFile}" tofile="${datedDist}" />
+		<copy file="${debriefDest}" tofile="${datedDist}" />
 
 		<!-- help the ftp task get going -->
 		<property environment="env" />
