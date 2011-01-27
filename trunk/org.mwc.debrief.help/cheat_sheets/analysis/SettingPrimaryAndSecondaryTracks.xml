@@ -13,7 +13,7 @@
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.</description>
 	</item>
 	<item title="View the tote" href="\org.mwc.debrief.help\html\legacy\start_up.html#debrief_views">
-		<description>In the centre section of the left hand column in Debrief is the Track Tote.  If it's not at the top, click on it's tab to highlight it.  If it's not visible at all, open it by selecting "Track Tote" from the "Window/Show View" drop-down menu.</description>
+		<description>In the centre section of the left hand column in Debrief is the Track Tote.  If it's obscured by other view panels, click on it's tab to highlight it.  If it's not visible at all, open it by selecting "Track Tote" from the "Window/Show View" drop-down menu.</description>
 	</item>
 	<item title="What can I see?" href="\org.mwc.debrief.help\html\legacy\analysing_data.html#the_tote_area">
 		<description>Once open, you should see a table consisting of two or more columns.  The left-hand column lists the calculated data fields, and an optional right-hand column shows the units used for that field.  The centre columns show the actual calculated data fields, one for each track on the tote.  The left-hand data column (OSPREY in our test data) is the primary track - that is, all calculations are shown relative to this track.  The calculations themselves are explained in greater detail in the Help manual (click on the Help icon above). </description>

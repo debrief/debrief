@@ -31,7 +31,7 @@
 			mode. Select OTG for the track segments in this tutorial file</description>
 	</item>
 	<item title="Main track loaded">
-		<description>There you are, your track data is now on the plot. In this (fictional) example, you have your blue ownship track . Unfortunately this track has a period of missing data.  There are also several jumps in the data - shown about 2/3 of the way along it.  We&apos;ll fix these first.</description>
+		<description>There you are, your track data is now on the plot. In this (fictional) example, you have your blue ownship track . Unfortunately this track has a period of missing data.  There are also several jumps in the data - shown about 2/3 of the way along it.  Note: jumps can occur when an inertial navigation system receives and external update.  We&apos;ll fix these first.</description>
 	</item>
  <item
        title="Getting a feel for the data">
