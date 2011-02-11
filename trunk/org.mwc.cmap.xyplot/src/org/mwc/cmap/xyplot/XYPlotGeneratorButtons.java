@@ -69,7 +69,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	/**
 	 * remember past selections from the drop-down list
 	 */
-	static HashMap<String, Integer> _pastSelections;
+	private static HashMap<String, Integer> _pastSelections;
 
 	/**
 	 * constructor - just initialise ourselves
@@ -215,8 +215,11 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 			// ok - just store the current one, in case the user just 'accepts' it.
 			int selItem = theOps.getSelectionIndex();
-			_result = _choices[selItem];
-			_resultIndex = selItem;
+			if (selItem != -1)
+			{
+				_result = _choices[selItem];
+				_resultIndex = selItem;
+			}
 
 			return holder;
 		}
