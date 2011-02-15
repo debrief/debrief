@@ -95,6 +95,25 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 			}
 		};
+		
+		_listenForMods = new DataListener()
+		{
+			public void dataModified(Layers theData, Layer changedLayer)
+			{
+				fireDirty();
+			}
+
+			public void dataExtended(Layers theData)
+			{
+				fireDirty();
+			}
+
+			public void dataReformatted(Layers theData, Layer changedLayer)
+			{
+				fireDirty();
+			}
+		};
+
 	}
 
 	protected void updateScenario(ScenarioWrapper scenarioLayers,
@@ -120,39 +139,24 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	private void startListeningTo(Layers layers)
 	{
-		if (_listenForMods == null)
-		{
-			_listenForMods = new DataListener()
-			{
-				public void dataModified(Layers theData, Layer changedLayer)
-				{
-					fireDirty();
-				}
 
-				public void dataExtended(Layers theData)
-				{
-					fireDirty();
-				}
-
-				public void dataReformatted(Layers theData, Layer changedLayer)
-				{
-					fireDirty();
-				}
-			};
-		}
-
-		layers.addDataExtendedListener(_listenForMods);
-		layers.addDataModifiedListener(_listenForMods);
-		layers.addDataReformattedListener(_listenForMods);
+		// are we already listening to it?
+		if (_myLayers != null)
+			stopListeningToThis(_myLayers);
 
 		// and remember it
 		_myLayers = layers;
 
+		// give it to the chart
+		_myChart.setLayers(_myLayers);
+
+		// start listening
+		layers.addDataExtendedListener(_listenForMods);
+		layers.addDataModifiedListener(_listenForMods);
+		layers.addDataReformattedListener(_listenForMods);
+
 		// make sure we can see the data
 		_myChart.rescale();
-
-		// hey, push ourselves out a little, so we keep it in sight.
-		// _myChart.getCanvas().getProjection().zoom(2.0);
 
 		// and ask for a refresh
 		fireDirty();
@@ -163,6 +167,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 		layers.removeDataExtendedListener(_listenForMods);
 		layers.removeDataModifiedListener(_listenForMods);
 		layers.removeDataReformattedListener(_listenForMods);
+		
+		// and forget it in the chart
+		_myChart.setLayers(null);
 	}
 
 	private void startListeningTo(ScenarioType scenario)
@@ -212,8 +219,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myLayers = null;
 
 		// empty the part monitor
-		if(_myPartMonitor != null)
-  		_myPartMonitor.ditch();
+		if (_myPartMonitor != null)
+			_myPartMonitor.ditch();
 		_myPartMonitor = null;
 	}
 
@@ -409,74 +416,74 @@ public class ASSETPlotEditor extends CorePlotEditor
 					}
 				});
 		//
-		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						if (_myScenario != part)
-						{
-							// are we already listening to it?
-							if (_myScenario != null)
-								stopListeningToThis(_myScenario);
-
-							// ok, let's start listening to it
-							_myScenario = (ScenarioType) part;
-							startListeningTo(_myScenario);
-						}
-					}
-				});
-		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						if (_myScenario == part)
-						{
-							stopListeningToThis(_myScenario);
-							_myScenario = null;
-						}
-					}
-				});
-
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						if (_myLayers != part)
-						{
-							// are we already listening to it?
-							if (_myLayers != null)
-								stopListeningToThis(_myLayers);
-
-							_myLayers = (Layers) part;
-
-							// give it to the chart
-							_myChart.setLayers(_myLayers);
-
-							// ok, let's start listening to it
-							startListeningTo(_myLayers);
-
-						}
-					}
-				});
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						if (_myLayers == part)
-						{
-							stopListeningToThis(_myLayers);
-							_myLayers = null;
-						}
-					}
-				});
+		// _myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.ACTIVATED,
+		// new PartMonitor.ICallback()
+		// {
+		// public void eventTriggered(String type, Object part,
+		// IWorkbenchPart parentPart)
+		// {
+		// if (_myScenario != part)
+		// {
+		// // are we already listening to it?
+		// if (_myScenario != null)
+		// stopListeningToThis(_myScenario);
+		//
+		// // ok, let's start listening to it
+		// _myScenario = (ScenarioType) part;
+		// startListeningTo(_myScenario);
+		// }
+		// }
+		// });
+		// _myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
+		// new PartMonitor.ICallback()
+		// {
+		// public void eventTriggered(String type, Object part,
+		// IWorkbenchPart parentPart)
+		// {
+		// if (_myScenario == part)
+		// {
+		// stopListeningToThis(_myScenario);
+		// _myScenario = null;
+		// }
+		// }
+		// });
+		//
+		// _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+		// new PartMonitor.ICallback()
+		// {
+		// public void eventTriggered(String type, Object part,
+		// IWorkbenchPart parentPart)
+		// {
+		// if (_myLayers != part)
+		// {
+		// // are we already listening to it?
+		// if (_myLayers != null)
+		// stopListeningToThis(_myLayers);
+		//
+		// _myLayers = (Layers) part;
+		//
+		// // give it to the chart
+		// _myChart.setLayers(_myLayers);
+		//
+		// // ok, let's start listening to it
+		// startListeningTo(_myLayers);
+		//
+		// }
+		// }
+		// });
+		// _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+		// new PartMonitor.ICallback()
+		// {
+		// public void eventTriggered(String type, Object part,
+		// IWorkbenchPart parentPart)
+		// {
+		// if (_myLayers == part)
+		// {
+		// stopListeningToThis(_myLayers);
+		// _myLayers = null;
+		// }
+		// }
+		// });
 
 	}
 
