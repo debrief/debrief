@@ -28,77 +28,6 @@ import MWC.GUI.Layers;
 public class ScenarioWrapper extends Layers implements LiveScenario
 {
 	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private CoreControllerPresenter _thePresenter;
-	private ControllerWrapper _theController;
-	private ScenarioLayer _scenLayer;
-
-	public ScenarioWrapper(CoreControllerPresenter scenarioController)
-	{
-		this(scenarioController, new ScenarioLayer());
-	}
-
-	/**
-	 * convenience method for when we have our own scenario layer
-	 * 
-	 * @param scenarioController
-	 * @param layer
-	 */
-	public ScenarioWrapper(CoreControllerPresenter scenarioController,
-			ScenarioLayer layer)
-	{
-		_thePresenter = scenarioController;
-		_theController = new ControllerWrapper();
-		_scenLayer = layer;
-		this.addThisLayer(_scenLayer);
-		this.addThisLayer(_theController);
-	}
-
-	/**
-	 * convenience method to ditch any layers other than the scenario and
-	 * controller
-	 * 
-	 */
-	public void ditchChartFeatures()
-	{
-
-		Enumeration<Editable> layers = this.elements();
-		while (layers.hasMoreElements())
-		{
-			Layer thisLayer = (Layer) layers.nextElement();
-			if ((thisLayer == _scenLayer) || (thisLayer == _theController))
-			{
-				// ok, leave it
-			}
-			else
-			{
-				// aaah, one last check - just check it's not an instance of the
-				// scenario wrapper
-				if (thisLayer instanceof ScenarioLayer)
-				{
-
-				}
-				else
-					this.removeThisLayer(thisLayer);
-			}
-		}
-	}
-
-	public ScenarioType getScenario()
-	{
-		return _scenLayer.getScenario();
-	}
-
-	public void fireNewController()
-	{
-		_theController.setObservers(_thePresenter.getObservers());
-		this.fireExtended();
-	}
-
-	/**
 	 * layout-manager compliant wrapper around a scenario control file
 	 * 
 	 * @author Administrator
@@ -145,8 +74,39 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 
 	}
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private CoreControllerPresenter _thePresenter;
+	private ControllerWrapper _theController;
+
+	private ScenarioLayer _scenLayer;
+
 	private ScenarioRunningListener _runListener;
+
 	private PropertyChangeSupport _pSupport;
+
+	public ScenarioWrapper(CoreControllerPresenter scenarioController)
+	{
+		this(scenarioController, new ScenarioLayer());
+	}
+
+	/**
+	 * convenience method for when we have our own scenario layer
+	 * 
+	 * @param scenarioController
+	 * @param layer
+	 */
+	public ScenarioWrapper(CoreControllerPresenter scenarioController,
+			ScenarioLayer layer)
+	{
+		_thePresenter = scenarioController;
+		_theController = new ControllerWrapper();
+		_scenLayer = layer;
+		this.addThisLayer(_scenLayer);
+		this.addThisLayer(_theController);
+	}
 
 	public void addStoppedListener(PropertyChangeListener listener)
 	{
@@ -157,7 +117,8 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 
 				public void finished(long elapsedTime, String reason)
 				{
-					_pSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED, elapsedTime, reason);
+					_pSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED,
+							elapsedTime, reason);
 				}
 
 				public void newScenarioStepTime(int val)
@@ -184,14 +145,57 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 
 			_scenLayer.getScenario().addScenarioRunningListener(_runListener);
 		}
-		
-		_pSupport.addPropertyChangeListener(TimeManager.LiveScenario.FINISHED, listener);
+
+		_pSupport.addPropertyChangeListener(TimeManager.LiveScenario.FINISHED,
+				listener);
+	}
+
+	/**
+	 * convenience method to ditch any layers other than the scenario and
+	 * controller
+	 * 
+	 */
+	public void ditchChartFeatures()
+	{
+
+		Enumeration<Editable> layers = this.elements();
+		while (layers.hasMoreElements())
+		{
+			Layer thisLayer = (Layer) layers.nextElement();
+			if ((thisLayer == _scenLayer) || (thisLayer == _theController))
+			{
+				// ok, leave it
+			}
+			else
+			{
+				// aaah, one last check - just check it's not an instance of the
+				// scenario wrapper
+				if (thisLayer instanceof ScenarioLayer)
+				{
+
+				}
+				else
+					this.removeThisLayer(thisLayer);
+			}
+		}
+	}
+
+	public void fireNewController()
+	{
+		_theController.setObservers(_thePresenter.getObservers());
+		this.fireExtended();
+	}
+
+	public ScenarioType getScenario()
+	{
+		return _scenLayer.getScenario();
 	}
 
 	public void removeStoppedListener(PropertyChangeListener listener)
 	{
-		if(_pSupport != null)
-		_pSupport.removePropertyChangeListener(TimeManager.LiveScenario.FINISHED, listener);
+		if (_pSupport != null)
+			_pSupport.removePropertyChangeListener(TimeManager.LiveScenario.FINISHED,
+					listener);
 	}
 
 }

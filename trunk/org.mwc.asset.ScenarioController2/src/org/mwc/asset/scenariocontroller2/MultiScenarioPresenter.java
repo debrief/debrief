@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-
-
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
@@ -18,18 +16,6 @@ import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 
 public class MultiScenarioPresenter extends CoreControllerPresenter
 {
-	/**
-	 * our data model
-	 * 
-	 */
-	private MultiScenarioCore _myModel;
-
-	/**
-	 * our view
-	 * 
-	 */
-	MultiScenarioDisplay _myDisplay;
-
 	/**
 	 * package up an operation with a progress monitor
 	 * 
@@ -70,7 +56,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	public static interface MultiScenarioDisplay extends ScenarioDisplay
 	{
-		/** someone is listening to the run/generate buttons
+		/**
+		 * someone is listening to the run/generate buttons
 		 * 
 		 * @param listener
 		 */
@@ -82,35 +69,86 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 */
 		void clearScenarios();
 
-		/** set the enabled state of the generate button
+		/**
+		 * start this monster job running
+		 * 
+		 * @param theJob
+		 */
+		void runThisJob(JobWithProgress theJob);
+
+		/**
+		 * set the enabled state of the generate button
 		 * 
 		 * @param b
 		 */
 		void setGenerateState(boolean b);
 
-		/** set the enabled state of the run button
+		/**
+		 * set the enabled state of the run button
 		 * 
 		 * @param b
 		 */
 		void setRunState(boolean b);
 
-		/** update the list of scenarios
+		/**
+		 * update the list of scenarios
 		 * 
 		 * @param _myModel
 		 */
 		void setScenarios(MultiScenarioCore _myModel);
-
-		/** start this monster job running
-		 * 
-		 * @param theJob
-		 */
-		void runThisJob(JobWithProgress theJob);
 	}
 
-	public MultiScenarioPresenter(MultiScenarioDisplay display, MultiScenarioCore model)
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		@SuppressWarnings("synthetic-access")
+		public final void testRelativePathMethod()
+		{
+			super.assertEquals("failed to recognise drive", false,
+					isRelativePath(new File("c:\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					isRelativePath(new File("\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					isRelativePath(new File("\\\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					isRelativePath(new File("//test.rep")));
+			super.assertEquals("failed to root designator", false,
+					isRelativePath(new File("////test.rep")));
+			super.assertEquals("failed to recognise absolute ref", true,
+					isRelativePath(new File("test.rep")));
+			super.assertEquals("failed to recognise relative ref", true,
+					isRelativePath(new File("./test.rep")));
+			super.assertEquals("failed to recognise parent ref", true,
+					isRelativePath(new File("../test.rep")));
+		}
+	}
+
+	/**
+	 * our data model
+	 * 
+	 */
+	private MultiScenarioCore _myModel;
+
+	/**
+	 * our view
+	 * 
+	 */
+	MultiScenarioDisplay _myDisplay;
+
+	public MultiScenarioPresenter(MultiScenarioDisplay display,
+			MultiScenarioCore model)
 	{
 		super(display);
-		
+
 		// store the presenter
 		_myDisplay = display;
 
@@ -129,113 +167,17 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 		_myDisplay.addMultiScenarioHandler(new ManageMultiListener()
 		{
-			public void doRun()
-			{
-				runScenarios();
-			}
-
 			public void doGenerate()
 			{
 				generateScenarios();
 			}
+
+			public void doRun()
+			{
+				runScenarios();
+			}
 		});
 
-	}
-
-	protected void generateScenarios()
-	{
-		// disable the genny button, until it's done.
-		_myDisplay.setGenerateState(false);
-
-		JobWithProgress theJob = new JobWithProgress()
-		{
-
-			public void run(ASSETProgressMonitor montor)
-			{
-
-				// and let it create some files
-				_myModel.prepareFiles(_controlFileName, _scenarioFileName, System.out,
-						System.err, System.in, montor, _scenarioController.outputDirectory);
-
-				// and sort out the observers
-				_myModel.prepareControllers(_scenarioController, montor, null);
-
-				// ok, now give the scenarios to the multi scenario table (in the UI
-				// thread
-				_myDisplay.setScenarios(_myModel);
-
-				// and set the button states
-				_myDisplay.setGenerateState(false);
-				_myDisplay.setRunState(true);
-			}
-		};
-
-		_myDisplay.runThisJob(theJob);
-
-	}
-
-	protected void runScenarios()
-	{
-		System.out.println("doing run");
-
-		Thread doRun = new Thread()
-		{
-
-			@Override
-			public void run()
-			{
-				// tell them to go for it
-				_myModel.nowRun(System.out, System.err, System.in, null);
-
-				// ok, better refresh the workspace
-				_myDisplay.refreshWorkspace();
-			}
-		};
-		doRun.start();
-	}
-
-	protected void handleTheseFiles(String[] fileNames)
-	{
-
-		// ok, loop through the files
-		for (int i = 0; i < fileNames.length; i++)
-		{
-			final String thisName = fileNames[i];
-
-			if (thisName != null)
-			{
-
-				// ok, examine this file
-				String firstNode = getFirstNodeName(thisName);
-
-				if (firstNode != null)
-				{
-					if (firstNode.equals("Scenario"))
-					{
-						// remember it
-						_scenarioFileName = thisName;
-
-						// set the filename
-						_myDisplay.setScenarioName(new File(thisName).getName());
-
-					}
-					else if (firstNode.equals("ScenarioController"))
-					{
-						// remember it
-						_controlFileName = thisName;
-
-						// show it
-						_myDisplay.setControlName(new File(thisName).getName());
-
-						// now sort out the controller data
-						controllerAssigned(_controlFileName);
-					}
-				}
-			}
-		}
-
-		// lastly, make our view the current selection
-		_myDisplay.activate();
 	}
 
 	private void controllerAssigned(String controlFile)
@@ -312,20 +254,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		}
 	}
 
-	private void loadThisObserverList(String controlFile,
-			Vector<ScenarioObserver> theObservers) throws FileNotFoundException
-	{
-		// add these observers to our scenario
-		for (int i = 0; i < theObservers.size(); i++)
-		{
-			// get the next observer
-			ScenarioObserver observer = theObservers.elementAt(i);
-
-			// and add it to our list
-			theObservers.add(observer);
-		}
-	}
-
 	/**
 	 * tell the observers to stop listening to the subject scenario, and then
 	 * ditch them
@@ -340,54 +268,127 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			_theObservers.removeAllElements();
 		}
 	}
-	
-	
+
+	protected void generateScenarios()
+	{
+		// disable the genny button, until it's done.
+		_myDisplay.setGenerateState(false);
+
+		JobWithProgress theJob = new JobWithProgress()
+		{
+
+			public void run(ASSETProgressMonitor montor)
+			{
+
+				// and let it create some files
+				_myModel.prepareFiles(_controlFileName, _scenarioFileName, System.out,
+						System.err, System.in, montor, _scenarioController.outputDirectory);
+
+				// and sort out the observers
+				_myModel.prepareControllers(_scenarioController, montor, null);
+
+				// ok, now give the scenarios to the multi scenario table (in the UI
+				// thread
+				_myDisplay.setScenarios(_myModel);
+
+				// and set the button states
+				_myDisplay.setGenerateState(false);
+				_myDisplay.setRunState(true);
+			}
+		};
+
+		_myDisplay.runThisJob(theJob);
+
+	}
+
+	@Override
+	protected void handleTheseFiles(String[] fileNames)
+	{
+
+		// ok, loop through the files
+		for (int i = 0; i < fileNames.length; i++)
+		{
+			final String thisName = fileNames[i];
+
+			if (thisName != null)
+			{
+
+				// ok, examine this file
+				String firstNode = getFirstNodeName(thisName);
+
+				if (firstNode != null)
+				{
+					if (firstNode.equals("Scenario"))
+					{
+						// remember it
+						_scenarioFileName = thisName;
+
+						// set the filename
+						_myDisplay.setScenarioName(new File(thisName).getName());
+
+					}
+					else if (firstNode.equals("ScenarioController"))
+					{
+						// remember it
+						_controlFileName = thisName;
+
+						// show it
+						_myDisplay.setControlName(new File(thisName).getName());
+
+						// now sort out the controller data
+						controllerAssigned(_controlFileName);
+					}
+				}
+			}
+		}
+
+		// lastly, make our view the current selection
+		_myDisplay.activate();
+	}
+
+	private void loadThisObserverList(String controlFile,
+			Vector<ScenarioObserver> theObservers) throws FileNotFoundException
+	{
+		// add these observers to our scenario
+		for (int i = 0; i < theObservers.size(); i++)
+		{
+			// get the next observer
+			ScenarioObserver observer = theObservers.elementAt(i);
+
+			// and add it to our list
+			theObservers.add(observer);
+		}
+	}
 
 	@Override
 	public void reloadDataFiles()
 	{
 		// let the parent do it's stuff
 		super.reloadDataFiles();
-		
+
 		// and clear the list of scenarios
 		_myDisplay.clearScenarios();
 
 	}
 
-
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
+	protected void runScenarios()
 	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		System.out.println("doing run");
 
-		public testMe(final String val)
+		Thread doRun = new Thread()
 		{
-			super(val);
-		}
 
-		@SuppressWarnings("synthetic-access")
-		public final void testRelativePathMethod()
-		{
-			super.assertEquals("failed to recognise drive", false,
-					isRelativePath(new File("c:\\test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("\\test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("\\\\test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("//test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("////test.rep")));
-			super.assertEquals("failed to recognise absolute ref", true,
-					isRelativePath(new File("test.rep")));
-			super.assertEquals("failed to recognise relative ref", true,
-					isRelativePath(new File("./test.rep")));
-			super.assertEquals("failed to recognise parent ref", true,
-					isRelativePath(new File("../test.rep")));
-		}
+			@Override
+			public void run()
+			{
+				// tell them to go for it
+				_myModel.nowRun(System.out, System.err, System.in, null);
+
+				// ok, better refresh the workspace
+				_myDisplay.refreshWorkspace();
+			}
+		};
+		doRun.start();
 	}
 
 }

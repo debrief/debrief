@@ -69,8 +69,8 @@ import ASSET.GUI.CommandLine.MultiScenarioCore;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 
-public class MultiScenarioView extends ViewPart implements
-		ISelectionProvider, TimeManager.LiveScenario, MultiScenarioPresenter.MultiScenarioDisplay
+public class MultiScenarioView extends ViewPart implements ISelectionProvider,
+		TimeManager.LiveScenario, MultiScenarioPresenter.MultiScenarioDisplay
 {
 
 	/**
@@ -144,10 +144,155 @@ public class MultiScenarioView extends ViewPart implements
 		_myPresenter = new MultiScenarioPresenter(this, new MultiScenarioCore());
 	}
 
+	public void activate()
+	{
+		try
+		{
+			// just check we're alive - just in case we've been called before
+			// the init is complete
+			IWorkbenchPartSite site = getSite();
+			IWorkbenchWindow window = site.getWorkbenchWindow();
+			IWorkbenchPage page = window.getActivePage();
+			if (page != null)
+			{
+				// try to find our view first
+				IViewPart theView = page.findView(site.getId());
+				if (theView != null)
+				{
+					// cool, show it then
+					page.showView(site.getId());
+				}
+			}
+		}
+		catch (PartInitException e)
+		{
+			// demote this error, it happens quite frequently when we're still opening
+			ASSETPlugin
+					.logError(
+							IStatus.WARNING,
+							"failed to activate scenario controller - possible because trying to activing during init",
+							null);
+		}
+	}
+
+	public void addFileDropListener(FilesDroppedListener listener)
+	{
+		_filesDroppedListener = listener;
+	}
+
+	public void addMultiScenarioHandler(ManageMultiListener listener)
+	{
+		_multiHandler = listener;
+	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
+
+		// see if we don't already contain it..
+		if (!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);
+	}
+
+	public void addStoppedListener(PropertyChangeListener listener)
+	{
+		if (_scenStopSupport == null)
+			_scenStopSupport = new PropertyChangeSupport(listener);
+		_scenStopSupport.addPropertyChangeListener(listener);
+	}
+
+	public void clearScenarios()
+	{
+		// ui update, put it in an async operation
+		// updating the text items has to be done in the UI thread. make it
+		// so
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				// ok, disable the run button,
+				_myUI.getRunBtn().setEnabled(false);
+
+				// and now enable the genny button
+				_myUI.getDoGenerateButton().setEnabled(true);
+
+				// and clear the scenario table
+				_simTable.setInput(null);
+			}
+		});
+
+	}
+
+	/**
+	 * sort out the file-drop target
+	 */
+	private void configureFileDropSupport(Control _pusher)
+	{
+		int dropOperation = DND.DROP_COPY;
+		Transfer[] dropTypes =
+		{ FileTransfer.getInstance() };
+
+		DropTarget target = new DropTarget(_pusher, dropOperation);
+		target.setTransfer(dropTypes);
+		target.addDropListener(new DropTargetListener()
+		{
+			public void dragEnter(DropTargetEvent event)
+			{
+				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+				{
+					if (event.detail != DND.DROP_COPY)
+					{
+						event.detail = DND.DROP_COPY;
+					}
+				}
+			}
+
+			public void dragLeave(DropTargetEvent event)
+			{
+			}
+
+			public void dragOperationChanged(DropTargetEvent event)
+			{
+			}
+
+			public void dragOver(DropTargetEvent event)
+			{
+			}
+
+			public void drop(DropTargetEvent event)
+			{
+				String[] fileNames = null;
+				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+				{
+					fileNames = (String[]) event.data;
+				}
+				if (fileNames != null)
+				{
+					if (_filesDroppedListener != null)
+						_filesDroppedListener.filesDropped(fileNames);
+				}
+			}
+
+			public void dropAccept(DropTargetEvent event)
+			{
+			}
+
+		});
+
+	}
+
+	private void contributeToActionBars()
+	{
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
+	@Override
 	public void createPartControl(Composite parent)
 	{
 		// create our UI
@@ -176,6 +321,7 @@ public class MultiScenarioView extends ViewPart implements
 		// now listen to the UI buttons
 		_myUI.getDoGenerateButton().addSelectionListener(new SelectionAdapter()
 		{
+			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				_multiHandler.doGenerate();
@@ -184,6 +330,7 @@ public class MultiScenarioView extends ViewPart implements
 
 		_myUI.getRunBtn().addSelectionListener(new SelectionAdapter()
 		{
+			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				_multiHandler.doRun();
@@ -195,38 +342,40 @@ public class MultiScenarioView extends ViewPart implements
 			_filesDroppedListener.filesDropped(_myPendingFilenames);
 	}
 
-	public void addMultiScenarioHandler(ManageMultiListener listener)
+	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		_multiHandler = listener;
-	}
-
-	public void refreshWorkspace()
-	{
-		// it's stopped running, refresh the workspace
-		IProject theProj = getAProject();
-		try
+		Action viewInPlotter = new Action()
 		{
-			theProj.refreshLocal(2, null);
-		}
-		catch (CoreException e)
-		{
-			ASSETPlugin.logError(Status.ERROR,
-					"Had trouble refreshing project folder", e);
-			e.printStackTrace();
-		}
-	}
-
-	public void setGenerateState(final boolean state)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+			@Override
 			public void run()
 			{
-				_myUI.getDoGenerateButton().setEnabled(state);
+				openPlotter();
 			}
-		});
+		};
+		viewInPlotter.setText("View in LPD");
+		viewInPlotter.setToolTipText("View 2D overview of scenario");
+		viewInPlotter.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/overview.gif"));
+
+		Action actionReloadDatafiles = new Action()
+		{
+			@Override
+			public void run()
+			{
+				_myPresenter.reloadDataFiles();
+			}
+		};
+		actionReloadDatafiles.setText("Reload");
+		actionReloadDatafiles.setToolTipText("Reload data files");
+		ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
+		actionReloadDatafiles.setImageDescriptor(desc);
+
+		// and display them
+		manager.add(viewInPlotter);
+		manager.add(actionReloadDatafiles);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
 	{
@@ -277,86 +426,6 @@ public class MultiScenarioView extends ViewPart implements
 		return res;
 	}
 
-	/**
-	 * sort out the file-drop target
-	 */
-	private void configureFileDropSupport(Control _pusher)
-	{
-		int dropOperation = DND.DROP_COPY;
-		Transfer[] dropTypes =
-		{ FileTransfer.getInstance() };
-
-		DropTarget target = new DropTarget(_pusher, dropOperation);
-		target.setTransfer(dropTypes);
-		target.addDropListener(new DropTargetListener()
-		{
-			public void dragEnter(DropTargetEvent event)
-			{
-				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
-				{
-					if (event.detail != DND.DROP_COPY)
-					{
-						event.detail = DND.DROP_COPY;
-					}
-				}
-			}
-
-			public void dragLeave(DropTargetEvent event)
-			{
-			}
-
-			public void dragOperationChanged(DropTargetEvent event)
-			{
-			}
-
-			public void dragOver(DropTargetEvent event)
-			{
-			}
-
-			public void dropAccept(DropTargetEvent event)
-			{
-			}
-
-			public void drop(DropTargetEvent event)
-			{
-				String[] fileNames = null;
-				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
-				{
-					fileNames = (String[]) event.data;
-				}
-				if (fileNames != null)
-				{
-					if (_filesDroppedListener != null)
-						_filesDroppedListener.filesDropped(fileNames);
-				}
-			}
-
-		});
-
-	}
-
-	public void clearScenarios()
-	{
-		// ui update, put it in an async operation
-		// updating the text items has to be done in the UI thread. make it
-		// so
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				// ok, disable the run button,
-				_myUI.getRunBtn().setEnabled(false);
-
-				// and now enable the genny button
-				_myUI.getDoGenerateButton().setEnabled(true);
-				
-				// and clear the scenario table
-				_simTable.setInput(null);
-			}
-		});
-
-	}
-
 	private IProject getAProject()
 	{
 		IProject res = null;
@@ -391,30 +460,9 @@ public class MultiScenarioView extends ViewPart implements
 		return res;
 	}
 
-	/**
-	 * right - store ourselves into the supplied memento object
-	 * 
-	 * @param memento
-	 */
-	public void saveState(IMemento memento)
+	public ISelection getSelection()
 	{
-		// let our parent go for it first
-		super.saveState(memento);
-
-		String _scenarioFileName = _myPresenter.getScenarioName();
-		String _controlFileName = _myPresenter.getControlName();
-		
-		if (_scenarioFileName != null)
-			memento.putString(SCENARIO_FILE_INDEX, _scenarioFileName);
-		if (_controlFileName != null)
-			memento.putString(CONTROL_FILE_INDEX, _controlFileName);
-
-		if (_myTimeControlProps != null)
-		{
-			Duration stepSize = _myTimeControlProps.getAutoInterval();
-			String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
-			memento.putString("StepInterval", stepSizeStr);
-		}
+		return _currentSelection;
 	}
 
 	/*
@@ -423,6 +471,7 @@ public class MultiScenarioView extends ViewPart implements
 	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite,
 	 * org.eclipse.ui.IMemento)
 	 */
+	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException
 	{
 		// let the parent do its bits
@@ -462,43 +511,6 @@ public class MultiScenarioView extends ViewPart implements
 
 	}
 
-	private void contributeToActionBars()
-	{
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager)
-	{
-		Action viewInPlotter = new Action()
-		{
-			public void run()
-			{
-				openPlotter();
-			}
-		};
-		viewInPlotter.setText("View in LPD");
-		viewInPlotter.setToolTipText("View 2D overview of scenario");
-		viewInPlotter.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/overview.gif"));
-
-		Action actionReloadDatafiles = new Action()
-		{
-			public void run()
-			{
-				_myPresenter.reloadDataFiles();
-			}
-		};
-		actionReloadDatafiles.setText("Reload");
-		actionReloadDatafiles.setToolTipText("Reload data files");
-		ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
-		actionReloadDatafiles.setImageDescriptor(desc);
-		
-		// and display them
-		manager.add(viewInPlotter);
-		manager.add(actionReloadDatafiles);
-	}
-
 	private void makeActions()
 	{
 
@@ -512,6 +524,12 @@ public class MultiScenarioView extends ViewPart implements
 			public boolean exists()
 			{
 				return true;
+			}
+
+			@SuppressWarnings("rawtypes")
+			public Object getAdapter(Class adapter)
+			{
+				return null;
 			}
 
 			public ImageDescriptor getImageDescriptor()
@@ -533,12 +551,6 @@ public class MultiScenarioView extends ViewPart implements
 			{
 				return "Pending plot";
 			}
-
-			@SuppressWarnings("rawtypes")
-			public Object getAdapter(Class adapter)
-			{
-				return null;
-			}
 		};
 		try
 		{
@@ -550,68 +562,168 @@ public class MultiScenarioView extends ViewPart implements
 		}
 		catch (PartInitException e)
 		{
-			ASSETPlugin.logError(Status.ERROR, "trouble opening ScenarioPlotter", e);
+			ASSETPlugin.logError(IStatus.ERROR, "trouble opening ScenarioPlotter", e);
 			e.printStackTrace();
 		}
 	}
 
-	public void activate()
+	public void refreshWorkspace()
 	{
+		// it's stopped running, refresh the workspace
+		IProject theProj = getAProject();
 		try
 		{
-			// just check we're alive - just in case we've been called before
-			// the init is complete
-			IWorkbenchPartSite site = getSite();
-			IWorkbenchWindow window = site.getWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-			if (page != null)
-			{
-				// try to find our view first
-				IViewPart theView = page.findView(site.getId());
-				if (theView != null)
-				{
-					// cool, show it then
-					page.showView(site.getId());
-				}
-			}
+			theProj.refreshLocal(2, null);
 		}
-		catch (PartInitException e)
+		catch (CoreException e)
 		{
-			// demote this error, it happens quite frequently when we're still opening
-			ASSETPlugin
-					.logError(
-							Status.WARNING,
-							"failed to activate scenario controller - possible because trying to activing during init",
-							null);
+			ASSETPlugin.logError(IStatus.ERROR,
+					"Had trouble refreshing project folder", e);
+			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus()
-	{
-		// viewer.getControl().setFocus();
-	}
-
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
-	{
-		if (_selectionListeners == null)
-			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
-
-		// see if we don't already contain it..
-		if (!_selectionListeners.contains(listener))
-			_selectionListeners.add(listener);
-	}
-
-	public ISelection getSelection()
-	{
-		return _currentSelection;
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
+	}
+
+	public void removeStoppedListener(PropertyChangeListener listener)
+	{
+		if (_scenStopSupport != null)
+			_scenStopSupport.removePropertyChangeListener(listener);
+	}
+
+	public void runThisJob(final JobWithProgress theJob)
+	{
+		Job swtJob = new Job("Prepare multiple scenarios")
+		{
+			@Override
+			protected IStatus run(IProgressMonitor monitor)
+			{
+				try
+				{
+					// provide a wrapped progress monitpr
+					ASSETProgressMonitor pMon = new WrappedProgressMonitor(monitor);
+
+					// and run the job
+					theJob.run(pMon);
+				}
+				catch (Exception e)
+				{
+					CorePlugin
+							.logError(IStatus.ERROR, "Failed in scenario generation", e);
+					e.printStackTrace();
+				}
+
+				return Status.OK_STATUS;
+			}
+		};
+
+		swtJob.addJobChangeListener(new JobChangeAdapter()
+		{
+			@Override
+			public void done(IJobChangeEvent event)
+			{
+				if (event.getResult().isOK())
+					System.out.println("Job completed successfully");
+				else
+					System.err.println("Job did not complete successfully");
+			}
+		});
+		swtJob.setUser(true);
+		swtJob.schedule(); // start as soon as possible
+	}
+
+	/**
+	 * right - store ourselves into the supplied memento object
+	 * 
+	 * @param memento
+	 */
+	@Override
+	public void saveState(IMemento memento)
+	{
+		// let our parent go for it first
+		super.saveState(memento);
+
+		String _scenarioFileName = _myPresenter.getScenarioName();
+		String _controlFileName = _myPresenter.getControlName();
+
+		if (_scenarioFileName != null)
+			memento.putString(SCENARIO_FILE_INDEX, _scenarioFileName);
+		if (_controlFileName != null)
+			memento.putString(CONTROL_FILE_INDEX, _controlFileName);
+
+		if (_myTimeControlProps != null)
+		{
+			Duration stepSize = _myTimeControlProps.getAutoInterval();
+			String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
+			memento.putString("StepInterval", stepSizeStr);
+		}
+	}
+
+	public void setControlName(final String name)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				_myUI.getControlVal().setText(name);
+			}
+		});
+	}
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
+	@Override
+	public void setFocus()
+	{
+		// viewer.getControl().setFocus();
+	}
+
+	public void setGenerateState(final boolean state)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				_myUI.getDoGenerateButton().setEnabled(state);
+			}
+		});
+	}
+
+	public void setRunState(final boolean state)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				_myUI.getRunBtn().setEnabled(state);
+			}
+		});
+	}
+
+	public void setScenarioName(final String name)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				_myUI.getScenarioVal().setText(name);
+			}
+		});
+	}
+
+	public void setScenarios(final MultiScenarioCore _myModel)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				_simTable.setInput(_myModel);
+			}
+		});
 	}
 
 	public void setSelection(ISelection selection)
@@ -632,107 +744,6 @@ public class MultiScenarioView extends ViewPart implements
 				}
 			}
 		}
-	}
-
-	public void addStoppedListener(PropertyChangeListener listener)
-	{
-		if (_scenStopSupport == null)
-			_scenStopSupport = new PropertyChangeSupport(listener);
-		_scenStopSupport.addPropertyChangeListener(listener);
-	}
-
-	public void removeStoppedListener(PropertyChangeListener listener)
-	{
-		if (_scenStopSupport != null)
-			_scenStopSupport.removePropertyChangeListener(listener);
-	}
-
-	public void addFileDropListener(FilesDroppedListener listener)
-	{
-		_filesDroppedListener = listener;
-	}
-
-	public void setScenarios(final MultiScenarioCore _myModel)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				_simTable.setInput(_myModel);
-			}
-		});
-	}
-
-	public void setRunState(final boolean state)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				_myUI.getRunBtn().setEnabled(state);
-			}
-		});
-	}
-
-	public void runThisJob(final JobWithProgress theJob)
-	{
-		Job swtJob = new Job("Prepare multiple scenarios")
-		{
-			@Override
-			protected IStatus run(IProgressMonitor monitor)
-			{
-				try
-				{
-					// provide a wrapped progress monitpr
-					ASSETProgressMonitor pMon = new WrappedProgressMonitor(monitor);
-
-					// and run the job
-					theJob.run(pMon);
-				}
-				catch (Exception e)
-				{
-					CorePlugin.logError(Status.ERROR, "Failed in scenario generation", e);
-					e.printStackTrace();
-				}
-
-				return Status.OK_STATUS;
-			}
-		};
-
-		swtJob.addJobChangeListener(new JobChangeAdapter()
-		{
-			public void done(IJobChangeEvent event)
-			{
-				if (event.getResult().isOK())
-					System.out.println("Job completed successfully");
-				else
-					System.err.println("Job did not complete successfully");
-			}
-		});
-		swtJob.setUser(true);
-		swtJob.schedule(); // start as soon as possible
-	}
-
-	public void setScenarioName(final String name)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				_myUI.getScenarioVal().setText(name);
-			}
-		});
-	}
-
-	public void setControlName(final String name)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				_myUI.getControlVal().setText(name);
-			}
-		});
 	}
 
 }

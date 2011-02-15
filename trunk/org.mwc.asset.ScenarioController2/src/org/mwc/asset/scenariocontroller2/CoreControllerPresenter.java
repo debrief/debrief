@@ -17,45 +17,6 @@ public abstract class CoreControllerPresenter
 {
 
 	/**
-	 * filename for the scenario
-	 * 
-	 */
-	protected String _scenarioFileName;
-	/**
-	 * filename for the controller
-	 * 
-	 */
-	protected String _controlFileName;
-	/**
-	 * the custom set of observers
-	 * 
-	 */
-	protected Vector<ScenarioObserver> _theObservers;
-	/**
-	 * where we put our resutls
-	 * 
-	 */
-	protected ResultsContainer _scenarioController;
-	
-	protected final ScenarioDisplay _coreDisplay;
-	
-	public CoreControllerPresenter(ScenarioDisplay display)
-	{
-		_coreDisplay = display;
-		
-
-		// ok, sort out the file drop handler
-		_coreDisplay.addFileDropListener(new FilesDroppedListener()
-		{
-			public void filesDropped(String[] files)
-			{
-				handleTheseFiles(files);
-			}
-		});
-
-	}
-
-	/**
 	 * object that listens out for files being dropped
 	 * 
 	 * @author ian
@@ -69,31 +30,17 @@ public abstract class CoreControllerPresenter
 	public static interface ScenarioDisplay
 	{
 		/**
+		 * make this view the selected view. We've just loaded some data, so tell
+		 * everybody we're alive
+		 */
+		void activate();
+
+		/**
 		 * specify handler for drop events
 		 * 
 		 * @param listener
 		 */
 		void addFileDropListener(FilesDroppedListener listener);
-
-		/**
-		 * display the scenario name
-		 * 
-		 * @param name
-		 */
-		void setScenarioName(String name);
-
-		/**
-		 * display the control file name
-		 * 
-		 * @param name
-		 */
-		void setControlName(String name);
-
-		/**
-		 * make this view the selected view. We've just loaded some data, so tell
-		 * everybody we're alive
-		 */
-		void activate();
 
 		/**
 		 * this is a relative path, produce an absolute path to a relative location
@@ -110,6 +57,20 @@ public abstract class CoreControllerPresenter
 		 * 
 		 */
 		void refreshWorkspace();
+
+		/**
+		 * display the control file name
+		 * 
+		 * @param name
+		 */
+		void setControlName(String name);
+
+		/**
+		 * display the scenario name
+		 * 
+		 * @param name
+		 */
+		void setScenarioName(String name);
 	}
 
 	protected static String getFirstNodeName(String SourceXMLFilePath)
@@ -168,6 +129,52 @@ public abstract class CoreControllerPresenter
 		return res;
 	}
 
+	/**
+	 * filename for the scenario
+	 * 
+	 */
+	protected String _scenarioFileName;
+
+	/**
+	 * filename for the controller
+	 * 
+	 */
+	protected String _controlFileName;
+
+	/**
+	 * the custom set of observers
+	 * 
+	 */
+	protected Vector<ScenarioObserver> _theObservers;
+
+	/**
+	 * where we put our resutls
+	 * 
+	 */
+	protected ResultsContainer _scenarioController;
+
+	protected final ScenarioDisplay _coreDisplay;
+
+	public CoreControllerPresenter(ScenarioDisplay display)
+	{
+		_coreDisplay = display;
+
+		// ok, sort out the file drop handler
+		_coreDisplay.addFileDropListener(new FilesDroppedListener()
+		{
+			public void filesDropped(String[] files)
+			{
+				handleTheseFiles(files);
+			}
+		});
+
+	}
+
+	public String getControlName()
+	{
+		return _controlFileName;
+	}
+
 	public Vector<ScenarioObserver> getObservers()
 	{
 		return _theObservers;
@@ -178,10 +185,7 @@ public abstract class CoreControllerPresenter
 		return _scenarioFileName;
 	}
 
-	public String getControlName()
-	{
-		return _controlFileName;
-	}
+	protected abstract void handleTheseFiles(String[] strings);
 
 	public void reloadDataFiles()
 	{
@@ -193,7 +197,5 @@ public abstract class CoreControllerPresenter
 			handleTheseFiles(new String[]
 			{ _controlFileName });
 	}
-
-	protected abstract void handleTheseFiles(String[] strings);
 
 }

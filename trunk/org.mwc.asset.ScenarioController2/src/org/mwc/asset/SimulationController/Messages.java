@@ -2,7 +2,8 @@ package org.mwc.asset.SimulationController;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages extends NLS {
+public class Messages extends NLS
+{
 
 	private static final String BUNDLE_NAME = "org.mwc.asset.SimulationController.messages"; //$NON-NLS-1$
 
@@ -13,11 +14,13 @@ public class Messages extends NLS {
 	public static String SimControllerUI_0;
 
 	public static String SimControllerUI_1;
-	static {
+	static
+	{
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 
-	private Messages() {
+	private Messages()
+	{
 	}
 }

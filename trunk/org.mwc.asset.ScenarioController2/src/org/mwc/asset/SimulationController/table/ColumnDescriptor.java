@@ -1,6 +1,7 @@
 package org.mwc.asset.SimulationController.table;
 
-public class ColumnDescriptor {
+public class ColumnDescriptor
+{
 
 	private final String myName;
 
@@ -8,25 +9,30 @@ public class ColumnDescriptor {
 
 	private boolean myIsVisible;
 
-	public ColumnDescriptor(String name, int index, boolean visible) {
+	public ColumnDescriptor(String name, int index, boolean visible)
+	{
 		myName = name;
 		myIndex = index;
 		myIsVisible = visible;
 	}
 
-	public String getName() {
-		return myName;
-	}
-
-	public int getIndex() {
+	public int getIndex()
+	{
 		return myIndex;
 	}
 
-	public boolean isVisible() {
+	public String getName()
+	{
+		return myName;
+	}
+
+	public boolean isVisible()
+	{
 		return myIsVisible;
 	}
 
-	public void setVisible(boolean visible) {
+	public void setVisible(boolean visible)
+	{
 		myIsVisible = visible;
 	}
 }

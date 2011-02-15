@@ -1,4 +1,5 @@
 package org.mwc.asset.scenariocontroller2.views;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -18,18 +19,56 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
 /**
-* This code was edited or generated using CloudGarden's Jigloo
-* SWT/Swing GUI Builder, which is free for non-commercial
-* use. If Jigloo is being used commercially (ie, by a corporation,
-* company or business for any purpose whatever) then you
-* should purchase a license for each developer using Jigloo.
-* Please visit www.cloudgarden.com for details.
-* Use of Jigloo implies acceptance of these licensing terms.
-* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
-* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
-* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
-*/
-public class UISkeleton extends org.eclipse.swt.widgets.Composite {
+ * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
+ * Builder, which is free for non-commercial use. If Jigloo is being used
+ * commercially (ie, by a corporation, company or business for any purpose
+ * whatever) then you should purchase a license for each developer using Jigloo.
+ * Please visit www.cloudgarden.com for details. Use of Jigloo implies
+ * acceptance of these licensing terms. A COMMERCIAL LICENSE HAS NOT BEEN
+ * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
+ * ANY CORPORATE OR COMMERCIAL PURPOSE.
+ */
+public class UISkeleton extends org.eclipse.swt.widgets.Composite
+{
+	/**
+	 * Auto-generated main method to display this
+	 * org.eclipse.swt.widgets.Composite inside a new Shell.
+	 */
+	public static void main(String[] args)
+	{
+		showGUI();
+	}
+
+	/**
+	 * Auto-generated method to display this org.eclipse.swt.widgets.Composite
+	 * inside a new Shell.
+	 */
+	public static void showGUI()
+	{
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+		UISkeleton inst = new UISkeleton(shell, SWT.NULL);
+		Point size = inst.getSize();
+		shell.setLayout(new FillLayout());
+		shell.layout();
+		if (size.x == 0 && size.y == 0)
+		{
+			inst.pack();
+			shell.pack();
+		}
+		else
+		{
+			Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
+			shell.setSize(shellBounds.width, shellBounds.height);
+		}
+		shell.open();
+		while (!shell.isDisposed())
+		{
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+	}
+
 	private Composite filenameHolder;
 	private Label scenarioLbl;
 	private Label controlLabel;
@@ -45,65 +84,82 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private Label scenarioVal;
 	private Composite multiTableHolder;
 	private Button singleRunBtn;
+
 	private Composite composite2;
+
 	private Composite multiRunBtnHolder;
 
-	/**
-	* Auto-generated main method to display this 
-	* org.eclipse.swt.widgets.Composite inside a new Shell.
-	*/
-	public static void main(String[] args) {
-		showGUI();
-	}
-		
-	/**
-	* Auto-generated method to display this 
-	* org.eclipse.swt.widgets.Composite inside a new Shell.
-	*/
-	public static void showGUI() {
-		Display display = Display.getDefault();
-		Shell shell = new Shell(display);
-		UISkeleton inst = new UISkeleton(shell, SWT.NULL);
-		Point size = inst.getSize();
-		shell.setLayout(new FillLayout());
-		shell.layout();
-		if(size.x == 0 && size.y == 0) {
-			inst.pack();
-			shell.pack();
-		} else {
-			Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
-			shell.setSize(shellBounds.width, shellBounds.height);
-		}
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-	}
-
-	public UISkeleton(org.eclipse.swt.widgets.Composite parent, int style) {
+	public UISkeleton(org.eclipse.swt.widgets.Composite parent, int style)
+	{
 		super(parent, style);
 		initGUI();
 	}
 
-	private void initGUI() {
-		try {
+	public Composite getControl()
+	{
+		return this;
+	}
+
+	public Label getControlVal()
+	{
+		return controlVal;
+	}
+
+	public Button getDoGenerateButton()
+	{
+		return doGenerateButton;
+	}
+
+	public Composite getMultiTableHolder()
+	{
+		return multiTableHolder;
+	}
+
+	public Button getRunBtn()
+	{
+		return runBtn;
+	}
+
+	public TabFolder getScenarioTabs()
+	{
+		return scenarioTabs;
+	}
+
+	public Label getScenarioVal()
+	{
+		return scenarioVal;
+	}
+
+	public Button getSingleRunBtn()
+	{
+		return singleRunBtn;
+	}
+
+	public Label getSingleScenarioStatus()
+	{
+		return singleStatVal;
+	}
+
+	private void initGUI()
+	{
+		try
+		{
 			FormLayout thisLayout = new FormLayout();
 			this.setLayout(thisLayout);
 			this.setSize(217, 163);
 			{
 				filenameHolder = new Composite(this, SWT.NONE);
 				GridLayout filenameHolderLayout = new GridLayout();
-				filenameHolderLayout.numColumns=3;
+				filenameHolderLayout.numColumns = 3;
 				filenameHolderLayout.makeColumnsEqualWidth = true;
 				FormData filenameHolderLData = new FormData();
 				filenameHolderLData.width = 214;
 				filenameHolderLData.height = 47;
-				filenameHolderLData.left =  new FormAttachment(16, 1000, 0);
-				filenameHolderLData.right =  new FormAttachment(1000, 1000, 0);
-				filenameHolderLData.top =  new FormAttachment(21, 1000, 0);
+				filenameHolderLData.left = new FormAttachment(16, 1000, 0);
+				filenameHolderLData.right = new FormAttachment(1000, 1000, 0);
+				filenameHolderLData.top = new FormAttachment(21, 1000, 0);
 				filenameHolder.setLayoutData(filenameHolderLData);
-				filenameHolder.setLayout(filenameHolderLayout);				
+				filenameHolder.setLayout(filenameHolderLayout);
 				{
 					scenarioLbl = new Label(filenameHolder, SWT.NONE);
 					GridData scenarioLblLData = new GridData();
@@ -183,14 +239,16 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 						multipleTab.setControl(composite2);
 						{
 							multiRunBtnHolder = new Composite(composite2, SWT.NONE);
-							RowLayout multiRunBtnHolderLayout = new RowLayout(org.eclipse.swt.SWT.HORIZONTAL);
+							RowLayout multiRunBtnHolderLayout = new RowLayout(
+									org.eclipse.swt.SWT.HORIZONTAL);
 							multiRunBtnHolderLayout.fill = true;
 							GridData multiRunBtnHolderLData = new GridData();
 							multiRunBtnHolderLData.grabExcessHorizontalSpace = true;
 							multiRunBtnHolder.setLayoutData(multiRunBtnHolderLData);
 							multiRunBtnHolder.setLayout(multiRunBtnHolderLayout);
 							{
-								doGenerateButton = new Button(multiRunBtnHolder, SWT.PUSH | SWT.CENTER);
+								doGenerateButton = new Button(multiRunBtnHolder, SWT.PUSH
+										| SWT.CENTER);
 								doGenerateButton.setText("Generate");
 							}
 							{
@@ -198,7 +256,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 								runBtn.setText("Run");
 							}
 						}
-			
+
 						{
 							multiTableHolder = new Composite(composite2, SWT.NONE);
 							GridLayout multiTableHolderLayout = new GridLayout();
@@ -209,54 +267,20 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 				}
 				FormData scenarioTabsLData = new FormData();
 				scenarioTabsLData.width = 204;
-				scenarioTabsLData.left =  new FormAttachment(10, 1000, 0);
-				scenarioTabsLData.right =  new FormAttachment(990, 1000, 0);
-				scenarioTabsLData.bottom =  new FormAttachment(1000, 1000, 0);
+				scenarioTabsLData.left = new FormAttachment(10, 1000, 0);
+				scenarioTabsLData.right = new FormAttachment(990, 1000, 0);
+				scenarioTabsLData.bottom = new FormAttachment(1000, 1000, 0);
 				scenarioTabsLData.height = 79;
-				scenarioTabsLData.top =  new FormAttachment(0, 1000, 56);
+				scenarioTabsLData.top = new FormAttachment(0, 1000, 56);
 				scenarioTabs.setLayoutData(scenarioTabsLData);
 				scenarioTabs.setSelection(1);
 			}
 			this.layout();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
-	}
-	
-	public Label getScenarioVal() {
-		return scenarioVal;
-	}
-	
-	public Label getControlVal() {
-		return controlVal;
-	}
-	
-	public Composite getControl() {
-		return this;
-	}
-	
-	public TabFolder getScenarioTabs() {
-		return scenarioTabs;
-	}
-	
-	public Label getSingleScenarioStatus() {
-		return singleStatVal;
-	}
-	
-	public Button getDoGenerateButton() {
-		return doGenerateButton;
-	}
-	
-	public Button getRunBtn() {
-		return runBtn;
-	}
-	
-	public Composite getMultiTableHolder() {
-		return multiTableHolder;
-	}
-	
-	public Button getSingleRunBtn() {
-		return singleRunBtn;
 	}
 
 }

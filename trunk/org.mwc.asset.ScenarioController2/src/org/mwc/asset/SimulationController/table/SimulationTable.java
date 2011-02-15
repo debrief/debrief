@@ -46,6 +46,332 @@ import MWC.GUI.Layer;
 public class SimulationTable
 {
 
+	private abstract class ColumnData extends ColumnSizeData
+	{
+
+		public ColumnData(String title, int weight)
+		{
+			super(new TableColumn(getTable(), SWT.LEFT), weight);
+			getTableColumn().setText(title);
+			getTableColumn().setData(this);
+		}
+
+		public abstract Object getSelection(ISimulation simulation,
+				Vector<IAttribute> attrs);
+
+		public abstract Object getValue(ISimulation simulation,
+				Vector<IAttribute> attrs);
+	}
+
+	private class SimulationLabelProvider extends BaseLabelProvider implements
+			ITableLabelProvider
+	{
+
+		public Image getColumnImage(Object element, int columnIndex)
+		{
+			return null;
+		}
+
+		public String getColumnText(Object element, int columnIndex)
+		{
+			if (!hasInput())
+			{
+				return ""; //$NON-NLS-1$
+			}
+			Object value = getCellValue(element, getTable().getColumn(columnIndex));
+			return value == null ? "" : value.toString(); //$NON-NLS-1$
+		}
+	}
+
+	private class SimulationRow
+	{
+
+		private final ISimulation mySimulation;
+
+		private boolean myIsRunning;
+
+		private PropertyChangeListener myStateListener;
+
+		private PropertyChangeListener myAttributeListener;
+
+		private HashSet<IAttribute> myListenedAttributes;
+
+		private boolean myDisposed = false;
+
+		private Vector<IAttribute> myAttributeList;
+		private final IAttribute _state;
+
+		public SimulationRow(ISimulation simulation, Vector<IAttribute> attributes,
+				IAttribute state)
+		{
+			mySimulation = simulation;
+			myListenedAttributes = new HashSet<IAttribute>();
+			myIsRunning = false;
+			myAttributeList = attributes;
+			_state = state;
+			myAttributeListener = new PropertyChangeListener()
+			{
+
+				public void propertyChange(PropertyChangeEvent evt)
+				{
+					Display.getDefault().asyncExec(new Runnable()
+					{
+
+						public void run()
+						{
+							if (isDisposed())
+							{
+								return;
+							}
+							onAttributeChanged();
+						}
+					});
+				}
+			};
+			myStateListener = new PropertyChangeListener()
+			{
+
+				public void propertyChange(PropertyChangeEvent evt)
+				{
+					// is it one of ours?
+					if (evt.getSource() == mySimulation)
+					{
+						if (isDisposed())
+						{
+							System.out.println("disposed!!");
+							return;
+						}
+						onStateChanged();
+					}
+				}
+			};
+
+			_state.addPropertyChangeListener(myStateListener);
+			onStateChanged();
+		}
+
+		public void dispose()
+		{
+			myDisposed = true;
+			_state.removePropertyChangeListener(myStateListener);
+			removeAttributeListeners();
+		}
+
+		private ISimulation getSimulation()
+		{
+			return mySimulation;
+		}
+
+		private boolean isDisposed()
+		{
+			return myDisposed || getControl().isDisposed();
+		}
+
+		private void onAttributeChanged()
+		{
+			updateRow();
+		}
+
+		private void onStateChanged()
+		{
+			Object theState = _state.getCurrent(getSimulation()).getValue();
+			if (ISimulation.RUNNING.equals(theState))
+			{
+				if (!myIsRunning)
+				{
+					myIsRunning = true;
+					for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
+					{
+						IAttribute attribute = myAttributeList.get(columnDescriptor
+								.getIndex());
+						attribute.addPropertyChangeListener(myAttributeListener);
+						myListenedAttributes.add(attribute);
+					}
+				}
+			}
+			else
+			{
+				if (myIsRunning)
+				{
+					myIsRunning = false;
+					removeAttributeListeners();
+				}
+			}
+			Display.getDefault().asyncExec(new Runnable()
+			{
+
+				public void run()
+				{
+					updateRow();
+				}
+			});
+		}
+
+		public void refreshListenedAttributes()
+		{
+			if (!myIsRunning)
+			{
+				return;
+			}
+
+			HashSet<IAttribute> newListenedAttributes = new HashSet<IAttribute>();
+			for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
+			{
+				IAttribute newListenedAttribute = myAttributeList
+						.elementAt(columnDescriptor.getIndex());
+				if (myListenedAttributes.contains(newListenedAttribute))
+				{
+					myListenedAttributes.remove(newListenedAttribute);
+				}
+				else
+				{
+					newListenedAttribute.addPropertyChangeListener(myAttributeListener);
+				}
+				newListenedAttributes.add(newListenedAttribute);
+			}
+			for (IAttribute oldListenedAttribute : myListenedAttributes)
+			{
+				oldListenedAttribute.removePropertyChangeListener(myAttributeListener);
+			}
+			myListenedAttributes = newListenedAttributes;
+		}
+
+		private void removeAttributeListeners()
+		{
+			for (IAttribute attribute : myListenedAttributes)
+			{
+				attribute.removePropertyChangeListener(myAttributeListener);
+			}
+			myListenedAttributes.clear();
+		}
+
+		private void updateRow()
+		{
+			myTableViewer.update(getSimulation(), null);
+			if (myTableCursor.getRow() != null
+					&& myTableCursor.getRow().getData() == mySimulation)
+			{
+				myTableCursor.redraw();
+			}
+		}
+	}
+
+	private class SimulationViewerSorter extends ViewerSorter
+	{
+
+		private TableColumn myTableColumn;
+
+		private boolean myIsAscending = false;
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public int compare(Viewer viewer, Object e1, Object e2)
+		{
+			if (myTableColumn == null)
+			{
+				return 0;
+			}
+
+			Object value1 = getCellValue(e1, myTableColumn);
+			Object value2 = getCellValue(e2, myTableColumn);
+			boolean value1empty = value1 == null || "".equals(value1.toString()); //$NON-NLS-1$
+			boolean value2empty = value2 == null || "".equals(value2.toString()); //$NON-NLS-1$
+
+			int result = 0;
+			if (value1empty && value2empty)
+			{
+				result = 0;
+			}
+			else if (value1empty)
+			{
+				result = 1;
+			}
+			else if (value2empty)
+			{
+				result = -1;
+			}
+			else
+			{
+				if (value1 instanceof Comparable<?>
+						&& value1.getClass().isInstance(value2))
+				{
+					result = ((Comparable<Object>) value1).compareTo(value2);
+				}
+				else if (value2 instanceof Comparable<?>
+						&& value2.getClass().isInstance(value1))
+				{
+					result = -((Comparable<Object>) value2).compareTo(value1);
+				}
+				else
+				{
+					if ((value1 != null) && (value2 != null))
+						result = value1.toString().compareTo(value2.toString());
+				}
+				if (!myIsAscending)
+				{
+					result = -result;
+				}
+			}
+
+			return result;
+		}
+
+		public void setColumn(TableColumn tableColumn)
+		{
+			if (tableColumn == null)
+			{
+				if (myTableColumn != null)
+				{
+					myTableColumn.setImage(null);
+				}
+				myIsAscending = false;
+				myTableColumn = tableColumn;
+				return;
+			}
+
+			if (tableColumn == myTableColumn)
+			{
+				myIsAscending = !myIsAscending;
+			}
+			else
+			{
+				if (myTableColumn != null)
+				{
+					myTableColumn.setImage(null);
+				}
+				myTableColumn = tableColumn;
+				myIsAscending = true;
+			}
+			myTableColumn.setImage(Activator.getImageDescriptor(
+					myIsAscending ? Activator.IMG_ASCEND : Activator.IMG_DESCEND)
+					.createImage());
+			boolean isCellSelected = myTableCursor.getRow() != null;
+			myTableViewer.refresh(true, true);
+			if (isCellSelected && getTable().getSelectionIndex() != -1)
+			{
+				myTableCursor.setSelection(getTable().getSelectionIndex(),
+						myTableCursor.getColumn());
+			}
+		}
+	}
+
+	private abstract class SortableColumnData extends ColumnData
+	{
+
+		public SortableColumnData(String title, int weight)
+		{
+			super(title, weight);
+			getTableColumn().addListener(SWT.Selection, new Listener()
+			{
+
+				public void handleEvent(Event event)
+				{
+					myViewerSorter.setColumn(getTableColumn());
+				}
+			});
+		}
+	}
+
 	private static final int ROW_MARKER_COLUMN_WIDTH = 16;
 
 	private static final int NAME_COLUMN_WEIGHT = 2;
@@ -176,12 +502,6 @@ public class SimulationTable
 		});
 	}
 
-	public void setSelectionProvider(ISelectionProvider selectionProvider)
-	{
-		mySelectionProvider = selectionProvider;
-		doSetSelection();
-	}
-
 	private void doSetSelection()
 	{
 		if (mySelectionProvider == null)
@@ -191,20 +511,15 @@ public class SimulationTable
 		mySelectionProvider.setSelection(mySelection);
 	}
 
-	public ISelection getSelection()
+	private Object getCellValue(Object element, TableColumn tableColumn)
 	{
-		return mySelection;
+		return getColumnData(tableColumn).getValue((ISimulation) element,
+				myInput.getAttributes());
 	}
 
-	private void setSelection(ISelection selection)
+	private ColumnData getColumnData(TableColumn tableColumn)
 	{
-		mySelection = selection;
-		doSetSelection();
-	}
-
-	private Table getTable()
-	{
-		return myTableViewer.getTable();
+		return (ColumnData) tableColumn.getData();
 	}
 
 	public Control getControl()
@@ -212,76 +527,19 @@ public class SimulationTable
 		return getTable();
 	}
 
-	public void setInput(ISimulationQue input)
+	public ISelection getSelection()
 	{
-		for (SimulationRow row : myRows)
-		{
-			row.dispose();
-		}
+		return mySelection;
+	}
 
-		myInput = input;
-
-		myAttributeColumns.clear();
-
-		if (hasInput())
-		{
-			int i = 0;
-			Vector<IAttribute> theAttrs = myInput.getAttributes();
-			for (IAttribute attribute : theAttrs)
-			{
-				myAttributeColumns.add(new ColumnDescriptor(attribute.getName(), i,
-						attribute.isSignificant()));
-				i++;
-			}
-		}
-
-		myViewerSorter.setColumn(null);
-
-		refreshColumns();
-
-		myTableViewer.setInput(myInput == null ? new ISimulation[0] : myInput
-				.getSimulations().toArray());
-
-		myRows.clear();
-		if (hasInput())
-		{
-			for (ISimulation simulation : myInput.getSimulations())
-			{
-				myRows.add(new SimulationRow(simulation, myInput.getAttributes(),
-						myInput.getState()));
-			}
-		}
-
-		refreshMenu();
+	private Table getTable()
+	{
+		return myTableViewer.getTable();
 	}
 
 	private boolean hasInput()
 	{
 		return myInput != null;
-	}
-
-	private void refreshMenu()
-	{
-		for (MenuItem menuItem : myContextMenu.getItems())
-		{
-			menuItem.dispose();
-		}
-		for (final ColumnDescriptor columnDescriptor : myAttributeColumns)
-		{
-			final MenuItem menuItem = new MenuItem(myContextMenu, SWT.CHECK);
-			menuItem.setText(columnDescriptor.getName());
-			menuItem.setSelection(columnDescriptor.isVisible());
-			menuItem.addListener(SWT.Selection, new Listener()
-			{
-
-				public void handleEvent(Event event)
-				{
-					columnDescriptor.setVisible(!columnDescriptor.isVisible());
-					menuItem.setSelection(columnDescriptor.isVisible());
-					refreshColumns();
-				}
-			});
-		}
 	}
 
 	private void refreshColumns()
@@ -395,340 +653,82 @@ public class SimulationTable
 		}
 	}
 
-	private ColumnData getColumnData(TableColumn tableColumn)
+	private void refreshMenu()
 	{
-		return (ColumnData) tableColumn.getData();
-	}
-
-	private Object getCellValue(Object element, TableColumn tableColumn)
-	{
-		return getColumnData(tableColumn).getValue((ISimulation) element,
-				myInput.getAttributes());
-	}
-
-	private abstract class ColumnData extends ColumnSizeData
-	{
-
-		public ColumnData(String title, int weight)
+		for (MenuItem menuItem : myContextMenu.getItems())
 		{
-			super(new TableColumn(getTable(), SWT.LEFT), weight);
-			getTableColumn().setText(title);
-			getTableColumn().setData(this);
+			menuItem.dispose();
 		}
-
-		public abstract Object getSelection(ISimulation simulation,
-				Vector<IAttribute> attrs);
-
-		public abstract Object getValue(ISimulation simulation,
-				Vector<IAttribute> attrs);
-	}
-
-	private abstract class SortableColumnData extends ColumnData
-	{
-
-		public SortableColumnData(String title, int weight)
+		for (final ColumnDescriptor columnDescriptor : myAttributeColumns)
 		{
-			super(title, weight);
-			getTableColumn().addListener(SWT.Selection, new Listener()
+			final MenuItem menuItem = new MenuItem(myContextMenu, SWT.CHECK);
+			menuItem.setText(columnDescriptor.getName());
+			menuItem.setSelection(columnDescriptor.isVisible());
+			menuItem.addListener(SWT.Selection, new Listener()
 			{
 
 				public void handleEvent(Event event)
 				{
-					myViewerSorter.setColumn(getTableColumn());
+					columnDescriptor.setVisible(!columnDescriptor.isVisible());
+					menuItem.setSelection(columnDescriptor.isVisible());
+					refreshColumns();
 				}
 			});
 		}
 	}
 
-	private class SimulationLabelProvider extends BaseLabelProvider implements
-			ITableLabelProvider
+	public void setInput(ISimulationQue input)
 	{
-
-		public String getColumnText(Object element, int columnIndex)
+		for (SimulationRow row : myRows)
 		{
-			if (!hasInput())
+			row.dispose();
+		}
+
+		myInput = input;
+
+		myAttributeColumns.clear();
+
+		if (hasInput())
+		{
+			int i = 0;
+			Vector<IAttribute> theAttrs = myInput.getAttributes();
+			for (IAttribute attribute : theAttrs)
 			{
-				return ""; //$NON-NLS-1$
+				myAttributeColumns.add(new ColumnDescriptor(attribute.getName(), i,
+						attribute.isSignificant()));
+				i++;
 			}
-			Object value = getCellValue(element, getTable().getColumn(columnIndex));
-			return value == null ? "" : value.toString(); //$NON-NLS-1$
 		}
 
-		public Image getColumnImage(Object element, int columnIndex)
+		myViewerSorter.setColumn(null);
+
+		refreshColumns();
+
+		myTableViewer.setInput(myInput == null ? new ISimulation[0] : myInput
+				.getSimulations().toArray());
+
+		myRows.clear();
+		if (hasInput())
 		{
-			return null;
+			for (ISimulation simulation : myInput.getSimulations())
+			{
+				myRows.add(new SimulationRow(simulation, myInput.getAttributes(),
+						myInput.getState()));
+			}
 		}
+
+		refreshMenu();
 	}
 
-	private class SimulationRow
+	private void setSelection(ISelection selection)
 	{
-
-		private final ISimulation mySimulation;
-
-		private boolean myIsRunning;
-
-		private PropertyChangeListener myStateListener;
-
-		private PropertyChangeListener myAttributeListener;
-
-		private HashSet<IAttribute> myListenedAttributes;
-
-		private boolean myDisposed = false;
-
-		private Vector<IAttribute> myAttributeList;
-		private final IAttribute _state;
-
-		public SimulationRow(ISimulation simulation, Vector<IAttribute> attributes,
-				IAttribute state)
-		{
-			mySimulation = simulation;
-			myListenedAttributes = new HashSet<IAttribute>();
-			myIsRunning = false;
-			myAttributeList = attributes;
-			_state = state;
-			myAttributeListener = new PropertyChangeListener()
-			{
-
-				public void propertyChange(PropertyChangeEvent evt)
-				{
-					Display.getDefault().asyncExec(new Runnable()
-					{
-
-						public void run()
-						{
-							if (isDisposed())
-							{
-								return;
-							}
-							onAttributeChanged();
-						}
-					});
-				}
-			};
-			myStateListener = new PropertyChangeListener()
-			{
-
-				public void propertyChange(PropertyChangeEvent evt)
-				{
-					// is it one of ours?
-					if (evt.getSource() == mySimulation)
-					{
-						if (isDisposed())
-						{
-							System.out.println("disposed!!");
-							return;
-						}
-						onStateChanged();
-					}
-				}
-			};
-
-			_state.addPropertyChangeListener(myStateListener);
-			onStateChanged();
-		}
-
-		private boolean isDisposed()
-		{
-			return myDisposed || getControl().isDisposed();
-		}
-
-		private ISimulation getSimulation()
-		{
-			return mySimulation;
-		}
-
-		private void onStateChanged()
-		{
-			Object theState = _state.getCurrent(getSimulation()).getValue();
-			if (ISimulation.RUNNING.equals(theState))
-			{
-				if (!myIsRunning)
-				{
-					myIsRunning = true;
-					for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
-					{
-						IAttribute attribute = myAttributeList.get(columnDescriptor
-								.getIndex());
-						attribute.addPropertyChangeListener(myAttributeListener);
-						myListenedAttributes.add(attribute);
-					}
-				}
-			}
-			else
-			{
-				if (myIsRunning)
-				{
-					myIsRunning = false;
-					removeAttributeListeners();
-				}
-			}
-			Display.getDefault().asyncExec(new Runnable()
-			{
-
-				public void run()
-				{
-					updateRow();
-				}
-			});
-		}
-
-		private void removeAttributeListeners()
-		{
-			for (IAttribute attribute : myListenedAttributes)
-			{
-				attribute.removePropertyChangeListener(myAttributeListener);
-			}
-			myListenedAttributes.clear();
-		}
-
-		public void refreshListenedAttributes()
-		{
-			if (!myIsRunning)
-			{
-				return;
-			}
-
-			HashSet<IAttribute> newListenedAttributes = new HashSet<IAttribute>();
-			for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns)
-			{
-				IAttribute newListenedAttribute = myAttributeList
-						.elementAt(columnDescriptor.getIndex());
-				if (myListenedAttributes.contains(newListenedAttribute))
-				{
-					myListenedAttributes.remove(newListenedAttribute);
-				}
-				else
-				{
-					newListenedAttribute.addPropertyChangeListener(myAttributeListener);
-				}
-				newListenedAttributes.add(newListenedAttribute);
-			}
-			for (IAttribute oldListenedAttribute : myListenedAttributes)
-			{
-				oldListenedAttribute.removePropertyChangeListener(myAttributeListener);
-			}
-			myListenedAttributes = newListenedAttributes;
-		}
-
-		private void onAttributeChanged()
-		{
-			updateRow();
-		}
-
-		private void updateRow()
-		{
-			myTableViewer.update(getSimulation(), null);
-			if (myTableCursor.getRow() != null
-					&& myTableCursor.getRow().getData() == mySimulation)
-			{
-				myTableCursor.redraw();
-			}
-		}
-
-		public void dispose()
-		{
-			myDisposed = true;
-			_state.removePropertyChangeListener(myStateListener);
-			removeAttributeListeners();
-		}
+		mySelection = selection;
+		doSetSelection();
 	}
 
-	private class SimulationViewerSorter extends ViewerSorter
+	public void setSelectionProvider(ISelectionProvider selectionProvider)
 	{
-
-		private TableColumn myTableColumn;
-
-		private boolean myIsAscending = false;
-
-		public void setColumn(TableColumn tableColumn)
-		{
-			if (tableColumn == null)
-			{
-				if (myTableColumn != null)
-				{
-					myTableColumn.setImage(null);
-				}
-				myIsAscending = false;
-				myTableColumn = tableColumn;
-				return;
-			}
-
-			if (tableColumn == myTableColumn)
-			{
-				myIsAscending = !myIsAscending;
-			}
-			else
-			{
-				if (myTableColumn != null)
-				{
-					myTableColumn.setImage(null);
-				}
-				myTableColumn = tableColumn;
-				myIsAscending = true;
-			}
-			myTableColumn.setImage(Activator.getImageDescriptor(
-					myIsAscending ? Activator.IMG_ASCEND
-							: Activator.IMG_DESCEND).createImage());
-			boolean isCellSelected = myTableCursor.getRow() != null;
-			myTableViewer.refresh(true, true);
-			if (isCellSelected && getTable().getSelectionIndex() != -1)
-			{
-				myTableCursor.setSelection(getTable().getSelectionIndex(),
-						myTableCursor.getColumn());
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public int compare(Viewer viewer, Object e1, Object e2)
-		{
-			if (myTableColumn == null)
-			{
-				return 0;
-			}
-
-			Object value1 = getCellValue(e1, myTableColumn);
-			Object value2 = getCellValue(e2, myTableColumn);
-			boolean value1empty = value1 == null || "".equals(value1.toString()); //$NON-NLS-1$
-			boolean value2empty = value2 == null || "".equals(value2.toString()); //$NON-NLS-1$
-
-			int result = 0;
-			if (value1empty && value2empty)
-			{
-				result = 0;
-			}
-			else if (value1empty)
-			{
-				result = 1;
-			}
-			else if (value2empty)
-			{
-				result = -1;
-			}
-			else
-			{
-				if (value1 instanceof Comparable<?>
-						&& value1.getClass().isInstance(value2))
-				{
-					result = ((Comparable<Object>) value1).compareTo(value2);
-				}
-				else if (value2 instanceof Comparable<?>
-						&& value2.getClass().isInstance(value1))
-				{
-					result = -((Comparable<Object>) value2).compareTo(value1);
-				}
-				else
-				{
-					if ((value1 != null) && (value2 != null))
-						result = value1.toString().compareTo(value2.toString());
-				}
-				if (!myIsAscending)
-				{
-					result = -result;
-				}
-			}
-
-			return result;
-		}
+		mySelectionProvider = selectionProvider;
+		doSetSelection();
 	}
 }
