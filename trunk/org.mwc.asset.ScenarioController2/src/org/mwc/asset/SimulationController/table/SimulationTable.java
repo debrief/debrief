@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.mwc.asset.scenariocontroller2.Activator;
 import org.mwc.asset.scenariocontroller2.ScenContPresenter;
-import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 

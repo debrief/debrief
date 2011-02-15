@@ -55,20 +55,22 @@ public class ScenContPresenter
 		void filesDropped(String[] files);
 	}
 
-	/** package up an operation with a progress monitor
+	/**
+	 * package up an operation with a progress monitor
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	public static interface JobWithProgress
 	{
 		void run(ASSETProgressMonitor montor);
 	}
-	
-	/** objects that handle a series of runs
+
+	/**
+	 * objects that handle a series of runs
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	public static interface ManageMultiListener
 	{
@@ -189,18 +191,16 @@ public class ScenContPresenter
 
 		JobWithProgress theJob = new JobWithProgress()
 		{
-			
+
 			public void run(ASSETProgressMonitor montor)
 			{
 
 				// and let it create some files
-				_myModel.prepareFiles(_controlFileName, _scenarioFileName,
-						System.out, System.err, System.in, montor,
-						_scenarioController.outputDirectory);
+				_myModel.prepareFiles(_controlFileName, _scenarioFileName, System.out,
+						System.err, System.in, montor, _scenarioController.outputDirectory);
 
 				// and sort out the observers
-				_myModel.prepareControllers(_scenarioController, montor,
-						null);
+				_myModel.prepareControllers(_scenarioController, montor, null);
 
 				// ok, now give the scenarios to the multi scenario table (in the UI
 				// thread
@@ -344,7 +344,7 @@ public class ScenContPresenter
 					loadThisObserverList(controlFile, _theObservers);
 				}
 			}
-			
+
 			// get the ui to update itself
 			_myDisplay.clearScenarios();
 		}
@@ -438,7 +438,6 @@ public class ScenContPresenter
 
 		return res;
 	}
-	
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
@@ -478,4 +477,28 @@ public class ScenContPresenter
 	{
 		return _theObservers;
 	}
+
+	public String getScenarioName()
+	{
+		return _scenarioFileName;
+	}
+
+	public String getControlName()
+	{
+		return _controlFileName;
+	}
+
+	public void reloadDataFiles()
+	{
+		// ok, force the data-files to be reloaded
+		if (_scenarioFileName != null)
+			handleTheseFiles(new String[]
+			{ _scenarioFileName });
+		if (_controlFileName != null)
+			handleTheseFiles(new String[]
+			{ _controlFileName });
+
+		_myDisplay.clearScenarios();
+	}
+
 }

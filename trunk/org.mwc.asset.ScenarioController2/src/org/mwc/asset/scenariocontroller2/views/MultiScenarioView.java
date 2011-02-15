@@ -16,9 +16,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -70,7 +68,7 @@ import ASSET.GUI.CommandLine.MultiScenarioCore;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 
-public class ScenarioControllerView extends ViewPart implements
+public class MultiScenarioView extends ViewPart implements
 		ISelectionProvider, TimeManager.LiveScenario, ScenContPresenter.Display
 {
 
@@ -103,25 +101,12 @@ public class ScenarioControllerView extends ViewPart implements
 
 	private static final String CONTROL_FILE_INDEX = "CONTROL_FILE";
 	private static final String SCENARIO_FILE_INDEX = "SCENARIO_FILE";
-	/**
-	 * remember the files we've loaded
-	 * 
-	 */
-	private String _scenarioFileName = null;
-	private String _controlFileName = null;
 
 	/**
 	 * ui bits
 	 * 
 	 */
-	private Action _viewInPlotter;
-	private Action _actionReloadDatafiles;
 	private UISkeleton _myUI;
-
-	/**
-	 * tactical data
-	 * 
-	 */
 
 	/**
 	 * watchable parts
@@ -152,7 +137,7 @@ public class ScenarioControllerView extends ViewPart implements
 	/**
 	 * The constructor.
 	 */
-	public ScenarioControllerView()
+	public MultiScenarioView()
 	{
 		// sort out the presenter
 		_myPresenter = new ScenContPresenter(this, new MultiScenarioCore());
@@ -363,6 +348,9 @@ public class ScenarioControllerView extends ViewPart implements
 
 				// and now enable the genny button
 				_myUI.getDoGenerateButton().setEnabled(true);
+				
+				// and clear the scenario table
+				_simTable.setInput(null);
 			}
 		});
 
@@ -412,6 +400,9 @@ public class ScenarioControllerView extends ViewPart implements
 		// let our parent go for it first
 		super.saveState(memento);
 
+		String _scenarioFileName = _myPresenter.getScenarioName();
+		String _controlFileName = _myPresenter.getControlName();
+		
 		if (_scenarioFileName != null)
 			memento.putString(SCENARIO_FILE_INDEX, _scenarioFileName);
 		if (_controlFileName != null)
@@ -473,48 +464,43 @@ public class ScenarioControllerView extends ViewPart implements
 	private void contributeToActionBars()
 	{
 		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager)
-	{
-		manager.add(_viewInPlotter);
-		manager.add(new Separator());
-		manager.add(_actionReloadDatafiles);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(_viewInPlotter);
-		manager.add(_actionReloadDatafiles);
-	}
-
-	private void makeActions()
-	{
-		_viewInPlotter = new Action()
+		Action viewInPlotter = new Action()
 		{
 			public void run()
 			{
 				openPlotter();
 			}
 		};
-		_viewInPlotter.setText("View in LPD");
-		_viewInPlotter.setToolTipText("View 2D overview of scenario");
-		_viewInPlotter.setImageDescriptor(CorePlugin
+		viewInPlotter.setText("View in LPD");
+		viewInPlotter.setToolTipText("View 2D overview of scenario");
+		viewInPlotter.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/overview.gif"));
 
-		_actionReloadDatafiles = new Action()
+		Action actionReloadDatafiles = new Action()
 		{
 			public void run()
 			{
-				reloadDataFiles();
+				_myPresenter.reloadDataFiles();
 			}
 		};
-		_actionReloadDatafiles.setText("Reload");
-		_actionReloadDatafiles.setToolTipText("Reload data files");
+		actionReloadDatafiles.setText("Reload");
+		actionReloadDatafiles.setToolTipText("Reload data files");
 		ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
-		_actionReloadDatafiles.setImageDescriptor(desc);
+		actionReloadDatafiles.setImageDescriptor(desc);
+		
+		// and display them
+		manager.add(viewInPlotter);
+		manager.add(actionReloadDatafiles);
+	}
+
+	private void makeActions()
+	{
+
 	}
 
 	protected void openPlotter()
@@ -597,20 +583,6 @@ public class ScenarioControllerView extends ViewPart implements
 							"failed to activate scenario controller - possible because trying to activing during init",
 							null);
 		}
-	}
-
-	protected void reloadDataFiles()
-	{
-		// ok, force the data-files to be reloaded
-		if (_scenarioFileName != null)
-			_filesDroppedListener.filesDropped(new String[]
-			{ _scenarioFileName });
-		if (_controlFileName != null)
-			_filesDroppedListener.filesDropped(new String[]
-			{ _controlFileName });
-
-		// and clear the scenario table
-		_simTable.setInput(null);
 	}
 
 	/**

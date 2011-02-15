@@ -8,7 +8,7 @@
             name="Scenario controller"
             icon="icons/gears_run.png"
             category="org.mwc.asset.core.simulation.category"
-            class="org.mwc.asset.scenariocontroller2.views.ScenarioControllerView"
+            class="org.mwc.asset.scenariocontroller2.views.MultiScenarioView"
             id="org.mwc.asset.ScenarioController2">
       </view>
    </extension>
