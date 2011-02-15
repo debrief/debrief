@@ -1,5 +1,7 @@
 package ASSET.Scenario.LiveScenario;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Vector;
 
 import ASSET.GUI.CommandLine.NewScenarioListener;
@@ -13,16 +15,17 @@ public interface ISimulationQue
 	 * 
 	 * @return
 	 */
-	public abstract Vector<ISimulation> getSimulations();
+	public Vector<ISimulation> getSimulations();
 
 	/**
 	 * common set of attributes for all of the simulations
 	 * 
 	 * @return
 	 */
-	public abstract Vector<IAttribute> getAttributes();
-	
-	/**  how to listen for the state of the simulations changing
+	public Vector<IAttribute> getAttributes();
+
+	/**
+	 * how to listen for the state of the simulations changing
 	 * 
 	 * @return
 	 */
@@ -32,19 +35,30 @@ public interface ISimulationQue
 	 * start the que running
 	 * 
 	 */
-	public abstract void startQue(NewScenarioListener newListener);
+	public void startQue(NewScenarioListener newListener);
 
 	/**
 	 * whether the que is running
 	 * 
 	 * @return yes/no
 	 */
-	public abstract boolean isRunning();
+	public boolean isRunning();
 
 	/**
 	 * stop the que
 	 * 
 	 */
-	public abstract void stopQue();
+	public void stopQue();
+
+	/**
+	 * perform a set of runs
+	 * 
+	 * @param out
+	 * @param err
+	 * @param in
+	 * @param object
+	 */
+	public int nowRun(PrintStream out, PrintStream err, InputStream in,
+			NewScenarioListener scenarioListener);
 
 }

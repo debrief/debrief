@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.mwc.asset.scenariocontroller2.Activator;
+import org.mwc.asset.scenariocontroller2.ScenContPresenter;
 import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -76,17 +77,17 @@ public class SimulationTable
 
 	private ColumnsResizer myColumnsResizer;
 
-	private ScenarioControllerView _myControllerView;
+	private ScenContPresenter _myPresenter;
 
 	private HashMap<ScenarioType, ScenarioWrapper> _wrappedScenarios = new HashMap<ScenarioType, ScenarioWrapper>();
 
-	public SimulationTable(Composite parent, ScenarioControllerView controllerView)
+	public SimulationTable(Composite parent, ScenContPresenter contPresenter)
 	{
 		myTableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 
 		_wrappedScenarios = new HashMap<ScenarioType, ScenarioWrapper>();
 
-		_myControllerView = controllerView;
+		_myPresenter = contPresenter;
 
 		getTable().setHeaderVisible(true);
 		getTable().setLinesVisible(true);
@@ -137,7 +138,7 @@ public class SimulationTable
 					ScenarioWrapper sw = _wrappedScenarios.get(theScenario);
 					if (sw == null)
 					{
-						sw = new ScenarioWrapper(_myControllerView, sl);
+						sw = new ScenarioWrapper(_myPresenter, sl);
 
 						// tell it about any backdrop data
 						Layer theBackdrop = theScenario.getBackdrop();

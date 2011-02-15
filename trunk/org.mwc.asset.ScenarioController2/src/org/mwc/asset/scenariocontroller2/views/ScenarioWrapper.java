@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.mwc.asset.scenariocontroller2.ScenContPresenter;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 
@@ -31,11 +32,11 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ScenarioControllerView _theCont;
+	private ScenContPresenter _thePresenter;
 	private ControllerWrapper _theController;
 	private ScenarioLayer _scenLayer;
 
-	public ScenarioWrapper(ScenarioControllerView scenarioController)
+	public ScenarioWrapper(ScenContPresenter scenarioController)
 	{
 		this(scenarioController, new ScenarioLayer());
 	}
@@ -46,10 +47,10 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	 * @param scenarioController
 	 * @param layer
 	 */
-	public ScenarioWrapper(ScenarioControllerView scenarioController,
+	public ScenarioWrapper(ScenContPresenter scenarioController,
 			ScenarioLayer layer)
 	{
-		_theCont = scenarioController;
+		_thePresenter = scenarioController;
 		_theController = new ControllerWrapper();
 		_scenLayer = layer;
 		this.addThisLayer(_scenLayer);
@@ -91,16 +92,9 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 		return _scenLayer.getScenario();
 	}
 
-	public void fireNewScenario()
-	{
-		_scenLayer.setScenario(_theCont.getScenario());
-
-		this.fireExtended();
-	}
-
 	public void fireNewController()
 	{
-		_theController.setObservers(_theCont.getObservers());
+		_theController.setObservers(_thePresenter.getObservers());
 		this.fireExtended();
 	}
 

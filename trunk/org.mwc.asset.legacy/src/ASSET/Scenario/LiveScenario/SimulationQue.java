@@ -5,6 +5,8 @@ package ASSET.Scenario.LiveScenario;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -282,6 +284,13 @@ public class SimulationQue implements ISimulationQue
 	public IAttribute getState()
 	{
 		return _theState;
+	}
+
+	public int nowRun(PrintStream out, PrintStream err, InputStream in,
+			NewScenarioListener scenarioListener)
+	{
+		startQue(scenarioListener);
+		return 0;
 	}
 
 
