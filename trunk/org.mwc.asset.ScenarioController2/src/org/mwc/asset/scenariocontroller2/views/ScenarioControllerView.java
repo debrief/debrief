@@ -1037,21 +1037,22 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 				pendingFilenames.add(contFile);
 			}
+			
+			// also, see if we have an auto-step size property
+			String stepSizeStr = memento.getString("StepInterval");
+			if (stepSizeStr != null)
+			{
+				// and store it.
+				Double duration = Double.valueOf(stepSizeStr);
+				_myPendingStepSize = new Duration(duration, Duration.MILLISECONDS);
+			}
+
 		}
 
 		// did we receive any?
 		if (pendingFilenames.size() > 0)
 			_myPendingFilenames = pendingFilenames.toArray(new String[]
 			{});
-
-		// also, see if we have an auto-step size property
-		String stepSizeStr = memento.getString("StepInterval");
-		if (stepSizeStr != null)
-		{
-			// and store it.
-			Double duration = Double.valueOf(stepSizeStr);
-			_myPendingStepSize = new Duration(duration, Duration.MILLISECONDS);
-		}
 
 	}
 
