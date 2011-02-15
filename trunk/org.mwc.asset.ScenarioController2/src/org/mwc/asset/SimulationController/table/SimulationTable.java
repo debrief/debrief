@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.mwc.asset.SimulationController.SimControllerPlugin;
+import org.mwc.asset.scenariocontroller2.Activator;
 import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -138,17 +138,17 @@ public class SimulationTable
 					if (sw == null)
 					{
 						sw = new ScenarioWrapper(_myControllerView, sl);
-						
+
 						// tell it about any backdrop data
 						Layer theBackdrop = theScenario.getBackdrop();
-						if(theBackdrop != null)
-							sw.addThisLayer(theBackdrop);				
-						
+						if (theBackdrop != null)
+							sw.addThisLayer(theBackdrop);
+
 						_wrappedScenarios.put((ScenarioType) theSim, sw);
-						
+
 						// also tell it about any observers
 						sw.fireNewController();
-						
+
 					}
 
 					// ok, now wrap it as an editable
@@ -190,7 +190,7 @@ public class SimulationTable
 		}
 		mySelectionProvider.setSelection(mySelection);
 	}
-	
+
 	public ISelection getSelection()
 	{
 		return mySelection;
@@ -666,10 +666,9 @@ public class SimulationTable
 				myTableColumn = tableColumn;
 				myIsAscending = true;
 			}
-			myTableColumn.setImage(SimControllerPlugin.getInstance()
-					.getImageRegistry().get(
-							myIsAscending ? SimControllerPlugin.IMG_ASCEND
-									: SimControllerPlugin.IMG_DESCEND));
+			myTableColumn.setImage(Activator.getImageDescriptor(
+					myIsAscending ? Activator.IMG_ASCEND
+							: Activator.IMG_DESCEND).createImage());
 			boolean isCellSelected = myTableCursor.getRow() != null;
 			myTableViewer.refresh(true, true);
 			if (isCellSelected && getTable().getSelectionIndex() != -1)

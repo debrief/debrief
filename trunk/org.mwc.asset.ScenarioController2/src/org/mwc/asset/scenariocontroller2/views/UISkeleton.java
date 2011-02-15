@@ -154,8 +154,6 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 						{
 							singleStatLabel = new Label(composite1, SWT.NONE);
 							singleStatLabel.setText("Status:");
-							GridData singleStatLabelLData = new GridData();
-							singleStatLabel.setLayoutData(singleStatLabelLData);
 							singleStatLabel.setAlignment(SWT.RIGHT);
 						}
 						{
@@ -168,11 +166,10 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 						}
 						{
 							singleRunBtn = new Button(composite1, SWT.PUSH | SWT.CENTER);
-							GridData singleRunBtnLData = new GridData();
-							singleRunBtn.setLayoutData(singleRunBtnLData);
 							singleRunBtn.setText("Run");
 							singleRunBtn.setEnabled(false);
 						}
+						new Label(composite1, SWT.NONE);
 					}
 				}
 				{
@@ -203,12 +200,10 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 						}
 			
 						{
-							GridData multiTableHolderLData = new GridData();
 							multiTableHolder = new Composite(composite2, SWT.NONE);
 							GridLayout multiTableHolderLayout = new GridLayout();
 							multiTableHolderLayout.makeColumnsEqualWidth = true;
 							multiTableHolder.setLayout(multiTableHolderLayout);
-							multiTableHolder.setLayoutData(multiTableHolderLData);
 						}
 					}
 				}
