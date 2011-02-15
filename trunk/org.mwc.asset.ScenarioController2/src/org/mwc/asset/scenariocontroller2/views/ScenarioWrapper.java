@@ -6,7 +6,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.mwc.asset.scenariocontroller2.ScenContPresenter;
+import org.mwc.asset.scenariocontroller2.CoreControllerPresenter;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 
@@ -32,11 +32,11 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ScenContPresenter _thePresenter;
+	private CoreControllerPresenter _thePresenter;
 	private ControllerWrapper _theController;
 	private ScenarioLayer _scenLayer;
 
-	public ScenarioWrapper(ScenContPresenter scenarioController)
+	public ScenarioWrapper(CoreControllerPresenter scenarioController)
 	{
 		this(scenarioController, new ScenarioLayer());
 	}
@@ -47,7 +47,7 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	 * @param scenarioController
 	 * @param layer
 	 */
-	public ScenarioWrapper(ScenContPresenter scenarioController,
+	public ScenarioWrapper(CoreControllerPresenter scenarioController,
 			ScenarioLayer layer)
 	{
 		_thePresenter = scenarioController;

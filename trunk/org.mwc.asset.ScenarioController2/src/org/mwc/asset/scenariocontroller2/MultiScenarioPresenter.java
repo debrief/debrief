@@ -2,15 +2,10 @@ package org.mwc.asset.scenariocontroller2;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
@@ -18,11 +13,10 @@ import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
-import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 
-public class ScenContPresenter
+public class MultiScenarioPresenter extends CoreControllerPresenter
 {
 	/**
 	 * our data model
@@ -34,26 +28,7 @@ public class ScenContPresenter
 	 * our view
 	 * 
 	 */
-	private Display _myDisplay;
-
-	private String _scenarioFileName;
-
-	private String _controlFileName;
-
-	private Vector<ScenarioObserver> _theObservers;
-
-	private ResultsContainer _scenarioController;
-
-	/**
-	 * object that listens out for files being dropped
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static interface FilesDroppedListener
-	{
-		void filesDropped(String[] files);
-	}
+	MultiScenarioDisplay _myDisplay;
 
 	/**
 	 * package up an operation with a progress monitor
@@ -93,46 +68,13 @@ public class ScenContPresenter
 	 * @author ian
 	 * 
 	 */
-	public static interface Display
+	public static interface MultiScenarioDisplay extends ScenarioDisplay
 	{
-		void addMultiScenarioHandler(ManageMultiListener listener);
-
-		/**
-		 * specify handler for drop events
+		/** someone is listening to the run/generate buttons
 		 * 
 		 * @param listener
 		 */
-		void addFileDropListener(FilesDroppedListener listener);
-
-		/**
-		 * display the scenario name
-		 * 
-		 * @param name
-		 */
-		void setScenarioName(String name);
-
-		/**
-		 * display the control file name
-		 * 
-		 * @param name
-		 */
-		void setControlName(String name);
-
-		/**
-		 * make this view the selected view. We've just loaded some data, so tell
-		 * everybody we're alive
-		 */
-		void activate();
-
-		/**
-		 * this is a relative path, produce an absolute path to a relative location
-		 * in the project directory
-		 * 
-		 * @param tgtDir
-		 *          relative path
-		 * @return absolute path
-		 */
-		File getProjectPathFor(File tgtDir);
+		void addMultiScenarioHandler(ManageMultiListener listener);
 
 		/**
 		 * new controller loaded, ditch generated scenarios
@@ -140,19 +82,35 @@ public class ScenContPresenter
 		 */
 		void clearScenarios();
 
-		void refreshWorkspace();
-
+		/** set the enabled state of the generate button
+		 * 
+		 * @param b
+		 */
 		void setGenerateState(boolean b);
 
-		void setScenarios(MultiScenarioCore _myModel);
-
+		/** set the enabled state of the run button
+		 * 
+		 * @param b
+		 */
 		void setRunState(boolean b);
 
+		/** update the list of scenarios
+		 * 
+		 * @param _myModel
+		 */
+		void setScenarios(MultiScenarioCore _myModel);
+
+		/** start this monster job running
+		 * 
+		 * @param theJob
+		 */
 		void runThisJob(JobWithProgress theJob);
 	}
 
-	public ScenContPresenter(Display display, MultiScenarioCore model)
+	public MultiScenarioPresenter(MultiScenarioDisplay display, MultiScenarioCore model)
 	{
+		super(display);
+		
 		// store the presenter
 		_myDisplay = display;
 
@@ -382,62 +340,21 @@ public class ScenContPresenter
 			_theObservers.removeAllElements();
 		}
 	}
+	
+	
 
-	private static String getFirstNodeName(String SourceXMLFilePath)
+	@Override
+	public void reloadDataFiles()
 	{
-		/* Check whether file is XML or not */
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(false);
-		factory.setNamespaceAware(true);
-		try
-		{
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse(SourceXMLFilePath);
-
-			NodeList nl = document.getElementsByTagName("*");
-			return nl.item(0).getNodeName();
-		}
-		catch (IOException ioe)
-		{
-			// ioe.printStackTrace();
-			return null;
-			// return "Not Valid XML File";
-		}
-		catch (Exception sxe)
-		{
-			// Exception x = sxe;
-			return null;
-			// x.printStackTrace();
-			// return "Not Valid XML File";
-		}
+		// let the parent do it's stuff
+		super.reloadDataFiles();
+		
+		// and clear the list of scenarios
+		_myDisplay.clearScenarios();
 
 	}
 
-	private static boolean isRelativePath(File tgtDir)
-	{
-		boolean res = true;
 
-		String thePath = tgtDir.getPath();
-
-		// use series of tests to check whether this is a relative path
-		if (thePath.length() == 0)
-			res = true;
-		else
-		{
-			if (thePath.contains(":"))
-				res = false;
-			if (thePath.contains("\\\\"))
-				res = false;
-			if (thePath.charAt(0) == '\\')
-				res = false;
-			if (thePath.contains("//"))
-				res = false;
-			if (thePath.charAt(0) == '/')
-				res = false;
-		}
-
-		return res;
-	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
@@ -471,34 +388,6 @@ public class ScenContPresenter
 			super.assertEquals("failed to recognise parent ref", true,
 					isRelativePath(new File("../test.rep")));
 		}
-	}
-
-	public Vector<ScenarioObserver> getObservers()
-	{
-		return _theObservers;
-	}
-
-	public String getScenarioName()
-	{
-		return _scenarioFileName;
-	}
-
-	public String getControlName()
-	{
-		return _controlFileName;
-	}
-
-	public void reloadDataFiles()
-	{
-		// ok, force the data-files to be reloaded
-		if (_scenarioFileName != null)
-			handleTheseFiles(new String[]
-			{ _scenarioFileName });
-		if (_controlFileName != null)
-			handleTheseFiles(new String[]
-			{ _controlFileName });
-
-		_myDisplay.clearScenarios();
 	}
 
 }

@@ -49,10 +49,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.SimulationController.table.SimulationTable;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.asset.scenariocontroller2.ScenContPresenter;
-import org.mwc.asset.scenariocontroller2.ScenContPresenter.FilesDroppedListener;
-import org.mwc.asset.scenariocontroller2.ScenContPresenter.JobWithProgress;
-import org.mwc.asset.scenariocontroller2.ScenContPresenter.ManageMultiListener;
+import org.mwc.asset.scenariocontroller2.CoreControllerPresenter;
+import org.mwc.asset.scenariocontroller2.CoreControllerPresenter.FilesDroppedListener;
+import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
+import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.JobWithProgress;
+import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.ManageMultiListener;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
@@ -69,7 +70,7 @@ import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 
 public class MultiScenarioView extends ViewPart implements
-		ISelectionProvider, TimeManager.LiveScenario, ScenContPresenter.Display
+		ISelectionProvider, TimeManager.LiveScenario, MultiScenarioPresenter.MultiScenarioDisplay
 {
 
 	/**
@@ -131,7 +132,7 @@ public class MultiScenarioView extends ViewPart implements
 	private ISelection _currentSelection;
 	private Duration _myPendingStepSize;
 	private FilesDroppedListener _filesDroppedListener;
-	private ScenContPresenter _myPresenter;
+	private CoreControllerPresenter _myPresenter;
 	private ManageMultiListener _multiHandler;
 
 	/**
@@ -140,7 +141,7 @@ public class MultiScenarioView extends ViewPart implements
 	public MultiScenarioView()
 	{
 		// sort out the presenter
-		_myPresenter = new ScenContPresenter(this, new MultiScenarioCore());
+		_myPresenter = new MultiScenarioPresenter(this, new MultiScenarioCore());
 	}
 
 	/**

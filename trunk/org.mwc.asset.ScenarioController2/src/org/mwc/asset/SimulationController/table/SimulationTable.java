@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.mwc.asset.scenariocontroller2.Activator;
-import org.mwc.asset.scenariocontroller2.ScenContPresenter;
+import org.mwc.asset.scenariocontroller2.CoreControllerPresenter;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
@@ -76,11 +76,11 @@ public class SimulationTable
 
 	private ColumnsResizer myColumnsResizer;
 
-	private ScenContPresenter _myPresenter;
+	private CoreControllerPresenter _myPresenter;
 
 	private HashMap<ScenarioType, ScenarioWrapper> _wrappedScenarios = new HashMap<ScenarioType, ScenarioWrapper>();
 
-	public SimulationTable(Composite parent, ScenContPresenter contPresenter)
+	public SimulationTable(Composite parent, CoreControllerPresenter contPresenter)
 	{
 		myTableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
 
