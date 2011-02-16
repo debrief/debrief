@@ -32,7 +32,7 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -40,7 +40,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartSite;
@@ -72,6 +71,25 @@ import MWC.GenericData.Duration;
 public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		TimeManager.LiveScenario, MultiScenarioPresenter.MultiScenarioDisplay
 {
+
+	public static interface UIDisplay
+	{
+
+		public void setScenario(String name);
+
+		public Composite getMultiTableHolder();
+
+		public void addGenerateListener(SelectionListener listener);
+
+		public void addRunAllListener(SelectionListener listener);
+
+		public void setControl(String name);
+
+		public void setRunAllEnabled(boolean b);
+
+		public void setGenerateEnabled(boolean b);
+
+	}
 
 	/**
 	 * support class to make SWT progress monitor look like our ASSET one
@@ -111,7 +129,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 * ui bits
 	 * 
 	 */
-	private UISkeleton _myUI;
+	private UIDisplay _myUI;
 
 	/**
 	 * watchable parts
@@ -155,32 +173,15 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	public void activate()
 	{
-		try
+		// just check we're alive - just in case we've been called before
+		// the init is complete
+		IWorkbenchPartSite site = getSite();
+		IWorkbenchWindow window = site.getWorkbenchWindow();
+		IWorkbenchPage page = window.getActivePage();
+
+		if (page != null)
 		{
-			// just check we're alive - just in case we've been called before
-			// the init is complete
-			IWorkbenchPartSite site = getSite();
-			IWorkbenchWindow window = site.getWorkbenchWindow();
-			IWorkbenchPage page = window.getActivePage();
-			if (page != null)
-			{
-				// try to find our view first
-				IViewPart theView = page.findView(site.getId());
-				if (theView != null)
-				{
-					// cool, show it then
-					page.showView(site.getId());
-				}
-			}
-		}
-		catch (PartInitException e)
-		{
-			// demote this error, it happens quite frequently when we're still opening
-			ASSETPlugin
-					.logError(
-							IStatus.WARNING,
-							"failed to activate scenario controller - possible because trying to activing during init",
-							null);
+			page.activate(site.getPart());
 		}
 	}
 
@@ -221,10 +222,10 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			public void run()
 			{
 				// ok, disable the run button,
-				_myUI.getRunBtn().setEnabled(false);
+				_myUI.setRunAllEnabled(false);
 
 				// and now enable the genny button
-				_myUI.getDoGenerateButton().setEnabled(true);
+				_myUI.setGenerateEnabled(true);
 
 				// and clear the scenario table
 				_simTable.setInput(null);
@@ -307,16 +308,17 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// create our UI
 		_myUI = new UISkeleton(parent, SWT.FILL);
 
-		_myUI.getMultiTableHolder().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		// _myUI.getMultiTableHolder().setLayoutData(
+		// new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
 		// and the table of scenarios
 		_simTable = new SimulationTable(_myUI.getMultiTableHolder(), _myPresenter);
-		_simTable.getControl().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+		// _simTable.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL,
+		// true, true, 2, 1));
 
 		// let us accept dropped files
-		configureFileDropSupport(_myUI);
+		configureFileDropSupport((Control) _myUI);
 
 		// fille in the menu bar(s)
 		makeActions();
@@ -328,7 +330,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		_simTable.setSelectionProvider(this);
 
 		// now listen to the UI buttons
-		_myUI.getDoGenerateButton().addSelectionListener(new SelectionAdapter()
+		_myUI.addGenerateListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
@@ -337,12 +339,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			}
 		});
 
-		_myUI.getRunBtn().addSelectionListener(new SelectionAdapter()
+		_myUI.addRunAllListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				_multiHandler.doRun();
+				_multiHandler.doRunAll();
 			}
 		});
 
@@ -680,7 +682,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		{
 			public void run()
 			{
-				_myUI.getControlVal().setText(name);
+				_myUI.setControl(name);
 			}
 		});
 	}
@@ -700,7 +702,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		{
 			public void run()
 			{
-				_myUI.getDoGenerateButton().setEnabled(state);
+				_myUI.setGenerateEnabled(state);
 			}
 		});
 	}
@@ -711,7 +713,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		{
 			public void run()
 			{
-				_myUI.getRunBtn().setEnabled(state);
+				_myUI.setRunAllEnabled(state);
 			}
 		});
 	}
@@ -722,7 +724,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		{
 			public void run()
 			{
-				_myUI.getScenarioVal().setText(name);
+				_myUI.setScenario(name);
 			}
 		});
 	}

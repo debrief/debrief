@@ -45,7 +45,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 * trigger stepping through the scenarios
 		 * 
 		 */
-		void doRun();
+		void doRunAll();
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				generateScenarios();
 			}
 
-			public void doRun()
+			public void doRunAll()
 			{
 				runScenarios();
 			}
@@ -341,7 +341,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				}
 			}
 		}
-
 		// lastly, make our view the current selection
 		_myDisplay.activate();
 	}

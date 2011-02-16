@@ -1,6 +1,7 @@
 package org.mwc.asset.scenariocontroller2.views;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -17,6 +18,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -28,7 +30,7 @@ import org.eclipse.swt.widgets.TabItem;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class UISkeleton extends org.eclipse.swt.widgets.Composite
+public class UISkeleton extends org.eclipse.swt.widgets.Composite implements UIDisplay
 {
 	/**
 	 * Auto-generated main method to display this
@@ -95,34 +97,22 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 		return this;
 	}
 
-	public Label getControlVal()
+	@Override
+	public void setControl(String text)
 	{
-		return controlVal;
+		controlVal.setText(text);
 	}
 
-	public Button getDoGenerateButton()
-	{
-		return doGenerateButton;
-	}
-
+	@Override
 	public Composite getMultiTableHolder()
 	{
 		return multiTableHolder;
 	}
 
-	public Button getRunBtn()
+	@Override
+	public void setScenario(String text)
 	{
-		return runBtn;
-	}
-
-	public TabFolder getScenarioTabs()
-	{
-		return scenarioTabs;
-	}
-
-	public Label getScenarioVal()
-	{
-		return scenarioVal;
+		scenarioVal.setText(text);
 	}
 
 	private void initGUI()
@@ -235,6 +225,30 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void addGenerateListener(SelectionListener listener)
+	{
+		doGenerateButton.addSelectionListener(listener);
+	}
+
+	@Override
+	public void addRunAllListener(SelectionListener listener)
+	{
+		runBtn.addSelectionListener(listener);
+	}
+
+	@Override
+	public void setRunAllEnabled(boolean b)
+	{
+		runBtn.setEnabled(b);
+	}
+
+	@Override
+	public void setGenerateEnabled(boolean b)
+	{
+		doGenerateButton.setEnabled(b);
 	}
 
 }
