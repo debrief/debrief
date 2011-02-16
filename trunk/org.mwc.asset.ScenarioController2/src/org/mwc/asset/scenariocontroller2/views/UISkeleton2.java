@@ -134,13 +134,13 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		btnPlay.setText("Play");
 
 		multiTableHolder = new Composite(this, SWT.BORDER);
+		multiTableHolder.setLayout(new GridLayout(1, false));
 		FormData fd_multiTableHolder = new FormData();
 		fd_multiTableHolder.bottom = new FormAttachment(100, -10);
 		fd_multiTableHolder.right = new FormAttachment(topPanel, 0, SWT.RIGHT);
 		fd_multiTableHolder.top = new FormAttachment(topPanel, 6);
 		fd_multiTableHolder.left = new FormAttachment(0, 10);
 		multiTableHolder.setLayoutData(fd_multiTableHolder);
-		multiTableHolder.setLayout(new FormLayout());
 
 	}
 

@@ -33,6 +33,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -306,7 +307,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	public void createPartControl(Composite parent)
 	{
 		// create our UI
-		_myUI = new UISkeleton(parent, SWT.FILL);
+		_myUI = new UISkeleton2(parent, SWT.FILL);
 
 		// _myUI.getMultiTableHolder().setLayoutData(
 		// new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -314,8 +315,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// and the table of scenarios
 		_simTable = new SimulationTable(_myUI.getMultiTableHolder(), _myPresenter);
 
-		// _simTable.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL,
-		// true, true, 2, 1));
+		_simTable.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
 		// let us accept dropped files
 		configureFileDropSupport((Control) _myUI);
