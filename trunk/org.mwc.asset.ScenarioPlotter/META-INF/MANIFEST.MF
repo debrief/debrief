@@ -17,5 +17,4 @@ Require-Bundle: org.mwc.asset.core,
  org.eclipse.ui.ide,
  org.eclipse.ui,
  org.mwc.asset.ScenarioController2;bundle-version="1.0.2"
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
