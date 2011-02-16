@@ -72,18 +72,13 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 	private Composite filenameHolder;
 	private Label scenarioLbl;
 	private Label controlLabel;
-	private Label singleStatLabel;
 	private Button runBtn;
 	private Button doGenerateButton;
-	private Composite composite1;
-	private Label singleStatVal;
 	private TabItem multipleTab;
-	private TabItem singleTab;
 	private TabFolder scenarioTabs;
 	private Label controlVal;
 	private Label scenarioVal;
 	private Composite multiTableHolder;
-	private Button singleRunBtn;
 
 	private Composite composite2;
 
@@ -128,16 +123,6 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 	public Label getScenarioVal()
 	{
 		return scenarioVal;
-	}
-
-	public Button getSingleRunBtn()
-	{
-		return singleRunBtn;
-	}
-
-	public Label getSingleScenarioStatus()
-	{
-		return singleStatVal;
 	}
 
 	private void initGUI()
@@ -198,37 +183,6 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 			{
 				scenarioTabs = new TabFolder(this, SWT.NONE);
 				{
-					singleTab = new TabItem(scenarioTabs, SWT.NONE);
-					singleTab.setText("Single Scenario");
-					{
-						composite1 = new Composite(scenarioTabs, SWT.NONE);
-						GridLayout composite1Layout = new GridLayout();
-						composite1Layout.makeColumnsEqualWidth = true;
-						composite1Layout.numColumns = 2;
-						composite1.setLayout(composite1Layout);
-						singleTab.setControl(composite1);
-						{
-							singleStatLabel = new Label(composite1, SWT.NONE);
-							singleStatLabel.setText("Status:");
-							singleStatLabel.setAlignment(SWT.RIGHT);
-						}
-						{
-							singleStatVal = new Label(composite1, SWT.WRAP);
-							GridData singleStatValLData = new GridData();
-							singleStatValLData.horizontalAlignment = GridData.FILL;
-							singleStatValLData.grabExcessHorizontalSpace = true;
-							singleStatVal.setLayoutData(singleStatValLData);
-							singleStatVal.setText("[pending]");
-						}
-						{
-							singleRunBtn = new Button(composite1, SWT.PUSH | SWT.CENTER);
-							singleRunBtn.setText("Run");
-							singleRunBtn.setEnabled(false);
-						}
-						new Label(composite1, SWT.NONE);
-					}
-				}
-				{
 					multipleTab = new TabItem(scenarioTabs, SWT.NONE);
 					multipleTab.setText("Multiple Scenarios");
 					{
@@ -253,7 +207,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 							}
 							{
 								runBtn = new Button(multiRunBtnHolder, SWT.PUSH | SWT.CENTER);
-								runBtn.setText("Run");
+								runBtn.setText("Run all");
 							}
 						}
 
