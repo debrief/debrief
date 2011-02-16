@@ -145,6 +145,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 	// member variables
 	// //////////////////////////////////////////////////////////
 
+	protected boolean _deferPaints = true;
+
 	/**
 	 * 
 	 */
@@ -264,6 +266,18 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 
 		});
+	}
+
+	/**
+	 * indicate whether paint events should build up, with only the most recent
+	 * event getting painted
+	 * 
+	 * @param defer
+	 *          yes/no
+	 */
+	public void setDeferPaints(boolean defer)
+	{
+		_deferPaints = defer;
 	}
 
 	/**
@@ -470,24 +484,42 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public void redraw()
 	{
-		if (!_myCanvas.isDisposed())
+
+		if (_deferPaints)
 		{
-			// create the runnable to place in the que
-			Runnable runme = new Runnable()
+			if (!_myCanvas.isDisposed())
 			{
-				public void run()
+				// create the runnable to place in the que
+				Runnable runme = new Runnable()
 				{
-					if (!_myCanvas.isDisposed())
+					public void run()
+					{
+						if (!_myCanvas.isDisposed())
+						{
+							_myCanvas.redraw();
+						}
+					}
+				};
+
+				// add it to the cache
+				_eventQue.addEvent(runme);
+			}
+		}
+		else
+		{
+			// nope, fire it right away
+			Display thisD = Display.getDefault();
+			if (thisD != null)
+				thisD.syncExec(new Runnable()
+				{
+
+					@Override
+					public void run()
 					{
 						_myCanvas.redraw();
 					}
-				}
-			};
-			
-			// add it to the cache
-			_eventQue.addEvent(runme);
+				});
 		}
-
 	}
 
 	public void addControlListener(ControlAdapter adapter)
@@ -503,9 +535,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 	public void addMouseListener(MouseListener listener)
 	{
 		_myCanvas.addMouseListener(listener);
-		
+
 	}
-	
+
 	public void addMouseWheelListener(MouseWheelListener listener)
 	{
 		_myCanvas.addMouseWheelListener(listener);

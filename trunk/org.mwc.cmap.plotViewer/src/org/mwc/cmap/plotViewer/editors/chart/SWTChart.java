@@ -441,6 +441,16 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		return _theCanvas;
 	}
+	
+	/** specify whether paint events should get deferred, with only the most
+	 * recent one getting painted
+	 * @param val yes/no
+	 */
+	public void setDeferPaints(boolean val)
+	{
+		_theCanvas.setDeferPaints(val);
+	}
+	
 
 	public final void update()
 	{
