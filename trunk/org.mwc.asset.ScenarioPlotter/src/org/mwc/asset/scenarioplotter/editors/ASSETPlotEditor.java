@@ -227,6 +227,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public void createPartControl(Composite parent)
 	{
 		super.createPartControl(parent);
+		
+		// tell the plotter not to defer paint events
+		getChart().setDeferPaints(false);
 
 		// and over-ride the undo button
 		IAction undoAction = new UndoActionHandler(getEditorSite(),
