@@ -2,6 +2,8 @@ package org.mwc.asset.scenariocontroller2.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -17,17 +19,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
+import org.eclipse.swt.layout.GridData;
 
 public class UISkeleton2 extends Composite implements UIDisplay
 {
-	/**
-	 * Auto-generated main method to display this
-	 * org.eclipse.swt.widgets.Composite inside a new Shell.
-	 */
-	public static void main(String[] args)
-	{
-		showGUI();
-	}
 
 	/**
 	 * Auto-generated method to display this org.eclipse.swt.widgets.Composite
@@ -58,7 +53,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 				display.sleep();
 		}
 	}
-	
+
 	private Label scenarioVal;
 	private Label controlVal;
 	private Button btnGenerate;
@@ -67,6 +62,10 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	private Button btnStep;
 	private Button btnPlay;
 	private Composite multiTableHolder;
+	private Label lblpending;
+	private Font _timeFont;
+	private Color _timeFore;
+	private Color _timeBack;
 
 	/**
 	 * Create the composite.
@@ -87,7 +86,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		topPanel.setLayoutData(fd_topPanel);
 		topPanel.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-		Composite filenameHolder = new Composite(topPanel, SWT.NONE);
+		Composite filenameHolder = new Composite(topPanel, SWT.BORDER);
 		filenameHolder.setLayout(new GridLayout(2, false));
 
 		Label lblScenarioFile = new Label(filenameHolder, SWT.NONE);
@@ -95,16 +94,20 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		lblScenarioFile.setText("Scenario file:");
 
 		scenarioVal = new Label(filenameHolder, SWT.NONE);
+		scenarioVal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
+				1, 1));
 		scenarioVal.setBounds(0, 0, 59, 14);
-		scenarioVal.setText("[pending]         ");
+		scenarioVal.setText("[pending]                     ");
 
 		Label lblControlFile = new Label(filenameHolder, SWT.NONE);
 		lblControlFile.setBounds(0, 0, 59, 14);
 		lblControlFile.setText("Control file:");
 
-		controlVal = new Label(filenameHolder, SWT.NONE);
+		controlVal = new Label(filenameHolder, SWT.BORDER);
+		controlVal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
+				1, 1));
 		controlVal.setBounds(0, 0, 59, 14);
-		controlVal.setText("[pending]        ");
+		controlVal.setText("[pending]               ");
 
 		Group grpManageScenarios = new Group(topPanel, SWT.NONE);
 		grpManageScenarios.setText("Manage scenarios");
@@ -122,16 +125,25 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		Group grpSelectedScenario = new Group(grpManageScenarios, SWT.NONE);
 		grpSelectedScenario.setText("Selected scenario");
-		grpSelectedScenario.setLayout(new RowLayout(SWT.VERTICAL));
+		grpSelectedScenario.setLayout(new GridLayout(2, false));
 
-		 btnInit = new Button(grpSelectedScenario, SWT.NONE);
+		btnInit = new Button(grpSelectedScenario, SWT.NONE);
 		btnInit.setText("Init");
 
-		 btnStep = new Button(grpSelectedScenario, SWT.NONE);
+		btnPlay = new Button(grpSelectedScenario, SWT.NONE);
+		btnPlay.setText("Play");
+
+		btnStep = new Button(grpSelectedScenario, SWT.NONE);
 		btnStep.setText("Step");
 
-		 btnPlay = new Button(grpSelectedScenario, SWT.NONE);
-		btnPlay.setText("Play");
+		lblpending = new Label(grpSelectedScenario, SWT.NONE);
+		_timeFont = SWTResourceManager.getFont("Courier New", 11, SWT.BOLD);
+		_timeFore = SWTResourceManager.getColor(SWT.COLOR_GREEN);
+		_timeBack = SWTResourceManager.getColor(105, 105, 105);
+		lblpending.setFont(_timeFont);
+		lblpending.setForeground(_timeFore);
+		lblpending.setBackground(_timeBack);
+		lblpending.setText("00:00:00");
 
 		multiTableHolder = new Composite(this, SWT.BORDER);
 		multiTableHolder.setLayout(new GridLayout(1, false));
@@ -142,6 +154,17 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		fd_multiTableHolder.left = new FormAttachment(0, 10);
 		multiTableHolder.setLayoutData(fd_multiTableHolder);
 
+	}
+
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		
+		// and ditch our custom objects
+		_timeFont.dispose();
+		_timeFore.dispose();
+		_timeBack.dispose();
 	}
 
 	@Override

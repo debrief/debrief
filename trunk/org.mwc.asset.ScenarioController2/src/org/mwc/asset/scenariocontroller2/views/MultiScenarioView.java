@@ -63,7 +63,6 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
-import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
 import MWC.GUI.Editable;
@@ -393,11 +392,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	{
 		Object res = null;
 
-		if (adapter == ScenarioType.class)
-		{
-			// TODO: return the selected scenario
-		}
-		else if (adapter == TimeProvider.class)
+		if (adapter == TimeProvider.class)
 		{
 			res = _timeManager;
 		}
