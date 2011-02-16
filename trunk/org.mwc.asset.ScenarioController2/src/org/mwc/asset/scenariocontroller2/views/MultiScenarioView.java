@@ -100,6 +100,10 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 	}
 
+	/**
+	 * markers to help index the fields we put into the memento
+	 * 
+	 */
 	private static final String CONTROL_FILE_INDEX = "CONTROL_FILE";
 	private static final String SCENARIO_FILE_INDEX = "SCENARIO_FILE";
 
@@ -120,6 +124,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 * 
 	 */
 	private WrappingSteppableTime _timeManager;
+
+	/**
+	 * remember the filenames. we receive them at startup, but can't use them
+	 * until the UI gets initialised
+	 */
 	private String[] _myPendingFilenames;
 	private TimeControlPreferences _myTimeControlProps;
 
@@ -657,8 +666,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		if (_myTimeControlProps != null)
 		{
 			Duration stepSize = _myTimeControlProps.getAutoInterval();
-			String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
-			memento.putString("StepInterval", stepSizeStr);
+			if (stepSize != null)
+			{
+				String stepSizeStr = "" + stepSize.getValueIn(Duration.MILLISECONDS);
+				memento.putString("StepInterval", stepSizeStr);
+			}
 		}
 	}
 
