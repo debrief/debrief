@@ -361,11 +361,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	// _theSize = new Dimension(p1, p2);
 	//
 	// _myCanvas.setSize(p1, p2);
-	//  	
+	//
 	// // reset our double buffer, since we've changed size
 	// _dblBuff = null;
 	// }
-	//  
+	//
 	/**
 	 * handler for a screen resize - inform our projection of the resize then
 	 * inform the painters.
@@ -430,37 +430,32 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		// set the font to start with,
 		if (!_theDest.isDisposed())
-			if (!_theDest.isDisposed())
-
+		{
+			if (theFont != null)
 			{
-				if (theFont != null)
-				{
-					_theDest.setFont(FontHelper.convertFont(theFont));
-				}
-
-				for (int thisC = 0; thisC < theString.length(); thisC++)
-				{
-					final char thisChar = theString.charAt(thisC);
-					int thisWid;
-					// just check if it's a space - we're not getting the right
-					// width back
-					if (thisChar == ' ')
-					{
-						thisWid = _theDest.getFontMetrics().getAverageCharWidth();
-					}
-					else
-					{
-						// thisWid = _theDest.getCharWidth(thisChar);
-						thisWid = _theDest.getAdvanceWidth(thisChar);
-					}
-					res += thisWid;
-				}
-
-				// add the spaces
-				// res = res + theString.length() * 2;
-
-				// res = (int)(res * 1.1d);
+				org.eclipse.swt.graphics.Font myFont = FontHelper.convertFont(theFont);
+				if (!_theDest.isDisposed())
+					_theDest.setFont(myFont);
 			}
+
+			for (int thisC = 0; thisC < theString.length(); thisC++)
+			{
+				final char thisChar = theString.charAt(thisC);
+				int thisWid;
+				// just check if it's a space - we're not getting the right
+				// width back
+				if (thisChar == ' ')
+				{
+					thisWid = _theDest.getFontMetrics().getAverageCharWidth();
+				}
+				else
+				{
+					// thisWid = _theDest.getCharWidth(thisChar);
+					thisWid = _theDest.getAdvanceWidth(thisChar);
+				}
+				res += thisWid;
+			}
+		}
 		return res;
 	}
 
@@ -581,7 +576,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// ok, may as well go for it now..
 		if (!_theDest.isDisposed())
 		{
-			int xmin,ymin,xmax, ymax;
+			int xmin, ymin, xmax, ymax;
 			xmin = ymin = 0;
 			xmax = this.getSize().width;
 			ymax = this.getSize().height;
@@ -938,10 +933,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// initialise the background color
 		if (!_theDest.isDisposed())
 			_theDest.setBackground(_theDest.getBackground());
-		
+
 		// and update the size
-		this.setScreenSize(new Dimension(_theDest.getClipping().width,_theDest.getClipping().height));
-//		._theSize = _theDest.getClipping();
+		this.setScreenSize(new Dimension(_theDest.getClipping().width, _theDest
+				.getClipping().height));
+		// ._theSize = _theDest.getClipping();
 
 		// set the thickness
 		// final BasicStroke bs = new BasicStroke(_lineWidth);
@@ -951,7 +947,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 	public final void endDraw(final Object theVal)
 	{
-		_theDest = null;
+//		_theDest = null;
 
 		// and forget the line width
 		_lineWidth = UNSET_LINE_WIDTH;
