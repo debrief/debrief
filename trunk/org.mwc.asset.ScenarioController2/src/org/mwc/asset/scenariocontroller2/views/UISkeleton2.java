@@ -214,5 +214,23 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	{
 		btnGenerate.setEnabled(b);
 	}
+	
+	@Override
+	public void setInitEnabled(boolean enabled)
+	{
+		btnInit.setEnabled(enabled);
+	}
+
+	@Override
+	public void setStepEnabled(boolean enabled)
+	{
+		btnStep.setEnabled(enabled);
+	}
+
+	@Override
+	public void setPlayEnabled(boolean enabled)
+	{
+		btnPlay.setEnabled(enabled);
+	}
 
 }

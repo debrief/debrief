@@ -89,6 +89,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 		public void setGenerateEnabled(boolean b);
 
+		public void setPlayEnabled(boolean enabled);
+
+		public void setStepEnabled(boolean enabled);
+
+		public void setInitEnabled(boolean enabled);
+
 	}
 
 	/**
