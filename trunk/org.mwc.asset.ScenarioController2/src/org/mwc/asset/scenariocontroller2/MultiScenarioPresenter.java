@@ -8,13 +8,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.Status;
 import org.junit.Test;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
+import org.mwc.cmap.core.CorePlugin;
 
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
@@ -88,26 +91,27 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 * @param theJob
 		 */
 		void runThisJob(JobWithProgress theJob);
-		
-		/** get the detailed display components
+
+		/**
+		 * get the detailed display components
 		 * 
 		 * @return
 		 */
 		UIDisplay getUI();
 
-//		/**
-//		 * set the enabled state of the generate button
-//		 * 
-//		 * @param b
-//		 */
-//		void setGenerateState(boolean b);
-//
-//		/**
-//		 * set the enabled state of the run button
-//		 * 
-//		 * @param b
-//		 */
-//		void setRunState(boolean b);
+		// /**
+		// * set the enabled state of the generate button
+		// *
+		// * @param b
+		// */
+		// void setGenerateState(boolean b);
+		//
+		// /**
+		// * set the enabled state of the run button
+		// *
+		// * @param b
+		// */
+		// void setRunState(boolean b);
 
 		/**
 		 * update the list of scenarios
@@ -178,7 +182,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 			else if (controlType == ScenarioControllerHandler.type)
 			{
-
 				_scenarioController = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
 
@@ -212,23 +215,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				}
 
 			}
-
-			// check if it's multi scenario..
-			final boolean isMulti = CommandLine
-					.checkIfGenerationRequired(controlFile);
-
-			// get the UI ready
-			if (isMulti)
-			{
-				_myDisplay.getUI().setGenerateEnabled(true);
-				_myDisplay.getUI().setRunAllEnabled(false);
-			}
-			else
-			{
-				_myDisplay.getUI().setGenerateEnabled(false);
-				_myDisplay.getUI().setRunAllEnabled(false);
-			}
-
 			// get the ui to update itself
 			_myDisplay.clearScenarios();
 		}
@@ -242,7 +228,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	{
 		// disable the genny button, until it's done.
 		_myDisplay.getUI().setGenerateEnabled(false);
-		
+
 		JobWithProgress theJob = new JobWithProgress()
 		{
 
@@ -313,8 +299,45 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				}
 			}
 		}
+
+		// right, make sure the correct buttons are enabled
+		enableRelevantButtons();
+
 		// lastly, make our view the current selection
 		_myDisplay.activate();
+	}
+
+	/**
+	 * make the relevant buttons enabled
+	 * 
+	 */
+	private void enableRelevantButtons()
+	{
+		if ((_controlFileName == null) || (_scenarioFileName == null))
+			return;
+
+		try
+		{
+			// check if it's multi scenario..
+			boolean isMulti = CommandLine.checkIfGenerationRequired(_controlFileName);
+
+			// get the UI ready
+			if (isMulti)
+			{
+				_myDisplay.getUI().setGenerateEnabled(true);
+				_myDisplay.getUI().setRunAllEnabled(false);
+			}
+			else
+			{
+				_myDisplay.getUI().setGenerateEnabled(false);
+				_myDisplay.getUI().setRunAllEnabled(true);
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			CorePlugin.logError(Status.ERROR, "whilst enabling model controls", e);
+		}
+
 	}
 
 	@Override
@@ -358,6 +381,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 		protected static String _controlfile;
 
+		final String controlPath = "src/org/mwc/asset/scenariocontroller2/tests/trial1.xml";
+		final String control_multiP_Path = "src/org/mwc/asset/scenariocontroller2/tests/trial_multi_part.xml";
+		final String control_multiS_Path = "src/org/mwc/asset/scenariocontroller2/tests/trial_multi_scen.xml";
+		final String scenarioPath = "src/org/mwc/asset/scenariocontroller2/tests/trial1.asset";
+
 		public TestMe(final String val)
 		{
 			super(val);
@@ -394,56 +422,92 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = mock(MultiScenarioCore.class);
 			MultiScenarioPresenter pres = new TestPresenter(display, model);
+			UIDisplay ui = mock(UIDisplay.class);
+			when(display.getUI()).thenReturn(ui);
+
 
 			// ok, try for the scenario first
 			String[] files =
-			{ "somePath/filea.txt" };
+			{scenarioPath };
+			
+			assertTrue("scenario file exists", new File(scenarioPath).exists());
 
 			pres.handleTheseFiles(files);
 
 			// ok, check the display got set
-			verify(display).setScenarioName("filea.txt");
+			verify(display).setScenarioName("trial1.asset");
 			verify(display).activate();
 
 			// aah, and check the control wasn't set
 			verify(display, never()).setControlName(anyString());
 		}
-		
+
+		public void testRealDataSinglePart()
+		{
+
+			// check we can see the files
+			assertTrue("can't find scenario", new File(scenarioPath).exists());
+			assertTrue("can't find control", new File(controlPath).exists());
+
+			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			MultiScenarioCore model = new MultiScenarioCore();
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
+			
+
+			// just add support for a couple of methods that we need to work
+			when(display.getProjectPathFor(new File("results"))).thenReturn(
+					new File("results"));
+			UIDisplay ui = mock(UIDisplay.class);
+			when(display.getUI()).thenReturn(ui);
+
+			pres.handleTheseFiles(new String[]{scenarioPath, controlPath});
+			
+			// check scenarios cleared
+			verify(display).clearScenarios();
+			
+			// check the UI is correctly enabled
+//			verify(ui).setInitEnabled(true);
+//			verify(ui).setStepEnabled(false);
+//			verify(ui).setPlayEnabled(false);
+			
+// TODO: test the single run steps			
+		}
+
 		public void testRealDataMultiPart()
 		{
-      final String scenarioPath = "src/org/mwc/asset/scenariocontroller2/tests/trial1.asset";
-      final String controlPath = "src/org/mwc/asset/scenariocontroller2/tests/trial_multi_part.xml";
-      
-      // check we can see the files
-      assertTrue("can't find scenario", new File(scenarioPath).exists());
-      assertTrue("can't find control", new File(controlPath).exists());
-      
+
+			// check we can see the files
+			assertTrue("can't find scenario", new File(scenarioPath).exists());
+			assertTrue("can't find control", new File(control_multiP_Path).exists());
+
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = new MultiScenarioCore();
 			UIDisplay ui = mock(UIDisplay.class);
 			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
-			
+
 			// just add support for a couple of methods that we need to work
-			when(display.getProjectPathFor(new File("results"))).thenReturn(new File("results"));
+			when(display.getProjectPathFor(new File("results"))).thenReturn(
+					new File("results"));
 			when(display.getUI()).thenReturn(ui);
-      
-			pres.handleTheseFiles(new String[]{scenarioPath, controlPath});
-			
+
+			pres.handleTheseFiles(new String[]
+			{ scenarioPath, control_multiP_Path });
+
 			// ok, check they loaded
 			verify(display).setScenarioName(anyString());
 			verify(display).setControlName(anyString());
-			
+
 			// and that the UI looks right
 			verify(ui).setGenerateEnabled(true);
 			verify(ui).setRunAllEnabled(false);
-			
+
 			// and check the controller bits are done
 			assertNotNull("controller loaded", pres._scenarioController);
 			verify(display).activate();
-			
+
 			// ok, go for the generate
 			pres.generateScenarios();
-			
+
 		}
 
 		@Test
@@ -455,12 +519,12 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 			// ok, try for the scenario first
 			String[] files =
-			{ "somePath/filec.txt" };
+			{ controlPath };
 
 			pres.handleTheseFiles(files);
 
 			// ok, check the display got set
-			verify(display).setControlName("filec.txt");
+			verify(display).setControlName("trial1.xml");
 			verify(display).activate();
 
 			// and the scenario wasn't set
@@ -473,16 +537,19 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = mock(MultiScenarioCore.class);
 			MultiScenarioPresenter pres = new TestPresenter(display, model);
+			UIDisplay ui = mock(UIDisplay.class);
+			when(display.getUI()).thenReturn(ui);
+
 
 			// ok, try for the scenario first
 			String[] files =
-			{ "somePath/filec.txt", "somePath/filea.txt" };
+			{ controlPath, scenarioPath };
 
 			pres.handleTheseFiles(files);
 
 			// ok, check the display got set
-			verify(display).setControlName("filec.txt");
-			verify(display).setScenarioName("filea.txt");
+			verify(display).setControlName("trial1.xml");
+			verify(display).setScenarioName("trial1.asset");
 			verify(display).activate();
 		}
 
@@ -491,17 +558,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			public TestPresenter(MultiScenarioDisplay display, MultiScenarioCore model)
 			{
 				super(display, model);
-			}
-
-			@Override
-			protected String getFirstNodeName(String theFile)
-			{
-				String res;
-				if (theFile.contains("filea"))
-					res = ScenarioHandler.type;
-				else
-					res = ScenarioControllerHandler.type;
-				return res;
 			}
 
 			@Override
@@ -517,15 +573,19 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = mock(MultiScenarioCore.class);
 			MultiScenarioPresenter pres = new TestPresenter(display, model);
-			pres._controlFileName = "somePath/filec.txt";
-			pres._scenarioFileName = "somePath/filea.txt";
+			UIDisplay ui = mock(UIDisplay.class);
+			when(display.getUI()).thenReturn(ui);
+
+			
+			pres._controlFileName = controlPath;
+			pres._scenarioFileName = scenarioPath;
 
 			// ok, try for the scenario first
 			pres.reloadDataFiles();
 
 			// ok, check the display got set
-			verify(display).setControlName("filec.txt");
-			verify(display).setScenarioName("filea.txt");
+			verify(display).setControlName("trial1.xml");
+			verify(display).setScenarioName("trial1.asset");
 			verify(display, times(2)).activate();
 			verify(display).clearScenarios();
 		}
