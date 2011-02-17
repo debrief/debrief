@@ -73,7 +73,7 @@ public abstract class CoreControllerPresenter
 		void setScenarioName(String name);
 	}
 
-	protected static String getFirstNodeName(String SourceXMLFilePath)
+	protected String getFirstNodeName(String SourceXMLFilePath)
 	{
 		/* Check whether file is XML or not */
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -103,7 +103,7 @@ public abstract class CoreControllerPresenter
 
 	}
 
-	protected static boolean isRelativePath(File tgtDir)
+	protected boolean isRelativePath(File tgtDir)
 	{
 		boolean res = true;
 
