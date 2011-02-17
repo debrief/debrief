@@ -586,4 +586,9 @@ public class MultiScenarioCore implements ISimulationQue
 		}
 	}
 
+	public Vector<ScenarioObserver> getObservers()
+	{
+		return _allObservers;
+	}
+
 }
