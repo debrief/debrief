@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -19,7 +20,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
-import org.eclipse.swt.layout.GridData;
 
 public class UISkeleton2 extends Composite implements UIDisplay
 {
@@ -62,11 +62,11 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	private Button btnStep;
 	private Button btnPlay;
 	private Composite multiTableHolder;
-	private Label lblpending;
+	private Label lblTime;
 	private Font _timeFont;
 	private Color _timeFore;
 	private Color _timeBack;
-
+	
 	/**
 	 * Create the composite.
 	 * 
@@ -136,14 +136,14 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		btnStep = new Button(grpSelectedScenario, SWT.NONE);
 		btnStep.setText("Step");
 
-		lblpending = new Label(grpSelectedScenario, SWT.NONE);
+		lblTime = new Label(grpSelectedScenario, SWT.NONE);
 		_timeFont = SWTResourceManager.getFont("Courier New", 11, SWT.BOLD);
 		_timeFore = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 		_timeBack = SWTResourceManager.getColor(105, 105, 105);
-		lblpending.setFont(_timeFont);
-		lblpending.setForeground(_timeFore);
-		lblpending.setBackground(_timeBack);
-		lblpending.setText("00:00:00");
+		lblTime.setFont(_timeFont);
+		lblTime.setForeground(_timeFore);
+		lblTime.setBackground(_timeBack);
+		lblTime.setText("00:00:00");
 
 		multiTableHolder = new Composite(this, SWT.BORDER);
 		multiTableHolder.setLayout(new GridLayout(1, false));
@@ -160,7 +160,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	public void dispose()
 	{
 		super.dispose();
-		
+
 		// and ditch our custom objects
 		_timeFont.dispose();
 		_timeFore.dispose();
@@ -214,7 +214,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	{
 		btnGenerate.setEnabled(b);
 	}
-	
+
 	@Override
 	public void setInitEnabled(boolean enabled)
 	{
@@ -231,6 +231,12 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	public void setPlayEnabled(boolean enabled)
 	{
 		btnPlay.setEnabled(enabled);
+	}
+
+	@Override
+	public void setTime(String time)
+	{
+		lblTime.setText(time);
 	}
 
 }

@@ -16,13 +16,21 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
+import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 
+import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
+import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
@@ -74,6 +82,12 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	public static interface MultiScenarioDisplay extends ScenarioDisplay
 	{
 		/**
+		 * listen out for scenarios being selected from the list
+		 * 
+		 */
+		public void addSelectionChangedListener(ISelectionChangedListener listener);
+
+		/**
 		 * someone is listening to the run/generate buttons
 		 * 
 		 * @param listener
@@ -120,6 +134,16 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	MultiScenarioDisplay _myDisplay;
 
+	/** the currently selected scenario
+	 * 
+	 */
+	private ScenarioWrapper _currentScen;
+
+	/** listener to let us watch the selected scenario
+	 * 
+	 */
+	private ScenarioSteppedListener _stepListener;
+
 	public MultiScenarioPresenter(MultiScenarioDisplay display,
 			MultiScenarioCore model)
 	{
@@ -130,6 +154,19 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 		// generate our model
 		_myModel = model;
+
+		// listen out for scenarios being selected in the table
+		_myDisplay.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+			@Override
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				EditableWrapper ed = (EditableWrapper) sel.getFirstElement();
+				ScenarioWrapper wrapped = (ScenarioWrapper) ed.getEditable();
+				selectThis(wrapped);
+			}
+		});
 
 		// ok, sort out the file drop handler
 		_myDisplay.addFileDropListener(new FilesDroppedListener()
@@ -153,7 +190,67 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				runScenarios();
 			}
 		});
+		
+		_stepListener = new ScenarioSteppedListener()
+		{
+			
+			@Override
+			public void step(ScenarioType scenario, long newTime)
+			{
+				newTime(newTime);
+			}
+			
+			@Override
+			public void restart(ScenarioType scenario)
+			{
+			}
+		};
 
+	}
+
+	/** display an updated time
+	 * 
+	 * @param newTime
+	 */
+	protected void newTime(final long newTime)
+	{
+		Display.getDefault().asyncExec(new Runnable(){
+
+			@Override
+			public void run()
+			{
+				String timeStr = MWC.Utilities.TextFormatting.FormatRNDateTime.toShortString(newTime);
+				_myDisplay.getUI().setTime(timeStr);
+			}});
+	}
+
+	protected void selectThis(final ScenarioWrapper wrap)
+	{
+		// is this the currently selected scenario
+		if(_currentScen != wrap)
+		{
+			_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
+		}
+		
+		// ok, remember the new one
+		_currentScen = wrap;
+		
+		Display.getDefault().asyncExec(new Runnable(){
+
+			@Override
+			public void run()
+			{
+				ScenarioType scen = wrap.getScenario();
+			
+				// ok start off with the time
+				newTime(scen.getTime());
+				
+				// now look at the state
+				
+				// TODO: carry on with state checking
+				
+				
+			}});
 	}
 
 	protected void controllerAssigned(String controlFile)
@@ -229,13 +326,22 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				// and sort out the observers
 				_myModel.prepareControllers(_scenarioController, montor, null);
 
-				// ok, now give the scenarios to the multi scenario table (in the UI
-				// thread
-				_myDisplay.setScenarios(_myModel);
+				Display.getDefault().asyncExec(new Runnable()
+				{
 
-				// and set the button states
-				_myDisplay.getUI().setGenerateEnabled(false);
-				_myDisplay.getUI().setRunAllEnabled(true);
+					@Override
+					public void run()
+					{
+						// ok, now give the scenarios to the multi scenario table (in the UI
+						// thread
+						_myDisplay.setScenarios(_myModel);
+
+						// and set the button states
+						_myDisplay.getUI().setGenerateEnabled(false);
+						_myDisplay.getUI().setRunAllEnabled(true);
+					}
+				});
+
 			}
 		};
 
@@ -243,7 +349,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	}
 
-	/** factor out how we actually run the job, so we can test it more easily
+	/**
+	 * factor out how we actually run the job, so we can test it more easily
 	 * 
 	 * @param theJob
 	 */
@@ -327,11 +434,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			{
 				// we don't need to generate, just put the scenario in there.
 				generateScenarios();
-				
+
 				// we've only got one scenario - so select it.
-				
+
 			}
-			
+
 		}
 		catch (FileNotFoundException e)
 		{
@@ -425,11 +532,10 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
 
-
 			// ok, try for the scenario first
 			String[] files =
-			{scenarioPath };
-			
+			{ scenarioPath };
+
 			assertTrue("scenario file exists", new File(scenarioPath).exists());
 
 			pres.handleTheseFiles(files);
@@ -451,36 +557,41 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = new MultiScenarioCore();
-			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model){
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model)
+			{
 
 				@Override
 				protected void runThisJob(JobWithProgress theJob)
 				{
-					ASSETProgressMonitor monitor = new ASSETProgressMonitor(){
+					ASSETProgressMonitor monitor = new ASSETProgressMonitor()
+					{
 						public void beginTask(String name, int totalWork)
 						{
 						}
+
 						public void worked(int work)
 						{
-						}};
+						}
+					};
 					theJob.run(monitor);
-				}};
-			
+				}
+			};
 
 			// just add support for a couple of methods that we need to work
 			when(display.getProjectPathFor(new File("results"))).thenReturn(
 					new File("results"));
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
-			
-			pres.handleTheseFiles(new String[]{scenarioPath, controlPath});
-			
+
+			pres.handleTheseFiles(new String[]
+			{ scenarioPath, controlPath });
+
 			// check scenarios cleared
 			verify(display).clearScenarios();
-			
+
 			// check the list of scenarios got set
 			verify(display).setScenarios((MultiScenarioCore) anyObject());
-			
+
 			// check the UI is correctly enabled
 			verify(ui).setInitEnabled(true);
 			verify(ui).setStepEnabled(false);
@@ -554,7 +665,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
 
-
 			// ok, try for the scenario first
 			String[] files =
 			{ controlPath, scenarioPath };
@@ -590,7 +700,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
 
-			
 			pres._controlFileName = controlPath;
 			pres._scenarioFileName = scenarioPath;
 

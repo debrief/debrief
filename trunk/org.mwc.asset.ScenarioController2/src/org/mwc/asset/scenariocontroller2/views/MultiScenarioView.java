@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -57,18 +56,14 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
-import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 
 public class MultiScenarioView extends ViewPart implements ISelectionProvider,
-		TimeManager.LiveScenario, MultiScenarioPresenter.MultiScenarioDisplay
+		MultiScenarioPresenter.MultiScenarioDisplay
 {
 
 	public static interface UIDisplay
@@ -83,17 +78,22 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		public void addGenerateListener(SelectionListener listener);
 
 		public void addRunAllListener(SelectionListener listener);
-		
+
 		public void setRunAllEnabled(boolean b);
 
 		public void setGenerateEnabled(boolean b);
-
 
 		public void setPlayEnabled(boolean enabled);
 
 		public void setStepEnabled(boolean enabled);
 
 		public void setInitEnabled(boolean enabled);
+
+		/** set the displayed time
+		 * 
+		 * @param time
+		 */
+		public void setTime(String time);
 
 	}
 
@@ -411,21 +411,6 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			}
 
 			res = _myTimeControlProps;
-		}
-		else if (adapter == TimeManager.LiveScenario.class)
-		{
-			// return the current selected item
-			StructuredSelection sel = (StructuredSelection) _currentSelection;
-			if (sel != null)
-			{
-				EditableWrapper obj = (EditableWrapper) sel.getFirstElement();
-				if (obj instanceof EditableWrapper)
-				{
-					Editable ed = obj.getEditable();
-					if (ed instanceof LiveScenario)
-						return ed;
-				}
-			}
 		}
 		else if (adapter == SteppableTime.class)
 		{

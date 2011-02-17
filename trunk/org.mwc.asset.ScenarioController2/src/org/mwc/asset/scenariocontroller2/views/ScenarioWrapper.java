@@ -1,18 +1,13 @@
 package org.mwc.asset.scenariocontroller2.views;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
-import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -25,7 +20,7 @@ import MWC.GUI.Layers;
  * @author Administrator
  * 
  */
-public class ScenarioWrapper extends Layers implements LiveScenario
+public class ScenarioWrapper extends Layers
 {
 	/**
 	 * layout-manager compliant wrapper around a scenario control file
@@ -83,10 +78,6 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 
 	private ScenarioLayer _scenLayer;
 
-	private ScenarioRunningListener _runListener;
-
-	private PropertyChangeSupport _pSupport;
-
 	public ScenarioWrapper(MultiScenarioPresenter scenarioController)
 	{
 		this(scenarioController, new ScenarioLayer());
@@ -106,48 +97,6 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 		_scenLayer = layer;
 		this.addThisLayer(_scenLayer);
 		this.addThisLayer(_controlWrapper);
-	}
-
-	public void addStoppedListener(PropertyChangeListener listener)
-	{
-		if (_runListener == null)
-		{
-			_runListener = new ScenarioRunningListener()
-			{
-
-				public void finished(long elapsedTime, String reason)
-				{
-					_pSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED,
-							elapsedTime, reason);
-				}
-
-				public void newScenarioStepTime(int val)
-				{
-				}
-
-				public void newStepTime(int val)
-				{
-				}
-
-				public void paused()
-				{
-				}
-
-				public void restart(ScenarioType scenario)
-				{
-				}
-
-				public void started()
-				{
-				}
-			};
-			_pSupport = new PropertyChangeSupport(this);
-
-			_scenLayer.getScenario().addScenarioRunningListener(_runListener);
-		}
-
-		_pSupport.addPropertyChangeListener(TimeManager.LiveScenario.FINISHED,
-				listener);
 	}
 
 	/**
@@ -191,11 +140,5 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 		return _scenLayer.getScenario();
 	}
 
-	public void removeStoppedListener(PropertyChangeListener listener)
-	{
-		if (_pSupport != null)
-			_pSupport.removePropertyChangeListener(TimeManager.LiveScenario.FINISHED,
-					listener);
-	}
 
 }
