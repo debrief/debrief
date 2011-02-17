@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -30,7 +29,7 @@ import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class UISkeleton extends org.eclipse.swt.widgets.Composite implements UIDisplay
+public class UISkeleton extends org.eclipse.swt.widgets.Composite
 {
 	/**
 	 * Auto-generated main method to display this
@@ -97,19 +96,16 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite implements UID
 		return this;
 	}
 
-	@Override
 	public void setControl(String text)
 	{
 		controlVal.setText(text);
 	}
 
-	@Override
 	public Composite getMultiTableHolder()
 	{
 		return multiTableHolder;
 	}
 
-	@Override
 	public void setScenario(String text)
 	{
 		scenarioVal.setText(text);
@@ -227,25 +223,21 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite implements UID
 		}
 	}
 
-	@Override
 	public void addGenerateListener(SelectionListener listener)
 	{
 		doGenerateButton.addSelectionListener(listener);
 	}
 
-	@Override
 	public void addRunAllListener(SelectionListener listener)
 	{
 		runBtn.addSelectionListener(listener);
 	}
 
-	@Override
 	public void setRunAllEnabled(boolean b)
 	{
 		runBtn.setEnabled(b);
 	}
 
-	@Override
 	public void setGenerateEnabled(boolean b)
 	{
 		doGenerateButton.setEnabled(b);
