@@ -134,12 +134,14 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	MultiScenarioDisplay _myDisplay;
 
-	/** the currently selected scenario
+	/**
+	 * the currently selected scenario
 	 * 
 	 */
 	private ScenarioWrapper _currentScen;
 
-	/** listener to let us watch the selected scenario
+	/**
+	 * listener to let us watch the selected scenario
 	 * 
 	 */
 	private ScenarioSteppedListener _stepListener;
@@ -190,16 +192,16 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				runScenarios();
 			}
 		});
-		
+
 		_stepListener = new ScenarioSteppedListener()
 		{
-			
+
 			@Override
 			public void step(ScenarioType scenario, long newTime)
 			{
 				newTime(newTime);
 			}
-			
+
 			@Override
 			public void restart(ScenarioType scenario)
 			{
@@ -208,49 +210,55 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	}
 
-	/** display an updated time
+	/**
+	 * display an updated time
 	 * 
 	 * @param newTime
 	 */
 	protected void newTime(final long newTime)
 	{
-		Display.getDefault().asyncExec(new Runnable(){
+		Display.getDefault().asyncExec(new Runnable()
+		{
 
 			@Override
 			public void run()
 			{
-				String timeStr = MWC.Utilities.TextFormatting.FormatRNDateTime.toShortString(newTime);
+				String timeStr = MWC.Utilities.TextFormatting.FormatRNDateTime
+						.toShortString(newTime);
 				_myDisplay.getUI().setTime(timeStr);
-			}});
+			}
+		});
 	}
 
 	protected void selectThis(final ScenarioWrapper wrap)
 	{
 		// is this the currently selected scenario
-		if(_currentScen != wrap)
+		if (_currentScen != wrap)
 		{
-			_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
+			if (_currentScen != null)
+				_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
 		}
-		
+
 		// ok, remember the new one
 		_currentScen = wrap;
-		
-		Display.getDefault().asyncExec(new Runnable(){
+
+		Display.getDefault().asyncExec(new Runnable()
+		{
 
 			@Override
 			public void run()
 			{
 				ScenarioType scen = wrap.getScenario();
-			
+
 				// ok start off with the time
 				newTime(scen.getTime());
-				
+
 				// now look at the state
-				
+
 				// TODO: carry on with state checking
-				
-				
-			}});
+
+			}
+		});
 	}
 
 	protected void controllerAssigned(String controlFile)
@@ -546,6 +554,12 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 			// aah, and check the control wasn't set
 			verify(display, never()).setControlName(anyString());
+		}
+
+		public void testTrackingSelection()
+		{
+			// TODO: test that we remove ourselves from unselected scenarios
+
 		}
 
 		public void testRealDataSinglePart()
