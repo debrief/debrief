@@ -2,9 +2,9 @@ package org.mwc.asset.scenariocontroller2;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +23,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.CorePlugin;
@@ -32,6 +34,7 @@ import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
+import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
@@ -39,6 +42,7 @@ import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ScenarioHandler;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
+import MWC.GUI.Layer;
 
 public class MultiScenarioPresenter extends CoreControllerPresenter
 {
@@ -255,7 +259,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 		_currentScen.getScenario().addScenarioSteppedListener(_stepListener);
 
-		Display.getDefault().asyncExec(new Runnable()
+		Display.getDefault().syncExec(new Runnable()
 		{
 
 			@Override
@@ -273,6 +277,10 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				else
 					playLabel = PLAY_LABEL;
 				_myDisplay.getUI().setPlayLabel(playLabel);
+
+				_myDisplay.getUI().setInitEnabled(true);
+				_myDisplay.getUI().setPlayEnabled(false);
+				_myDisplay.getUI().setStepEnabled(false);
 
 			}
 		});
@@ -594,8 +602,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			assertTrue("can't find control", new File(controlPath).exists());
 
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			MultiScenarioCore model = new MultiScenarioCore();
-			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model)
+			final MultiScenarioCore model = new MultiScenarioCore();
+			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display,
+					model)
 			{
 
 				@Override
@@ -620,6 +629,32 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 					new File("results"));
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
+
+			doAnswer(new Answer<Object>()
+			{
+				public Object answer(InvocationOnMock invocation)
+				{
+				
+					ScenarioType theScenario = 	(ScenarioType) model.getSimulations().firstElement();
+
+					// better wrap it
+					ScenarioLayer sl = new ScenarioLayer();
+					sl.setScenario(theScenario);
+
+					ScenarioWrapper sw = new ScenarioWrapper(pres, sl);
+
+					// tell it about any backdrop data
+					Layer theBackdrop = theScenario.getBackdrop();
+					if (theBackdrop != null)
+						sw.addThisLayer(theBackdrop);
+
+					// also tell it about any observers
+					sw.fireNewController();
+
+					pres.selectThis(sw);
+					return null;
+				}
+			}).when(display).selectFirstRow();
 
 			pres.handleTheseFiles(new String[]
 			{ scenarioPath, controlPath });
@@ -747,7 +782,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// ok, check the display got set
 			verify(display).setControlName("trial1.xml");
 			verify(display).setScenarioName("trial1.asset");
-			verify(display, times(2)).activate();
+			verify(display).activate();
 			verify(display).clearScenarios();
 		}
 
