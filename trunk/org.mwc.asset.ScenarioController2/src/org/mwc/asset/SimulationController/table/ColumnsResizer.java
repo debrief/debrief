@@ -65,6 +65,7 @@ public class ColumnsResizer
 			}
 		}
 
+
 		myTableWidth = myTable.getClientArea().width;
 
 		int totalWidth;
@@ -76,6 +77,9 @@ public class ColumnsResizer
 		}
 		else
 		{
+			// just check we haven't been collapsed
+			if (myUserTableWidth == 0)
+				return;
 			totalWidth = myUserTotalWidth * myTableWidth / myUserTableWidth;
 		}
 		totalWidth -= myFixedColumnsWidth;
