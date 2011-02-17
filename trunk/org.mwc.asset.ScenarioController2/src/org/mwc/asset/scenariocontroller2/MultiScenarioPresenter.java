@@ -1,5 +1,6 @@
 package org.mwc.asset.scenariocontroller2;
 
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -98,20 +99,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 * @return
 		 */
 		UIDisplay getUI();
-
-		// /**
-		// * set the enabled state of the generate button
-		// *
-		// * @param b
-		// */
-		// void setGenerateState(boolean b);
-		//
-		// /**
-		// * set the enabled state of the run button
-		// *
-		// * @param b
-		// */
-		// void setRunState(boolean b);
 
 		/**
 		 * update the list of scenarios
@@ -252,8 +239,17 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 		};
 
-		_myDisplay.runThisJob(theJob);
+		runThisJob(theJob);
 
+	}
+
+	/** factor out how we actually run the job, so we can test it more easily
+	 * 
+	 * @param theJob
+	 */
+	protected void runThisJob(JobWithProgress theJob)
+	{
+		_myDisplay.runThisJob(theJob);
 	}
 
 	@Override
@@ -329,9 +325,13 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 			else
 			{
-				_myDisplay.getUI().setGenerateEnabled(false);
-				_myDisplay.getUI().setRunAllEnabled(true);
+				// we don't need to generate, just put the scenario in there.
+				generateScenarios();
+				
+				// we've only got one scenario - so select it.
+				
 			}
+			
 		}
 		catch (FileNotFoundException e)
 		{
@@ -451,7 +451,20 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = new MultiScenarioCore();
-			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model){
+
+				@Override
+				protected void runThisJob(JobWithProgress theJob)
+				{
+					ASSETProgressMonitor monitor = new ASSETProgressMonitor(){
+						public void beginTask(String name, int totalWork)
+						{
+						}
+						public void worked(int work)
+						{
+						}};
+					theJob.run(monitor);
+				}};
 			
 
 			// just add support for a couple of methods that we need to work
@@ -459,18 +472,19 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 					new File("results"));
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
-
+			
 			pres.handleTheseFiles(new String[]{scenarioPath, controlPath});
 			
 			// check scenarios cleared
 			verify(display).clearScenarios();
 			
-			// check the UI is correctly enabled
-//			verify(ui).setInitEnabled(true);
-//			verify(ui).setStepEnabled(false);
-//			verify(ui).setPlayEnabled(false);
+			// check the list of scenarios got set
+			verify(display).setScenarios((MultiScenarioCore) anyObject());
 			
-// TODO: test the single run steps			
+			// check the UI is correctly enabled
+			verify(ui).setInitEnabled(true);
+			verify(ui).setStepEnabled(false);
+			verify(ui).setPlayEnabled(false);
 		}
 
 		public void testRealDataMultiPart()
