@@ -95,6 +95,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		 */
 		public void setTime(String time);
 
+		/** indicate what the label is on the play button
+		 * 
+		 * @param text
+		 */
+		public  void setPlayLabel(String text);
+
 	}
 
 	/**
@@ -751,6 +757,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	public UIDisplay getUI()
 	{
 		return _myUI;
+	}
+
+	@Override
+	public void selectFirstRow()
+	{
+		_simTable.selectFirstRow();
 	}
 
 }

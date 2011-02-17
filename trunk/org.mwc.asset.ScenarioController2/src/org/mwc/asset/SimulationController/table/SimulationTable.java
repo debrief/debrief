@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.mwc.asset.scenariocontroller2.Activator;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
@@ -437,66 +438,91 @@ public class SimulationTable
 		myTableCursor = new TableCursor(getTable(), SWT.NONE);
 		myTableCursor.addListener(SWT.Selection, new Listener()
 		{
-
 			public void handleEvent(Event event)
 			{
 				getTable().setSelection(myTableCursor.getRow());
 				ISimulation theSim = (ISimulation) myTableCursor.getRow().getData();
 
-				// hmm, is this a data column?
-				Object newSel = getColumnData(
-						getTable().getColumn(myTableCursor.getColumn())).getSelection(
-						theSim, myInput.getAttributes());
+				fireNewSelection(theSim);
+			}
+		});
+	}
 
-				StructuredSelection strSel = null;
+	protected void fireNewSelection(ISimulation selection)
+	{
 
-				if (newSel instanceof CoreScenario)
+		// hmm, is this a data column?
+		Object newSel = getColumnData(
+				getTable().getColumn(myTableCursor.getColumn())).getSelection(
+				selection, myInput.getAttributes());
+
+		StructuredSelection strSel = null;
+
+		if (newSel instanceof CoreScenario)
+		{
+			ScenarioType theScenario = (ScenarioType) newSel;
+
+			// better wrap it
+			ScenarioLayer sl = new ScenarioLayer();
+			sl.setScenario(theScenario);
+
+			// right, do we have a wrapper for this object. we cache them so we
+			// aren't always changing
+			ScenarioWrapper sw = _wrappedScenarios.get(theScenario);
+			if (sw == null)
+			{
+				sw = new ScenarioWrapper(_myPresenter, sl);
+
+				// tell it about any backdrop data
+				Layer theBackdrop = theScenario.getBackdrop();
+				if (theBackdrop != null)
+					sw.addThisLayer(theBackdrop);
+
+				_wrappedScenarios.put(theScenario, sw);
+
+				// also tell it about any observers
+				sw.fireNewController();
+
+			}
+
+			// ok, now wrap it as an editable
+			EditableWrapper ew = new EditableWrapper(sw);
+
+			// and as a selection
+			strSel = new StructuredSelection(ew);
+		}
+		else if (newSel instanceof IAttribute)
+		{
+			IAttribute attr = (IAttribute) newSel;
+
+			// ok, create indexed attributed
+			IndexedAttribute indexed = new IndexedAttribute(selection, attr);
+
+			// better wrap it
+			strSel = new StructuredSelection(indexed);
+		}
+
+		if (strSel != null)
+		{
+			setSelection(strSel);
+		}
+	}
+
+	public void selectFirstRow()
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				// do we have data?
+				if (getTable().getData() != null)
 				{
-					ScenarioType theScenario = (ScenarioType) newSel;
-
-					// better wrap it
-					ScenarioLayer sl = new ScenarioLayer();
-					sl.setScenario(theScenario);
-
-					// right, do we have a wrapper for this object. we cache them so we
-					// aren't always changing
-					ScenarioWrapper sw = _wrappedScenarios.get(theScenario);
-					if (sw == null)
-					{
-						sw = new ScenarioWrapper(_myPresenter, sl);
-
-						// tell it about any backdrop data
-						Layer theBackdrop = theScenario.getBackdrop();
-						if (theBackdrop != null)
-							sw.addThisLayer(theBackdrop);
-
-						_wrappedScenarios.put((ScenarioType) theSim, sw);
-
-						// also tell it about any observers
-						sw.fireNewController();
-
-					}
-
-					// ok, now wrap it as an editable
-					EditableWrapper ew = new EditableWrapper(sw);
-
-					// and as a selection
-					strSel = new StructuredSelection(ew);
-				}
-				else if (newSel instanceof IAttribute)
-				{
-					IAttribute attr = (IAttribute) newSel;
-
-					// ok, create indexed attributed
-					IndexedAttribute indexed = new IndexedAttribute(theSim, attr);
-
-					// better wrap it
-					strSel = new StructuredSelection(indexed);
-				}
-
-				if (strSel != null)
-				{
-					setSelection(strSel);
+					getTable().select(0);
+					TableItem fRow = getTable().getItem(0);
+					Object item = fRow.getData();
+					fireNewSelection((ISimulation) item);
 				}
 			}
 		});

@@ -66,7 +66,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	private Font _timeFont;
 	private Color _timeFore;
 	private Color _timeBack;
-	
+
 	/**
 	 * Create the composite.
 	 * 
@@ -180,63 +180,135 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	}
 
 	@Override
-	public void setScenario(String name)
+	public void setScenario(final String name)
 	{
-		scenarioVal.setText(name);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				scenarioVal.setText(name);
+			}
+		});
 	}
 
 	@Override
-	public void setControl(String name)
+	public void setControl(final String name)
 	{
-		controlVal.setText(name);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				controlVal.setText(name);
+			}
+		});
 	}
 
 	@Override
-	public void addGenerateListener(SelectionListener listener)
+	public void addGenerateListener(final SelectionListener listener)
 	{
-		btnGenerate.addSelectionListener(listener);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnGenerate.addSelectionListener(listener);
+			}
+		});
 	}
 
 	@Override
-	public void addRunAllListener(SelectionListener listener)
+	public void addRunAllListener(final SelectionListener listener)
 	{
-		btnRunAll.addSelectionListener(listener);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnRunAll.addSelectionListener(listener);
+			}
+		});
 	}
 
 	@Override
-	public void setRunAllEnabled(boolean b)
+	public void setRunAllEnabled(final boolean b)
 	{
-		btnRunAll.setEnabled(b);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnRunAll.setEnabled(b);
+			}
+		});
 	}
 
 	@Override
-	public void setGenerateEnabled(boolean b)
+	public void setGenerateEnabled(final boolean b)
 	{
-		btnGenerate.setEnabled(b);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnGenerate.setEnabled(b);
+			}
+		});
 	}
 
 	@Override
-	public void setInitEnabled(boolean enabled)
+	public void setInitEnabled(final boolean enabled)
 	{
-		btnInit.setEnabled(enabled);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnInit.setEnabled(enabled);
+			}
+		});
 	}
 
 	@Override
-	public void setStepEnabled(boolean enabled)
+	public void setStepEnabled(final boolean enabled)
 	{
-		btnStep.setEnabled(enabled);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnStep.setEnabled(enabled);
+			}
+		});
 	}
 
 	@Override
-	public void setPlayEnabled(boolean enabled)
+	public void setPlayEnabled(final boolean enabled)
 	{
-		btnPlay.setEnabled(enabled);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnPlay.setEnabled(enabled);
+			}
+		});
 	}
 
 	@Override
-	public void setTime(String time)
+	public void setPlayLabel(final String text)
 	{
-		lblTime.setText(time);
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				btnPlay.setText(text);
+			}
+		});
+	}
+
+	@Override
+	public void setTime(final String time)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{
+				lblTime.setText(time);
+			}
+		});
 	}
 
 }
