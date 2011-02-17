@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
-		<MultiScenarioGenerator Number="100" NameTemplate="ForceProt_">
+		<MultiScenarioGenerator Number="5" NameTemplate="ForceProt_">
 			<VarianceList>
 				<Variance name="Vary the search speed" id="//Wander[@Name='Count fishing vessels']/Speed">
 					<Attribute name="Value">
