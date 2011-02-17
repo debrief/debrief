@@ -1,9 +1,15 @@
 package org.mwc.asset.scenariocontroller2;
 
+import static org.mockito.Mockito.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import junit.framework.TestCase;
+
+import org.junit.Test;
 
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
@@ -11,11 +17,13 @@ import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
+import ASSET.Util.XML.ScenarioHandler;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 
 public class MultiScenarioPresenter extends CoreControllerPresenter
 {
+
 	/**
 	 * package up an operation with a progress monitor
 	 * 
@@ -98,40 +106,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		void setScenarios(MultiScenarioCore _myModel);
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		@SuppressWarnings("synthetic-access")
-		public final void testRelativePathMethod()
-		{
-			super.assertEquals("failed to recognise drive", false,
-					isRelativePath(new File("c:\\test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("\\test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("\\\\test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("//test.rep")));
-			super.assertEquals("failed to root designator", false,
-					isRelativePath(new File("////test.rep")));
-			super.assertEquals("failed to recognise absolute ref", true,
-					isRelativePath(new File("test.rep")));
-			super.assertEquals("failed to recognise relative ref", true,
-					isRelativePath(new File("./test.rep")));
-			super.assertEquals("failed to recognise parent ref", true,
-					isRelativePath(new File("../test.rep")));
-		}
-	}
-
 	/**
 	 * our data model
 	 * 
@@ -180,7 +154,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	}
 
-	private void controllerAssigned(String controlFile)
+	protected void controllerAssigned(String controlFile)
 	{
 		// ok, forget any existing observers
 		ditchObservers();
@@ -318,22 +292,25 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 				if (firstNode != null)
 				{
-					if (firstNode.equals("Scenario"))
+					// get the last component of the filename
+					String fName = new File(thisName).getName();
+
+					if (firstNode.equals(ScenarioHandler.type))
 					{
 						// remember it
 						_scenarioFileName = thisName;
 
 						// set the filename
-						_myDisplay.setScenarioName(new File(thisName).getName());
+						_myDisplay.setScenarioName(fName);
 
 					}
-					else if (firstNode.equals("ScenarioController"))
+					else if (firstNode.equals(ScenarioControllerHandler.type))
 					{
 						// remember it
 						_controlFileName = thisName;
 
 						// show it
-						_myDisplay.setControlName(new File(thisName).getName());
+						_myDisplay.setControlName(fName);
 
 						// now sort out the controller data
 						controllerAssigned(_controlFileName);
@@ -388,6 +365,152 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 		};
 		doRun.start();
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public static class TestMe extends TestCase
+	{
+
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		protected static String _controlfile;
+
+		public TestMe(final String val)
+		{
+			super(val);
+		}
+
+		@SuppressWarnings("synthetic-access")
+		public final void testRelativePathMethod()
+		{
+			MultiScenarioDisplay mockDisplay = mock(MultiScenarioDisplay.class);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(mockDisplay,
+					null);
+
+			super.assertEquals("failed to recognise drive", false,
+					pres.isRelativePath(new File("c:\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					pres.isRelativePath(new File("\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					pres.isRelativePath(new File("\\\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					pres.isRelativePath(new File("//test.rep")));
+			super.assertEquals("failed to root designator", false,
+					pres.isRelativePath(new File("////test.rep")));
+			super.assertEquals("failed to recognise absolute ref", true,
+					pres.isRelativePath(new File("test.rep")));
+			super.assertEquals("failed to recognise relative ref", true,
+					pres.isRelativePath(new File("./test.rep")));
+			super.assertEquals("failed to recognise parent ref", true,
+					pres.isRelativePath(new File("../test.rep")));
+		}
+
+		@Test
+		public final void testHandleScenarioFile()
+		{
+			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			MultiScenarioCore model = mock(MultiScenarioCore.class);
+			MultiScenarioPresenter pres = new TestPresenter(display, model);
+
+			// ok, try for the scenario first
+			String[] files =
+			{ "somePath/filea.txt" };
+
+			pres.handleTheseFiles(files);
+
+			// ok, check the display got set
+			verify(display).setScenarioName("filea.txt");
+			verify(display).activate();
+
+			// aah, and check the control wasn't set
+			verify(display, never()).setControlName(anyString());
+		}
+
+		@Test
+		public final void testHandleControlFile()
+		{
+			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			MultiScenarioCore model = mock(MultiScenarioCore.class);
+			MultiScenarioPresenter pres = new TestPresenter(display, model);
+
+			// ok, try for the scenario first
+			String[] files =
+			{ "somePath/filec.txt" };
+
+			pres.handleTheseFiles(files);
+
+			// ok, check the display got set
+			verify(display).setControlName("filec.txt");
+			verify(display).activate();
+
+			// and the scenario wasn't set
+			verify(display, never()).setScenarioName(anyString());
+		}
+
+		@Test
+		public final void testHandleBothFiles()
+		{
+			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			MultiScenarioCore model = mock(MultiScenarioCore.class);
+			MultiScenarioPresenter pres = new TestPresenter(display, model);
+
+			// ok, try for the scenario first
+			String[] files =
+			{ "somePath/filec.txt", "somePath/filea.txt" };
+
+			pres.handleTheseFiles(files);
+
+			// ok, check the display got set
+			verify(display).setControlName("filec.txt");
+			verify(display).setScenarioName("filea.txt");
+			verify(display).activate();
+		}
+
+		protected static class TestPresenter extends MultiScenarioPresenter
+		{
+			public TestPresenter(MultiScenarioDisplay display, MultiScenarioCore model)
+			{
+				super(display, model);
+			}
+
+			@Override
+			protected String getFirstNodeName(String theFile)
+			{
+				String res;
+				if (theFile.contains("filea"))
+					res = ScenarioHandler.type;
+				else
+					res = ScenarioControllerHandler.type;
+				return res;
+			}
+
+			@Override
+			protected void controllerAssigned(String controlFile)
+			{
+				_controlfile = controlFile;
+			}
+
+		}
+
+		public void testReloadDatafiles()
+		{
+			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			MultiScenarioCore model = mock(MultiScenarioCore.class);
+			MultiScenarioPresenter pres = new TestPresenter(display, model);
+			pres._controlFileName = "somePath/filec.txt";
+			pres._scenarioFileName = "somePath/filea.txt";
+
+			// ok, try for the scenario first
+			pres.reloadDataFiles();
+
+			// ok, check the display got set
+			verify(display).setControlName("filec.txt");
+			verify(display).setScenarioName("filea.txt");
+			verify(display, times(2)).activate();
+		}
+
 	}
 
 }
