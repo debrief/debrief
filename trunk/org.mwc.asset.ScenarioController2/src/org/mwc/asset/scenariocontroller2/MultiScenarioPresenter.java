@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -40,6 +42,10 @@ import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 
 public class MultiScenarioPresenter extends CoreControllerPresenter
 {
+
+	private static final String PLAY_LABEL = "Play";
+
+	private static final String PAUSE_LABEL = "Pause";
 
 	/**
 	 * package up an operation with a progress monitor
@@ -120,6 +126,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 * @param _myModel
 		 */
 		void setScenarios(MultiScenarioCore _myModel);
+
+		public void selectFirstRow();
 	}
 
 	/**
@@ -145,6 +153,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 * 
 	 */
 	private ScenarioSteppedListener _stepListener;
+
+	private SimpleDateFormat _format = new SimpleDateFormat("HH:mm:ss");
 
 	public MultiScenarioPresenter(MultiScenarioDisplay display,
 			MultiScenarioCore model)
@@ -219,12 +229,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
-
-			@Override
 			public void run()
 			{
-				String timeStr = MWC.Utilities.TextFormatting.FormatRNDateTime
-						.toShortString(newTime);
+				String timeStr = _format.format(new Date(newTime));
 				_myDisplay.getUI().setTime(timeStr);
 			}
 		});
@@ -242,6 +249,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		// ok, remember the new one
 		_currentScen = wrap;
 
+		_currentScen.getScenario().addScenarioSteppedListener(_stepListener);
+
 		Display.getDefault().asyncExec(new Runnable()
 		{
 
@@ -254,8 +263,12 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				newTime(scen.getTime());
 
 				// now look at the state
-
-				// TODO: carry on with state checking
+				String playLabel;
+				if (scen.isRunning())
+					playLabel = PAUSE_LABEL;
+				else
+					playLabel = PLAY_LABEL;
+				_myDisplay.getUI().setPlayLabel(playLabel);
 
 			}
 		});
@@ -266,6 +279,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 		try
 		{
+			// start off by ditching the existing list
+			_myDisplay.clearScenarios();
+			
 			// hmm, check what type of control file it is
 			String controlType = getFirstNodeName(controlFile);
 
@@ -307,8 +323,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				}
 
 			}
-			// get the ui to update itself
-			_myDisplay.clearScenarios();
 		}
 		catch (Exception e)
 		{
@@ -334,21 +348,19 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				// and sort out the observers
 				_myModel.prepareControllers(_scenarioController, montor, null);
 
-				Display.getDefault().asyncExec(new Runnable()
-				{
+				// ok, now give the scenarios to the multi scenario table (in the UI
+				// thread
+				_myDisplay.setScenarios(_myModel);
+				
+				// also clear the timer
+				_myDisplay.getUI().setTime("--:--:--");
 
-					@Override
-					public void run()
-					{
-						// ok, now give the scenarios to the multi scenario table (in the UI
-						// thread
-						_myDisplay.setScenarios(_myModel);
-
-						// and set the button states
-						_myDisplay.getUI().setGenerateEnabled(false);
-						_myDisplay.getUI().setRunAllEnabled(true);
-					}
-				});
+				// and set the button states
+				_myDisplay.getUI().setGenerateEnabled(false);
+				_myDisplay.getUI().setRunAllEnabled(true);
+				
+				// lastly, select the first itme
+				_myDisplay.selectFirstRow();
 
 			}
 		};
@@ -440,11 +452,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 			else
 			{
-				// we don't need to generate, just put the scenario in there.
+				// there's only one scenario - go ahead with the generation
 				generateScenarios();
-
-				// we've only got one scenario - so select it.
-
 			}
 
 		}
@@ -458,12 +467,21 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	@Override
 	public void reloadDataFiles()
 	{
-		// let the parent do it's stuff
-		super.reloadDataFiles();
+		// ok, clear the file paths, so we only do generate once they're both ready
+		String safeControl = _controlFileName;
+		String safeScenario = _scenarioFileName;
+
+		// ok, now we've got a safe copy, clear the stored values (so we only do init once they're both read in)
+		_scenarioFileName = null;
+		_controlFileName = null;
+		_currentScen = null;
+		_scenarioController = null;
 
 		// and clear the list of scenarios
 		_myDisplay.clearScenarios();
 
+		// let the parent do it's stuff
+		handleTheseFiles(new String[]{safeControl, safeScenario});
 	}
 
 	protected void runScenarios()
