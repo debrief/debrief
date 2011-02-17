@@ -174,9 +174,13 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			public void selectionChanged(SelectionChangedEvent event)
 			{
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				EditableWrapper ed = (EditableWrapper) sel.getFirstElement();
-				ScenarioWrapper wrapped = (ScenarioWrapper) ed.getEditable();
-				selectThis(wrapped);
+				Object firstEle = sel.getFirstElement();
+				if (firstEle instanceof EditableWrapper)
+				{
+					EditableWrapper ed = (EditableWrapper) sel.getFirstElement();
+					ScenarioWrapper wrapped = (ScenarioWrapper) ed.getEditable();
+					selectThis(wrapped);
+				}
 			}
 		});
 
@@ -281,7 +285,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		{
 			// start off by ditching the existing list
 			_myDisplay.clearScenarios();
-			
+
 			// hmm, check what type of control file it is
 			String controlType = getFirstNodeName(controlFile);
 
@@ -351,14 +355,14 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				// ok, now give the scenarios to the multi scenario table (in the UI
 				// thread
 				_myDisplay.setScenarios(_myModel);
-				
+
 				// also clear the timer
 				_myDisplay.getUI().setTime("--:--:--");
 
 				// and set the button states
 				_myDisplay.getUI().setGenerateEnabled(false);
 				_myDisplay.getUI().setRunAllEnabled(true);
-				
+
 				// lastly, select the first itme
 				_myDisplay.selectFirstRow();
 
@@ -471,7 +475,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		String safeControl = _controlFileName;
 		String safeScenario = _scenarioFileName;
 
-		// ok, now we've got a safe copy, clear the stored values (so we only do init once they're both read in)
+		// ok, now we've got a safe copy, clear the stored values (so we only do
+		// init once they're both read in)
 		_scenarioFileName = null;
 		_controlFileName = null;
 		_currentScen = null;
@@ -481,7 +486,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		_myDisplay.clearScenarios();
 
 		// let the parent do it's stuff
-		handleTheseFiles(new String[]{safeControl, safeScenario});
+		handleTheseFiles(new String[]
+		{ safeControl, safeScenario });
 	}
 
 	protected void runScenarios()
