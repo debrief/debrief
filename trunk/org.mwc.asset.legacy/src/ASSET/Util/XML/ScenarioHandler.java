@@ -30,7 +30,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	CoreScenario _theScenario;
 	Layers _myLayers = null;
 
-  static final public String SCENARIO_NAME = "Scenario";
+  static final public String type = "Scenario";
   static final private String TIME = "StartTime";
   private static final String NAME_ATTRIBUTE = "Name";
   private static final String CASE_ATTRIBUTE = "Case";
@@ -46,7 +46,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   public ScenarioHandler(final ASSET.Scenario.CoreScenario theScenario, Layers theLayers)
   {
     // inform our parent what type of class we are
-    super(SCENARIO_NAME);
+    super(type);
 
     _theScenario = theScenario;
     _myLayers = theLayers;
@@ -151,7 +151,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
   public static org.w3c.dom.Element exportScenario(final ScenarioType scenario, Layer theDecorations, final org.w3c.dom.Document doc)
   {
-    final org.w3c.dom.Element scen = doc.createElement(SCENARIO_NAME);
+    final org.w3c.dom.Element scen = doc.createElement(type);
     SimpleDateFormat xmlFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     xmlFormatter.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     scen.setAttribute("Created",xmlFormatter.format(new java.util.Date()));

@@ -270,7 +270,7 @@ public final class ScenarioGenerator
 				String asString = ScenarioGenerator.writeToString(thisDoc);
 
 				NodeList list = thisDoc
-						.getElementsByTagName(ScenarioHandler.SCENARIO_NAME);
+						.getElementsByTagName(ScenarioHandler.type);
 				Element scen = (Element) list.item(0);
 				String scen_name = scen
 						.getAttribute(MultiScenarioGenerator.SCENARIO_NAME_ATTRIBUTE);

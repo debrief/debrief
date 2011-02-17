@@ -494,7 +494,7 @@ public final class MultiScenarioGenerator
 	private void renameScenario(Document newDoc, int index)
 	{
 		// get the scenario object
-		NodeList list = newDoc.getElementsByTagName(ScenarioHandler.SCENARIO_NAME);
+		NodeList list = newDoc.getElementsByTagName(ScenarioHandler.type);
 		Element scen = (Element) list.item(0);
 		scen.setAttribute(SCENARIO_NAME_ATTRIBUTE, newScenarioName(index));
 	}
@@ -510,7 +510,7 @@ public final class MultiScenarioGenerator
 	private static void setScenarioCase(Document newDoc, String caseId)
 	{
 		// get the scenario object
-		NodeList list = newDoc.getElementsByTagName(ScenarioHandler.SCENARIO_NAME);
+		NodeList list = newDoc.getElementsByTagName(ScenarioHandler.type);
 		Element scen = (Element) list.item(0);
 		scen.setAttribute(SCENARIO_CASE_ATTRIBUTE, caseId);
 	}
