@@ -6,7 +6,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.mwc.asset.scenariocontroller2.CoreControllerPresenter;
+import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 
@@ -78,8 +78,8 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private CoreControllerPresenter _thePresenter;
-	private ControllerWrapper _theController;
+	private MultiScenarioPresenter _thePresenter;
+	private ControllerWrapper _controlWrapper;
 
 	private ScenarioLayer _scenLayer;
 
@@ -87,7 +87,7 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 
 	private PropertyChangeSupport _pSupport;
 
-	public ScenarioWrapper(CoreControllerPresenter scenarioController)
+	public ScenarioWrapper(MultiScenarioPresenter scenarioController)
 	{
 		this(scenarioController, new ScenarioLayer());
 	}
@@ -98,14 +98,14 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 	 * @param scenarioController
 	 * @param layer
 	 */
-	public ScenarioWrapper(CoreControllerPresenter scenarioController,
+	public ScenarioWrapper(MultiScenarioPresenter scenarioController,
 			ScenarioLayer layer)
 	{
 		_thePresenter = scenarioController;
-		_theController = new ControllerWrapper();
+		_controlWrapper = new ControllerWrapper();
 		_scenLayer = layer;
 		this.addThisLayer(_scenLayer);
-		this.addThisLayer(_theController);
+		this.addThisLayer(_controlWrapper);
 	}
 
 	public void addStoppedListener(PropertyChangeListener listener)
@@ -162,7 +162,7 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 		while (layers.hasMoreElements())
 		{
 			Layer thisLayer = (Layer) layers.nextElement();
-			if ((thisLayer == _scenLayer) || (thisLayer == _theController))
+			if ((thisLayer == _scenLayer) || (thisLayer == _controlWrapper))
 			{
 				// ok, leave it
 			}
@@ -182,7 +182,7 @@ public class ScenarioWrapper extends Layers implements LiveScenario
 
 	public void fireNewController()
 	{
-		_theController.setObservers(_thePresenter.getObservers());
+		_controlWrapper.setObservers(_thePresenter.getObservers());
 		this.fireExtended();
 	}
 

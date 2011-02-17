@@ -1,15 +1,20 @@
 package org.mwc.asset.scenariocontroller2;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
@@ -83,20 +88,26 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 * @param theJob
 		 */
 		void runThisJob(JobWithProgress theJob);
-
-		/**
-		 * set the enabled state of the generate button
+		
+		/** get the detailed display components
 		 * 
-		 * @param b
+		 * @return
 		 */
-		void setGenerateState(boolean b);
+		UIDisplay getUI();
 
-		/**
-		 * set the enabled state of the run button
-		 * 
-		 * @param b
-		 */
-		void setRunState(boolean b);
+//		/**
+//		 * set the enabled state of the generate button
+//		 * 
+//		 * @param b
+//		 */
+//		void setGenerateState(boolean b);
+//
+//		/**
+//		 * set the enabled state of the run button
+//		 * 
+//		 * @param b
+//		 */
+//		void setRunState(boolean b);
 
 		/**
 		 * update the list of scenarios
@@ -156,8 +167,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	protected void controllerAssigned(String controlFile)
 	{
-		// ok, forget any existing observers
-		ditchObservers();
 
 		try
 		{
@@ -166,8 +175,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 			if (controlType == StandaloneObserverListHandler.type)
 			{
-				_theObservers = ASSETReaderWriter.importThisObserverList(controlFile,
-						new java.io.FileInputStream(controlFile));
 			}
 			else if (controlType == ScenarioControllerHandler.type)
 			{
@@ -175,7 +182,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				_scenarioController = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
 
-				_theObservers = _scenarioController.observerList;
+				Vector<ScenarioObserver> theObservers = _scenarioController.observerList;
 
 				// since we have a results container - we have enough information to set
 				// the output files
@@ -191,7 +198,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 				}
 
-				Enumeration<ScenarioObserver> numer = _theObservers.elements();
+				Enumeration<ScenarioObserver> numer = theObservers.elements();
 				while (numer.hasMoreElements())
 				{
 					ScenarioObserver thisS = numer.nextElement();
@@ -210,13 +217,16 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			final boolean isMulti = CommandLine
 					.checkIfGenerationRequired(controlFile);
 
-			// setup the listeners if we're just in a single scenario run
-			if (!isMulti)
+			// get the UI ready
+			if (isMulti)
 			{
-				if (_theObservers != null)
-				{
-					loadThisObserverList(controlFile, _theObservers);
-				}
+				_myDisplay.getUI().setGenerateEnabled(true);
+				_myDisplay.getUI().setRunAllEnabled(false);
+			}
+			else
+			{
+				_myDisplay.getUI().setGenerateEnabled(false);
+				_myDisplay.getUI().setRunAllEnabled(false);
 			}
 
 			// get the ui to update itself
@@ -228,26 +238,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		}
 	}
 
-	/**
-	 * tell the observers to stop listening to the subject scenario, and then
-	 * ditch them
-	 * 
-	 */
-	private void ditchObservers()
-	{
-		// and ditch any existing observers
-		if (_theObservers != null)
-		{
-			// and ditch the list
-			_theObservers.removeAllElements();
-		}
-	}
-
 	protected void generateScenarios()
 	{
 		// disable the genny button, until it's done.
-		_myDisplay.setGenerateState(false);
-
+		_myDisplay.getUI().setGenerateEnabled(false);
+		
 		JobWithProgress theJob = new JobWithProgress()
 		{
 
@@ -266,8 +261,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				_myDisplay.setScenarios(_myModel);
 
 				// and set the button states
-				_myDisplay.setGenerateState(false);
-				_myDisplay.setRunState(true);
+				_myDisplay.getUI().setGenerateEnabled(false);
+				_myDisplay.getUI().setRunAllEnabled(true);
 			}
 		};
 
@@ -320,20 +315,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		}
 		// lastly, make our view the current selection
 		_myDisplay.activate();
-	}
-
-	private void loadThisObserverList(String controlFile,
-			Vector<ScenarioObserver> theObservers) throws FileNotFoundException
-	{
-		// add these observers to our scenario
-		for (int i = 0; i < theObservers.size(); i++)
-		{
-			// get the next observer
-			ScenarioObserver observer = theObservers.elementAt(i);
-
-			// and add it to our list
-			theObservers.add(observer);
-		}
 	}
 
 	@Override
@@ -427,6 +408,43 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// aah, and check the control wasn't set
 			verify(display, never()).setControlName(anyString());
 		}
+		
+		public void testRealDataMultiPart()
+		{
+      final String scenarioPath = "src/org/mwc/asset/scenariocontroller2/tests/trial1.asset";
+      final String controlPath = "src/org/mwc/asset/scenariocontroller2/tests/trial_multi_part.xml";
+      
+      // check we can see the files
+      assertTrue("can't find scenario", new File(scenarioPath).exists());
+      assertTrue("can't find control", new File(controlPath).exists());
+      
+			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			MultiScenarioCore model = new MultiScenarioCore();
+			UIDisplay ui = mock(UIDisplay.class);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
+			
+			// just add support for a couple of methods that we need to work
+			when(display.getProjectPathFor(new File("results"))).thenReturn(new File("results"));
+			when(display.getUI()).thenReturn(ui);
+      
+			pres.handleTheseFiles(new String[]{scenarioPath, controlPath});
+			
+			// ok, check they loaded
+			verify(display).setScenarioName(anyString());
+			verify(display).setControlName(anyString());
+			
+			// and that the UI looks right
+			verify(ui).setGenerateEnabled(true);
+			verify(ui).setRunAllEnabled(false);
+			
+			// and check the controller bits are done
+			assertNotNull("controller loaded", pres._scenarioController);
+			verify(display).activate();
+			
+			// ok, go for the generate
+			pres.generateScenarios();
+			
+		}
 
 		@Test
 		public final void testHandleControlFile()
@@ -509,8 +527,14 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(display).setControlName("filec.txt");
 			verify(display).setScenarioName("filea.txt");
 			verify(display, times(2)).activate();
+			verify(display).clearScenarios();
 		}
 
+	}
+
+	public Vector<ScenarioObserver> getObservers()
+	{
+		return _myModel.getObservers();
 	}
 
 }

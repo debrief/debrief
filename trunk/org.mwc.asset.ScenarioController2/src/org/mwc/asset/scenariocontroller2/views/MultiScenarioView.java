@@ -49,7 +49,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.SimulationController.table.SimulationTable;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.asset.scenariocontroller2.CoreControllerPresenter;
 import org.mwc.asset.scenariocontroller2.CoreControllerPresenter.FilesDroppedListener;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.JobWithProgress;
@@ -75,6 +74,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	public static interface UIDisplay
 	{
 
+		public void setControl(String name);
+
 		public void setScenario(String name);
 
 		public Composite getMultiTableHolder();
@@ -82,12 +83,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		public void addGenerateListener(SelectionListener listener);
 
 		public void addRunAllListener(SelectionListener listener);
-
-		public void setControl(String name);
-
+		
 		public void setRunAllEnabled(boolean b);
 
 		public void setGenerateEnabled(boolean b);
+
 
 		public void setPlayEnabled(boolean enabled);
 
@@ -165,7 +165,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	private ISelection _currentSelection;
 	private Duration _myPendingStepSize;
 	private FilesDroppedListener _filesDroppedListener;
-	private CoreControllerPresenter _myPresenter;
+	private MultiScenarioPresenter _myPresenter;
 	private ManageMultiListener _multiHandler;
 
 	/**
@@ -760,6 +760,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				}
 			}
 		}
+	}
+
+	@Override
+	public UIDisplay getUI()
+	{
+		return _myUI;
 	}
 
 }

@@ -2,7 +2,6 @@ package org.mwc.asset.scenariocontroller2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -10,7 +9,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
 
 public abstract class CoreControllerPresenter
@@ -142,12 +140,6 @@ public abstract class CoreControllerPresenter
 	protected String _controlFileName;
 
 	/**
-	 * the custom set of observers
-	 * 
-	 */
-	protected Vector<ScenarioObserver> _theObservers;
-
-	/**
 	 * where we put our resutls
 	 * 
 	 */
@@ -173,11 +165,6 @@ public abstract class CoreControllerPresenter
 	public String getControlName()
 	{
 		return _controlFileName;
-	}
-
-	public Vector<ScenarioObserver> getObservers()
-	{
-		return _theObservers;
 	}
 
 	public String getScenarioName()
