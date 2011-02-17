@@ -13,29 +13,6 @@ import MWC.GenericData.*;
 public class TimeManager implements ControllableTime, TimeProvider
 {
 
-	/** marker interface for objects that don't have concept of forward/backward steps, 
-	 * but are just able to move forwards in step or play mode
-	 */
-	public static interface LiveScenario
-	{
-		/** event name for when this live scenario is complete
-		 * 
-		 */
-		public static final String FINISHED = "FINISHED";
-		
-		/** somebody wants to know when we finish
-		 * 
-		 * @param listener
-		 */
-		public void addStoppedListener(PropertyChangeListener listener);
-		
-		/** somebody doesn't want to know when we finish
-		 * 
-		 * @param listener
-		 */
-		public void removeStoppedListener(PropertyChangeListener listener);
-	}
-	
 	/**
 	 * manage all of the listeners, etc.
 	 */

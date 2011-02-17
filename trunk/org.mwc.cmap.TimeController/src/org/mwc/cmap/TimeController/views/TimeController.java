@@ -71,9 +71,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
@@ -346,39 +344,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
-
-		// sort out the live listener bits
-		_myStoppedListener = new PropertyChangeListener()
-		{
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				if (evt.getPropertyName() == TimeManager.LiveScenario.FINISHED)
-				{
-
-					Display.getDefault().asyncExec(new Runnable()
-					{
-						public void run()
-						{
-							// are we playing?
-							String playTool = _playButton.getToolTipText();
-							if (playTool.equals(PAUSE_TEXT))
-							{
-								if (!_wholePanel.isDisposed())
-								{
-									_playButton.setSelection(false);
-									_playListener.widgetSelected(null);
-									// better stop it
-									// stopPlaying();
-									System.err.println("play stopped");
-								}
-							}
-						}
-					});
-				}
-
-			}
-		};
-
 	}
 
 	private MWC.Utilities.Timer.Timer getTimer()
@@ -906,10 +871,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	protected TrackDataProvider _myTrackProvider;
 
-	protected LiveScenario _liveScenario;
-
-	protected PropertyChangeListener _myStoppedListener;
-
 	/**
 	 * the list of operations that the current plot wants us to display
 	 * 
@@ -959,46 +920,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
-
-		_myPartMonitor.addPartListener(TimeManager.LiveScenario.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						// ok, we can't control this in the normal way, do some control
-						// hiding
-						reformatUI(false);
-
-						// stop listening to the current one
-						if (_liveScenario != null)
-							_liveScenario.removeStoppedListener(_myStoppedListener);
-
-						// also register as a listener
-						_liveScenario = (LiveScenario) part;
-
-						_liveScenario.addStoppedListener(_myStoppedListener);
-
-					}
-				});
-
-		_myPartMonitor.addPartListener(TimeManager.LiveScenario.class,
-				PartMonitor.CLOSED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						// is it our scenario?
-						if (part == _liveScenario)
-						{
-							// stop listening to it
-							_liveScenario.removeStoppedListener(_myStoppedListener);
-
-							// clear the pointer
-							_liveScenario = null;
-						}
-					}
-				});
 
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
