@@ -114,14 +114,10 @@ public class MultiScenarioCore implements ISimulationQue
 		return res;
 	}
 
-	public boolean isMultiScenario(String controlFile) throws FileNotFoundException
+	public boolean isMultiScenario(String controlFile)
+			throws FileNotFoundException
 	{
-		boolean res;
-		if ((_myGenny != null) && (_myGenny.isInitialised()))
-			return _myGenny.isMultiScenario();
-		else
-			res = CommandLine.isMultiScenarioFile(controlFile);
-		return res;
+		return CommandLine.isMultiScenarioFile(controlFile);
 	}
 
 	/**
@@ -229,17 +225,7 @@ public class MultiScenarioCore implements ISimulationQue
 			// and get going....
 			runner.run();
 
-			// ok, tell the observers it's time for bed
-			for (int i = 0; i < _allObservers.size(); i++)
-			{
-				CoreObserver thisObs = (CoreObserver) _allObservers.elementAt(i);
-
-				// go for it
-				thisObs.tearDown(runner.getScenario());
-			}
-
-			// and remove the observers
-			runner.clearObservers();
+			wrapper.terminate(_allObservers);
 
 			try
 			{
@@ -608,6 +594,23 @@ public class MultiScenarioCore implements ISimulationQue
 				// and add to the runner
 				commandLine.addObserver(thisObs);
 			}
+		}
+
+		public void terminate(Vector<ScenarioObserver> allObservers)
+		{
+
+			// ok, get the scenario, so we can set up our observers
+			for (int i = 0; i < allObservers.size(); i++)
+			{
+				CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
+
+				// and tear it down
+				thisObs.tearDown(scenario);
+			}
+
+			// and remove all the observers
+			commandLine.clearObservers();
+
 		}
 	}
 
