@@ -37,6 +37,7 @@ import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
+import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
@@ -212,7 +213,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				doRunAll();
 			}
 		});
-		
+
 		_myDisplay.getUI().addInitListener(new SelectionAdapter()
 		{
 			@Override
@@ -257,20 +258,40 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	protected void doPlay()
 	{
-		// TODO Auto-generated method stub
-		
+		_currentScen.getScenario().start();
 	}
 
 	protected void doStep()
 	{
-		// TODO Auto-generated method stub
-		
+		_currentScen.getScenario().step();
 	}
 
 	protected void doInit()
 	{
-		// TODO Auto-generated method stub
-		
+		if (_currentScen == null)
+		{
+			CorePlugin.logError(Status.ERROR,
+					"Should not be able to play, no scenario selected", null);
+			return;
+		}
+
+		// get the wrapped scenario
+		InstanceWrapper instance = _myModel.getWrapperFor(_currentScen
+				.getScenario());
+
+		if (instance == null)
+		{
+			CorePlugin.logError(Status.ERROR,
+					"Should not be able to play, no scenario not found", null);
+			return;
+		}
+
+		// set the listeners
+		instance.initialise(_myModel.getObservers());
+
+		_myDisplay.getUI().setInitEnabled(false);
+		_myDisplay.getUI().setStepEnabled(true);
+		_myDisplay.getUI().setPlayEnabled(true);
 	}
 
 	/**
@@ -352,7 +373,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 			catch (FileNotFoundException e)
 			{
-				CorePlugin.logError(Status.ERROR, "failed whilst loading control file", e);
+				CorePlugin.logError(Status.ERROR, "failed whilst loading control file",
+						e);
 			}
 
 			Vector<ScenarioObserver> theObservers = _scenarioController.observerList;
@@ -511,7 +533,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				// not multi run, disable the group buttons
 				_myDisplay.getUI().setGenerateEnabled(false);
 				_myDisplay.getUI().setRunAllEnabled(false);
-				
+
 				// there's only one scenario - go ahead with the generation
 				doGenerate();
 			}
