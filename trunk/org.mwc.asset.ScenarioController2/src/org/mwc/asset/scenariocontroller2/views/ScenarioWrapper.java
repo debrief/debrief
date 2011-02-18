@@ -78,11 +78,6 @@ public class ScenarioWrapper extends Layers
 
 	private ScenarioLayer _scenLayer;
 
-	public ScenarioWrapper(MultiScenarioPresenter scenarioController)
-	{
-		this(scenarioController, new ScenarioLayer());
-	}
-
 	/**
 	 * convenience method for when we have our own scenario layer
 	 * 

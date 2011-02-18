@@ -66,6 +66,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 	public static interface UIDisplay
 	{
+		public final String PLAY_LABEL = "Play";
+		public final String PAUSE_LABEL = "Pause";
 
 		public void setControl(String name);
 
@@ -194,8 +196,6 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 */
 	public MultiScenarioView()
 	{
-		// sort out the presenter
-		_myPresenter = new MultiScenarioPresenter(this, new MultiScenarioCore());
 	}
 
 	public void activate()
@@ -239,16 +239,10 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// ui update, put it in an async operation
 		// updating the text items has to be done in the UI thread. make it
 		// so
-		Display.getDefault().asyncExec(new Runnable()
+		Display.getDefault().syncExec(new Runnable()
 		{
 			public void run()
 			{
-				// ok, disable the run button,
-				_myUI.setRunAllEnabled(false);
-
-				// and now enable the genny button
-				_myUI.setGenerateEnabled(true);
-
 				// and clear the scenario table
 				_simTable.setInput(null);
 			}
@@ -330,8 +324,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// create our UI
 		_myUI = new UISkeleton2(parent, SWT.FILL);
 
-		// _myUI.getMultiTableHolder().setLayoutData(
-		// new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		// lastly, sort out the presenter (now we know our UI is ready to be called)
+		_myPresenter = new MultiScenarioPresenter(this, new MultiScenarioCore());
 
 		// and the table of scenarios
 		_simTable = new SimulationTable(_myUI.getMultiTableHolder(), _myPresenter);
@@ -355,6 +349,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// if we have any pending filenames, get them dropped
 		if (_myPendingFilenames != null)
 			_filesDroppedListener.filesDropped(_myPendingFilenames);
+
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)

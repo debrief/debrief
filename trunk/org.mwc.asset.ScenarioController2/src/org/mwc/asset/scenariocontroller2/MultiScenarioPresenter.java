@@ -34,7 +34,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import ASSET.ScenarioType;
-import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
@@ -51,10 +50,6 @@ import MWC.GUI.Layer;
 public class MultiScenarioPresenter extends CoreControllerPresenter
 {
 
-	private static final String PLAY_LABEL = "Play";
-
-	private static final String PAUSE_LABEL = "Pause";
-
 	/**
 	 * package up an operation with a progress monitor
 	 * 
@@ -64,27 +59,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	public static interface JobWithProgress
 	{
 		void run(ASSETProgressMonitor montor);
-	}
-
-	/**
-	 * objects that handle a series of runs
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static interface ManageMultiListener
-	{
-		/**
-		 * trigger scenario generation
-		 * 
-		 */
-		void doGenerate();
-
-		/**
-		 * trigger stepping through the scenarios
-		 * 
-		 */
-		void doRunAll();
 	}
 
 	/**
@@ -258,7 +232,20 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	protected void doPlay()
 	{
-		_currentScen.getScenario().start();
+		String newLabel;
+		ScenarioType scen = _currentScen.getScenario();
+		if (scen.isRunning())
+		{
+			newLabel = UIDisplay.PLAY_LABEL;
+			scen.pause();
+		}
+		else
+		{
+			newLabel = UIDisplay.PAUSE_LABEL;
+			scen.start();
+		}
+
+		_myDisplay.getUI().setPlayLabel(newLabel);
 	}
 
 	protected void doStep()
@@ -313,12 +300,18 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 	protected void selectThis(final ScenarioWrapper wrap)
 	{
+		// is this something we watch?
+
 		// is this the currently selected scenario
-		if (_currentScen != wrap)
+		if (_currentScen == wrap)
 		{
-			if (_currentScen != null)
-				_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
+			// yes - ignore the selection
+			return;
 		}
+
+		// do we already ahave a scenario
+		if (_currentScen != null)
+			_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
 
 		// ok, remember the new one
 		_currentScen = wrap;
@@ -338,15 +331,18 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 				// now look at the state
 				String playLabel;
-				if (scen.isRunning())
-					playLabel = PAUSE_LABEL;
+				boolean isRun = scen.isRunning();
+				
+				if(isRun)
+					playLabel = UIDisplay.PAUSE_LABEL;
 				else
-					playLabel = PLAY_LABEL;
+					playLabel = UIDisplay.PLAY_LABEL;
 				_myDisplay.getUI().setPlayLabel(playLabel);
 
-				_myDisplay.getUI().setInitEnabled(true);
-				_myDisplay.getUI().setPlayEnabled(false);
-				_myDisplay.getUI().setStepEnabled(false);
+				_myDisplay.getUI().setInitEnabled(!isRun);
+				_myDisplay.getUI().setPlayEnabled(isRun);
+				_myDisplay.getUI().setStepEnabled(isRun);
+
 
 			}
 		});
@@ -434,11 +430,21 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				// also clear the timer
 				_myDisplay.getUI().setTime("--:--:--");
 
+				// check if it's multi scenario..
 				// and set the button states
-				_myDisplay.getUI().setRunAllEnabled(true);
+				try
+				{
+					if (_myModel.isMultiScenario(_controlFileName))
+						_myDisplay.getUI().setRunAllEnabled(true);
+				}
+				catch (FileNotFoundException e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"failed whilst checking type of control file", e);
+				}
 
 				// lastly, select the first itme
-				_myDisplay.selectFirstRow();
+				// _myDisplay.selectFirstRow();
 
 			}
 		};
@@ -517,31 +523,35 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		if ((_controlFileName == null) || (_scenarioFileName == null))
 			return;
 
+		// right, the list of files has changed start off by disabling the single
+		// scenario buttons
+		_myDisplay.getUI().setInitEnabled(false);
+		_myDisplay.getUI().setStepEnabled(false);
+		_myDisplay.getUI().setPlayEnabled(false);
+
+		// also handle the scenario generation bits
 		try
 		{
-			// check if it's multi scenario..
-			boolean isMulti = CommandLine.checkIfGenerationRequired(_controlFileName);
-
-			// get the UI ready
-			if (isMulti)
+			if (_myModel.isMultiScenario(_controlFileName))
 			{
+				// yes, multi scenario - let the user choose when to generate
 				_myDisplay.getUI().setGenerateEnabled(true);
 				_myDisplay.getUI().setRunAllEnabled(false);
 			}
 			else
 			{
-				// not multi run, disable the group buttons
+				// not multi scenario, disable the generation buttons
 				_myDisplay.getUI().setGenerateEnabled(false);
 				_myDisplay.getUI().setRunAllEnabled(false);
 
 				// there's only one scenario - go ahead with the generation
 				doGenerate();
 			}
-
 		}
 		catch (FileNotFoundException e)
 		{
-			CorePlugin.logError(Status.ERROR, "whilst enabling model controls", e);
+			CorePlugin.logError(Status.ERROR,
+					"failed whilst checking type of control file", e);
 		}
 
 	}
@@ -559,9 +569,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		_controlFileName = null;
 		_currentScen = null;
 		_scenarioController = null;
-
-		// and clear the list of scenarios
-		_myDisplay.clearScenarios();
 
 		// let the parent do it's stuff
 		handleTheseFiles(new String[]

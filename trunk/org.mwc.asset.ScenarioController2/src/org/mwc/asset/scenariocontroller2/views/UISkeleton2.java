@@ -130,12 +130,15 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		btnInit = new Button(grpSelectedScenario, SWT.NONE);
 		btnInit.setText("Init");
+		btnInit.setEnabled(false);
 
 		btnPlay = new Button(grpSelectedScenario, SWT.NONE);
-		btnPlay.setText("Play");
+		btnPlay.setText(PLAY_LABEL);
+		btnPlay.setEnabled(false);
 
 		btnStep = new Button(grpSelectedScenario, SWT.NONE);
 		btnStep.setText("Step");
+		btnStep.setEnabled(false);
 
 		lblTime = new Label(grpSelectedScenario, SWT.NONE);
 		_timeFont = SWTResourceManager.getFont("Courier New", 11, SWT.BOLD);
