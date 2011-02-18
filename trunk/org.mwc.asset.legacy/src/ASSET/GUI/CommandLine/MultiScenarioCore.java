@@ -191,7 +191,6 @@ public class MultiScenarioCore implements ISimulationQue
 		// them
 		int ctr = 0;
 		ScenarioType oldScenario = null;
-		boolean firstRun = true;
 		for (Iterator<InstanceWrapper> iterator = _theScenarios.iterator(); iterator
 				.hasNext();)
 		{
