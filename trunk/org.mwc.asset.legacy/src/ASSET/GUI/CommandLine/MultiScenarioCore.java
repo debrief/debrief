@@ -572,7 +572,7 @@ public class MultiScenarioCore implements ISimulationQue
 		return _stateObserver;
 	}
 
-	protected static class InstanceWrapper
+	public static class InstanceWrapper
 	{
 		final ScenarioType scenario;
 		final CommandLine commandLine;
