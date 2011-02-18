@@ -3,6 +3,7 @@ package ASSET.GUI.CommandLine;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -110,6 +111,16 @@ public class MultiScenarioCore implements ISimulationQue
 		String res = _myGenny.createScenarios(scenario, control,
 				_myScenarioDocuments, pMon, outputDirectory);
 
+		return res;
+	}
+
+	public boolean isMultiScenario(String controlFile) throws FileNotFoundException
+	{
+		boolean res;
+		if ((_myGenny != null) && (_myGenny.isInitialised()))
+			return _myGenny.isMultiScenario();
+		else
+			res = CommandLine.isMultiScenarioFile(controlFile);
 		return res;
 	}
 

@@ -108,17 +108,16 @@ public final class ScenarioGenerator
 	{
 	}
 
-	/**
-	 * ************************************************************ member methods
-	 * *
+	/** load the two files, and generate the scenarios
 	 * 
+	 * @param templatePath
+	 * @param controlPath
+	 * @param results
 	 * @param mWrap
-	 *          *
 	 * @param outputDirectory
-	 *          TODO**********************************************************
+	 * @return
 	 */
-
-	public String createScenarios(String templatePath, String controlPath,
+		public String createScenarios(String templatePath, String controlPath,
 			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
 	{
 		Document theControlFile = null;
@@ -188,7 +187,6 @@ public final class ScenarioGenerator
 	 *          vector containing the new scenarios
 	 * @param mWrap
 	 * @param outputDirectory
-	 *          TODO
 	 * @return error message on failure, or null for success
 	 */
 	protected String doScenarioGeneration(Document template,
@@ -494,6 +492,21 @@ public final class ScenarioGenerator
 	// else
 	// return string;
 	// }
+	
+	public boolean isMultiParticipant()
+	{
+		return _participantGenny != null;
+	}
+	
+	public boolean isMultiScenario()
+	{
+		return _scenarioGenny != null;
+	}
+	
+	public boolean isInitialised()
+	{
+		return _controlDocument != null;
+	}
 
 	/**
 	 * read in the list of variances, and collate them into our list

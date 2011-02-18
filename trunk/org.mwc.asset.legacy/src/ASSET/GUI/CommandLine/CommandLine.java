@@ -17,7 +17,6 @@ import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.SupportTesting;
-import ASSET.Util.MonteCarlo.MultiParticipantGenerator;
 import ASSET.Util.MonteCarlo.MultiScenarioGenerator;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GenericData.WorldLocation;
@@ -564,7 +563,7 @@ public class CommandLine
       try
       {
         // see if it contains multi-scenario instructions
-        isMultiScenario = checkIfGenerationRequired(controlFile);
+        isMultiScenario = isMultiScenario(controlFile);
       }
       catch (FileNotFoundException e)
       {
@@ -624,13 +623,13 @@ public class CommandLine
     }
   }
   
-  public static boolean checkIfGenerationRequired(String controlFileName) throws FileNotFoundException
+  public static boolean isMultiScenarioFile(String controlFileName) throws FileNotFoundException
   {
   	File controlFile = new File(controlFileName);
-  	return checkIfGenerationRequired(controlFile);
+  	return isMultiScenario(controlFile);
   }
 
-  private static boolean checkIfGenerationRequired(File controlFile) throws FileNotFoundException
+  private static boolean isMultiScenario(File controlFile) throws FileNotFoundException
   {
     boolean multiScenario = false;
 
@@ -652,10 +651,6 @@ public class CommandLine
 
     // ok, now have a look inside it.
     if (str.indexOf(MultiScenarioGenerator.GENERATOR_TYPE) > 0)
-    {
-      multiScenario = true;
-    }
-    if (str.indexOf(MultiParticipantGenerator.GENERATOR_TYPE) > 0)
     {
       multiScenario = true;
     }
