@@ -38,6 +38,7 @@ import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
+import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
@@ -130,6 +131,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	private ScenarioSteppedListener _stepListener;
 
 	private SimpleDateFormat _format = new SimpleDateFormat("HH:mm:ss");
+
+	private ScenarioRunningListener _runListener;
 
 	public MultiScenarioPresenter(MultiScenarioDisplay display,
 			MultiScenarioCore model)
@@ -228,6 +231,45 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 		};
 
+		_runListener = new ScenarioRunningListener()
+		{
+			@Override
+			public void started()
+			{
+			}
+			@Override
+			public void restart(ScenarioType scenario)
+			{
+			}
+			
+			@Override
+			public void paused()
+			{
+			}
+			
+			@Override
+			public void newStepTime(int val)
+			{
+			}
+			
+			@Override
+			public void newScenarioStepTime(int val)
+			{
+			}
+			
+			@Override
+			public void finished(long elapsedTime, String reason)
+			{
+				doFinish();
+			}
+		};
+	}
+
+	protected void doFinish()
+	{
+		// ok, our scenario has finished - tidy up the listeners
+		InstanceWrapper instance = _myModel.getWrapperFor(_currentScen.getScenario());
+		instance.terminate(_myModel.getObservers());
 	}
 
 	protected void doPlay()
@@ -308,44 +350,47 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// yes - ignore the selection
 			return;
 		}
+		
+		ScenarioType scen = wrap.getScenario();
+
 
 		// do we already ahave a scenario
 		if (_currentScen != null)
-			_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
-
+		{
+			scen.removeScenarioSteppedListener(_stepListener);
+			scen.removeScenarioRunningListener(_runListener);
+		}
+		
 		// ok, remember the new one
 		_currentScen = wrap;
 
-		_currentScen.getScenario().addScenarioSteppedListener(_stepListener);
+		// listen out for it stepping
+		scen.addScenarioSteppedListener(_stepListener);
 
-		Display.getDefault().syncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				ScenarioType scen = wrap.getScenario();
-
-				// ok start off with the time
-				newTime(scen.getTime());
-
-				// now look at the state
-				String playLabel;
-				boolean isRun = scen.isRunning();
-				
-				if(isRun)
-					playLabel = UIDisplay.PAUSE_LABEL;
-				else
-					playLabel = UIDisplay.PLAY_LABEL;
-				_myDisplay.getUI().setPlayLabel(playLabel);
-
-				_myDisplay.getUI().setInitEnabled(!isRun);
-				_myDisplay.getUI().setPlayEnabled(isRun);
-				_myDisplay.getUI().setStepEnabled(isRun);
+		// we also want to know about it finishing
+		scen.addScenarioRunningListener(_runListener);
 
 
-			}
-		});
+		// ok start off with the time
+		newTime(scen.getTime());
+
+		// now look at the state
+		boolean isRun = scen.isRunning();
+
+		// update the play label
+		String playLabel;
+		if (isRun)
+			playLabel = UIDisplay.PAUSE_LABEL;
+		else
+			playLabel = UIDisplay.PLAY_LABEL;
+		
+		_myDisplay.getUI().setPlayLabel(playLabel);
+		
+		// and the other buttons
+		_myDisplay.getUI().setInitEnabled(!isRun);
+		_myDisplay.getUI().setPlayEnabled(isRun);
+		_myDisplay.getUI().setStepEnabled(isRun);
+
 	}
 
 	protected void controllerAssigned(String controlFile)
