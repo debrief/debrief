@@ -202,17 +202,8 @@ public class MultiScenarioCore implements ISimulationQue
 			if (listener != null)
 				listener.newScenario(oldScenario, thisS);
 
-			if (firstRun)
-			{
-				firstRun = false;
-				// we don't need to initialise the listeners for the first scenario, it
-				// gets done in advance.
-			}
-			else
-			{
-				// get the observers sorted
-				wrapper.initialise(_allObservers);
-			}
+			// get the observers sorted
+			wrapper.initialise(_allObservers);
 
 			// now run this one
 			CommandLine runner = wrapper.commandLine;
@@ -225,6 +216,7 @@ public class MultiScenarioCore implements ISimulationQue
 			// and get going....
 			runner.run();
 
+			// and ditch the observers
 			wrapper.terminate(_allObservers);
 
 			try
@@ -409,15 +401,6 @@ public class MultiScenarioCore implements ISimulationQue
 				// is it active?
 				obs.initialise(_resultsStore.outputDirectory);
 			}
-		}
-
-		// right, just setup the listeners for the first scenario, so it can be
-		// controlled form
-		// the time controller
-		if (!_theScenarios.isEmpty())
-		{
-			InstanceWrapper firstS = _theScenarios.firstElement();
-			firstS.initialise(_allObservers);
 		}
 
 		// tell the parent we've got a new scenario
