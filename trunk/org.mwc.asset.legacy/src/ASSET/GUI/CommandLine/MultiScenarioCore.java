@@ -555,6 +555,7 @@ public class MultiScenarioCore implements ISimulationQue
 	{
 		final ScenarioType scenario;
 		final CommandLine commandLine;
+		boolean _initialised = false;
 
 		public InstanceWrapper(ScenarioType theScenario, CommandLine theCommandLine)
 		{
@@ -576,6 +577,8 @@ public class MultiScenarioCore implements ISimulationQue
 				// and add to the runner
 				commandLine.addObserver(thisObs);
 			}
+			
+			_initialised = true;
 		}
 
 		public void terminate(Vector<ScenarioObserver> allObservers)
@@ -593,6 +596,12 @@ public class MultiScenarioCore implements ISimulationQue
 			// and remove all the observers
 			commandLine.clearObservers();
 
+			_initialised = false;
+		}
+
+		public boolean isInitialised()
+		{
+			return _initialised;
 		}
 	}
 
