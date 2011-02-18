@@ -237,26 +237,27 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			public void started()
 			{
 			}
+
 			@Override
 			public void restart(ScenarioType scenario)
 			{
 			}
-			
+
 			@Override
 			public void paused()
 			{
 			}
-			
+
 			@Override
 			public void newStepTime(int val)
 			{
 			}
-			
+
 			@Override
 			public void newScenarioStepTime(int val)
 			{
 			}
-			
+
 			@Override
 			public void finished(long elapsedTime, String reason)
 			{
@@ -268,7 +269,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	protected void doFinish()
 	{
 		// ok, our scenario has finished - tidy up the listeners
-		InstanceWrapper instance = _myModel.getWrapperFor(_currentScen.getScenario());
+		InstanceWrapper instance = _myModel.getWrapperFor(_currentScen
+				.getScenario());
 		instance.terminate(_myModel.getObservers());
 	}
 
@@ -330,7 +332,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	protected void newTime(final long newTime)
 	{
-		Display.getDefault().asyncExec(new Runnable()
+		Display.getDefault().syncExec(new Runnable()
 		{
 			public void run()
 			{
@@ -350,17 +352,17 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// yes - ignore the selection
 			return;
 		}
-		
-		ScenarioType scen = wrap.getScenario();
-
 
 		// do we already ahave a scenario
 		if (_currentScen != null)
 		{
-			scen.removeScenarioSteppedListener(_stepListener);
-			scen.removeScenarioRunningListener(_runListener);
+			_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
+			_currentScen.getScenario().removeScenarioRunningListener(_runListener);
 		}
 		
+		// get convenient short cut
+		ScenarioType scen = wrap.getScenario();
+
 		// ok, remember the new one
 		_currentScen = wrap;
 
@@ -369,7 +371,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 		// we also want to know about it finishing
 		scen.addScenarioRunningListener(_runListener);
-
 
 		// ok start off with the time
 		newTime(scen.getTime());
@@ -383,21 +384,24 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			playLabel = UIDisplay.PAUSE_LABEL;
 		else
 			playLabel = UIDisplay.PLAY_LABEL;
-		
-		_myDisplay.getUI().setPlayLabel(playLabel);
-		
-		// and the other buttons
-		_myDisplay.getUI().setInitEnabled(!isRun);
-		_myDisplay.getUI().setPlayEnabled(isRun);
-		_myDisplay.getUI().setStepEnabled(isRun);
 
+		_myDisplay.getUI().setPlayLabel(playLabel);
+
+		// and the other buttons
+
+		// see if the scenario has been initialised yet
+		InstanceWrapper instance = _myModel.getWrapperFor(scen);
+		boolean isInit = instance.isInitialised();
+		
+		_myDisplay.getUI().setInitEnabled(!isInit);
+		_myDisplay.getUI().setPlayEnabled(isInit);
+		_myDisplay.getUI().setStepEnabled(isInit);
+
+		
 	}
 
 	protected void controllerAssigned(String controlFile)
 	{
-
-		// start off by ditching the existing list
-		_myDisplay.clearScenarios();
 
 		// hmm, check what type of control file it is
 		String controlType = getFirstNodeName(controlFile);
@@ -489,7 +493,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				}
 
 				// lastly, select the first itme
-				// _myDisplay.selectFirstRow();
+				_myDisplay.selectFirstRow();
 
 			}
 		};
@@ -567,6 +571,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	{
 		if ((_controlFileName == null) || (_scenarioFileName == null))
 			return;
+		
+		// clear any existing secnarios
+		_myDisplay.clearScenarios();
 
 		// right, the list of files has changed start off by disabling the single
 		// scenario buttons
@@ -664,6 +671,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		public final void testRelativePathMethod()
 		{
 			MultiScenarioDisplay mockDisplay = mock(MultiScenarioDisplay.class);
+			UIDisplay ui = mock(UIDisplay.class);
+			when(mockDisplay.getUI()).thenReturn(ui);
 			MultiScenarioPresenter pres = new MultiScenarioPresenter(mockDisplay,
 					null);
 
@@ -689,10 +698,10 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		public final void testHandleScenarioFile()
 		{
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			MultiScenarioCore model = mock(MultiScenarioCore.class);
-			MultiScenarioPresenter pres = new TestPresenter(display, model);
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
+			MultiScenarioCore model = mock(MultiScenarioCore.class);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
 
 			// ok, try for the scenario first
 			String[] files =
@@ -715,6 +724,34 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// TODO: test that we remove ourselves from unselected scenarios
 
 		}
+		
+		private static class RunnablePresenter extends MultiScenarioPresenter
+		{
+
+			public RunnablePresenter(MultiScenarioDisplay display,
+					MultiScenarioCore model)
+			{
+				super(display, model);
+			}
+			
+			@Override
+			protected void runThisJob(JobWithProgress theJob)
+			{
+				ASSETProgressMonitor monitor = new ASSETProgressMonitor()
+				{
+					public void beginTask(String name, int totalWork)
+					{
+					}
+
+					public void worked(int work)
+					{
+					}
+				};
+				theJob.run(monitor);
+			}
+
+			
+		}
 
 		public void testRealDataSinglePart()
 		{
@@ -724,33 +761,15 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			assertTrue("can't find control", new File(controlPath).exists());
 
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
+			UIDisplay ui = mock(UIDisplay.class);
+			when(display.getUI()).thenReturn(ui);
 			final MultiScenarioCore model = new MultiScenarioCore();
-			final MultiScenarioPresenter pres = new MultiScenarioPresenter(display,
-					model)
-			{
-
-				@Override
-				protected void runThisJob(JobWithProgress theJob)
-				{
-					ASSETProgressMonitor monitor = new ASSETProgressMonitor()
-					{
-						public void beginTask(String name, int totalWork)
-						{
-						}
-
-						public void worked(int work)
-						{
-						}
-					};
-					theJob.run(monitor);
-				}
-			};
+			final MultiScenarioPresenter pres = new RunnablePresenter(display,
+					model);
 
 			// just add support for a couple of methods that we need to work
 			when(display.getProjectPathFor(new File("results"))).thenReturn(
 					new File("results"));
-			UIDisplay ui = mock(UIDisplay.class);
-			when(display.getUI()).thenReturn(ui);
 
 			doAnswer(new Answer<Object>()
 			{
@@ -792,8 +811,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(ui, times(2)).setGenerateEnabled(false);
 			verify(ui).setRunAllEnabled(false);
 			verify(ui).setInitEnabled(true);
-			verify(ui).setStepEnabled(false);
-			verify(ui).setPlayEnabled(false);
+			verify(ui, times(2)).setStepEnabled(false);
+			verify(ui,times(2)).setPlayEnabled(false);
 		}
 
 		public void testRealDataMultiPart()
@@ -804,15 +823,43 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			assertTrue("can't find control", new File(control_multiP_Path).exists());
 
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
-			MultiScenarioCore model = new MultiScenarioCore();
+			final MultiScenarioCore model = new MultiScenarioCore();
 			UIDisplay ui = mock(UIDisplay.class);
-			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
+			when(display.getUI()).thenReturn(ui);
+			final MultiScenarioPresenter pres = new RunnablePresenter(display, model);
 
 			// just add support for a couple of methods that we need to work
 			when(display.getProjectPathFor(new File("results"))).thenReturn(
 					new File("results"));
-			when(display.getUI()).thenReturn(ui);
 
+			doAnswer(new Answer<Object>()
+					{
+						public Object answer(InvocationOnMock invocation)
+						{
+
+							ScenarioType theScenario = (ScenarioType) model.getSimulations()
+									.firstElement();
+
+							// better wrap it
+							ScenarioLayer sl = new ScenarioLayer();
+							sl.setScenario(theScenario);
+
+							ScenarioWrapper sw = new ScenarioWrapper(pres, sl);
+
+							// tell it about any backdrop data
+							Layer theBackdrop = theScenario.getBackdrop();
+							if (theBackdrop != null)
+								sw.addThisLayer(theBackdrop);
+
+							// also tell it about any observers
+							sw.fireNewController();
+
+							pres.selectThis(sw);
+							return null;
+						}
+					}).when(display).selectFirstRow();
+
+			
 			pres.handleTheseFiles(new String[]
 			{ scenarioPath, control_multiP_Path });
 
@@ -821,16 +868,17 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(display).setControlName(anyString());
 
 			// and that the UI looks right
-			verify(ui).setGenerateEnabled(true);
+			verify(ui, times(2)).setGenerateEnabled(false);
 			verify(ui).setRunAllEnabled(false);
+			
+			verify(ui).setInitEnabled(true);
+			verify(ui, times(2)).setPlayEnabled(false);
+			verify(ui, times(2)).setStepEnabled(false);
+			verify(ui).setPlayLabel(UIDisplay.PLAY_LABEL);
 
 			// and check the controller bits are done
 			assertNotNull("controller loaded", pres._scenarioController);
 			verify(display).activate();
-
-			// ok, go for the generate
-			pres.doGenerate();
-
 		}
 
 		@Test
@@ -838,7 +886,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		{
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = mock(MultiScenarioCore.class);
-			MultiScenarioPresenter pres = new TestPresenter(display, model);
+			UIDisplay ui = mock(UIDisplay.class);
+			when(display.getUI()).thenReturn(ui);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
 
 			// ok, try for the scenario first
 			String[] files =
@@ -859,9 +909,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		{
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = mock(MultiScenarioCore.class);
-			MultiScenarioPresenter pres = new TestPresenter(display, model);
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
 
 			// ok, try for the scenario first
 			String[] files =
@@ -875,28 +925,13 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(display).activate();
 		}
 
-		protected static class TestPresenter extends MultiScenarioPresenter
-		{
-			public TestPresenter(MultiScenarioDisplay display, MultiScenarioCore model)
-			{
-				super(display, model);
-			}
-
-			@Override
-			protected void controllerAssigned(String controlFile)
-			{
-				_controlfile = controlFile;
-			}
-
-		}
-
 		public void testReloadDatafiles()
 		{
 			MultiScenarioDisplay display = mock(MultiScenarioDisplay.class);
 			MultiScenarioCore model = mock(MultiScenarioCore.class);
-			MultiScenarioPresenter pres = new TestPresenter(display, model);
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
+			MultiScenarioPresenter pres = new MultiScenarioPresenter(display, model);
 
 			pres._controlFileName = controlPath;
 			pres._scenarioFileName = scenarioPath;
