@@ -145,6 +145,22 @@ public class MultiScenarioCore implements ISimulationQue
 		return res;
 	}
 
+	public InstanceWrapper getWrapperFor(ScenarioType scenario)
+	{
+		InstanceWrapper res = null;
+		Iterator<InstanceWrapper> sList = _theScenarios.iterator();
+		while (sList.hasNext())
+		{
+			InstanceWrapper thisWrap = (InstanceWrapper) sList.next();
+			if (thisWrap.scenario == scenario)
+			{
+				res = thisWrap;
+				break;
+			}
+		}
+		return res;
+	}
+
 	/**
 	 * ok, let's get going...
 	 * 
@@ -317,10 +333,8 @@ public class MultiScenarioCore implements ISimulationQue
 			{
 				if (resCode == TROUBLE_MAKING_FILES)
 				{
-					err
-							.println("Failed to write new scenarios to disk.  Is an old copy of an output file currently open?");
-					err
-							.println("  Alternately, is a file-browser currently looking at the output directory?");
+					err.println("Failed to write new scenarios to disk.  Is an old copy of an output file currently open?");
+					err.println("  Alternately, is a file-browser currently looking at the output directory?");
 				}
 			}
 		}
@@ -367,16 +381,15 @@ public class MultiScenarioCore implements ISimulationQue
 		// also read in the collection of scenarios
 		_theScenarios = new Vector<InstanceWrapper>(0, 1);
 
-		pMon
-				.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
+		pMon.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
 
 		for (Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator
 				.hasNext();)
 		{
 			Document thisD = iterator.next();
 			String scenarioStr = ScenarioGenerator.writeToString(thisD);
-			InputStream scenarioStream = new ByteArrayInputStream(scenarioStr
-					.getBytes());
+			InputStream scenarioStream = new ByteArrayInputStream(
+					scenarioStr.getBytes());
 			CoreScenario newS = new CoreScenario();
 			ASSETReaderWriter.importThis(newS, null, scenarioStream);
 			// wrap the scenario
@@ -411,9 +424,10 @@ public class MultiScenarioCore implements ISimulationQue
 		}
 
 		// tell the parent we've got a new scenario
-		if(newScenarioListener != null)
-			newScenarioListener.newScenario(null,_theScenarios.firstElement().scenario);
-		
+		if (newScenarioListener != null)
+			newScenarioListener.newScenario(null,
+					_theScenarios.firstElement().scenario);
+
 		return resCode;
 	}
 
