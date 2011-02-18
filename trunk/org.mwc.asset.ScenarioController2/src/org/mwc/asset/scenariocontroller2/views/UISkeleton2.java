@@ -1,6 +1,7 @@
 package org.mwc.asset.scenariocontroller2.views;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -309,6 +310,24 @@ public class UISkeleton2 extends Composite implements UIDisplay
 				lblTime.setText(time);
 			}
 		});
+	}
+
+	@Override
+	public void addInitListener(SelectionAdapter selectionAdapter)
+	{
+		btnInit.addSelectionListener(selectionAdapter);
+	}
+
+	@Override
+	public void addStepListener(SelectionAdapter selectionAdapter)
+	{
+		btnStep.addSelectionListener(selectionAdapter);
+	}
+
+	@Override
+	public void addPlayListener(SelectionAdapter selectionAdapter)
+	{
+		btnPlay.addSelectionListener(selectionAdapter);
 	}
 
 }

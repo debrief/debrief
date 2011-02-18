@@ -25,6 +25,29 @@ public abstract class CoreControllerPresenter
 		void filesDropped(String[] files);
 	}
 
+	/** object that manages a single scenario
+	 * 
+	 * @author ianmayo
+	 *
+	 */
+	public static interface ManageSingleListener
+	{
+		/** prepare the scenario
+		 * 
+		 */
+		public void init();
+		/** step the scenario forward
+		 * 
+		 */
+		public void step();
+		
+		/** get the scenario to play itself
+		 * 
+		 */
+		public void play();
+		
+	}
+	
 	public static interface ScenarioDisplay
 	{
 		/**

@@ -5,6 +5,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -96,13 +99,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		 * 
 		 */
 		public void addSelectionChangedListener(ISelectionChangedListener listener);
-
-		/**
-		 * someone is listening to the run/generate buttons
-		 * 
-		 * @param listener
-		 */
-		void addMultiScenarioHandler(ManageMultiListener listener);
 
 		/**
 		 * new controller loaded, ditch generated scenarios
@@ -198,16 +194,47 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 		});
 
-		_myDisplay.addMultiScenarioHandler(new ManageMultiListener()
+		// and the button listeners
+		_myDisplay.getUI().addGenerateListener(new SelectionAdapter()
 		{
-			public void doGenerate()
+			@Override
+			public void widgetSelected(SelectionEvent e)
 			{
-				generateScenarios();
+				doGenerate();
 			}
+		});
 
-			public void doRunAll()
+		_myDisplay.getUI().addRunAllListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
 			{
-				runScenarios();
+				doRunAll();
+			}
+		});
+		
+		_myDisplay.getUI().addInitListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				doInit();
+			}
+		});
+		_myDisplay.getUI().addStepListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				doStep();
+			}
+		});
+		_myDisplay.getUI().addPlayListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				doPlay();
 			}
 		});
 
@@ -226,6 +253,24 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 		};
 
+	}
+
+	protected void doPlay()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void doStep()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void doInit()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
@@ -289,60 +334,60 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	protected void controllerAssigned(String controlFile)
 	{
 
-		try
+		// start off by ditching the existing list
+		_myDisplay.clearScenarios();
+
+		// hmm, check what type of control file it is
+		String controlType = getFirstNodeName(controlFile);
+
+		if (controlType == StandaloneObserverListHandler.type)
 		{
-			// start off by ditching the existing list
-			_myDisplay.clearScenarios();
-
-			// hmm, check what type of control file it is
-			String controlType = getFirstNodeName(controlFile);
-
-			if (controlType == StandaloneObserverListHandler.type)
-			{
-			}
-			else if (controlType == ScenarioControllerHandler.type)
+		}
+		else if (controlType == ScenarioControllerHandler.type)
+		{
+			try
 			{
 				_scenarioController = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
+			}
+			catch (FileNotFoundException e)
+			{
+				CorePlugin.logError(Status.ERROR, "failed whilst loading control file", e);
+			}
 
-				Vector<ScenarioObserver> theObservers = _scenarioController.observerList;
+			Vector<ScenarioObserver> theObservers = _scenarioController.observerList;
 
-				// since we have a results container - we have enough information to set
-				// the output files
-				File tgtDir = _scenarioController.outputDirectory;
+			// since we have a results container - we have enough information to set
+			// the output files
+			File tgtDir = _scenarioController.outputDirectory;
 
-				// if the tgt dir is a relative reference, make it relative to
-				// our first project, not the user's login directory
-				if (isRelativePath(tgtDir))
-				{
-					File outputDir = _myDisplay.getProjectPathFor(tgtDir);
-					if (outputDir != null)
-						_scenarioController.outputDirectory = outputDir;
-
-				}
-
-				Enumeration<ScenarioObserver> numer = theObservers.elements();
-				while (numer.hasMoreElements())
-				{
-					ScenarioObserver thisS = numer.nextElement();
-					// does this worry about the output file?
-					if (thisS instanceof RecordToFileObserverType)
-					{
-						// yup, better store it...
-						RecordToFileObserverType rs = (RecordToFileObserverType) thisS;
-						rs.setDirectory(tgtDir);
-					}
-				}
+			// if the tgt dir is a relative reference, make it relative to
+			// our first project, not the user's login directory
+			if (isRelativePath(tgtDir))
+			{
+				File outputDir = _myDisplay.getProjectPathFor(tgtDir);
+				if (outputDir != null)
+					_scenarioController.outputDirectory = outputDir;
 
 			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
+
+			Enumeration<ScenarioObserver> numer = theObservers.elements();
+			while (numer.hasMoreElements())
+			{
+				ScenarioObserver thisS = numer.nextElement();
+				// does this worry about the output file?
+				if (thisS instanceof RecordToFileObserverType)
+				{
+					// yup, better store it...
+					RecordToFileObserverType rs = (RecordToFileObserverType) thisS;
+					rs.setDirectory(tgtDir);
+				}
+			}
+
 		}
 	}
 
-	protected void generateScenarios()
+	protected void doGenerate()
 	{
 		// disable the genny button, until it's done.
 		_myDisplay.getUI().setGenerateEnabled(false);
@@ -368,7 +413,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				_myDisplay.getUI().setTime("--:--:--");
 
 				// and set the button states
-				_myDisplay.getUI().setGenerateEnabled(false);
 				_myDisplay.getUI().setRunAllEnabled(true);
 
 				// lastly, select the first itme
@@ -464,8 +508,12 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			}
 			else
 			{
+				// not multi run, disable the group buttons
+				_myDisplay.getUI().setGenerateEnabled(false);
+				_myDisplay.getUI().setRunAllEnabled(false);
+				
 				// there's only one scenario - go ahead with the generation
-				generateScenarios();
+				doGenerate();
 			}
 
 		}
@@ -498,7 +546,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		{ safeControl, safeScenario });
 	}
 
-	protected void runScenarios()
+	protected void doRunAll()
 	{
 		System.out.println("doing run");
 
@@ -634,8 +682,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			{
 				public Object answer(InvocationOnMock invocation)
 				{
-				
-					ScenarioType theScenario = 	(ScenarioType) model.getSimulations().firstElement();
+
+					ScenarioType theScenario = (ScenarioType) model.getSimulations()
+							.firstElement();
 
 					// better wrap it
 					ScenarioLayer sl = new ScenarioLayer();
@@ -666,6 +715,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(display).setScenarios((MultiScenarioCore) anyObject());
 
 			// check the UI is correctly enabled
+			verify(ui, times(2)).setGenerateEnabled(false);
+			verify(ui).setRunAllEnabled(false);
 			verify(ui).setInitEnabled(true);
 			verify(ui).setStepEnabled(false);
 			verify(ui).setPlayEnabled(false);
@@ -704,7 +755,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(display).activate();
 
 			// ok, go for the generate
-			pres.generateScenarios();
+			pres.doGenerate();
 
 		}
 

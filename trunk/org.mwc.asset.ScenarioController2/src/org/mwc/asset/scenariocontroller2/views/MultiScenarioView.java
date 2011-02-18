@@ -30,7 +30,6 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -51,7 +50,6 @@ import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.scenariocontroller2.CoreControllerPresenter.FilesDroppedListener;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.JobWithProgress;
-import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.ManageMultiListener;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
@@ -100,6 +98,24 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		 * @param text
 		 */
 		public  void setPlayLabel(String text);
+
+		/** someone wants to know about the init button
+		 * 
+		 * @param selectionAdapter
+		 */
+		public void addInitListener(SelectionAdapter selectionAdapter);
+
+		/** someone wants to know about the step button
+		 * 
+		 * @param selectionAdapter
+		 */
+		public void addStepListener(SelectionAdapter selectionAdapter);
+
+		/** someone wants to know about the play button
+		 * 
+		 * @param selectionAdapter
+		 */
+		public void addPlayListener(SelectionAdapter selectionAdapter);
 
 	}
 
@@ -172,7 +188,6 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	private Duration _myPendingStepSize;
 	private FilesDroppedListener _filesDroppedListener;
 	private MultiScenarioPresenter _myPresenter;
-	private ManageMultiListener _multiHandler;
 
 	/**
 	 * The constructor.
@@ -201,12 +216,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	{
 		_filesDroppedListener = listener;
 	}
-
-	public void addMultiScenarioHandler(ManageMultiListener listener)
-	{
-		_multiHandler = listener;
-	}
-
+	
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
@@ -341,24 +351,6 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		getSite().setSelectionProvider(this);
 		_simTable.setSelectionProvider(this);
 
-		// now listen to the UI buttons
-		_myUI.addGenerateListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				_multiHandler.doGenerate();
-			}
-		});
-
-		_myUI.addRunAllListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				_multiHandler.doRunAll();
-			}
-		});
 
 		// if we have any pending filenames, get them dropped
 		if (_myPendingFilenames != null)
