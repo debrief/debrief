@@ -164,20 +164,26 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 			if (_myDropHelpers != null)
 			{
 				TreeItem ti = (TreeItem) event.item;
-				EditableWrapper ew = (EditableWrapper) ti.getData();
-				for (Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter.hasNext();)
-				{
-					XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 
-					// right, does it handle this kind of element?
-					if (handler.canBeDroppedOn(ew.getEditable()))
+				// check the tree isn't empty
+				if (ti != null)
+				{
+					EditableWrapper ew = (EditableWrapper) ti.getData();
+					for (Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter
+							.hasNext();)
 					{
-						// yup, can it drop on our target?
-						Object tgt = event.item.getData();
-						if (tgt instanceof EditableWrapper)
+						XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
+
+						// right, does it handle this kind of element?
+						if (handler.canBeDroppedOn(ew.getEditable()))
 						{
-							allowDrop = true;
-							break;
+							// yup, can it drop on our target?
+							Object tgt = event.item.getData();
+							if (tgt instanceof EditableWrapper)
+							{
+								allowDrop = true;
+								break;
+							}
 						}
 					}
 				}
@@ -219,19 +225,19 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 					{
 						EditableWrapper thisP = (EditableWrapper) iter.next();
 						Editable dragee = thisP.getEditable();
-						if(dragee instanceof BaseLayer)
+						if (dragee instanceof BaseLayer)
 						{
 							allowDrop = false;
 							continue;
 						}
 					}
-					
+
 				}
 				else
 				{
 					allowDrop = false;
 				}
-				
+
 			}
 		}
 
@@ -268,7 +274,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 		/**
 		 * the types of object we can drop onto
 		 */
-		@SuppressWarnings({ "rawtypes" })
+		@SuppressWarnings(
+		{ "rawtypes" })
 		private final Class[] targets;
 
 		/**
@@ -375,7 +382,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 						// hey, either the number is looking at the first occurence
 						// of the declaration, or it's looking at minus one. switch
 						// minus one to zero, so we can get started
-						if(index == -1)
+						if (index == -1)
 							index = 0;
 						else
 							index = Math.max(index, 5);
@@ -390,7 +397,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 						// do we have any loaders?
 						if (_myDropHelpers != null)
 						{
-							for (Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter.hasNext();)
+							for (Iterator<XMLFileDropHandler> iter = _myDropHelpers
+									.iterator(); iter.hasNext();)
 							{
 								XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 
@@ -405,8 +413,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 										if (handler.canBeDroppedOn(ew.getEditable()))
 										{
 											// yes, go for it!
-											handler.handleDrop(new FileInputStream(theFile), ew.getEditable(),
-													ew.getLayers());
+											handler.handleDrop(new FileInputStream(theFile),
+													ew.getEditable(), ew.getLayers());
 											break;
 										}
 									}
@@ -417,13 +425,13 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 					}
 					catch (FileNotFoundException e)
 					{
-						CorePlugin.logError(Status.ERROR,
-								"File not found for drag/drop:" + fileName, e);
+						CorePlugin.logError(Status.ERROR, "File not found for drag/drop:"
+								+ fileName, e);
 					}
 					catch (IOException e)
 					{
-						CorePlugin.logError(Status.ERROR,
-								"IOException handling drag/drop:" + fileName, e);
+						CorePlugin.logError(Status.ERROR, "IOException handling drag/drop:"
+								+ fileName, e);
 					}
 				}
 				else
@@ -470,7 +478,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
 				// ok, we need to add a new instance of the dragee (so we can support
 				// multiple instances)
-				Editable newDragee = (Editable) RightClickCutCopyAdaptor.cloneThis(dragee);
+				Editable newDragee = (Editable) RightClickCutCopyAdaptor
+						.cloneThis(dragee);
 
 				// also add it to the plottable layer target
 				BaseLayer dest = (BaseLayer) destination.getEditable();
@@ -489,8 +498,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
 	public Transfer[] getTypes()
 	{
-		Transfer[] res = new Transfer[] { EditableTransfer.getInstance(),
-				FileTransfer.getInstance() };
+		Transfer[] res = new Transfer[]
+		{ EditableTransfer.getInstance(), FileTransfer.getInstance() };
 		return res;
 	}
 

@@ -152,7 +152,12 @@ public class LengthPropertyCellEditor extends TextCellEditor {
 	 * @return position in list
 	 */
 	private int findValue() {
-		Double value = new Double(text.getText());
+		String val = text.getText();
+		if(val.contains("m"))
+		{
+			val = val.replace("m"," ");
+		}
+		Double value = new Double(val);
 		List<Double> list = LengthsRegistry.getRegistry().getLengths();
 		for (int i = 0; i < list.size(); i++) {
 			Double cur = list.get(i);

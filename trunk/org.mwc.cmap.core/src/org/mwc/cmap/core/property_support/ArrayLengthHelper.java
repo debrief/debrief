@@ -43,6 +43,11 @@ public class ArrayLengthHelper extends EditorHelper
 	public Object translateFromSWT(Object value)
 	{
 		String theStr = (String) value;
+		if(theStr.contains("m"))
+		{
+			theStr = theStr.replace('m', ' ');
+		}
+			
 		ArrayLength newVal = new ArrayLength(Double.parseDouble(theStr)); 
 		return newVal;
 	}
