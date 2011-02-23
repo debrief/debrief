@@ -513,7 +513,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 				thisD.syncExec(new Runnable()
 				{
 
-					@Override
 					public void run()
 					{
 						_myCanvas.redraw();
