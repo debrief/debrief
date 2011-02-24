@@ -151,11 +151,24 @@ public class Transit extends CoreDecision implements java.io.Serializable
    * whether this represents a single transit, and is now complete
    */
   protected boolean _transit_complete = false;
+  
+  /** whether we're heading towards the next data point yet. We 
+   * decide we've passed it when it's behind us, but we 
+   * can only do that check once it's come in front of us - 
+   * otherwise we'd immediately 'pass' the next point if it's behind us
+   */
+  protected boolean _isAhead = false;
 
   //////////////////////////////////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////////////////////////////////
 
+/*
+ * 
+ * @param destinations
+ * @param transit_speed
+ * @param loop
+ */
 
   public Transit(final WorldPath destinations, final WorldSpeed transit_speed, final boolean loop)
   {
@@ -223,80 +236,104 @@ public class Transit extends CoreDecision implements java.io.Serializable
     // how far away from it are we?
     final WorldVector offset = _myDestination.subtract(status.getLocation());
 
-    // find the distance in yards
-    double dist_yds = MWC.Algorithms.Conversions.Degs2Yds(offset.getRange());
+  	// nope, sort out the bearing to the target
+  	double crse = status.getCourse();
+  	
+  	// and what's the bearing
+  	double brg = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
+  	
+  	// what's the delta
+  	double delta = brg - crse;
+  	while(delta > 180)
+  		delta -= 360;
+  	while(delta < -180)
+  		delta += 360;
 
-    // are we at our destination?
-    if (dist_yds < _threshold.getValueIn(WorldDistance.YARDS))
+    // right, are we heading towards the next point yet
+    if(_isAhead)
     {
-      // cool, that's that point reached
-      passedNewPoint = true;
+    	// yes, we now have to check if we've passed it
+    	// right, is it ahead of us?
+    	if(Math.abs(delta) > 90d)
+    	{
+    		// ok, reset the ahead flag
+    		_isAhead = false;
 
-      // are we heading forwards, or reverse?
-      if (_in_reverse_transit)
-      {
-        // we are currently performing reverse transit.  get the next ppint
+        // cool, that's that point reached
+        passedNewPoint = true;
 
-        // are we back at the start?
-        if (_currentDestination == 0)
+        // are we heading forwards, or reverse?
+        if (_in_reverse_transit)
         {
-          // yes, switch back to working forwards through the data
-          _in_reverse_transit = false;
+          // we are currently performing reverse transit.  get the next ppint
 
-          // head for the first point (or ourselves, if there's only one item in the list)
-          _currentDestination = Math.min(1, _myDestinations.size() - 1);
-        }
-        else
-        {
-          // work back to the previous point
-          _currentDestination--;
-        }
-      }
-      else
-      {
-        // we are working forwards, carry on!
-
-        // have we any destinations left?
-        if (_currentDestination < _myDestinations.size() - 1)
-        {
-          // ok, now go to the next destination
-          _currentDestination++;
-        }
-        else
-        {
-          // no, we're at the last destination.
-          // are we looping?
-          if (_loop)
+          // are we back at the start?
+          if (_currentDestination == 0)
           {
-            // yes, are we going forwards or back?
-            if (_inReverse)
-            {
-              // ok, start going backwards
-              _in_reverse_transit = true;
+            // yes, switch back to working forwards through the data
+            _in_reverse_transit = false;
 
-              // head for the previous destination in the list (we know we are already on the last one)
-              _currentDestination--;
-
-              // just check that we aren't in a path containing only one point
-              // : ensure it's zero
-              _currentDestination = Math.max(_currentDestination, 0);
-            }
-            else
-            {
-              // head back for the start
-              _currentDestination = 0;
-            }
+            // head for the first point (or ourselves, if there's only one item in the list)
+            _currentDestination = Math.min(1, _myDestinations.size() - 1);
           }
           else
           {
-            // no, we are not looping
-            _transit_complete = true;
-            _currentDestination = -1;
-          } // whether we are looping
-        } // whether we have reached the last destination in the list
-      } // are we heading forwards or backwards?
+            // work back to the previous point
+            _currentDestination--;
+          }
+        }
+        else
+        {
+          // we are working forwards, carry on!
 
-    } // have we passed our next destination
+          // have we any destinations left?
+          if (_currentDestination < _myDestinations.size() - 1)
+          {
+            // ok, now go to the next destination
+            _currentDestination++;
+          }
+          else
+          {
+            // no, we're at the last destination.
+            // are we looping?
+            if (_loop)
+            {
+              // yes, are we going forwards or back?
+              if (_inReverse)
+              {
+                // ok, start going backwards
+                _in_reverse_transit = true;
+
+                // head for the previous destination in the list (we know we are already on the last one)
+                _currentDestination--;
+
+                // just check that we aren't in a path containing only one point
+                // : ensure it's zero
+                _currentDestination = Math.max(_currentDestination, 0);
+              }
+              else
+              {
+                // head back for the start
+                _currentDestination = 0;
+              }
+            }
+            else
+            {
+              // no, we are not looping
+              _transit_complete = true;
+              _currentDestination = -1;
+            } // whether we are looping
+          } // whether we have reached the last destination in the list
+        } // are we heading forwards or backwards?
+    	}
+    }
+    else
+    {
+    	// right, is it ahead of us?
+    	if(Math.abs(delta) < 90d)
+    		_isAhead = true;
+    }
+
     return passedNewPoint;
   }
 
