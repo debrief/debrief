@@ -10,7 +10,7 @@
 		<Surface Name="T23">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Name="the tail">
+				<TypedCookieSensor Name="the tail" Medium="ActiveBB">
 					<TypedRangeDoublet>
 						<Type Name="SUBMARINE" />
 						<DetectionRange Value="50" Units="nm" />
@@ -23,16 +23,100 @@
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
-			<Waterfall Name="T23 Search">
-				<Wander Name="random barrier">
-					<Range Value="100" Units="nm"></Range>
-					<Location>
-						<shortLocation Lat="3.8" Long="3.6"></shortLocation>
-					</Location>
+			<Sequence Name="SIP barrier" StayAlive="true">
+				<Transit Name="1" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="5.2" Long="3.5"></shortLocation>
+						</Point>
+					</WorldPath>
 					<Speed Value="12" Units="kts" />
-					<Height Value="0.0" Units="ft" />
-				</Wander>
-			</Waterfall>
+				</Transit>
+				<Composite Name="disable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="false" Name="active off"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="2" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="5" Long="4.5"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+				</Transit>
+				<Composite Name="enable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="true" Name="active on"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="3" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4" Long="5"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+				</Transit>
+				<Composite Name="disable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="false" Name="active off"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="4" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.4" Long="3.5"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+				</Transit>
+				<Composite Name="enable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="true" Name="active on"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="5" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.8" Long="3"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+				</Transit>
+				<Composite Name="disable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="false" Name="active off"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="6" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.6" Long="4.5"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+				</Transit>
+				<Composite Name="enable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="true" Name="active on"
+						Medium="ActiveBB" />
+				</Composite>
+
+			</Sequence>
+
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="kts" />
@@ -45,12 +129,12 @@
 		<SSN Name="red">
 			<Category Type="SUBMARINE" Force="RED" Environment="SUBSURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Name="Intercept">
+				<TypedCookieInterceptSensor Medium="ActiveBB">
 					<TypedRangeDoublet>
 						<Type Name="FRIGATE" />
-						<DetectionRange Value="100" Units="nm" />
+						<DetectionRange Value="80" Units="nm" />
 					</TypedRangeDoublet>
-				</TypedCookieSensor>
+				</TypedCookieInterceptSensor>
 			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
@@ -114,7 +198,7 @@
 				</br>
 			</line>
 			<circle Filled="false" Label="Search area" LabelLocation="Left"
-				LabelVisible="true" LineThickness="1" Visible="true">
+				LabelVisible="true" LineThickness="1" Visible="false">
 				<colour Value="YELLOW" />
 				<fontcolour Value="YELLOW" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />

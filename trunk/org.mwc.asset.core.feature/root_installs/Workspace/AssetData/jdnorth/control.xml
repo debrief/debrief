@@ -2,7 +2,7 @@
 <ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="red" number="100">
+			<ParticipantVariance name="red" number="10">
 				<Variance name="target location" id="/Waterfall//shortLocation">
 					<Attribute name="Long">
 						<Range max="0" min="4" />
@@ -29,7 +29,7 @@
 		</DebriefReplayObserver><RemoveDetectedObserver Name="Ditch detected fishermen" Active="true">
 			<Target>
 				<TargetType>
-					<Type Name="GREEN" />
+					<Type Name="RED" />
 				</TargetType>
 			</Target>
 			<Watch>
