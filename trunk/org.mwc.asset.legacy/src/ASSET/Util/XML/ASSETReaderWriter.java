@@ -378,6 +378,9 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     gi.addHandler(new ASSET.Util.XML.Sensors.TypedCookieSensorHandler()
     {			public void addSensor(SensorType sensor)
 			{				thisList.add(sensor);			}    });
+    gi.addHandler(new ASSET.Util.XML.Sensors.TypedCookieInterceptHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
     
     
     

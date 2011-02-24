@@ -54,6 +54,13 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
         addThisSensor(sensor);
       }
     });
+    addHandler(new TypedCookieInterceptHandler()
+    {
+      public void addSensor(final SensorType sensor)
+      {
+        addThisSensor(sensor);
+      }
+    });
     
     addHandler(new PlainCookieSensorHandler()
     {

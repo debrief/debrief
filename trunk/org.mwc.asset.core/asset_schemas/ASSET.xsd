@@ -293,6 +293,8 @@
 						minOccurs="0" />
 					<xs:element name="TypedCookieSensor" type="TypedCookieSensorType"
 						minOccurs="0" />
+					<xs:element name="TypedCookieInterceptSensor" type="TypedCookieInterceptType"
+						minOccurs="0" />
 					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType"
 						minOccurs="0" />
 					<xs:element name="MADLookupSensor" type="MADLookupSensorType"
@@ -470,6 +472,44 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TypedCookieInterceptType">
+		<xs:annotation>
+			<xs:documentation>Simple cookie-cutter intercept sensor with per-type
+				ranges
+			</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited,
+				aperture Editable:
+				inherited, detection range</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreSensorType">
+				<xs:sequence>
+					<xs:element name="TypedRangeDoublet" type="TypedRangeDatumType"
+						maxOccurs="unbounded" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Collection of detection range vs target type
+								items</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="Medium" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation>The type of medium this intercept sensor hears
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+				<xs:attribute name="DetectionLevel" type="DetectionLevelType"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>The level of detection delivered by this
+							sensor
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
