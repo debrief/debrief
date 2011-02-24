@@ -67,6 +67,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	private Font _timeFont;
 	private Color _timeFore;
 	private Color _timeBack;
+	private Group grpFiles;
 
 	/**
 	 * Create the composite.
@@ -86,8 +87,12 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		fd_topPanel.left = new FormAttachment(0, 3);
 		topPanel.setLayoutData(fd_topPanel);
 		topPanel.setLayout(new RowLayout(SWT.HORIZONTAL));
+		
+		grpFiles = new Group(topPanel, SWT.NONE);
+		grpFiles.setText("Files");
 
-		Composite filenameHolder = new Composite(topPanel, SWT.BORDER);
+		Composite filenameHolder = new Composite(grpFiles, SWT.NONE);
+		filenameHolder.setSize(218, 45);
 		filenameHolder.setLayout(new GridLayout(2, false));
 
 		Label lblScenarioFile = new Label(filenameHolder, SWT.NONE);
@@ -116,7 +121,13 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		Group grpAllScenarios = new Group(grpManageScenarios, SWT.NONE);
 		grpAllScenarios.setText("All scenarios");
-		grpAllScenarios.setLayout(new RowLayout(SWT.VERTICAL));
+		RowLayout rl_grpAllScenarios = new RowLayout(SWT.VERTICAL);
+		rl_grpAllScenarios.spacing = 0;
+		rl_grpAllScenarios.marginTop = 0;
+		rl_grpAllScenarios.marginRight = 0;
+		rl_grpAllScenarios.marginLeft = 0;
+		rl_grpAllScenarios.marginBottom = 0;
+		grpAllScenarios.setLayout(rl_grpAllScenarios);
 
 		btnGenerate = new Button(grpAllScenarios, SWT.NONE);
 		btnGenerate.setText("Generate");
@@ -126,7 +137,12 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		Group grpSelectedScenario = new Group(grpManageScenarios, SWT.NONE);
 		grpSelectedScenario.setText("Selected scenario");
-		grpSelectedScenario.setLayout(new GridLayout(2, false));
+		GridLayout gl_grpSelectedScenario = new GridLayout(2, false);
+		gl_grpSelectedScenario.marginWidth = 0;
+		gl_grpSelectedScenario.marginHeight = 0;
+		gl_grpSelectedScenario.horizontalSpacing = 0;
+		gl_grpSelectedScenario.verticalSpacing = 0;
+		grpSelectedScenario.setLayout(gl_grpSelectedScenario);
 
 		btnInit = new Button(grpSelectedScenario, SWT.NONE);
 		btnInit.setText("Init");
