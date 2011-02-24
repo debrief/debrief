@@ -2,10 +2,16 @@
 <ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="red" number="5">
+			<ParticipantVariance name="red" number="100">
 				<Variance name="target location" id="/Waterfall//shortLocation">
 					<Attribute name="Long">
 						<Range max="0" min="4" />
+					</Attribute>
+					
+				</Variance>
+				<Variance name="transit speed" id="/Waterfall//Speed">
+					<Attribute name="Value">
+						<Range max="12" min="8" />
 					</Attribute>
 					
 				</Variance>
@@ -13,7 +19,7 @@
 		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="24" Units="hours" ></Duration>
+			<Duration Value="120" Units="hours" ></Duration>
 		</TimeObserver>
 		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
@@ -35,7 +41,7 @@
 		<PlotSensorObserver Name="Show detections" Active="true">
 			<Target>
 				<TargetType>
-					<Type Name="SURFACE" ></Type>
+					<Type Name="SUBMARINE" ></Type>
 				</TargetType>
 			</Target>
 			<Watch>

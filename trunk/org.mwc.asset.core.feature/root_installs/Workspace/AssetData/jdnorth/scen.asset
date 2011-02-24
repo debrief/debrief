@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="JD Scenario" xmlns="http://www.mwc.org/asset"
-	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z"
-	Case="1" ShowActivity="false" ShowName="false" ShowStatus="false" ShowSymbol="false">
+	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
+	ShowActivity="false" ShowName="false" ShowStatus="false" ShowSymbol="false">
 	<StepTime Units="minutes" Value="5" />
-	<Environment Name="Atlantic Summer"
-		AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
+	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
+		SeaState="1">
 	</Environment>
 	<Participants>
 		<Surface Name="T23">
@@ -43,8 +43,7 @@
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<SSN Name="red">
-			<Category Type="SUBMARINE" Force="RED"
-				Environment="SUBSURFACE" />
+			<Category Type="SUBMARINE" Force="RED" Environment="SUBSURFACE" />
 			<SensorFit>
 				<TypedCookieSensor Name="Intercept">
 					<TypedRangeDoublet>
@@ -61,11 +60,11 @@
 			</Status>
 			<Waterfall Name="">
 				<Evade Name="">
-					<Duration Value="0.0" Units="millis" />
+					<Duration Value="10" Units="minutes" />
 					<FleeHeight Value="0.0" Units="ft" />
-					<FleeSpeed Value="0.0" Units="m/s" />
+					<FleeSpeed Value="12" Units="kts" />
 					<TargetType>
-						<Type Name="SUBSURFACE" />
+						<Type Name="BLUE" />
 					</TargetType>
 				</Evade>
 				<Transit Name="" Looping="true">
@@ -77,7 +76,8 @@
 					<Speed Value="12" Units="kts" />
 				</Transit>
 			</Waterfall>
-			<SSMovementCharacteristics Name="" FuelUsageRate="0.0">
+			<SSMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="kts" />
 				<MaxSpeed Value="22.0" Units="kts" />
 				<AccelerationRate Value="1.0" Units="m/s/s" />
@@ -93,16 +93,45 @@
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
-				<font Bold="false" Family="Sans Serif" Italic="false"
-					Size="8" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
 				<Delta Units="degs" Value="1.000" />
 				<colour Value="DARK_GREY" />
 			</grid>
-			<scale AutoMode="true" DisplayUnits="yd"
-				Location="BottomLeft" Name="World Default" ScaleMax="100000"
-				ScaleStep="50000" Visible="true">
+			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
+				Name="World Default" ScaleMax="100000" ScaleStep="50000" Visible="true">
 				<colour Value="GREY" />
 			</scale>
+			<line Label="Finish line" LabelLocation="Left" LabelVisible="true"
+				LineThickness="2" Visible="true">
+				<colour CustomBlue="0" CustomGreen="0" CustomRed="255" Value="custom" />
+				<fontcolour Value="RED" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="12" />
+				<tl>
+					<shortLocation Depth="0.000" Lat="0" Long="0" />
+				</tl>
+				<br>
+					<shortLocation Depth="0.000" Lat="0" Long="4" />
+				</br>
+			</line>
+			<circle Filled="false" Label="Search area" LabelLocation="Left"
+				LabelVisible="true" LineThickness="1" Visible="true">
+				<colour Value="YELLOW" />
+				<fontcolour Value="YELLOW" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="3.8" Long="3.6" />
+				</centre>
+				<Radius Units="nm" Value="100" />
+			</circle>
+			<textlabel Label="Start point" LabelLocation="Left"
+				LabelVisible="true" Scale="Small" Symbol="FilledCircle"
+				SymbolVisible="true" Visible="true">
+				<colour Value="RED" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="11" Long="9" />
+				</centre>
+			</textlabel>
 		</layer>
 	</DebriefLayer>
 </Scenario>
