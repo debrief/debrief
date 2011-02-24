@@ -14,6 +14,7 @@ import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Participants.Category;
+import ASSET.Participants.DemandedSensorStatus;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Participants.Category.Environment;
@@ -41,6 +42,12 @@ public class TypedCookieSensor extends CoreSensor
 	private HashMap<TypedRangeDoublet, DetectionList> _typedDetections;
 
 	private Integer _detectionState = DetectionEvent.DETECTED;
+	
+	
+	/** optional sensor medium
+	 * 
+	 */
+	private int _medium;
 
 	/**
 	 * 
@@ -63,6 +70,17 @@ public class TypedCookieSensor extends CoreSensor
 		this(id, rangeDoublets, DetectionEvent.DETECTED);
 	}
 
+
+	public int getMedium()
+	{
+		return _medium;
+	}
+
+	public void setMedium(int medium)
+	{
+		_medium = medium;
+	}
+	
 	public Vector<TypedRangeDoublet> getRanges()
 	{
 		return _rangeDoublets;
@@ -112,8 +130,8 @@ public class TypedCookieSensor extends CoreSensor
 				// ok, it's worth sorting out the range
 				if (range == null)
 				{
-					sep = target.getStatus().getLocation().subtract(
-							host.getStatus().getLocation());
+					sep = target.getStatus().getLocation()
+							.subtract(host.getStatus().getLocation());
 					range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
 				}
 
@@ -203,15 +221,25 @@ public class TypedCookieSensor extends CoreSensor
 		return null;
 	}
 
-	public int getMedium()
-	{
-		return 0;
-	}
-
 	public void update(DemandedStatus myDemandedStatus, Status myStatus,
 			long newTime)
 	{
-		// don't bother, nothing to do here
+		Vector<DemandedSensorStatus> states = myDemandedStatus.getSensorStates();
+		if (states != null)
+		{
+			Iterator<DemandedSensorStatus> iter = states.iterator();
+			while (iter.hasNext())
+			{
+				DemandedSensorStatus ds = (DemandedSensorStatus) iter.next();
+				if (ds.getMedium() == getMedium())
+				{
+					if (ds.getSwitchOn())
+						this.setWorking(true);
+					else
+						this.setWorking(false);
+				}
+			}
+		}
 	}
 
 	public EditorType getInfo()
