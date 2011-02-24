@@ -209,101 +209,120 @@ public class PlotSensorObserver extends DetectionObserver implements
 			{
 				SensorType thisS = looper.next();
 
-				// is it simple enought to plot?
-				if (thisS instanceof TypedCookieSensor)
+				if (thisS.isWorking())
 				{
-					TypedCookieSensor pcs = (TypedCookieSensor) thisS;
-					// get the detection ranges
-
-					Vector<TypedRangeDoublet> ranges = pcs.getRanges();
-
-					for (Iterator<TypedRangeDoublet> iterator2 = ranges.iterator(); iterator2
-							.hasNext();)
+					// is it simple enought to plot?
+					if (thisS instanceof TypedCookieSensor)
 					{
-						TypedRangeDoublet thisRange = iterator2.next();
+						TypedCookieSensor pcs = (TypedCookieSensor) thisS;
+						// get the detection ranges
 
-						WorldDistance range = thisRange.getRange();
+						Vector<TypedRangeDoublet> ranges = pcs.getRanges();
 
-						// converto to screen coords
-						WorldLocation tl1 = thisP.getStatus().getLocation().add(
-								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-										range, null));
-						WorldLocation tl2 = thisP.getStatus().getLocation().add(
-								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0),
-										range, null));
-						WorldLocation br1 = thisP.getStatus().getLocation().add(
-								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
-										range, null));
-						WorldLocation br2 = thisP.getStatus().getLocation().add(
-								new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180),
-										range, null));
-						
-						WorldLocation tlW = new WorldLocation(tl2.getLat(), tl1.getLong(), 0);
-						WorldLocation brW = new WorldLocation(br2.getLat(), br1.getLong(), 0);
-
-						Point tl = new Point(dest.toScreen(tlW));
-						Point br = dest.toScreen(brW);
-
-						boolean doSolid = false;
-
-						// decide if this sensor is in contact
-						DetectionList dList = pcs.getDetectionsFor(thisRange);
-						if (dList != null)
+						for (Iterator<TypedRangeDoublet> iterator2 = ranges.iterator(); iterator2
+								.hasNext();)
 						{
-							if (dList.size() > 0)
+							TypedRangeDoublet thisRange = iterator2.next();
+
+							WorldDistance range = thisRange.getRange();
+
+							// converto to screen coords
+							WorldLocation tl1 = thisP
+									.getStatus()
+									.getLocation()
+									.add(
+											new WorldVector(
+													MWC.Algorithms.Conversions.Degs2Rads(270), range,
+													null));
+							WorldLocation tl2 = thisP
+									.getStatus()
+									.getLocation()
+									.add(
+											new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0),
+													range, null));
+							WorldLocation br1 = thisP
+									.getStatus()
+									.getLocation()
+									.add(
+											new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+													range, null));
+							WorldLocation br2 = thisP
+									.getStatus()
+									.getLocation()
+									.add(
+											new WorldVector(
+													MWC.Algorithms.Conversions.Degs2Rads(180), range,
+													null));
+
+							WorldLocation tlW = new WorldLocation(tl2.getLat(),
+									tl1.getLong(), 0);
+							WorldLocation brW = new WorldLocation(br2.getLat(),
+									br1.getLong(), 0);
+
+							Point tl = new Point(dest.toScreen(tlW));
+							Point br = dest.toScreen(brW);
+
+							boolean doSolid = false;
+
+							// decide if this sensor is in contact
+							DetectionList dList = pcs.getDetectionsFor(thisRange);
+							if (dList != null)
 							{
-								DetectionEvent lastD = dList.lastElement();
-								// is it at the current time?
-								if (lastD.getTime() == _tNow)
+								if (dList.size() > 0)
 								{
-									doSolid = true;
+									DetectionEvent lastD = dList.lastElement();
+									// is it at the current time?
+									if (lastD.getTime() == _tNow)
+									{
+										doSolid = true;
+									}
 								}
 							}
-						}
 
-						// sort out the color
-						dest.setColor(ScenarioParticipantWrapper.getColorFor(thisP
-								.getCategory().getForce()));
+							// sort out the color
+							dest.setColor(ScenarioParticipantWrapper.getColorFor(thisP
+									.getCategory().getForce()));
 
-						if (doSolid)
-							dest.setLineStyle(CanvasType.SOLID);
-						else
-							dest.setLineStyle(CanvasType.DOTTED);
-
-						if (_shadeCircle)
-						{
-							if (dest instanceof ExtendedCanvasType)
-							{
-								ExtendedCanvasType et = (ExtendedCanvasType) dest;
-								et.semiFillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
-							}
+							if (doSolid)
+								dest.setLineStyle(CanvasType.SOLID);
 							else
-								dest.fillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
-						}
-						dest.drawOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+								dest.setLineStyle(CanvasType.DOTTED);
 
-						dest.setLineStyle(CanvasType.SOLID);
-
-						if (_showNames)
-						{
-							// collate a string of the types this ring represents
-							StringBuilder sb = new StringBuilder();
-							Vector<String> theItems = thisRange.getMyTypes();
-							if (theItems != null)
+							if (_shadeCircle)
 							{
-								Iterator<String> iter = theItems.iterator();
-								while (iter.hasNext())
+								if (dest instanceof ExtendedCanvasType)
 								{
-									String thisT = iter.next();
-									sb.append(thisT + " ");
+									ExtendedCanvasType et = (ExtendedCanvasType) dest;
+									et.semiFillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
 								}
+								else
+									dest.fillOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+							}
+							dest.drawOval(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
 
-								if (sb.length() > 0)
+							dest.setLineStyle(CanvasType.SOLID);
+
+							if (_showNames)
+							{
+								// collate a string of the types this ring represents
+								StringBuilder sb = new StringBuilder();
+								Vector<String> theItems = thisRange.getMyTypes();
+								if (theItems != null)
 								{
-									String theStr = sb.toString();
-									int wit = dest.getStringWidth(null, theStr);
-									dest.drawText(theStr, tl.x + (br.x - tl.x) / 2 - wit / 2,
-											br.y + dest.getStringHeight(null));
+									Iterator<String> iter = theItems.iterator();
+									while (iter.hasNext())
+									{
+										String thisT = iter.next();
+										sb.append(thisT + " ");
+									}
+
+									if (sb.length() > 0)
+									{
+										String theStr = sb.toString();
+										int wit = dest.getStringWidth(null, theStr);
+										dest.drawText(theStr, tl.x + (br.x - tl.x) / 2 - wit / 2,
+												br.y + dest.getStringHeight(null));
+									}
 								}
 							}
 						}
