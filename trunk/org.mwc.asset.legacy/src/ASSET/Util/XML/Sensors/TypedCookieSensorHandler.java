@@ -14,6 +14,7 @@ import java.util.Vector;
 import ASSET.Models.SensorType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionEvent.DetectionStatePropertyEditor;
+import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Sensor.Cookie.TypedCookieSensor;
 import ASSET.Models.Sensor.Cookie.TypedCookieSensor.TypedRangeDoublet;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
@@ -28,6 +29,12 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 	
   String _detectionLevel;
   protected final static String DETECTION_LEVEL = "DetectionLevel";
+  
+  int _medium = -1;
+  private final static String MEDIUM = "Medium";
+
+  public static EnvironmentType.MediumPropertyEditor _myEditor =
+    new EnvironmentType.MediumPropertyEditor();
 
 
 
@@ -45,6 +52,15 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 				
 				_rangeDoublets.add(doublet);
 			}});
+    
+    addAttributeHandler(new HandleAttribute(MEDIUM)
+    {
+      public void setValue(String name, final String val)
+      {
+        _myEditor.setValue(val);
+        _medium = _myEditor.getIndex();
+      }
+    });
     
     addAttributeHandler(new HandleAttribute(DETECTION_LEVEL)
     {
@@ -69,9 +85,15 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     
     final ASSET.Models.Sensor.Cookie.TypedCookieSensor typedSensor = new TypedCookieSensor(myId, _rangeDoublets, thisDetLevel);
     typedSensor.setName(myName);
+
     
+    // do we have a medium
+    if(_medium != -1)
+    	typedSensor.setMedium(_medium);
+
     _rangeDoublets = null;
     _detectionLevel = null;
+    _medium = -1;
 
     return typedSensor;
   }
@@ -79,6 +101,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
   public void elementClosed()
   {
     super.elementClosed();
+
   }
 
   static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,

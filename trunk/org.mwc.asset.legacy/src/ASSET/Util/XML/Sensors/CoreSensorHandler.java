@@ -1,7 +1,7 @@
 package ASSET.Util.XML.Sensors;
 
-import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.SensorType;
+import ASSET.Models.Sensor.CoreSensor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +18,8 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
   private final static String WORKING = "Working";
   protected boolean _working = true;
   private static final String ID_VAL = "id";
+  
+
 
   public CoreSensorHandler(final String myType)
   {
@@ -59,6 +61,7 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
     // ok - now store it
     addSensor(sensor);
     sensor.setWorking(_working);
+
 
     // and clear the data
     _myName = null;
