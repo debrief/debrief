@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
+		<MultiScenarioGenerator Number="10" NameTemplate="NewInterceptRange_">
+			<VarianceList>
+				<Variance name="diff detection ranges" id="//TypedCookieInterceptSensor//DetectionRange">
+					<Attribute name="Value">
+						<Range max="80" min="120" />
+					</Attribute>
+					
+				</Variance></VarianceList>
+		</MultiScenarioGenerator>
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="red" number="10">
+			<ParticipantVariance name="red" number="100">
 				<Variance name="target location" id="/Waterfall//shortLocation">
 					<Attribute name="Long">
 						<Range max="0" min="4" />
@@ -11,7 +20,7 @@
 				</Variance>
 				<Variance name="transit speed" id="/Waterfall//Speed">
 					<Attribute name="Value">
-						<Range max="12" min="8" />
+						<Range max="8" min="4" />
 					</Attribute>
 					
 				</Variance>
@@ -26,7 +35,7 @@
 		</TrackPlotObserver>
 		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
 			record_positions="true" Active="false" record_decisions="true">
-		</DebriefReplayObserver><RemoveDetectedObserver Name="Ditch detected fishermen" Active="true">
+		</DebriefReplayObserver><RemoveDetectedObserver Name="Ditch detected SSKs" Active="true">
 			<Target>
 				<TargetType>
 					<Type Name="RED" />
@@ -49,5 +58,19 @@
 					<Type Name="SURFACE" />
 				</TargetType>
 			</Watch>
-		</PlotSensorObserver></ObserverList>
+		</PlotSensorObserver>
+		<ProportionDetectedObserver Name="how many red's detected?" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+			<BatchCollator OnlyBatchReporting="true" Active="true"
+				CollationMethod="LIST" PerCase="false" />
+		</ProportionDetectedObserver></ObserverList>
 </ScenarioController>

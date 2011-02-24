@@ -2,7 +2,7 @@
 <Scenario Name="JD Scenario" xmlns="http://www.mwc.org/asset"
 	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
 	ShowActivity="false" ShowName="false" ShowStatus="false" ShowSymbol="false">
-	<StepTime Units="minutes" Value="5" />
+	<StepTime Units="minutes" Value="10" />
 	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 	</Environment>
@@ -132,7 +132,7 @@
 				<TypedCookieInterceptSensor Medium="ActiveBB">
 					<TypedRangeDoublet>
 						<Type Name="FRIGATE" />
-						<DetectionRange Value="80" Units="nm" />
+						<DetectionRange Value="100" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieInterceptSensor>
 			</SensorFit>
@@ -207,13 +207,22 @@
 				</centre>
 				<Radius Units="nm" Value="100" />
 			</circle>
-			<textlabel Label="Start point" LabelLocation="Left"
-				LabelVisible="true" Scale="Small" Symbol="FilledCircle"
+			<textlabel Label="Red start" LabelLocation="Left"
+				LabelVisible="true" Scale="Medium" Symbol="FilledCircle"
 				SymbolVisible="true" Visible="true">
 				<colour Value="RED" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
 				<centre>
 					<shortLocation Depth="0.000" Lat="11" Long="9" />
+				</centre>
+			</textlabel>
+			<textlabel Label="Blue start" LabelLocation="Left"
+				LabelVisible="true" Scale="Medium" Symbol="FilledCircle"
+				SymbolVisible="true" Visible="true">
+				<colour Value="BLUE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="4" Long="4" />
 				</centre>
 			</textlabel>
 		</layer>
