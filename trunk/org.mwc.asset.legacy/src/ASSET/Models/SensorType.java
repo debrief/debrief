@@ -117,6 +117,16 @@ public interface SensorType extends MWC.GUI.Editable, SensorDataProvider
 
   public static interface ActiveSensor
   {
+  	/** state message for going active
+  	 * 
+  	 */
+  	public final String ACTIVE_SENSOR_ON = "ActiveSensorOn";
+  	
+  	/** state message for de-activating sonar
+  	 * 
+  	 */
+  	public final String ACTIVE_SENSOR_OFF = "ActiveSensorOff";
+  	
     /**
      * get the source level
      *
