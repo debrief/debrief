@@ -105,6 +105,13 @@ public class ProportionDetectedObserver extends
 			_validDetections.add(eh);
 		}
 
+		double currentProp = 100 * getProportionDetected();
+		
+		// tell the attribute helper
+		getAttributeHelper().newData(this.getScenario(), detection.getTime(),
+				((int)currentProp) + "%");
+
+		
 	}
 
 	/**
