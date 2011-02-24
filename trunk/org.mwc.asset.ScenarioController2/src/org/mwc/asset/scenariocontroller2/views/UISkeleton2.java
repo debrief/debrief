@@ -14,12 +14,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 
 public class UISkeleton2 extends Composite implements UIDisplay
@@ -67,7 +62,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	private Font _timeFont;
 	private Color _timeFore;
 	private Color _timeBack;
-	private Group grpFiles;
+	private Group grpDataFiles;
 
 	/**
 	 * Create the composite.
@@ -88,31 +83,42 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		topPanel.setLayoutData(fd_topPanel);
 		topPanel.setLayout(new RowLayout(SWT.HORIZONTAL));
 		
-		grpFiles = new Group(topPanel, SWT.NONE);
-		grpFiles.setText("Files");
+		grpDataFiles = new Group(topPanel, SWT.NONE);
+		grpDataFiles.setText("Data files");
+		GridLayout gl_grpDataFiles = new GridLayout(1, false);
+		gl_grpDataFiles.verticalSpacing = 0;
+		gl_grpDataFiles.marginWidth = 0;
+		gl_grpDataFiles.marginHeight = 0;
+		gl_grpDataFiles.horizontalSpacing = 0;
+		grpDataFiles.setLayout(gl_grpDataFiles);
 
-		Composite filenameHolder = new Composite(grpFiles, SWT.NONE);
-		filenameHolder.setSize(218, 45);
-		filenameHolder.setLayout(new GridLayout(2, false));
+		Composite filenameHolder = new Composite(grpDataFiles, SWT.NONE);
+		GridLayout gl_filenameHolder = new GridLayout(1, false);
+		gl_filenameHolder.verticalSpacing = 0;
+		gl_filenameHolder.marginHeight = 0;
+		gl_filenameHolder.horizontalSpacing = 0;
+		filenameHolder.setLayout(gl_filenameHolder);
 
 		Label lblScenarioFile = new Label(filenameHolder, SWT.NONE);
-		lblScenarioFile.setBounds(0, 0, 59, 14);
+	//	lblScenarioFile.setBounds(0, 0, 59, 14);
 		lblScenarioFile.setText("Scenario file:");
 
 		scenarioVal = new Label(filenameHolder, SWT.NONE);
-		scenarioVal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
+		scenarioVal.setAlignment(SWT.RIGHT);
+		scenarioVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
 				1, 1));
-		scenarioVal.setBounds(0, 0, 59, 14);
+//		scenarioVal.setBounds(0, 0, 59, 14);
 		scenarioVal.setText("[pending]                     ");
 
 		Label lblControlFile = new Label(filenameHolder, SWT.NONE);
-		lblControlFile.setBounds(0, 0, 59, 14);
+//		lblControlFile.setBounds(0, 0, 59, 14);
 		lblControlFile.setText("Control file:");
 
-		controlVal = new Label(filenameHolder, SWT.BORDER);
-		controlVal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,
+		controlVal = new Label(filenameHolder, SWT.NONE);
+		controlVal.setAlignment(SWT.RIGHT);
+		controlVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
 				1, 1));
-		controlVal.setBounds(0, 0, 59, 14);
+// 		controlVal.setBounds(0, 0, 59, 14);
 		controlVal.setText("[pending]               ");
 
 		Group grpManageScenarios = new Group(topPanel, SWT.NONE);
@@ -121,13 +127,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		Group grpAllScenarios = new Group(grpManageScenarios, SWT.NONE);
 		grpAllScenarios.setText("All scenarios");
-		RowLayout rl_grpAllScenarios = new RowLayout(SWT.VERTICAL);
-		rl_grpAllScenarios.spacing = 0;
-		rl_grpAllScenarios.marginTop = 0;
-		rl_grpAllScenarios.marginRight = 0;
-		rl_grpAllScenarios.marginLeft = 0;
-		rl_grpAllScenarios.marginBottom = 0;
-		grpAllScenarios.setLayout(rl_grpAllScenarios);
+		grpAllScenarios.setLayout(new RowLayout(SWT.VERTICAL));
 
 		btnGenerate = new Button(grpAllScenarios, SWT.NONE);
 		btnGenerate.setText("Generate");
@@ -137,12 +137,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		Group grpSelectedScenario = new Group(grpManageScenarios, SWT.NONE);
 		grpSelectedScenario.setText("Selected scenario");
-		GridLayout gl_grpSelectedScenario = new GridLayout(2, false);
-		gl_grpSelectedScenario.marginWidth = 0;
-		gl_grpSelectedScenario.marginHeight = 0;
-		gl_grpSelectedScenario.horizontalSpacing = 0;
-		gl_grpSelectedScenario.verticalSpacing = 0;
-		grpSelectedScenario.setLayout(gl_grpSelectedScenario);
+		grpSelectedScenario.setLayout(new GridLayout(2, false));
 
 		btnInit = new Button(grpSelectedScenario, SWT.NONE);
 		btnInit.setText("Init");
