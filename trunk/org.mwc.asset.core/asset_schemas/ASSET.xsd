@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	elementFormDefault="qualified">
-	<!--                                -->
-	<!--Top Level-->
-	<!--                                -->
+	<!-- -->
+	<!--Top Level -->
+	<!-- -->
 	<xs:element name="Scenario">
 		<xs:annotation>
 			<xs:documentation>Container for an asset scenario</xs:documentation>
@@ -203,9 +203,9 @@
 			<xs:element name="TimeToLaunchObserver" type="TimeToLaunchObserverType" />
 		</xs:choice>
 	</xs:complexType>
-	<!--                                -->
-	<!--Sensors-->
-	<!--                                -->
+	<!-- -->
+	<!--Sensors -->
+	<!-- -->
 	<xs:element name="BroadbandSensor" type="BroadbandSensorType">
 		<xs:annotation>
 			<xs:documentation>instance of subject, declared to allow standalone
@@ -313,6 +313,12 @@
 		<xs:attribute name="Name" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>The name of this sensor</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Medium" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Optional override type for medium of this sensor
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="Working" type="xs:boolean" use="optional">
@@ -486,6 +492,13 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="Medium" type="xs:string" use="optional">
+					<xs:annotation>
+						<xs:documentation>Optional override type for medium of this sensor
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
 				<xs:attribute name="DetectionLevel" type="DetectionLevelType">
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this
@@ -570,9 +583,9 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<!--                                -->
-	<!--Environment-->
-	<!--                                -->
+	<!-- -->
+	<!--Environment -->
+	<!-- -->
 	<xs:complexType name="CoreEnvironmentType">
 		<xs:annotation>
 			<xs:documentation>The environment for this scenario
@@ -638,9 +651,9 @@
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
-	<!--                                -->
-	<!--Lookup tables for Lookup Sensor Type-->
-	<!--                                -->
+	<!-- -->
+	<!--Lookup tables for Lookup Sensor Type -->
+	<!-- -->
 	<xs:complexType name="RadarLookupType">
 		<xs:annotation>
 			<xs:documentation>Collection of radar identification characteristics
@@ -872,8 +885,8 @@
 		<xs:attribute name="SeaState_9" type="xs:float" use="optional" />
 		<xs:attribute name="SeaState_10" type="xs:float" use="optional" />
 	</xs:complexType>
-	<!--Participants-->
-	<!--                                -->
+	<!--Participants -->
+	<!-- -->
 	<xs:complexType name="ParticipantsType">
 		<xs:annotation>
 			<xs:documentation>The list of vessels/aircraft to be modelled in this
@@ -994,11 +1007,9 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<!--                       -->
-	<!--
-		declare instances of the vessel types so we can create them externally
-	-->
-	<!--            -->
+	<!-- -->
+	<!-- declare instances of the vessel types so we can create them externally -->
+	<!-- -->
 	<xs:element name="FixedWing" type="FixedWingType">
 		<xs:annotation>
 			<xs:documentation>instance of subject, declared to allow standalone
@@ -1171,9 +1182,9 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<!--                                -->
-	<!--Radiated noise levels-->
-	<!--                                -->
+	<!-- -->
+	<!--Radiated noise levels -->
+	<!-- -->
 	<xs:complexType name="SSKBroadbandType">
 		<xs:annotation>
 			<xs:documentation>Radiated noise for SSK, includes dived and snorting
@@ -1228,8 +1239,8 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<!--layered chart data-->
-	<!--                                -->
+	<!--layered chart data -->
+	<!-- -->
 	<xs:complexType name="DebriefLayerType">
 		<xs:annotation>
 			<xs:documentation>A freeform text layer layer containing Debrief
@@ -1242,9 +1253,9 @@
 			<xs:any processContents="skip" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
-	<!--                                -->
-	<!--Utility types-->
-	<!--                                -->
+	<!-- -->
+	<!--Utility types -->
+	<!-- -->
 	<xs:attribute name="Type">
 		<xs:annotation>
 			<xs:documentation>Vehicle categorisation</xs:documentation>
@@ -1782,9 +1793,9 @@
 				minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
-	<!--                                -->
-	<!--Data values-->
-	<!--                                -->
+	<!-- -->
+	<!--Data values -->
+	<!-- -->
 	<xs:complexType name="DurationType">
 		<xs:annotation>
 			<xs:documentation>Duration (time period)</xs:documentation>
@@ -1864,9 +1875,9 @@
 		</xs:attribute>
 		<xs:attribute name="Value" type="xs:float" use="required" />
 	</xs:complexType>
-	<!--                                -->
-	<!--Behaviours-->
-	<!--                                -->
+	<!-- -->
+	<!--Behaviours -->
+	<!-- -->
 	<xs:element name="Waterfall" type="WaterfallType">
 		<xs:annotation>
 			<xs:documentation>Standalone instance of a waterfall behaviour
@@ -2314,12 +2325,12 @@
 		<xs:complexContent>
 			<xs:extension base="DecisionModelType">
 				<xs:sequence>
-					<xs:choice>
+					<xs:choice minOccurs="0" maxOccurs="1">
 						<xs:element name="Detection" type="DetectionType" />
 						<xs:element name="DetectionForPeriod" type="DetectionForPeriodType" />
 						<xs:element name="ElapsedTime" type="ElapsedTimeType" />
 					</xs:choice>
-					<xs:choice>
+					<xs:choice minOccurs="0" maxOccurs="1">
 						<xs:element name="ManoeuvreToLocation" type="ManoeuvreToLocationType" />
 						<xs:element name="ManoeuvreToCourse" type="ManoeuvreToCourseType" />
 						<xs:element name="ChangeSensorLineUp" type="ChangeSensorLineUpType" />
@@ -2348,7 +2359,8 @@
 	</xs:complexType>
 	<xs:complexType name="ElapsedTimeType">
 		<xs:annotation>
-			<xs:documentation>Stop the behaviour after the specified period
+			<xs:documentation>Stop the behaviour after the specified period (zero
+				period to just fire once)
 			</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible: inherited,
 				duration Editable:
@@ -2494,7 +2506,8 @@
 						<xs:annotation>
 							<xs:documentation>The type of platform we're defending
 								(investigate targets nearest
-								to the first matching platform of this type) </xs:documentation>
+								to the first matching platform of
+								this type) </xs:documentation>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="Height" type="WorldDistanceType"
@@ -2517,7 +2530,8 @@
 					use="optional">
 					<xs:annotation>
 						<xs:documentation>Whether platforms conduct collaborative search,
-						only trying to ID a target if it hasn't already been done by one in the scenario</xs:documentation>
+							only trying to ID a target if it hasn't already been done by one
+							in the scenario</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
@@ -2544,7 +2558,8 @@
 					<xs:annotation>
 						<xs:documentation>Whether to allow the trailing platform to modify
 							it's speed
-							to maintain the optimal trail distance</xs:documentation>
+							to maintain the optimal trail distance
+						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 
@@ -2930,8 +2945,6 @@
 							<xs:enumeration value="ADS_DEPLOYED" />
 							<xs:enumeration value="ADS_HOUSED" />
 							<xs:enumeration value="IN_HOVER" />
-							<xs:enumeration value="ACTIVE_SENSOR_ON" />
-							<xs:enumeration value="ACTIVE_SENSOR_OFF" />
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
@@ -2985,13 +2998,11 @@
 			<xs:extension base="DecisionModelType" />
 		</xs:complexContent>
 	</xs:complexType>
-	<!--                                -->
-	<!--Scenario observers-->
-	<!--                                -->
-	<!--
-		<xs:complexContent> <xs:extension base="DecisionModelType">
-		<xs:sequence> </xs:sequence> </xs:extension> </xs:complexContent>
-	-->
+	<!-- -->
+	<!--Scenario observers -->
+	<!-- -->
+	<!-- <xs:complexContent> <xs:extension base="DecisionModelType"> <xs:sequence> 
+		</xs:sequence> </xs:extension> </xs:complexContent> -->
 	<xs:complexType name="CoreObserverType" abstract="true">
 		<xs:annotation>
 			<xs:documentation>Core observer functionality</xs:documentation>
@@ -3142,7 +3153,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-		<xs:complexType name="DetectionObserverType">
+	<xs:complexType name="DetectionObserverType">
 		<xs:annotation>
 			<xs:documentation>Record any detections</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible:Inherited .
@@ -3538,9 +3549,9 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<!--                                -->
-	<!--Monte Carlo stuff-->
-	<!--                                -->
+	<!-- -->
+	<!--Monte Carlo stuff -->
+	<!-- -->
 	<xs:complexType name="ScenarioGeneratorType">
 		<xs:annotation>
 			<xs:documentation>Container for either multi-scenario,
