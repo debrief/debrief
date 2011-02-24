@@ -2930,6 +2930,8 @@
 							<xs:enumeration value="ADS_DEPLOYED" />
 							<xs:enumeration value="ADS_HOUSED" />
 							<xs:enumeration value="IN_HOVER" />
+							<xs:enumeration value="ACTIVE_SENSOR_ON" />
+							<xs:enumeration value="ACTIVE_SENSOR_OFF" />
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
