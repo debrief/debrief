@@ -740,13 +740,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	@Override
 	public UIDisplay getUI()
 	{
 		return _myUI;
 	}
 
-	@Override
 	public void selectFirstRow()
 	{
 		_simTable.selectFirstRow();

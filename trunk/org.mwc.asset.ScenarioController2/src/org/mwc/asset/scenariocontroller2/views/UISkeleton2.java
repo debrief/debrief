@@ -188,13 +188,11 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	@Override
 	public Composite getMultiTableHolder()
 	{
 		return multiTableHolder;
 	}
 
-	@Override
 	public void setScenario(final String name)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -206,7 +204,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setControl(final String name)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -218,7 +215,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void addGenerateListener(final SelectionListener listener)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -230,7 +226,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void addRunAllListener(final SelectionListener listener)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -242,7 +237,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setRunAllEnabled(final boolean b)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -254,7 +248,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setGenerateEnabled(final boolean b)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -266,7 +259,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setInitEnabled(final boolean enabled)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -278,7 +270,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setStepEnabled(final boolean enabled)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -290,7 +281,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setPlayEnabled(final boolean enabled)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -302,7 +292,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setPlayLabel(final String text)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -314,7 +303,6 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void setTime(final String time)
 	{
 		Display.getDefault().syncExec(new Runnable()
@@ -326,19 +314,16 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		});
 	}
 
-	@Override
 	public void addInitListener(SelectionAdapter selectionAdapter)
 	{
 		btnInit.addSelectionListener(selectionAdapter);
 	}
 
-	@Override
 	public void addStepListener(SelectionAdapter selectionAdapter)
 	{
 		btnStep.addSelectionListener(selectionAdapter);
 	}
 
-	@Override
 	public void addPlayListener(SelectionAdapter selectionAdapter)
 	{
 		btnPlay.addSelectionListener(selectionAdapter);

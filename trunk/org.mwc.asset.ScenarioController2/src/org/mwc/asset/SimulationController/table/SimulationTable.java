@@ -513,7 +513,6 @@ public class SimulationTable
 		Display.getDefault().syncExec(new Runnable()
 		{
 
-			@Override
 			public void run()
 			{
 				// do we have data?

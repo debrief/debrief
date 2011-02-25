@@ -148,7 +148,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		// listen out for scenarios being selected in the table
 		_myDisplay.addSelectionChangedListener(new ISelectionChangedListener()
 		{
-			@Override
 			public void selectionChanged(SelectionChangedEvent event)
 			{
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
@@ -219,13 +218,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		_stepListener = new ScenarioSteppedListener()
 		{
 
-			@Override
 			public void step(ScenarioType scenario, long newTime)
 			{
 				newTime(newTime);
 			}
 
-			@Override
 			public void restart(ScenarioType scenario)
 			{
 			}
@@ -233,32 +230,26 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 
 		_runListener = new ScenarioRunningListener()
 		{
-			@Override
 			public void started()
 			{
 			}
 
-			@Override
 			public void restart(ScenarioType scenario)
 			{
 			}
 
-			@Override
 			public void paused()
 			{
 			}
 
-			@Override
 			public void newStepTime(int val)
 			{
 			}
 
-			@Override
 			public void newScenarioStepTime(int val)
 			{
 			}
 
-			@Override
 			public void finished(long elapsedTime, String reason)
 			{
 				doFinish();
