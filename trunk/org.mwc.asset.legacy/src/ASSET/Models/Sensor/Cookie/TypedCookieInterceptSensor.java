@@ -135,14 +135,6 @@ public class TypedCookieInterceptSensor extends CoreSensor
 				int medium = thisS.getMedium();
 				if (medium == _medium)
 				{
-					if (range == null)
-					{
-						sep = target.getStatus().getLocation()
-								.subtract(host.getStatus().getLocation());
-						range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
-
-					}
-
 					// see if we can see at this range
 					// loop through our detection types
 					for (Iterator<TypedRangeDoublet> iterator = _rangeDoublets.iterator(); iterator
@@ -153,6 +145,15 @@ public class TypedCookieInterceptSensor extends CoreSensor
 						TypedRangeDoublet doublet = iterator.next();
 						if (doublet.mayDetect(target.getCategory()))
 						{
+							// sort out the nrage
+							if (range == null)
+							{
+								sep = target.getStatus().getLocation()
+										.subtract(host.getStatus().getLocation());
+								range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
+							}
+
+							// see if it's in range
 							if (doublet.canDetect(range))
 							{
 

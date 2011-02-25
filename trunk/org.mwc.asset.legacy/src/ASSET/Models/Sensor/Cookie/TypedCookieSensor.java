@@ -387,11 +387,11 @@ public class TypedCookieSensor extends CoreSensor
 				{
 					String thisType = iterator.next();
 					// right, does this match
-					if (targetCat.getEnvironment().equals(thisType))
-						res = true;
-					if (targetCat.getForce().equals(thisType))
-						res = true;
 					if (targetCat.getType().equals(thisType))
+						res = true;
+					else if (targetCat.getEnvironment().equals(thisType))
+						res = true;
+					else if (targetCat.getForce().equals(thisType))
 						res = true;
 				}
 			}
