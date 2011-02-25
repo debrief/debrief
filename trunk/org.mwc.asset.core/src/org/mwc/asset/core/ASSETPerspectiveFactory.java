@@ -24,29 +24,27 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT,
-				0.25f, editorArea);
+				0.4f, editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
 
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM,
-				0.2f, "topLeft");
-		midLeft.addPlaceholder(CorePlugin.OVERVIEW_PLOT);
-		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);
-		midLeft.addView(ASSETPlugin.VESSEL_MONITOR);
-		midLeft.addPlaceholder(ASSETPlugin.SENSOR_MONITOR);
+//	//				0.2f, "topLeft");
 
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout upperMidLeft = layout.createFolder("upperMidLeft",
-				IPageLayout.TOP, 0.3f, "midLeft");
+				IPageLayout.BOTTOM, 0.2f, "topLeft");
 		upperMidLeft.addView(ASSETPlugin.SCENARIO_CONTROLLER2);
 		upperMidLeft.addPlaceholder(IPageLayout.ID_BOOKMARKS);
+		upperMidLeft.addPlaceholder(CorePlugin.OVERVIEW_PLOT);
+		upperMidLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);
+		upperMidLeft.addPlaceholder(ASSETPlugin.SENSOR_MONITOR);
 		
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft",
-				IPageLayout.BOTTOM, 0.5f, "midLeft");
+				IPageLayout.BOTTOM, 0.6f, "upperMidLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 
@@ -62,7 +60,6 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		// and our view shortcuts
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
-		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		layout.addShowViewShortcut(ASSETPlugin.SCENARIO_CONTROLLER2);
 		layout.addShowViewShortcut(ASSETPlugin.VESSEL_MONITOR);
