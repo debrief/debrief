@@ -9,15 +9,17 @@
 package ASSET.Util.MonteCarlo;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.jaxen.JaxenException;
+import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -35,11 +37,6 @@ public final class XMLVariance
 	 * the name of this variance
 	 */
 	private String _myName = null;
-
-	/**
-	 * the XPath identifier for this variance
-	 */
-	private XPathExpression _myPath = null;
 
 	/**
 	 * the xpath id we use
@@ -170,30 +167,30 @@ public final class XMLVariance
 		return _myObject.getCurValue();
 	}
 
-	/**
-	 * return the current value of the our variance in the suppled document
-	 */
-	public final String getValueIn(final Document document)
+	private String insertPrefixesTo(final String theXPath)
 	{
-		String res = null;
-		try
-		{
-			// find our object
-			final Element ourObj = (Element) _myPath.evaluate(document,
-					XPathConstants.NODE);
 
-			// did we find it?
-			if (ourObj != null)
+		String theRes = new String(theXPath);
+		String[] items = theRes.split("/");
+		for (int i = 0; i < items.length; i++)
+		{
+			String thisA = items[i];
+			if (thisA.length() > 2)
 			{
-				// perform our operation
-				res = _myObject.getCurValueIn(ourObj);
+				if (Character.isLetter(thisA.charAt(0)))
+				{
+					// right, we don't just to a straight-forward replace, since our
+					// phrase may appear more
+					// than once in the expression, or within another string.
+					// so, we prepend the search with a slash, and include that slash
+					// with the replacement string
+					theRes = theRes.replace("/" + thisA, "/" + NAMESPACE_PREFIX + ":"
+							+ thisA);
+				}
 			}
 		}
-		catch (Exception je)
-		{
-			throw new java.lang.RuntimeException(je.getMessage());
-		}
-		return res;
+
+		return theRes;
 	}
 
 	/**
@@ -217,45 +214,41 @@ public final class XMLVariance
 			theXPath = _myId;
 		}
 
-		// find our objects
-		NodeList ourObj = null;
-
-		try
-		{
-			_myPath = NamespaceContextProvider.createPath(theXPath);
-			
-			ourObj = (NodeList) _myPath.evaluate(document, XPathConstants.NODESET);
-
-		}
-		catch (XPathExpressionException je)
-		{
-			throw new IllegalExpressionException(theXPath, je);
-		}
-
 		// keep track of the values we use - to become a hashmap
 		String resStr = "";
+
+		List<?> results = null;
+		try
+		{
+			String myPath = insertPrefixesTo(theXPath);
+			DOMXPath expression = new org.jaxen.dom.DOMXPath(myPath);
+			expression.addNamespace(NAMESPACE_PREFIX, "http://www.mwc.org/asset");
+			results = expression.selectNodes(document);
+
+		}
+		catch (JaxenException e)
+		{
+			e.printStackTrace();
+		}
 
 		// did we find it?
 		boolean foundHim = false;
 
-		if (ourObj != null)
+		if (results != null)
 		{
-			if (ourObj.getLength() > 0)
+			if (results.size() > 0)
 			{
 				// yup, found hime. we don't need to throw the exception now
 				foundHim = true;
 
-				for (int i = 0; i < ourObj.getLength(); i++)
+				Iterator<?> iter = results.iterator();
+				while (iter.hasNext())
 				{
-					// get the next one
-					Element element = (Element) ourObj.item(i);
-
-					// perform our operation
-					resStr += _myObject.execute(element, document);
+					Element ele = (Element) iter.next();
+					resStr += _myObject.execute(ele, document);
 				}
 			}
 		}
-
 		// did we find him?
 		if (!foundHim)
 		{
@@ -289,9 +282,6 @@ public final class XMLVariance
 		boolean res = true;
 
 		if (!_myName.equals(other._myName))
-			res = false;
-
-		if (!_myPath.equals(other._myPath))
 			res = false;
 
 		if (!_myObject.getCurValue().equals(other._myObject.getCurValue()))
@@ -694,13 +684,15 @@ public final class XMLVariance
 			boundURI = URI;
 		}
 
-		/** convenience method that sorts out some xpath bits for us
+		/**
+		 * convenience method that sorts out some xpath bits for us
 		 * 
 		 * @param theXPath
 		 * @return
 		 * @throws XPathExpressionException
 		 */
-		public static XPathExpression createPath(final String theXPath) throws XPathExpressionException
+		public static XPathExpression createPath(final String theXPath)
+				throws XPathExpressionException
 		{
 			XPathFactory xpf = XPathFactory.newInstance();
 			XPath xp = xpf.newXPath();
@@ -737,10 +729,13 @@ public final class XMLVariance
 				{
 					if (Character.isLetter(thisA.charAt(0)))
 					{
-						// right, we don't just to a straight-forward replace, since our phrase may appear more
+						// right, we don't just to a straight-forward replace, since our
+						// phrase may appear more
 						// than once in the expression, or within another string.
-						// so, we prepend the search with a slash, and include that slash with the replacement string
-						theRes = theRes.replace("/" + thisA,"/" +  boundPrefix + ":" + thisA);
+						// so, we prepend the search with a slash, and include that slash
+						// with the replacement string
+						theRes = theRes.replace("/" + thisA, "/" + boundPrefix + ":"
+								+ thisA);
 					}
 				}
 			}
