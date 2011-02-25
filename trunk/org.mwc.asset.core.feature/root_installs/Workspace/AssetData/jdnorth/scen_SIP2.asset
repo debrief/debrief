@@ -19,7 +19,7 @@
 			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="6" Long="4"></shortLocation>
+					<shortLocation Lat="5" Long="4"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
@@ -30,7 +30,7 @@
 							<shortLocation Lat="4" Long="5"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="16" Units="kts" />
+					<Speed Value="18" Units="kts" />
 				</Transit>
 				<Composite Name="disable active">
 					<ElapsedTime Name="zero time">
@@ -57,7 +57,7 @@
 				<Transit Name="3" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="6" Long="8"></shortLocation>
+							<shortLocation Lat="5" Long="8"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="16" Units="kts" />
@@ -90,7 +90,7 @@
 							<shortLocation Lat="2.9" Long="6"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="18" Units="kts" />
+					<Speed Value="8" Units="kts" />
 				</Transit>
 				<Composite Name="disable active">
 					<ElapsedTime Name="zero time">
@@ -105,7 +105,7 @@
 							<shortLocation Lat="3.8" Long="6"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="18" Units="kts" />
+					<Speed Value="12" Units="kts" />
 				</Transit>
 				<Composite Name="enable active">
 					<ElapsedTime Name="zero time">
@@ -117,10 +117,40 @@
 				<Transit Name="5b" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="4.5" Long="6"></shortLocation>
+							<shortLocation Lat="3.9" Long="6"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="18" Units="kts" />
+					<Speed Value="8" Units="kts" />
+				</Transit>
+				<Composite Name="disable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="false" Name="active off"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="5c" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.6" Long="6"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+				</Transit>
+				<Composite Name="enable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="true" Name="active on"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="5d" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.7" Long="6"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="8" Units="kts" />
 				</Transit>
 				<Composite Name="disable active">
 					<ElapsedTime Name="zero time">
@@ -132,7 +162,7 @@
 				<Transit Name="6" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="6" Long="4"></shortLocation>
+							<shortLocation Lat="5" Long="4"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="16" Units="kts" />

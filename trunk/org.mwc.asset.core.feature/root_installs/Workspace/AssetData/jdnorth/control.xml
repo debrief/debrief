@@ -18,7 +18,7 @@
 				</Variance>
 				<Variance name="random pause" id="/Waterfall/Wait/Duration">
 					<Attribute name="Value">
-						<Range max="0" min="36" />
+						<Range max="0" min="48" />
 					</Attribute>
 					
 				</Variance>
@@ -26,7 +26,7 @@
 		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="120" Units="hours" ></Duration>
+			<Duration Value="180" Units="hours" ></Duration>
 		</TimeObserver>
 		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
