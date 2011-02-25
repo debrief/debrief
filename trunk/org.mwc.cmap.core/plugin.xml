@@ -27,6 +27,11 @@
                name="*">
          </export>
       </library>
+      <library name="libs/mockito-all-1.8.5.jar">
+         <export
+               name="*">
+         </export>
+      </library>
    </runtime>
 
    <requires>
