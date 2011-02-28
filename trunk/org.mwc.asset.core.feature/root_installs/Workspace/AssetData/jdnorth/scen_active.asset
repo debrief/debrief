@@ -19,7 +19,7 @@
 			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="4" Long="4"></shortLocation>
+					<shortLocation Lat="4" Long="7"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
@@ -27,7 +27,7 @@
 				<Transit Name="1" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="5.2" Long="3.5"></shortLocation>
+							<shortLocation Lat="5.2" Long="6.5"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -35,7 +35,7 @@
 				<Transit Name="2" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="5" Long="4.5"></shortLocation>
+							<shortLocation Lat="5" Long="7.5"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -43,7 +43,7 @@
 				<Transit Name="3" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="4" Long="5"></shortLocation>
+							<shortLocation Lat="4" Long="8"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -51,7 +51,7 @@
 				<Transit Name="4" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="4.4" Long="3.5"></shortLocation>
+							<shortLocation Lat="4.4" Long="6.5"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -59,7 +59,7 @@
 				<Transit Name="5" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="4.8" Long="3"></shortLocation>
+							<shortLocation Lat="4.8" Long="6"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -67,7 +67,7 @@
 				<Transit Name="6" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="4.6" Long="4.5"></shortLocation>
+							<shortLocation Lat="4.6" Long="7.5"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -101,6 +101,9 @@
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Waterfall Name="">
+				<Wait Name="random pause">
+					<Duration Value="1" Units="hours" />
+				</Wait>
 				<Evade Name="">
 					<Duration Value="10" Units="minutes" />
 					<FleeHeight Value="0.0" Units="ft" />
@@ -149,10 +152,10 @@
 				<fontcolour Value="RED" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="12" />
 				<tl>
-					<shortLocation Depth="0.000" Lat="0" Long="0" />
+					<shortLocation Depth="0.000" Lat="0" Long="4" />
 				</tl>
 				<br>
-					<shortLocation Depth="0.000" Lat="0" Long="4" />
+					<shortLocation Depth="0.000" Lat="0" Long="8" />
 				</br>
 			</line>
 			<circle Filled="false" Label="Search area" LabelLocation="Left"
@@ -180,7 +183,7 @@
 				<colour Value="BLUE" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
 				<centre>
-					<shortLocation Depth="0.000" Lat="4" Long="4" />
+					<shortLocation Depth="0.000" Lat="4" Long="7" />
 				</centre>
 			</textlabel>
 		</layer>
