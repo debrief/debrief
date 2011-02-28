@@ -237,7 +237,7 @@
 				<Transit Name="5d" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="4.7" Long="5.8"></shortLocation>
+							<shortLocation Lat="4.7" Long="5.4"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="8" Units="kts" />
