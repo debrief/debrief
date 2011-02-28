@@ -288,6 +288,42 @@
 					<shortLocation Depth="0.000" Lat="6" Long="4" />
 				</centre>
 			</textlabel>
+						<textlabel Label="1" LabelLocation="Left"
+				LabelVisible="true" Scale="small" Symbol="FilledCircle"
+				SymbolVisible="true" Visible="true">
+				<colour Value="BLUE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="5" Long="4" />
+				</centre>
+			</textlabel>
+			<textlabel Label="2" LabelLocation="Left"
+				LabelVisible="true" Scale="small" Symbol="FilledCircle"
+				SymbolVisible="true" Visible="true">
+				<colour Value="BLUE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="4" Long="5" />
+				</centre>
+			</textlabel>
+			<textlabel Label="3" LabelLocation="Left"
+				LabelVisible="true" Scale="small" Symbol="FilledCircle"
+				SymbolVisible="true" Visible="true">
+				<colour Value="BLUE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="4" Long="7" />
+				</centre>
+			</textlabel>
+			<textlabel Label="4" LabelLocation="Left"
+				LabelVisible="true" Scale="small" Symbol="FilledCircle"
+				SymbolVisible="true" Visible="true">
+				<colour Value="BLUE" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="5" Long="8" />
+				</centre>
+			</textlabel>
 		</layer>
 	</DebriefLayer>
 </Scenario>
