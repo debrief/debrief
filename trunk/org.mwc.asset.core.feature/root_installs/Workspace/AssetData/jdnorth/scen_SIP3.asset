@@ -24,6 +24,36 @@
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Sequence Name="SIP barrier" StayAlive="true">
+				<Transit Name="2" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.9" Long="4.1"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="16" Units="kts" />
+				</Transit>
+				<Composite Name="disable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="false" Name="active off"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="2" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.1" Long="4.9"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="16" Units="kts" />
+				</Transit>
+				<Composite Name="enable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="true" Name="active on"
+						Medium="ActiveBB" />
+				</Composite>
 				<Transit Name="1" Looping="false">
 					<WorldPath>
 						<Point>
@@ -43,6 +73,36 @@
 					<WorldPath>
 						<Point>
 							<shortLocation Lat="4" Long="7"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="16" Units="kts" />
+				</Transit>
+				<Composite Name="enable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="true" Name="active on"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="3" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.1" Long="7.1"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="16" Units="kts" />
+				</Transit>
+				<Composite Name="disable active">
+					<ElapsedTime Name="zero time">
+						<Duration Value="0.0" Units="millis" />
+					</ElapsedTime>
+					<ChangeSensorLineUp SwitchOn="false" Name="active off"
+						Medium="ActiveBB" />
+				</Composite>
+				<Transit Name="2" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="4.9" Long="7.9"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="16" Units="kts" />
@@ -117,7 +177,7 @@
 				<Transit Name="5" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="2.8" Long="5.8"></shortLocation>
+							<shortLocation Lat="2.72" Long="5.8"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="8" Units="kts" />
@@ -147,7 +207,7 @@
 				<Transit Name="5b" Looping="false">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="3.9" Long="5.8"></shortLocation>
+							<shortLocation Lat="3.85" Long="5.8"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="8" Units="kts" />
@@ -266,6 +326,31 @@
 				<TurningCircle Value="400.0" Units="m" />
 			</SSMovementCharacteristics>
 		</SSN>
+		<Helo Name="token">
+			<Category Type="SUBMARINE" Force="RED"
+				Environment="SUBSURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="0.0" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="" Long=""></shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Waterfall Name=""></Waterfall>
+			<HeloMovementCharacteristics Name="" FuelUsageRate="0.0"
+				DefaultTurnRate="0.0">
+				<MinSpeed Value="0.0" Units="m/s" />
+				<MaxSpeed Value="0.0" Units="m/s" />
+				<AccelerationRate Value="0.0" Units="m/s/s" />
+				<DecelerationRate Value="0.0" Units="m/s/s" />
+				<MinHeight Value="0.0" Units="ft" />
+				<MaxHeight Value="0.0" Units="ft" />
+				<DefaultClimbRate Value="0.0" Units="m/s" />
+				<DefaultDiveRate Value="0.0" Units="m/s" />
+				<DefaultClimbSpeed Value="0.0" Units="m/s" />
+				<DefaultDiveSpeed Value="0.0" Units="m/s" />
+			</HeloMovementCharacteristics>
+		</Helo>
 	</Participants>
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
@@ -315,7 +400,7 @@
 				<colour Value="BLUE" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
 				<centre>
-					<shortLocation Depth="0.000" Lat="6" Long="4" />
+					<shortLocation Depth="0.000" Lat="5" Long="4" />
 				</centre>
 			</textlabel>
 			<textlabel Label="1" LabelLocation="Left"
