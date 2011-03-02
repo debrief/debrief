@@ -19,7 +19,6 @@ public abstract class ScaledSym extends PlainSymbol
 	private static final long serialVersionUID = 1L;
 	private Vector<double[][]> _myCoords;
 
-
 	/**
 	 * getBounds
 	 * 
@@ -47,17 +46,29 @@ public abstract class ScaledSym extends PlainSymbol
 
 	abstract protected Vector<double[][]> getCoords();
 
-	/** give us a chance to cache the coordinates
+	/**
+	 * accessor for whether this type of symbol is specified in world or screen
+	 * coordinates
+	 * 
+	 * @return
+	 */
+	public boolean inScreenCoords()
+	{
+		return true;
+	}
+
+	/**
+	 * give us a chance to cache the coordinates
 	 * 
 	 * @return
 	 */
 	private Vector<double[][]> getMyCoords()
 	{
-		if(_myCoords == null)
+		if (_myCoords == null)
 			_myCoords = getCoords();
 		return _myCoords;
 	}
-	
+
 	/**
 	 * paint
 	 * 
@@ -73,13 +84,30 @@ public abstract class ScaledSym extends PlainSymbol
 		// set the colour
 		dest.setColor(getColor());
 
-		// create our centre point
+		// create centre rotation
+		// AffineTransform thisRotation = AffineTransform.getRotateInstance(
+		// -direction, theLocation.getLong(), theLocation.getLat());
+		AffineTransform thisRotation = AffineTransform.getRotateInstance(
+				-direction, 0, 0);
 
-		AffineTransform thisRotation = AffineTransform.getRotateInstance( -direction , theLocation.getLong(), theLocation.getLat());
+		// do the scale-factor
+		double scaleVal;
+		if (inScreenCoords())
+		{
+			// find out the screen size
+			scaleVal = 1;
+		}
+		else
+		{
+			scaleVal = 1;
+		}
+		AffineTransform scale = AffineTransform
+				.getScaleInstance(scaleVal, scaleVal);
 
+		// find the lines that make up the shape
 		Vector<double[][]> hullLines = getMyCoords();
 
-
+		// start looping through - to paint them
 		Iterator<double[][]> iter = hullLines.iterator();
 		while (iter.hasNext())
 		{
@@ -87,17 +115,36 @@ public abstract class ScaledSym extends PlainSymbol
 			double[][] thisLine = iter.next();
 			for (int i = 0; i < thisLine.length; i++)
 			{
-				double thisX = MWC.Algorithms.Conversions.m2Degs(thisLine[i][0])
-						+ theLocation.getLong();
-				double thisY = MWC.Algorithms.Conversions.m2Degs(thisLine[i][1])
+				Point2D raw = new Point2D.Double(thisLine[i][0], thisLine[i][1]);
+				Point2D postTurn = new Point2D.Double();
+				Point2D postScale = new Point2D.Double();
+
+				thisRotation.transform(raw, postTurn);
+				scale.transform(postTurn, postScale);
+
+				double latM = MWC.Algorithms.Conversions.m2Degs(postScale.getY())
 						+ theLocation.getLat();
+				double longM = MWC.Algorithms.Conversions.m2Degs(postScale.getX())
+						+ theLocation.getLong();
 
-				Point2D before = new Point2D.Double(thisX, thisY);
-				Point2D after = new Point2D.Double();
-				after = thisRotation.transform(before, after);
+				WorldLocation loc = new WorldLocation(latM, longM, 0d);
 
-				java.awt.Point newP = dest.toScreen(new WorldLocation(after.getY(),
-						after.getX(), 0));
+				// double thisX = MWC.Algorithms.Conversions.m2Degs(thisLine[i][0])
+				// + theLocation.getLong();
+				// double thisY = MWC.Algorithms.Conversions.m2Degs(thisLine[i][1])
+				// + theLocation.getLat();
+				//
+				// Point2D before = new Point2D.Double(thisX, thisY);
+				// Point2D after2 = new Point2D.Double();
+				// Point2D after3 = new Point2D.Double();
+				//
+				// // do the rotate
+				// thisRotation.transform(before, after2);
+				//
+				// // and the scale
+				// scale.transform(after2, after3);
+
+				java.awt.Point newP = dest.toScreen(loc);
 
 				if (lastPoint != null)
 				{

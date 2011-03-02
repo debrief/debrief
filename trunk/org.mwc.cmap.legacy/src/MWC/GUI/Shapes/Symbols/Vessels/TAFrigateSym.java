@@ -92,7 +92,7 @@ public class TAFrigateSym extends PlainSymbol {
 
   public String getType()
   {
-    return "TA Frigate";
+    return "TA Frigate3";
   }
 
 }

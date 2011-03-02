@@ -346,7 +346,8 @@ public class SymbolFactory
       vessels.put("Cruiser", MWC.GUI.Shapes.Symbols.Vessels.CruiserSym.class);
       vessels.put("Destroyer", MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym.class);
       vessels.put("Frigate", MWC.GUI.Shapes.Symbols.Vessels.FrigateSym.class);
-      vessels.put("TA Frigate", MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym.class);
+      vessels.put("TA Frigate3", MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym.class);
+      vessels.put("TA Frigate", MWC.GUI.Shapes.Symbols.Vessels.ScaledTAFrigateSym.class);
       vessels.put("Fishing_Vessel", MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
       vessels.put("Merchant", MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
       vessels.put("Unknown", MWC.GUI.Shapes.Symbols.Vessels.UnknownSym.class);
