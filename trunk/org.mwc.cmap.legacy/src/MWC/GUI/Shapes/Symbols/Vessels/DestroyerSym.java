@@ -33,66 +33,51 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.WorldLocation;
+import java.util.Vector;
 
-public class DestroyerSym extends PlainSymbol {
+public class DestroyerSym extends ScreenScaledSym
+{
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void getMetafile()
-  {
-  }
+	public java.awt.Dimension getBounds()
+	{
+		// sort out the size of the symbol at the current scale factor
+		java.awt.Dimension res = new java.awt.Dimension(
+				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	protected Vector<double[][]> getCoords()
+	{
+		Vector<double[][]> hullLines = new Vector<double[][]>();
 
-  public void paint(CanvasType dest, WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+		// start off with the top
+		hullLines.add(new double[][]
+		{
+		{ 5.8, -1 },
+		{ 0, -9 },
+		{ -5.8, -1 } });
 
+		// now the bottom
+		hullLines.add(new double[][]
+		{
+		{ 3.6, -4 },
+		{ 3.6, 6 },
+		{ 0, 9 },
+		{ -3.6, 6 },
+		{ -3.6, -4 } });
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+		return hullLines;
 
-    // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+	}
 
-    int wid = (int)(6 * getScaleVal());
-    int wid_2 = (int)(wid/2d);
-    int wid_3 = (int)(wid/3d);
-
-    // first the side pieces
-    dest.drawLine(centre.x - wid_3, centre.y - wid_2, centre.x - wid_3, centre.y + wid_2);
-    dest.drawLine(centre.x + wid_3, centre.y - wid_2, centre.x + wid_3, centre.y + wid_2);
-
-    // join the size pieces at the bottom
-    dest.drawLine(centre.x - wid_3, centre.y + wid_2, centre.x, centre.y + (int)(wid * 0.85));
-    dest.drawLine(centre.x + wid_3, centre.y + wid_2, centre.x, centre.y + (int)(wid * 0.85));
-
-    // now the top pieces
-    dest.drawLine(centre.x, centre.y - (int)(1.2 * wid), centre.x - (int)(0.5 * wid), centre.y - (int)(wid*0.33) );
-    dest.drawLine(centre.x, centre.y - (int)(1.2 * wid), centre.x + (int)(0.5 * wid), centre.y - (int)(wid*0.37) );
-
-  }
-
-  public String getType()
-  {
-    return "Destroyer";
-  }
+	public String getType()
+	{
+		return "Destroyer";
+	}
 
 }
-
-
-
-
