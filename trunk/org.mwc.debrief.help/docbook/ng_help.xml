@@ -3277,7 +3277,10 @@ and so on....</programlisting></para>
                     <note>
                         <para>In summer 2010 a set of scaled symbols were introduced. These are not
                             shown at fixed screen sizes, but as representative sizes of the subject
-                            vessel - so they resize as you zoom in on a plot.</para>
+                            vessel - so they resize as you zoom in on a plot.  In summer 2011 the
+                            range of vessels represented by scaled symbols was extended = plus it
+                            became possible to specify the length and width of the subject platform
+                            for a realistically sized ship representation.</para>
                     </note>
                 </sect2>
                 <sect2 id="more_buoy_patterns">
