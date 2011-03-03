@@ -36,63 +36,51 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.WorldLocation;
+import java.util.Vector;
 
-public class FrigateSym extends PlainSymbol {
+public class FrigateSym extends ScreenScaledSym
+{
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void getMetafile()
-  {  }
+	public java.awt.Dimension getBounds()
+	{
+		// sort out the size of the symbol at the current scale factor
+		java.awt.Dimension res = new java.awt.Dimension(
+				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	protected Vector<double[][]> getCoords()
+	{
+		Vector<double[][]> hullLines = new Vector<double[][]>();
 
-  public void paint(CanvasType dest, WorldLocation centre)
-  {
-    paint(dest, centre, 90.0);
-  }
+		// start with hull
+		hullLines.add(new double[][]
+		{
+		{ -4, -2 },
+		{ -4, 2 },
+		{ 4, -2 },
+		{ 4, 2 },
+		{ -4, -2 }});
 
+		// now the keel form
+		hullLines.add(new double[][]
+		{
+		{ -4, 2 },
+		{ 0, 5 },
+		{ 4, 2 } });
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+		return hullLines;
 
-    // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+	}
 
-    int wid = (int)(4 * getScaleVal());
-    int wid_2 = (int)(wid/2d);
-    int wid_4 = (int)(wid/4d);
-
-    // start with the cross-over bits
-    dest.drawLine(centre.x - wid, centre.y - wid_2, centre.x + wid, centre.y + wid_2);
-    dest.drawLine(centre.x - wid, centre.y + wid_2, centre.x + wid, centre.y - wid_2);
-    dest.drawLine(centre.x - wid, centre.y + wid_2, centre.x - wid, centre.y - wid_2);
-    dest.drawLine(centre.x + wid, centre.y + wid_2, centre.x + wid, centre.y - wid_2);
-
-    // now the dangly bits
-    dest.drawLine(centre.x - wid, centre.y + wid_2, centre.x, centre.y + 5 *  wid_4);
-    dest.drawLine(centre.x + wid, centre.y + wid_2, centre.x, centre.y + 5 *  wid_4);
-
-  }
-
-  public String getType()
-  {
-    return "Frigate";
-  }
+	public String getType()
+	{
+		return "Frigate";
+	}
 
 }
-
-
-
-
