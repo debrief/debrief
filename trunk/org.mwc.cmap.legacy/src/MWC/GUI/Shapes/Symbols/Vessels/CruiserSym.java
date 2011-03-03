@@ -33,70 +33,64 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
+import java.util.Vector;
+
 import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class CruiserSym extends PlainSymbol {
+public class CruiserSym extends ScreenScaledSym
+{
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void getMetafile()
-  {
-  }
+	public java.awt.Dimension getBounds()
+	{
+		// sort out the size of the symbol at the current scale factor
+		java.awt.Dimension res = new java.awt.Dimension(
+				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	{
+		// TODO Auto-generated method stub
+		super.paint(dest, theLocation, direction);
+	}
 
-  public void paint(CanvasType dest, WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	protected Vector<double[][]> getCoords()
+	{
+		Vector<double[][]> hullLines = new Vector<double[][]>();
 
+		// outer line
+		hullLines.add(new double[][]
+		{
+		{ -7, 0 },
+		{ 0, -10 },
+		{ 7, 0 },
+		{ 0, 3.8 },
+		{ -7, 0 },
+		{ 7, 0 } });
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+		// now the cross
+		hullLines.add(new double[][]
+		{
+		{ -1, -3 },
+		{ 0, -4 },
+		{ 1, -3 },
+		{ 0, -2 },
+		{ -1, -3 } });
 
-    // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+		return hullLines;
 
-    int wid = (int)(getScaleVal() * 2);
+	}
 
-    // start with the centre object
-    dest.fillOval(centre.x - wid/4, centre.y - wid/4, wid/2, wid/2);
-
-    double theta = MWC.Algorithms.Conversions.Degs2Rads(120.0);
-
-    int deltaX = (int)(Math.sin(theta) * wid * 3.0);
-    int deltaY =(int)(Math.cos(theta) * wid * 3.0);
-
-    // first travel from above the centre down to the points
-    dest.drawLine(centre.x, centre.y - wid * 3, centre.x + deltaX, centre.y - deltaY);
-    dest.drawLine(centre.x, centre.y - wid * 3, centre.x - deltaX, centre.y - deltaY);
-    dest.drawLine(centre.x - deltaX, centre.y - deltaY, centre.x + deltaX, centre.y - deltaY);
-
-    // join these points up
-    dest.drawLine(centre.x - deltaX, centre.y - deltaY, centre.x, centre.y - (int)(2.2 * deltaY));
-    dest.drawLine(centre.x + deltaX, centre.y - deltaY, centre.x, centre.y - (int)(2.2 * deltaY));
-
-
-  }
-
-  public String getType()
-  {
-    return "Cruiser";
-  }
+	public String getType()
+	{
+		return "Cruiser";
+	}
 
 }
-
-
-
-
