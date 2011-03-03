@@ -5,7 +5,7 @@ import java.util.Vector;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
 
-public class ScaledTAFrigateSym extends ScaledSym
+public class ScaledTAFrigateSym extends ScreenScaledSym
 {
 
 	/**
@@ -13,25 +13,14 @@ public class ScaledTAFrigateSym extends ScaledSym
 	 */
 	private static final long serialVersionUID = 1L;
 
-	
-	
-	
-	@Override
-	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
-	{
-		// sort out the symbol scale - so our data is presented in screen units
-		
-		
-		this.setScaleVal(100);
-		
-		
-		super.paint(dest, theLocation, direction);
-	}
-
-
+	/** initialise, and set the scale factor
+	 * 
+	 */	
 	public ScaledTAFrigateSym()
 	{
 		super();
+		// set the scale
+		this.setScaleVal(2);
 	}
 
 
@@ -70,14 +59,16 @@ public class ScaledTAFrigateSym extends ScaledSym
 		hullLines.add(new double[][]
 			                       		{
 		{ 0,	5},
-		{ -0.4,	5.3},
-		{ -0.5,	6},
-		{ -0.4,	6.7},
+		{ -0.8,	5.3},
+		{ -1,	6},
+		{ -0.8,	6.7},
 		{ 0,	7},
-		{ 0.4,	7.3},
-		{ 0.5,	8},
-		{ 0.4,	8.7},
-		{ 0,	9 } });
+		{ 0.8,	7.3},
+		{ 1,	8},
+		{ 0.8,	8.7},
+		{ 0,	9 },
+		{ -0.4,	9.1 }
+		});
 	
 		return hullLines;
 

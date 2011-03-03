@@ -33,7 +33,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	}
 
 	/**
-	 * paint
+	 * paint - ignoring the current direction
 	 * 
 	 * @param dest
 	 *          parameter for paint
@@ -45,17 +45,6 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	}
 
 	abstract protected Vector<double[][]> getCoords();
-
-	/**
-	 * accessor for whether this type of symbol is specified in world or screen
-	 * coordinates
-	 * 
-	 * @return
-	 */
-	public boolean inScreenCoords()
-	{
-		return true;
-	}
 
 	/**
 	 * give us a chance to cache the coordinates
@@ -84,12 +73,11 @@ public abstract class ScreenScaledSym extends PlainSymbol
 		// set the colour
 		dest.setColor(getColor());
 
-		// create centre rotation
-		// AffineTransform thisRotation = AffineTransform.getRotateInstance(
-		// -direction, theLocation.getLong(), theLocation.getLat());
+		// get the origin in screen coordinates
+		Point centre = dest.toScreen(theLocation);
+
 		AffineTransform thisRotation = AffineTransform.getRotateInstance(
 				-direction, 0, 0);
-		Point centre = dest.toScreen(theLocation);
 		AffineTransform thisTranslate = AffineTransform.getTranslateInstance(
 				centre.x, centre.y);
 		AffineTransform thisScale = AffineTransform.getScaleInstance(getScaleVal(), getScaleVal());
@@ -97,7 +85,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 		// find the lines that make up the shape
 		Vector<double[][]> hullLines = getMyCoords();
 
-		// and our data objects
+		// now for our reusable data objects
 		Point2D raw = new Point2D.Double();
 		Point2D postTurn = new Point2D.Double();
 		Point2D postScale  = new Point2D.Double();
@@ -112,18 +100,22 @@ public abstract class ScreenScaledSym extends PlainSymbol
 			// now loop through the points
 			for (int i = 0; i < thisLine.length; i++)
 			{
+				// ok, get this point
 				raw.setLocation(thisLine[i][0], thisLine[i][1]);
 
+				// apply transformations
 				thisRotation.transform(raw, postTurn);
 				thisScale.transform(postTurn, postScale);
 				thisTranslate.transform(postScale, postTranslate);
 
+				// and plot (as long as it isn't the first point)
 				if (lastPoint != null)
 				{
 					dest.drawLine((int) lastPoint.getX(), (int) lastPoint.getY(),
 							(int) postTranslate.getX(), (int) postTranslate.getY());
 				}
 
+				// remember the last point
 				lastPoint = new Point2D.Double(postTranslate.getX(),
 						postTranslate.getY());
 			}

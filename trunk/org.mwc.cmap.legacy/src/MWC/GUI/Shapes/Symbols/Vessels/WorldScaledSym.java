@@ -10,7 +10,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public abstract class ScaledSym extends PlainSymbol
+public abstract class WorldScaledSym extends PlainSymbol
 {
 
 	/**

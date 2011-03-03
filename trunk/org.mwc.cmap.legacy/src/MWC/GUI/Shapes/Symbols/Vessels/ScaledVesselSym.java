@@ -2,7 +2,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
-public class ScaledVesselSym extends ScaledSym
+public class ScaledVesselSym extends WorldScaledSym
 {
 
 	/**
