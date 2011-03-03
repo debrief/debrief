@@ -33,67 +33,61 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
+import java.util.Vector;
+
 import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class FishingVesselSym extends PlainSymbol {
+public class FishingVesselSym extends ScreenScaledSym
+{
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void getMetafile()
-  {
-  }
+	public java.awt.Dimension getBounds()
+	{
+		// sort out the size of the symbol at the current scale factor
+		java.awt.Dimension res = new java.awt.Dimension(
+				(int) (2 * 4 * getScaleVal()), (int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)( 3 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public void paint(CanvasType dest, WorldLocation theLocation, double direction)
+	{
+		// override the scale values
+		super.setScaleVal(1);
+		super.paint(dest, theLocation, direction);
+	}
 
-  public void paint(CanvasType dest, WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	protected Vector<double[][]> getCoords()
+	{
+		Vector<double[][]> hullLines = new Vector<double[][]>();
 
+		hullLines.add(new double[][]
+		{
+		{ -9, -4 },
+		{ 9, -4 },
+		{ 8.9, -1.45 },
+		{ 7.91, 0.3 },
+		{ 6.74, 1.1 },
+		{ 4.08, 3.41 },
+		{ 0, 4.02 },
+		{ -4.08, 3.41 },
+		{-6.74, 1.1 },
+		{ -7.91, 0.3 },
+		{ -8.9, -1.45 },
+		{ -9, -4 } });
 
-  public void paint(CanvasType dest, WorldLocation theLocation, double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+		return hullLines;
 
-    // create our centre point
-    java.awt.Point centre = dest.toScreen(theLocation);
+	}
 
-    int wid = (int)(6 * getScaleVal());
-    int tinyWid = (int) getScaleVal();
-
-    int wid_3_4 = (int)(wid * 0.75);
-    int wid_4 = (int)(wid * 0.25);
-
-    // start with the centre object
-    dest.fillOval(centre.x - tinyWid/2, centre.y - tinyWid/2, tinyWid, tinyWid);
-
-    // now the half circle
-    dest.drawArc(centre.x - wid/2, centre.y - wid_3_4, wid, wid, 180, 180);
-
-    // now the slash
-    dest.drawLine(centre.x - wid/2, centre.y - wid_4,
-                 centre.x + wid/2, centre.y - wid_4);
-
-
-  }
-
-  public String getType()
-  {
-    return "Fishing_Vessel";
-  }
+	public String getType()
+	{
+		return "Fishing_Vessel";
+	}
 
 }
-
-
-
-
