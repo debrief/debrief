@@ -47,6 +47,7 @@ import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -717,7 +718,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * class containing editable details of a track
 	 */
-	public final class trackInfo extends Editable.EditorType
+	public final class trackInfo extends Editable.EditorType implements Editable.DynamicDescriptors
 	{
 
 		/**
@@ -752,7 +753,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			try
 			{
-				final PropertyDescriptor[] res =
+				PropertyDescriptor[] res =
 				{
 						expertProp("SymbolType",
 								"the type of symbol plotted for this label", FORMAT),
@@ -790,6 +791,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
 				res[1]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+
+				// SPECIAL CASE: if we have a world scaled symbol, provide editors for
+				// the symbol size
+				TrackWrapper item = (TrackWrapper) this.getData();
+				if (item._theSnailShape instanceof WorldScaledSym)
+				{
+					// yes = better create height/width editors
+					PropertyDescriptor[] res2 = new PropertyDescriptor[res.length + 2];
+					System.arraycopy(res, 0, res2, 2, res.length);
+					res2[0] = expertProp("SymbolLength", "Length of symbol", FORMAT);
+					res2[1] = expertProp("SymbolWidth", "Width of symbol", FORMAT);
+
+					// and now use the new value
+					res = res2;
+				}
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -1278,7 +1294,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			seg.setWrapper(this);
 			_thePositions.addSegment((TrackSegment) point);
 			done = true;
-			
+
 			// hey, sort out the positions
 			sortOutRelativePositions();
 		}
@@ -3339,6 +3355,46 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_theSnailShape.setColor(this.getColor());
 
 			_theSnailShape.setScaleVal(scale);
+		}
+	}
+
+	public WorldDistance getSymbolLength()
+	{
+		WorldDistance res = null;
+		if (_theSnailShape instanceof WorldScaledSym)
+		{
+			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			res = sym.getLength();
+		}
+		return res;
+	}
+
+	public void setSymbolLength(WorldDistance symbolLength)
+	{
+		if (_theSnailShape instanceof WorldScaledSym)
+		{
+			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			sym.setLength(symbolLength);
+		}
+	}
+
+	public WorldDistance getSymbolWidth()
+	{
+		WorldDistance res = null;
+		if (_theSnailShape instanceof WorldScaledSym)
+		{
+			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			res = sym.getWidth();
+		}
+		return res;
+	}
+
+	public void setSymbolWidth(WorldDistance symbolWidth)
+	{
+		if (_theSnailShape instanceof WorldScaledSym)
+		{
+			WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+			sym.setHeight(symbolWidth);
 		}
 	}
 

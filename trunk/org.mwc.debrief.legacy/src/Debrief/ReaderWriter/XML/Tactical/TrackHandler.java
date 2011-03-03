@@ -23,13 +23,17 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
+import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
 public final class TrackHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
+	private static final String SYMBOL_WIDTH = "SYMBOL_WIDTH";
+	private static final String SYMBOL_LENGTH = "SYMBOL_LENGTH";
 	private static final String SOLUTIONS_VISIBLE = "SolutionsVisible";
 	private static final String SENSORS_VISIBLE = "SensorsVisible";
 	private static final String PLOT_ARRAY_CENTRE = "PlotArrayCentre";
@@ -43,6 +47,8 @@ public final class TrackHandler extends
 
 	// our "working" track
 	Debrief.Wrappers.TrackWrapper _myTrack;
+	protected WorldDistance _symWidth;
+	protected WorldDistance _symLength;
 
 	/**
 	 * class which contains list of textual representations of label locations
@@ -64,9 +70,7 @@ public final class TrackHandler extends
 		final Element trk = doc.createElement("track");
 		trk.setAttribute("Name", toXML(track.getName()));
 		trk.setAttribute("Visible", writeThis(track.getVisible()));
-		trk
-				.setAttribute("PositionsVisible",
-						writeThis(track.getPositionsVisible()));
+		trk.setAttribute("PositionsVisible", writeThis(track.getPositionsVisible()));
 		trk.setAttribute("NameVisible", writeThis(track.getNameVisible()));
 		trk.setAttribute("NameAtStart", writeThis(track.getNameAtStart()));
 		trk.setAttribute(LINE_THICKNESS, writeThis(track.getLineThickness()));
@@ -79,8 +83,8 @@ public final class TrackHandler extends
 		trk.setAttribute("Symbol", track.getSymbolType());
 
 		// whether the sensor/solution layers should be visible
-		trk.setAttribute(SENSORS_VISIBLE, writeThis(track.getSensors()
-				.getVisible()));
+		trk.setAttribute(SENSORS_VISIBLE,
+				writeThis(track.getSensors().getVisible()));
 		trk.setAttribute(SOLUTIONS_VISIBLE, writeThis(track.getSolutions()
 				.getVisible()));
 
@@ -92,6 +96,12 @@ public final class TrackHandler extends
 		{
 			FontHandler.exportFont(theFont, trk, doc);
 		}
+		
+		// and the symbol
+		if(track.getSymbolLength() != null)
+			WorldDistanceHandler.exportDistance(SYMBOL_LENGTH, track.getSymbolLength(), trk, doc);
+		if(track.getSymbolWidth() != null)
+			WorldDistanceHandler.exportDistance(SYMBOL_WIDTH, track.getSymbolWidth(), trk, doc);
 
 		// first output any sensor data
 		final Enumeration<Editable> sensors = track.getSensors().elements();
@@ -115,7 +125,8 @@ public final class TrackHandler extends
 		{
 			while (solutions.hasMoreElements())
 			{
-				final Debrief.Wrappers.TMAWrapper thisS = (TMAWrapper) solutions.nextElement();
+				final Debrief.Wrappers.TMAWrapper thisS = (TMAWrapper) solutions
+						.nextElement();
 				TMAHandler.exportSolutionTrack(thisS, trk, doc);
 			}
 		}
@@ -358,6 +369,24 @@ public final class TrackHandler extends
 				_myTrack.setLineThickness(value);
 			}
 		});
+		
+		addHandler(new WorldDistanceHandler(SYMBOL_WIDTH)
+		{
+			@Override
+			public void setWorldDistance(WorldDistance res)
+			{
+				_symWidth =res;
+			}
+		});
+
+		addHandler(new WorldDistanceHandler(SYMBOL_LENGTH)
+		{
+			@Override
+			public void setWorldDistance(WorldDistance res)
+			{
+				_symLength =res;
+			}
+		});
 
 	}
 
@@ -369,10 +398,18 @@ public final class TrackHandler extends
 	@Override
 	public final void elementClosed()
 	{
+		// ok, the symbol should be sorted, do the lengths
+		if(_symLength != null)
+			_myTrack.setSymbolLength(_symLength);
+		if(_symWidth != null)
+			_myTrack.setSymbolWidth(_symWidth);
+		
 		// our layer is complete, add it to the parent!
 		_theLayers.addThisLayer(_myTrack);
 
 		_myTrack = null;
+		_symWidth = null;
+		_symLength = null;
 	}
 
 	// this is one of ours, so get on with it!
