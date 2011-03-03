@@ -77,7 +77,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 		Point centre = dest.toScreen(theLocation);
 
 		AffineTransform thisRotation = AffineTransform.getRotateInstance(
-				-direction, 0, 0);
+				direction, 0, 0);
 		AffineTransform thisTranslate = AffineTransform.getTranslateInstance(
 				centre.x, centre.y);
 		AffineTransform thisScale = AffineTransform.getScaleInstance(getScaleVal(), getScaleVal());
