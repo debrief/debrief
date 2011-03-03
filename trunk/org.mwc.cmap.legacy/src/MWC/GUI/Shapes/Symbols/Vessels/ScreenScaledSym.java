@@ -64,7 +64,7 @@ public abstract class ScreenScaledSym extends PlainSymbol
 	 */
 	private Vector<double[][]> getMyCoords()
 	{
-	//	if (_myCoords == null)
+		if (_myCoords == null)
 			_myCoords = getCoords();
 		return _myCoords;
 	}
