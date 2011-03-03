@@ -178,7 +178,7 @@ import MWC.GUI.Tools.SubjectAction;
 public interface Editable
 {
 
-  /**
+	/**
    * the name of this object
    * 
    * @return the name of this editable object
@@ -206,6 +206,15 @@ public interface Editable
    */
   // public HelpContext getHelpInfo();
 
+	/** marker interface for objects with changeable descriptors - so we re-calculate them everytime
+	 * 
+	 */
+  public interface DynamicDescriptors
+	{
+
+	}
+
+  
   /**
    * ******************************************************************* class
    * containing the help description for a particular

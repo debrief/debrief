@@ -2,9 +2,28 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GenericData.WorldDistance;
+
 public class ScaledVesselSym extends WorldScaledSym
 {
 
+	public ScaledVesselSym()
+	{
+		super(new WorldDistance(100, WorldDistance.METRES),
+				new WorldDistance(13, WorldDistance.METRES));
+	}
+
+	protected double getWidthNormalFactor()
+	{
+		return 13.4;
+	}
+	
+	protected double getLengthNormalFactor()
+	{
+		return 133;
+	}
+	
+	
 	/**
 	 * 
 	 */

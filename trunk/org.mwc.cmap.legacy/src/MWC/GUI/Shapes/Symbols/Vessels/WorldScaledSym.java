@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 public abstract class WorldScaledSym extends PlainSymbol
@@ -19,6 +20,57 @@ public abstract class WorldScaledSym extends PlainSymbol
 	private static final long serialVersionUID = 1L;
 	private Vector<double[][]> _myCoords;
 
+	protected WorldDistance _length;
+	protected WorldDistance _width;
+
+	/** constructor - including the default dimensions
+	 * 
+	 * @param length length of the platform
+	 * @param width width (beam) of the platform
+	 */
+	public WorldScaledSym(WorldDistance length, WorldDistance width)
+	{
+		super();
+		this._length = length;
+		this._width = width;
+	}
+
+	
+/** what factor do we have to apply to normalise this shape to one unit wide
+ * 
+ * @return
+ */
+	abstract protected double getWidthNormalFactor();
+	
+	/** what factor do we have to apply to normalise this shape to one unit long
+	 * 
+	 * @return
+	 */
+	abstract protected double getLengthNormalFactor();
+
+
+	public WorldDistance getLength()
+	{
+		return _length;
+	}
+
+	public void setLength(WorldDistance length)
+	{
+		_length = length;
+	}
+
+	public WorldDistance getWidth()
+	{
+		return _width;
+	}
+
+	public void setHeight(WorldDistance width)
+	{
+		_width = width;
+	}
+
+	
+	
 	/**
 	 * getBounds
 	 * 
@@ -45,17 +97,6 @@ public abstract class WorldScaledSym extends PlainSymbol
 	}
 
 	abstract protected Vector<double[][]> getCoords();
-
-	/**
-	 * accessor for whether this type of symbol is specified in world or screen
-	 * coordinates
-	 * 
-	 * @return
-	 */
-	public boolean inScreenCoords()
-	{
-		return true;
-	}
 
 	/**
 	 * give us a chance to cache the coordinates
@@ -85,24 +126,15 @@ public abstract class WorldScaledSym extends PlainSymbol
 		dest.setColor(getColor());
 
 		// create centre rotation
-		// AffineTransform thisRotation = AffineTransform.getRotateInstance(
-		// -direction, theLocation.getLong(), theLocation.getLat());
 		AffineTransform thisRotation = AffineTransform.getRotateInstance(
 				-direction, 0, 0);
 
 		// do the scale-factor
-		double scaleVal;
-		if (inScreenCoords())
-		{
-			// find out the screen size
-			scaleVal = 1;
-		}
-		else
-		{
-			scaleVal = 1;
-		}
+		double lenFactor =  _length.getValueIn(WorldDistance.METRES) / getLengthNormalFactor() ;
+		double widFactor =   _width.getValueIn(WorldDistance.METRES) / getWidthNormalFactor();
+		
 		AffineTransform scale = AffineTransform
-				.getScaleInstance(scaleVal, scaleVal);
+				.getScaleInstance(widFactor, lenFactor);
 
 		// find the lines that make up the shape
 		Vector<double[][]> hullLines = getMyCoords();
@@ -119,12 +151,12 @@ public abstract class WorldScaledSym extends PlainSymbol
 				Point2D postTurn = new Point2D.Double();
 				Point2D postScale = new Point2D.Double();
 
-				thisRotation.transform(raw, postTurn);
-				scale.transform(postTurn, postScale);
+				scale.transform(raw, postScale);
+				thisRotation.transform(postScale, postTurn);
 
-				double latM = MWC.Algorithms.Conversions.m2Degs(postScale.getY())
+				double latM = MWC.Algorithms.Conversions.m2Degs(postTurn.getY())
 						+ theLocation.getLat();
-				double longM = MWC.Algorithms.Conversions.m2Degs(postScale.getX())
+				double longM = MWC.Algorithms.Conversions.m2Degs(postTurn.getX())
 						+ theLocation.getLong();
 
 				WorldLocation loc = new WorldLocation(latM, longM, 0d);

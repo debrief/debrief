@@ -2,9 +2,27 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GenericData.WorldDistance;
+
 public class ScaledSubmarineSym extends WorldScaledSym
 {
 
+	public ScaledSubmarineSym()
+	{
+		super(new WorldDistance(100, WorldDistance.METRES),
+				new WorldDistance(20, WorldDistance.METRES));
+	}
+
+	protected double getWidthNormalFactor()
+	{
+		return 20;
+	}
+	
+	protected double getLengthNormalFactor()
+	{
+		return 118;
+	}
+	
 	/**
 	 * 
 	 */

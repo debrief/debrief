@@ -184,7 +184,13 @@ public class EditableWrapper implements IPropertySource
 	 */
 	final public IPropertyDescriptor[] getPropertyDescriptors()
 	{
-
+		// right, does this object have dynamic descriptors?
+		if(_editable.getInfo() instanceof Editable.DynamicDescriptors)
+		{
+		// yes - reset our list, we'll regenerate them
+		_myDescriptors = null;
+		}
+		
 		if (_myDescriptors == null)
 		{
 			Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
