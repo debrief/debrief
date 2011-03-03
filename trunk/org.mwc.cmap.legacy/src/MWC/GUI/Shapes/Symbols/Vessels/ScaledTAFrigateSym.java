@@ -2,9 +2,6 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
-import MWC.GUI.CanvasType;
-import MWC.GenericData.WorldLocation;
-
 public class ScaledTAFrigateSym extends ScreenScaledSym
 {
 
@@ -28,36 +25,22 @@ public class ScaledTAFrigateSym extends ScreenScaledSym
 	{
 		Vector<double[][]> hullLines = new Vector<double[][]>();
 
-		// start with the cross-over bits
-		hullLines.add(new double[][]
-		{
-		{ -4, -2 }, { 4, 2 } });
-
+		// start with the hull
 		hullLines.add(new double[][]
 		                       		{
-		                       		{ -4, 2 }, { 4, -2 } });
-		hullLines.add(new double[][]
-			                       		{
-			                       		{ -4, 2 }, { -4, -2 } });
-		hullLines.add(new double[][]
-			                       		{
-			                       		{ 4, 2 }, { 4, -2 } });
+		                       		{ -4, -2 },
+		                       		{ -4, 2 },
+		                       		{ 4, -2 },
+		                       		{ 4, 2 },
+		                       		{ -4, -2 }});
 
+		// now the keel
 		hullLines.add(new double[][]
 			                       		{
-			                       		{ -4, 2 }, { 4, -2 } });
-
-		// now the dangly bits
-		hullLines.add(new double[][]
-			                       		{
-			                       		{ -4, 2 }, { 0, 5 } });
-		hullLines.add(new double[][]
-			                       		{
-			                       		{ 4, 2 }, { 0, 5 } });
+			                       		{ -4, 2 }, { 0, 5 }, { 4, 2 } });
 
 		// and the tail
-		hullLines.add(new double[][]
-			                       		{
+		hullLines.add(new double[][]	{
 		{ 0,	5},
 		{ -0.8,	5.3},
 		{ -1,	6},
