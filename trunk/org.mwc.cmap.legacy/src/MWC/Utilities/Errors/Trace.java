@@ -74,210 +74,214 @@ import java.io.PrintStream;
 
 import MWC.GUI.ToolParent;
 
-/** Class to allow the output of stack traces to file, instead of the command line
- *
+/**
+ * Class to allow the output of stack traces to file, instead of the command
+ * line
+ * 
  * @author Ian.Mayo
  * @version 1
  */
-public class Trace extends java.lang.Object {
+public class Trace extends java.lang.Object
+{
 
-  /** whether we also send output to the console
-   */
-  static final private boolean DEBUG = true;
+	/**
+	 * whether we also send output to the console
+	 */
+	static final private boolean DEBUG = true;
 
-    /** destination for the text
-     */
-    static private java.io.PrintStream _output;
+	/**
+	 * destination for the text
+	 */
+	static private java.io.PrintStream _output;
 
-    /** the filename to use */
-    static private final String _outName = "trace.txt";
+	/** the filename to use */
+	static private final String _outName = "trace.txt";
 
-    /** remember the line separator on this system */
-    static private String _line_separator;
+	/** remember the line separator on this system */
+	static private String _line_separator;
 
-    /** remember if we have already shown a warning to the user about the
-     * trace file being created
-     */
-    static private boolean _warningShown = false;
-    
-    static private ToolParent _myParent;
+	/**
+	 * remember if we have already shown a warning to the user about the trace
+	 * file being created
+	 */
+	static private boolean _warningShown = false;
 
-  //////////////////////////////////////////////////
-  // member methods
-  //////////////////////////////////////////////////
+	static private ToolParent _myParent;
 
-  	/**
-  	 * initialise the tool, so that it knows where to get it's layers information
-  	 * 
-  	 * @param theParent
-  	 */
-  	public static void initialise(ToolParent theParent)
-  	{
-  		_myParent = theParent;
-  	}
-    
-/** write this exception to the trace file
- * @param e the exception to record
- */
-    static public void trace(Throwable e)
-    {
-      if(_output == null)
-      {
-        createOutput(true);
-      }
+	// ////////////////////////////////////////////////
+	// member methods
+	// ////////////////////////////////////////////////
 
-      // just do an extra check to see if the user has been warned yet (if the user wants to, that-is)
-      if(!_warningShown)
-      {
-        String msg = "Errors have occured.  An error file has been created the working directory";
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
-        _warningShown = true;
-      }
-      //
-      doHeader();
+	/**
+	 * initialise the tool, so that it knows where to get it's layers information
+	 * 
+	 * @param theParent
+	 */
+	public static void initialise(ToolParent theParent)
+	{
+		_myParent = theParent;
+	}
 
-      e.printStackTrace(_output);
+	/**
+	 * write this exception to the trace file
+	 * 
+	 * @param e
+	 *          the exception to record
+	 */
+	static public void trace(Throwable e)
+	{
+		trace(e, null);
+	}
 
-      // do we have a logger?
-      if(_myParent != null)
-      	_myParent.logError(ToolParent.INFO, "Exception caught:" + e.getMessage(),null);
-      
-      if(DEBUG)
-      {
-        e.printStackTrace();
-      }
-    }
+	/**
+	 * write these details to the trace file, together with a message
+	 */
+	static public void trace(String message, boolean showWarning)
+	{ // do we have a logger?
+		if (_myParent != null)
+		{
+			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, null);
+		}
+		else
+		{
+			if (_output == null)
+			{
+				createOutput(showWarning);
+			}
 
+			// just do an extra check to see if the user has been warned yet (if the
+			// user wants to, that-is)
+			if (showWarning && !_warningShown)
+			{
+				String msg = "Errors have occured.  An error file has been created the working directory";
+				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
+				_warningShown = true;
+			}
 
-   /** write these details to the trace file, together with a message
-     */
-    static public void trace(String message, boolean showWarning)
-    {
-      if(_output == null)
-      {
-        createOutput(showWarning);
-      }
+			// do we have a logger?
+			if (_myParent != null)
+				_myParent.logError(ToolParent.INFO, message, null);
 
-      // just do an extra check to see if the user has been warned yet (if the user wants to, that-is)
-      if(showWarning && !_warningShown)
-      {
-        String msg = "Errors have occured.  An error file has been created the working directory";
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
-        _warningShown = true;
-      }
+			//
+			doHeader();
 
-      // do we have a logger?
-      if(_myParent != null)
-      	_myParent.logError(ToolParent.INFO, message,null);
+			_output.print(message);
+			_output.print(_line_separator);
 
+			if (DEBUG)
+			{
+				System.err.println(message);
+			}
+		}
 
-      //
-      doHeader();
+	}
 
-      _output.print(message);
-      _output.print(_line_separator);
+	/**
+	 * write these details to the trace file, together with a message
+	 */
+	static public void trace(String message)
+	{
+		trace(message, true);
+	}
 
-      if(DEBUG)
-      {
-        System.err.println(message);
-      }
+	/**
+	 * write these details to the trace file, together with a message
+	 */
+	static public void trace(Throwable e, String message)
+	{
+		if (_myParent != null)
+		{
+			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, null);
+		}
+		else
+		{
+			if (_output == null)
+			{
+				createOutput(true);
+			}
 
-    }
+			// just do an extra check to see if the user has been warned yet
+			if (!_warningShown)
+			{
+				String msg = "Errors have occured.  An error file has been created the working directory";
+				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
+				_warningShown = true;
+			}
 
-   /** write these details to the trace file, together with a message
-     */
-    static public void trace(String message)
-    {
-      trace(message, true);
-    }
+			//
+			doHeader();
 
-    /** write these details to the trace file, together with a message
-     */
-    static public void trace(Throwable e, String message)
-    {
-      if(_output == null)
-      {
-        createOutput(true);
-      }
+			_output.print(message);
+			_output.print(_line_separator);
+			e.printStackTrace(_output);
 
-      // just do an extra check to see if the user has been warned yet
-      if(!_warningShown)
-      {
-        String msg = "Errors have occured.  An error file has been created the working directory";
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
-        _warningShown = true;
-      }
+			if (DEBUG)
+			{
+				System.err.println(message);
+				e.printStackTrace();
+			}
 
-      //
-      doHeader();
+			// do we have a logger?
+			if (_myParent != null)
+				_myParent.logError(ToolParent.INFO, message + "-" + e.getMessage(),
+						null);
+		}
+	}
 
-      _output.print(message);
-      _output.print(_line_separator);
-      e.printStackTrace(_output);
+	/**
+	 * create the output stream
+	 */
+	static private void createOutput(boolean showWarning)
+	{
+		_line_separator = System.getProperty("line.separator");
 
+		File f_out = new File(_outName);
+		try
+		{
 
-      if(DEBUG)
-      {
-        System.err.println(message);
-        e.printStackTrace();
-      }
-      
-      // do we have a logger?
-      if(_myParent != null)
-      	_myParent.logError(ToolParent.INFO, message + "-" + e.getMessage(),null);
+			if (showWarning)
+			{
+				// this is the first time we have sent errors to the trace, inform the
+				// user
+				String msg = "Errors have occured.  An error file has been created in "
+						+ f_out.getAbsolutePath();
+				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
 
-    }
+				_warningShown = true;
+			}
 
-/** create the output stream
- */
-    static private void createOutput(boolean showWarning)
-    {
-      _line_separator = System.getProperty("line.separator");
+			_output = new PrintStream(new FileOutputStream(f_out));
+			// stick in the date
+			_output.print("Stack trace started at:" + new java.util.Date());
 
-      File f_out = new File(_outName);
-      try{
+			System.err.println("Trace output to file:" + f_out.getAbsolutePath());
 
-        if(showWarning)
-        {
-          // this is the first time we have sent errors to the trace, inform the user
-          String msg = "Errors have occured.  An error file has been created in " + f_out.getAbsolutePath();
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
+			_output.print(_line_separator);
 
-          _warningShown = true;
-        }
+			// also insert the current system properties
+			System.getProperties().list(_output);
 
-        _output = new PrintStream(new FileOutputStream(f_out));
-        // stick in the date
-        _output.print("Stack trace started at:" + new java.util.Date());
+			doHeader();
 
-        System.err.println("Trace output to file:" + f_out.getAbsolutePath());
-        
-        _output.print(_line_separator);
+		}
+		catch (Exception e)
+		{
+			// don't bother
+			System.err
+					.println("Failed to create output trace, output going to sys.err");
+			_output = System.err;
+		}
+	}
 
-        // also insert the current system properties
-        System.getProperties().list(_output);
+	static private void doHeader()
+	{
+		if (_output == null)
+		{
+			createOutput(true);
+		}
+		//
+		_output.print("-------------------------------");
 
-        doHeader();
-
-      }
-      catch(Exception e)
-      {
-          // don't bother
-          System.err.println("Failed to create output trace, output going to sys.err");
-        _output = System.err;
-      }
-    }
-
-
-    static private void doHeader()
-    {
-      if(_output == null)
-      {
-        createOutput(true);
-      }
-      //
-      _output.print("-------------------------------");
-
-      _output.print(_line_separator);
-    }
+		_output.print(_line_separator);
+	}
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Nov 02 10:17:38 GMT 2010" Name="Debrief Plot" PlotId="1285669575458">
-<details Text="Saved with Debrief version dated Mon Nov 01 08:49:25 GMT 2010"/>
+<plot Created="Tue Mar 01 15:19:44 GMT 2011" Name="Debrief Plot" PlotId="1285669575458">
+<details Text="Saved with Debrief version dated Thu Jan 27 15:51:48 GMT 2011"/>
 <session>
 <layers>
-<layer LineThickness="0" Name="Chart Features" Visible="true">
+<layer LineThickness="0" Name="Chart Features" Visible="false">
 <vpf_database Visible="false">
 <vpf_library Name="vmaplv0" Visible="false"/>
 </vpf_database>
@@ -24,7 +24,7 @@
 <colour Value="GREY"/>
 </scale>
 </layer>
-<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="TA Frigate" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
@@ -2442,7 +2442,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="false">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Arial" Italic="false" Size="12"/>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
@@ -4866,7 +4866,18 @@
 </fix>
 </TrackSegment>
 </track>
-<layer LineThickness="0" Name="Misc" Visible="true">
+<layer LineThickness="0" Name="Misc" Visible="false">
+<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
+</br>
+</line>
 <textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -4874,6 +4885,17 @@
 <shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
 </centre>
 </textlabel>
+<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
+<colour Value="GREEN"/>
+<fontcolour Value="GREEN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1483758" Long="-11.6983092"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
+</br>
+</rectangle>
 <circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Visible="true">
 <colour Value="YELLOW"/>
 <fontcolour Value="YELLOW"/>
@@ -4892,28 +4914,6 @@
 </tl>
 <br>
 <shortLocation Depth="0.000" Lat="12.1722102" Long="-11.6331319"/>
-</br>
-</line>
-<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
-<colour Value="GREEN"/>
-<fontcolour Value="GREEN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1483758" Long="-11.6983092"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
-</br>
-</rectangle>
-<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
-<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
-<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1495665" Long="-11.7047038"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
 </br>
 </line>
 </layer>
@@ -4938,14 +4938,14 @@
 <narrative_entry Dtg="951212 113700" Entry="comment 11" Track="CARPET" Type="Narratives"/>
 <narrative_entry Dtg="951212 114100" Entry="comment 12" Track="CARPET" Type="Narratives"/>
 </narrative>
-<layer LineThickness="0" Name="Annotations" Visible="true"/>
+<layer LineThickness="0" Name="Annotations" Visible="false"/>
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.8660803"/>
+<shortLocation Depth="0.000" Lat="12.1778381" Long="-11.7638985"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="11.8942194" Long="-11.5727500"/>
+<shortLocation Depth="0.000" Lat="12.1775545" Long="-11.7636117"/>
 </br>
 </projection>
 <gui>
@@ -4958,11 +4958,11 @@
 <property Name="DateFormat" Value="yy/MM/dd HH:mm"/>
 <property Name="ShadeArcs" Value="true"/>
 <property Name="Radius" Value="3500.000"/>
-<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="Highlighter" Value="Symbol Highlight"/>
 <property Name="BLUE" Value="64"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="951212 070924"/>
+<property Name="CurrentTime" Value="951212 051812"/>
 <property Name="NumRings" Value="1"/>
 <property Name="Toolbox_Start_Time" Value="951212 050000"/>
 <property Name="PointSize" Value="5"/>

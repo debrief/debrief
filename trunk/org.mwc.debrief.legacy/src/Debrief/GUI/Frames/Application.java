@@ -1010,7 +1010,9 @@ public abstract class Application implements ToolParent, ActionListener,
 	 */
 	public void logError(int status, String text, Exception e)
 	{
-		System.out.println("Error:" + text);
+		if(_substituteParent != null)
+			_substituteParent.logError(status, text, e);
+		System.err.println("Error:" + text);
 	}
 
 }

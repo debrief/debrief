@@ -215,7 +215,7 @@ public class ScaledMerchantSym extends WorldScaledSym
 	 */
 	public String getType()
 	{
-		return "ScaledLPG";
+		return "ScaledMerchant";
 	}
 
 }
