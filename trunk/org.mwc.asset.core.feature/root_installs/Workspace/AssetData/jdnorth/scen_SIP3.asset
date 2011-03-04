@@ -332,7 +332,7 @@
 			<SensorFit></SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="" Long=""></shortLocation>
+					<shortLocation Lat="1" Long="1"></shortLocation>
 				</Location>
 				<Speed Value="0.0" Units="m/s" />
 			</Status>
