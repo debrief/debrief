@@ -3272,15 +3272,24 @@ and so on....</programlisting></para>
                             <figure id="debrief_symbols" float="0"><title>Symbols provided by
                                     <application>Debrief</application>
                             </title><mediaobject><imageobject>
-                                    <imagedata fileref="figures/d3_symbols.gif" width="100%"/>
+                                    <imagedata fileref="figures/d3_symbols.gif" width=""/>
                                 </imageobject></mediaobject></figure></para>
                     <note>
                         <para>In summer 2010 a set of scaled symbols were introduced. These are not
                             shown at fixed screen sizes, but as representative sizes of the subject
-                            vessel - so they resize as you zoom in on a plot.  In summer 2011 the
-                            range of vessels represented by scaled symbols was extended = plus it
+                            vessel - so they resize as you zoom in on a plot. In summer 2011 the
+                            range of vessels represented by scaled symbols was extended,  plus it
                             became possible to specify the length and width of the subject platform
-                            for a realistically sized ship representation.</para>
+                            for a realistically sized vehicle representation.<figure
+                                id="scaled_symbols" float="0">
+                                <title>Scaled vessel symbols in <application>Debrief</application>
+                                </title>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/ScaledVessels.png" width=""/>
+                                    </imageobject>
+                                </mediaobject>
+                            </figure></para>
                     </note>
                 </sect2>
                 <sect2 id="more_buoy_patterns">

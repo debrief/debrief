@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Mar 01 15:19:44 GMT 2011" Name="Debrief Plot" PlotId="1285669575458">
+<plot Created="Mon Mar 07 09:38:13 GMT 2011" Name="Debrief Plot" PlotId="1285669575458">
 <details Text="Saved with Debrief version dated Thu Jan 27 15:51:48 GMT 2011"/>
 <session>
 <layers>
@@ -24,9 +24,11 @@
 <colour Value="GREY"/>
 </scale>
 </layer>
-<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="TA Frigate" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="ScaledFrigate" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<SYMBOL_LENGTH Units="m" Value="120.0000000"/>
+<SYMBOL_WIDTH Units="m" Value="18.0000000"/>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix Course="269.700" Dtg="951212 050000" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
@@ -4878,24 +4880,6 @@
 <shortLocation Depth="0.000" Lat="12.1673036" Long="-11.7434517"/>
 </br>
 </line>
-<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
-<colour Value="RED"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
-</centre>
-</textlabel>
-<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
-<colour Value="GREEN"/>
-<fontcolour Value="GREEN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1483758" Long="-11.6983092"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
-</br>
-</rectangle>
 <circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Visible="true">
 <colour Value="YELLOW"/>
 <fontcolour Value="YELLOW"/>
@@ -4916,6 +4900,24 @@
 <shortLocation Depth="0.000" Lat="12.1722102" Long="-11.6331319"/>
 </br>
 </line>
+<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
+</centre>
+</textlabel>
+<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
+<colour Value="GREEN"/>
+<fontcolour Value="GREEN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1483758" Long="-11.6983092"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
+</br>
+</rectangle>
 </layer>
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET" Type="Narratives"/>
@@ -4942,10 +4944,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="12.1778381" Long="-11.7638985"/>
+<shortLocation Depth="0.000" Lat="12.1781605" Long="-11.7640667"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="12.1775545" Long="-11.7636117"/>
+<shortLocation Depth="0.000" Lat="12.1772321" Long="-11.7634435"/>
 </br>
 </projection>
 <gui>
