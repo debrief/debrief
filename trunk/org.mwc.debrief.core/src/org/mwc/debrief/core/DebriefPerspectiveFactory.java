@@ -42,6 +42,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
+		bottomLeft.addView(DebriefPlugin.MULTI_PATH);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 			
 		
@@ -67,6 +68,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
+		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
 		
 		// layout.addShowViewShortcut(CorePlugin.PLOT_3d); -- don't show shortcut for 3d, we only open
 		// it via action (so we can populate it)  

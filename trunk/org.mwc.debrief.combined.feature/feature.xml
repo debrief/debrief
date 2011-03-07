@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="Debrief-specific plugins"
-      version="1.0.152">
+      version="1.0.153">
 
    <description>
       Debrief-specific plugins used by the Debrief Maritime Analysis
@@ -224,6 +224,13 @@ Library.
 
    <plugin
          id="org.mwc.debrief.SensorFusion"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.debrief.multipath"
          download-size="0"
          install-size="0"
          version="0.0.0"
