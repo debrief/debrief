@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="cheat_sheets"/>
+	<classpathentry kind="lib" path="lib/commons-net-2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
