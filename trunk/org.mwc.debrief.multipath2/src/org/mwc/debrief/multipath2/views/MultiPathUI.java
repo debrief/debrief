@@ -33,22 +33,22 @@ public class MultiPathUI extends Composite
 		Composite composite = new Composite(this, SWT.NONE);
 		GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
 				1);
-		gd_composite.widthHint = 165;
+		gd_composite.widthHint = 190;
 		composite.setLayoutData(gd_composite);
 
 		_cmpSVP = new Composite(composite, SWT.NONE);
-		_cmpSVP.setBounds(0, 0, 80, 43);
+		_cmpSVP.setBounds(0, 0, 92, 43);
 
 		Label lblNewLabel = new Label(_cmpSVP, SWT.NONE);
 		lblNewLabel.setBounds(0, 0, 59, 14);
 		lblNewLabel.setText("SVP:");
 
 		_lblSVP = new Label(_cmpSVP, SWT.NONE);
-		_lblSVP.setBounds(0, 21, 80, 14);
+		_lblSVP.setBounds(0, 21, 90, 14);
 		_lblSVP.setText("[pending]");
 
 		_cmpIntervals = new Composite(composite, SWT.NONE);
-		_cmpIntervals.setBounds(82, 0, 80, 43);
+		_cmpIntervals.setBounds(94, 0, 90, 43);
 
 		Label lblIntervals = new Label(_cmpIntervals, SWT.NONE);
 		lblIntervals.setText("Intervals");
