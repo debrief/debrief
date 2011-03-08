@@ -8,10 +8,11 @@ import java.util.Vector;
 
 import flanagan.interpolation.LinearInterpolation;
 
-/** class that loads & store an SVP, providing a mean average calculator
+/**
+ * class that loads & store an SVP, providing a mean average calculator
  * 
  * @author ian
- *
+ * 
  */
 public class SVP
 {
@@ -21,11 +22,15 @@ public class SVP
 	double _depths[];
 	double _speeds[];
 
-	/** load an SVP from teh specific path
+	/**
+	 * load an SVP from teh specific path
 	 * 
-	 * @param path where to get it from
-	 * @throws NumberFormatException if the numbers aren't legible
-	 * @throws IOException if the file can't be found
+	 * @param path
+	 *          where to get it from
+	 * @throws NumberFormatException
+	 *           if the numbers aren't legible
+	 * @throws IOException
+	 *           if the file can't be found
 	 */
 	public void load(String path) throws NumberFormatException, IOException
 	{
@@ -56,10 +61,13 @@ public class SVP
 		}
 	}
 
-	/** calculate the weighted average speed between the two depths
+	/**
+	 * calculate the weighted average speed between the two depths
 	 * 
-	 * @param depthOne first depth
-	 * @param depthTwo second depth
+	 * @param depthOne
+	 *          first depth
+	 * @param depthTwo
+	 *          second depth
 	 * @return
 	 */
 	public double getMeanSpeedBetween(double depthOne, double depthTwo)
@@ -71,15 +79,15 @@ public class SVP
 
 		// ok, first find the point before the shallow depth
 		int before = pointBefore(shallowDepth);
-		
+
 		// did we find one?
-		if(before == -1)
+		if (before == -1)
 			throw new RuntimeException(SHALLOW_FAIL);
 
 		// now find the point after the deep depth
 		int after = pointAfter(deepDepth);
-		
-		if(after == -1)
+
+		if (after == -1)
 			throw new RuntimeException(DEEP_FAIL);
 
 		double runningMean = -1;
@@ -134,7 +142,8 @@ public class SVP
 		return runningMean;
 	}
 
-	/** determine the index of the observation before the specified depth
+	/**
+	 * determine the index of the observation before the specified depth
 	 * 
 	 * @param depth
 	 * @return
@@ -157,7 +166,8 @@ public class SVP
 		return res;
 	}
 
-	/** determine the index of the data point after the supplied depth
+	/**
+	 * determine the index of the data point after the supplied depth
 	 * 
 	 * @param depth
 	 * @return
@@ -184,6 +194,9 @@ public class SVP
 	// /////////////////////////////////////////////////
 	public static class SVP_Test extends junit.framework.TestCase
 	{
+		public static final String SVP_FILE = "src/org/mwc/debrief/multipath/model/test_svp.csv";
+		public static final String SVP_FILE2 = "src/org/mwc/debrief/multipath/model/test_svp2.csv";
+
 		public void testMean()
 		{
 			SVP svp = new SVP();
@@ -192,7 +205,7 @@ public class SVP
 
 			try
 			{
-				svp.load("src/org/mwc/debrief/multipath/model/test_svp.csv");
+				svp.load(SVP_FILE);
 			}
 			catch (NumberFormatException e)
 			{
@@ -202,7 +215,6 @@ public class SVP
 			{
 				fail("unable to read lines");
 			}
-			
 
 			double mean = svp.getMeanSpeedBetween(30, 55);
 			assertEquals("correct mean", 1510.125, mean);
@@ -219,8 +231,8 @@ public class SVP
 			mean = svp.getMeanSpeedBetween(55, 20);
 			assertEquals("correct mean", 1508.42, mean, 0.01);
 		}
-		
-		public void testMissingData()
+
+		public void testMean2()
 		{
 			SVP svp = new SVP();
 
@@ -228,7 +240,7 @@ public class SVP
 
 			try
 			{
-				svp.load("src/org/mwc/debrief/multipath/model/test_svp.csv");
+				svp.load(SVP_FILE2);
 			}
 			catch (NumberFormatException e)
 			{
@@ -238,28 +250,83 @@ public class SVP
 			{
 				fail("unable to read lines");
 			}
+
+			double mean;
+
+			// now for a calc that spans a SVP step
+			int surface = 0;
+			int transmitter = 50;
+			int receiver = 30;
+			mean = svp.getMeanSpeedBetween(surface, transmitter);
+			assertEquals("correct mean", 1501.628, mean, 0.01);
+
+			// now for a calc that goes from surface
+			mean = svp.getMeanSpeedBetween(surface, receiver);
+			assertEquals("correct mean", 1502.207, mean, 0.01);
+
+			// and the direct path
+			mean = svp.getMeanSpeedBetween(receiver, transmitter);
+			assertEquals("correct mean", 1500.760, mean, 0.01);
 			
+			// try some other depths
+			transmitter = 20;
+			receiver = 75;
+
+			mean = svp.getMeanSpeedBetween(surface, transmitter);
+			assertEquals("correct mean", 1502.298, mean, 0.01);
+
+			// now for a calc that goes from surface
+			mean = svp.getMeanSpeedBetween(surface, receiver);
+			assertEquals("correct mean", 1500.305, mean, 0.01);
+
+			// and the direct path
+			mean = svp.getMeanSpeedBetween(receiver, transmitter);
+			assertEquals("correct mean", 1499.581, mean, 0.01);
+}
+
+		public void testMissingData()
+		{
+			SVP svp = new SVP();
+
+			assertEquals("not got data", null, svp._depths);
+
+			try
+			{
+				svp.load(SVP_FILE);
+			}
+			catch (NumberFormatException e)
+			{
+				fail("wrong number format");
+			}
+			catch (IOException e)
+			{
+				fail("unable to read lines");
+			}
+
 			// change the first point so we don't have data at zero
 			svp._depths[0] = 4;
-			
-			try{
+
+			try
+			{
 				svp.getMeanSpeedBetween(0, 22);
 				fail("should not have found index");
-			}catch(RuntimeException e)
+			}
+			catch (RuntimeException e)
 			{
 				assertEquals("wrong message provided", SHALLOW_FAIL, e.getMessage());
 			}
 
-			try{
+			try
+			{
 				svp.getMeanSpeedBetween(33, 222);
 				fail("should not have found index");
-			}catch(RuntimeException e)
+			}
+			catch (RuntimeException e)
 			{
 				assertEquals("wrong message provided", DEEP_FAIL, e.getMessage());
 			}
 
 		}
-
 
 		public void testIndex()
 		{
@@ -269,7 +336,7 @@ public class SVP
 
 			try
 			{
-				svp.load("src/org/mwc/debrief/multipath/model/test_svp.csv");
+				svp.load(SVP_FILE);
 			}
 			catch (NumberFormatException e)
 			{
@@ -314,7 +381,6 @@ public class SVP
 
 			t1 = svp.pointAfter(150);
 			assertEquals("correct depth", -1, t1);
-
 
 		}
 	}

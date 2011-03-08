@@ -40,6 +40,16 @@ public class TimeDeltas
 	}
 
 	private Vector<Observation> _myData;
+	
+	public HiResDate getStartTime()
+	{
+		return _myData.firstElement().getDate();
+	}
+	
+	public HiResDate getEndTime()
+	{
+		return _myData.lastElement().getDate();
+	}
 
 	/**
 	 * load an data file from the specified path
@@ -100,6 +110,8 @@ public class TimeDeltas
 	// /////////////////////////////////////////////////
 	public static class IntervalTest extends junit.framework.TestCase
 	{
+		public static final String TEST_TIMES_FILE = "src/org/mwc/debrief/multipath/model/test_times.csv";
+
 		public void testMe()
 		{
 			TimeDeltas times = new TimeDeltas();
@@ -125,7 +137,7 @@ public class TimeDeltas
 
 			try
 			{
-				times.load("src/org/mwc/debrief/multipath/model/test_times.csv");
+				times.load(TEST_TIMES_FILE);
 			}
 			catch (NumberFormatException e)
 			{
