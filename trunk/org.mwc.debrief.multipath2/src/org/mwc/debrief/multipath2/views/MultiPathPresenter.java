@@ -110,10 +110,22 @@ public class MultiPathPresenter
 		 */
 		public void setEnabled(boolean b);
 
+		/** show the SVP filename
+		 * 
+		 * @param fName
+		 */
 		public void setSVPName(String fName);
 
+		/** show the interval filename
+		 * 
+		 * @param fName
+		 */
 		public void setIntervalName(String fName);
 
+		/** feedback on the current slider value
+		 * 
+		 * @param val
+		 */
 		public void setSliderVal(int val);
 	};
 

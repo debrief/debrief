@@ -85,9 +85,7 @@ private void createPlot(Composite ui)
 	
 	NumberAxis valAxis = new NumberAxis("Delay (Secs)");
 	DefaultXYItemRenderer theRenderer = new	DefaultXYItemRenderer();
-	theRenderer.setShapesVisible(false);
-
-
+	theRenderer.setBaseShapesVisible(false);
 	
 	 _thePlot = new XYPlot(null, dateAxis, valAxis, theRenderer );
 	JFreeChart _plotArea = new JFreeChart(_thePlot);
