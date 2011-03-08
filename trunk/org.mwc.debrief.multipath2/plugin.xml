@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Multpath Analysis"
+            icon="icons/MultiPath.png"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.debrief.multipath2.views.MultiPathView"
+            id="org.mwc.debrief.MultiPath2">
+      </view>
+   </extension>
+
+</plugin>
