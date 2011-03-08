@@ -6,6 +6,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.FillLayout;
 
 public class MultiPathUI extends Composite
 {
@@ -50,21 +52,16 @@ public class MultiPathUI extends Composite
 		label_1.setBounds(0, 21, 59, 14);
 		
 		Composite cmpSlider = new Composite(this, SWT.NONE);
+		cmpSlider.setLayout(new FillLayout(SWT.VERTICAL));
 		cmpSlider.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
 		cmpSlider.setBounds(144, 0, 294, 43);
 		
-		Label lblNewLabel_2 = new Label(cmpSlider, SWT.NONE);
-		lblNewLabel_2.setBounds(118, 0, 59, 14);
+		Label lblNewLabel_2 = new Label(cmpSlider, SWT.CENTER);
+		lblNewLabel_2.setAlignment(SWT.CENTER);
 		lblNewLabel_2.setText("[pending]");
 		
-		Label lblNewLabel_3 = new Label(cmpSlider, SWT.NONE);
-		lblNewLabel_3.setAlignment(SWT.RIGHT);
-		lblNewLabel_3.setBounds(53, 0, 59, 14);
-		lblNewLabel_3.setText("Depth:");
-		
 		Slider slider = new Slider(cmpSlider, SWT.NONE);
-		slider.setBounds(10, 20, 274, 15);
 		
 		 chartHolder = new Composite(this, SWT.EMBEDDED);
 		chartHolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
