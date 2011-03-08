@@ -7,6 +7,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MultiPathUI extends Composite
 {
@@ -37,31 +38,35 @@ public class MultiPathUI extends Composite
 		composite.setLayoutData(gd_composite);
 
 		_cmpSVP = new Composite(composite, SWT.NONE);
-		_cmpSVP.setBounds(0, 0, 92, 43);
+		_cmpSVP.setBounds(0, 0, 92, 32);
 
 		Label lblNewLabel = new Label(_cmpSVP, SWT.NONE);
 		lblNewLabel.setBounds(0, 0, 59, 14);
 		lblNewLabel.setText("SVP:");
 
 		_lblSVP = new Label(_cmpSVP, SWT.NONE);
-		_lblSVP.setBounds(0, 21, 90, 14);
+		_lblSVP.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.BOLD));
+		_lblSVP.setBounds(0, 15, 90, 14);
 		_lblSVP.setText("[pending]");
 
 		_cmpIntervals = new Composite(composite, SWT.NONE);
-		_cmpIntervals.setBounds(94, 0, 90, 43);
+		_cmpIntervals.setBounds(94, 0, 90, 32);
 
 		Label lblIntervals = new Label(_cmpIntervals, SWT.NONE);
-		lblIntervals.setText("Intervals");
+		lblIntervals.setText("Intervals:");
 		lblIntervals.setBounds(0, 0, 59, 14);
 
 		_lblIntervals = new Label(_cmpIntervals, SWT.NONE);
+		_lblIntervals.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.BOLD));
 		_lblIntervals.setText("[pending]");
-		_lblIntervals.setBounds(0, 21, 80, 14);
+		_lblIntervals.setBounds(0, 15, 90, 14);
 
 		Composite cmpSlider = new Composite(this, SWT.NONE);
 		cmpSlider.setLayout(new FillLayout(SWT.VERTICAL));
-		cmpSlider.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
-				1));
+		GridData gd_cmpSlider = new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
+				1);
+		gd_cmpSlider.heightHint = 32;
+		cmpSlider.setLayoutData(gd_cmpSlider);
 
 		cmpSlider.setBounds(144, 0, 294, 43);
 
@@ -130,8 +135,6 @@ public class MultiPathUI extends Composite
 		{
 			setSliderValText("Disabled, pending data");
 		}
-		else
-			setSliderValText("[pending]");
 	}
 
 }

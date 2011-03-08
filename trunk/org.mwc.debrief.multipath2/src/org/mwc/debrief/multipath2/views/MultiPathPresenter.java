@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.IMemento;
 import org.jfree.data.time.TimeSeries;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
@@ -18,6 +19,10 @@ import MWC.GenericData.WatchableList;
 
 public class MultiPathPresenter
 {
+
+	private static final String INTERVAL_FILE = "INTERVAL_FILE";
+	private static final String SVP_FILE = "SVP_FILE";
+	public static final int DEFAULT_DEPTH = 50;
 
 	/**
 	 * UI component of multipath analysis
@@ -110,19 +115,22 @@ public class MultiPathPresenter
 		 */
 		public void setEnabled(boolean b);
 
-		/** show the SVP filename
+		/**
+		 * show the SVP filename
 		 * 
 		 * @param fName
 		 */
 		public void setSVPName(String fName);
 
-		/** show the interval filename
+		/**
+		 * show the interval filename
 		 * 
 		 * @param fName
 		 */
 		public void setIntervalName(String fName);
 
-		/** feedback on the current slider value
+		/**
+		 * feedback on the current slider value
 		 * 
 		 * @param val
 		 */
@@ -134,7 +142,9 @@ public class MultiPathPresenter
 	private TimeSeries _measuredSeries = null;
 	private SVP _svp = null;
 	private TimeDeltas _times = null;
-
+	protected String _intervalPath;
+	protected String _svpPath;
+	private ValueHandler _dragHandler;
 
 	/**
 	 * initialise presenter
@@ -147,90 +157,41 @@ public class MultiPathPresenter
 		_display = display;
 		_model = new MultiPathModel();
 
-		// setup assorted listeners
-		_display.addDragHandler(new ValueHandler()
+
+	}
+
+	private void loadSVP(String path)
+	{
+		try
 		{
+			
+			// clear the path = we'll overwrite it if we're successful
+			_svpPath = null;
 
-			@Override
-			public void newValue(double val)
-			{
-				updateCalc(val);
-			}
-		});
+			_svp = new SVP();
 
-		_display.addSVPListener(new FileHandler()
+			_svp.load(path);
+
+			_svpPath = path;
+
+			// get the filename
+			File file = new File(path);
+			String fName = file.getName();
+			_display.setSVPName(fName);
+
+		}
+		catch (NumberFormatException e)
 		{
-
-			public void newFile(String path)
-			{
-
-				try
-				{
-					_svp = new SVP();
-
-					_svp.load(path);
-
-					// get the filename
-					File file = new File(path);
-					String fName = file.getName();
-					_display.setSVPName(fName);
-
-				}
-				catch (NumberFormatException e)
-				{
-					CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
-					_svp = null;
-				}
-				catch (IOException e)
-				{
-					CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
-					_svp = null;
-				}
-
-				// check if UI should be enabled
-				checkEnablement();
-
-			}
-		});
-
-		_display.addTimeDeltaListener(new FileHandler()
+			CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
+			_svp = null;
+		}
+		catch (IOException e)
 		{
+			CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
+			_svp = null;
+		}
 
-			public void newFile(String path)
-			{
-				try
-				{
-					_times = new TimeDeltas();
-
-					_times.load(path);
-
-					// reset the measured series
-					_measuredSeries = null;
-
-					// get the filename
-					File file = new File(path);
-					String fName = file.getName();
-					_display.setIntervalName(fName);
-
-				}
-				catch (NumberFormatException e)
-				{
-					CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
-					_times = null;
-				}
-				catch (IOException e)
-				{
-					CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
-					_times = null;
-				}
-
-				// check if UI should be enabled
-				checkEnablement();
-
-			}
-		});
-
-		// lastly, check if we're enabled.
+		// check if UI should be enabled
 		checkEnablement();
 	}
 
@@ -250,6 +211,9 @@ public class MultiPathPresenter
 		{
 			// enable it
 			_display.setEnabled(true);
+			
+			// and give it a sensible start value
+			_dragHandler.newValue(DEFAULT_DEPTH);
 		}
 	}
 
@@ -293,8 +257,8 @@ public class MultiPathPresenter
 		else
 		{
 			// cool, valid data
-			_display.setSliderVal((int)val);
-			
+			_display.setSliderVal((int) val);
+
 			WatchableList primary = tv.getPrimaryTrack();
 			WatchableList secondary = tv.getSecondaryTracks()[0];
 			try
@@ -313,4 +277,107 @@ public class MultiPathPresenter
 		}
 
 	}
+
+	public void saveState(IMemento memento)
+	{
+		// store the filenames
+		if (_svpPath != null)
+			memento.putString(SVP_FILE, _svpPath);
+
+		if (_intervalPath != null)
+			memento.putString(INTERVAL_FILE, _intervalPath);
+	}
+
+	/**
+	 * initialise ourselves from the memento
+	 * 
+	 */
+	public void init(IMemento memento)
+	{
+		_svpPath = memento.getString(SVP_FILE);
+		_intervalPath = memento.getString(INTERVAL_FILE);
+	}
+
+	/** load the intervals from the supplied file
+	 * 
+	 * @param path
+	 */
+	private void loadIntervals(String path)
+	{
+		try
+		{
+			// clear the path = we'll overwrite it if we're successful
+			_intervalPath = null;
+			
+			_times = new TimeDeltas();
+
+			_times.load(path);
+
+			_intervalPath = path;
+
+			// reset the measured series
+			_measuredSeries = null;
+
+			// get the filename
+			File file = new File(path);
+			String fName = file.getName();
+			_display.setIntervalName(fName);
+
+		}
+		catch (NumberFormatException e)
+		{
+			CorePlugin.logError(Status.ERROR, "time-delta formatting problem", e);
+			_times = null;
+		}
+		catch (IOException e)
+		{
+			CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
+			_times = null;
+		}
+
+		// check if UI should be enabled
+		checkEnablement();
+	}
+
+	/** connect the presenter to the UI component, now that it's initialised
+	 * 
+	 */
+	public void bind()
+	{
+		// setup assorted listeners
+		_dragHandler = new ValueHandler()
+		{
+			@Override
+			public void newValue(double val)
+			{
+				updateCalc(val);
+			}
+		};
+		_display.addDragHandler(_dragHandler);
+
+		_display.addSVPListener(new FileHandler()
+		{
+			public void newFile(String path)
+			{
+				loadSVP(path);
+			}
+		});
+
+		_display.addTimeDeltaListener(new FileHandler()
+		{
+			public void newFile(String path)
+			{
+				loadIntervals(path);
+			}
+		});
+		
+		// aah, do we have any pending files?
+		if(_svpPath != null)
+			loadSVP(_svpPath);
+		
+		if(_intervalPath != null)
+			loadIntervals(_intervalPath);
+
+		// lastly, check if we're enabled.
+		checkEnablement();	}
 }
