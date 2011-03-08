@@ -38,7 +38,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 	
 	public static final String DEBRIEF_EDITOR = "org.mwc.debrief.PlotEditor";
 	public static final String SENSOR_FUSION = "org.mwc.debrief.SensorFusion";
-	public static final String MULTI_PATH = "org.mwc.debrief.MultiPath";
+	public static final String MULTI_PATH = "org.mwc.debrief.MultiPath2";
 
 	// The shared instance.
 	private static DebriefPlugin plugin;
