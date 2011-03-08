@@ -46,7 +46,6 @@ public class MultiPathView extends ViewPart implements MultiPathPresenter.Displa
 	 */
 	public static final String ID = "org.mwc.debrief.MultiPath2";
 	private MultiPathUI _ui;
-	private MultiPathPresenter _presenter;
 
 	/**
 	 * The constructor.
@@ -67,7 +66,8 @@ public class MultiPathView extends ViewPart implements MultiPathPresenter.Displa
 		createPlot(_ui.getChartHolder());
 		
 		// now sort out the presenter
-		_presenter = new MultiPathPresenter(this);
+		@SuppressWarnings("unused")
+		MultiPathPresenter presenter = new MultiPathPresenter(this);
 
 		makeActions();
 		hookContextMenu();
@@ -110,10 +110,6 @@ private void createPlot(Composite ui)
 	private void fillLocalPullDown(IMenuManager manager)
 	{
 
-	}
-
-	private void fillContextMenu(IMenuManager manager)
-	{
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)

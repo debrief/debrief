@@ -20,8 +20,7 @@ import MWC.TacticalData.Fix;
 
 public class MultiPathModel
 {
-	
-	
+
 	public static class CalculationException extends RuntimeException
 	{
 		/**
@@ -34,7 +33,7 @@ public class MultiPathModel
 			super(msg);
 		}
 	}
-	
+
 	/**
 	 * get the measured profile
 	 * 
