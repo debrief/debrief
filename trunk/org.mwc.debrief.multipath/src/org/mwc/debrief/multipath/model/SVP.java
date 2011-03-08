@@ -192,7 +192,7 @@ public class SVP
 
 			try
 			{
-				svp.load("src/org/mwc/debrief/multipath/model/test_data.csv");
+				svp.load("src/org/mwc/debrief/multipath/model/test_svp.csv");
 			}
 			catch (NumberFormatException e)
 			{
@@ -228,7 +228,7 @@ public class SVP
 
 			try
 			{
-				svp.load("src/org/mwc/debrief/multipath/model/test_data.csv");
+				svp.load("src/org/mwc/debrief/multipath/model/test_svp.csv");
 			}
 			catch (NumberFormatException e)
 			{
@@ -269,7 +269,7 @@ public class SVP
 
 			try
 			{
-				svp.load("src/org/mwc/debrief/multipath/model/test_data.csv");
+				svp.load("src/org/mwc/debrief/multipath/model/test_svp.csv");
 			}
 			catch (NumberFormatException e)
 			{
