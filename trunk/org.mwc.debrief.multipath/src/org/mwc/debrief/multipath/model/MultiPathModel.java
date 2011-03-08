@@ -146,7 +146,10 @@ public class MultiPathModel
 		double lS = Math.sqrt(lsHoriz * lsHoriz + zS * zS);
 		double lR = Math.sqrt(Math.pow(hD - lsHoriz, 2) + zR * zR);
 
-		double time_delay = (lS / cS + lR / cR) - (lDirect / cD);
+		double timeSurface = lS / cS;
+		double timeReceiver = lR / cR;
+		double timeDirect = lDirect / cD;
+		double time_delay = (timeSurface + timeReceiver) - timeDirect;
 		return time_delay;
 	}
 
@@ -183,14 +186,35 @@ public class MultiPathModel
 
 				startLoc = newLoc;
 			}
-			
+
 			SVP svp = getSVP();
 
 			// ok, go for the calc
 			MultiPathModel model = new MultiPathModel();
-			TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp, deltas, 44);
-			
-			assertNotNull("got some results",calc);
+			TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp,
+					deltas, 44);
+
+			assertNotNull("got some results", calc);
+		}
+
+		public void testCalc()
+		{
+			// ok, go for the calc
+			MultiPathModel model = new MultiPathModel();
+
+			double sepM = 2549.11;
+			double zR = 30;
+			double zS = 50;
+			double cD = 1500.760;
+			double cS = 1501.628;
+			double cR = 1502.207;
+			double delay = model.calculateDelay(sepM, zR, zS, cD, cS, cR);
+
+			assertEquals("wrong calc", -0.00044, delay, 0.001);
+
+			sepM = 2072.33;
+			assertEquals("wrong calc", -0.000034, delay, 0.001);
+
 		}
 
 		private SVP getSVP()
