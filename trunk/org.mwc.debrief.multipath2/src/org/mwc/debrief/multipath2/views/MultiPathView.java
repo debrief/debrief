@@ -317,9 +317,15 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	@Override
-	public void setSliderVal(int val)
+	public void setSliderText(String text)
 	{
-		_ui.setSliderValText("Depth:" + val + "m");
+		_ui.setSliderValText(text);
+	}
+
+	@Override
+	public void setSliderVal(int value)
+	{
+		_ui.getSlider().setSelection(value);
 	}
 
 }

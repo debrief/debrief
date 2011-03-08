@@ -10,6 +10,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.multipath2.model.MultiPathModel;
 import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
+import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 import org.mwc.debrief.multipath2.model.SVP;
 import org.mwc.debrief.multipath2.model.TimeDeltas;
 import org.mwc.debrief.multipath2.views.MultiPathPresenter.Display.FileHandler;
@@ -23,6 +24,7 @@ public class MultiPathPresenter
 	private static final String INTERVAL_FILE = "INTERVAL_FILE";
 	private static final String SVP_FILE = "SVP_FILE";
 	public static final int DEFAULT_DEPTH = 50;
+	private static final String DEPTH_VAL = "DEPTH_VAL";
 
 	/**
 	 * UI component of multipath analysis
@@ -61,7 +63,7 @@ public class MultiPathPresenter
 			 * 
 			 * @param val
 			 */
-			void newValue(double val);
+			void newValue(int val);
 		}
 
 		/**
@@ -134,7 +136,13 @@ public class MultiPathPresenter
 		 * 
 		 * @param val
 		 */
-		public void setSliderVal(int val);
+		public void setSliderText(String text);
+
+		/** set the value on the slider
+		 * 
+		 * @param _curDepth
+		 */
+		public void setSliderVal(int _curDepth);
 	};
 
 	private final Display _display;
@@ -143,6 +151,7 @@ public class MultiPathPresenter
 	private SVP _svp = null;
 	private TimeDeltas _times = null;
 	protected String _intervalPath;
+	protected int _curDepth = DEFAULT_DEPTH;
 	protected String _svpPath;
 	private ValueHandler _dragHandler;
 
@@ -157,16 +166,16 @@ public class MultiPathPresenter
 		_display = display;
 		_model = new MultiPathModel();
 
-
 	}
 
 	private void loadSVP(String path)
 	{
 		try
 		{
-			
+
 			// clear the path = we'll overwrite it if we're successful
 			_svpPath = null;
+			_display.setSVPName("[pending]");
 
 			_svp = new SVP();
 
@@ -174,7 +183,7 @@ public class MultiPathPresenter
 
 			_svpPath = path;
 
-			// get the filename
+			// display the filename
 			File file = new File(path);
 			String fName = file.getName();
 			_display.setSVPName(fName);
@@ -190,9 +199,14 @@ public class MultiPathPresenter
 			CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
 			_svp = null;
 		}
+		catch (DataFormatException e)
+		{
+			_display.showError("Does not look like SVP data");
+		}
 
 		// check if UI should be enabled
 		checkEnablement();
+
 	}
 
 	/**
@@ -202,18 +216,37 @@ public class MultiPathPresenter
 	protected void checkEnablement()
 	{
 
-		if ((_svp == null) || (_times == null))
+		if (_svpPath == null)
 		{
 			// disable it
 			_display.setEnabled(false);
+
+			// show error
+			_display.setSliderText("Waiting for SVP");
+		}
+		else if (_intervalPath == null)
+		{
+			// disable it
+			_display.setEnabled(false);
+
+			// show error
+			_display.setSliderText("Waiting for interval data");
 		}
 		else
 		{
-			// enable it
-			_display.setEnabled(true);
-			
-			// and give it a sensible start value
-			_dragHandler.newValue(DEFAULT_DEPTH);
+			// just check the init is complete
+			if ((_svp != null) && (_times != null))
+			{
+
+				// enable it
+				_display.setEnabled(true);
+				
+				// initialise the slider
+				_display.setSliderVal(_curDepth);
+
+				// and give it a sensible start value
+				_dragHandler.newValue(_curDepth);
+			}
 		}
 	}
 
@@ -223,11 +256,8 @@ public class MultiPathPresenter
 
 	}
 
-	protected void updateCalc(double val)
+	protected void updateCalc(int val)
 	{
-		// do we have our measured series?
-		if (_measuredSeries == null)
-			_measuredSeries = _model.getMeasuredProfileFor(_times);
 
 		// do we have a tote?
 		TrackDataProvider tv = _display.getDataProvider();
@@ -254,10 +284,24 @@ public class MultiPathPresenter
 		{
 			_display.showError("Too many secondary tracks");
 		}
+		else if (_times == null)
+		{
+			_display.showError("Waiting for interval data");
+		}
 		else
 		{
+
+			// do we have our measured series?
+			if (_measuredSeries == null)
+			{
+				_measuredSeries = _model.getMeasuredProfileFor(_times);
+			}
+
+			// remember the depth
+			_curDepth = (int) val;
+
 			// cool, valid data
-			_display.setSliderVal((int) val);
+			_display.setSliderText("Depth:" + val + "m");
 
 			WatchableList primary = tv.getPrimaryTrack();
 			WatchableList secondary = tv.getSecondaryTracks()[0];
@@ -286,6 +330,8 @@ public class MultiPathPresenter
 
 		if (_intervalPath != null)
 			memento.putString(INTERVAL_FILE, _intervalPath);
+
+		memento.putInteger(DEPTH_VAL, _curDepth);
 	}
 
 	/**
@@ -296,9 +342,13 @@ public class MultiPathPresenter
 	{
 		_svpPath = memento.getString(SVP_FILE);
 		_intervalPath = memento.getString(INTERVAL_FILE);
+		Integer depth = memento.getInteger(DEPTH_VAL);
+		if (depth != null)
+			_curDepth = depth;
 	}
 
-	/** load the intervals from the supplied file
+	/**
+	 * load the intervals from the supplied file
 	 * 
 	 * @param path
 	 */
@@ -308,7 +358,8 @@ public class MultiPathPresenter
 		{
 			// clear the path = we'll overwrite it if we're successful
 			_intervalPath = null;
-			
+			_display.setIntervalName("[pending]");
+
 			_times = new TimeDeltas();
 
 			_times.load(path);
@@ -334,12 +385,17 @@ public class MultiPathPresenter
 			CorePlugin.logError(Status.ERROR, "time-delta file-read problem", e);
 			_times = null;
 		}
+		catch (DataFormatException e)
+		{
+			_display.showError("Does not look like interval data");
+		}
 
 		// check if UI should be enabled
 		checkEnablement();
 	}
 
-	/** connect the presenter to the UI component, now that it's initialised
+	/**
+	 * connect the presenter to the UI component, now that it's initialised
 	 * 
 	 */
 	public void bind()
@@ -348,7 +404,7 @@ public class MultiPathPresenter
 		_dragHandler = new ValueHandler()
 		{
 			@Override
-			public void newValue(double val)
+			public void newValue(int val)
 			{
 				updateCalc(val);
 			}
@@ -370,14 +426,15 @@ public class MultiPathPresenter
 				loadIntervals(path);
 			}
 		});
-		
+
 		// aah, do we have any pending files?
-		if(_svpPath != null)
+		if (_svpPath != null)
 			loadSVP(_svpPath);
-		
-		if(_intervalPath != null)
+
+		if (_intervalPath != null)
 			loadIntervals(_intervalPath);
 
 		// lastly, check if we're enabled.
-		checkEnablement();	}
+		checkEnablement();
+	}
 }

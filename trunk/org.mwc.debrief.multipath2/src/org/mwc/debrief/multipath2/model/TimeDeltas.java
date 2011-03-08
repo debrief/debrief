@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
+
 import MWC.GenericData.HiResDate;
 
 /**
@@ -61,7 +63,7 @@ public class TimeDeltas
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(String path) throws NumberFormatException, IOException
+	public void load(String path) throws NumberFormatException, IOException, MultiPathModel.DataFormatException
 	{
 		Vector<Long> times = new Vector<Long>();
 		Vector<Double> values = new Vector<Double>();
@@ -82,6 +84,13 @@ public class TimeDeltas
 				values.add(Double.valueOf(st.nextToken()));
 			}
 		}
+		if (values.size() > 0)
+		{
+			// just check the values are of the correct order
+			double sampleVal = values.elementAt(1);
+			if (sampleVal > 500)
+				throw new MultiPathModel.DataFormatException(
+						"Doesn't look like time interval data");
 
 		final int numEntries = values.size();
 		_myData = new Vector<Observation>();
@@ -92,6 +101,7 @@ public class TimeDeltas
 			Double thisInterval = values.elementAt(i);
 			Observation obs = new Observation(thisD, thisInterval);
 			_myData.add(obs);
+		}
 		}
 	}
 
@@ -132,6 +142,11 @@ public class TimeDeltas
 			{
 				// ok - this should have been thrown
 			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+
 
 			assertEquals("still not got data", null, times._myData);
 
@@ -147,6 +162,11 @@ public class TimeDeltas
 			{
 				fail("unable to read lines");
 			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+
 
 			assertEquals("got correct num entries", 379, times._myData.size());
 

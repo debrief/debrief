@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
+
 import flanagan.interpolation.LinearInterpolation;
 
 /**
@@ -32,7 +34,8 @@ public class SVP
 	 * @throws IOException
 	 *           if the file can't be found
 	 */
-	public void load(String path) throws NumberFormatException, IOException
+	public void load(String path) throws NumberFormatException, IOException,
+			DataFormatException
 	{
 		Vector<Double> values = new Vector<Double>();
 
@@ -51,14 +54,66 @@ public class SVP
 			}
 		}
 
-		final int numEntries = values.size();
-		_depths = new double[numEntries / 2];
-		_speeds = new double[numEntries / 2];
-		for (int i = 0; i < numEntries; i += 2)
+		if (values.size() > 0)
 		{
-			_depths[i / 2] = values.elementAt(i);
-			_speeds[i / 2] = values.elementAt(i + 1);
+			// just check the values are of the correct order
+			double sampleVal = values.elementAt(1);
+			if (sampleVal < 500)
+				throw new MultiPathModel.DataFormatException(
+						"Doesn't look like sound speed data");
+
+			// ok, now move the values into our two arrays
+			final int numEntries = values.size();
+			_depths = new double[numEntries / 2];
+			_speeds = new double[numEntries / 2];
+			for (int i = 0; i < numEntries; i += 2)
+			{
+				_depths[i / 2] = values.elementAt(i);
+				_speeds[i / 2] = values.elementAt(i + 1);
+			}
+
+			// SPECIAL CASE: if the first depth is under 5 metres, extrapolate a
+			// point at zero metres
+			double minDepth = _depths[0];
+			if (minDepth > 0)
+			{
+				// aah, none-zero. do we have one nearby
+				if (minDepth < 5)
+				{
+					// do we have enough to extrapolate?
+					if (_depths.length >= 2)
+					{
+							double zeroSpd = extrapolateZero(_depths[0], _speeds[0], _depths[1], _speeds[1]);
+							
+							double[] tmpDepths = new double[_depths.length + 1];
+							double[] tmpSpeeds = new double[_depths.length + 1];
+							
+							// now shove the arrays along
+							System.arraycopy(_depths, 0, tmpDepths, 1, _depths.length);
+							System.arraycopy(_speeds, 0, tmpSpeeds, 1, _speeds.length);
+							
+							_depths = tmpDepths;
+							_speeds = tmpSpeeds;
+							
+							_depths[0] = 0;
+							_speeds[0] = zeroSpd;
+					}
+
+				}
+			}
+
 		}
+	}
+
+	private static double extrapolateZero(double depthOne, double speedOne,
+			double depthTwo, double speedTwo)
+	{
+		double spdDelta = speedTwo - speedOne;
+		double depthDelta = depthTwo - depthOne;
+		double gradient = spdDelta / depthDelta;
+		double zeroSpeed = speedOne - (depthOne * gradient);
+
+		return zeroSpeed;
 	}
 
 	/**
@@ -194,8 +249,9 @@ public class SVP
 	// /////////////////////////////////////////////////
 	public static class SVP_Test extends junit.framework.TestCase
 	{
-		public static final String SVP_FILE = "src/org/mwc/debrief/multipath/model/test_svp.csv";
-		public static final String SVP_FILE2 = "src/org/mwc/debrief/multipath/model/test_svp2.csv";
+		public static final String SVP_FILE = "src/org/mwc/debrief/multipath2/model/test_svp.csv";
+		public static final String SVP_FILE2 = "src/org/mwc/debrief/multipath2/model/test_svp2.csv";
+		public static final String SVP_FILE_NO_ZERO = "src/org/mwc/debrief/multipath2/model/test_svp_noZero.csv";
 
 		public void testMean()
 		{
@@ -215,6 +271,11 @@ public class SVP
 			{
 				fail("unable to read lines");
 			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+
 
 			double mean = svp.getMeanSpeedBetween(30, 55);
 			assertEquals("correct mean", 1510.125, mean);
@@ -250,6 +311,11 @@ public class SVP
 			{
 				fail("unable to read lines");
 			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+
 
 			double mean;
 
@@ -267,7 +333,7 @@ public class SVP
 			// and the direct path
 			mean = svp.getMeanSpeedBetween(receiver, transmitter);
 			assertEquals("correct mean", 1500.760, mean, 0.01);
-			
+
 			// try some other depths
 			transmitter = 20;
 			receiver = 75;
@@ -282,7 +348,7 @@ public class SVP
 			// and the direct path
 			mean = svp.getMeanSpeedBetween(receiver, transmitter);
 			assertEquals("correct mean", 1499.581, mean, 0.01);
-}
+		}
 
 		public void testMissingData()
 		{
@@ -302,6 +368,11 @@ public class SVP
 			{
 				fail("unable to read lines");
 			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+
 
 			// change the first point so we don't have data at zero
 			svp._depths[0] = 4;
@@ -328,6 +399,48 @@ public class SVP
 
 		}
 
+		public void testExtrapolate()
+		{
+			double res = SVP.extrapolateZero(3, 4, 6, 5);
+			assertEquals("wrong extrapolated value", 3d, res);
+
+			res = SVP.extrapolateZero(3, 4, 6, 6);
+			assertEquals("wrong extrapolated value", 2d, res);
+
+			res = SVP.extrapolateZero(3, 6, 6, 4);
+			assertEquals("wrong extrapolated value", 8d, res);
+			
+			
+			// now try loading it
+			SVP svp = new SVP();
+
+			assertEquals("not got data", null, svp._depths);
+
+			try
+			{
+				svp.load(SVP_FILE_NO_ZERO);
+			}
+			catch (NumberFormatException e)
+			{
+				fail("wrong number format");
+			}
+			catch (IOException e)
+			{
+				fail("unable to read lines");
+			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+			
+			assertEquals("not created extra point", 4, svp._depths.length);
+			assertEquals("not created extra point", 4, svp._speeds.length);
+			
+			assertEquals("not got zero depth", 0d, svp._depths[0]);
+			assertEquals("not got surface speed", 1503d, svp._speeds[0]);
+			
+		}
+
 		public void testIndex()
 		{
 			SVP svp = new SVP();
@@ -346,6 +459,11 @@ public class SVP
 			{
 				fail("unable to read lines");
 			}
+			catch (DataFormatException e)
+			{
+				fail("bad data");
+			}
+
 
 			assertEquals("got data", 4, svp._depths.length);
 

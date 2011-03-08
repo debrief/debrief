@@ -33,6 +33,21 @@ public class MultiPathModel
 			super(msg);
 		}
 	}
+	
+	public static class DataFormatException extends Exception
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public DataFormatException(String msg)
+		{
+			super(msg);
+		}
+		
+	}
 
 	/**
 	 * get the measured profile
@@ -248,6 +263,12 @@ public class MultiPathModel
 				e.printStackTrace();
 				fail("file read problem");
 			}
+			catch (DataFormatException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				fail("bad data problem");
+			}
 			return svp;
 		}
 
@@ -267,6 +288,11 @@ public class MultiPathModel
 			{
 				e.printStackTrace();
 				fail("file read problem");
+			}
+			catch (DataFormatException e)
+			{
+				e.printStackTrace();
+				fail("bad data problem");
 			}
 			return deltas;
 		}
