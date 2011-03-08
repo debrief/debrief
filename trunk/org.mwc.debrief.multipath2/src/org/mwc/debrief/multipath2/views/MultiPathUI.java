@@ -1,18 +1,22 @@
 package org.mwc.debrief.multipath2.views;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Slider;
 
 public class MultiPathUI extends Composite
 {
 
 	private Composite chartHolder;
+	private Composite _cmpSVP;
+	private Composite _cmpIntervals;
+	private Label _lblSVP;
+	private Label _lblIntervals;
+	private Slider _slider;
 
 	/**
 	 * Create the composite.
@@ -29,27 +33,27 @@ public class MultiPathUI extends Composite
 		gd_composite.widthHint = 150;
 		composite.setLayoutData(gd_composite);
 		
-		Composite composite_1 = new Composite(composite, SWT.NONE);
-		composite_1.setBounds(0, 0, 64, 43);
+		 _cmpSVP = new Composite(composite, SWT.NONE);
+		_cmpSVP.setBounds(0, 0, 64, 43);
 		
-		Label lblNewLabel = new Label(composite_1, SWT.NONE);
+		Label lblNewLabel = new Label(_cmpSVP, SWT.NONE);
 		lblNewLabel.setBounds(0, 0, 59, 14);
 		lblNewLabel.setText("SVP:");
 		
-		Label lblNewLabel_1 = new Label(composite_1, SWT.NONE);
-		lblNewLabel_1.setBounds(0, 21, 59, 14);
-		lblNewLabel_1.setText("[pending]");
+		 _lblSVP = new Label(_cmpSVP, SWT.NONE);
+		_lblSVP.setBounds(0, 21, 59, 14);
+		_lblSVP.setText("[pending]");
 		
-		Composite composite_2 = new Composite(composite, SWT.NONE);
-		composite_2.setBounds(70, 0, 64, 43);
+		_cmpIntervals = new Composite(composite, SWT.NONE);
+		_cmpIntervals.setBounds(70, 0, 64, 43);
 		
-		Label lblIntervals = new Label(composite_2, SWT.NONE);
+		Label lblIntervals = new Label(_cmpIntervals, SWT.NONE);
 		lblIntervals.setText("Intervals");
 		lblIntervals.setBounds(0, 0, 59, 14);
 		
-		Label label_1 = new Label(composite_2, SWT.NONE);
-		label_1.setText("[pending]");
-		label_1.setBounds(0, 21, 59, 14);
+		_lblIntervals = new Label(_cmpIntervals, SWT.NONE);
+		_lblIntervals.setText("[pending]");
+		_lblIntervals.setBounds(0, 21, 59, 14);
 		
 		Composite cmpSlider = new Composite(this, SWT.NONE);
 		cmpSlider.setLayout(new FillLayout(SWT.VERTICAL));
@@ -61,7 +65,8 @@ public class MultiPathUI extends Composite
 		lblNewLabel_2.setAlignment(SWT.CENTER);
 		lblNewLabel_2.setText("[pending]");
 		
-		Slider slider = new Slider(cmpSlider, SWT.NONE);
+		_slider = new Slider(cmpSlider, SWT.NONE);
+		_slider.setMaximum(300);
 		
 		 chartHolder = new Composite(this, SWT.EMBEDDED);
 		chartHolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -70,6 +75,27 @@ public class MultiPathUI extends Composite
 
 	}
 	
+	public Composite getSVPHolder()
+	{
+		return _cmpSVP;
+	}
+	
+	public Composite getIntervalHolder()
+	{
+		return _cmpIntervals;
+	}
+	
+	public void setSVPName(String text)
+	{
+		_lblSVP.setText(text);
+	}
+	
+	public void setIntervalName(String text)
+	{
+		_lblIntervals.setText(text);
+	}
+
+			
 	public Composite getChartHolder()
 	{
 		return chartHolder;
@@ -79,6 +105,11 @@ public class MultiPathUI extends Composite
 	protected void checkSubclass()
 	{
 		// Disable the check that prevents subclassing of SWT components
+	}
+
+	public Slider getSlider()
+	{
+		return _slider;
 	}
 
 }

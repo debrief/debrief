@@ -8,8 +8,10 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartPanel;
@@ -18,6 +20,8 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.TimeSeries;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.JFreeChart.RelativeDateAxis;
@@ -26,7 +30,7 @@ import MWC.GUI.JFreeChart.RelativeDateAxis;
 
  */
 
-public class MultiPathView extends ViewPart
+public class MultiPathView extends ViewPart implements MultiPathPresenter.Display
 {
 
 	/**
@@ -34,6 +38,7 @@ public class MultiPathView extends ViewPart
 	 */
 	public static final String ID = "org.mwc.debrief.MultiPath2";
 	private MultiPathUI _ui;
+	private MultiPathPresenter _presenter;
 
 	/**
 	 * The constructor.
@@ -53,8 +58,9 @@ public class MultiPathView extends ViewPart
 		
 		createPlot(_ui.getChartHolder());
 		
-//		Button doMe = new Button(parent, SWT.NONE);
-//		doMe.setText("do me");
+		// now sort out the presenter
+		_presenter = new MultiPathPresenter(this);
+
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
@@ -130,5 +136,63 @@ private void createPlot(Composite ui)
 	public void setFocus()
 	{
 		
+	}
+
+	@Override
+	public void addSVPListener(FileHandler handler)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addTimeDeltaListener(FileHandler handler)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addDragHandler(final ValueHandler handler)
+	{
+		final Slider slider = _ui.getSlider();
+		slider.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				handler.newValue(slider.getSelection());
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+				handler.newValue(slider.getSelection());
+			}});
+	}
+
+	@Override
+	public TrackDataProvider getDataProvider()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void showError(String string)
+	{
+		showMessage(string);
+	}
+
+	@Override
+	public void display(TimeSeries _measuredSeries, TimeSeries calculated)
+	{
+		// put the series onto the chart
+	}
+
+	@Override
+	public void setEnabled(boolean b)
+	{
+		_ui.setEnabled(b);
 	}
 }
