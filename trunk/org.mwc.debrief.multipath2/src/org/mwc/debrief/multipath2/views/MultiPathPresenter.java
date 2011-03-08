@@ -113,6 +113,8 @@ public class MultiPathPresenter
 		public void setSVPName(String fName);
 
 		public void setIntervalName(String fName);
+
+		public void setSliderVal(int val);
 	};
 
 	private final Display _display;
@@ -278,6 +280,9 @@ public class MultiPathPresenter
 		}
 		else
 		{
+			// cool, valid data
+			_display.setSliderVal((int)val);
+			
 			WatchableList primary = tv.getPrimaryTrack();
 			WatchableList secondary = tv.getSecondaryTracks()[0];
 			try
