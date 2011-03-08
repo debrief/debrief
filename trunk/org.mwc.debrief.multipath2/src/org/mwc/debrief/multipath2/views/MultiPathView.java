@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -179,8 +180,17 @@ private void createPlot(Composite ui)
 	@Override
 	public TrackDataProvider getDataProvider()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		TrackDataProvider res = null;
+		
+		// ok, grab the current editor
+		IEditorPart editor = this.getSite().getPage().getActiveEditor();
+		Object provider = editor.getAdapter(TrackDataProvider.class);
+		if(provider != null)
+		{
+			res = (TrackDataProvider) provider;
+		}
+		
+		return res;
 	}
 
 	@Override

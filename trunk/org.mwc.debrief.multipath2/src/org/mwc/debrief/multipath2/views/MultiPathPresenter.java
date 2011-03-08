@@ -8,6 +8,7 @@ import org.jfree.data.time.TimeSeries;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.multipath2.model.MultiPathModel;
+import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
 import org.mwc.debrief.multipath2.model.SVP;
 import org.mwc.debrief.multipath2.model.TimeDeltas;
 import org.mwc.debrief.multipath2.views.MultiPathPresenter.Display.FileHandler;
@@ -79,28 +80,33 @@ public class MultiPathPresenter
 		 */
 		public void addDragHandler(ValueHandler handler);
 
-		/** see if anybody can provide tracks
+		/**
+		 * see if anybody can provide tracks
 		 * 
 		 * @return
 		 */
 		public TrackDataProvider getDataProvider();
 
-		/** there's a problem, show it to the user
+		/**
+		 * there's a problem, show it to the user
 		 * 
 		 * @param string
 		 */
 		public void showError(String string);
 
-		/** show these data series
+		/**
+		 * show these data series
 		 * 
 		 * @param _measuredSeries
 		 * @param calculated
 		 */
 		public void display(TimeSeries _measuredSeries, TimeSeries calculated);
 
-		/** indicate whether the slider should be enabled
+		/**
+		 * indicate whether the slider should be enabled
 		 * 
-		 * @param b yes/no
+		 * @param b
+		 *          yes/no
 		 */
 		public void setEnabled(boolean b);
 
@@ -114,6 +120,7 @@ public class MultiPathPresenter
 	private TimeSeries _measuredSeries = null;
 	private SVP _svp = null;
 	private TimeDeltas _times = null;
+
 
 	/**
 	 * initialise presenter
@@ -148,12 +155,11 @@ public class MultiPathPresenter
 					_svp = new SVP();
 
 					_svp.load(path);
-					
+
 					// get the filename
 					File file = new File(path);
-					String  fName = file.getName();
+					String fName = file.getName();
 					_display.setSVPName(fName);
-
 
 				}
 				catch (NumberFormatException e)
@@ -186,12 +192,12 @@ public class MultiPathPresenter
 
 					// reset the measured series
 					_measuredSeries = null;
-					
+
 					// get the filename
 					File file = new File(path);
-					String  fName = file.getName();
+					String fName = file.getName();
 					_display.setIntervalName(fName);
-					
+
 				}
 				catch (NumberFormatException e)
 				{
@@ -209,7 +215,7 @@ public class MultiPathPresenter
 
 			}
 		});
-		
+
 		// lastly, check if we're enabled.
 		checkEnablement();
 	}
@@ -240,7 +246,7 @@ public class MultiPathPresenter
 	}
 
 	protected void updateCalc(double val)
-	{		
+	{
 		// do we have our measured series?
 		if (_measuredSeries == null)
 			_measuredSeries = _model.getMeasuredProfileFor(_times);
@@ -249,23 +255,44 @@ public class MultiPathPresenter
 		TrackDataProvider tv = _display.getDataProvider();
 
 		// do we only have one seconary?
-		if (tv.getSecondaryTracks().length > 1)
+		if (tv == null)
 		{
-			_display.showError("Too many secondary tracks");
+			_display
+					.showError("Must have a primary and a secondary track on the tote");
 		}
-		else if(tv.getPrimaryTrack() == null)
+		else if (tv.getPrimaryTrack() == null)
 		{
 			_display.showError("Needs a primary track (or location)");
+		}
+		else if (tv.getSecondaryTracks() == null)
+		{
+			_display.showError("Secondary track missing");
+		}
+		else if (tv.getSecondaryTracks().length == 0)
+		{
+			_display.showError("Secondary track missing");
+		}
+		else if (tv.getSecondaryTracks().length > 1)
+		{
+			_display.showError("Too many secondary tracks");
 		}
 		else
 		{
 			WatchableList primary = tv.getPrimaryTrack();
 			WatchableList secondary = tv.getSecondaryTracks()[0];
-			TimeSeries calculated = _model.getCalculatedProfileFor(primary,
-					secondary, _svp, _times, val);
-	
-			// ok, ready to plot
-			_display.display(_measuredSeries, calculated);
+			try
+			{
+				TimeSeries calculated = _model.getCalculatedProfileFor(primary,
+						secondary, _svp, _times, val);
+
+				// ok, ready to plot
+				_display.display(_measuredSeries, calculated);
+			}
+			catch (CalculationException e)
+			{
+				_display.showError(e.getMessage());
+				CorePlugin.logError(Status.ERROR, "Performing multipath analysis", e);
+			}
 		}
 
 	}

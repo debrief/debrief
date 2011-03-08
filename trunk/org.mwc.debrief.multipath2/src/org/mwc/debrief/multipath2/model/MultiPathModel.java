@@ -20,6 +20,21 @@ import MWC.TacticalData.Fix;
 
 public class MultiPathModel
 {
+	
+	
+	public static class CalculationException extends RuntimeException
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public CalculationException(String msg)
+		{
+			super(msg);
+		}
+	}
+	
 	/**
 	 * get the measured profile
 	 * 
@@ -98,9 +113,9 @@ public class MultiPathModel
 
 			// do we have data
 			if (priLocs.length == 0)
-				throw new RuntimeException("Insufficient primary data");
+				throw new CalculationException("Insufficient primary data");
 			if (secLocs.length == 0)
-				throw new RuntimeException("Insufficient secondary data");
+				throw new CalculationException("Insufficient secondary data");
 
 			WorldLocation priLoc = priLocs[0].getLocation();
 			WorldLocation secLoc = secLocs[0].getLocation();
