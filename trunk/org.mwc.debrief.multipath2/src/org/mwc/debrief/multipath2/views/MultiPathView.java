@@ -3,6 +3,7 @@ package org.mwc.debrief.multipath2.views;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -33,6 +34,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import MWC.GUI.JFreeChart.DateAxisEditor;
@@ -53,6 +55,7 @@ public class MultiPathView extends ViewPart implements
 	private MultiPathUI _ui;
 	private XYPlot _thePlot;
 	private MultiPathPresenter _presenter;
+	private Action _helpAction;
 
 	/**
 	 * The constructor.
@@ -72,7 +75,7 @@ public class MultiPathView extends ViewPart implements
 		_ui = new MultiPathUI(parent, SWT.EMBEDDED);
 
 		createPlot(_ui.getChartHolder());
-		
+
 		// let the presenter finish off
 		_presenter.bind();
 
@@ -135,16 +138,22 @@ public class MultiPathView extends ViewPart implements
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-
+		// and the help link
+		manager.add(_helpAction);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		// and the help link
+		manager.add(_helpAction);
 
 	}
 
 	private void makeActions()
 	{
+		_helpAction = CorePlugin.createOpenHelpAction(
+				"org.mwc.debrief.help.MultipathAnalysis",
+				"Help on multi-path analysis", this);
 
 	}
 
@@ -239,8 +248,8 @@ public class MultiPathView extends ViewPart implements
 	public void setEnabled(boolean b)
 	{
 		_ui.setEnabled(b);
-		
-		if(b)
+
+		if (b)
 			_ui.getSlider().setSelection(MultiPathPresenter.DEFAULT_DEPTH);
 	}
 
