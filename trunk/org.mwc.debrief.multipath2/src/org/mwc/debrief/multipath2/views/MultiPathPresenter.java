@@ -1,5 +1,6 @@
 package org.mwc.debrief.multipath2.views;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.Status;
@@ -102,6 +103,10 @@ public class MultiPathPresenter
 		 * @param b yes/no
 		 */
 		public void setEnabled(boolean b);
+
+		public void setSVPName(String fName);
+
+		public void setIntervalName(String fName);
 	};
 
 	private final Display _display;
@@ -143,6 +148,12 @@ public class MultiPathPresenter
 					_svp = new SVP();
 
 					_svp.load(path);
+					
+					// get the filename
+					File file = new File(path);
+					String  fName = file.getName();
+					_display.setSVPName(fName);
+
 
 				}
 				catch (NumberFormatException e)
@@ -175,6 +186,12 @@ public class MultiPathPresenter
 
 					// reset the measured series
 					_measuredSeries = null;
+					
+					// get the filename
+					File file = new File(path);
+					String  fName = file.getName();
+					_display.setIntervalName(fName);
+					
 				}
 				catch (NumberFormatException e)
 				{

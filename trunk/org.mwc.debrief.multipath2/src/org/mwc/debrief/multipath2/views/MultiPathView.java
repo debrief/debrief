@@ -8,9 +8,16 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
@@ -141,15 +148,13 @@ private void createPlot(Composite ui)
 	@Override
 	public void addSVPListener(FileHandler handler)
 	{
-		// TODO Auto-generated method stub
-		
+		configureFileDropSupport(_ui.getSVPHolder(), handler);
 	}
 
 	@Override
 	public void addTimeDeltaListener(FileHandler handler)
 	{
-		// TODO Auto-generated method stub
-		
+		configureFileDropSupport(_ui.getIntervalHolder(), handler);
 	}
 
 	@Override
@@ -195,4 +200,77 @@ private void createPlot(Composite ui)
 	{
 		_ui.setEnabled(b);
 	}
+	
+
+	/**
+	 * sort out the file-drop target
+	 */
+	private void configureFileDropSupport(Control _pusher, final FileHandler handler)
+	{
+		int dropOperation = DND.DROP_COPY;
+		Transfer[] dropTypes =
+		{ FileTransfer.getInstance() };
+
+		DropTarget target = new DropTarget(_pusher, dropOperation);
+		target.setTransfer(dropTypes);
+		target.addDropListener(new DropTargetListener()
+		{
+			public void dragEnter(DropTargetEvent event)
+			{
+				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+				{
+					if (event.detail != DND.DROP_COPY)
+					{
+						event.detail = DND.DROP_COPY;
+					}
+				}
+			}
+
+			public void dragLeave(DropTargetEvent event)
+			{
+			}
+
+			public void dragOperationChanged(DropTargetEvent event)
+			{
+			}
+
+			public void dragOver(DropTargetEvent event)
+			{
+			}
+
+			public void drop(DropTargetEvent event)
+			{
+				String[] fileNames = null;
+				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+				{
+					fileNames = (String[]) event.data;
+				}
+				if (fileNames != null)
+				{
+					
+					if (handler != null)
+						handler.newFile(fileNames[0]);
+				}
+			}
+
+			public void dropAccept(DropTargetEvent event)
+			{
+			}
+
+		});
+
+	}
+
+	@Override
+	public void setSVPName(String fName)
+	{
+		_ui.setSVPName(fName);
+	}
+
+	@Override
+	public void setIntervalName(String fName)
+	{
+		_ui.setIntervalName(fName);
+	}
+	
 }
