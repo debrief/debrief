@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -275,8 +276,33 @@ public class TrackManager implements TrackDataProvider // ,
 			// did we find it?
 			if (found == null)
 			{
-				// nope, better ditch the primary
-				_thePrimary = null;
+				// aah, what if it's an annotation in a base layer?
+				Enumeration<Editable> enumer = _theLayers.elements();
+				while (enumer.hasMoreElements() && (found == null))
+				{
+					Layer thisL = (Layer) enumer.nextElement();
+					if (thisL instanceof BaseLayer)
+					{
+						BaseLayer base = (BaseLayer) thisL;
+						Enumeration<Editable> enumer2 = base.elements();
+						while (enumer2.hasMoreElements())
+						{
+							Editable thisE = enumer2.nextElement();
+							if (thisE.getName().equals(_thePrimary.getName()))
+							{
+								found = base;
+								break;
+							}
+						}
+					}
+				}
+
+				// did it work?
+				if (found == null)
+				{
+					// nope, better ditch the primary
+					_thePrimary = null;
+				}
 			}
 		}
 
