@@ -138,7 +138,8 @@ public class MultiPathPresenter
 		 */
 		public void setSliderText(String text);
 
-		/** set the value on the slider
+		/**
+		 * set the value on the slider
 		 * 
 		 * @param _curDepth
 		 */
@@ -240,7 +241,7 @@ public class MultiPathPresenter
 
 				// enable it
 				_display.setEnabled(true);
-				
+
 				// initialise the slider
 				_display.setSliderVal(_curDepth);
 
@@ -340,11 +341,14 @@ public class MultiPathPresenter
 	 */
 	public void init(IMemento memento)
 	{
-		_svpPath = memento.getString(SVP_FILE);
-		_intervalPath = memento.getString(INTERVAL_FILE);
-		Integer depth = memento.getInteger(DEPTH_VAL);
-		if (depth != null)
-			_curDepth = depth;
+		if (memento != null)
+		{
+			_svpPath = memento.getString(SVP_FILE);
+			_intervalPath = memento.getString(INTERVAL_FILE);
+			Integer depth = memento.getInteger(DEPTH_VAL);
+			if (depth != null)
+				_curDepth = depth;
+		}
 	}
 
 	/**
