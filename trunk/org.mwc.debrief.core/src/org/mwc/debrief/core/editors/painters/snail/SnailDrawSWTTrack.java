@@ -10,6 +10,7 @@ import java.util.Iterator;
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -17,6 +18,7 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldDistance.ArrayLength;
 
 /**
  * class to draw a 'back-track' of points backwards from the current datapoint
@@ -181,6 +183,42 @@ final class SnailDrawSWTTrack
 		{
 			if (dotPoints.size() > 0)
 			{
+				int _mySize = 5;
+				
+				// have a go at plotting the array sensor
+				if (trk.getPlotArrayCentre()) {
+					Enumeration<Editable> enumer = trk.getSensors()
+							.elements();
+					while (enumer.hasMoreElements()) {
+						SensorWrapper sw = (SensorWrapper) enumer
+								.nextElement();
+
+						// is this sensor visible?
+						if (sw.getVisible()) {
+							ArrayLength len = sw.getSensorOffset();
+							if (len != null) {
+								if (len.getValue() != 0) {
+									WorldLocation centre = trk
+											.getBacktraceTo(dtg,
+													len, sw.getWormInHole());
+									Point pt = dest.toScreen(centre);
+									dest.drawLine(pt.x - _mySize, pt.y
+											- _mySize, pt.x + _mySize, pt.y
+											+ _mySize);
+									dest.drawLine(pt.x + _mySize, pt.y
+											- _mySize, pt.x - _mySize, pt.y
+											+ _mySize);
+								}
+							}
+						}
+					}
+				}
+				
+				
+				
+				
+				
+				
 				// keep track of how many points we've plotted
 				int pointCounter = 1;
 
