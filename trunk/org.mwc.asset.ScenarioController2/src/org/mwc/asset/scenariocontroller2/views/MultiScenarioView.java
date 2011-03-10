@@ -322,6 +322,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	@Override
 	public void createPartControl(Composite parent)
 	{
+		// and declare our context sensitive help
+		CorePlugin
+				.declareContextHelp(parent, "org.mwc.asset.help.ScenarioController");
+
+		
 		// create our UI
 		_myUI = new UISkeleton2(parent, SWT.FILL);
 
@@ -387,7 +392,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		
 		manager.add(new Separator());
 		manager.add(CorePlugin.createOpenHelpAction(
-				"org.mwc.debrief.help.ScenarioController", null, this));
+				"org.mwc.asset.help.ScenarioController", null, this));
 
 	}
 

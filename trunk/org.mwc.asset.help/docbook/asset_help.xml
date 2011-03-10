@@ -7951,7 +7951,7 @@
             url="www.debrief.info">Debrief</ulink> application - particularly with regard to the
           graphical plot, property editing, and core units (distance, locations, areas). </para>
       </sect1>
-      <sect1>
+      <sect1 id="user_workbench">
         <title>Workbench user interface</title>
         <para>The following diagram highlights the main areas of the
             <application>Workbench</application> user interface, though note that the screen
@@ -8003,6 +8003,10 @@
               </listitem>
             </varlistentry>
           </variablelist></para>
+        <sect2 id="ScenarioController">
+          <title>Scenario Controller</title>
+          <para/>
+        </sect2>
       </sect1>
     </chapter>
     <chapter id="user_factory">

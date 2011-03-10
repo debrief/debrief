@@ -67,10 +67,6 @@
 		<echo message="Copying stylesheet" />
 		<copy file="${helpDir}/docbook/Header.css" verbose="true" failonerror="true" todir="${helpDest}" preservelastmodified="yes" />
 
-		<!-- try to insert our additional section content -->
-		<echo message="Inserting history" />
-		<antcall target="insert_history_link" />
-
 		<!-- lastly, do the pdf stage-->
 		<antcall target="docbook_to_pdf">
 		</antcall>
@@ -98,7 +94,7 @@
 		<property name="saxon.dir" value="${rootDir}/contribs/saxon6_5_2" />
 		<property name="xml.dir" value="${helpDir}docbook" />
 		<property name="fo.dir" value="fo" />
-		<xslt style="${xml.dir}/fo_style.xsl" classpath="${saxon.dir}/saxon.jar" in="${xml.dir}/ng_help.xml" out="${xml.dir}/out.fo" />
+		<xslt style="${xml.dir}/fo_style.xsl" classpath="${saxon.dir}/saxon.jar" in="${xml.dir}/asset_help.xml" out="${xml.dir}/out.fo" />
 
 		<echo message="output to fo complete, now going to pdf" />
 
