@@ -13,13 +13,13 @@
  <item
        title="ASSET data files">
     <description>
-       ASSET breaks down the information required to run through a scenario into two separate file types:  <b>scenario</b> files describe what&amp;apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation. Whilst both types of file contain data stored in the textual &amp;lt;i&amp;gt;xml&amp;lt;/i&amp;gt; data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix (to help you to organise your data)
+       ASSET breaks down the information required to run through a scenario into two separate file types:  <b>scenario</b> files describe what&apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation. Whilst both types of file contain data stored in the textual <b>xml</b> data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix (to help you to organise your data)
     </description>
  </item>
   <item
        title="ASSET modelling process">
     <description>
-    The process you&apos;ll follow when using ASSET will be as follows:  <b>1</b> define your scenario, <b>2</b> specifThe ASSET xml editor.ill be controlled, <b>3</b> load the datafiles, <b>4</b> run through the scenario, <b>5</b> analyse the scenario results.  </description>
+    The process you&apos;ll follow when using ASSET will be as follows:  <b>1</b> define your scenario, <b>2</b> specify how the senario will be controlled, <b>3</b> load the datafiles, <b>4</b> run through the scenario, <b>5</b> analyse the scenario results.  </description>
  </item>
  <item
        title="Open a scenario file">
