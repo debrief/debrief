@@ -31,7 +31,7 @@
        dialog="true"
        skip="true"
        title="Create a &apos;General&apos; project">
-		<description>If your navigator is empty, then yes, you need to create a project. Right-click in the Navigator view, and select &apos;Project...&apos; from the &apos;New&apos; sub-menu.  The New Project wizard will open. From the &apos;General&apos; folder, select Project, and then press &apos;Next&apos;. Now just enter a name for your project (this could be your name or the name of the current simulation project). Lastly press the &apos;Finish&apos; button, and you will see the new project in your workspace.  Or use the &apos;Click to run&apos; link below to quickly open the New project window.
+		<description>If your navigator is empty, then yes, you need to create a project. Right-click in the Navigator view, and select &apos;New&apos;, then  &apos;Project...&apos;.  The New Project wizard will open. From the &apos;General&apos; folder, select Project, and then press &apos;Next&apos;. Now just enter a name for your project (this could be your name or the name of the current simulation project). Lastly press the &apos;Finish&apos; button, and you will see the new project in your workspace.  Or use the &apos;Click to run&apos; link below to quickly open the New project window.
 		</description>
   <command
         required="false"
@@ -46,7 +46,7 @@
          title="Check the XML editor is configured">
       <description>
          <b>ASSET uses data files that adhere to the XML data standard. XML is easily read and manipulated by computers, but can be a little verbose and fiddly when edited by humans. That&apos;s why we use an XML Editor that hides some of the fiddly details</b><br/>
-ASSET is based on the Eclipse platform, which includes its own rudimentary xml editor. Check this is present by expanding the sample data folder in your Navigator. Now right-click on an xml file.  In the &quot;Open With&quot; sub-menu you should see &quot;XML Editor&quot;, this confirms the xml editor is present and working.  If you don&apos;t see the XML Editor entry, please contact the mainainer - since it appears your installation is invalid.
+ASSET is based on the Eclipse platform, which includes its own rudimentary xml editor. Check this is present by expanding the sample data folder in your Navigator. Now right-click on an xml file.  In the &quot;Open With&quot; sub-menu you should see &quot;XML Editor&quot;, this confirms the xml editor is present and working.  If you don&apos;t see the XML Editor entry, please contact the mainainer - since it appears your installation is invalid, and you won&apos;t be getting much further with this tutorial.
       </description>
    </item>
 </cheatsheet>
