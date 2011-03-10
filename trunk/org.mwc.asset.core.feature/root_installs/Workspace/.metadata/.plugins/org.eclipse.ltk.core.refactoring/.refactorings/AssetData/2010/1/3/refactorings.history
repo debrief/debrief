@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;AssetData/user_control_control.xml&apos; to &apos;trial1.xml&apos;" description="Rename resource &apos;user_control_control.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="user_control_control.xml" name="trial1.xml" stamp="1263304090420" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;AssetData/trial1.xml&apos; to &apos;trial1_sample.xml&apos;" description="Rename resource &apos;trial1.xml&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="trial1.xml" name="trial1_sample.xml" stamp="1263307971477" updateReferences="true"/>
-</session>
