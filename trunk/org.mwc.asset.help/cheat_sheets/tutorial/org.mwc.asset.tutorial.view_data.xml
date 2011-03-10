@@ -7,13 +7,18 @@
 	</intro>
 	<item title="Checking you have some data">
 		<description>
-			In an earlier cheat sheet you should have created an empty project and linked in the sample ASSET data.  If you didn&amp;apos;t, then frankly you&amp;apos;re bugger - so if I was you I&amp;apos;d go back and do it right now.
-		</description>
+			In an earlier cheat sheet you should have created an empty project and linked in the sample ASSET data.  If you didn&apos;t, then frankly you&apos;re bugger - so if I was you I&apos;d go back and do it right now.cription>
 	</item>
  <item
        title="ASSET data files">
     <description>
-       <b>Body</b>
+       ASSET breaks down thASSET breaks down the information required to run through a simulation into two separate file types: <b>ScenaRight, let&apos;s start off wi
+      <subitem
+            label="&lt;b&gt;ASSET&apos;s xml editor&lt;/b&gt;&lt;br/&gt;">
+      </subitem>th a scenario file.  Double-click on the <b>ForceProt.asset</b> data file in the <b>AssetData</b> folder of your navigator.  It will open in the central editor pane.  ASSET&apos;s xml editor uses a two-tab construct.  At the foot of the editor pane you&apos;ll see two tabs, one named &lt;i&gt;Design&lt;/i&gt; and the other named &lt;i&gt;Source&lt;/i&gt;.  The Design tab is a tree-oriented editor that gives you an overview of your scenario, the Source tab lets you get right down in the weeds.apos;s start off wi
+      <subitem
+            label="ASSET&apos;s xml editor">
+      </subitem>th aes describe what&apos;s to be simulated, and <b>Control</b> files direct ASSET in how to run the simulation.  Whilst both types of file contain data stored in the textual &lt;i&gt;xml&lt;/i&gt; data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix (to aid you organise your data).s down the information required to run through a simulation into two separate file types: <b>Scenario</b> files describe what&apos;s to be simulated, and <b>Control</b> files direct ASSET in how to run the simulation.  Whilst both types of file contain data stored in the textual &lt;i&gt;xml&lt;/i&gt; data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix.s down the information required to run through a simulation into two separate file types: <b>Scenario</b> files describe what&apos;s to be simulated, and <b>Control</b> files direct ASSET in how to run the simulation.s down the information required to run through a simulation into two separate file types: <b>scenario</b> file describe what&apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation.on required to run through a simulation into two separate file types: <b>scenario</b> file describe what&amp;apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation.
     </description>
  </item>
  <item
