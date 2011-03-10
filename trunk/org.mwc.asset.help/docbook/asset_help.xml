@@ -7488,6 +7488,573 @@
           </orderedlist></para>
       </sect1>
     </chapter>
+    <chapter id="userguide_sm_search">
+      <title>Submarine Search</title>
+      <sect1 id="subsearch_intro">
+        <title>Introduction</title>
+        <para>The example scenarios presented so far largely focus on helicopter based tactics -
+          with interactions dominated by detections from above-water sensors. This section of the
+          tutorial will switch to the other significant area of detection modelling within
+            <application>ASSET</application>, focussing on <link linkend="mod_detection">underwater
+            acoustic sensors</link>. </para>
+        <para>The tactical problem to be considered entails an SSN performing a series of movements
+          and active sonar transmissions (as shown in the diagram <link linkend="SubSearchDiag"
+            >below</link>) with the intention of influencing an opposing force SSK. Airborne
+          participants will provide radar coverage, though this will be modelled at a level above
+          the MPAs themselves; through a detection performance observer. </para>
+        <para> The analysis of the problem will include variation in the SSN's prescripted search
+          plan and the behaviour (aggressive vs evasive) of the SSK. We will start off by performing
+          a series of <link linkend="user_command_line_monte">command-line Monte Carlo</link>
+          simulations to work through a large number of permutations, then further investigate
+          scenarios of interest using the <link linkend="userguide_workbench">Workbench</link> GUI
+          environment. </para>
+        <para>Since the SSN in this scenario is not responsive to the SSKs, we are able to use <link
+            linkend="parallel_planes">parallel planes</link> processing - our scenario will contain
+          the single blue searcher but many red ssks all operating in <link
+            linkend="parallel_planes">parallel planes</link> unaware of each other. This will both
+          bring performance advantages, and allow the multiple SSK permutations to be monitored
+          within a single <link linkend="userguide_workbench">Workbench</link> session. <figure
+            float="0" id="SubSearchDiag">
+            <title>Overview of submarine search problem</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/SubmarineSearchTutorialDiag.gif"/>
+              </imageobject>
+            </mediaobject>
+          </figure></para>
+      </sect1>
+      <sect1>
+        <title id="SM_SCENARIO_FILE">Preparing the data</title>
+        <sect2>
+          <title>Environment</title>
+          <para>Start off by <link linkend="tutorial_create_scenario">generating the scenario
+              file</link>, inserting the desired environment at the start (note that the
+            environmental tables used for lookup sensors are not required here - no lookup sensors
+            are required for the scenario). I suggest a low sea-state and relatively clear
+            atmosphere to start with to encourage interaction. </para>
+        </sect2>
+        <sect2>
+          <title>Participants</title>
+          <sect3>
+            <title>SSK</title>
+            <para>Next come with the participants, starting with the SSK. Give it a name
+              (obviously), something like <emphasis>Target</emphasis> should do. Next comes its
+                <link linkend="RECHARGE_NOTE">charge rate</link>, I found
+                <computeroutput>0.005</computeroutput> gave realistic enough results. Lastly
+              indicate that the SSK is a Monte Carlo Target - to receive special <link
+                linkend="parallel_planes">parallel planes</link> processing. Then comes the
+                <guilabel>Category</guilabel>, which will indicated that this a
+                <computeroutput>SUBSURFACE, RED, SUBMARINE</computeroutput>. </para>
+            <para>The sensor fit represents the next data to record, for our example we'll equip the
+              SSK with <guilabel>Broadband Sensor</guilabel> and <guilabel>Active
+                Intercept</guilabel> sensors (giving the broadband sensor an aperture of 130
+              degrees). For the initial status of the ssk place it using a <guilabel>Relative
+                Location</guilabel> at (0nm,0nm,-60m), with a course of 0, fuel level of 100, and
+              speed of 10 kts. Before we take on the compex task of defining the SSK behaviour we'll
+              finish off the simpler components. So, give the SSK a
+                <guilabel>RadiatedCharacteristics</guilabel> item, and insert
+                <guilabel>SSKBroadband</guilabel>
+              <link linkend="mod_acoustic_rad">radiated noise</link> dataset. Specify a Base Noise
+              Level of 70, and a Snort Noise Level of 120. </para>
+            <sidebar>
+              <para>As a reminder, the SSK has two broadband <link linkend="mod_acoustic_rad"
+                  >radiated noise</link> levels: a quiet one for when running deep on main motor
+                (battery-powered) and a noisier one for when snorting at periscope depth. </para>
+            </sidebar>
+            <para>Lastly indicate the submarine's movement characteristics, using the
+                <guilabel>SSMovementCharacteristics</guilabel> structure. I used the following
+              values: </para>
+            <para>
+              <programlisting>
+                &lt;SSMovementCharacteristics FuelUsageRate="0.0002" Name="SSN Movement"&gt;
+                &lt;MinSpeed Units="kts" Value="1"/&gt;
+                &lt;MaxSpeed Units="kts" Value="12"/&gt;
+                &lt;AccelerationRate Units="kt/s" Value="1"/&gt;
+                &lt;DecelerationRate Units="kt/s" Value="1"/&gt;
+                &lt;MinHeight Units="m" Value="-300"/&gt;
+                &lt;MaxHeight Units="m" Value="-18"/&gt;
+                &lt;DefaultClimbRate Units="ft/s" Value="1"/&gt;
+                &lt;DefaultDiveRate Units="ft/s" Value="1"/&gt;
+                &lt;TurningCircle Units="m" Value="600"/&gt;
+                &lt;/SSMovementCharacteristics&gt;
+              </programlisting>
+            </para>
+            <para>The last item to be entered for the SSK is its behaviour. In support of our
+              analysis objectives we're going to supply the SSK with two alternate behaviours. Our
+              Monte Carlo processing can then provide target instances demonstrating either an
+              Aggressive or Evasive posture. The two high level behaviours are contained in a <link
+                linkend="behaviour_switch">Switch</link> container. So, start off by inserting a
+                <link linkend="behaviour_switch">Switch</link> object immediately below the SSK
+              status. Give the switch a name, and indicate the detault behaviour to be executed (
+                <computeroutput>1</computeroutput> will do). Each of the two behaviours will be
+              contained in a <link linkend="behaviour_Waterfall">Waterfall</link> structure. We'll
+              start off with the Evasive behaviour. So insert the Waterfall structure, and give it a
+              name of something like <computeroutput>Evasive</computeroutput>. Into the Waterfall we
+              will insert the hierarchical SSK evade behaviour, starting with the highest priority.
+              In this instance we will make the SSK maintaining it's batteries at a safe level the
+              highest priority behaviour, so insert <guilabel>SSKRecharge</guilabel> fom from
+                <guilabel>Elements</guilabel> tab. Name it as <computeroutput>Emergency
+                Snort</computeroutput>, set the minimum level as 5 and the safe level as 15, and
+              indicate that the SSK will snort at a speed of 4 knots. </para>
+            <para>So, when the SSK battery level reaches dangerously low levels it will conduct a
+              snort however hostile its current environment may be. Obviously it won't conduct a
+              very long snort - just enought to keep the SSK operational.</para>
+            <para>The next component of the SSK evasive behaviour will cover the evasion itself.
+              Beneatch the <guilabel>SSK Recharge</guilabel> component insert an
+                <guilabel>Evade</guilabel> component, naming it <computeroutput>Avoid
+                SSN</computeroutput>. Configure this behaviour to continue evading for a period of
+              30 minutes, at a depth of 80m (that's a height of -80m by the way), and at a speed of
+              6 knots. Lastly, indicate that the SSK will be evading all
+                <computeroutput>Blue</computeroutput> targets. To specify Blue force participants as
+              targets, put the cursor into the <guilabel>TargetType</guilabel> element, and
+              double-click <guilabel>Type</guilabel> from the <guilabel>Add child</guilabel> tab of
+              the <guilabel>Elements</guilabel> toolbox. Within the <guilabel>Type</guilabel>
+              element select <computeroutput>BLUE</computeroutput> from the drop-down list. </para>
+            <para>Beneath the <computeroutput>Evade</computeroutput> behaviour insert another
+                <computeroutput>SSK Recharge</computeroutput> behaviour, to represent normal snort
+              behaviour. This snort behaviour will be conducted whenever the battery level falls
+              below 30%, on which the SSK will attempt to snort back up to 100%, though not when in
+              contact with any blue targets. Set the <computeroutput>EvadeThese</computeroutput>
+              type to <computeroutput>BLUE</computeroutput> as you did with the
+                <computeroutput>Evade</computeroutput> behaviour above. </para>
+            <para>The lowest-level component of the Evasive SSK behaviour is the general patrol
+              behaviour. This is represented through a <link linkend="mod_rectangle_wander"
+                >Rectangle Wander</link> element, inserted from the <guilabel>Add child</guilabel>
+              tab of the <guilabel>Elements</guilabel> toolbox, giving a sensible name, a speed of 6
+              knots, and a height of -80m (representing a depth of 80m). By default the top left and
+              bottom right corners are specified using Short-Location elements (which take lat and
+              long expressed as decimal degrees) . We will be specifying them using
+              Relative-Location elements, whcih express the location as ranges from the origin.
+              Start to replace the existing elements by selecting the first
+                <computeroutput>shortLocation</computeroutput>, then double-click on
+                <computeroutput>relativeLocation</computeroutput> from the
+                <guilabel>Insert</guilabel> tab of the <guilabel>elements</guilabel> toolbar. Now
+              you can delete the existing <computeroutput>shortLocation</computeroutput> item. And
+              repeat this process for the other 3 corner references (no, it isn't as long-whinded in
+              real-life as when written down). Set the top-left coordinates to 60nm North, 0nm East,
+              and bottom-right to 0nm North, 120Nm West. And that's the SSK evasive behaviour
+              complete. </para>
+            <para>Next comes the SSK aggressive behaviour. Now, my definition of this behaviour is
+              very similar to the evasive behaviour. So start off by making a duplicate of the
+              previous <computeroutput>Evasive</computeroutput> Waterfall component, renaming it to
+                <computeroutput>Aggressive</computeroutput>. Within this component both of the
+                <computeroutput>SSK Recharge</computeroutput> and the <computeroutput>Rectangle
+                Wander</computeroutput> behaviours remain unchanged, but we will exchange the
+                <computeroutput>Evade</computeroutput> behaviour for an
+                <computeroutput>Intercept</computeroutput> one. Delete the
+                <computeroutput>Evade</computeroutput> behaviour first, then insert an
+                <computeroutput>Intercept</computeroutput> behaviour from the
+                <guilabel>Insert</guilabel> tab of the <guilabel>Elements</guilabel> toolbox.
+              Configure the Intercept behaviour to allow speed changes and specify that the SSK will
+              attempt to intercept Blue submarines <footnote>
+                <para>Sharp-eyed techno-geek readers will have noticed that we could have
+                  represented these two behaviours complete. We could have created a single SSK
+                  behaviour containing the two recharge and single rectangle wander elements, with
+                  the <link linkend="behaviour_switch">Switch</link> between the two recharges. This
+                  Switch could then have contained the two alternate Evade and <link
+                    linkend="intercept_behaviour">Intercept</link> behaviours. Whilst this structure
+                  would represent our two behaviours in a more compact form, it could ultimately
+                  hinder the amount of changes which could be made between the two - having two
+                  completely separate behaviour waterfalls provides the greatest room for changes.
+                </para>
+              </footnote>. And that is the SSK complete. </para>
+            <para>Next comes the SSN. Start off by giving it a category of <computeroutput>Blue,
+                Subsurface, Submarine</computeroutput>. Then provide it with a sensor-fit comprising
+                <computeroutput>Active Broadband Sensor</computeroutput> (source level:148,
+              aperture:130, working: false <footnote>
+                <para>we are setting the working attribute to false to indicate that the sonar isn't
+                  transmitting at the start of the scenario - other elements of the SSN behaviour
+                  set working to true to indicate that the sensor is transmitting on active.</para>
+              </footnote>). Also provide a standard <link linkend="mod_medium_bb">Broadband</link>
+              Sensor (aperture:130), and <link linkend="mod_medium_nb">Narrowband</link> sensor
+              (steady time 10 minutes). For the SSN initial status give it a full fuel load <footnote>
+                <para>yes, fuel level is irrelevant for an SSN in ASSET, it is provided for
+                  completeness</para>
+              </footnote>, and indicate that it is heading North at 10 knots. Make it's initial
+              location 1/2 Nm North &amp; East of the origin, at a depth of 60m (using a
+                <computeroutput>relativeLocation</computeroutput>). </para>
+            <para>And now on to the SSN behaviour. Insert a
+                <computeroutput>Waterfall</computeroutput> element beneath the existing status
+              element, naming it something like <computeroutput>SSN Search</computeroutput>. The
+              first item in the ssn search is a <link linkend="mod_working_transit">Working
+                Transit</link>, which allows a participant to conduct a transit whilst making
+              regular stops to perform a particular activity. So, insert the <computeroutput>Working
+                Transit</computeroutput> behaviour into the SSN's parent
+                <computeroutput>Waterfall</computeroutput> behaviour, configuring it with a name
+              ("sweeping active transit"), number of stops to make (8), indicate that the SSN should
+              not repeat the transit on completion (Looping:false), and to transit at 12 knots.
+              Define the path to travel through as passing through the following sets of coordinates
+              expressed as relative locations in North, East nautical miles: (0,0) (30,10) (50,25)
+              (55,40). Into the Working Transit insert the following behaviour (activity) performed
+              at 8 points during the transit: <figure float="0" id="SubActiveTXDiag">
+                <title>Submarine active transmissions</title>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/TutSSNWorkingTransit.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </figure></para>
+            <para>After the sweeping curve of active transmissions (as shown in the <link
+                linkend="SubSearchDiag">initial diagram</link>) the submarine the moves into it's
+              passive search area, so insert a <link linkend="mod_wander">Wander</link> behaviour
+              representing the passive search. Configure the Wander behaviour with a range of 20
+              nautical miles, centre the behaviour on the relative location 15nm North, 40Nm East,
+              at a depth of 100m and speed of 12 knots. Next for the SSN comes it's definition of
+              radiated noise - set the broadband base noise level to be 70 decibels. Finally
+              configure the SSN movement parameters, as shown below:
+              <programlisting>&lt;SSMovementCharacteristics FuelUsageRate="0" Name="SSN Movement"&gt;
+                &lt;MinSpeed Units="kts" Value="1"/&gt;
+                &lt;MaxSpeed Units="kts" Value="28"/&gt;
+                &lt;AccelerationRate Units="kt/s" Value="1"/&gt;
+                &lt;DecelerationRate Units="kt/s" Value="1"/&gt;
+                &lt;MinHeight Units="m" Value="-300"/&gt;
+                &lt;MaxHeight Units="m" Value="-18"/&gt;
+                &lt;DefaultClimbRate Units="ft/s" Value="1"/&gt;
+                &lt;DefaultDiveRate Units="ft/s" Value="1"/&gt;
+                &lt;TurningCircle Units="m" Value="600"/&gt;
+                &lt;/SSMovementCharacteristics&gt;</programlisting>.
+              And that's the end of the SSN definition, now onto the MPS definition. </para>
+            <para>Start off by inserting a <computeroutput>Fixed Wing</computeroutput> participant
+              to the scenario, naming it <computeroutput>MPA</computeroutput> - or similar. Then
+              configure the MPA as <computeroutput>Airborne, Blue, MPA</computeroutput>. Provide the
+              MPA with a <link linkend="mod_lookup_radar">radar</link> configured as below: <figure
+                float="0" id="MPARadarParams">
+                <title>MPA Radar parameters</title>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/TutSubSearchMPARadar.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </figure></para>
+            <para>Then go on to set the initial status of the MPA; full fuel tanks, located at a
+              position 30nm North, 90nm east, travelling on 060 degrees at 90 knots. The MPA
+              behaviour model is quite simple for this scenario, performing a rectangle wander
+              within the corners 60Nm North, 60Nm East, 0Nm North, 120Nm East, travelling at 110
+              knots at an altitude of 2000 metres. Lastly enter the Fixed Wing Movement
+              Characteristics :
+              <programlisting>&lt;FixedWingMovementCharacteristics FuelUsageRate="0.00001" Name="MPA Flight" DefaultTurnRate="2"&gt;
+                &lt;MinSpeed Units="kts" Value="70"/&gt;
+                &lt;MaxSpeed Units="kts" Value="260"/&gt;
+                &lt;AccelerationRate Units="kt/s" Value="5"/&gt;
+                &lt;DecelerationRate Units="kt/s" Value="7"/&gt;
+                &lt;MinHeight Units="m" Value="1000"/&gt;
+                &lt;MaxHeight Units="m" Value="6000"/&gt;
+                &lt;DefaultClimbRate Units="ft/s" Value="3"/&gt;
+                &lt;DefaultDiveRate Units="ft/s" Value="10"/&gt;
+                &lt;DefaultClimbSpeed Units="kts" Value="90"/&gt;
+                &lt;DefaultDiveSpeed Units="kts" Value="120"/&gt;
+                &lt;/FixedWingMovementCharacteristics&gt;</programlisting></para>
+            <para>And that completes the MPA description, after which we move on to the control file
+              in the next section.</para>
+          </sect3>
+        </sect2>
+      </sect1>
+      <sect1>
+        <title id="SM_SCENARIO_CONTROL_FILE">Control file</title>
+        <para>The control file for this problem will comprise scenario generation instructions (to
+          allow us to run through a batch of simulations), participant generation instructions (to
+          allow us to simulataneously model a number of ssk targets running in <link
+            linkend="parallel_planes">parallel planes</link>), and observer definitions used to
+          record analysis outputs and to terminate the scenario. </para>
+        <para>Start off by creating the empty control file, as we did <link
+            linkend="tutorial_create_control">earlier</link>. Set the <link
+            linkend="ScenarioOutputDirectory">output directory</link> to somewhere tidy like
+            <filename>c:\asset\sm_output</filename> Insert your scenario generator, inserting a
+            <computeroutput>MultiScenarioGenerator</computeroutput> into it. Within the
+          multi-scenario generator set the <link linkend="ScenarioNameTemplate">name template</link>
+          to something useful like <computeroutput>sm_search</computeroutput>, which will become the
+          prefix for the automatically generated scenarios. Also set the <link
+            linkend="ScenarioNumber">number</link> of scenarios to be generated - start off with
+            <computeroutput>10</computeroutput> for now. Also into the Multi Scenario Generator
+          element we have to specify what we want <application>ASSET</application> to vary. For this
+          tactical problem we will experiment with how frequently the searching SSN conducts active
+          transmissions during the sweeping curve, by varying the number of stops on the <link
+            linkend="mod_working_transit">Working Transit</link>. Do this by inserting a single
+          Variance element, itself containing an <computeroutput>Attribute</computeroutput> element
+          into Multi-scenario generator variances list. The list may have sample elements already,
+          just ditch them if there are. Now configure this variance to indicate that it is the
+            <computeroutput>WorkingTransit</computeroutput> element that we are going to modify, the
+            <computeroutput>NumStops</computeroutput> is the name of the <link
+            linkend="mod_gen_attribute">attribute</link> to modify within it, and that we want a
+            <link linkend="mod_gen_range">range</link> of values between 3 and 12 provided (to
+          represent the number of times the submarine will stop). <figure float="0">
+            <title>Variance in submarine search</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/SMSearchVariance.gif"/>
+              </imageobject>
+            </mediaobject>
+          </figure></para>
+        <para>Next we move onto the <link linkend="mod_multiple_participant">participant
+            generation</link> element. Start off by inserting the
+            <computeroutput>MultiParticipantGenerator</computeroutput> into the scenario generator.
+          Configure this by indicating that we want <link linkend="mod_part_number">100
+            targets</link> to be generated, and that the <link linkend="mod_part_name">participant
+            name</link> begin with <computeroutput>TGT</computeroutput>. Note that we don't have to
+          set the <computeroutput>inParallelPlanes</computeroutput> attribute here, since it is
+          already defined ( <computeroutput>MonteCarloTarget = true</computeroutput>) for the SSK in
+          the scenario file. We do, however, have to specify the variances to apply to the multiple
+          SSKs. This is a two-stage process, first setting the general attributes to vary, and then
+          specifying where ASSET should place the SSKs. The first variance to insert will vary the
+          speed at which the SSK patrols - so the name is
+          <computeroutput>SSK_Speed</computeroutput>, the id is
+            <computeroutput>/RectangleWander/Speed</computeroutput>
+          <footnote>
+            <para>Which means: <variablelist>
+                <varlistentry>
+                  <term>/</term>
+                  <listitem>
+                    <para>At the end of the participant identifer (which gets prefixed to the id
+                      before use) there is a trailing slash. Adding this second trailing slash means
+                        <emphasis>descend as far as you like through the description of this
+                        participant</emphasis>
+                    </para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>RectangleWander</term>
+                  <listitem>
+                    <para>Stop when you get to a RectangleWander behaviour</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>/Speed</term>
+                  <listitem>
+                    <para>Find the Speed element within the RectangleWander behaviour</para>
+                  </listitem>
+                </varlistentry>
+              </variablelist></para>
+          </footnote>, and we are varying the <computeroutput>Value</computeroutput> attribute
+          between <computeroutput>3</computeroutput> and <computeroutput>8</computeroutput> in
+            <computeroutput>0.5</computeroutput> knot steps. Next we are going to vary the initial
+          course. So, add a new variance called <computeroutput>SSK_Course</computeroutput>, and
+          give it the simple <guilabel>id</guilabel> of <computeroutput>Status</computeroutput>.
+          Indicate that the we are going to vary the value of the <guilabel>Attribute</guilabel>
+          name <computeroutput>Course</computeroutput> within the vessel status, providing values
+          between <computeroutput>0</computeroutput> and <computeroutput>360</computeroutput> at
+            <computeroutput>1</computeroutput> degree steps. </para>
+        <para>The next item to vary is more significant to our particular analysis, varying the
+          posture of the SSK. As you no doubt remember we stored the two mutually exclusive SSK
+          behaviours in a <link linkend="behaviour_switch">Switch</link> construct. The Switch
+          construct contained the index of which behaviour to activate. We are going to use a
+          variance to randomly select one of these behaviours. So, insert a new
+            <guilabel>Variance</guilabel> item titled <computeroutput>SSK Posture</computeroutput>
+          with an XPath id of <computeroutput>Switch</computeroutput>. Next indicate that we are
+          going to vary an <guilabel>Attribute</guilabel> through a <computeroutput>
+            <link linkend="mod_gen_choice">Choice</link>
+          </computeroutput> of values: <computeroutput>1</computeroutput> and
+            <computeroutput>2</computeroutput>. </para>
+        <para>Lastly we will define the area through which we want our series of SSKs to be placed.
+          This is through use of a <link linkend="mod_gen_dist">ParticipantLocation</link>
+          construct. Into this we define a <guilabel>WorldArea</guilabel> comprising top-left and
+          bottom-right corners. The top-left (expressed in relative distances:
+            <computeroutput>relativeLocation</computeroutput>) us at 60Nm North, 0Nm East and the
+          bottom-right is at 0Nm North and 120Nm East. </para>
+        <para>After the scenario generation instructions we move on to the
+            <guilabel>ObserverList</guilabel>, which indicates which <link linkend="mod_referees"
+            >referees</link>and <link linkend="mod_observers">observers</link> we want to monitor
+          the running scenario. The observers we will use will record tracks to file for us, and
+          stop the scenario after a set period. The first track recorder will be the <link
+            linkend="obs_track_plot">Track Plot Observer</link>, used to give us a graphic plot of
+          the tracks on completion. Configure the track plot observer to be
+            <computeroutput>Active</computeroutput>, to show positions, give it a sensible filename,
+          and ask for a grid to be placed over the image on completion (10Nm would seem about right
+          for our scenario size). Also specify that
+            <computeroutput>only_final_positions</computeroutput> should be provided (to avoid
+          receiving a dense mass of target tracks). Next comes an observer used to create Debrief
+          files covering the period: <link linkend="mod_DebriefReplayObserver">Debrief Replay
+            Observer</link>. Indicate that you want this to record decisions and positions, but not
+          detections - just to keep the volume of information down. </para>
+        <para>To prevent the scenario from running on ad infinitum add a <link
+            linkend="obs_time_observer">Time Observer</link>, configured to stop the scenario after
+          36 hours. And that completes the control file. </para>
+      </sect1>
+      <sect1>
+        <title>Running through the scenario</title>
+        <sect2>
+          <title>Quick-look in Workbench</title>
+          <para>To get some quick feedback on how we've designed the scenario we will first run it
+            through the <application>ASSET</application>
+            <application>Workbench</application>
+            <footnote>
+              <para>This quick test will verify that our scenario and control files are valid and
+                complete, and also highlight any glaring errors before we switch to batch
+                processing.</para>
+            </footnote>. So, start off by double-clicking on the <filename>workbench.exe</filename>
+            application in your <application>ASSET</application> installation directory. </para>
+          <para>Once the <application>Workbench has opened, initiate the <guilabel>Monte Carlo
+                Loader</guilabel> form byclicking on the <inlinegraphic
+                fileref="figures/MonteCarlo.gif" format="GIF"/> button from the
+                <guilabel>File</guilabel> sub-toolbar of the <guilabel>Controls</guilabel> toolbar.
+              The Monte Carlo loader will open. Into the <guilabel>Scenario file:</guilabel> box
+              drag your submarine search scenario file, and into the <guilabel>Control
+                file:</guilabel> box drag your control file. Next press the
+                <guibutton>Generate</guibutton> button and watch the scenario generation progress
+              reported before your very eyes (as below). </application>
+            <figure float="0">
+              <title>Scenario generation from Workbench</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/SMSearchProgress.gif"/>
+                </imageobject>
+              </mediaobject>
+            </figure></para>
+          <para>On the <application>ASSET</application> plot you will also see the blue SSN and MPA,
+            together with the 100 SSK targets. Open up the status panel for one of the SSKs near the
+            SSN so that we can monitor what it's doing. Step forward a couple of times to allow the
+            status to update, then examine what the SSK is currently doing (the line of text at the
+            top of the panel). Due to the names we supplied for the behaviours this should contain a
+            clue about whether this is an evasive or aggressive target. Now run the scenario forward
+            on automatic and when the SSN starts it's all-sector active transmissions (when you see
+            it change direction frequently) the SSK you are looking at should either turn to
+            intercept or turn away. Good, that's the scenario checked. Now for the batch mode
+            processing. </para>
+        </sect2>
+        <sect2>
+          <title>Batch processing</title>
+          <para>To perform the batch-mode processing I would copy the scenario and control files
+            into the <application>ASSET</application> installation directory. Then open a command
+            line console, and type <computeroutput>ASSET scenario.xml control.xml</computeroutput>.
+              <application>ASSET</application> should now start processing the scenarios in batch
+            mode, giving you the following results on the console. <figure float="0">
+              <title>Monitoring batch processing</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/SMSearchScreen.gif"/>
+                </imageobject>
+              </mediaobject>
+            </figure></para>
+          <para>Once the processing is complete you can load any of the <filename>.rep</filename>
+            files into <application>Debrief</application>. Unfortunately the analysis problem under
+            consideration here doesn't lend itself to statistical analysis. One of the best
+            overviews is to quickly flick through some of the track plot images to recognise
+            clusters of ssks (only possible if you set
+              <computeroutput>only_show_final_positions</computeroutput>, else you just have a mush
+            of overlapping tracks). </para>
+        </sect2>
+      </sect1>
+    </chapter>
+    <chapter id="userguide_eclipse">
+      <title>Eclipse-based Workbench</title>
+      <sect1 id="user_eclipse">
+        <title>Introduction</title>
+        <para>The <application>ASSET Workbench</application> is a graphical front-end to the
+            <application>ASSET</application> modelling engine. Together with its integrated
+            <application>Debrief</application> application it's able to support the full modelling
+          lifecyle. <link linkend="mod_scenario_intro">Scenario</link> and <link
+            linkend="mod_scenario_control">Control</link> files are edited and loaded into the
+            <application>Workbench</application>, and then you step forward through the scenario.
+          Graphical dialogs are provided to allow you to drill-down into the detailed attributes,
+          settings, and behaviours of the scenario participants - giving you fine control and
+          detailed understanding of a live simulation. The <application>Workbench</application>
+          application makes extensive re-use of components developed for MWC's <ulink
+            url="www.debrief.info">Debrief</ulink> application - particularly with regard to the
+          graphical plot, property editing, and core units (distance, locations, areas). </para>
+      </sect1>
+      <sect1>
+        <title>Workbench user interface</title>
+        <para>The following diagram highlights the main areas of the
+            <application>Workbench</application> user interface, though note that the screen
+          elements are completely configurable - elements can be drag/dropped to any other location
+          (including out of the application): <figure float="0">
+            <title>Screenshot of Workbench application</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/workbench_view.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure><variablelist>
+            <varlistentry>
+              <term>Toolbar</term>
+              <listitem>
+                <para>Along the top of the <application>Workbench</application> user interface is
+                  the toolbar. This toolbar supports file-based operations (such as save), and
+                  geospatial operations (such as zoom-in, fit to window) for when a 2d geospatial
+                  plot is being viewed - either when running live or in post-event analysis (via
+                    <application>Debrief</application>). </para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Time Controller</term>
+              <listitem>
+                <para>The time controller displays the current model time, and provides operations
+                  to restart a scenario, play automatically or step forward a single step. The time
+                  controller properties (available from the dropdown menu) allow the time-step sizes
+                  to be adjusted.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry id="ECLIPSE_PROPERTIES_WINDOW">
+              <term>Properties Window</term>
+              <listitem>
+                <para>In the top-right of the screenshot is the properties window - which displays
+                  editable properties for the currently selected object, regardless of where the
+                  selection is (layer manager, gui, scenario controller).</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Plot</term>
+              <listitem>
+                <para>The right-hand side of the screen is dedicated to the Plot itself, a
+                  2-dimensional snapshot view of the scenario. Double-clicking on a participant's
+                  icon will open that participant in the properties window, and the <guilabel>Chart
+                    Features</guilabel> sub-toolbar of the <guilabel>Controls</guilabel> toolbar
+                  allows graphic items to be added to the plot (contours, grids, scales,
+                  annotations. </para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </sect1>
+    </chapter>
+    <chapter id="user_factory">
+      <title>Factory</title>
+      <para>The ASSET Tactics Factory is an application used to create initial best-guess tactics
+        for a defined tactical scenario. Whilst there is no expectation that the output of the ASSET
+        Tactics Factory will provide a tactic suitable for direct use at sea, the application is
+        capable of identifying the mathematically optimal <footnote>
+          <para>Actually, whilst the genetic algorithm employed in the factory can deliver the
+            mathematically optimal solution, it is better at identifying a near-optimal solution in
+            a fraction of the time necessary for an exhaustive search.</para>
+        </footnote> tactic for a particular problem. This optimal tactic can then be used as a
+        starting point by the human tactician. </para>
+      <para>
+        <figure id="factory_flows">
+          <title>Flow of information within ASSET Factory</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/diagram_illustrating_genetic_alg.gif"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+      </para>
+      <para>As illustrated in <xref linkend="factory_flows"/>, three sets of data must be loaded
+        prior to running: <variablelist>
+          <varlistentry>
+            <term>Base Scenario</term>
+            <listitem>
+              <para>This is the scenario used as a base template for the problem to be
+                analysed</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>Observers</term>
+            <listitem>
+              <para>The list of observers provide two facilities: the provide the score necessary
+                for quantitative analysis of a particular scenario (such as time to weapon release,
+                % area searched), together with scenario control facilities (such as stop after 4
+                hours running, or stop on weapon release).</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>Parameters to vary</term>
+            <listitem>
+              <para>This is a list describing what to vary within the base scenario in each
+                permutation. Each item identifies what parameter in the base scenario is to be
+                varied, together with instructions in how to produce the new value (such as random
+                integers between 0 and 360).</para>
+            </listitem>
+          </varlistentry>
+        </variablelist></para>
+    </chapter>
     <chapter id="userguide_workbench">
       <title>Custom Workbench (legacy)</title>
       <sect1 id="user_workbench">
@@ -8134,622 +8701,6 @@
               </mediaobject>
             </figure></para>
         </sect2>
-      </sect1>
-    </chapter>
-    <chapter id="userguide_eclipse">
-      <title>Eclipse-based Workbench</title>
-      <sect1 id="user_eclipse">
-        <title>Introduction</title>
-        <para>The <application>ASSET Workbench</application> is a graphical front-end to the
-            <application>ASSET</application> modelling engine. Together with its integrated
-            <application>Debrief</application> application it's able to support the full modelling
-          lifecyle. <link linkend="mod_scenario_intro">Scenario</link> and <link
-            linkend="mod_scenario_control">Control</link> files are edited and loaded into the
-            <application>Workbench</application>, and then you step forward through the scenario.
-          Graphical dialogs are provided to allow you to drill-down into the detailed attributes,
-          settings, and behaviours of the scenario participants - giving you fine control and
-          detailed understanding of a live simulation. The <application>Workbench</application>
-          application makes extensive re-use of components developed for MWC's <ulink
-            url="www.debrief.info">Debrief</ulink> application - particularly with regard to the
-          graphical plot, property editing, and core units (distance, locations, areas). </para>
-      </sect1>
-      <sect1>
-        <title>Workbench user interface</title>
-        <para>The following diagram highlights the main areas of the
-            <application>Workbench</application> user interface, though note that the screen
-          elements are completely configurable - elements can be drag/dropped to any other location
-          (including out of the application): <figure float="0">
-            <title>Screenshot of Workbench application</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/workbench_view.png"/>
-              </imageobject>
-            </mediaobject>
-          </figure><variablelist>
-            <varlistentry>
-              <term>Toolbar</term>
-              <listitem>
-                <para>Along the top of the <application>Workbench</application> user interface is
-                  the toolbar. This toolbar supports file-based operations (such as save), and
-                  geospatial operations (such as zoom-in, fit to window) for when a 2d geospatial
-                  plot is being viewed - either when running live or in post-event analysis (via
-                    <application>Debrief</application>). </para>
-              </listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>Time Controller</term>
-              <listitem>
-                <para>The time controller displays the current model time, and provides operations
-                  to restart a scenario, play automatically or step forward a single step. The time
-                  controller properties (available from the dropdown menu) allow the time-step sizes
-                  to be adjusted.</para>
-              </listitem>
-            </varlistentry>
-            <varlistentry id="ECLIPSE_PROPERTIES_WINDOW">
-              <term>Properties Window</term>
-              <listitem>
-                <para>In the top-right of the screenshot is the properties window - which displays
-                  editable properties for the currently selected object, regardless of where the
-                  selection is (layer manager, gui, scenario controller).</para>
-              </listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>Plot</term>
-              <listitem>
-                <para>The right-hand side of the screen is dedicated to the Plot itself, a
-                  2-dimensional snapshot view of the scenario. Double-clicking on a participant's
-                  icon will open that participant in the properties window, and the <guilabel>Chart
-                    Features</guilabel> sub-toolbar of the <guilabel>Controls</guilabel> toolbar
-                  allows graphic items to be added to the plot (contours, grids, scales,
-                  annotations. </para>
-              </listitem>
-            </varlistentry>
-          </variablelist></para>
-      </sect1>
-    </chapter>
-    <chapter id="userguide_sm_search">
-      <title>Submarine Search</title>
-      <sect1 id="subsearch_intro">
-        <title>Introduction</title>
-        <para>The example scenarios presented so far largely focus on helicopter based tactics -
-          with interactions dominated by detections from above-water sensors. This section of the
-          tutorial will switch to the other significant area of detection modelling within
-            <application>ASSET</application>, focussing on <link linkend="mod_detection">underwater
-            acoustic sensors</link>. </para>
-        <para>The tactical problem to be considered entails an SSN performing a series of movements
-          and active sonar transmissions (as shown in the diagram <link linkend="SubSearchDiag"
-            >below</link>) with the intention of influencing an opposing force SSK. Airborne
-          participants will provide radar coverage, though this will be modelled at a level above
-          the MPAs themselves; through a detection performance observer. </para>
-        <para> The analysis of the problem will include variation in the SSN's prescripted search
-          plan and the behaviour (aggressive vs evasive) of the SSK. We will start off by performing
-          a series of <link linkend="user_command_line_monte">command-line Monte Carlo</link>
-          simulations to work through a large number of permutations, then further investigate
-          scenarios of interest using the <link linkend="userguide_workbench">Workbench</link> GUI
-          environment. </para>
-        <para>Since the SSN in this scenario is not responsive to the SSKs, we are able to use <link
-            linkend="parallel_planes">parallel planes</link> processing - our scenario will contain
-          the single blue searcher but many red ssks all operating in <link
-            linkend="parallel_planes">parallel planes</link> unaware of each other. This will both
-          bring performance advantages, and allow the multiple SSK permutations to be monitored
-          within a single <link linkend="userguide_workbench">Workbench</link> session. <figure
-            float="0" id="SubSearchDiag">
-            <title>Overview of submarine search problem</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/SubmarineSearchTutorialDiag.gif"/>
-              </imageobject>
-            </mediaobject>
-          </figure></para>
-      </sect1>
-      <sect1>
-        <title id="SM_SCENARIO_FILE">Preparing the data</title>
-        <sect2>
-          <title>Environment</title>
-          <para>Start off by <link linkend="tutorial_create_scenario">generating the scenario
-              file</link>, inserting the desired environment at the start (note that the
-            environmental tables used for lookup sensors are not required here - no lookup sensors
-            are required for the scenario). I suggest a low sea-state and relatively clear
-            atmosphere to start with to encourage interaction. </para>
-        </sect2>
-        <sect2>
-          <title>Participants</title>
-          <sect3>
-            <title>SSK</title>
-            <para>Next come with the participants, starting with the SSK. Give it a name
-              (obviously), something like <emphasis>Target</emphasis> should do. Next comes its
-                <link linkend="RECHARGE_NOTE">charge rate</link>, I found
-                <computeroutput>0.005</computeroutput> gave realistic enough results. Lastly
-              indicate that the SSK is a Monte Carlo Target - to receive special <link
-                linkend="parallel_planes">parallel planes</link> processing. Then comes the
-                <guilabel>Category</guilabel>, which will indicated that this a
-                <computeroutput>SUBSURFACE, RED, SUBMARINE</computeroutput>. </para>
-            <para>The sensor fit represents the next data to record, for our example we'll equip the
-              SSK with <guilabel>Broadband Sensor</guilabel> and <guilabel>Active
-                Intercept</guilabel> sensors (giving the broadband sensor an aperture of 130
-              degrees). For the initial status of the ssk place it using a <guilabel>Relative
-                Location</guilabel> at (0nm,0nm,-60m), with a course of 0, fuel level of 100, and
-              speed of 10 kts. Before we take on the compex task of defining the SSK behaviour we'll
-              finish off the simpler components. So, give the SSK a
-                <guilabel>RadiatedCharacteristics</guilabel> item, and insert
-                <guilabel>SSKBroadband</guilabel>
-              <link linkend="mod_acoustic_rad">radiated noise</link> dataset. Specify a Base Noise
-              Level of 70, and a Snort Noise Level of 120. </para>
-            <sidebar>
-              <para>As a reminder, the SSK has two broadband <link linkend="mod_acoustic_rad"
-                  >radiated noise</link> levels: a quiet one for when running deep on main motor
-                (battery-powered) and a noisier one for when snorting at periscope depth. </para>
-            </sidebar>
-            <para>Lastly indicate the submarine's movement characteristics, using the
-                <guilabel>SSMovementCharacteristics</guilabel> structure. I used the following
-              values: </para>
-            <para>
-              <programlisting>
-                &lt;SSMovementCharacteristics FuelUsageRate="0.0002" Name="SSN Movement"&gt;
-                &lt;MinSpeed Units="kts" Value="1"/&gt;
-                &lt;MaxSpeed Units="kts" Value="12"/&gt;
-                &lt;AccelerationRate Units="kt/s" Value="1"/&gt;
-                &lt;DecelerationRate Units="kt/s" Value="1"/&gt;
-                &lt;MinHeight Units="m" Value="-300"/&gt;
-                &lt;MaxHeight Units="m" Value="-18"/&gt;
-                &lt;DefaultClimbRate Units="ft/s" Value="1"/&gt;
-                &lt;DefaultDiveRate Units="ft/s" Value="1"/&gt;
-                &lt;TurningCircle Units="m" Value="600"/&gt;
-                &lt;/SSMovementCharacteristics&gt;
-              </programlisting>
-            </para>
-            <para>The last item to be entered for the SSK is its behaviour. In support of our
-              analysis objectives we're going to supply the SSK with two alternate behaviours. Our
-              Monte Carlo processing can then provide target instances demonstrating either an
-              Aggressive or Evasive posture. The two high level behaviours are contained in a <link
-                linkend="behaviour_switch">Switch</link> container. So, start off by inserting a
-                <link linkend="behaviour_switch">Switch</link> object immediately below the SSK
-              status. Give the switch a name, and indicate the detault behaviour to be executed (
-                <computeroutput>1</computeroutput> will do). Each of the two behaviours will be
-              contained in a <link linkend="behaviour_Waterfall">Waterfall</link> structure. We'll
-              start off with the Evasive behaviour. So insert the Waterfall structure, and give it a
-              name of something like <computeroutput>Evasive</computeroutput>. Into the Waterfall we
-              will insert the hierarchical SSK evade behaviour, starting with the highest priority.
-              In this instance we will make the SSK maintaining it's batteries at a safe level the
-              highest priority behaviour, so insert <guilabel>SSKRecharge</guilabel> fom from
-                <guilabel>Elements</guilabel> tab. Name it as <computeroutput>Emergency
-                Snort</computeroutput>, set the minimum level as 5 and the safe level as 15, and
-              indicate that the SSK will snort at a speed of 4 knots. </para>
-            <para>So, when the SSK battery level reaches dangerously low levels it will conduct a
-              snort however hostile its current environment may be. Obviously it won't conduct a
-              very long snort - just enought to keep the SSK operational.</para>
-            <para>The next component of the SSK evasive behaviour will cover the evasion itself.
-              Beneatch the <guilabel>SSK Recharge</guilabel> component insert an
-                <guilabel>Evade</guilabel> component, naming it <computeroutput>Avoid
-                SSN</computeroutput>. Configure this behaviour to continue evading for a period of
-              30 minutes, at a depth of 80m (that's a height of -80m by the way), and at a speed of
-              6 knots. Lastly, indicate that the SSK will be evading all
-                <computeroutput>Blue</computeroutput> targets. To specify Blue force participants as
-              targets, put the cursor into the <guilabel>TargetType</guilabel> element, and
-              double-click <guilabel>Type</guilabel> from the <guilabel>Add child</guilabel> tab of
-              the <guilabel>Elements</guilabel> toolbox. Within the <guilabel>Type</guilabel>
-              element select <computeroutput>BLUE</computeroutput> from the drop-down list. </para>
-            <para>Beneath the <computeroutput>Evade</computeroutput> behaviour insert another
-                <computeroutput>SSK Recharge</computeroutput> behaviour, to represent normal snort
-              behaviour. This snort behaviour will be conducted whenever the battery level falls
-              below 30%, on which the SSK will attempt to snort back up to 100%, though not when in
-              contact with any blue targets. Set the <computeroutput>EvadeThese</computeroutput>
-              type to <computeroutput>BLUE</computeroutput> as you did with the
-                <computeroutput>Evade</computeroutput> behaviour above. </para>
-            <para>The lowest-level component of the Evasive SSK behaviour is the general patrol
-              behaviour. This is represented through a <link linkend="mod_rectangle_wander"
-                >Rectangle Wander</link> element, inserted from the <guilabel>Add child</guilabel>
-              tab of the <guilabel>Elements</guilabel> toolbox, giving a sensible name, a speed of 6
-              knots, and a height of -80m (representing a depth of 80m). By default the top left and
-              bottom right corners are specified using Short-Location elements (which take lat and
-              long expressed as decimal degrees) . We will be specifying them using
-              Relative-Location elements, whcih express the location as ranges from the origin.
-              Start to replace the existing elements by selecting the first
-                <computeroutput>shortLocation</computeroutput>, then double-click on
-                <computeroutput>relativeLocation</computeroutput> from the
-                <guilabel>Insert</guilabel> tab of the <guilabel>elements</guilabel> toolbar. Now
-              you can delete the existing <computeroutput>shortLocation</computeroutput> item. And
-              repeat this process for the other 3 corner references (no, it isn't as long-whinded in
-              real-life as when written down). Set the top-left coordinates to 60nm North, 0nm East,
-              and bottom-right to 0nm North, 120Nm West. And that's the SSK evasive behaviour
-              complete. </para>
-            <para>Next comes the SSK aggressive behaviour. Now, my definition of this behaviour is
-              very similar to the evasive behaviour. So start off by making a duplicate of the
-              previous <computeroutput>Evasive</computeroutput> Waterfall component, renaming it to
-                <computeroutput>Aggressive</computeroutput>. Within this component both of the
-                <computeroutput>SSK Recharge</computeroutput> and the <computeroutput>Rectangle
-                Wander</computeroutput> behaviours remain unchanged, but we will exchange the
-                <computeroutput>Evade</computeroutput> behaviour for an
-                <computeroutput>Intercept</computeroutput> one. Delete the
-                <computeroutput>Evade</computeroutput> behaviour first, then insert an
-                <computeroutput>Intercept</computeroutput> behaviour from the
-                <guilabel>Insert</guilabel> tab of the <guilabel>Elements</guilabel> toolbox.
-              Configure the Intercept behaviour to allow speed changes and specify that the SSK will
-              attempt to intercept Blue submarines <footnote>
-                <para>Sharp-eyed techno-geek readers will have noticed that we could have
-                  represented these two behaviours complete. We could have created a single SSK
-                  behaviour containing the two recharge and single rectangle wander elements, with
-                  the <link linkend="behaviour_switch">Switch</link> between the two recharges. This
-                  Switch could then have contained the two alternate Evade and <link
-                    linkend="intercept_behaviour">Intercept</link> behaviours. Whilst this structure
-                  would represent our two behaviours in a more compact form, it could ultimately
-                  hinder the amount of changes which could be made between the two - having two
-                  completely separate behaviour waterfalls provides the greatest room for changes.
-                </para>
-              </footnote>. And that is the SSK complete. </para>
-            <para>Next comes the SSN. Start off by giving it a category of <computeroutput>Blue,
-                Subsurface, Submarine</computeroutput>. Then provide it with a sensor-fit comprising
-                <computeroutput>Active Broadband Sensor</computeroutput> (source level:148,
-              aperture:130, working: false <footnote>
-                <para>we are setting the working attribute to false to indicate that the sonar isn't
-                  transmitting at the start of the scenario - other elements of the SSN behaviour
-                  set working to true to indicate that the sensor is transmitting on active.</para>
-              </footnote>). Also provide a standard <link linkend="mod_medium_bb">Broadband</link>
-              Sensor (aperture:130), and <link linkend="mod_medium_nb">Narrowband</link> sensor
-              (steady time 10 minutes). For the SSN initial status give it a full fuel load <footnote>
-                <para>yes, fuel level is irrelevant for an SSN in ASSET, it is provided for
-                  completeness</para>
-              </footnote>, and indicate that it is heading North at 10 knots. Make it's initial
-              location 1/2 Nm North &amp; East of the origin, at a depth of 60m (using a
-                <computeroutput>relativeLocation</computeroutput>). </para>
-            <para>And now on to the SSN behaviour. Insert a
-                <computeroutput>Waterfall</computeroutput> element beneath the existing status
-              element, naming it something like <computeroutput>SSN Search</computeroutput>. The
-              first item in the ssn search is a <link linkend="mod_working_transit">Working
-                Transit</link>, which allows a participant to conduct a transit whilst making
-              regular stops to perform a particular activity. So, insert the <computeroutput>Working
-                Transit</computeroutput> behaviour into the SSN's parent
-                <computeroutput>Waterfall</computeroutput> behaviour, configuring it with a name
-              ("sweeping active transit"), number of stops to make (8), indicate that the SSN should
-              not repeat the transit on completion (Looping:false), and to transit at 12 knots.
-              Define the path to travel through as passing through the following sets of coordinates
-              expressed as relative locations in North, East nautical miles: (0,0) (30,10) (50,25)
-              (55,40). Into the Working Transit insert the following behaviour (activity) performed
-              at 8 points during the transit: <figure float="0" id="SubActiveTXDiag">
-                <title>Submarine active transmissions</title>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/TutSSNWorkingTransit.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-            <para>After the sweeping curve of active transmissions (as shown in the <link
-                linkend="SubSearchDiag">initial diagram</link>) the submarine the moves into it's
-              passive search area, so insert a <link linkend="mod_wander">Wander</link> behaviour
-              representing the passive search. Configure the Wander behaviour with a range of 20
-              nautical miles, centre the behaviour on the relative location 15nm North, 40Nm East,
-              at a depth of 100m and speed of 12 knots. Next for the SSN comes it's definition of
-              radiated noise - set the broadband base noise level to be 70 decibels. Finally
-              configure the SSN movement parameters, as shown below:
-              <programlisting>&lt;SSMovementCharacteristics FuelUsageRate="0" Name="SSN Movement"&gt;
-                &lt;MinSpeed Units="kts" Value="1"/&gt;
-                &lt;MaxSpeed Units="kts" Value="28"/&gt;
-                &lt;AccelerationRate Units="kt/s" Value="1"/&gt;
-                &lt;DecelerationRate Units="kt/s" Value="1"/&gt;
-                &lt;MinHeight Units="m" Value="-300"/&gt;
-                &lt;MaxHeight Units="m" Value="-18"/&gt;
-                &lt;DefaultClimbRate Units="ft/s" Value="1"/&gt;
-                &lt;DefaultDiveRate Units="ft/s" Value="1"/&gt;
-                &lt;TurningCircle Units="m" Value="600"/&gt;
-                &lt;/SSMovementCharacteristics&gt;</programlisting>.
-              And that's the end of the SSN definition, now onto the MPS definition. </para>
-            <para>Start off by inserting a <computeroutput>Fixed Wing</computeroutput> participant
-              to the scenario, naming it <computeroutput>MPA</computeroutput> - or similar. Then
-              configure the MPA as <computeroutput>Airborne, Blue, MPA</computeroutput>. Provide the
-              MPA with a <link linkend="mod_lookup_radar">radar</link> configured as below: <figure
-                float="0" id="MPARadarParams">
-                <title>MPA Radar parameters</title>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/TutSubSearchMPARadar.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </figure></para>
-            <para>Then go on to set the initial status of the MPA; full fuel tanks, located at a
-              position 30nm North, 90nm east, travelling on 060 degrees at 90 knots. The MPA
-              behaviour model is quite simple for this scenario, performing a rectangle wander
-              within the corners 60Nm North, 60Nm East, 0Nm North, 120Nm East, travelling at 110
-              knots at an altitude of 2000 metres. Lastly enter the Fixed Wing Movement
-              Characteristics :
-              <programlisting>&lt;FixedWingMovementCharacteristics FuelUsageRate="0.00001" Name="MPA Flight" DefaultTurnRate="2"&gt;
-                &lt;MinSpeed Units="kts" Value="70"/&gt;
-                &lt;MaxSpeed Units="kts" Value="260"/&gt;
-                &lt;AccelerationRate Units="kt/s" Value="5"/&gt;
-                &lt;DecelerationRate Units="kt/s" Value="7"/&gt;
-                &lt;MinHeight Units="m" Value="1000"/&gt;
-                &lt;MaxHeight Units="m" Value="6000"/&gt;
-                &lt;DefaultClimbRate Units="ft/s" Value="3"/&gt;
-                &lt;DefaultDiveRate Units="ft/s" Value="10"/&gt;
-                &lt;DefaultClimbSpeed Units="kts" Value="90"/&gt;
-                &lt;DefaultDiveSpeed Units="kts" Value="120"/&gt;
-                &lt;/FixedWingMovementCharacteristics&gt;</programlisting></para>
-            <para>And that completes the MPA description, after which we move on to the control file
-              in the next section.</para>
-          </sect3>
-        </sect2>
-      </sect1>
-      <sect1>
-        <title id="SM_SCENARIO_CONTROL_FILE">Control file</title>
-        <para>The control file for this problem will comprise scenario generation instructions (to
-          allow us to run through a batch of simulations), participant generation instructions (to
-          allow us to simulataneously model a number of ssk targets running in <link
-            linkend="parallel_planes">parallel planes</link>), and observer definitions used to
-          record analysis outputs and to terminate the scenario. </para>
-        <para>Start off by creating the empty control file, as we did <link
-            linkend="tutorial_create_control">earlier</link>. Set the <link
-            linkend="ScenarioOutputDirectory">output directory</link> to somewhere tidy like
-            <filename>c:\asset\sm_output</filename> Insert your scenario generator, inserting a
-            <computeroutput>MultiScenarioGenerator</computeroutput> into it. Within the
-          multi-scenario generator set the <link linkend="ScenarioNameTemplate">name template</link>
-          to something useful like <computeroutput>sm_search</computeroutput>, which will become the
-          prefix for the automatically generated scenarios. Also set the <link
-            linkend="ScenarioNumber">number</link> of scenarios to be generated - start off with
-            <computeroutput>10</computeroutput> for now. Also into the Multi Scenario Generator
-          element we have to specify what we want <application>ASSET</application> to vary. For this
-          tactical problem we will experiment with how frequently the searching SSN conducts active
-          transmissions during the sweeping curve, by varying the number of stops on the <link
-            linkend="mod_working_transit">Working Transit</link>. Do this by inserting a single
-          Variance element, itself containing an <computeroutput>Attribute</computeroutput> element
-          into Multi-scenario generator variances list. The list may have sample elements already,
-          just ditch them if there are. Now configure this variance to indicate that it is the
-            <computeroutput>WorkingTransit</computeroutput> element that we are going to modify, the
-            <computeroutput>NumStops</computeroutput> is the name of the <link
-            linkend="mod_gen_attribute">attribute</link> to modify within it, and that we want a
-            <link linkend="mod_gen_range">range</link> of values between 3 and 12 provided (to
-          represent the number of times the submarine will stop). <figure float="0">
-            <title>Variance in submarine search</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/SMSearchVariance.gif"/>
-              </imageobject>
-            </mediaobject>
-          </figure></para>
-        <para>Next we move onto the <link linkend="mod_multiple_participant">participant
-            generation</link> element. Start off by inserting the
-            <computeroutput>MultiParticipantGenerator</computeroutput> into the scenario generator.
-          Configure this by indicating that we want <link linkend="mod_part_number">100
-            targets</link> to be generated, and that the <link linkend="mod_part_name">participant
-            name</link> begin with <computeroutput>TGT</computeroutput>. Note that we don't have to
-          set the <computeroutput>inParallelPlanes</computeroutput> attribute here, since it is
-          already defined ( <computeroutput>MonteCarloTarget = true</computeroutput>) for the SSK in
-          the scenario file. We do, however, have to specify the variances to apply to the multiple
-          SSKs. This is a two-stage process, first setting the general attributes to vary, and then
-          specifying where ASSET should place the SSKs. The first variance to insert will vary the
-          speed at which the SSK patrols - so the name is
-          <computeroutput>SSK_Speed</computeroutput>, the id is
-            <computeroutput>/RectangleWander/Speed</computeroutput>
-          <footnote>
-            <para>Which means: <variablelist>
-                <varlistentry>
-                  <term>/</term>
-                  <listitem>
-                    <para>At the end of the participant identifer (which gets prefixed to the id
-                      before use) there is a trailing slash. Adding this second trailing slash means
-                        <emphasis>descend as far as you like through the description of this
-                        participant</emphasis>
-                    </para>
-                  </listitem>
-                </varlistentry>
-                <varlistentry>
-                  <term>RectangleWander</term>
-                  <listitem>
-                    <para>Stop when you get to a RectangleWander behaviour</para>
-                  </listitem>
-                </varlistentry>
-                <varlistentry>
-                  <term>/Speed</term>
-                  <listitem>
-                    <para>Find the Speed element within the RectangleWander behaviour</para>
-                  </listitem>
-                </varlistentry>
-              </variablelist></para>
-          </footnote>, and we are varying the <computeroutput>Value</computeroutput> attribute
-          between <computeroutput>3</computeroutput> and <computeroutput>8</computeroutput> in
-            <computeroutput>0.5</computeroutput> knot steps. Next we are going to vary the initial
-          course. So, add a new variance called <computeroutput>SSK_Course</computeroutput>, and
-          give it the simple <guilabel>id</guilabel> of <computeroutput>Status</computeroutput>.
-          Indicate that the we are going to vary the value of the <guilabel>Attribute</guilabel>
-          name <computeroutput>Course</computeroutput> within the vessel status, providing values
-          between <computeroutput>0</computeroutput> and <computeroutput>360</computeroutput> at
-            <computeroutput>1</computeroutput> degree steps. </para>
-        <para>The next item to vary is more significant to our particular analysis, varying the
-          posture of the SSK. As you no doubt remember we stored the two mutually exclusive SSK
-          behaviours in a <link linkend="behaviour_switch">Switch</link> construct. The Switch
-          construct contained the index of which behaviour to activate. We are going to use a
-          variance to randomly select one of these behaviours. So, insert a new
-            <guilabel>Variance</guilabel> item titled <computeroutput>SSK Posture</computeroutput>
-          with an XPath id of <computeroutput>Switch</computeroutput>. Next indicate that we are
-          going to vary an <guilabel>Attribute</guilabel> through a <computeroutput>
-            <link linkend="mod_gen_choice">Choice</link>
-          </computeroutput> of values: <computeroutput>1</computeroutput> and
-            <computeroutput>2</computeroutput>. </para>
-        <para>Lastly we will define the area through which we want our series of SSKs to be placed.
-          This is through use of a <link linkend="mod_gen_dist">ParticipantLocation</link>
-          construct. Into this we define a <guilabel>WorldArea</guilabel> comprising top-left and
-          bottom-right corners. The top-left (expressed in relative distances:
-            <computeroutput>relativeLocation</computeroutput>) us at 60Nm North, 0Nm East and the
-          bottom-right is at 0Nm North and 120Nm East. </para>
-        <para>After the scenario generation instructions we move on to the
-            <guilabel>ObserverList</guilabel>, which indicates which <link linkend="mod_referees"
-            >referees</link>and <link linkend="mod_observers">observers</link> we want to monitor
-          the running scenario. The observers we will use will record tracks to file for us, and
-          stop the scenario after a set period. The first track recorder will be the <link
-            linkend="obs_track_plot">Track Plot Observer</link>, used to give us a graphic plot of
-          the tracks on completion. Configure the track plot observer to be
-            <computeroutput>Active</computeroutput>, to show positions, give it a sensible filename,
-          and ask for a grid to be placed over the image on completion (10Nm would seem about right
-          for our scenario size). Also specify that
-            <computeroutput>only_final_positions</computeroutput> should be provided (to avoid
-          receiving a dense mass of target tracks). Next comes an observer used to create Debrief
-          files covering the period: <link linkend="mod_DebriefReplayObserver">Debrief Replay
-            Observer</link>. Indicate that you want this to record decisions and positions, but not
-          detections - just to keep the volume of information down. </para>
-        <para>To prevent the scenario from running on ad infinitum add a <link
-            linkend="obs_time_observer">Time Observer</link>, configured to stop the scenario after
-          36 hours. And that completes the control file. </para>
-      </sect1>
-      <sect1>
-        <title>Running through the scenario</title>
-        <sect2>
-          <title>Quick-look in Workbench</title>
-          <para>To get some quick feedback on how we've designed the scenario we will first run it
-            through the <application>ASSET</application>
-            <application>Workbench</application>
-            <footnote>
-              <para>This quick test will verify that our scenario and control files are valid and
-                complete, and also highlight any glaring errors before we switch to batch
-                processing.</para>
-            </footnote>. So, start off by double-clicking on the <filename>workbench.exe</filename>
-            application in your <application>ASSET</application> installation directory. </para>
-          <para>Once the <application>Workbench has opened, initiate the <guilabel>Monte Carlo
-                Loader</guilabel> form byclicking on the <inlinegraphic
-                fileref="figures/MonteCarlo.gif" format="GIF"/> button from the
-                <guilabel>File</guilabel> sub-toolbar of the <guilabel>Controls</guilabel> toolbar.
-              The Monte Carlo loader will open. Into the <guilabel>Scenario file:</guilabel> box
-              drag your submarine search scenario file, and into the <guilabel>Control
-                file:</guilabel> box drag your control file. Next press the
-                <guibutton>Generate</guibutton> button and watch the scenario generation progress
-              reported before your very eyes (as below). </application>
-            <figure float="0">
-              <title>Scenario generation from Workbench</title>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/SMSearchProgress.gif"/>
-                </imageobject>
-              </mediaobject>
-            </figure></para>
-          <para>On the <application>ASSET</application> plot you will also see the blue SSN and MPA,
-            together with the 100 SSK targets. Open up the status panel for one of the SSKs near the
-            SSN so that we can monitor what it's doing. Step forward a couple of times to allow the
-            status to update, then examine what the SSK is currently doing (the line of text at the
-            top of the panel). Due to the names we supplied for the behaviours this should contain a
-            clue about whether this is an evasive or aggressive target. Now run the scenario forward
-            on automatic and when the SSN starts it's all-sector active transmissions (when you see
-            it change direction frequently) the SSK you are looking at should either turn to
-            intercept or turn away. Good, that's the scenario checked. Now for the batch mode
-            processing. </para>
-        </sect2>
-        <sect2>
-          <title>Batch processing</title>
-          <para>To perform the batch-mode processing I would copy the scenario and control files
-            into the <application>ASSET</application> installation directory. Then open a command
-            line console, and type <computeroutput>ASSET scenario.xml control.xml</computeroutput>.
-              <application>ASSET</application> should now start processing the scenarios in batch
-            mode, giving you the following results on the console. <figure float="0">
-              <title>Monitoring batch processing</title>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/SMSearchScreen.gif"/>
-                </imageobject>
-              </mediaobject>
-            </figure></para>
-          <para>Once the processing is complete you can load any of the <filename>.rep</filename>
-            files into <application>Debrief</application>. Unfortunately the analysis problem under
-            consideration here doesn't lend itself to statistical analysis. One of the best
-            overviews is to quickly flick through some of the track plot images to recognise
-            clusters of ssks (only possible if you set
-              <computeroutput>only_show_final_positions</computeroutput>, else you just have a mush
-            of overlapping tracks). </para>
-        </sect2>
-      </sect1>
-    </chapter>
-    <chapter id="user_monitor">
-      <title>Monitor</title>
-      <sect1 id="user_monitor_intro">
-        <title>Introduction</title>
-        <para/>
-      </sect1>
-    </chapter>
-    <chapter id="user_playground">
-      <title>Playground</title>
-      <para/>
-    </chapter>
-    <chapter id="user_factory">
-      <title>Factory</title>
-      <para>The ASSET Tactics Factory is an application used to create initial best-guess tactics
-        for a defined tactical scenario. Whilst there is no expectation that the output of the ASSET
-        Tactics Factory will provide a tactic suitable for direct use at sea, the application is
-        capable of identifying the mathematically optimal <footnote>
-          <para>Actually, whilst the genetic algorithm employed in the factory can deliver the
-            mathematically optimal solution, it is better at identifying a near-optimal solution in
-            a fraction of the time necessary for an exhaustive search.</para>
-        </footnote> tactic for a particular problem. This optimal tactic can then be used as a
-        starting point by the human tactician. </para>
-      <para>
-        <figure id="factory_flows">
-          <title>Flow of information within ASSET Factory</title>
-          <mediaobject>
-            <imageobject>
-              <imagedata fileref="figures/diagram_illustrating_genetic_alg.gif"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-      </para>
-      <para>As illustrated in <xref linkend="factory_flows"/>, three sets of data must be loaded
-        prior to running: <variablelist>
-          <varlistentry>
-            <term>Base Scenario</term>
-            <listitem>
-              <para>This is the scenario used as a base template for the problem to be
-                analysed</para>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>Observers</term>
-            <listitem>
-              <para>The list of observers provide two facilities: the provide the score necessary
-                for quantitative analysis of a particular scenario (such as time to weapon release,
-                % area searched), together with scenario control facilities (such as stop after 4
-                hours running, or stop on weapon release).</para>
-            </listitem>
-          </varlistentry>
-          <varlistentry>
-            <term>Parameters to vary</term>
-            <listitem>
-              <para>This is a list describing what to vary within the base scenario in each
-                permutation. Each item identifies what parameter in the base scenario is to be
-                varied, together with instructions in how to produce the new value (such as random
-                integers between 0 and 360).</para>
-            </listitem>
-          </varlistentry>
-        </variablelist></para>
-    </chapter>
-    <chapter id="noise_model">
-      <title>Noise Model</title>
-      <para>The <application>ASSET</application> Noise Model is a subset of the Workbench designed
-        to meet the following requirement:xxxxxxxxxx </para>
-      <sect1 id="noise_mod_requirement">
-        <title>Requirement</title>
-        <para/>
-      </sect1>
-      <sect1 id="noise_mod_tutorial">
-        <title>Tutorial</title>
-        <para>lead through, step by step</para>
-        <sect2>
-          <title>Designing a scenario</title>
-          <para>XML editor, etc</para>
-        </sect2>
-        <sect2>
-          <title>Opening the <application>ASSET</application> Noise Model </title>
-          <para/>
-        </sect2>
-        <sect2>
-          <title>Loading data</title>
-          <para/>
-        </sect2>
-        <sect2>
-          <title>Viewing noise data</title>
-          <para/>
-        </sect2>
-        <sect2>
-          <title>Interactively changing the scenario</title>
-          <para/>
-        </sect2>
-      </sect1>
-      <sect1 id="noise_mod_reference">
-        <title>Reference</title>
-        <para>links to parts of this document which define the modelling used, notably: propagation,
-          radiated noise, sensor modelling</para>
       </sect1>
     </chapter>
   </book>
