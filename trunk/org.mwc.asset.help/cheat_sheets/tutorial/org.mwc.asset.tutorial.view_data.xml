@@ -10,5 +10,17 @@
 			In an earlier cheat sheet you should have created an empty project and linked in the sample ASSET data.  If you didn&amp;apos;t, then frankly you&amp;apos;re bugger - so if I was you I&amp;apos;d go back and do it right now.
 		</description>
 	</item>
+ <item
+       title="ASSET data files">
+    <description>
+       <b>Body</b>
+    </descripti
+ <item
+       title="Item">
+    <description>
+       <b>Body</b>
+    </description>
+ </item>on>
+ </item>
 
 </cheatsheet>
