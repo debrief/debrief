@@ -36,7 +36,7 @@
  <item
        title="Have a look at the scenario">
     <description>
-    In the Design view, you&apos;ll see that the top-level element in our data is the tree, and this contains child elements that specify the time-step, the environment used for the simulation, and the participants in the simulation.  In <b>xml</b>, these data structures are called <b>elements</b>, they&apos;re annotated in the design view with an <b>e</b> symbol.   Data items in these elements are called <b>attributes</b> - which are annotated with a <b>b</b> symbol.  To the right of the participants element you&apos;ll see some green text that specifies what types of element can be added to the participants element - in this case the list of platform types that can be specified.  If you right-click on the <b>Participants</b> element and select <b>Add Child</b> you&apos;ll see a list of platform types that can be added - but we&apos;ll leave that for later.  Open the participants element and you&apos;ll see it contains three surface vessels and a single ssk. Open the first surface vessel and you&apos;ll see it&apos;s called HVU.  Attributes are edited with the <b>Properties</b> view.  Open this using the Window/Show View/Properties menu, or clicking the <b>Click to perform</b> button below. Next,  feel free to browse through the HVU child elements to view the data structures.
+    In the Design view, you&apos;ll see that the top-level element in our tree is the <b>Scenario</b>, and this contains child elements that specify the time-step, the environment used for the simulation, and the participants in the simulation.  In <b>xml</b>, these data structures are called <b>elements</b>, they&apos;re annotated in the design view with an <b>e</b> symbol.   Data items in these elements are called <b>attributes</b> - which are annotated with a <b>b</b> symbol.  To the right of the participants element you&apos;ll see some green text that specifies what types of element can be added to the participants element - in this case the list of platform types that can be specified.  If you right-click on the <b>Participants</b> element and select <b>Add Child</b> you&apos;ll see a list of platform types that can be added - but we&apos;ll leave that for later.  Open the participants element by clicking on the triangle to the left of it, and you&apos;ll see it contains three <b>surface</b> vessels and a single <b>ssk</b>. Open the first surface vessel and you&apos;ll see it&apos;s called HVU.  Attributes are edited with the <b>Properties</b> view.  Open this using the Window/Show View/Properties menu, or by clicking the <b>Click to perform</b> button below. Next,  feel free to browse through the HVU child elements to view the data structures.es.
     </description>
     <command
           required="false"
@@ -45,16 +45,26 @@
  <item
        title="View a control file">
     <description>
-       Ok, close the scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.
-If you look into the ScenarioGenerator object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the scenario element called <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
-If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that control how long the scenario runs for, producing a track plot image, producing Debrief plot files, plus indications of how to display/control detections.
+    Ok, close the scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario), plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>
+If you look into the <b>ScenarioGenerator</b> object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the vessel named <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
+If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that control how long the scenario runs for, producing a track plot image, producing Debrief plot files, plus indications of how to display/control detections.ctions.ons.
     </description>
+ </item>
+ <item
+       title="Open the scenario controller">
+    <description>
+       For the next step you&apos;ll need the <b>Scenario Controller</b> view open - so do that using the Window/Show view menu, or by clicking on the <b>Click to perform</b> button below.
+    </description>
+        <command
+          required="false"
+          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.asset.ScenarioController2)"/>
  </item>
  <item
        title="Load the data">
     <description>
-       For the next step you&apos;ll need the <b>Scenario Controller</b> view open - so do that using the Window/Show view menu, or by clicking on the <b>Click to perform</b> button below.  Now, drag the two <b>ForceProt</b> files onto the <b>Data files</b> area at the top of the Scenario Controller view.  It may take a few seconds to load - because ASSET is generating 300 random SSKs, as requested in the control file. You&apos;ll see panel update to show the file names.  In the table in the lower-half of the view the scenario has been added - with a status of <b>Waiting</b>.  The columns to the right-hand side of the table show the current value of any assigned observers that are capable of providing a running commentary.
+       Now, drag the two <b>ForceProt</b> files onto the <b>Data files</b> area at the top of the Scenario Controller view.  It may take a few seconds to load - because ASSET is generating 300 random SSKs, as requested in the control file. You&apos;ll see panel update to show the file names.  In the table in the lower-half of the view the scenario has been added - with a status of <b>Waiting</b>.  The columns to the right-hand side of the table show the current value of any assigned observers that are capable of providing a running commentary.
     </description>
+
  </item>
  <item
        title="Run the scenario">
@@ -65,7 +75,7 @@ If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that
  <item
        title="Watch the scenario">
     <description>
-       Were you expecting a little more graphic detail? Ok.  Before we do, we will restart the scenario.  Do this by first clicking on the <b>Reload data files</b> yellow-arrows icon in the mini toolbar at the top of the scenario controller. Now re-do the <b>Init</b> for the scenario, and lastly click on the globe icon in the mini-toolbar.  Your plot should now open, showing a spread of red ssk icons across the screen, with the random courses we specified in the control file.   Click on the <b>Step</b> button a few times and you&apos;ll see the scenario move forward.  Click on <b>Play</b> and you&apos;ll see it move forward.pecting a little more graphic detail? Ok.  Before we do, we will restart the scenario.  Do this by first clicking on the <b>Reload data files</b> yellow-arrows icon in the mini toolbar at the top of the scenario controller.  Next,  Click on the globe icon next to it.  The blank (black) plot will now show. Next, click on te
+       Were you expecting a little more graphic detail? Ok.  Before we do, we will restart the scenario.  Do this by first clicking on the <b>Reload data files</b> yellow-arrows icon in the mini toolbar at the top of the scenario controller. Now re-do the <b>Init</b> for the scenario, and lastly click on the globe icon in the mini-toolbar.  Your plot should now open, showing a spread of red ssk icons across the screen, with the random courses we specified in the control file.   Click on the <b>Step</b> button a few times and you&apos;ll see the scenario move forward.  Click on <b>Play</b> and you&apos;ll see it move forward. It will take 2 minutes or so to complete, but not too long.
     </description>
  </item>
  <item
