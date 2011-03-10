@@ -2,6 +2,7 @@ package org.mwc.debrief.multipath2.model;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jfree.data.time.FixedMillisecond;
@@ -33,7 +34,7 @@ public class MultiPathModel
 			super(msg);
 		}
 	}
-	
+
 	public static class DataFormatException extends Exception
 	{
 
@@ -41,12 +42,23 @@ public class MultiPathModel
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		
+
 		public DataFormatException(String msg)
 		{
 			super(msg);
 		}
-		
+
+	}
+
+	/**
+	 * keep a cache of calculate ranges, we'll keep on using them
+	 * 
+	 */
+	private transient HashMap<String, WorldVector> _rangeCache;
+
+	public MultiPathModel()
+	{
+		_rangeCache = new HashMap<String, WorldVector>();
 	}
 
 	/**
@@ -133,7 +145,21 @@ public class MultiPathModel
 
 			WorldLocation priLoc = priLocs[0].getLocation();
 			WorldLocation secLoc = secLocs[0].getLocation();
-			WorldVector sep = priLoc.subtract(secLoc);
+
+			// create a key for this range separation calculation
+			String thisKey = "" + priLoc.getLat() + priLoc.getLong()
+					+ secLoc.getLat() + secLoc.getLong();
+			
+			// do we have this key
+			WorldVector sep = _rangeCache.get(thisKey);
+			if (sep == null)
+			{
+				// nope, better create it then
+				sep = priLoc.subtract(secLoc);
+				
+				// and store it
+				_rangeCache.put(thisKey, sep);
+			}
 			double sepM = MWC.Algorithms.Conversions.Degs2m(sep.getRange());
 
 			double zR = priLoc.getDepth();

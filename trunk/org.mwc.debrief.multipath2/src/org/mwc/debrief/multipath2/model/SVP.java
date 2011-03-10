@@ -3,6 +3,7 @@ package org.mwc.debrief.multipath2.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -23,6 +24,7 @@ public class SVP
 	public static final String SHALLOW_FAIL = "SVP doesn't go shallow enough";
 	double _depths[];
 	double _speeds[];
+	private HashMap<String, Double> _cache;
 
 	/**
 	 * load an SVP from teh specific path
@@ -37,6 +39,9 @@ public class SVP
 	public void load(String path) throws NumberFormatException, IOException,
 			DataFormatException
 	{
+		// ok, clear the cache - we're getting a new profile
+		_cache = new HashMap<String, Double>();
+
 		Vector<Double> values = new Vector<Double>();
 
 		BufferedReader bufRdr = new BufferedReader(new FileReader(path));
@@ -83,20 +88,21 @@ public class SVP
 					// do we have enough to extrapolate?
 					if (_depths.length >= 2)
 					{
-							double zeroSpd = extrapolateZero(_depths[0], _speeds[0], _depths[1], _speeds[1]);
-							
-							double[] tmpDepths = new double[_depths.length + 1];
-							double[] tmpSpeeds = new double[_depths.length + 1];
-							
-							// now shove the arrays along
-							System.arraycopy(_depths, 0, tmpDepths, 1, _depths.length);
-							System.arraycopy(_speeds, 0, tmpSpeeds, 1, _speeds.length);
-							
-							_depths = tmpDepths;
-							_speeds = tmpSpeeds;
-							
-							_depths[0] = 0;
-							_speeds[0] = zeroSpd;
+						double zeroSpd = extrapolateZero(_depths[0], _speeds[0],
+								_depths[1], _speeds[1]);
+
+						double[] tmpDepths = new double[_depths.length + 1];
+						double[] tmpSpeeds = new double[_depths.length + 1];
+
+						// now shove the arrays along
+						System.arraycopy(_depths, 0, tmpDepths, 1, _depths.length);
+						System.arraycopy(_speeds, 0, tmpSpeeds, 1, _speeds.length);
+
+						_depths = tmpDepths;
+						_speeds = tmpSpeeds;
+
+						_depths[0] = 0;
+						_speeds[0] = zeroSpd;
 					}
 
 				}
@@ -127,74 +133,95 @@ public class SVP
 	 */
 	public double getMeanSpeedBetween(double depthOne, double depthTwo)
 	{
-		double shallowDepth = Math.min(depthOne, depthTwo);
-		double deepDepth = Math.max(depthOne, depthTwo);
 
-		LinearInterpolation interp = new LinearInterpolation(_depths, _speeds);
+		Double res = null;
 
-		// ok, first find the point before the shallow depth
-		int before = pointBefore(shallowDepth);
+		String thisKey = "" + depthOne + "-" + depthTwo;
 
-		// did we find one?
-		if (before == -1)
-			throw new RuntimeException(SHALLOW_FAIL);
+		res = _cache.get(thisKey);
 
-		// now find the point after the deep depth
-		int after = pointAfter(deepDepth);
-
-		if (after == -1)
-			throw new RuntimeException(DEEP_FAIL);
-
-		double runningMean = -1;
-		double lastDepth = -1;
-		double lastSpeed = -1;
-
-		// sort out the gaps
-		for (int i = before; i <= after; i++)
+		// did we find it?
+		if (res != null)
 		{
-			double thisDepth = _depths[i];
-			double thisSpeed = _speeds[i];
+			// done - we have our answer
+		}
+		else
+		{
+			
+			// don't have our sound speed, better calculate it.
+			double shallowDepth = Math.min(depthOne, depthTwo);
+			double deepDepth = Math.max(depthOne, depthTwo);
 
-			// have we passed our first loop?
-			if (lastDepth != -1)
+			LinearInterpolation interp = new LinearInterpolation(_depths, _speeds);
+
+			// ok, first find the point before the shallow depth
+			int before = pointBefore(shallowDepth);
+
+			// did we find one?
+			if (before == -1)
+				throw new RuntimeException(SHALLOW_FAIL);
+
+			// now find the point after the deep depth
+			int after = pointAfter(deepDepth);
+
+			if (after == -1)
+				throw new RuntimeException(DEEP_FAIL);
+
+			double runningMean = -1;
+			double lastDepth = -1;
+			double lastSpeed = -1;
+
+			// sort out the gaps
+			for (int i = before; i <= after; i++)
 			{
-				if (runningMean == -1)
+				double thisDepth = _depths[i];
+				double thisSpeed = _speeds[i];
+
+				// have we passed our first loop?
+				if (lastDepth != -1)
 				{
-					double travelInThisSeg = thisDepth - shallowDepth;
-					double lowerSpeed = interp.interpolate(shallowDepth);
-					double upperSpeed = thisSpeed;
-					double meanSpeed = (lowerSpeed + upperSpeed) / 2;
-					runningMean = meanSpeed * travelInThisSeg;
-				}
-				else
-				{
-					// ok, are we in a mid-section?
-					if (thisDepth < deepDepth)
+					if (runningMean == -1)
 					{
-						// yes, consume the whole of this section
-						double travelInThisSeg = thisDepth - lastDepth;
-						double meanSpeed = (thisSpeed + lastSpeed) / 2;
-						runningMean += meanSpeed * travelInThisSeg;
+						double travelInThisSeg = thisDepth - shallowDepth;
+						double lowerSpeed = interp.interpolate(shallowDepth);
+						double upperSpeed = thisSpeed;
+						double meanSpeed = (lowerSpeed + upperSpeed) / 2;
+						runningMean = meanSpeed * travelInThisSeg;
 					}
 					else
 					{
-						// we must be in the last leg, just consume the portion we need
-						double travelInThisSeg = deepDepth - lastDepth;
-						double lowerSpeed = lastSpeed;
-						double upperSpeed = interp.interpolate(deepDepth);
-						double meanSpeed = (lowerSpeed + upperSpeed) / 2;
-						runningMean += meanSpeed * travelInThisSeg;
+						// ok, are we in a mid-section?
+						if (thisDepth < deepDepth)
+						{
+							// yes, consume the whole of this section
+							double travelInThisSeg = thisDepth - lastDepth;
+							double meanSpeed = (thisSpeed + lastSpeed) / 2;
+							runningMean += meanSpeed * travelInThisSeg;
+						}
+						else
+						{
+							// we must be in the last leg, just consume the portion we need
+							double travelInThisSeg = deepDepth - lastDepth;
+							double lowerSpeed = lastSpeed;
+							double upperSpeed = interp.interpolate(deepDepth);
+							double meanSpeed = (lowerSpeed + upperSpeed) / 2;
+							runningMean += meanSpeed * travelInThisSeg;
+						}
 					}
 				}
+				lastDepth = thisDepth;
+				lastSpeed = thisSpeed;
 			}
-			lastDepth = thisDepth;
-			lastSpeed = thisSpeed;
+
+			// ok, now just divide by the total depth travelled
+			runningMean = runningMean / (deepDepth - shallowDepth);
+
+			res = runningMean;
+			_cache.put(thisKey, res);
 		}
 
-		// ok, now just divide by the total depth travelled
-		runningMean = runningMean / (deepDepth - shallowDepth);
-
-		return runningMean;
+		// done = we've got our answer
+		return res.doubleValue();
 	}
 
 	/**
@@ -276,7 +303,6 @@ public class SVP
 				fail("bad data");
 			}
 
-
 			double mean = svp.getMeanSpeedBetween(30, 55);
 			assertEquals("correct mean", 1510.125, mean);
 
@@ -315,7 +341,6 @@ public class SVP
 			{
 				fail("bad data");
 			}
-
 
 			double mean;
 
@@ -373,7 +398,6 @@ public class SVP
 				fail("bad data");
 			}
 
-
 			// change the first point so we don't have data at zero
 			svp._depths[0] = 4;
 
@@ -409,8 +433,7 @@ public class SVP
 
 			res = SVP.extrapolateZero(3, 6, 6, 4);
 			assertEquals("wrong extrapolated value", 8d, res);
-			
-			
+
 			// now try loading it
 			SVP svp = new SVP();
 
@@ -432,13 +455,13 @@ public class SVP
 			{
 				fail("bad data");
 			}
-			
+
 			assertEquals("not created extra point", 4, svp._depths.length);
 			assertEquals("not created extra point", 4, svp._speeds.length);
-			
+
 			assertEquals("not got zero depth", 0d, svp._depths[0]);
 			assertEquals("not got surface speed", 1503d, svp._speeds[0]);
-			
+
 		}
 
 		public void testIndex()
@@ -463,7 +486,6 @@ public class SVP
 			{
 				fail("bad data");
 			}
-
 
 			assertEquals("got data", 4, svp._depths.length);
 
