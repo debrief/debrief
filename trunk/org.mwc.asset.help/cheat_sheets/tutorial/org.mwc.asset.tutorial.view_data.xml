@@ -47,10 +47,11 @@
     <description>
        Ok, close the scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.
 If you look into the ScenarioGenerator object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the scenario element called <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
-If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that control how long the scenario runs for, producing a track plot image, producing Debrief plot files, plus indications of how to display/control detections.he scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.
-If you look into the ScenarioGenerator object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the scenario element called <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
-If you opehe scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.he scenario file
+If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that control how long the scenario runs for, producing a track plot image, producing Debrief plot files, plus indications of how to display/control detections.
     </description>
+    <command
+          required="false"
+          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.PropertySheet)"/>
  </item>
  <item
        title="Load the data">
