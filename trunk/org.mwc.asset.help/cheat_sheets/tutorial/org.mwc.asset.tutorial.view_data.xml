@@ -68,5 +68,11 @@ If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that
        Were you expecting a little more graphic detail? Ok.  Before we do, we will restart the scenario.  Do this by first clicking on the <b>Reload data files</b> yellow-arrows icon in the mini toolbar at the top of the scenario controller. Now re-do the <b>Init</b> for the scenario, and lastly click on the globe icon in the mini-toolbar.  Your plot should now open, showing a spread of red ssk icons across the screen, with the random courses we specified in the control file.   Click on the <b>Step</b> button a few times and you&apos;ll see the scenario move forward.  Click on <b>Play</b> and you&apos;ll see it move forward.pecting a little more graphic detail? Ok.  Before we do, we will restart the scenario.  Do this by first clicking on the <b>Reload data files</b> yellow-arrows icon in the mini toolbar at the top of the scenario controller.  Next,  Click on the globe icon next to it.  The blank (black) plot will now show. Next, click on te
     </description>
  </item>
+ <item
+       title="What can we analyse?">
+    <description>
+       Right, it&apos;s finally finished running. What do you do now? That&apos;s it, you do some analysis.  If you look in your <b>Navigator</b> pane, you'll see a <b>ForceProt</b> folder (this was the folder name specified in the control file). Have a look in there and you'll see a <b>.rep</b> and a <b>.png</b> file.  Double-click on the png to open it, and you'll see a snapshot. You could alternatively double-click on the rep file to open it in the Debrief editor, though I wouldn&apos;t recommend it in this case because it contains soooo many tracks.
+    </description>
+ </item>
 
 </cheatsheet>
