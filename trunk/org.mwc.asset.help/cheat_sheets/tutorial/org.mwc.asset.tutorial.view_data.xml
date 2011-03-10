@@ -49,15 +49,15 @@
 If you look into the ScenarioGenerator object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the scenario element called <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
 If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that control how long the scenario runs for, producing a track plot image, producing Debrief plot files, plus indications of how to display/control detections.
     </description>
-    <command
-          required="false"
-          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.PropertySheet)"/>
  </item>
  <item
        title="Load the data">
     <description>
-       <b>Body</b>
+       <b>For the next step you&apos;ll need the <b>Scenario Controller</b> view open - so do that using the Window/Show view menu, or by clicking on the <b>Click to perform</b> button below.  Now, drag the two <b>ForceProt</b> files onto the <b>Data files</b> area at the top of the Scenario Controller view. You&apos;ll see panel update to show the file names.  In the table in the lower-half of the view the scenario has been added - with a status of <b>Waiting</b>.
     </description>
+    <command
+          required="false"
+          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.asset.ScenarioController2)"/>
  </item>
  <item
        title="Run the scenario">
