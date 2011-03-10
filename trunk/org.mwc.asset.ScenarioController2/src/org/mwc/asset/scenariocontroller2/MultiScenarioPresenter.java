@@ -263,6 +263,10 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		InstanceWrapper instance = _myModel.getWrapperFor(_currentScen
 				.getScenario());
 		instance.terminate(_myModel.getObservers());
+		
+		// refresh the workspace, so the output files are visible
+		_myDisplay.refreshWorkspace();
+
 	}
 
 	protected void doPlay()
