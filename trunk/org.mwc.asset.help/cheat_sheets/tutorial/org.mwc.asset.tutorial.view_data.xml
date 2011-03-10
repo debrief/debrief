@@ -7,31 +7,49 @@
 	</intro>
 	<item title="Checking you have some data">
 		<description>
-			In an earlier cheat sheet you should have created an empty project and linked in the sample ASSET data.  If you didn&apos;t, then frankly you&apos;re bugger - so if I was you I&apos;d go back and do it right now.cription>
+			In an earlier cheat sheet you should have created an empty project and linked in the sample ASSET data.  If you didn&amp;apos;t, then frankly you&amp;apos;re bugger - so if I was you I&amp;apos;d go back and do it right now.
+		</description>
 	</item>
  <item
        title="ASSET data files">
     <description>
-       ASSET breaks down thASSET breaks down the information required to run through a sOpen a scenario fileeparate file types: <b>ScenaRight, let&apos;s start off with a scenario file.  Double-click on the <b>ForceProt.asset</b> data file in the <b>AssetData</b> folder of your navigator.  It will open in the central editor pane.  ASSET&apos;s xml editor uses a two-tab construct.  At the foot of the editor pane you&apos;ll see two tabs, one named &lt;i&gt;Design&lt;/i&gt; and the other named &lt;i&gt;Source&lt;/i&gt;.  The Design tab is a tree-oriented editor that gives you an overview of your scenario, the Source tab lets you get right down in the weeds.<br/>
-In the Design view, you&apos;ll see that the top-level element in our data is the tree, and this contains child elements that specify the time-step, the environment used for the simulation, and the participants in the simulation.  Open the participants element and you&apos;ll see it contains three surface vessels and a single ssk.  Open the first surface vessel and you&apos;ll see it&apos;s called HVU.  Feel free to browse through theapos;s start off wi
-      <subitem
-            label="&lt;b&gt;ASSET&apos;s xml editor&lt;/b&gt;&lt;br/&gt;">
-      </subitem>th a scenario file.  Double-click on the <b>ForceProt.asset</b> data file in the <b>AssetData</b> folder of your navigator.  It will open in the central editor pane.  ASSET&apos;s xml editor uses a two-tab construct.  At the foot of the editor pane you&apos;ll see two tabs, one named &lt;i&gt;Design&lt;/i&gt; and the other named &lt;i&gt;Source&lt;/i&gt;.  The Design tab is a tree-oriented editor that gives you an overview of your scenario, the Source tab lets you get right down in the weeds.apos;s start off wi
-      <subitem
-            label="ASSET&apos;s xml editor">
-      </subitem>th aes describe what&apos;s to be simulated, and <b>Control</b> files direct ASSET in how to run the simulation.  Whilst both types of file contain data stored in the textual &lt;i&gt;xml&lt;/i&gt; data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix (to aid you organise your data).s down the information required to run through a simulation into two separate file types: <b>Scenario</b> files describe what&apos;s to be simulated, and <b>Control</b> files direct ASSET in how to run the simulation.  Whilst both types of file contain data stored in the textual &lt;i&gt;xml&lt;/i&gt; data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix.s down the information required to run through a simulation into two separate file types: <b>Scenario</b> files describe what&apos;s to be simulated, and <b>Control</b> files direct ASSET in how to run the simulation.s down the information required to run through a simulation into two separate file types: <b>scenario</b> file describe what&apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation.on required to run through a simulation into two separate file types: <b>scenario</b> file describe what&amp;apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation.
+       ASSET breaks down the information required to run through a scenario into two separate file types:  <b>scenario</b> files describe what&amp;apos;s to be simulated, and <b>control</b> files direct ASSET in how to run the simulation. Whilst both types of file contain data stored in the textual &amp;lt;i&amp;gt;xml&amp;lt;/i&amp;gt; data format, the ASSET working practice is that scenario files have the <b>.asset</b> file suffix (to help you to organise your data)
+    </description>
+ </item>
+  <item
+       title="ASSET modelling process">
+    <description>
+    The process you&apos;ll follow when using ASSET will be as follows:  <b>1</b> define your scenario, <b>2</b> specifThe ASSET xml editor.ill be controlled, <b>3</b> load the datafiles, <b>4</b> run through the scenario, <b>5</b> analyse the scenario results.  </description>
+ </item>
+ <item
+       title="Open a scenario file">
+    <description>
+      Right, let&apos;s start off with a scenario file.  Double-click on the <b>ForceProt.asset</b> data file in the <b>AssetData</b> folder of your navigator.  It will open in the central editor pane.  
     </description>
  </item>
  <item
-       title="View a scenario file">
+       title="The ASSET XML editor">
     <description>
-       <b>Body</b>
+      ASSET&apos;s xml editor uses a two-tab construct.  At the foot of the editor pane you&apos;ll see two tabs, one named &lt;i&gt;Design&lt;/i&gt; and the other named &lt;i&gt;Source&lt;/i&gt;.  The Design tab is a tree-oriented editor that gives you an overview of your scenario, the Source tab lets you get right down in the weeds.
     </description>
+ </item>
+ <item
+       title="Have a look at the scenario">
+    <description>
+    In the Design view, you&apos;ll see that the top-level element in our data is the tree, and this contains child elements that specify the time-step, the environment used for the simulation, and the participants in the simulation.  In <b>xml</b>, these data structures are called <b>elements</b>, they&apos;re annotated in the design view with an <b>e</b> symbol.   Data items in these elements are called <b>attributes</b> - which are annotated with a <b>b</b> symbol.  To the right of the participants element you&apos;ll see some green text that specifies what types of element can be added to the participants element - in this case the list of platform types that can be specified.  If you right-click on the <b>Participants</b> element and select <b>Add Child</b> you&apos;ll see a list of platform types that can be added - but we&apos;ll leave that for later.  Open the participants element and you&apos;ll see it contains three surface vessels and a single ssk. Open the first surface vessel and you&apos;ll see it&apos;s called HVU.  Attributes are edited with the <b>Properties</b> view.  Open this using the Window/Show View/Properties menu, or clicking the <b>Click to perform</b> button below. Next,  feel free to browse through the HVU child elements to view the data structures.  <br/>otated with a <b>b</b> symbol.  To the right of the participants element you&apos;ll see some green text that specifies what types of element can be added to the participants element - in this case the list of platform types that can be specified.  If you right-click on the <b>Participants</b> element and select <b>Add Child</b> you&apos;ll see a list of platform types that can be added - but we&apos;ll leave that for later.  Open the participants element and you&apos;ll see it contains three surface vessels and a single ssk. Open the first surface vessel and you&apos;ll see it&apos;s called HVU.  Attributes are edited with the <b>Properties</b> view.  Open this using the Window/Show View/Properties menu, or clicking the <b>Click to perform</b> button below. Feel free to browse through it&apos;s child elements to view the data structures.  <br/>otated with a <b>b</b> symbol.  To the right of the participants element you&apos;ll see some green text that specifies what types of element can be added to the participants element - in this case the list of platform types that can be specified.  If you right-click on the <b>Participants</b> element and select <b>Add Child</b> you&apos;ll see a list of platform types that can be added - but we&apos;ll leave that for later.  Open the participants element and you&apos;ll see it contains three surface vessels and a single ssk. Open the first surface vessel and you&apos;ll see it&apos;s called HVU.  Attributes are edited with the <b>Properties</b> view.  Open this using the Window/Show View/Properties menu, or clicking the button below. Feel free to browse through it&apos;s child elements to view the data structures.
+    </description>
+    <command
+          required="false"
+          serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.PropertySheet)"/>
  </item>
  <item
        title="View a control file">
     <description>
-       <b>Body</b>
+       Ok, close the scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.
+If you look into the ScenarioGenerator object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the scenario element called <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
+If you open the <b>ObserverList</b> you&apos;ll see it contains 6 observers that control how long the scenario runs for, producing a track plot image, producing Debrief plot files, plus indications of how to display/control detections.he scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.
+If you look into the ScenarioGenerator object you&apos;ll see it contains an element that defines multiple participants - <b>300</b> of the scenario element called <b>SSK</b>.  It also varies their initial course, and where they start.<br/> 
+If you opehe scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario, plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>.he scenario file
     </description>
  </item>
  <item
