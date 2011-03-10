@@ -185,6 +185,12 @@ public class MultiPathView extends ViewPart implements
 	}
 
 	@Override
+	public void addMagicListener(SelectionListener listener)
+	{
+		_ui.addMagicHandler(listener);
+	}
+	
+	@Override
 	public void addTimeDeltaListener(FileHandler handler)
 	{
 		configureFileDropSupport(_ui.getIntervalHolder(), handler);
@@ -254,7 +260,7 @@ public class MultiPathView extends ViewPart implements
 			_ui.getSlider().setSelection(MultiPathPresenter.DEFAULT_DEPTH);
 	}
 
-	/**
+	/**d
 	 * sort out the file-drop target
 	 */
 	private void configureFileDropSupport(Control _pusher,

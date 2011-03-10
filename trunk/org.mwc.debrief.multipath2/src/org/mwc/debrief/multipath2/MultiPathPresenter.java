@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.ui.IMemento;
 import org.jfree.data.time.TimeSeries;
 import org.mwc.cmap.core.CorePlugin;
@@ -144,6 +146,12 @@ public class MultiPathPresenter
 		 * @param _curDepth
 		 */
 		public void setSliderVal(int _curDepth);
+
+		/** let someone listen out for the magic button being pressed
+		 * 
+		 * @param listener
+		 */
+		public  void addMagicListener(SelectionListener listener);
 	};
 
 	private final Display _display;
@@ -422,12 +430,26 @@ public class MultiPathPresenter
 				loadSVP(path);
 			}
 		});
-
+		
 		_display.addTimeDeltaListener(new FileHandler()
 		{
 			public void newFile(String path)
 			{
 				loadIntervals(path);
+			}
+		});
+		
+		_display.addMagicListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				doMagic();
+			}
+			
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+				// TODO Auto-generated method stub
+				
 			}
 		});
 
@@ -440,5 +462,13 @@ public class MultiPathPresenter
 
 		// lastly, check if we're enabled.
 		checkEnablement();
+	}
+
+	/** do an optimisation on the current datasets
+	 * 
+	 */
+	protected void doMagic()
+	{
+	_display.showError("optimisation not yet implemented!");
 	}
 }
