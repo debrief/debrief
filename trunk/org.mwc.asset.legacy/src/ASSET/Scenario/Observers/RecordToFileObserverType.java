@@ -173,6 +173,7 @@ public abstract class RecordToFileObserverType extends CoreObserver
    */
   protected FileWriter createOutputFileWriter(final ScenarioType scenario) throws IOException
   {
+
     String theName = null;
     if (getFileName() != null)
     {
@@ -199,7 +200,9 @@ public abstract class RecordToFileObserverType extends CoreObserver
     // check we have the output directory
     getDirectory().mkdirs();
 
-    FileWriter os = new FileWriter(new File(getDirectory(), theName));
+    File theFile = new File(getDirectory(), theName);
+    
+		FileWriter os = new FileWriter(theFile);
     return os;
   }
   

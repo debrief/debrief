@@ -228,7 +228,7 @@ public final class ScenarioGenerator
 		// do we want to delete the existing files?
 		if (deleteExisting)
 		{
-			deleteThisDirectory(new File(_myDirectory));
+			deleteThisDirectory(new File(getDirectory()));
 		}
 
 		// firstly output the control file to disk in the parent directory
@@ -236,7 +236,7 @@ public final class ScenarioGenerator
 		String controlFileAsString = ScenarioGenerator
 				.writeToString(_controlDocument);
 
-		File controlOutput = new File(_myDirectory + "/" + CONTROL_FILENAME);
+		File controlOutput = new File(getDirectory() + "/" + CONTROL_FILENAME);
 		controlOutput.getAbsoluteFile().getParentFile().mkdirs();
 		try
 		{
@@ -277,7 +277,7 @@ public final class ScenarioGenerator
 				int thisId = counter + 1;
 
 				// create the path to the new file
-				String theDir = _myDirectory + "/" + thisId + "/";
+				String theDir = getDirectory() + "/" + thisId + "/";
 
 				// declare it as a file
 				File outFile = new File(theDir);
@@ -546,7 +546,7 @@ public final class ScenarioGenerator
 
 			if (el != null)
 			{
-				_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
+				setDirectory(el.getAttribute(OUTPUT_DIRECTORY));
 				String theSeedStr = el.getAttribute(RANDOM_SEED);
 				if (theSeedStr != null)
 					if (theSeedStr.length() > 0)
@@ -554,7 +554,7 @@ public final class ScenarioGenerator
 			}
 
 			if (outputDirectory != null)
-				_myDirectory = outputDirectory.getAbsolutePath();
+				setDirectory(outputDirectory.getAbsolutePath());
 
 		}
 		catch (Exception e)
@@ -582,6 +582,16 @@ public final class ScenarioGenerator
 		_targetScenario = rawDoc;
 	}
 
+	private void setDirectory(String dir)
+	{
+		_myDirectory = dir;
+	}
+	
+	private String getDirectory()
+	{
+		return _myDirectory;
+	}
+	
 	/**
 	 * set the document which we are going to be changing
 	 */
@@ -886,7 +896,7 @@ public final class ScenarioGenerator
 
 			// check they got loaded
 			assertEquals("loaded template name",
-					"test_reports/asset_test_output/test_variance1", genny._myDirectory);
+					"test_reports/asset_test_output/test_variance1", genny.getDirectory());
 		}
 
 		public final void testPerformVariances()
@@ -1065,7 +1075,7 @@ public final class ScenarioGenerator
 
 			// ok, we've read in the data - find out where the output directory is, so
 			// that we can seed it with an old file (to check that they get deleted)
-			String theDir = genny._myDirectory;
+			String theDir = genny.getDirectory();
 			File touchFile = new File(theDir + "/" + "seed_file.txt");
 			try
 			{

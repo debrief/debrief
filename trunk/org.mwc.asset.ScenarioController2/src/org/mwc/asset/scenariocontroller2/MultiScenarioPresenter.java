@@ -309,7 +309,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		}
 
 		// set the listeners
-		instance.initialise(_myModel.getObservers());
+		instance.initialise(_myModel.getObservers(), _scenarioController.outputDirectory);
 
 		_myDisplay.getUI().setInitEnabled(false);
 		_myDisplay.getUI().setStepEnabled(true);

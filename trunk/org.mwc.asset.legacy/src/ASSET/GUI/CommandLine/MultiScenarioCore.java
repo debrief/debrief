@@ -20,6 +20,7 @@ import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
 import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.InterScenarioObserverType;
+import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.ScenarioStatusObserver;
 import ASSET.Scenario.Observers.TimeObserver;
@@ -202,7 +203,7 @@ public class MultiScenarioCore implements ISimulationQue
 				listener.newScenario(oldScenario, thisS);
 
 			// get the observers sorted
-			wrapper.initialise(_allObservers);
+			wrapper.initialise(_allObservers, null);
 
 			// now run this one
 			CommandLine runner = wrapper.commandLine;
@@ -563,7 +564,8 @@ public class MultiScenarioCore implements ISimulationQue
 			commandLine = theCommandLine;
 		}
 
-		public void initialise(Vector<ScenarioObserver> allObservers)
+		public void initialise(Vector<ScenarioObserver> allObservers,
+				File outputDirectory)
 		{
 
 			// ok, get the scenario, so we can set up our observers
@@ -571,13 +573,23 @@ public class MultiScenarioCore implements ISimulationQue
 			{
 				CoreObserver thisObs = (CoreObserver) allObservers.elementAt(i);
 
+				// ok, do we need to tell it about the directory?
+				if (thisObs instanceof RecordToFileObserverType)
+				{
+					if (outputDirectory != null)
+					{
+						RecordToFileObserverType rec = (RecordToFileObserverType) thisObs;
+						rec.setDirectory(outputDirectory);
+					}
+				}
+
 				// and set it up
 				thisObs.setup(scenario);
 
 				// and add to the runner
 				commandLine.addObserver(thisObs);
 			}
-			
+
 			_initialised = true;
 		}
 
