@@ -14,13 +14,37 @@
        title="ASSET data files">
     <description>
        <b>Body</b>
-    </descripti
+    </description>
+ </item>
  <item
-       title="Item">
+       title="View a scenario file">
     <description>
        <b>Body</b>
     </description>
- </item>on>
+ </item>
+ <item
+       title="View a control file">
+    <description>
+       <b>Body</b>
+    </description>
+ </item>
+ <item
+       title="Load the data">
+    <description>
+       <b>Body</b>
+    </description>
+ </item>
+ <item
+       title="Run the scenario">
+    <description>
+       <b>Body</b>
+    </description>
+ </item>
+ <item
+       title="Watch the scenario">
+    <description>
+       <b>Body</b>
+    </description>
  </item>
 
 </cheatsheet>
