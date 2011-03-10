@@ -16,6 +16,12 @@
       
    </extension>
    
+      <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="HelpContexts.xml"  plugin="org.mwc.asset.help"/>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.cheatsheets.cheatSheetContent">
       <category

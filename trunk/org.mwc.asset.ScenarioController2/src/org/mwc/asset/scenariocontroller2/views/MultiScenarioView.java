@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -383,6 +384,11 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// and display them
 		manager.add(viewInPlotter);
 		manager.add(actionReloadDatafiles);
+		
+		manager.add(new Separator());
+		manager.add(CorePlugin.createOpenHelpAction(
+				"org.mwc.debrief.help.ScenarioController", null, this));
+
 	}
 
 	@Override

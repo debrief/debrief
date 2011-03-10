@@ -1,0 +1,11 @@
+<contexts>
+	<context id="Asset">
+		<description>Getting started with Asset</description>
+		<topic href="html/legacy/start_up.html#navigating_debrief" label="Moving around the Debrief application"/>
+	</context>
+	<context id="ScenarioController" title="Scenario Controller">
+		<description>Provides an overview of the full chart area, with facilities to quickly move around the current viewport</description>
+		<topic href="html/legacy/moving_around.html#overview_window" label="Introduction to the Chart Overview"/>
+	</context>
+	
+</contexts>

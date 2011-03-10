@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ScenarioController2 Plug-in
 Bundle-SymbolicName: org.mwc.asset.ScenarioController2;singleton:=true
-Bundle-Version: 1.0.20
+Bundle-Version: 1.0.21
 Bundle-Activator: org.mwc.asset.scenariocontroller2.Activator
 Require-Bundle: org.mwc.asset.legacy;bundle-version="1.0.1",
  org.mwc.asset.core;bundle-version="1.0.0",
