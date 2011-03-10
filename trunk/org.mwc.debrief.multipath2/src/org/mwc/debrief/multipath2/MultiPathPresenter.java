@@ -1,4 +1,4 @@
-package org.mwc.debrief.multipath2.views;
+package org.mwc.debrief.multipath2;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,13 +8,13 @@ import org.eclipse.ui.IMemento;
 import org.jfree.data.time.TimeSeries;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.debrief.multipath2.MultiPathPresenter.Display.FileHandler;
+import org.mwc.debrief.multipath2.MultiPathPresenter.Display.ValueHandler;
 import org.mwc.debrief.multipath2.model.MultiPathModel;
 import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 import org.mwc.debrief.multipath2.model.SVP;
 import org.mwc.debrief.multipath2.model.TimeDeltas;
-import org.mwc.debrief.multipath2.views.MultiPathPresenter.Display.FileHandler;
-import org.mwc.debrief.multipath2.views.MultiPathPresenter.Display.ValueHandler;
 
 import MWC.GenericData.WatchableList;
 
