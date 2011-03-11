@@ -139,7 +139,7 @@
 
 	<target name="copy_to_usb" depends="deploy">
 
-		<property name="usbDest" value="/Volumes/USB DISK/" />
+		<property name="usbDest" value="/Volumes/UNTITLED/" />
 
 		<echo message="ditching existing versions" />
 		<delete file="${usbDest}/Repository.zip" verbose="true" />
