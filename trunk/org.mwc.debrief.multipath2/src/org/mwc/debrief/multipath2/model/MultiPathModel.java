@@ -442,10 +442,10 @@ public class MultiPathModel
 
 			MultiPathModel model = new MultiPathModel();
 
-			for (int i = 1; i < 100; i++)
+			for (int i = 1140; i < 1348; i++)
 			{
 
-				double zS = 50;
+				double zS = 1340;
 				double zR = i;
 
 				// now sort out the sound speeds

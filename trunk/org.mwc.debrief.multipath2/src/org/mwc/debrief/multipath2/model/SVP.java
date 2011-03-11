@@ -147,12 +147,19 @@ public class SVP
 		}
 		else
 		{
+			// get the data ready
+			LinearInterpolation interp = new LinearInterpolation(_depths, _speeds);
+			
+			// special case - equal depths
+			if(depthOne == depthTwo)
+				res = interp.interpolate(depthOne);
+			else
+			{
 
 			// don't have our sound speed, better calculate it.
 			double shallowDepth = Math.min(depthOne, depthTwo);
 			double deepDepth = Math.max(depthOne, depthTwo);
 
-			LinearInterpolation interp = new LinearInterpolation(_depths, _speeds);
 
 			// ok, first find the point before the shallow depth
 			int before = pointBefore(shallowDepth);
@@ -228,6 +235,8 @@ public class SVP
 			runningMean = runningMean / (deepDepth - shallowDepth);
 
 			res = runningMean;
+			
+			}
 			_cache.put(thisKey, res);
 		}
 
