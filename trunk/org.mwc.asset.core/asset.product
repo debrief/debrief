@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.15" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.16" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -14,6 +14,8 @@
    </configIni>
 
    <launcherArgs>
+      <programArgs>-data
+@user.home/.AssetNG</programArgs>
       <vmArgs>-Xms40m -Xmx256m</vmArgs>
    </launcherArgs>
 
