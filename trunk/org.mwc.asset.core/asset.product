@@ -31,8 +31,10 @@
    <intro introId="org.mwc.debrief.core.intro"/>
 
    <vm>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</macos>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
    </vm>
+
 
    <plugins>
       <plugin id="org.apache.ant"/>
@@ -101,8 +103,8 @@
       <feature id="org.eclipse.rcp" version="3.6.1.r361_v20100827-9OArFLdFjY-ThSQXmKvKz0_T"/>
       <feature id="org.eclipse.platform" version="3.6.1.r361_v20100909-9gF78GrkFqw7GrsZnvz0JWNTeb6fue6896L"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.23"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.123"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.149"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.127"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.153"/>
    </features>
 
 
