@@ -120,25 +120,26 @@ public class MultiPathModel
 			// ok, sort out the calculated times
 			TimeSeries calcTimes = _model.getCalculatedProfileFor(_primary,
 					_secondary, _svp, _times, param[0]);
-			
+
 			int lenA = _measuredTimes.getItemCount();
 			int lenB = calcTimes.getItemCount();
-			
-			if(lenA != lenB)
+
+			if (lenA != lenB)
 			{
-				throw new RuntimeException("Measured and calculated datasets should be of equal length");
+				throw new RuntimeException(
+						"Measured and calculated datasets should be of equal length");
 			}
-			
+
 			double runningError = 0;
-			
-			for(int i=0;i<lenA;i++)
+
+			for (int i = 0; i < lenA; i++)
 			{
 				double valA = _measuredTimes.getDataItem(i).getValue().doubleValue();
 				double valB = calcTimes.getDataItem(i).getValue().doubleValue();
 				double thisError = Math.pow(valB - valA, 2);
 				runningError += thisError;
 			}
-			
+
 			// done
 			System.out.println("returned " + runningError + " from:" + param[0]);
 
@@ -435,6 +436,32 @@ public class MultiPathModel
 
 		}
 
+		public void testCalc2()
+		{
+			SVP svp = getSVP2();
+
+			MultiPathModel model = new MultiPathModel();
+
+			for (int i = 1; i < 100; i++)
+			{
+
+				double zS = 50;
+				double zR = i;
+
+				// now sort out the sound speeds
+				double cD = svp.getMeanSpeedBetween(zS, zR);
+				double cS = svp.getMeanSpeedBetween(0, zS);
+				double cR = svp.getMeanSpeedBetween(0, zR);
+
+				// do the actual calculation
+				double time_delay = model.calculateDelay(1200, zR, zS, cD, cS, cR);
+
+				System.out.println("cd:" + (int)cD + " cs:" + (int)cS + " cr:" + (int)cR + " delay at " + i + " is:" + time_delay);
+				
+			}
+
+		}
+
 		private SVP getSVP()
 		{
 			SVP svp = new SVP();
@@ -461,6 +488,31 @@ public class MultiPathModel
 			return svp;
 		}
 
+		private SVP getSVP2()
+		{
+			SVP svp = new SVP();
+			try
+			{
+				svp.load(SVP.SVP_Test.SVP_FILE2);
+			}
+			catch (NumberFormatException e)
+			{
+				e.printStackTrace();
+				fail("number format");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				fail("file read problem");
+			}
+			catch (DataFormatException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				fail("bad data problem");
+			}
+			return svp;
+		}
 		private static TimeDeltas getDeltas()
 		{
 			TimeDeltas deltas = new TimeDeltas();

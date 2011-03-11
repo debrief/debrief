@@ -147,7 +147,7 @@ public class SVP
 		}
 		else
 		{
-			
+
 			// don't have our sound speed, better calculate it.
 			double shallowDepth = Math.min(depthOne, depthTwo);
 			double deepDepth = Math.max(depthOne, depthTwo);
@@ -180,9 +180,20 @@ public class SVP
 				// have we passed our first loop?
 				if (lastDepth != -1)
 				{
+					// is this the first segment
 					if (runningMean == -1)
 					{
-						double travelInThisSeg = thisDepth - shallowDepth;
+						// just check our whole depth isn't in the first segment.
+						double travelInThisSeg;
+						if (deepDepth < thisDepth)
+						{
+							// yes, we just sep the two depths
+							travelInThisSeg = deepDepth - shallowDepth;
+						}
+						else
+						{
+							travelInThisSeg = thisDepth - shallowDepth;
+						}
 						double lowerSpeed = interp.interpolate(shallowDepth);
 						double upperSpeed = thisSpeed;
 						double meanSpeed = (lowerSpeed + upperSpeed) / 2;
