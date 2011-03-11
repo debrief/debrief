@@ -120,7 +120,7 @@ public class TimeDeltas
 	// /////////////////////////////////////////////////
 	public static class IntervalTest extends junit.framework.TestCase
 	{
-		public static final String TEST_TIMES_FILE = "src/org/mwc/debrief/multipath/model/test_times.csv";
+		public static final String TEST_TIMES_FILE = "src/org/mwc/debrief/multipath2/model/test_times.csv";
 
 		public void testMe()
 		{
@@ -131,7 +131,7 @@ public class TimeDeltas
 			// and missing file
 			try
 			{
-				times.load("src/org/mwc/debrief/multipath/model/test_times_bad.csv");
+				times.load("src/org/mwc/debrief/multipath/model2/test_times_bad.csv");
 				fail("should not have found file");
 			}
 			catch (NumberFormatException e)

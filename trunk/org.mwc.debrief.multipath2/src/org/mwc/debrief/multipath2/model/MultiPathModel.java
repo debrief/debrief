@@ -9,6 +9,10 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.mwc.debrief.multipath2.model.TimeDeltas.Observation;
 
+import flanagan.math.Minimisation;
+import flanagan.math.MinimisationFunction;
+import flanagan.math.MinimizationFunction;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -88,6 +92,60 @@ public class MultiPathModel
 		return res;
 	}
 
+	public static class MiracleFunction implements MinimisationFunction
+	{
+		private WatchableList _primary;
+		private WatchableList _secondary;
+		private SVP _svp;
+		private TimeDeltas _times;
+		private MultiPathModel _model;
+		private TimeSeries _measuredTimes;
+
+		public MiracleFunction(WatchableList primary, WatchableList secondary,
+				SVP svp, TimeDeltas times)
+		{
+			_primary = primary;
+			_secondary = secondary;
+			_svp = svp;
+			_times = times;
+
+			// sort out the measured times
+			_model = new MultiPathModel();
+			_measuredTimes = _model.getMeasuredProfileFor(times);
+		}
+
+		@Override
+		public double function(double[] param)
+		{
+			// ok, sort out the calculated times
+			TimeSeries calcTimes = _model.getCalculatedProfileFor(_primary,
+					_secondary, _svp, _times, param[0]);
+			
+			int lenA = _measuredTimes.getItemCount();
+			int lenB = calcTimes.getItemCount();
+			
+			if(lenA != lenB)
+			{
+				throw new RuntimeException("Measured and calculated datasets should be of equal length");
+			}
+			
+			double runningError = 0;
+			
+			for(int i=0;i<lenA;i++)
+			{
+				double valA = _measuredTimes.getDataItem(i).getValue().doubleValue();
+				double valB = calcTimes.getDataItem(i).getValue().doubleValue();
+				double thisError = Math.pow(valB - valA, 2);
+				runningError += thisError;
+			}
+			
+			// done
+			System.out.println("returned " + runningError + " from:" + param[0]);
+
+			return runningError;
+		}
+	}
+
 	/**
 	 * get the calculated profile
 	 * 
@@ -149,14 +207,14 @@ public class MultiPathModel
 			// create a key for this range separation calculation
 			String thisKey = "" + priLoc.getLat() + priLoc.getLong()
 					+ secLoc.getLat() + secLoc.getLong();
-			
+
 			// do we have this key
 			WorldVector sep = _rangeCache.get(thisKey);
 			if (sep == null)
 			{
 				// nope, better create it then
 				sep = priLoc.subtract(secLoc);
-				
+
 				// and store it
 				_rangeCache.put(thisKey, sep);
 			}
@@ -250,6 +308,111 @@ public class MultiPathModel
 					deltas, 44);
 
 			assertNotNull("got some results", calc);
+		}
+
+		public static class MyFunc implements MinimisationFunction
+		{
+
+			private WatchableList _primary;
+			private WatchableList _secondary;
+			private SVP _svp;
+			private TimeDeltas _times;
+			private MultiPathModel _model;
+			private TimeSeries _measuredTimes;
+
+			public MyFunc(WatchableList primary, WatchableList secondary, SVP svp,
+					TimeDeltas times)
+			{
+				_primary = primary;
+				_secondary = secondary;
+				_svp = svp;
+				_times = times;
+
+				// sort out the measured times
+				_model = new MultiPathModel();
+				_measuredTimes = _model.getMeasuredProfileFor(times);
+			}
+
+			@Override
+			public double function(double[] param)
+			{
+				// ok, sort out the calculated times
+				// TimeSeries calcTimes = _model.getCalculatedProfileFor(_primary,
+				// _secondary, _svp, _times, param[0]);
+
+				// now the error function
+
+				double res = Math.abs(100d - param[0]);
+
+				// done
+				System.out.println("returned " + res + " from:" + param[0]);
+
+				return res;
+			}
+
+		};
+
+		public void testMagic()
+		{
+			// load the data
+			final SVP svp = new SVP();
+			final TimeDeltas times = new TimeDeltas();
+
+			try
+			{
+				svp.load(SVP.SVP_Test.SVP_FILE);
+				times.load(TimeDeltas.IntervalTest.TEST_TIMES_FILE);
+			}
+			catch (NumberFormatException e)
+			{
+				e.printStackTrace();
+				fail();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				fail();
+			}
+			catch (DataFormatException e)
+			{
+				e.printStackTrace();
+				fail();
+			}
+
+			// ok, what else do we need?
+
+			// Create instance of Minimisation
+			Minimisation min = new Minimisation();
+
+			// Create instace of class holding function to be minimised
+			WatchableList primary = null;
+			WatchableList secondary = null;
+			MinimisationFunction funct = new MyFunc(primary, secondary, svp, times);
+
+			// initial estimates
+			double[] start =
+			{ 30 };
+
+			// initial step sizes
+			double[] step =
+			{ 5 };
+
+			// convergence tolerance
+			double ftol = 1e-2;
+
+			// Nelder and Mead minimisation procedure
+			min.nelderMead(funct, start, step, ftol, 100);
+
+			// get the minimum value
+			double minimum = min.getMinimum();
+
+			// get values of y and z at minimum
+			double[] param = min.getParamValues();
+
+			// Output the results to screen
+			System.out.println("Minimum = " + min.getMinimum());
+			System.out.println("Value of x at the minimum = " + param[0]);
+
 		}
 
 		public void testCalc()

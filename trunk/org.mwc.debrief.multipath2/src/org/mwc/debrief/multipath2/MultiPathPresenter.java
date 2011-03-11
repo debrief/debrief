@@ -19,6 +19,8 @@ import org.mwc.debrief.multipath2.model.SVP;
 import org.mwc.debrief.multipath2.model.TimeDeltas;
 
 import MWC.GenericData.WatchableList;
+import flanagan.math.Minimisation;
+import flanagan.math.MinimisationFunction;
 
 public class MultiPathPresenter
 {
@@ -147,11 +149,12 @@ public class MultiPathPresenter
 		 */
 		public void setSliderVal(int _curDepth);
 
-		/** let someone listen out for the magic button being pressed
+		/**
+		 * let someone listen out for the magic button being pressed
 		 * 
 		 * @param listener
 		 */
-		public  void addMagicListener(SelectionListener listener);
+		public void addMagicListener(SelectionListener listener);
 	};
 
 	private final Display _display;
@@ -268,36 +271,9 @@ public class MultiPathPresenter
 	protected void updateCalc(int val)
 	{
 
-		// do we have a tote?
-		TrackDataProvider tv = _display.getDataProvider();
+		TrackDataProvider tv = getTracks();
 
-		// do we only have one seconary?
-		if (tv == null)
-		{
-			_display
-					.showError("Must have a primary and a secondary track on the tote");
-		}
-		else if (tv.getPrimaryTrack() == null)
-		{
-			_display.showError("Needs a primary track (or location)");
-		}
-		else if (tv.getSecondaryTracks() == null)
-		{
-			_display.showError("Secondary track missing");
-		}
-		else if (tv.getSecondaryTracks().length == 0)
-		{
-			_display.showError("Secondary track missing");
-		}
-		else if (tv.getSecondaryTracks().length > 1)
-		{
-			_display.showError("Too many secondary tracks");
-		}
-		else if (_times == null)
-		{
-			_display.showError("Waiting for interval data");
-		}
-		else
+		if (tv != null)
 		{
 
 			// do we have our measured series?
@@ -329,6 +305,45 @@ public class MultiPathPresenter
 			}
 		}
 
+	}
+
+	private TrackDataProvider getTracks()
+	{
+		// do we have a tote?
+		TrackDataProvider tv = _display.getDataProvider();
+
+		// do we only have one seconary?
+		if (tv == null)
+		{
+			_display
+					.showError("Must have a primary and a secondary track on the tote");
+		}
+		else if (tv.getPrimaryTrack() == null)
+		{
+			tv = null;
+			_display.showError("Needs a primary track (or location)");
+		}
+		else if (tv.getSecondaryTracks() == null)
+		{
+			tv = null;
+			_display.showError("Secondary track missing");
+		}
+		else if (tv.getSecondaryTracks().length == 0)
+		{
+			tv = null;
+			_display.showError("Secondary track missing");
+		}
+		else if (tv.getSecondaryTracks().length > 1)
+		{
+			tv = null;
+			_display.showError("Too many secondary tracks");
+		}
+		else if (_times == null)
+		{
+			tv = null;
+			_display.showError("Waiting for interval data");
+		}
+		return tv;
 	}
 
 	public void saveState(IMemento memento)
@@ -430,7 +445,7 @@ public class MultiPathPresenter
 				loadSVP(path);
 			}
 		});
-		
+
 		_display.addTimeDeltaListener(new FileHandler()
 		{
 			public void newFile(String path)
@@ -438,18 +453,18 @@ public class MultiPathPresenter
 				loadIntervals(path);
 			}
 		});
-		
+
 		_display.addMagicListener(new SelectionListener()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
 				doMagic();
 			}
-			
+
 			public void widgetDefaultSelected(SelectionEvent e)
 			{
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 
@@ -464,11 +479,58 @@ public class MultiPathPresenter
 		checkEnablement();
 	}
 
-	/** do an optimisation on the current datasets
+	/**
+	 * do an optimisation on the current datasets
 	 * 
 	 */
 	protected void doMagic()
 	{
-	_display.showError("optimisation not yet implemented!");
+
+		// get the tracks
+		TrackDataProvider tv = getTracks();
+		
+		// did it work?
+		if (tv != null)
+		{
+
+			WatchableList primary = tv.getPrimaryTrack();
+			WatchableList secondary = tv.getSecondaryTracks()[0];
+
+			// Create instance of Minimisation
+			Minimisation min = new Minimisation();
+
+			// Create instace of class holding function to be minimised
+			MinimisationFunction funct = new MultiPathModel.MiracleFunction(primary,
+					secondary, _svp, _times);
+
+			// initial estimates
+			double[] start =
+			{ 31 };
+
+			// initial step sizes
+			double[] step =
+			{ 5 };
+
+			// convergence tolerance
+			double ftol = 1e-4;
+			
+			min.addConstraint(0, -1, 0d);
+			min.addConstraint(0, 1, 300);
+
+			// Nelder and Mead minimisation procedure
+			min.nelderMead(funct, start, step, ftol, 500);
+
+			// get the results out
+			double[] param = min.getParamValues();
+			
+			double depth = param[0];
+			
+			System.out.println("* depth = " + depth + "**");
+
+			// fire in the minimum
+			updateCalc((int) depth);
+			
+			_display.setSliderVal((int)depth);
+		}
 	}
 }
