@@ -231,6 +231,71 @@ public final class WorldArea implements Serializable
 	}
 
 	/**
+	 * find the range of the nearest corner (or the centre point) to the indicated
+	 * point
+	 */
+	final public double rangeFromEdge(WorldLocation other)
+	{
+		double res;
+
+		// first the TL/BR corners
+		double r1 = distanceToSegment(getTopLeft(), getTopRight(), other);
+		double r2 = distanceToSegment(getTopRight(), getBottomRight(), other);
+		double r3 = distanceToSegment(getBottomRight(), getBottomLeft(), other);
+		double r4 = distanceToSegment(getBottomLeft(), getTopLeft(), other);
+
+		// System.out.print("ranges:" + (int)(10000d * r1));
+		// System.out.println(", " + (int)(r2 *10000d)+ ", " +
+		// (int)(r3*10000d) + ", " + (int)(r4*10000d) + ", " + (int)(r5*10000d));
+
+		res = Math.min(r1, r2);
+		res = Math.min(res, r3);
+		res = Math.min(res, r4);
+
+		// sort out the min
+		return res;
+	}
+
+	/**
+	 * Returns the distance of p3 to the segment defined by p1,p2;
+	 * 
+	 * @return The distance of p3 to the segment defined by p1,p2
+	 */
+	private static double distanceToSegment(WorldLocation p1, WorldLocation p2,
+			WorldLocation p3)
+	{
+
+		final double xDelta = p2.getLong() - p1.getLong();
+		final double yDelta = p2.getLat() - p1.getLat();
+
+		if ((xDelta == 0) && (yDelta == 0))
+		{
+			throw new IllegalArgumentException("p1 and p2 cannot be the same point");
+		}
+
+		final double u = ((p3.getLong() - p1.getLong()) * xDelta + (p3.getLat() - p1
+				.getLat()) * yDelta)
+				/ (xDelta * xDelta + yDelta * yDelta);
+
+		final WorldLocation closestPoint;
+		if (u < 0)
+		{
+			closestPoint = p1;
+		}
+		else if (u > 1)
+		{
+			closestPoint = p2;
+		}
+		else
+		{
+			closestPoint = new WorldLocation(p1.getLat() + u * yDelta, p1.getLong()
+					+ u * xDelta, 0);
+		}
+
+		return closestPoint.rangeFrom(p3);
+	}
+
+	/**
 	 * see if the two areas overlap
 	 * 
 	 * @return flag for overlap
@@ -569,6 +634,21 @@ public final class WorldArea implements Serializable
 			wa3 = null;
 		}
 
+		public final void testRangeFromLine()
+		{
+			double dist1 = wa1.rangeFromEdge(new WorldLocation(13, 11, 0));
+			assertEquals("correct range", 1d, dist1, 0.01);
+			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 11, 0));
+			assertEquals("correct range", 0d, dist1, 0.01);
+			dist1 = wa1.rangeFromEdge(new WorldLocation(9, 11, 0));
+			assertEquals("correct range", 1d, dist1, 0.01);
+			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 13, 0));
+			assertEquals("correct range", 1d, dist1, 0.02);
+			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 9, 0));
+			assertEquals("correct range", 1d, dist1, 0.02);
+
+		}
+
 		public final void testConstructor()
 		{
 			WorldArea ww1 = new WorldArea(w1, w2);
@@ -812,18 +892,19 @@ public final class WorldArea implements Serializable
 		}
 	}
 
-	/** generate a random location, uniformly distributed within this area
+	/**
+	 * generate a random location, uniformly distributed within this area
 	 * 
 	 * @return
 	 */
 	public WorldLocation getRandomLocation()
 	{
 		double _lat, _long, _depth;
-		
+
 		_lat = _bottomLeft.getLat() + Math.random() * getHeight();
 		_long = _bottomLeft.getLong() + Math.random() * getWidth();
 		_depth = _bottomLeft.getDepth() + Math.random() * getDepthRange();
-		
+
 		return new WorldLocation(_lat, _long, _depth);
 	}
 
