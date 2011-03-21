@@ -8,6 +8,8 @@ import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.Status;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 
 public interface ParticipantType extends ParticipantDetectedListener, SensorDataProvider, NetworkParticipant
 {
@@ -15,6 +17,12 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
   public void addParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
 
   public void removeParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
+  
+  
+  /** find the range of this participant from the specified location (which allows us to have a participant that
+   * has an area, not just a point
+   */
+  public WorldDistance rangeFrom(WorldLocation point);
 
   /**
    * listeners which hear when a participant either is using a different behaviour to the previous step,

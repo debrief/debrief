@@ -130,9 +130,7 @@ public class TypedCookieSensor extends CoreSensor
 				// ok, it's worth sorting out the range
 				if (range == null)
 				{
-					sep = target.getStatus().getLocation()
-							.subtract(host.getStatus().getLocation());
-					range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
+					range = host.rangeFrom(target.getStatus().getLocation()); 
 				}
 
 				if (doublet.canDetect(range))
@@ -140,6 +138,11 @@ public class TypedCookieSensor extends CoreSensor
 
 					detected = true;
 
+					// calculate the separation - so we can plot a bearing
+					sep = target.getStatus().getLocation()
+							.subtract(host.getStatus().getLocation());
+
+					
 					double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
 							.getBearing());
 

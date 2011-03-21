@@ -123,11 +123,11 @@ public class TypedCookieInterceptSensor extends CoreSensor
 		WorldVector sep = null;
 
 		// ok, see if this participant is radiating our noce type
-		
+
 		SensorList sList = target.getSensorFit();
 		Collection<SensorType> coll = sList.getSensors();
 		Iterator<SensorType> iter = coll.iterator();
-		while(iter.hasNext())
+		while (iter.hasNext())
 		{
 			SensorType thisS = iter.next();
 			if (thisS.isWorking())
@@ -148,14 +148,16 @@ public class TypedCookieInterceptSensor extends CoreSensor
 							// sort out the nrage
 							if (range == null)
 							{
-								sep = target.getStatus().getLocation()
-										.subtract(host.getStatus().getLocation());
-								range = new WorldDistance(sep.getRange(), WorldDistance.DEGS);
+								range = host.rangeFrom(target.getStatus().getLocation());
 							}
 
 							// see if it's in range
 							if (doublet.canDetect(range))
 							{
+
+								// calculate the separation - so we can plot a bearing
+								sep = target.getStatus().getLocation()
+										.subtract(host.getStatus().getLocation());
 
 								detected = true;
 

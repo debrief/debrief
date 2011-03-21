@@ -62,6 +62,7 @@ public class Category implements java.io.Serializable
 		public static final String MINISUB = "MINISUB";
 		public static final String TORPEDO = "TORPEDO";
 		public static final String SONAR_BUOY = "SONAR_BUOY";
+		public static final String BUOY_FIELD = "BUOY_FIELD";
 
 		/**
 		 * surface types

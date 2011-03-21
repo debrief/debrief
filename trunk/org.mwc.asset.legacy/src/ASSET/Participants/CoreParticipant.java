@@ -638,6 +638,15 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		_movement = movement;
 	}
 
+
+	@Override
+	public WorldDistance rangeFrom(WorldLocation point)
+	{
+	  double dist = getStatus().getLocation().rangeFrom(point);
+	  WorldDistance res = new WorldDistance(dist, WorldDistance.DEGS);
+		return res;
+	}
+	
 	/**
 	 * add a sensor to this participant
 	 */
@@ -979,5 +988,6 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 		}
 	}
+
 
 }

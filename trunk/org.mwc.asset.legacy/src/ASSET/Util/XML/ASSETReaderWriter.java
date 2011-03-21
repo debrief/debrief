@@ -247,6 +247,13 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
         _tempPart = part;
       }
     });
+    gi.addHandler(new ASSET.Util.XML.Vessels.BuoyFieldHandler()
+    {
+      public void addThis(final ASSET.ParticipantType part, boolean isMonteCarlo)
+      {
+        _tempPart = part;
+      }
+    });
     gi.addHandler(new ASSET.Util.XML.Vessels.HeloHandler()
     {
       public void addThis(final ASSET.ParticipantType part, boolean isMonteCarlo)

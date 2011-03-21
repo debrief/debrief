@@ -64,6 +64,17 @@ public class ParticipantsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     // reset the WaterfallHandler count (preventing infinite recursion)
     WaterfallHandler._thisChainDepth = 0;
 
+    addHandler(new ASSET.Util.XML.Vessels.BuoyFieldHandler()
+    {
+      public void addThis(final ASSET.ParticipantType part, boolean isMonteCarlo)
+      {
+        insertThisParticipant(part, isMonteCarlo);
+      }
+    });
+
+    // reset the WaterfallHandler count (preventing infinite recursion)
+    WaterfallHandler._thisChainDepth = 0;
+
     addHandler(new ASSET.Util.XML.Vessels.HeloHandler()
     {
       public void addThis(final ASSET.ParticipantType part, boolean isMonteCarlo)
@@ -135,6 +146,10 @@ public class ParticipantsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       else if (next instanceof ASSET.Models.Vessels.Surface)
       {
         SurfaceHandler.exportThis(next, participants, doc);
+      }
+      else if (next instanceof ASSET.Models.Vessels.SonarBuoyField)
+      {
+        BuoyFieldHandler.exportThis(next, participants, doc);
       }
       else if (next instanceof ASSET.Models.Vessels.FixedWing)
       {
