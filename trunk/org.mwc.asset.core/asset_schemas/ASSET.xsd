@@ -911,6 +911,7 @@
 			<xs:element name="Helo" type="HeloType" minOccurs="0"/>
 			<xs:element name="FixedWing" type="FixedWingType" minOccurs="0"/>
 			<xs:element name="SSN" type="SSNType" minOccurs="0"/>
+			<xs:element name="BuoyField" type="BuoyFieldType" minOccurs="0"/>
 			<xs:element name="Torpedo" type="TorpedoType" minOccurs="0"/>
 		</xs:choice>
 	</xs:complexType>
@@ -1057,6 +1058,13 @@
 				object to be defined in file</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="BuoyField" type="BuoyFieldType">
+		<xs:annotation>
+			<xs:documentation>instance of subject, declared to allow standalone
+				instance of this
+				object to be defined in file</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="FixedWingType">
 		<xs:annotation>
 			<xs:documentation>Representation of a Fixed Wing aircraft
@@ -1096,6 +1104,27 @@
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="BuoyFieldType">
+		<xs:annotation>
+			<xs:documentation>Representation of a sonar buoy field</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited
+				Editable:
+				inherited</xs:documentation>
+			
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ParticipantType">
+				<xs:sequence>
+					<xs:element name="Coverage"
+						type="WorldAreaType">
+						<xs:annotation>
+							<xs:documentation>The area covered by the buoy field</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -1286,6 +1315,7 @@
 				<xs:enumeration value="HELICOPTER"/>
 				<xs:enumeration value="MPA"/>
 				<xs:enumeration value="AV_MISSILE"/>
+				<xs:enumeration value="BUOY_FIELD"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>
@@ -1428,6 +1458,7 @@
 					<xs:enumeration value="MPA"/>
 					<xs:enumeration value="AV_MISSILE"/>
 					<xs:enumeration value="TORPEDO"/>
+					<xs:enumeration value="BUOY_FIELD"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
