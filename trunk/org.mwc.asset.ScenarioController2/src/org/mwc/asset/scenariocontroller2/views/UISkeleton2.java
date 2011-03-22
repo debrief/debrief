@@ -151,14 +151,14 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		btnStep.setText("Step");
 		btnStep.setEnabled(false);
 
-		lblTime = new Label(grpSelectedScenario, SWT.NONE);
+		lblTime = new Label(grpSelectedScenario, SWT.WRAP);
 		_timeFont = SWTResourceManager.getFont("Courier New", 11, SWT.BOLD);
 		_timeFore = SWTResourceManager.getColor(SWT.COLOR_GREEN);
 		_timeBack = SWTResourceManager.getColor(105, 105, 105);
 		lblTime.setFont(_timeFont);
 		lblTime.setForeground(_timeFore);
 		lblTime.setBackground(_timeBack);
-		lblTime.setText("00:00:00");
+		lblTime.setText("00\\00\\00\n00:00:00");
 
 		multiTableHolder = new Composite(this, SWT.BORDER);
 		multiTableHolder.setLayout(new GridLayout(1, false));

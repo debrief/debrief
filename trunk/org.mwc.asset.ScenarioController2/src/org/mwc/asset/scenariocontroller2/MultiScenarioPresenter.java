@@ -130,7 +130,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	private ScenarioSteppedListener _stepListener;
 
-	private SimpleDateFormat _format = new SimpleDateFormat("HH:mm:ss");
+	private SimpleDateFormat _dateFormat = new SimpleDateFormat("yy/MM/dd");
+	private SimpleDateFormat _timeFormat = new SimpleDateFormat("HH:mm:ss");
 
 	private ScenarioRunningListener _runListener;
 
@@ -331,8 +332,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		{
 			public void run()
 			{
-				String timeStr = _format.format(new Date(newTime));
-				_myDisplay.getUI().setTime(timeStr);
+				String dateStr = _dateFormat.format(new Date(newTime));
+				String timeStr = _timeFormat.format(new Date(newTime));
+				_myDisplay.getUI().setTime(dateStr + "\n" + timeStr);
 			}
 		});
 	}
