@@ -1116,13 +1116,17 @@
 			<xs:documentation source="http://asset.info/ui">Visible: inherited
 				Editable:
 				inherited</xs:documentation>
-			
+
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="Coverage"
-						type="WorldAreaType">
+					<xs:element name="Coverage" type="WorldAreaType">
+						<xs:annotation>
+							<xs:documentation>The area covered by the buoy field</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TimePeriod" type="TimePeriodType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The area covered by the buoy field</xs:documentation>
 						</xs:annotation>
@@ -1846,6 +1850,25 @@
 			</xs:simpleType>
 		</xs:attribute>
 		<xs:attribute name="Value" type="xs:float" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="TimePeriodType">
+		<xs:annotation>
+			<xs:documentation>Time period</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible:Start, End
+				Editable: Start, End</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Start" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation>Start of this period  (yyyy-mm-ddThh:mm:ss)
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="End" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation>End of this period (yyyy-mm-ddThh:mm:ss)
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="SpeedType">
 		<xs:annotation>
