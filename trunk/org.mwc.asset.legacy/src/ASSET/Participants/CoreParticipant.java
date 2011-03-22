@@ -237,8 +237,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			if (_myDemandedStatus != null)
 				copyDemStatus = DemandedStatus.copy(newTime, _myDemandedStatus);
 
-			_myDemandedStatus = _decisionModel.decide(_myStatus, this
-					.getMovementChars(), copyDemStatus, _myNewDetections, scenario,
+			_myDemandedStatus = _decisionModel.decide(_myStatus,
+					this.getMovementChars(), copyDemStatus, _myNewDetections, scenario,
 					newTime);
 		}
 
@@ -364,10 +364,14 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			}
 		}
 
-		// do movement itself
-		_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus,
-				_movementChars);
-
+		// if we have a set of movement chars, do the move.
+		if (_movementChars != null)
+		{
+			// do movement itself
+			_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus,
+					_movementChars);
+		}
+		
 		// do the state update cycle
 		updateStates(newTime);
 
@@ -638,15 +642,14 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		_movement = movement;
 	}
 
-
 	@Override
 	public WorldDistance rangeFrom(WorldLocation point)
 	{
-	  double dist = getStatus().getLocation().rangeFrom(point);
-	  WorldDistance res = new WorldDistance(dist, WorldDistance.DEGS);
+		double dist = getStatus().getLocation().rangeFrom(point);
+		WorldDistance res = new WorldDistance(dist, WorldDistance.DEGS);
 		return res;
 	}
-	
+
 	/**
 	 * add a sensor to this participant
 	 */
@@ -723,8 +726,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		_myDemandedStatus = val;
 		if (_myDemandedStatus != null)
-			_myInitialDemandedStatus = DemandedStatus.copy(_myDemandedStatus
-					.getTime(), _myDemandedStatus);
+			_myInitialDemandedStatus = DemandedStatus.copy(
+					_myDemandedStatus.getTime(), _myDemandedStatus);
 	}
 
 	/**
@@ -988,6 +991,5 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 		}
 	}
-
 
 }

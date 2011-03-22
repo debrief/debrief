@@ -1,5 +1,6 @@
 package ASSET.Models.Vessels;
 
+import ASSET.ScenarioType;
 import ASSET.Participants.CoreParticipant;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -76,5 +77,14 @@ public class SonarBuoyField extends CoreParticipant
 	{
 		return _myCoverage;
 	}
+
+	@Override
+	public void doMovement(long oldtime, long newTime, ScenarioType scenario)
+	{
+		// TODO Auto-generated method stub
+		super.doMovement(oldtime, newTime, scenario);
+	}
+	
+	
 
 }
