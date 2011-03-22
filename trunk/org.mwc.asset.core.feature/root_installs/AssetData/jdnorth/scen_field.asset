@@ -194,10 +194,37 @@
 			</Status>
 			<Coverage>
 				<TopLeft>
-					<shortLocation Lat="5" Long="3"></shortLocation>
+					<shortLocation Lat="3.1" Long="4.4"></shortLocation>
 				</TopLeft>
 				<BottomRight>
-					<shortLocation Lat="3" Long="5"></shortLocation>
+					<shortLocation Lat="3.5" Long="4.8"></shortLocation>
+				</BottomRight>
+			</Coverage>
+			<TimePeriod Start="2010-01-16T11:13:14Z"
+				End="2010-01-17T11:13:14Z" />
+		</BuoyField>
+		<BuoyField Name="SEA_FIELD">
+			<Category Type="BUOY_FIELD" Force="GREEN"
+				Environment="SUBSURFACE" />
+			<SensorFit>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="5" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
+			<Status Course="0.0" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="" Long=""></shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Coverage>
+				<TopLeft>
+					<shortLocation Lat="2.8" Long="8.4"></shortLocation>
+				</TopLeft>
+				<BottomRight>
+					<shortLocation Lat="4.4" Long="11.8"></shortLocation>
 				</BottomRight>
 			</Coverage>
 		</BuoyField>
@@ -206,7 +233,7 @@
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
-				<Delta Units="degs" Value="1.000" />
+				<Delta Units="degs" Value="1.5" />
 				<colour Value="DARK_GREY" />
 			</grid>
 			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
@@ -225,17 +252,6 @@
 					<shortLocation Depth="0.000" Lat="0" Long="8" />
 				</br>
 			</line>
-			<rectangle Filled="false" Label="Buoyfield" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
-<colour Value="GREEN"/>
-<fontcolour Value="GREEN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<tl>
-<shortLocation Depth="0.000" Lat="3" Long="5"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="5" Long="3"/>
-</br>
-</rectangle>
 			<circle Filled="false" Label="Search area" LabelLocation="Left"
 				LabelVisible="true" LineThickness="1" Visible="false">
 				<colour Value="YELLOW" />
