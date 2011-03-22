@@ -7,12 +7,17 @@ import java.util.Vector;
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
+import ASSET.Models.Vessels.SonarBuoyField;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Participants.Status;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -155,24 +160,23 @@ public class ScenarioParticipantWrapper implements
 	{
 		return _myPart.getStatus().getLocation();
 	}
-	
+
 	public boolean hasOrderedChildren()
 	{
 		return false;
 	}
-	
+
 	public static java.awt.Color getColorFor(String force)
 	{
 		if (force.equals(ASSET.Participants.Category.Force.BLUE))
 			return java.awt.Color.blue;
-		else if (force.equals(
-				ASSET.Participants.Category.Force.GREEN))
+		else if (force.equals(ASSET.Participants.Category.Force.GREEN))
 			return java.awt.Color.green;
 		else
 			return java.awt.Color.red;
-		
+
 	}
-	
+
 	public java.awt.Color getColor()
 	{
 		return getColorFor(_myPart.getCategory().getForce());
@@ -221,8 +225,9 @@ public class ScenarioParticipantWrapper implements
 					if (rng != null)
 					{
 						// hey, plot it!
-						final WorldVector wv = new WorldVector(MWC.Algorithms.Conversions
-								.Degs2Rads(brg.floatValue()), rng.getValueIn(WorldDistance.DEGS), 0);
+						final WorldVector wv = new WorldVector(
+								MWC.Algorithms.Conversions.Degs2Rads(brg.floatValue()),
+								rng.getValueIn(WorldDistance.DEGS), 0);
 						final WorldLocation other_end = _curLocation.add(wv);
 						// take copy of original location, since we don't want to over-write
 						// it
@@ -257,19 +262,20 @@ public class ScenarioParticipantWrapper implements
 					if (sym == null)
 					{
 						// bugger. we haven't had this one before. retrieve it the long way
-						sym = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(_myPart.getCategory()
-								.getType());
+						sym = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(_myPart
+								.getCategory().getType());
 
 						// ok, and remember it
-						_myParent.getSymbolRegister().put(_myPart.getCategory().getType(), sym);
+						_myParent.getSymbolRegister().put(_myPart.getCategory().getType(),
+								sym);
 					}
 
 					if (sym != null)
 					{
 						sym.setColor(getColor());
 						sym.setScaleVal(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE);
-						sym.paint(dest, loc, MWC.Algorithms.Conversions.Degs2Rads(_myPart.getStatus()
-								.getCourse()));
+						sym.paint(dest, loc, MWC.Algorithms.Conversions.Degs2Rads(_myPart
+								.getStatus().getCourse()));
 					}
 					else
 					{
@@ -282,6 +288,33 @@ public class ScenarioParticipantWrapper implements
 					dest.setColor(getColor());
 
 					dest.drawRect(pt.x, pt.y, 1, 1);
+				}
+
+				// just throwin a special case - for buoyfields
+				if (_myPart instanceof SonarBuoyField)
+				{
+
+					boolean amAlive = true;
+
+					SonarBuoyField field = (SonarBuoyField) _myPart;
+					// is it alive?
+					long tNow = field.getStatus().getTime();
+					if(!field.isActiveAt(tNow))
+					{
+						amAlive = false;
+					}
+					
+					if(!amAlive)
+						dest.setLineStyle(CanvasType.DOTTED);
+					else
+						dest.setLineStyle(CanvasType.SOLID);
+
+					WorldArea area = field.getCoverage();
+					Point tl = new Point(dest.toScreen(area.getTopLeft()));
+					Point br = new Point(dest.toScreen(area.getBottomRight()));
+					int width = br.x - tl.x;
+					int height = br.y - tl.y;
+					dest.drawRect(tl.x, tl.y, width, height);
 				}
 
 				// now for the activity
@@ -352,7 +385,7 @@ public class ScenarioParticipantWrapper implements
 	 */
 	public void setShowContacts(boolean val)
 	{
-  		_showDetections = val;
+		_showDetections = val;
 	}
 
 	/**
@@ -457,8 +490,8 @@ public class ScenarioParticipantWrapper implements
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res = {
-						prop("ShowContacts", "show contacts for this participant"),
+				final java.beans.PropertyDescriptor[] res =
+				{ prop("ShowContacts", "show contacts for this participant"),
 						prop("Visible", "whether to show this participant"),
 						prop("Name", "name of this participant"), };
 				return res;
@@ -498,7 +531,8 @@ public class ScenarioParticipantWrapper implements
 			_theElements = new Vector<Editable>(3, 1);
 
 			// ok add the movement chars
-			Editable moveChars = new MoveCharsPlottable(_myPart.getMovementChars(), _myParent);
+			Editable moveChars = new MoveCharsPlottable(_myPart.getMovementChars(),
+					_myParent);
 			_theElements.add(moveChars);
 		}
 
@@ -506,7 +540,8 @@ public class ScenarioParticipantWrapper implements
 		if (_noSensorFit)
 			if (_myPart.getSensorFit() != null)
 			{
-				Editable sensors = new SensorsPlottable(_myPart.getSensorFit(), _myParent);
+				Editable sensors = new SensorsPlottable(_myPart.getSensorFit(),
+						_myParent);
 				_theElements.add(sensors);
 				_noSensorFit = false;
 			}
@@ -515,8 +550,8 @@ public class ScenarioParticipantWrapper implements
 		if (_noDecisionModel)
 			if (_myPart.getDecisionModel() != null)
 			{
-				Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel(),
-						_myParent);
+				Editable behaviours = new BehavioursPlottable(
+						_myPart.getDecisionModel(), _myParent);
 				_theElements.add(behaviours);
 				_noDecisionModel = false;
 			}

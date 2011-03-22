@@ -1,8 +1,11 @@
 package ASSET.Util.XML.Vessels;
 
 import ASSET.Models.Vessels.SonarBuoyField;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldAreaHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.XMLTimeRangeHandler;
 
 /**
  * Title:
@@ -16,9 +19,11 @@ import MWC.Utilities.ReaderWriter.XML.Util.WorldAreaHandler;
 abstract public class BuoyFieldHandler extends ParticipantHandler{
 
   static private final String myType = "BuoyField";
-  static private final String TYPE_NAME = "Coverage";
+  static private final String COVER_NAME = "Coverage";
+  static private final String PERIOD_NAME = "TimePeriod";
   
 	protected WorldArea _coverage;
+	protected TimePeriod _period;
 
   public BuoyFieldHandler() {
     super(myType);
@@ -26,7 +31,7 @@ abstract public class BuoyFieldHandler extends ParticipantHandler{
     // add handlers for the SU properties
     // none in this instance
 
-    addHandler(new WorldAreaHandler(TYPE_NAME)
+    addHandler(new WorldAreaHandler(COVER_NAME)
     {
 			@Override
 			public void setArea(WorldArea area)
@@ -34,6 +39,15 @@ abstract public class BuoyFieldHandler extends ParticipantHandler{
 				_coverage = area;
 			}
     });
+    
+    addHandler(new XMLTimeRangeHandler(PERIOD_NAME)
+		{
+			@Override
+			public void setTimeRange(HiResDate start, HiResDate end)
+			{
+				_period = new TimePeriod.BaseTimePeriod(start, end);
+			}
+		});
 
   }
 
@@ -41,7 +55,12 @@ abstract public class BuoyFieldHandler extends ParticipantHandler{
   {
     final SonarBuoyField thisField = new SonarBuoyField(index, _coverage);
     
+    // do we have a period?
+    if(_period != null)
+    	thisField.setTimePeriod(_period);
+    
     _coverage = null;
+    _period = null;
     
     return thisField;
   }
@@ -55,7 +74,11 @@ abstract public class BuoyFieldHandler extends ParticipantHandler{
 
     SonarBuoyField field = (SonarBuoyField) toExport;
     WorldArea coverage = field.getCoverage();
-    WorldAreaHandler.exportThis(coverage, thisPart, doc, TYPE_NAME);
+    WorldAreaHandler.exportThis(coverage, thisPart, doc, COVER_NAME);
+    
+    TimePeriod period = field.getTimePeriod();
+    if(period != null)
+    	XMLTimeRangeHandler.exportThis(period.getStartDTG(), period.getEndDTG(), thisPart, doc, PERIOD_NAME);
 
     parent.appendChild(thisPart);
 

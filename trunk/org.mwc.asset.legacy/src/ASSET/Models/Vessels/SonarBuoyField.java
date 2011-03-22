@@ -2,6 +2,9 @@ package ASSET.Models.Vessels;
 
 import ASSET.ScenarioType;
 import ASSET.Participants.CoreParticipant;
+import ASSET.Participants.Status;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -30,6 +33,8 @@ public class SonarBuoyField extends CoreParticipant
 	 */
 	private WorldArea _myCoverage;
 
+	private TimePeriod _myPeriod;
+
 	/**
 	 * normal constructor
 	 * 
@@ -44,6 +49,8 @@ public class SonarBuoyField extends CoreParticipant
 		// store the coverage
 		_myCoverage = coverage;
 
+		// and set our location to be the centre of the buoyfield
+		this.getStatus().setLocation(getCoverage().getCentre());
 	}
 
 	// ////////////////////////////////////////////////
@@ -57,6 +64,19 @@ public class SonarBuoyField extends CoreParticipant
 	public String getActivity()
 	{
 		return "Active";
+	}
+
+	@Override
+	public void setStatus(Status val)
+	{
+		if (val != null)
+		{
+			super.setStatus(val);
+		}
+		else
+		{
+			super.setStatus(new Status(0, 0));
+		}
 	}
 
 	/**
@@ -79,12 +99,43 @@ public class SonarBuoyField extends CoreParticipant
 	}
 
 	@Override
+	public void doDetection(long oldtime, long newTime, ScenarioType scenario)
+	{
+		// aaah, are we active?
+		if (isActiveAt(newTime))
+			super.doDetection(oldtime, newTime, scenario);
+	}
+
+	/** convenience funtion for if we're currently active
+	 * 
+	 * @param newTime current time
+	 * @return yes/no
+	 */
+	public boolean isActiveAt(long newTime)
+	{
+		boolean res = true;
+		if(_myPeriod != null)
+			res = _myPeriod.contains(new HiResDate(newTime));
+		return res;
+	}
+
+	@Override
 	public void doMovement(long oldtime, long newTime, ScenarioType scenario)
 	{
-		// TODO Auto-generated method stub
 		super.doMovement(oldtime, newTime, scenario);
+
+		// update our status
+		this.getStatus().setTime(newTime);
 	}
-	
-	
+
+	public void setTimePeriod(TimePeriod period)
+	{
+		_myPeriod = period;
+	}
+
+	public TimePeriod getTimePeriod()
+	{
+		return _myPeriod;
+	}
 
 }
