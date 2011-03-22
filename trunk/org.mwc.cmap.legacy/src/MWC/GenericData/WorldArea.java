@@ -238,20 +238,21 @@ public final class WorldArea implements Serializable
 	{
 		double res;
 
-		// first the TL/BR corners
-		double r1 = distanceToSegment(getTopLeft(), getTopRight(), other);
-		double r2 = distanceToSegment(getTopRight(), getBottomRight(), other);
-		double r3 = distanceToSegment(getBottomRight(), getBottomLeft(), other);
-		double r4 = distanceToSegment(getBottomLeft(), getTopLeft(), other);
+		if (this.contains(other))
+			res = 0;
+		else
+		{
 
-		// System.out.print("ranges:" + (int)(10000d * r1));
-		// System.out.println(", " + (int)(r2 *10000d)+ ", " +
-		// (int)(r3*10000d) + ", " + (int)(r4*10000d) + ", " + (int)(r5*10000d));
+			// first the TL/BR corners
+			double r1 = distanceToSegment(getTopLeft(), getTopRight(), other);
+			double r2 = distanceToSegment(getTopRight(), getBottomRight(), other);
+			double r3 = distanceToSegment(getBottomRight(), getBottomLeft(), other);
+			double r4 = distanceToSegment(getBottomLeft(), getTopLeft(), other);
 
-		res = Math.min(r1, r2);
-		res = Math.min(res, r3);
-		res = Math.min(res, r4);
-
+			res = Math.min(r1, r2);
+			res = Math.min(res, r3);
+			res = Math.min(res, r4);
+		}
 		// sort out the min
 		return res;
 	}
@@ -634,15 +635,19 @@ public final class WorldArea implements Serializable
 			wa3 = null;
 		}
 
-		public final void testRangeFromLine()
+		public final void testRangeFromEdge()
 		{
 			double dist1 = wa1.rangeFromEdge(new WorldLocation(13, 11, 0));
 			assertEquals("correct range", 1d, dist1, 0.01);
 			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 11, 0));
 			assertEquals("correct range", 0d, dist1, 0.01);
+			dist1 = wa1.rangeFromEdge(new WorldLocation(9, 10.4, 0));
+			assertEquals("correct range", 1d, dist1, 0.01);
 			dist1 = wa1.rangeFromEdge(new WorldLocation(9, 11, 0));
 			assertEquals("correct range", 1d, dist1, 0.01);
 			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 13, 0));
+			assertEquals("correct range", 1d, dist1, 0.02);
+			dist1 = wa1.rangeFromEdge(new WorldLocation(11.2, 13, 0));
 			assertEquals("correct range", 1d, dist1, 0.02);
 			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 9, 0));
 			assertEquals("correct range", 1d, dist1, 0.02);
