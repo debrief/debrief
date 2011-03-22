@@ -10,53 +10,44 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import org.xml.sax.Attributes;
-
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-abstract public class TimeRangeHandler extends MWCXMLReader
+abstract public class XMLTimeRangeHandler extends MWCXMLReader
 {
 
   private static final String MY_TYPE = "timeRange";
+	private static final String START = "Start";
+	private static final String END = "End";
 	private HiResDate _start = MWC.GenericData.TimePeriod.INVALID_DATE;
   private HiResDate _end = MWC.GenericData.TimePeriod.INVALID_DATE;
-
-  private java.text.SimpleDateFormat sdf = null;
-
-  public TimeRangeHandler(String type)
+  
+  public XMLTimeRangeHandler(String type)
   {
     // inform our parent what type of class we are
     super(type);
-
-    sdf = new java.text.SimpleDateFormat("dd MMM yy HH:mm:ss");
-    sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-  	
+    
+    // sort out the handlers
+    addAttributeHandler(new HandleDateTimeAttribute(START)
+    {
+      public void setValue(String name, final long val)
+      {
+      	_start = new HiResDate(val);
+      }
+    });
+    // sort out the handlers
+    addAttributeHandler(new HandleDateTimeAttribute(END)
+    {
+      public void setValue(String name, final long val)
+      {
+      	_end = new HiResDate(val);
+      }
+    });
   }
 
-  public TimeRangeHandler()
+  public XMLTimeRangeHandler()
   {
   	this(MY_TYPE);
-  }
-
-  // this is one of ours, so get on with it!
-  protected void handleOurselves(String name, Attributes attributes)
-  {
-    _start = _end = MWC.GenericData.TimePeriod.INVALID_DATE;
-
-    int len = attributes.getLength();
-    for (int i = 0; i < len; i++)
-    {
-
-      String nm = attributes.getLocalName(i);
-      String val = attributes.getValue(i);
-      if (nm.equals("Start"))
-        _start = parseThisDate(val);
-      else if (nm.equals("End"))
-        _end = parseThisDate(val);
-
-    }
-
   }
 
   public void elementClosed()
@@ -79,12 +70,12 @@ abstract public class TimeRangeHandler extends MWCXMLReader
     org.w3c.dom.Element eTime = doc.createElement(type);
     if (start != MWC.GenericData.TimePeriod.INVALID_DATE)
     {
-      eTime.setAttribute("Start", writeThis(start));
+      eTime.setAttribute(START, writeThisInXML(start.getDate()));
       useful = true;
     }
     if (end != MWC.GenericData.TimePeriod.INVALID_DATE)
     {
-      eTime.setAttribute("End", writeThis(end));
+      eTime.setAttribute(END, writeThisInXML(end.getDate()));
       useful = true;
     }
 
