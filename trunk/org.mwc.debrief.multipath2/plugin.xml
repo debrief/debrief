@@ -8,14 +8,14 @@
             name="Multipath Analysis"
             icon="icons/MultiPath.png"
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.multipath2.views.MultiPathView"
+            class="org.mwc.debrief.multipath2.MultiPathView"
             id="org.mwc.debrief.MultiPath2">
       </view>
       <view
             name="Multipath Analysis (Test)"
             icon="icons/MultiPath.png"
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.multipath2.views.MultiPathViewTest"
+            class="org.mwc.debrief.multipath2.MultiPathViewTest"
             id="org.mwc.debrief.MultiPath2Test">
       </view>
    </extension>

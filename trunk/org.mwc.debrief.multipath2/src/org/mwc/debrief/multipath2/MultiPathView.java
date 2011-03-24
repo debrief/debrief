@@ -1,4 +1,4 @@
-package org.mwc.debrief.multipath2.views;
+package org.mwc.debrief.multipath2;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -36,7 +36,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.debrief.multipath2.MultiPathPresenter;
+import org.mwc.debrief.multipath2.views.MultiPathUI;
 
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.JFreeChart.RelativeDateAxis;

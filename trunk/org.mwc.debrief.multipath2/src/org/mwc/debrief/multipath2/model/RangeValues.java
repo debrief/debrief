@@ -49,7 +49,7 @@ public class RangeValues
 			double thisTime = 0, thisRange = 0;
 			if (st.hasMoreTokens())
 			{
-				thisTime = Double.valueOf(st.nextToken()) * 1000;
+				thisTime = Double.valueOf(st.nextToken());
 			}
 			if (st.hasMoreTokens())
 			{
@@ -86,8 +86,23 @@ public class RangeValues
 	 */
 	public double valueAt(long millis)
 	{
-		return _interp.interpolate((double) millis);
+		double secs = millis / 1000d;
+		return _interp.interpolate(secs);
 	}
+	
+
+	/**
+	 * see if we have data at the specified time
+	 * 
+	 * @param timeVal
+	 * @return
+	 */
+	public boolean hasValueAt(long timeVal)
+	{
+		double secs = timeVal / 1000d;
+		return ((_times[0] <= secs) && (_times[_times.length - 1] >= secs));
+	}
+
 
 	// /////////////////////////////////////////////////
 	// and the testing goes here
@@ -151,17 +166,6 @@ public class RangeValues
 
 		}
 
-	}
-
-	/**
-	 * see if we have data at the specified time
-	 * 
-	 * @param timeVal
-	 * @return
-	 */
-	public boolean hasValueAt(long timeVal)
-	{
-		return ((_times[0] <= timeVal) && (_times[_times.length - 1] >= timeVal));
 	}
 
 }

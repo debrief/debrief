@@ -610,19 +610,19 @@ public class MultiPathModel
 
 			// what's this time?
 			HiResDate tNow = thisO.getDate();
-			long timeVal = tNow.getDate().getTime();
+			long timeMillis = tNow.getDate().getTime();
 
 			// do we have a range at this time?
-			if (ranges.hasValueAt(timeVal))
+			if (ranges.hasValueAt(timeMillis))
 			{
 
 				// what's the range separation at this time
-				double sepM = ranges.valueAt(timeVal);
+				double sepM = ranges.valueAt(timeMillis);
 
 				// and the delay
 				double time_delay = calculateDelayFor(svp, targetDepth, hostDepth, sepM);
 
-				res.add(new FixedMillisecond(timeVal), time_delay);
+				res.add(new FixedMillisecond(timeMillis), time_delay);
 			}
 		}
 

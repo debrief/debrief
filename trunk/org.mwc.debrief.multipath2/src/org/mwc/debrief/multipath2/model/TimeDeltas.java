@@ -65,7 +65,7 @@ public class TimeDeltas
 	 */
 	public void load(String path) throws NumberFormatException, IOException, MultiPathModel.DataFormatException
 	{
-		Vector<Long> times = new Vector<Long>();
+		Vector<Double> times = new Vector<Double>();
 		Vector<Double> values = new Vector<Double>();
 
 		BufferedReader bufRdr = new BufferedReader(new FileReader(path));
@@ -77,7 +77,7 @@ public class TimeDeltas
 			StringTokenizer st = new StringTokenizer(line, ",");
 			if(st.hasMoreTokens())
 			{
-				times.add(Long.valueOf(st.nextToken()));
+				times.add(Double.valueOf(st.nextToken()));
 			}
 			if(st.hasMoreTokens())
 			{
@@ -96,8 +96,8 @@ public class TimeDeltas
 		_myData = new Vector<Observation>();
 		for (int i = 0; i < numEntries; i++)
 		{
-			long thisTime = times.elementAt(i);
-			HiResDate thisD = new HiResDate(thisTime);
+			Double thisTime = times.elementAt(i);
+			HiResDate thisD = new HiResDate((long)(thisTime * 1000d));
 			Double thisInterval = values.elementAt(i);
 			Observation obs = new Observation(thisD, thisInterval);
 			_myData.add(obs);
