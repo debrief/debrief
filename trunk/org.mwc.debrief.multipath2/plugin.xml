@@ -11,6 +11,13 @@
             class="org.mwc.debrief.multipath2.views.MultiPathView"
             id="org.mwc.debrief.MultiPath2">
       </view>
+      <view
+            name="Multpath Analysis (Test)"
+            icon="icons/MultiPath.png"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.debrief.multipath2.views.MultiPathViewTest"
+            id="org.mwc.debrief.MultiPath2Test">
+      </view>
    </extension>
 
 </plugin>

@@ -6,8 +6,8 @@ Bundle-Version: 1.0.3
 Bundle-Activator: org.mwc.debrief.multipath2.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.legacy;bundle-version="1.0.113",
- org.mwc.debrief.legacy;bundle-version="1.0.174",
- org.mwc.cmap.core;bundle-version="1.0.132"
+ org.mwc.cmap.legacy,
+ org.mwc.debrief.legacy,
+ org.mwc.cmap.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
