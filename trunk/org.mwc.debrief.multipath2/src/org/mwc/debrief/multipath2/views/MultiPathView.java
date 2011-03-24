@@ -55,7 +55,7 @@ public class MultiPathView extends ViewPart implements
 	public static final String ID = "org.mwc.debrief.MultiPath2";
 	private MultiPathUI _ui;
 	private XYPlot _thePlot;
-	private MultiPathPresenter _presenter;
+	protected MultiPathPresenter _presenter;
 	private Action _helpAction;
 
 	/**
@@ -178,6 +178,14 @@ public class MultiPathView extends ViewPart implements
 
 	}
 
+
+	@Override
+	public void addRangesListener(FileHandler handler)
+	{
+		configureFileDropSupport(_ui.getRangeHolder(), handler);
+	}
+
+	
 	@Override
 	public void addSVPListener(FileHandler handler)
 	{

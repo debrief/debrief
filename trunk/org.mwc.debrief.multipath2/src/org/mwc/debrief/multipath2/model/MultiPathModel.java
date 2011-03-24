@@ -147,6 +147,60 @@ public class MultiPathModel
 		}
 	}
 
+
+	public static class RangedMiracleFunction implements MinimisationFunction
+	{
+		private SVP _svp;
+		private TimeDeltas _times;
+		private MultiPathModel _model;
+		private TimeSeries _measuredTimes;
+		private RangeValues _ranges;
+		private double _ownDepth;
+
+		public RangedMiracleFunction(RangeValues ranges,
+				SVP svp, TimeDeltas times, double ownDepth)
+		{
+			_ownDepth = ownDepth;
+			_ranges = ranges;
+			_svp = svp;
+			_times = times;
+
+			// sort out the measured times
+			_model = new MultiPathModel();
+			_measuredTimes = _model.getMeasuredProfileFor(times);
+		}
+
+		@Override
+		public double function(double[] param)
+		{
+			// ok, sort out the calculated times
+			TimeSeries calcTimes = _model.getCalculatedProfileFor(_ranges, _svp, _times, param[0], _ownDepth);
+
+			int lenA = _measuredTimes.getItemCount();
+			int lenB = calcTimes.getItemCount();
+
+			if (lenA != lenB)
+			{
+				throw new RuntimeException(
+						"Measured and calculated datasets should be of equal length");
+			}
+
+			double runningError = 0;
+
+			for (int i = 0; i < lenA; i++)
+			{
+				double valA = _measuredTimes.getDataItem(i).getValue().doubleValue();
+				double valB = calcTimes.getDataItem(i).getValue().doubleValue();
+				double thisError = Math.pow(valB - valA, 2);
+				runningError += thisError;
+			}
+
+			// done
+			System.out.println("returned " + runningError + " from:" + param[0]);
+
+			return runningError;
+		}
+	}
 	/**
 	 * get the calculated profile
 	 * 
@@ -191,6 +245,7 @@ public class MultiPathModel
 
 			// what's this time?
 			HiResDate tNow = thisO.getDate();
+			long timeVal = tNow.getDate().getTime();
 
 			// find the locations
 			Watchable[] priLocs = primary.getNearestTo(tNow);
@@ -221,18 +276,10 @@ public class MultiPathModel
 			}
 			double sepM = MWC.Algorithms.Conversions.Degs2m(sep.getRange());
 
-			double zR = priLoc.getDepth();
-			double zS = targetDepth;
+			double time_delay = calculateDelayFor(svp, targetDepth,
+					priLoc.getDepth(), sepM);
 
-			// now sort out the sound speeds
-			double cD = svp.getMeanSpeedBetween(zS, zR);
-			double cS = svp.getMeanSpeedBetween(0, zS);
-			double cR = svp.getMeanSpeedBetween(0, zR);
-
-			// do the actual calculation
-			double time_delay = calculateDelay(sepM, zR, zS, cD, cS, cR);
-
-			res.add(new FixedMillisecond(tNow.getDate().getTime()), time_delay);
+			res.add(new FixedMillisecond(timeVal), time_delay);
 		}
 
 		// restore the interpolation settings
@@ -248,6 +295,22 @@ public class MultiPathModel
 		}
 
 		return res;
+	}
+
+	private double calculateDelayFor(SVP svp, double targetDepth,
+			double hostDepth, double sepM)
+	{
+		double zR = hostDepth;
+		double zS = targetDepth;
+
+		// now sort out the sound speeds
+		double cD = svp.getMeanSpeedBetween(zS, zR);
+		double cS = svp.getMeanSpeedBetween(0, zS);
+		double cR = svp.getMeanSpeedBetween(0, zR);
+
+		// do the actual calculation
+		double time_delay = calculateDelay(sepM, zR, zS, cD, cS, cR);
+		return time_delay;
 	}
 
 	private double calculateDelay(double sepM, double zR, double zS, double cD,
@@ -456,8 +519,9 @@ public class MultiPathModel
 				// do the actual calculation
 				double time_delay = model.calculateDelay(1200, zR, zS, cD, cS, cR);
 
-				System.out.println("cd:" + (int)cD + " cs:" + (int)cS + " cr:" + (int)cR + " delay at " + i + " is:" + time_delay);
-				
+				System.out.println("cd:" + (int) cD + " cs:" + (int) cS + " cr:"
+						+ (int) cR + " delay at " + i + " is:" + time_delay);
+
 			}
 
 		}
@@ -513,6 +577,7 @@ public class MultiPathModel
 			}
 			return svp;
 		}
+
 		private static TimeDeltas getDeltas()
 		{
 			TimeDeltas deltas = new TimeDeltas();
@@ -537,5 +602,46 @@ public class MultiPathModel
 			}
 			return deltas;
 		}
+	}
+
+	/**
+	 * helper method, produces calculated profile using pre-coded set of ranges
+	 * 
+	 * @param ranges
+	 * @param svp
+	 * @param times
+	 * @param val
+	 * @return
+	 */
+	public TimeSeries getCalculatedProfileFor(RangeValues ranges, SVP svp,
+			TimeDeltas times, double targetDepth, double hostDepth)
+	{
+		TimeSeries res = new TimeSeries("Calculated delay (TEST)");
+
+		// ok, loop through the times
+		Iterator<Observation> iter = times.iterator();
+		while (iter.hasNext())
+		{
+			Observation thisO = iter.next();
+
+			// what's this time?
+			HiResDate tNow = thisO.getDate();
+			long timeVal = tNow.getDate().getTime();
+
+			// do we have a range at this time?
+			if (ranges.hasValueAt(timeVal))
+			{
+
+				// what's the range separation at this time
+				double sepM = ranges.valueAt(timeVal);
+
+				// and the delay
+				double time_delay = calculateDelayFor(svp, targetDepth, hostDepth, sepM);
+
+				res.add(new FixedMillisecond(timeVal), time_delay);
+			}
+		}
+
+		return res;
 	}
 }

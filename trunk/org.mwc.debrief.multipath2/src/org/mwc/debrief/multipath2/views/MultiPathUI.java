@@ -6,6 +6,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -78,7 +79,7 @@ public class MultiPathUI extends Composite
 		_sliderVal.setText("[pending]");
 
 		_slider = new Slider(cmpSlider, SWT.NONE);
-		_slider.setMaximum(300);
+		_slider.setMaximum(500);
 
 		Composite cmpButton = new Composite(this, SWT.NONE);
 		GridData gd_cmpButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,
@@ -107,6 +108,12 @@ public class MultiPathUI extends Composite
 	public Composite getIntervalHolder()
 	{
 		return _cmpIntervals;
+	}
+	
+
+	public Control getRangeHolder()
+	{
+		return _slider;
 	}
 
 	public void setSVPName(String text)
@@ -155,4 +162,5 @@ public class MultiPathUI extends Composite
 			setSliderValText("Disabled, pending data");
 		}
 	}
+
 }

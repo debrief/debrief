@@ -13,7 +13,6 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.multipath2.MultiPathPresenter.Display.FileHandler;
 import org.mwc.debrief.multipath2.MultiPathPresenter.Display.ValueHandler;
 import org.mwc.debrief.multipath2.model.MultiPathModel;
-import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 import org.mwc.debrief.multipath2.model.SVP;
 import org.mwc.debrief.multipath2.model.TimeDeltas;
@@ -76,6 +75,13 @@ public class MultiPathPresenter
 		 * @param handler
 		 */
 		public void addSVPListener(FileHandler handler);
+
+		/**
+		 * let someone know about a ranges file being dropped
+		 * 
+		 * @param handler
+		 */
+		public void addRangesListener(FileHandler handler);
 
 		/**
 		 * let someone know about a new time-delta file being dropped
@@ -157,11 +163,11 @@ public class MultiPathPresenter
 		public void addMagicListener(SelectionListener listener);
 	};
 
-	private final Display _display;
-	private final MultiPathModel _model;
+	protected final Display _display;
+	protected final MultiPathModel _model;
 	private TimeSeries _measuredSeries = null;
-	private SVP _svp = null;
-	private TimeDeltas _times = null;
+	protected SVP _svp = null;
+	protected TimeDeltas _times = null;
 	protected String _intervalPath;
 	protected int _curDepth = DEFAULT_DEPTH;
 	protected String _svpPath;
@@ -180,7 +186,7 @@ public class MultiPathPresenter
 
 	}
 
-	private void loadSVP(String path)
+	protected void loadSVP(String path)
 	{
 		try
 		{
@@ -268,43 +274,39 @@ public class MultiPathPresenter
 
 	}
 
+	protected TimeSeries getCalculatedProfile(int val)
+	{
+		TrackDataProvider tv = getTracks();
+		WatchableList primary = tv.getPrimaryTrack();
+		WatchableList secondary = tv.getSecondaryTracks()[0];
+		TimeSeries calculated = _model.getCalculatedProfileFor(primary, secondary,
+				_svp, _times, val);
+
+		return calculated;
+	}
+
 	protected void updateCalc(int val)
 	{
 
-		TrackDataProvider tv = getTracks();
-
-		if (tv != null)
+		// do we have our measured series?
+		if (_measuredSeries == null)
 		{
-
-			// do we have our measured series?
-			if (_measuredSeries == null)
-			{
-				_measuredSeries = _model.getMeasuredProfileFor(_times);
-			}
-
-			// remember the depth
-			_curDepth = (int) val;
-
-			// cool, valid data
-			_display.setSliderText("Depth:" + val + "m");
-
-			WatchableList primary = tv.getPrimaryTrack();
-			WatchableList secondary = tv.getSecondaryTracks()[0];
-			try
-			{
-				TimeSeries calculated = _model.getCalculatedProfileFor(primary,
-						secondary, _svp, _times, val);
-
-				// ok, ready to plot
-				_display.display(_measuredSeries, calculated);
-			}
-			catch (CalculationException e)
-			{
-				_display.showError(e.getMessage());
-				CorePlugin.logError(Status.ERROR, "Performing multipath analysis", e);
-			}
+			_measuredSeries = _model.getMeasuredProfileFor(_times);
 		}
 
+		// remember the depth
+		_curDepth = (int) val;
+
+		// cool, valid data
+		_display.setSliderText("Depth:" + val + "m");
+
+		TimeSeries calculated = getCalculatedProfile(val);
+
+		if (calculated != null)
+		{
+			// ok, ready to plot
+			_display.display(_measuredSeries, calculated);
+		}
 	}
 
 	private TrackDataProvider getTracks()
@@ -379,7 +381,7 @@ public class MultiPathPresenter
 	 * 
 	 * @param path
 	 */
-	private void loadIntervals(String path)
+	protected void loadIntervals(String path)
 	{
 		try
 		{
@@ -485,52 +487,50 @@ public class MultiPathPresenter
 	 */
 	protected void doMagic()
 	{
+		// Create instace of class holding function to be minimised
+		MinimisationFunction funct = createMiracle();
 
+		// Create instance of Minimisation
+		Minimisation min = new Minimisation();
+
+		// initial estimates
+		double[] start =
+		{ 31 };
+
+		// initial step sizes
+		double[] step =
+		{ 5 };
+
+		// convergence tolerance
+		double ftol = 1e-4;
+
+		min.addConstraint(0, -1, 0d);
+		min.addConstraint(0, 1, 300);
+
+		// Nelder and Mead minimisation procedure
+		min.nelderMead(funct, start, step, ftol, 500);
+
+		// get the results out
+		double[] param = min.getParamValues();
+
+		double depth = param[0];
+
+		System.out.println("* depth = " + depth + "**");
+
+		// fire in the minimum
+		updateCalc((int) depth);
+
+		_display.setSliderVal((int) depth);
+
+	}
+
+	protected MinimisationFunction createMiracle()
+	{
 		// get the tracks
 		TrackDataProvider tv = getTracks();
-		
-		// did it work?
-		if (tv != null)
-		{
+		WatchableList primary = tv.getPrimaryTrack();
+		WatchableList secondary = tv.getSecondaryTracks()[0];
 
-			WatchableList primary = tv.getPrimaryTrack();
-			WatchableList secondary = tv.getSecondaryTracks()[0];
-
-			// Create instance of Minimisation
-			Minimisation min = new Minimisation();
-
-			// Create instace of class holding function to be minimised
-			MinimisationFunction funct = new MultiPathModel.MiracleFunction(primary,
-					secondary, _svp, _times);
-
-			// initial estimates
-			double[] start =
-			{ 31 };
-
-			// initial step sizes
-			double[] step =
-			{ 5 };
-
-			// convergence tolerance
-			double ftol = 1e-4;
-			
-			min.addConstraint(0, -1, 0d);
-			min.addConstraint(0, 1, 300);
-
-			// Nelder and Mead minimisation procedure
-			min.nelderMead(funct, start, step, ftol, 500);
-
-			// get the results out
-			double[] param = min.getParamValues();
-			
-			double depth = param[0];
-			
-			System.out.println("* depth = " + depth + "**");
-
-			// fire in the minimum
-			updateCalc((int) depth);
-			
-			_display.setSliderVal((int)depth);
-		}
+		return new MultiPathModel.MiracleFunction(primary, secondary, _svp, _times);
 	}
 }

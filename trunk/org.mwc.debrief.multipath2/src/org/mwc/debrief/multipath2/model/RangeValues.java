@@ -3,13 +3,12 @@ package org.mwc.debrief.multipath2.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 
-import MWC.GenericData.HiResDate;
+import flanagan.interpolation.LinearInterpolation;
 
 /**
  * class that loads a series of time-delta observations
@@ -19,39 +18,10 @@ import MWC.GenericData.HiResDate;
  */
 public class RangeValues
 {
-	public static class Observation
-	{
-		private HiResDate time;
-		private double range;
 
-		public Observation(HiResDate timeVal, double rangeVal)
-		{
-			time = timeVal;
-			range = rangeVal;
-		}
-
-		public HiResDate getDate()
-		{
-			return time;
-		}
-
-		public double getRange()
-		{
-			return range;
-		}
-	}
-
-	private Vector<Observation> _myData;
-
-	public HiResDate getStartTime()
-	{
-		return _myData.firstElement().getDate();
-	}
-
-	public HiResDate getEndTime()
-	{
-		return _myData.lastElement().getDate();
-	}
+	double[] _times;
+	double[] _ranges;
+	private LinearInterpolation _interp;
 
 	/**
 	 * load an data file from the specified path
@@ -76,52 +46,62 @@ public class RangeValues
 		while ((line = bufRdr.readLine()) != null)
 		{
 			StringTokenizer st = new StringTokenizer(line, ",");
+			double thisTime = 0, thisRange = 0;
 			if (st.hasMoreTokens())
 			{
-				times.add(Double.valueOf(st.nextToken()));
+				thisTime = Double.valueOf(st.nextToken()) * 1000;
 			}
 			if (st.hasMoreTokens())
 			{
-				values.add(Double.valueOf(st.nextToken()));
+				thisRange = Double.valueOf(st.nextToken());
+			}
+
+			if (thisTime < 2000000)
+			{
+				times.add(thisTime);
+				values.add(thisRange);
 			}
 		}
 		if (values.size() > 0)
 		{
-			final int numEntries = values.size();
-			_myData = new Vector<Observation>();
-			for (int i = 0; i < numEntries; i++)
+			_ranges = new double[values.size()];
+			_times = new double[values.size()];
+			for (int i = 0; i < values.size(); i++)
 			{
-				double thisTime = times.elementAt(i) * 1000;
-				HiResDate thisD = new HiResDate((long)thisTime);
-				Double thisRange = values.elementAt(i);
-				Observation obs = new Observation(thisD, thisRange);
-				_myData.add(obs);
+				_ranges[i] = values.elementAt(i);
+				_times[i] = times.elementAt(i);
 			}
+
+			// and generate the interpolation algorithm
+			_interp = new LinearInterpolation(_times, _ranges);
+
 		}
 	}
 
 	/**
-	 * provide support for cycling through the observations
+	 * produce an interpolated range
 	 * 
+	 * @param millis
 	 * @return
 	 */
-	public Iterator<Observation> iterator()
+	public double valueAt(long millis)
 	{
-		return _myData.iterator();
+		return _interp.interpolate((double) millis);
 	}
 
 	// /////////////////////////////////////////////////
 	// and the testing goes here
 	// /////////////////////////////////////////////////
-	public static class IntervalTest extends junit.framework.TestCase
+	public static class RangesTest extends junit.framework.TestCase
 	{
-		public static final String TEST_TIMES_FILE = "src/org/mwc/debrief/multipath2/model/TestRangeValues.csv";
+		public static final String TEST_RANGES_FILE = "src/org/mwc/debrief/multipath2/model/TestRangeValues.csv";
 
 		public void testMe()
 		{
 			RangeValues times = new RangeValues();
 
-			assertEquals("not got data", null, times._myData);
+			assertEquals("not got data", null, times._times);
+			assertEquals("not got data", null, times._ranges);
 
 			// and missing file
 			try
@@ -142,11 +122,11 @@ public class RangeValues
 				fail("bad data");
 			}
 
-			assertEquals("still not got data", null, times._myData);
+			assertEquals("still not got data", null, times._ranges);
 
 			try
 			{
-				times.load(TEST_TIMES_FILE);
+				times.load(TEST_RANGES_FILE);
 			}
 			catch (NumberFormatException e)
 			{
@@ -161,11 +141,27 @@ public class RangeValues
 				fail("bad data");
 			}
 
-			assertEquals("got correct num entries", 801, times._myData.size());
+			assertEquals("got correct num entries", 801, times._times.length);
 
-			assertNotNull("return iterator", times.iterator());
+			assertEquals("got correct range", 2530.96, times.valueAt(10000), 0.0001);
+			assertEquals("got correct range", 2529.144, times.valueAt(11000), 0.0001);
+			assertTrue("correct time checking", times.hasValueAt(0));
+			assertTrue("correct time checking", times.hasValueAt(2000));
+			assertTrue("correct time checking", !times.hasValueAt(36000000));
 
 		}
 
 	}
+
+	/**
+	 * see if we have data at the specified time
+	 * 
+	 * @param timeVal
+	 * @return
+	 */
+	public boolean hasValueAt(long timeVal)
+	{
+		return ((_times[0] <= timeVal) && (_times[_times.length - 1] >= timeVal));
+	}
+
 }
