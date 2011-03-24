@@ -4425,6 +4425,193 @@ Platform C,-551</screen></para>
                             <link linkend="track_shifting">stacked dots</link> will be working with
                         the correct data values.</para>
                 </sect2>
+                <sect2 id="multipath_analysis">
+                    <title id="multipath_title">Multipath analysis</title>
+                    <para>Should you have access to multipath sensor data of a target vessel from a
+                        host platform, Debrief is able to assist in determining the target depth. In
+                        overview, Debrief allows you to compare the measured time interval with one
+                        calculated from the relevant dispositions of the two tracks (plus measured
+                        sound speeds for that location).</para>
+                    <sect3 id="multipath_datasets">
+                        <title>Datasets</title>
+                        <para>To perform this analysis you require the following datasets:<orderedlist>
+                                <listitem>
+                                    <para>Ownship and Target tracks</para>
+                                </listitem>
+                                <listitem>
+                                    <para>A SVP (Sound Velocity Profile) file for the location
+                                        (using the file format defined <link
+                                            linkend="multi_data_svp">here</link>)</para>
+                                </listitem>
+                                <listitem>
+                                    <para>A file of measured time intervals (using the file format
+                                        defined <link linkend="multi_data_delays"
+                                        >here</link>)</para>
+                                </listitem>
+                            </orderedlist></para>
+                    </sect3>
+                    <sect3 id="multi_delay_algorithms">
+                        <title>Time delay algorithms</title>
+                        <para>The indirect path length is calculated as follows:<screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/multi_length_alg.png" width=""/>
+                                    </imageobject>
+                                    <caption>Algorithm used to determine indirect path
+                                        length</caption>
+                                </mediaobject>
+                            </screenshot>Where: <variablelist>
+                                <varlistentry>
+                                    <term>L<subscript>d</subscript></term>
+                                    <listitem>
+                                        <para>Direct path length</para>
+                                    </listitem>
+                                </varlistentry>
+                                <varlistentry>
+                                    <term>L<subscript>s,horiz</subscript></term>
+                                    <listitem>
+                                        <para>Horizontal range to the point where the surface path
+                                            intersects the surface (see diagram below)</para>
+                                    </listitem>
+                                </varlistentry>
+                                <varlistentry>
+                                    <term>L<subscript>s</subscript></term>
+                                    <listitem>
+                                        <para>Path length from source to surface</para>
+                                    </listitem>
+                                </varlistentry>
+                                <varlistentry>
+                                    <term>L<subscript>r</subscript></term>
+                                    <listitem>
+                                        <para>Path length from surface to receiver</para>
+                                    </listitem>
+                                </varlistentry>
+                                <varlistentry>
+                                    <term>H<subscript>d</subscript></term>
+                                    <listitem>
+                                        <para>Horizontal range</para>
+                                    </listitem>
+                                </varlistentry>
+                                <varlistentry>
+                                    <term>Z<subscript>s</subscript></term>
+                                    <listitem>
+                                        <para>Source depth</para>
+                                    </listitem>
+                                </varlistentry>
+                                <varlistentry>
+                                    <term>Z<subscript>r</subscript></term>
+                                    <listitem>
+                                        <para>Receiver depth</para>
+                                    </listitem>
+                                </varlistentry>
+                            </variablelist>These lengths are the calculated as: <screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/multi_lengths.png" width=""/>
+                                    </imageobject>
+                                    <caption>Comparison of acoustic paths</caption>
+                                </mediaobject>
+                            </screenshot>Finally the path lengths are divided by the respective
+                            sounds speeds to obtain the path travel times, and this the overall time delay:<screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/multi_delay.png" width=""/>
+                                    </imageobject>
+                                    <caption>Calculation of time delay</caption>
+                                </mediaobject>
+                            </screenshot></para>
+                    </sect3>
+                    <sect3 id="multi_svp_algorithms">
+                        <title>Sound Speed algorithms</title>
+                        <para>The sounds paths shown in the illustration above may travel through
+                            depths that have varying sound speeds.  We calculate an average sound
+                            speed for the depth profile by calculating a weighted mean for that
+                            depth range:</para>
+                        <para>Source depth = 55 m</para>
+                        <para>Receiver depth = 30 m</para>
+                        <para>Sound Speed Profile:</para>
+                        <informaltable border="1" class="MsoNormalTable"
+                            style="border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt;  mso-yfti-tbllook:1184;mso-padding-alt:0cm 5.4pt 0cm 5.4pt;mso-border-insideh:  .5pt solid windowtext;mso-border-insidev:.5pt solid windowtext">
+                            <tr>
+                                <td rowspan="1" colspan="1" valign="top">Depth (m)</td>
+                                <td rowspan="1" colspan="1" valign="top">Speed (m/s)</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="1" colspan="1" valign="top">0</td>
+                                <td rowspan="1" colspan="1" valign="top">1500</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="1" colspan="1" valign="top">30</td>
+                                <td rowspan="1" colspan="1" valign="top">1505</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="1" colspan="1" valign="top">40</td>
+                                <td rowspan="1" colspan="1" valign="top">1510</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="1" colspan="1" valign="top">60</td>
+                                <td rowspan="1" colspan="1" valign="top">1515</td>
+                            </tr>
+                        </informaltable>
+                        <para>Average sound speed between 0 m and 30 m can be ignored as the sound
+                            never goes into that region. Average sound speed between 30 m and 40 m
+                            is 1507.5 m/s.  The sound speed at 55 m is 1513.75 m/s (through linear
+                            interpolation). Average sound speed between 40 m and 55 m is 1511.875
+                            m/s. Using the depth range in metres as its weighting value, the overall
+                            average sound speed is ((1511.875*15)+(1507.5*10))/25 = 1510.125
+                            m/s</para>
+                    </sect3>
+                    <sect3>
+                        <title>Optimisation Algorithm</title>
+                        <para>Debrief is able to use Dr Michael Thomas Flanagan's (at <ulink
+                                url="www.ee.ucl.ac.uk/~mflanaga">www.ee.ucl.ac.uk/~mflanaga</ulink>)
+                            Nelder Mead simplex optimisation algorithm to determine the optimum
+                            target depth to minimise the least-squares error between the calculated
+                            and measured curves.</para>
+                    </sect3>
+                    <sect3 id="multi_ui">
+                        <title>User interface</title>
+                        <para>Perform multi-path analysis using the Multipath analysis view.  Open
+                            this view by selecting it from the <guilabel>Window/Show View</guilabel>
+                            menu. <screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/multi_empty.png" width=""/>
+                                    </imageobject>
+                                    <caption>Initial view of multipath analysis view</caption>
+                                </mediaobject>
+                            </screenshot>As you'll see from the above screenshot, the panel is laid
+                            out with a series of controls above an xy plot. The controls at the top
+                            of the view indicate the files being used for SVP and time-delays, a
+                            slider control is provided to let you trial target depths, plus there's
+                            a <emphasis>magic</emphasis> button that runs an optimisation algorithm
+                            - generating a <emphasis>best-guess</emphasis> of target-depth by
+                            minimising the time-delay error.</para>
+                        <para>So, start off by dragging in your SVP and time-delay files - dropping
+                            them over the respective <emphasis>[pending]</emphasis> label. Next,
+                            ensure your 'ownship' track is marked as the current primary track, and
+                            your target track is the secondary track in the Debrief Track Tote (as
+                            explained in <xref linkend="more_assigning_tracks"/>).</para>
+                        <para>Once you've loaded the data and assigned the tracks, the slider
+                            control will become enabled and you can drag it to trial new target
+                            depths.  The xy plot will update to show a comparison of the calculated
+                            time delays against the measured delay.  You'll determine the target
+                            depth estimate by using the slider to place the blue (calculated) line
+                            as close as possible to the red (measured) line.<screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/multi_working.png" width=""/>
+                                    </imageobject>
+                                    <caption>Multipath analysis view with data loaded</caption>
+                                </mediaobject>
+                            </screenshot></para>
+                        <para>An alternative to working out the estimated target depth by
+                            eye/experimentation is to click on the magic top-hat icon.   A <ulink
+                                url="http://www.ee.ucl.ac.uk/~mflanaga/java/Minimisation.html"
+                                >Nelder and Mead simplex optimisation algorithm</ulink> will now run
+                            - with the slider set to the result on completion.</para>
+                    </sect3>
+                </sect2>
             </sect1>
         </chapter>
         <chapter id="tma_data">
@@ -5662,6 +5849,55 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 &lt;Prd_Freq>	The predicted target range in hertz  Positive float
 &lt;Prd_Freq_Acc>	The predicted target frequency accuracy in hertz  Positive float</literallayout>
                     </para>
+                </sect2>
+            </sect1>
+            <sect1 id="multi_data_files">
+                <title>Multipath analysis datafiles</title>
+                <sect2 id="multi_data_intro">
+                    <title>Introduction</title>
+                    <para>The <link linkend="multipath_analysis">Multi Path Analysis</link> view
+                        allows a target depth to be estimated by visually aligning a calculated set
+                        of time delays with a measured set.  This view requires two additional data
+                        files to be loaded.  Both of these files are in textual
+                            <filename>csv</filename> format.</para>
+                </sect2>
+                <sect2 id="multi_data_svp">
+                    <title>SVP file</title>
+                    <para>The Sound Velocity Profile file is a two-column csv text file:<variablelist>
+                            <varlistentry>
+                                <term>depth</term>
+                                <listitem>
+                                    <para>floating point depth (m)</para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term>sound speed</term>
+                                <listitem>
+                                    <para>floating point sound speed (m/s)</para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist></para>
+                </sect2>
+                <sect2 id="multi_data_delays">
+                    <title>Time delays file</title>
+                    <para>The time-delays data file is a two-column csv text file:</para>
+                    <variablelist>
+                        <varlistentry>
+                            <term>time</term>
+                            <listitem>
+                                <para>floating point timestamp (seconds from the start of January 1,
+                                    1970)</para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>time-delay</term>
+                            <listitem>
+                                <para>floating point time delay (seconds)</para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                    <para>Note, you can determine the timestamp using the <ulink
+                            url="http://www.unixstamp.com/">unix timestamp</ulink> web site. </para>
                 </sect2>
             </sect1>
             <sect1 id="intro_xml">
