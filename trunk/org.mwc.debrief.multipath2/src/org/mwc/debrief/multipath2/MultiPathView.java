@@ -49,6 +49,7 @@ public class MultiPathView extends ViewPart implements
 		MultiPathPresenter.Display
 {
 
+	private static final String HELP_CONTEXT = "org.mwc.debrief.help.MultipathAnalysis";
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -65,6 +66,7 @@ public class MultiPathView extends ViewPart implements
 	{
 		// now sort out the presenter
 		_presenter = new MultiPathPresenter(this);
+		
 	}
 
 	/**
@@ -84,6 +86,9 @@ public class MultiPathView extends ViewPart implements
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+		
+		// and declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, HELP_CONTEXT);
 	}
 
 	private void createPlot(Composite ui)
@@ -153,7 +158,7 @@ public class MultiPathView extends ViewPart implements
 	private void makeActions()
 	{
 		_helpAction = CorePlugin.createOpenHelpAction(
-				"org.mwc.debrief.help.MultipathAnalysis",
+				HELP_CONTEXT,
 				"Help on multi-path analysis", this);
 
 	}
