@@ -5,14 +5,14 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Multpath Analysis"
+            name="Multipath Analysis"
             icon="icons/MultiPath.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.multipath2.views.MultiPathView"
             id="org.mwc.debrief.MultiPath2">
       </view>
       <view
-            name="Multpath Analysis (Test)"
+            name="Multipath Analysis (Test)"
             icon="icons/MultiPath.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.multipath2.views.MultiPathViewTest"
