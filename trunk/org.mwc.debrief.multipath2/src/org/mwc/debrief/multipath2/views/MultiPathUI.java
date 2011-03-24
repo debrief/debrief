@@ -80,7 +80,7 @@ public class MultiPathUI extends Composite
 		_sliderVal.setText("[pending]");
 
 		_slider = new Slider(cmpSlider, SWT.NONE);
-		_slider.setMaximum(500);
+		_slider.setMaximum(800);
 
 		Composite cmpButton = new Composite(this, SWT.NONE);
 		GridData gd_cmpButton = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1,

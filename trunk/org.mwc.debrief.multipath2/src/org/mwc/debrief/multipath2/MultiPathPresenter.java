@@ -276,13 +276,16 @@ public class MultiPathPresenter
 
 	protected TimeSeries getCalculatedProfile(int val)
 	{
+		TimeSeries res = null;
 		TrackDataProvider tv = getTracks();
 		WatchableList primary = tv.getPrimaryTrack();
 		WatchableList secondary = tv.getSecondaryTracks()[0];
-		TimeSeries calculated = _model.getCalculatedProfileFor(primary, secondary,
-				_svp, _times, val);
-
-		return calculated;
+		if ((primary != null) && (secondary != null))
+		{
+			res = _model.getCalculatedProfileFor(primary, secondary, _svp, _times,
+					val);
+		}
+		return res;
 	}
 
 	protected void updateCalc(int val)
@@ -495,27 +498,28 @@ public class MultiPathPresenter
 
 		// initial estimates
 		double[] start =
-		{ 60 };
+		{ 100 };
 
 		// initial step sizes
 		double[] step =
-		{ 20 };
+		{ 60 };
 
 		// convergence tolerance
-		double ftol = 1e-5;
+		double ftol = 1e-7;
 
 		min.addConstraint(0, -1, 0d);
-		min.addConstraint(0, 1, 500);
+		min.addConstraint(0, 1, 1000);
 
 		// Nelder and Mead minimisation procedure
-		min.nelderMead(funct, start, step, ftol, 5000);
+		min.nelderMead(funct, start, step, ftol, 500);
 
 		// get the results out
 		double[] param = min.getParamValues();
 
 		double depth = param[0];
-		
-		CorePlugin.logError(Status.INFO, "Optimised multipath depth is " + depth, null);
+
+		CorePlugin.logError(Status.INFO, "Optimised multipath depth is " + depth,
+				null);
 
 		// fire in the minimum
 		updateCalc((int) depth);

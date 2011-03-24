@@ -140,6 +140,9 @@ public class MultiPathModel
 				double thisError = Math.pow(valB - valA, 2);
 				runningError += thisError;
 			}
+			
+			// log the calculation
+			CorePlugin.logError(Status.INFO,"error:" + (int) (runningError * 10000000d) +  " for " +  param[0], null);
 
 			// done
 			return runningError;
