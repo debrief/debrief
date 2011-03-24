@@ -24,7 +24,7 @@ public class SVP
 	public static final String SHALLOW_FAIL = "SVP doesn't go shallow enough";
 	double _depths[];
 	double _speeds[];
-	private HashMap<String, Double> _cache;
+	private HashMap<Double, Double> _cache;
 
 	/**
 	 * load an SVP from teh specific path
@@ -40,7 +40,7 @@ public class SVP
 			DataFormatException
 	{
 		// ok, clear the cache - we're getting a new profile
-		_cache = new HashMap<String, Double>();
+		_cache = new HashMap<Double, Double>();
 
 		Vector<Double> values = new Vector<Double>();
 
@@ -136,7 +136,9 @@ public class SVP
 
 		Double res = null;
 
-		String thisKey = "" + depthOne + "-" + depthTwo;
+		Double thisKey = depthOne * 1000 + depthTwo;
+		
+//		String thisKey = "" + depthOne + "-" + depthTwo;
 
 		res = _cache.get(thisKey);
 
@@ -241,7 +243,7 @@ public class SVP
 		}
 
 		// done = we've got our answer
-		return res.doubleValue();
+		return res;
 	}
 
 	/**

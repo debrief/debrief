@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.wb.swt.ResourceManager;
 
 public class MultiPathUI extends Composite
 {
@@ -87,9 +88,10 @@ public class MultiPathUI extends Composite
 		gd_cmpButton.widthHint = 60;
 		cmpButton.setLayoutData(gd_cmpButton);
 
-		_btnMagic = new Button(cmpButton, SWT.NONE);
-		_btnMagic.setBounds(0, 0, 60, 30);
-		_btnMagic.setText("Magic!");
+		_btnMagic = new Button(cmpButton, SWT.FLAT);
+		_btnMagic.setToolTipText("Calculate optimal target depth");
+		_btnMagic.setImage(ResourceManager.getPluginImage("org.mwc.debrief.multipath2", "icons/magic_hat.png"));
+		_btnMagic.setBounds(0, 0, 40, 40);
 
 		chartHolder = new Composite(this, SWT.EMBEDDED);
 		chartHolder

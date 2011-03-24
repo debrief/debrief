@@ -58,16 +58,22 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 		{
 			CorePlugin.logError(Status.ERROR,
 					"ranges file number formatting problem", e);
+			_ranges  = null;
 		}
 		catch (IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "ranges file loading problem", e);
+			_ranges  = null;
 		}
 		catch (DataFormatException e)
 		{
 			CorePlugin.logError(Status.ERROR, "ranges file data formatting problem",
 					e);
+			_ranges  = null;
 		}
+		
+		if(_ranges != null)
+			updateCalc(100);
 	}
 
 	protected TimeSeries getCalculatedProfile(int val)

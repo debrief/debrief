@@ -495,27 +495,27 @@ public class MultiPathPresenter
 
 		// initial estimates
 		double[] start =
-		{ 31 };
+		{ 60 };
 
 		// initial step sizes
 		double[] step =
-		{ 5 };
+		{ 20 };
 
 		// convergence tolerance
-		double ftol = 1e-4;
+		double ftol = 1e-5;
 
 		min.addConstraint(0, -1, 0d);
-		min.addConstraint(0, 1, 300);
+		min.addConstraint(0, 1, 500);
 
 		// Nelder and Mead minimisation procedure
-		min.nelderMead(funct, start, step, ftol, 500);
+		min.nelderMead(funct, start, step, ftol, 5000);
 
 		// get the results out
 		double[] param = min.getParamValues();
 
 		double depth = param[0];
-
-		System.out.println("* depth = " + depth + "**");
+		
+		CorePlugin.logError(Status.INFO, "Optimised multipath depth is " + depth, null);
 
 		// fire in the minimum
 		updateCalc((int) depth);

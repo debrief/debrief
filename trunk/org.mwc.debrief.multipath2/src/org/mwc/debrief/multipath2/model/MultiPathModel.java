@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.Status;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.multipath2.model.TimeDeltas.Observation;
 
 import flanagan.math.Minimisation;
@@ -141,8 +144,6 @@ public class MultiPathModel
 			}
 
 			// done
-			System.out.println("returned " + runningError + " from:" + param[0]);
-
 			return runningError;
 		}
 	}
@@ -189,15 +190,18 @@ public class MultiPathModel
 
 			for (int i = 0; i < lenA; i++)
 			{
-				double valA = _measuredTimes.getDataItem(i).getValue().doubleValue();
-				double valB = calcTimes.getDataItem(i).getValue().doubleValue();
+				TimeSeriesDataItem measObs = _measuredTimes.getDataItem(i);
+				TimeSeriesDataItem calcObs = calcTimes.getDataItem(i);
+				double valA = measObs.getValue().doubleValue();
+				double valB = calcObs.getValue().doubleValue();
 				double thisError = Math.pow(valB - valA, 2);
 				runningError += thisError;
 			}
 
+			// log the calculation
+			CorePlugin.logError(Status.INFO,"error:" + (int) (runningError * 10000000d) +  " for " +  param[0], null);
+			
 			// done
-			System.out.println("returned " + runningError + " from:" + param[0]);
-
 			return runningError;
 		}
 	}
