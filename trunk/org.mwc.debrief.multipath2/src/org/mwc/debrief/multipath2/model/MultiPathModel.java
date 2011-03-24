@@ -12,10 +12,6 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.multipath2.model.TimeDeltas.Observation;
 
-import flanagan.math.Minimisation;
-import flanagan.math.MinimisationFunction;
-import flanagan.math.MinimizationFunction;
-
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -25,6 +21,8 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import flanagan.math.Minimisation;
+import flanagan.math.MinimisationFunction;
 
 public class MultiPathModel
 {
@@ -381,35 +379,17 @@ public class MultiPathModel
 		public static class MyFunc implements MinimisationFunction
 		{
 
-			private WatchableList _primary;
-			private WatchableList _secondary;
-			private SVP _svp;
-			private TimeDeltas _times;
-			private MultiPathModel _model;
-			private TimeSeries _measuredTimes;
 
 			public MyFunc(WatchableList primary, WatchableList secondary, SVP svp,
 					TimeDeltas times)
 			{
-				_primary = primary;
-				_secondary = secondary;
-				_svp = svp;
-				_times = times;
 
-				// sort out the measured times
-				_model = new MultiPathModel();
-				_measuredTimes = _model.getMeasuredProfileFor(times);
 			}
 
 			@Override
 			public double function(double[] param)
 			{
-				// ok, sort out the calculated times
-				// TimeSeries calcTimes = _model.getCalculatedProfileFor(_primary,
-				// _secondary, _svp, _times, param[0]);
-
 				// now the error function
-
 				double res = Math.abs(100d - param[0]);
 
 				// done
@@ -470,9 +450,6 @@ public class MultiPathModel
 
 			// Nelder and Mead minimisation procedure
 			min.nelderMead(funct, start, step, ftol, 100);
-
-			// get the minimum value
-			double minimum = min.getMinimum();
 
 			// get values of y and z at minimum
 			double[] param = min.getParamValues();
