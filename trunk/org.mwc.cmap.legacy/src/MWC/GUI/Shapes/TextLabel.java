@@ -296,8 +296,7 @@ public class TextLabel extends PlainShape implements Editable
 	{
 		_theString = theString;
 
-		// clear our string width cached value
-		_myWidth = UNKNOWN_WIDTH;
+		resetWidth();
 	}
 
 	public String getString()
@@ -313,6 +312,14 @@ public class TextLabel extends PlainShape implements Editable
 	public void setFont(Font theFont)
 	{
 		_theFont = theFont;
+
+		resetWidth();
+	}
+
+	private void resetWidth()
+	{
+		// ok, reset the width
+		_myWidth = UNKNOWN_WIDTH;
 	}
 
 	private static int getNumberOfLinesIn(String baseLine)
@@ -370,7 +377,8 @@ public class TextLabel extends PlainShape implements Editable
 	 * @param theStr
 	 * @param theFont
 	 */
-	private void paintMultiLine(CanvasType dest, String theStr, Font theFont, Point thePoint)
+	private void paintMultiLine(CanvasType dest, String theStr, Font theFont,
+			Point thePoint)
 	{
 		int _numLines = 0;
 		Vector<String> _subStrings = new Vector<String>();
@@ -384,18 +392,18 @@ public class TextLabel extends PlainShape implements Editable
 		_numLines = t.countTokens();
 		for (int i = 0; i < _numLines; i++)
 		{
-	//		_subStrings.add(t.nextToken());
-//	Note: we used to do a 'trim' of the text to ditch any 
-//        stray chars. We don't do it now, so users can use padding spaces	
-// Note: and we've reinstated it
+			// _subStrings.add(t.nextToken());
+			// Note: we used to do a 'trim' of the text to ditch any
+			// stray chars. We don't do it now, so users can use padding spaces
+			// Note: and we've reinstated it
 			_subStrings.add(t.nextToken().trim());
 		}
-		
+
 		int lineHeight = dest.getStringHeight(getFont());
 
 		// SWT - increase the gap between the lines
 		// add 10% line spacing
-		if(_numLines > 1)
+		if (_numLines > 1)
 			lineHeight = (int) (lineHeight * 1.3d);
 
 		int ypos = thePoint.y;
@@ -419,7 +427,7 @@ public class TextLabel extends PlainShape implements Editable
 					// Calculate the width of this portion of the string
 					// and use it to figure out the left-right centering.
 					int lineWidth = dest.getStringWidth(getFont(), subString);
-//					System.out.println("wid of|" + subString + "| is:" + lineWidth);
+					// System.out.println("wid of|" + subString + "| is:" + lineWidth);
 
 					xpos = thePoint.x;// - (lineWidth) / 2;
 					xpos += (_myWidth - lineWidth) / 2;
@@ -432,7 +440,7 @@ public class TextLabel extends PlainShape implements Editable
 			// single line of text
 			{
 				xpos = thePoint.x;// - (lineWidth) / 2;
-				
+
 				// move to the right, by this 1/2 of the distance between
 				// this widht and the longest width
 
@@ -467,7 +475,7 @@ public class TextLabel extends PlainShape implements Editable
 
 			if (_numLines > 1)
 			{
-					for (int i = 0; i < _numLines; i++)
+				for (int i = 0; i < _numLines; i++)
 				{
 					String subString = (String) _subStrings.elementAt(i);
 
@@ -500,9 +508,9 @@ public class TextLabel extends PlainShape implements Editable
 		if (!getVisible())
 			return;
 
-		if(getString().trim().length()==0)
+		if (getString().trim().length() == 0)
 			return;
-		
+
 		// get an updated centre, if we want to!
 		if (_theShape != null)
 		{
@@ -520,12 +528,12 @@ public class TextLabel extends PlainShape implements Editable
 		int lineHeight = dest.getStringHeight(getFont());
 		int numLines = getNumberOfLinesIn(getString());
 		int blockHeight = lineHeight * numLines;
-		blockHeight += (int) (((double)lineHeight * 0.2d ) * (numLines - 1));
+		blockHeight += (int) (((double) lineHeight * 0.2d) * (numLines - 1));
 		String longestLine = getLongestLineIn(getString().trim());
 
 		// note, we cache the string width, to reduce computation
-		// if(_myWidth == UNKNOWN_WIDTH)
-		_myWidth = dest.getStringWidth(getFont(), longestLine);
+		if (_myWidth == UNKNOWN_WIDTH)
+			_myWidth = dest.getStringWidth(getFont(), longestLine);
 
 		Point offset = getOffset(_myWidth, lineHeight, blockHeight);
 
@@ -538,7 +546,8 @@ public class TextLabel extends PlainShape implements Editable
 		}
 		else
 		{
-			MWC.Utilities.Errors.Trace.trace("Problem with painting label - font not found.");
+			MWC.Utilities.Errors.Trace
+					.trace("Problem with painting label - font not found.");
 		}
 
 	}
@@ -566,7 +575,9 @@ public class TextLabel extends PlainShape implements Editable
 	{
 		Point res = null;
 
-//		System.out.println("for text:" + getString() +  " width is:" + wid + " line ht is:" + lineHeight + " block ht is:" + blockHeight + " offset ht:" + _theFixedOffset.height);
+		// System.out.println("for text:" + getString() + " width is:" + wid +
+		// " line ht is:" + lineHeight + " block ht is:" + blockHeight +
+		// " offset ht:" + _theFixedOffset.height);
 
 		int verticalBalance = lineHeight - 3;
 		int horizBalance = 2;
@@ -575,18 +586,18 @@ public class TextLabel extends PlainShape implements Editable
 		switch (_theRelativeLocation)
 		{
 		case LocationPropertyEditor.LEFT:
-			res = new Point(-(wid + horizBalance), -(blockHeight/2));
-//			res = new Point(-(wid + horizBalance), verticalBalance);
-			res.translate(-_theFixedOffset.width / 2,   verticalBalance);
+			res = new Point(-(wid + horizBalance), -(blockHeight / 2));
+			// res = new Point(-(wid + horizBalance), verticalBalance);
+			res.translate(-_theFixedOffset.width / 2, verticalBalance);
 			break;
 		case LocationPropertyEditor.RIGHT:
-//			res = new Point(wid/2 + horizBalance, -(blockHeight / 2));
+			// res = new Point(wid/2 + horizBalance, -(blockHeight / 2));
 			res = new Point(horizBalance, -(blockHeight / 2));
-			res.translate(_theFixedOffset.width / 2,  verticalBalance);
+			res.translate(_theFixedOffset.width / 2, verticalBalance);
 			break;
 		case LocationPropertyEditor.TOP:
 			res = new Point(-wid / 2 - horizBalance / 2, -(blockHeight - lineHeight));
-			res.translate(0,  -_theFixedOffset.height - verticalBalance );
+			res.translate(0, -_theFixedOffset.height - verticalBalance);
 			break;
 		case LocationPropertyEditor.BOTTOM:
 			res = new Point(-wid / 2 - horizBalance / 2, 2 * lineHeight);
@@ -594,14 +605,14 @@ public class TextLabel extends PlainShape implements Editable
 			break;
 		case LocationPropertyEditor.CENTRE:
 			res = new Point(-wid / 2, -(blockHeight / 2));
-//			res = new Point(-wid / 2, -(blockHeight / 2) - lineHeight);
-//			res = new Point(0, -(blockHeight / 2) - lineHeight);
+			// res = new Point(-wid / 2, -(blockHeight / 2) - lineHeight);
+			// res = new Point(0, -(blockHeight / 2) - lineHeight);
 			res.translate(0, _theFixedOffset.height + verticalBalance);
 			break;
 		}
 
-//		System.out.println("res is:" + res);
-		
+		// System.out.println("res is:" + res);
+
 		return res;
 	}
 

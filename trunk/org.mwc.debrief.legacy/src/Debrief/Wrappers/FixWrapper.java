@@ -378,7 +378,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		// declare a duff track
 		_trackWrapper = null;
 		// start us off with a nice font
-		_theFont = _plainFont;
+		setFont(_plainFont);
 		// whether to show symbol
 		_showSymbol = false;
 
@@ -411,7 +411,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_myEditor = null;
 		_myArea = null;
 		_theLabel = null;
-		_theFont = null;
+		setFont(null);
 		_showLabel = null;
 
 	}
@@ -630,7 +630,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		if (getLabelShowing())
 		{
 			_theLabel.setColor(theCol);
-			_theLabel.setFont(getFont());
 			_theLabel.paint(dest);
 		}
 	}
@@ -653,6 +652,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	public final void setFont(final Font theFont)
 	{
 		_theFont = theFont;
+		
+		_theLabel.setFont(getFont());
 	}
 
 	@Override

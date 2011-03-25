@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Thu Mar 10 16:46:19 GMT 2011" Name="Debrief Plot" PlotId="1285669575458">
-<details Text="Saved with Debrief version dated Thu Mar 10 16:45:17 GMT 2011"/>
+<plot Created="Fri Mar 25 10:47:44 GMT 2011" Name="Debrief Plot" PlotId="1285669575458">
+<details Text="Saved with Debrief version dated Fri Mar 11 12:49:58 GMT 2011"/>
 <session>
 <layers>
 <layer LineThickness="0" Name="Chart Features" Visible="false">
-<vpf_database Visible="false"/>
+<vpf_database Visible="false">
+<vpf_library Name="vmaplv0" Visible="false"/>
+</vpf_database>
 <Grid4W FillGrid="false" Name="4W Grid" Orientation="0.000" PlotLabels="true" PlotLines="true" US_Standard="true" Visible="false" xDelta="2.0000000" xMax="G" xMin="A" yDelta="2.0000000" yMax="6" yMin="1">
 <colour Value="WHITE"/>
 <FillColor CustomBlue="161" CustomGreen="161" CustomRed="161" Value="custom"/>
@@ -2442,7 +2444,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="false">
+<track InterpolatePoints="false" LineThickness="2" LinkPositions="true" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="Submarine" Visible="true">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Arial" Italic="false" Size="12"/>
 <TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
@@ -4889,15 +4891,6 @@
 <shortLocation Depth="0.000" Lat="12.1722102" Long="-11.6331319"/>
 </br>
 </line>
-<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Visible="true">
-<colour Value="YELLOW"/>
-<fontcolour Value="YELLOW"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
-</centre>
-<Radius Units="yds" Value="4000.0000000"/>
-</circle>
 <rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
 <colour Value="GREEN"/>
 <fontcolour Value="GREEN"/>
@@ -4916,6 +4909,15 @@
 <shortLocation Depth="0.000" Lat="12.2023179" Long="-11.7632050"/>
 </centre>
 </textlabel>
+<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Visible="true">
+<colour Value="YELLOW"/>
+<fontcolour Value="YELLOW"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
+</centre>
+<Radius Units="yds" Value="4000.0000000"/>
+</circle>
 </layer>
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET" Type="Narratives"/>
@@ -4942,10 +4944,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="12.1781605" Long="-11.7640667"/>
+<shortLocation Depth="30.000" Lat="12.2023179" Long="-11.8660803"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="12.1772321" Long="-11.7634435"/>
+<shortLocation Depth="0.000" Lat="11.9470944" Long="-11.5797821"/>
 </br>
 </projection>
 <gui>
@@ -4958,11 +4960,11 @@
 <property Name="DateFormat" Value="yy/MM/dd HH:mm"/>
 <property Name="ShadeArcs" Value="true"/>
 <property Name="Radius" Value="3500.000"/>
-<property Name="Highlighter" Value="Symbol Highlight"/>
+<property Name="Highlighter" Value="Default Highlight"/>
 <property Name="BLUE" Value="64"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="951212 051812"/>
+<property Name="CurrentTime" Value="951212 065053"/>
 <property Name="NumRings" Value="1"/>
 <property Name="Toolbox_Start_Time" Value="951212 050000"/>
 <property Name="PointSize" Value="5"/>
