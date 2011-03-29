@@ -50,7 +50,7 @@ public class MultiPathUI extends Composite
 		lblNewLabel.setText("SVP:");
 
 		_lblSVP = new Label(_cmpSVP, SWT.NONE);
-		_lblSVP.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.BOLD));
+		_lblSVP.setFont(SWTResourceManager.getFont("Lucida Grande", 9, SWT.BOLD));
 		_lblSVP.setBounds(0, 15, 90, 14);
 		_lblSVP.setText("[pending]");
 
@@ -62,7 +62,7 @@ public class MultiPathUI extends Composite
 		lblIntervals.setBounds(0, 0, 59, 14);
 
 		_lblIntervals = new Label(_cmpIntervals, SWT.NONE);
-		_lblIntervals.setFont(SWTResourceManager.getFont("Lucida Grande", 11,
+		_lblIntervals.setFont(SWTResourceManager.getFont("Lucida Grande", 9,
 				SWT.BOLD));
 		_lblIntervals.setText("[pending]");
 		_lblIntervals.setBounds(0, 15, 90, 14);
@@ -115,7 +115,7 @@ public class MultiPathUI extends Composite
 
 	public Control getRangeHolder()
 	{
-		return _slider;
+		return _sliderVal;
 	}
 
 	public void setSVPName(String text)
@@ -157,7 +157,7 @@ public class MultiPathUI extends Composite
 	@Override
 	public void setEnabled(boolean enabled)
 	{
-		super.setEnabled(enabled);
+		_slider.setEnabled(enabled);
 
 		if (!enabled)
 		{
