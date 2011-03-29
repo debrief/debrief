@@ -12,12 +12,6 @@
 		<startup class="org.mwc.asset.core.ASSETPlugin" />
 	</extension>
 	<extension id="CMAP" point="org.eclipse.core.runtime.products">
-		<product application="org.eclipse.ui.ide.workbench" name="CMAP">
-			<property name="aboutImage" value="icons/WorkBenchLogo.gif" />
-			<property name="aboutText"
-				value="Welcome to ASSET NG, from the Maritime Warfare Centre" />
-			<property name="windowImages" value="icons/security_agent.png" />
-		</product>
 	</extension>
 	<extension id="ASSET" point="org.eclipse.core.runtime.products">
 		<product application="org.eclipse.ui.ide.workbench" name="AssetNG">

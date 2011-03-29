@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.24">
+      version="1.0.25">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -15,6 +15,10 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <includes
+         id="org.mwc.asset.help.feature"
+         version="0.0.0"/>
 
    <plugin
          id="org.mwc.asset.core"
@@ -320,6 +324,20 @@
 
    <plugin
          id="org.eclipse.wst.server.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.ui.cheatsheets"
          download-size="0"
          install-size="0"
          version="0.0.0"
