@@ -11,7 +11,7 @@
 	<property name="repoDest" value="${deployDest}/Repository" />
 	<property name="osxExe" value="${deployDest}/DebriefNG/DebriefNG.app/Contents/MacOS/DebriefNG" />
 
-	<target name="build" depends="clean">
+	<target name="build" depends="clean, compileDocbook">
 
 		<property name="builder" value="../deploy/${archivePrefix}" />
 
