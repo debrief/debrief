@@ -395,7 +395,7 @@ public class FlatFileExporter
 	 * @throws ParseException
 	 *           if the string doesn't match
 	 */
-	public static Date dateFrom(String dateStr) throws ParseException
+	private static Date dateFrom(String dateStr) throws ParseException
 	{
 		DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
 		df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -418,7 +418,7 @@ public class FlatFileExporter
 		return df.format(val);
 	}
 
-	public String testExport() throws ParseException
+	private String testExport() throws ParseException
 	{
 		final String StartTime = "04:45:00	20/04/2009";
 		final Date startDate = dateFrom(StartTime);
@@ -444,7 +444,7 @@ public class FlatFileExporter
 	 * @param Y_ORIGIN_YDS
 	 * @return
 	 */
-	public String getHeader(final String OWNSHIP, String OS_TRACK_NAME,
+	private String getHeader(final String OWNSHIP, String OS_TRACK_NAME,
 			String SENSOR_NAME, String TGT_NAME, Date startDate, Date endDate,
 			int NUM_RECORDS, int X_ORIGIN_YDS, int Y_ORIGIN_YDS)
 	{
@@ -466,7 +466,7 @@ public class FlatFileExporter
 	 * 
 	 * @return 5 lines of test data - to match supplied sample
 	 */
-	public String getTestBody()
+	private String getTestBody()
 	{
 		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999,
 				-999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6,
