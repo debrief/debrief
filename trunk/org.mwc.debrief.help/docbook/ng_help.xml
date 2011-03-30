@@ -4564,10 +4564,10 @@ Platform C,-551</screen></para>
                     <sect3>
                         <title>Optimisation Algorithm</title>
                         <para>Debrief is able to use Dr Michael Thomas Flanagan's (at <ulink
-                                url="www.ee.ucl.ac.uk/~mflanaga">www.ee.ucl.ac.uk/~mflanaga</ulink>)
-                            Nelder Mead simplex optimisation algorithm to determine the optimum
-                            target depth to minimise the least-squares error between the calculated
-                            and measured curves.</para>
+                                url="www.ee.ucl.ac.uk/~mflanaga">www.ee.ucl.ac.uk/~mflanaga</ulink>,
+                            [note: external link]) Nelder Mead simplex optimisation algorithm to
+                            determine the optimum target depth to minimise the least-squares error
+                            between the calculated and measured curves.</para>
                     </sect3>
                     <sect3 id="multi_ui">
                         <title>User interface</title>
@@ -4606,10 +4606,24 @@ Platform C,-551</screen></para>
                                 </mediaobject>
                             </screenshot></para>
                         <para>An alternative to working out the estimated target depth by
-                            eye/experimentation is to click on the magic top-hat icon.   A <ulink
+                            eye/experimentation is to click on the magic top-hat icon. A <ulink
                                 url="http://www.ee.ucl.ac.uk/~mflanaga/java/Minimisation.html"
-                                >Nelder and Mead simplex optimisation algorithm</ulink> will now run
-                            - with the slider set to the result on completion.</para>
+                                >Nelder and Mead simplex optimisation algorithm</ulink> [note:
+                            external link] will now run - with the slider set to the result on
+                            completion.  Should you be interested in the performance of this
+                            iterative optimisation algorithm, a summary of each step is placed as an
+                            information message in the error log (viewable by selecting
+                                <guimenu>Window</guimenu>/<guimenu>Show
+                                View</guimenu>/<guimenuitem>Error Log</guimenuitem>). The log will
+                            show the 'score' for each target depth trialled - normally only around
+                            10-20 depths are necessary to reach an optimum.  </para>
+                        <para>Note, during developement, on occasion the optimisation algorithm
+                            failed to produce a realistic target depth. On each occasion this was a
+                            symptom of there not being a valid result in the available target range
+                            (0 to 1000m) - which itself was symptomatic of invalid data files:
+                            dropping the data-files into the wrong 'slot' or mistakenly using units
+                            different to those specified in the <link linkend="multi_data_delays"
+                                >reference</link>.</para>
                     </sect3>
                 </sect2>
             </sect1>
