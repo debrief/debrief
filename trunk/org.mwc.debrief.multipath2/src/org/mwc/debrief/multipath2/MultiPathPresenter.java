@@ -13,6 +13,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.multipath2.MultiPathPresenter.Display.FileHandler;
 import org.mwc.debrief.multipath2.MultiPathPresenter.Display.ValueHandler;
 import org.mwc.debrief.multipath2.model.MultiPathModel;
+import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 import org.mwc.debrief.multipath2.model.SVP;
 import org.mwc.debrief.multipath2.model.TimeDeltas;
@@ -171,7 +172,7 @@ public class MultiPathPresenter
 	protected String _intervalPath;
 	protected int _curDepth = DEFAULT_DEPTH;
 	protected String _svpPath;
-	private ValueHandler _dragHandler;
+	protected ValueHandler _dragHandler;
 
 	/**
 	 * initialise presenter
@@ -303,7 +304,16 @@ public class MultiPathPresenter
 		// cool, valid data
 		_display.setSliderText("Depth:" + val + "m");
 
-		TimeSeries calculated = getCalculatedProfile(val);
+		TimeSeries calculated = null;
+		try
+		{
+			calculated = getCalculatedProfile(val);
+		}
+		catch (CalculationException e)
+		{
+			String trouble = e.getMessage();
+			_display.setSliderText(trouble);
+		}
 
 		if (calculated != null)
 		{

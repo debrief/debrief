@@ -42,14 +42,52 @@ public class MultiPathPresenterTest extends MultiPathPresenter
 			public void newFile(String path)
 			{
 				loadRanges(path);
+				
+				checkEnablement();
 			}
 		});
+	}
+
+	@Override
+	protected void checkEnablement()
+	{
+		// do the parent bit first
+		super.checkEnablement();
+		
+		// check for the range stuff
+		if (_rangePath == null)
+		{
+			// disable it
+			_display.setEnabled(false);
+
+			// show error
+			_display.setSliderText("Waiting for ranges");
+		}
+		else
+		{
+			// just check the init is complete
+			if ((_svp != null) && (_times != null))
+			{
+
+				// enable it
+				_display.setEnabled(true);
+
+				// initialise the slider
+				_display.setSliderVal(_curDepth);
+
+				// and give it a sensible start value
+				_dragHandler.newValue(_curDepth);
+			}
+
+		}
+
 	}
 
 	protected void loadRanges(String path)
 	{
 		try
 		{
+			_rangePath = path;
 			_ranges = new RangeValues();
 
 			_ranges.load(path);
