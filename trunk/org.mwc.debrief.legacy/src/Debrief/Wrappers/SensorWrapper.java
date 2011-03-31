@@ -192,7 +192,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * straight line fwd/backward of the attack datum, or whether it's a dragged
 	 * sensor that follows the track of it's host platform (like a towed array).
 	 */
-	private Boolean _wormInHole = Boolean.FALSE;
+	private boolean _wormInHole = true;
 
 	private HiResDate _lastDataFrequency = new HiResDate(0,
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
