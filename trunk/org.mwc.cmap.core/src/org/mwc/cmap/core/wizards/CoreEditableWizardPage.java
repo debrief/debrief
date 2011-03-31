@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
