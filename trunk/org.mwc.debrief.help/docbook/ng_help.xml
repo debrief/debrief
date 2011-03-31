@@ -4184,7 +4184,14 @@ and so on....</programlisting></para>
                         backwards - so towed array data would be -ve). See the next section for more
                         detail on the support for a shared library of array lengths. The location of
                         the start of the sensor contact bearing line is calculated using the current
-                        value of course for the host platform and the sensor offset value.</para>
+                        value of course for the host platform and the sensor offset value.<note>
+                            <para>Sensor data is typically added to a plot by dragging/dropping it
+                                from the <guimenu>Navigator</guimenu> view. If the dragged in
+                                datafile only contains cuts from a single sensor a dialog pops up
+                                give you chance to override the sensor name and color.  If the file
+                                contains data from more than one sensor then they just quietly slip
+                                in.</para>
+                        </note></para>
                 </sect2>
                 <sect2 id="SectWormInHole">
                     <title>Worm in the hole</title>
