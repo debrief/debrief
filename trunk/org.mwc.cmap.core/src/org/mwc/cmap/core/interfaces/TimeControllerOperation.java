@@ -64,10 +64,10 @@ public abstract class TimeControllerOperation
 	 *          what we put on the menu and the dialog
 	 */
 	protected TimeControllerOperation(String operationName,
-			boolean requireSensorData, boolean singleSensor, boolean  requiresSensorData)
+			boolean requireSensor, boolean singleSensor, boolean  requiresSensorData)
 	{
 		_operationName = operationName;
-		_requireSensor = requireSensorData;
+		_requireSensor = requireSensor;
 		_singleSensor = singleSensor;
 		_requiresSensorData = requiresSensorData;
 	}
@@ -193,7 +193,7 @@ public abstract class TimeControllerOperation
 
 			if(theCuts.size() == 0)
 			{
-				showMessage("Sorry, there must be at least some visible sensor data data");
+				showMessage("Sorry, there must be some visible sensor data in the specified time period");
 				return;
 			}
 		}
