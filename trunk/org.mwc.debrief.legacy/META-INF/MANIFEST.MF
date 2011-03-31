@@ -105,6 +105,7 @@ Export-Package:
    MWC.GUI,
    MWC.GUI.Tools",
  Debrief.ReaderWriter.FlatFile,
+ Debrief.ReaderWriter.FlatFile.DopplerShift,
  Debrief.ReaderWriter.PCArgos;
   uses:="MWC.Utilities.ReaderWriter,
    javax.swing,

@@ -13,7 +13,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
-import org.mwc.debrief.core.ContextOperations.ExportDopplerShift;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateNewSensor;
 import org.mwc.debrief.core.ContextOperations.GenerateNewSensorContact;
@@ -177,7 +176,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		RightClickSupport.addRightClickGenerator(new GenerateSensorRangePlot());
 		RightClickSupport.addRightClickGenerator(new GenerateNewSensor());
 		RightClickSupport.addRightClickGenerator(new GenerateNewSensorContact());
-		RightClickSupport.addRightClickGenerator(new ExportDopplerShift());
 
 
 		// and the Replay importer/exporter (used to export items from the
