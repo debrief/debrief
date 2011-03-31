@@ -10,6 +10,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -22,25 +23,26 @@ import org.mwc.cmap.core.CorePlugin;
 public class DirectorySelectorWizardPage extends WizardPage
 {
 
-
 	protected String _filePath;
 
 	private DirectoryFieldEditor _fileFieldEditor;
 
+	private String _helpContext;
+
 	public static final String FILE_SUFFIX = "txt";
 
-	
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public DirectorySelectorWizardPage(String PAGE_ID, String title, String description,
-			String pluginName, String iconPath)
+	public DirectorySelectorWizardPage(String PAGE_ID, String title,
+			String description, String pluginName, String iconPath, String helpContext)
 	{
 		super(PAGE_ID);
 		setTitle(title);
 		setDescription(description);
+		_helpContext = helpContext;
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				pluginName, iconPath));
 	}
@@ -50,6 +52,12 @@ public class DirectorySelectorWizardPage extends WizardPage
 	 */
 	public void createControl(Composite parent)
 	{
+
+		if (_helpContext != null)
+		{
+			// declare our context sensitive help
+			CorePlugin.declareContextHelp(parent, _helpContext);
+		}
 
 		final Composite container = new Composite(parent, SWT.NULL);
 		final GridLayout layout = new GridLayout();
@@ -109,10 +117,10 @@ public class DirectorySelectorWizardPage extends WizardPage
 			updateStatus("Target directory must be specified");
 			return;
 		}
-		
+
 		// just check it's a directory, not a file
 		File testFile = new File(targetDir);
-		if(!testFile.isDirectory())
+		if (!testFile.isDirectory())
 		{
 			updateStatus("Target must be a directory, not a file");
 			return;
