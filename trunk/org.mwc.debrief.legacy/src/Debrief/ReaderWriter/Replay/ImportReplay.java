@@ -331,6 +331,8 @@ public class ImportReplay extends PlainImporterBase
 	private final LayersFormatter[] _myFormatters =
 	{ new FormatTracks() };
 
+	private Vector<SensorWrapper> _sensorNames;
+
 	/**
 	 * the property name we use for importing tracks (DR/ATG)
 	 * 
@@ -638,6 +640,9 @@ public class ImportReplay extends PlainImporterBase
 						{
 							// then create it
 							thisSensor = new SensorWrapper(sensorName);
+							
+							// remember it
+							_sensorNames.add(thisSensor);
 
 							// set it's colour to the colour of the first data point
 							thisSensor.setColor(sw.getColor());
@@ -1001,6 +1006,16 @@ public class ImportReplay extends PlainImporterBase
 		}
 
 		return res;
+	}
+
+	public Vector<SensorWrapper> getNewlyLoadedSensors()
+	{
+		return _sensorNames;
+	}
+	
+	public void clearSensorList()
+	{
+		_sensorNames = new Vector<SensorWrapper>();
 	}
 
 	static public int replayLineStyleFor(String theSym)

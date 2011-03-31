@@ -119,6 +119,10 @@ public interface IPlotLoader extends INamedItem
 			init(name, icon, fileTypes);
 		}
 		
+		public BaseLoader getLoader()
+		{
+			return _myLoader;
+		}
 
 		public void loadFile(PlotEditor thePlot, InputStream inputStream, String fileName)
 		{

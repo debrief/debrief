@@ -43,6 +43,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
@@ -64,17 +65,24 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
+import org.mwc.cmap.core.wizards.EnterBooleanPage;
+import org.mwc.cmap.core.wizards.EnterStringPage;
+import org.mwc.cmap.core.wizards.SelectColorPage;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
+import org.mwc.debrief.core.interfaces.IPlotLoader.BaseLoader;
+import org.mwc.debrief.core.interfaces.IPlotLoader.DeferredPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
+import org.mwc.debrief.core.loaders.ReplayLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 import org.mwc.debrief.core.operations.ExportDopplerShift;
 import org.mwc.debrief.core.operations.ExportTimeDataToClipboard;
@@ -86,6 +94,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
@@ -424,6 +433,28 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// operation, we
 					// rely on it calling us back (loadingComplete)
 					thisLoader.loadFile(this, is, fileName);
+
+					// special handling - popup a dialog to allow sensor name/color to be
+					// set if there's just one sensor
+					if (thisLoader instanceof DeferredPlotLoader)
+					{
+						DeferredPlotLoader ld = (DeferredPlotLoader) thisLoader;
+						BaseLoader loader = ld.getLoader();
+						if (loader != null)
+						{
+							if (loader instanceof ReplayLoader)
+							{
+								ReplayLoader rl = (ReplayLoader) loader;
+								ImportReplay ir = rl.getReplayLoader();
+								Vector<SensorWrapper> sensors = ir.getNewlyLoadedSensors();
+								if (sensors.size() == 1)
+								{
+									SensorWrapper thisS = sensors.firstElement();
+									nameThisSensor(thisS);
+								}
+							}
+						}
+					}
 				}
 			}
 			catch (RuntimeException e)
@@ -431,6 +462,40 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				CorePlugin.logError(Status.ERROR, "Problem loading data file:"
 						+ fileName, e);
 			}
+		}
+	}
+
+	private void nameThisSensor(SensorWrapper thisS)
+	{
+		// create the wizard to color/name this
+		SimplePageListWizard wizard = new SimplePageListWizard();
+		EnterStringPage getName = new EnterStringPage(null, thisS.getName(),
+				"Import Sensor data",
+				"Please provide the name for this sensor",
+				"a one-word title for this block of sensor contacts (e.g. S2046)",
+				null, null);
+		SelectColorPage getColor = new SelectColorPage(null, thisS.getColor(),
+				"Import Sensor data", "Now format the new sensor",
+				"The color for this new sensor", null, null);
+		EnterBooleanPage getVis = new EnterBooleanPage(null, false,
+				"Import Sensor data",
+				"Please specify if this sensor should be shown once loaded",
+				"yes/no",
+				null, null);
+		wizard.addWizard(getName);
+		wizard.addWizard(getColor);
+		wizard.addWizard(getVis);
+		WizardDialog dialog = new WizardDialog(Display.getCurrent()
+				.getActiveShell(), wizard);
+		dialog.create();
+		dialog.open();
+		// did it work?
+		if (dialog.getReturnCode() == WizardDialog.OK)
+		{
+			// ok, use the name
+			thisS.setName(getName.getString());
+			thisS.setColor(getColor.getColor());
+			thisS.setVisible(getVis.getBoolean());
 		}
 	}
 
@@ -986,8 +1051,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					tmpOS = null;
 
 					// sort out the file size
-					CorePlugin.logError(Status.INFO, "Saved file size is:"
-							+ tmpFile.length() / 1024 + " Kb", null);
+					CorePlugin.logError(Status.INFO,
+							"Saved file size is:" + tmpFile.length() / 1024 + " Kb", null);
 
 					// 4. Check there's something in the temp file
 					if (tmpFile.exists())
@@ -1204,7 +1269,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// do we have a project?
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProject[] projects = workspace.getRoot().getProjects();
-		if((projects == null) || (projects.length == 0))
+		if ((projects == null) || (projects.length == 0))
 		{
 			String msg = "Debrief plots are stored in 'Projects'";
 			msg += "\nBut you do not yet have one defined.";
@@ -1216,26 +1281,25 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					"Save as", null, msg, MessageDialog.WARNING, new String[]
 					{ "Ok" }, 0);
 			md.open();
-			
+
 			// try to open the cheat sheet
 			final String CHEAT_ID = "org.mwc.debrief.help.started.generate_project";
-			
-		   Display.getCurrent().asyncExec(new Runnable()
-			{				
+
+			Display.getCurrent().asyncExec(new Runnable()
+			{
 				public void run()
 				{
-				   OpenCheatSheetAction action = new OpenCheatSheetAction(CHEAT_ID);
-				   action.run();
+					OpenCheatSheetAction action = new OpenCheatSheetAction(CHEAT_ID);
+					action.run();
 				}
 			});
-		   
-		  // ok, drop out - we can't do a save anyway
+
+			// ok, drop out - we can't do a save anyway
 			return;
 		}
-		
-		
+
 		// get the workspace
-		
+
 		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
 		dialog.setTitle("Save Plot As");
 		if (getEditorInput() instanceof FileEditorInput)

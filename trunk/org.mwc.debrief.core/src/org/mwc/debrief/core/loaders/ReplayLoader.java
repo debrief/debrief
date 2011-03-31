@@ -3,31 +3,84 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
-import MWC.Utilities.ReaderWriter.PlainImporterBase;
 
 /**
  * @author ian.mayo
  */
 public class ReplayLoader extends IPlotLoader.BaseLoader
 {
+	
+	/** local copy of our loader - we store it so it can be accessed externally
+	 * 
+	 */
+	private ImportReplay _loader;
 
-	// public void doTheLoad(Layers destination, InputStream source, String
-	// fileName)
-	// {
-	//
-	// }
+	public ImportReplay getReplayLoader()
+	{
+		if(_loader == null)
+			_loader =new Debrief.ReaderWriter.Replay.ImportReplay()
+			{
+				// override the count-lines method. We may only have a project-relative
+				// to the data-file - and the legacy code won't be able to find the file.
+				// we do, however have a stream for the input file - just count the
+				// lines in this.
+				public int countLinesFor(String fName)
+				{
+					int lines = 0;
+					try
+					{
+						// create a file-wrapper to see if we can open the file directly
+						File countFile = new File(fName);
+						if (countFile.exists())
+						{
+							// create ourselves a fresh stream. we create some fresh streams
+							// based on this one which get closed in processing
+							final FileInputStream lineCounterStream = new FileInputStream(fName);
+							lines = super.countLinesInStream(lineCounterStream);
+							lineCounterStream.close();
+							DebriefPlugin.logError(Status.INFO, "Replay loader - counted:"
+									+ lines + " lines", null);
+						}
+					}
+					catch (FileNotFoundException fe)
+					{
+						DebriefPlugin
+								.logError(
+										Status.INFO,
+										"Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.",
+										fe);
+					}
+					catch (IOException e)
+					{
+						DebriefPlugin.logError(Status.ERROR,
+								"Failed to open stream for counting lines:" + fName, null);
+					}
+					return lines;
+				}
+
+			};
+				
+		return _loader;
+	}
 
 	/**
 	 * @param _theFile
@@ -35,50 +88,14 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	 * @param theLayers
 	 * @param is
 	 */
-	void doTheLoad(final String thePath, final String theFileName,
+	private void doTheLoad(final String thePath, final String theFileName,
 			final Layers theLayers, final InputStream is)
 	{
-		final PlainImporterBase importer = new Debrief.ReaderWriter.Replay.ImportReplay()
-		{
-			// override the count-lines method. We may only have a project-relative
-			// to the data-file - and the legacy code won't be able to find the file.
-			// we do, however have a stream for the input file - just count the
-			// lines in this.
-			public int countLinesFor(String fName)
-			{
-				int lines = 0;
-				try
-				{
-					// create a file-wrapper to see if we can open the file directly
-					File countFile = new File(fName);
-					if (countFile.exists())
-					{
-						// create ourselves a fresh stream. we create some fresh streams
-						// based on this one which get closed in processing
-						final FileInputStream lineCounterStream = new FileInputStream(fName);
-						lines = super.countLinesInStream(lineCounterStream);
-						lineCounterStream.close();
-						DebriefPlugin.logError(Status.INFO, "Replay loader - counted:"
-								+ lines + " lines", null);
-					}
-				}
-				catch (FileNotFoundException fe)
-				{
-					DebriefPlugin
-							.logError(
-									Status.INFO,
-									"Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.",
-									fe);
-				}
-				catch (IOException e)
-				{
-					DebriefPlugin.logError(Status.ERROR,
-							"Failed to open stream for counting lines:" + fName, null);
-				}
-				return lines;
-			}
-
-		};
+		final ImportReplay importer = getReplayLoader();
+		
+		// clear the list of sensor names
+		importer.clearSensorList();
+		
 		// and do the import...
 		importer.importThis(thePath, is, theLayers);
 	}
