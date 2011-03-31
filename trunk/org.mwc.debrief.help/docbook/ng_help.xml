@@ -1806,6 +1806,11 @@ and so on....</programlisting></para>
                         position observations as necessary. Sensor data is resampled using the
                             <guilabel>VisibleFrequency</guilabel> property - though note that this
                         does not add or remove points, it merely changes their visibility.</para>
+                    <para>Note: sensor and TUA data have a characteristic where there may be empty
+                        periods when the contact is not held.  It would be wrong to continue
+                        interpolating data points during these periods, so data points are not
+                        generated if there is a gap of more than 3 minutes between data
+                        points.</para>
                 </sect2>
                 <sect2 id="SplitTrackSections">
                     <title>Splitting track sections</title>

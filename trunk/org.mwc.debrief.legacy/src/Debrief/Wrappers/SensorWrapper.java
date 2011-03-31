@@ -1076,6 +1076,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	{
 		SensorContactWrapper _next = (SensorContactWrapper) next;
 		SensorContactWrapper _last = (SensorContactWrapper) last;
+		
 
 		double brg = interp.interp(_last.getBearing(), _next.getBearing());
 		double ambig = 0;
@@ -1084,13 +1085,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			ambig = interp.interp(_last.getAmbiguousBearing(),
 					_next.getAmbiguousBearing());
 		}
+		
 		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
 		// do we have range?
 		WorldDistance theRng = null;
 		if ((_last.getRange() != null) && (_next.getRange() != null))
 		{
 			double rngDegs = interp.interp(
-					_last.getRange().getValueIn(WorldDistance.DEGS), _last.getRange()
+					_last.getRange().getValueIn(WorldDistance.DEGS), _next.getRange()
 							.getValueIn(WorldDistance.DEGS));
 			theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
 		}

@@ -12,6 +12,7 @@
 
 package Debrief.Wrappers;
 
+import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -26,10 +27,17 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 
 abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		implements MWC.GUI.Layer, SnailDrawTacticalContact.HostedList
 {
+
+	/** specify 3 minute delta
+	 * 
+	 */
+	private static final int THRESHOLD = 3 *  60 * 1000;
 
 	/**
 	 * 
@@ -157,9 +165,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		long endTime = this.getEndDTG().getMicros();
 
 		Enumeration<Editable> _cuts = elements();
-		if(!_cuts.hasMoreElements())
-			 return;
-		
+		if (!_cuts.hasMoreElements())
+			return;
+
 		PlottableWrapperWithTimeAndOverrideableColor _last = (PlottableWrapperWithTimeAndOverrideableColor) _cuts
 				.nextElement();
 
@@ -168,9 +176,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			return;
 
 		// well, we found our first element - see if there's another one
-		if(!_cuts.hasMoreElements())
-			 return;
-		
+		if (!_cuts.hasMoreElements())
+			return;
+
 		PlottableWrapperWithTimeAndOverrideableColor _next = (PlottableWrapperWithTimeAndOverrideableColor) _cuts
 				.nextElement();
 
@@ -185,6 +193,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			{
 				// hey, this really shouldn't have happened, prob ignore it
 			}
+
 
 			// loop through to find this item. are we looking before the first item?
 			while ((_next != null) && (_next.getDTG().getMicros() < tNow))
@@ -203,18 +212,23 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			}
 			else
 			{
+				
 				// right, we appear to be either side of the relevant item
 				// interpolate the values
 				// go for the freq first
 				LinearInterpolator interp = new LinearInterpolator((Watchable) _last,
 						(Watchable) _next, tNow);
+				
+				long timeDelta = _next.getDTG().getDate().getTime() - _last.getDTG().getDate().getTime();
+				if(timeDelta < THRESHOLD)
+				{
+					// create a new data value
+					PlottableWrapperWithTimeAndOverrideableColor newItem = createItem(
+							_last, _next, interp, tNow);
 
-				// create a new data value
-				PlottableWrapperWithTimeAndOverrideableColor newItem = createItem(
-						_last, _next, interp, tNow);
-
-				// and store it.
-				newItems.add(newItem);
+					// and store it.
+					newItems.add(newItem);
+				}
 			}
 		}
 
@@ -808,8 +822,44 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		}
 	}
 
-	// //////////////////////////////////////////////////////////////////////////
-	// embedded class, used for editing the projection
-	// //////////////////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		public void testDecimate()
+		{
+			SensorWrapper sw = new SensorWrapper("mySensor");
+			long nowMillis = 3000;
+			for (int i = 0; i < 6; i++)
+			{
+				SensorContactWrapper scw = new SensorContactWrapper("parent",
+						new HiResDate(nowMillis), new WorldDistance(i, WorldDistance.NM),
+						i, new WorldLocation(1, i, 0), Color.RED, "the label", 0,
+						"other label");
+				sw.add(scw);
+				nowMillis += 16 * 1000;
+			}
+
+			// jump forward a while
+			nowMillis += 5 * 60 * 1000;
+
+			for (int j = 0; j < 6; j++)
+			{
+				SensorContactWrapper scw = new SensorContactWrapper("parent",
+						new HiResDate(nowMillis), new WorldDistance(j, WorldDistance.NM),
+						j, new WorldLocation(1, j, 0), Color.RED, "the label", 0,
+						"other label");
+				sw.add(scw);
+				nowMillis += 16 * 1000;
+			}
+
+			assertEquals("correct number before", 12, sw._myContacts.size());
+
+			sw.decimate(new HiResDate(20000), 4000000);
+
+			assertEquals("correct number of decimated", 8, sw._myContacts.size());
+		}
+	}
 
 }
