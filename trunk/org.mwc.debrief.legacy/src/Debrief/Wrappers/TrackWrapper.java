@@ -3736,7 +3736,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		WorldLocation res = null;
 
-		if (wormInHole)
+		if (wormInHole && sensorOffset != null)
 		{
 			res = WormInHoleOffset.getWormOffsetFor(this, searchTime, sensorOffset);
 		}
