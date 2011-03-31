@@ -31,7 +31,7 @@ import org.eclipse.ui.ide.IDE;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.wizards.CoastWizardPage;
 import org.mwc.cmap.core.wizards.ETOPOWizardPage;
-import org.mwc.cmap.core.wizards.FilenameWizardPage;
+import org.mwc.cmap.core.wizards.NewPlotFilenameWizardPage;
 import org.mwc.cmap.core.wizards.GridWizardPage;
 import org.mwc.cmap.core.wizards.ScaleWizardPage;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -52,7 +52,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
  */
 
 public class NewPlotWizard extends Wizard implements INewWizard {
-	private FilenameWizardPage _fileWizard;
+	private NewPlotFilenameWizardPage _fileWizard;
 	private ScaleWizardPage _scaleWizard;
 	private CoastWizardPage _coastWizard;
 	private GridWizardPage _gridWizard;
@@ -78,7 +78,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void addPages() {
-		_fileWizard = new FilenameWizardPage(selection);
+		_fileWizard = new NewPlotFilenameWizardPage(selection);
 		_scaleWizard = new ScaleWizardPage(selection);
 		_coastWizard = new CoastWizardPage(selection);
 		_gridWizard = new GridWizardPage(selection);
