@@ -4323,9 +4323,11 @@ Platform C,-551</screen></para>
                             the centre-left of the image). Clicking on a block of sensor data in the
                             view also selects that sensor data in the Layer Manager (though on
                             occasion you need to expand the <guilabel>Sensors</guilabel> folder in
-                            the Layer Manager. As blocks of sensor data are selected, they are shown
-                            in black in the view. Tracks can be multiple-selected with the
-                                <keysym>&lt;ctrl></keysym> key.</para>
+                            the Layer Manager). As blocks of sensor data are selected, they are
+                            shown in black in the view. Items can be multiple-selected with the
+                                <keysym>&lt;ctrl></keysym> key. Once multiple blocks of sensor dara
+                            are selected in the layer manager you can right-click on them and select
+                            'Merge sensors into <emphasis>xxxx</emphasis>'</para>
                         <para>Also note that whilst by default comes up with a unique color/symbol
                             combination for each block of sensor data, you can click on the 'Show
                             original colours' palette icon at the top of the view. This will switch
@@ -4409,6 +4411,63 @@ Platform C,-551</screen></para>
                         multi-select). Once selected, right-click on one of the items and select
                             <guimenuitem>Keep port bearing</guimenuitem> or <guimenuitem>Keep
                             starboard bearing</guimenuitem>.</para>
+                </sect2>
+                <sect2 id="doppler_export">
+                    <title>Exploiting doppler calculations</title>
+                    <para>To support the display frequency residuals (as used in <xref
+                            linkend="DraggingTracks"/>), Debrief contains a set of doppler <link
+                            linkend="freq_alg">frequency calculations</link>.  Should you require
+                        this data in a third-party application it is possible to export this
+                        calculated data. Do this export as follows:<orderedlist>
+                            <listitem>
+                                <para>You must have a Debrief plot open that contains ownship plus
+                                    target tracks</para>
+                            </listitem>
+                            <listitem>
+                                <para>Ownship <link linkend="assigning_tracks">must be marked</link>
+                                    as <link linkend="primary_track">primary track</link>, and the
+                                    target track must be the only secondary track</para>
+                            </listitem>
+                            <listitem>
+                                <para>The ownship track must contain sensor data</para>
+                            </listitem>
+                            <listitem>
+                                <para>The target track must have its base frequency assigned.</para>
+                            </listitem>
+                            <listitem>
+                                <para>Using the <link linkend="time_controller">Time
+                                        Controller</link> view, select the time period for which
+                                    data is to be exported</para>
+                            </listitem>
+                            <listitem>
+                                <para>Select <guimenu>Export Doppler Shift data</guimenu>
+                                </para>
+                            </listitem>
+                        </orderedlist></para>
+                    <para>The data is collated using the following algorithm:<orderedlist>
+                            <listitem>
+                                <para>Loop through the visible blocks of sensor data for the ownship
+                                    track</para>
+                            </listitem>
+                            <listitem>
+                                <para>Find all target track segments that overlap with this block of
+                                    sensor data</para>
+                            </listitem>
+                            <listitem>
+                                <para>Loop through this block of sensor data</para>
+                            </listitem>
+                            <listitem>
+                                <para>For each sensor cut, find the position on the target track
+                                    nearest to this time</para>
+                            </listitem>
+                            <listitem>
+                                <para>Perform a doppler calculation for this sensor cut/target
+                                    position</para>
+                            </listitem>
+                        </orderedlist></para>
+                    <para>The data will now be written to file in csv format:  first the base
+                        frequency then a series of time-stamped measured and predicted frequencies.
+                    </para>
                 </sect2>
                 <sect2 id="MultiTonalAnalysis">
                     <title>Multi tonal frequency analysis</title>

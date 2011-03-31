@@ -19,7 +19,12 @@
 		<topic href="html/legacy/controlling_time.html#relative_mode" label="Switching between relative &amp; absolute display modes"/>
 		<topic href="html/legacy/controlling_time.html#time_copy" label="Copying track data to the clipboard"/>
 		<topic href="html/legacy/show_time_vars.html" label="Selecting the period for which xy data should be plotted"/>
+		<topic href="html/legacy/analyse_sensor_data.html#doppler_export" label="Exporting doppler data"/>
 	</context>		
+	<context id="ExportDoppler">
+		<description>You can exploit the calculated doppler date by exporting it to data file</description>
+		<topic href="html/legacy/analyse_sensor_data.html#doppler_export" label="Exporting doppler data"/>
+	</context>
 	<context id="TrackShifting">
 		<description>This panel displays bearing errors between tracks with sensor data </description>
 		<topic href="html/legacy/formatting_data.html#track_shifting" label="How to shift-tracks"/>
