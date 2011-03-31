@@ -1,15 +1,12 @@
 /**
  * 
  */
-package org.mwc.debrief.track_shift.views;
+package Debrief.Wrappers.Track;
 
 import java.awt.Color;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.Track.CoreTMASegment;
-import Debrief.Wrappers.Track.RelativeTMASegment;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -38,7 +35,7 @@ public final class Doublet implements Comparable<Doublet>
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
-	Doublet(final SensorContactWrapper sensor, final FixWrapper targetFix,
+	public Doublet(final SensorContactWrapper sensor, final FixWrapper targetFix,
 			TrackSegment parent, final FixWrapper hostFix)
 	{
 		_sensor = sensor;
