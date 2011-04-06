@@ -36,7 +36,7 @@
 
 
 	<target name="compileDocbook" description="convenience function to compile the user guide">
-		<ant dir="../org.mwc.debrief.help" target="docbook_to_eclipse" antfile="collate_docbook.xml" />
+		<ant dir="../org.mwc.asset.help" target="docbook_to_eclipse" antfile="collate_docbook.xml" />
 	</target>
 
 	<target name="clean">

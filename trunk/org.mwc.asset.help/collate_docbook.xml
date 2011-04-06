@@ -81,7 +81,7 @@
 		<property name="docName" value="assetNG.pdf" description="The asset document file" />
 		<property name="xml.dir" value="docbook" description="where our docbook sources are" />
 
-		<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs" />
+		<property name="pdfDestination" value="../org.mwc.asset.core.feature/root_installs" />
 		<echo message="Ditching old pdf" />
 		<delete file="${pdfDestination}/${docName}" />
 

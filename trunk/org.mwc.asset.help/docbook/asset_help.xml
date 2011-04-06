@@ -8061,7 +8061,7 @@
     </chapter>
     <chapter id="userguide_workbench">
       <title>Custom Workbench (legacy)</title>
-      <sect1 id="user_workbench">
+      <sect1 id="user_workbench_legacy">
         <title>Introduction</title>
         <para>The <application>ASSET Workbench</application> is a custom graphical front-end to the
             <application>ASSET</application> modelling engine. Scenario (and occasionally Control)
