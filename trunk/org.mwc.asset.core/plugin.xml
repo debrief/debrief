@@ -11,8 +11,6 @@
 		<extension point="org.eclipse.ui.startup">
 		<startup class="org.mwc.asset.core.ASSETPlugin" />
 	</extension>
-	<extension id="CMAP" point="org.eclipse.core.runtime.products">
-	</extension>
 	<extension id="ASSET" point="org.eclipse.core.runtime.products">
 		<product application="org.eclipse.ui.ide.workbench" name="AssetNG">
 			<property name="windowImages" value="icons/components.gif">
