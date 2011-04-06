@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.17" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.18" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -98,14 +98,14 @@
 
    <features>
       <feature id="org.mwc.asset.help.feature" version="1.0.1"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.130"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.156"/>
-      <feature id="org.eclipse.wst.common_core.feature" version="3.2.3.v201011031800-7B7DFEsF7RZHOaLfS0KpNJ"/>
-      <feature id="org.eclipse.wst.common_ui.feature" version="3.2.3.v201011031800-7C78FPlEdhO_oXWe4k_elbMgT1Lq"/>
-      <feature id="org.eclipse.wst.xml_core.feature" version="3.2.3.v201102160550-7C7OFXcF7RZHQKIkMxMsW_"/>
-      <feature id="org.eclipse.wst.xml_ui.feature" version="3.2.3.v201102160550-7H7AFUWDxumQJOi9ghcTb5YgkwEZ"/>
-      <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.2.101.v201102161624-50FXNAkF7B77RBgFFBF"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.25"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.131"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.159"/>
+      <feature id="org.eclipse.wst.common_core.feature" version="3.2.2.v201008091400-7B7DFElF7RZHOZJ6W0PsNJ"/>
+      <feature id="org.eclipse.wst.common_ui.feature" version="3.2.2.v201008091400-7C78FPhEdhO_mXde7kbap_K7X1Qt"/>
+      <feature id="org.eclipse.wst.xml_core.feature" version="3.2.2.v201008170029-7C7OFXYF7RZHQHI5PyJwPT"/>
+      <feature id="org.eclipse.wst.xml_ui.feature" version="3.2.2.v201008170029-7H7AFUQDxumQGOpBqffOY2f1qxDZ"/>
+      <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.2.100.v201005241420-50FXNAkF7B77RBgFFBF"/>
    </features>
 
 
