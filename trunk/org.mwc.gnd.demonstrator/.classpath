@@ -5,11 +5,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/postgresql-8.3-604.jdbc3.jar"/>
 	<classpathentry kind="lib" path="libs/postgis_1.3.5.jar"/>
-	<classpathentry kind="lib" path="libs/apache-abdera-0.4.0-incubating/lib/axiom-api-1.2.5.jar"/>
-	<classpathentry kind="lib" path="libs/apache-abdera-0.4.0-incubating/lib/axiom-impl-1.2.5.jar"/>
-	<classpathentry kind="lib" path="libs/apache-abdera-0.4.0-incubating/lib/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="libs/apache-abdera-0.4.0-incubating/lib/jaxen-1.1.1.jar"/>
-	<classpathentry kind="lib" path="libs/apache-abdera-0.4.0-incubating/abdera-0.4.0-incubating.jar"/>
-	<classpathentry kind="lib" path="libs/apache-abdera-0.4.0-incubating/modules/abdera-extensions-geo-0.4.0-incubating.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
