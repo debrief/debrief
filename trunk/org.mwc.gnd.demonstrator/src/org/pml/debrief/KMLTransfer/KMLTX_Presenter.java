@@ -2,17 +2,19 @@ package org.pml.debrief.KMLTransfer;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-
-import javax.xml.parsers.SAXParser;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -27,6 +29,7 @@ public class KMLTX_Presenter
 	private final static String filePath = "/Users/ianmayo/Downloads/ais";
 	private static final String DATABASE_ROOT = "jdbc:postgresql://127.0.0.1/ais";
 	private static Connection _conn;
+	private static PreparedStatement sql;
 
 	/**
 	 * @param args
@@ -46,14 +49,43 @@ public class KMLTX_Presenter
 			connectToDatabase();
 
 			// sort out a helper to read the XML
-			DefaultHandler saxer = new MySaxParser();
+			MySaxParser saxer = new MySaxParser()
+			{
+				public void writeThis(String name2, Date date2, Point2D coords2,
+						Integer index2, Double course2, Double speed2)
+				{
+					try
+					{
+						writeThisToDb(name2, date2, coords2, index2, course2, speed2);
+					}
+					catch (SQLException e)
+					{
+						e.printStackTrace();
+						System.exit(1);
+					}
+				}
+			};
 			XMLReader parser = XMLReaderFactory
 					.createXMLReader("org.apache.xerces.parsers.SAXParser");
 			parser.setContentHandler(saxer);
 
+			// see about format
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+//			String str = "insert into tracks (latval, longval) values (32.3, 22.4);";
+//			Statement st = _conn.createStatement();
+//			st.execute(str);
+//			System.exit(0);
+			
+
+			String query = "insert into tracks (dateval, nameval, latval, longval," +
+					" courseval, speedval) VALUES (?, ?, ?, ?, ?, ?);";
+			System.out.println("query will be:" + query);
+			sql = _conn.prepareStatement(query);
+
 			// start looping through files
 			File[] fList = sourceP.listFiles();
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < fList.length; i++)
 			{
 				File thisF = fList[i];
 
@@ -62,11 +94,21 @@ public class KMLTX_Presenter
 				ZipEntry contents = zip.entries().nextElement();
 				InputStream is = zip.getInputStream(contents);
 
-				places = 0;
+				// sort out the filename snap_2011-04-11_08/32/00
+				String[] legs = thisF.getName().split("_");
+				String timeStr = legs[2].substring(0, 8);
+				Date theDate = df.parse(legs[1] + " " + timeStr);
+				saxer.setDate(theDate);
+
+				files++;
+
+				System.err.println("==" + i + " of " + fList.length + " at:" + new Date());
 
 				// right, go for it
 				processThisFile(is, parser);
 			}
+
+			System.out.println("output " + places + " for " + files + " files");
 
 		}
 		catch (RuntimeException re)
@@ -84,6 +126,16 @@ public class KMLTX_Presenter
 			e.printStackTrace();
 		}
 		catch (SAXException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (ParseException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SQLException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -106,6 +158,23 @@ public class KMLTX_Presenter
 			}
 
 		}
+	}
+
+	protected static void writeThisToDb(String name2, Date date2,
+			Point2D coords2, Integer index2, Double course2, Double speed2) throws SQLException
+	{
+		// String query =
+		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
+		sql.setTimestamp(1, new java.sql.Timestamp(date2.getTime()));
+		sql.setString(2, name2);
+		sql.setDouble(3, coords2.getY());
+		sql.setDouble(4, coords2.getX());
+		sql.setDouble(5, course2);
+		sql.setDouble(6, speed2);
+		
+		sql.executeUpdate();
+
+		places++;
 	}
 
 	private static void connectToDatabase()
@@ -142,16 +211,16 @@ public class KMLTX_Presenter
 	}
 
 	public static int places = 0;
-	public static int points = 0;
-	public static int description = 0;
+	public static int files = 0;
 
-	protected static class MySaxParser extends DefaultHandler
+	protected static abstract class MySaxParser extends DefaultHandler
 	{
 		private String name;
 		private Point2D coords;
 		private Double course;
 		private Double speed;
 		private Integer index;
+		private Date date;
 
 		@Override
 		public void endElement(String arg0, String arg1, String arg2)
@@ -166,8 +235,8 @@ public class KMLTX_Presenter
 				{
 					if (course != null)
 					{
-						System.out.println("create fix at " + coords + " for " + name
-								+ " (" + index + ") on:" + course + " at:" + speed);
+						writeThis(name, date, coords, index, course, speed);
+
 						name = null;
 						coords = null;
 						course = null;
@@ -176,6 +245,14 @@ public class KMLTX_Presenter
 					}
 				}
 			}
+		}
+
+		abstract public void writeThis(String name2, Date date2, Point2D coords2,
+				Integer index2, Double course2, Double speed2);
+
+		public void setDate(Date finalDate)
+		{
+			date = finalDate;
 		}
 
 		@Override
@@ -199,34 +276,53 @@ public class KMLTX_Presenter
 			}
 			else if (isCoords)
 			{
-				String data = new String(ch, start, length);
-				String[] split = data.split(",");
-				double longVal = Double.valueOf(split[0]);
-				double latVal = Double.valueOf(split[1]);
-				coords = new Point2D.Double(longVal, latVal);
+				try
+				{
+					String data = new String(ch, start, length);
+					String[] split = data.split(",");
+					double longVal = Double.valueOf(split[0]);
+					double latVal = Double.valueOf(split[1]);
+					coords = new Point2D.Double(longVal, latVal);
+				}
+				catch (NumberFormatException e)
+				{
+		//			System.out.println("number format prob reading pos for " + name);
+				}
+				catch (java.lang.ArrayIndexOutOfBoundsException aw)
+				{
+		//			System.out.println("array index prob reading pos for " + name);
+				}
 			}
 			else if (isDesc)
 			{
-				final String details = new String(ch, start, length);
+				try
+				{
+					final String details = new String(ch, start, length);
 
-				// start off with course & speed
-				int startStr = details.indexOf("&nbsp;") + 6;
-				int endStr = details.indexOf("&deg;");
-				if (endStr == -1)
-					return;
+					// start off with course & speed
+					int startStr = details.indexOf("&nbsp;") + 6;
+					int endStr = details.indexOf("&deg;");
+					if (endStr == -1)
+						return;
 
-				String subStr = details.substring(startStr, endStr);
-				String[] components = subStr.split(" ");
-				course = Double.valueOf(components[0]);
-				speed = Double.valueOf(components[3]);
+					String subStr = details.substring(startStr, endStr);
+					String[] components = subStr.split(" ");
+					course = Double.valueOf(components[0]);
+					speed = Double.valueOf(components[3]);
 
-				// now the mmsi
-				startStr = details.indexOf("mmsi=");
-				if(startStr == -1)
-					return;
-				endStr = details.indexOf("\"", startStr);
-				subStr = details.substring(startStr + "mmsi=".length(), endStr);
-				index = Integer.valueOf(subStr);
+					// now the mmsi
+					startStr = details.indexOf("mmsi=");
+					if (startStr == -1)
+						return;
+					endStr = details.indexOf("\"", startStr);
+					subStr = details.substring(startStr + "mmsi=".length(), endStr);
+					index = Integer.valueOf(subStr);
+				}
+				catch (java.lang.StringIndexOutOfBoundsException aw)
+				{
+//					System.out.println("prob reading desc for " + name);
+				}
+
 			}
 		}
 
@@ -249,12 +345,10 @@ public class KMLTX_Presenter
 			else if (tagName.equals("coordinates"))
 			{
 				isCoords = true;
-				points++;
 			}
 			else if (tagName.equals("description"))
 			{
 				isDesc = true;
-				description++;
 			}
 
 		}
