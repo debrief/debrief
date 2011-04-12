@@ -48,7 +48,7 @@ public class PostGet_Presenter
 				double course = res.getDouble(ctr++);
 				double speed = res.getDouble(ctr++);
 				
-				// YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
+				// debrief format: YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 				Date jDate = new Date(date.getTime());
 				String line = "";
 				line += sdf.format(jDate) + " ";
