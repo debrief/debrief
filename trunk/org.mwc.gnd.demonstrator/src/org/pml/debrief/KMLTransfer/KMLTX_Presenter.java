@@ -100,7 +100,7 @@ public class KMLTX_Presenter
 
 			// start looping through files
 			File[] fList = sourceP.listFiles();
-			for (int i = 0; i < 1; i++)
+			for (int i = 0; i < fList.length; i++)
 			{
 				File thisF = fList[i];
 
