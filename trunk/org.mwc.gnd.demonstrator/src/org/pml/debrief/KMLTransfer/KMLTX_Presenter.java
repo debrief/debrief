@@ -22,6 +22,9 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+
 public class KMLTX_Presenter
 {
 
@@ -29,6 +32,7 @@ public class KMLTX_Presenter
 	private static final String DATABASE_ROOT = "jdbc:postgresql://127.0.0.1/ais";
 	private static Connection _conn;
 	private static PreparedStatement sql;
+	private static WorldArea limits;
 
 	/**
 	 * @param args
@@ -37,6 +41,11 @@ public class KMLTX_Presenter
 	{
 		try
 		{
+			
+			WorldLocation tl = new WorldLocation(59, -9.75, 0d);
+			WorldLocation br = new WorldLocation(58, -5.5, 0d);
+			 limits = new WorldArea(tl, br);
+			
 			// check we have data
 			File sourceP = new File(filePath);
 			if (!sourceP.exists())
@@ -84,7 +93,7 @@ public class KMLTX_Presenter
 
 			// start looping through files
 			File[] fList = sourceP.listFiles();
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 500; i++)
 			{
 				File thisF = fList[i];
 
@@ -164,6 +173,11 @@ public class KMLTX_Presenter
 			Point2D coords2, Integer index2, Double course2, Double speed2)
 			throws SQLException
 	{
+		// are we in zone?
+		WorldLocation loc = new WorldLocation(coords2.getY(), coords2.getX(), 0d);
+		if(!limits.contains(loc))
+			return;
+		
 		// String query =
 		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
 		sql.setTimestamp(1, new java.sql.Timestamp(date2.getTime()));
@@ -311,8 +325,8 @@ public class KMLTX_Presenter
 
 					String subStr = details.substring(startStr, endStr);
 					String[] components = subStr.split(" ");
-					course = Double.valueOf(components[0]);
-					speed = Double.valueOf(components[3]);
+					course = Double.valueOf(components[3]);
+					speed = Double.valueOf(components[0]);
 
 					// now the mmsi
 					startStr = details.indexOf("mmsi=");
