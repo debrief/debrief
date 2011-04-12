@@ -15,12 +15,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -41,11 +44,11 @@ public class KMLTX_Presenter
 	{
 		try
 		{
-			
+
 			WorldLocation tl = new WorldLocation(59, -9.75, 0d);
 			WorldLocation br = new WorldLocation(58, -5.5, 0d);
-			 limits = new WorldArea(tl, br);
-			
+			limits = new WorldArea(tl, br);
+
 			// check we have data
 			File sourceP = new File(filePath);
 			if (!sourceP.exists())
@@ -57,7 +60,7 @@ public class KMLTX_Presenter
 			connectToDatabase();
 
 			// sort out a helper to read the XML
-			MySaxParser saxer = new MySaxParser()
+			MyHandler handler = new MyHandler()
 			{
 				public void writeThis(String name2, Date date2, Point2D coords2,
 						Integer index2, Double course2, Double speed2)
@@ -73,9 +76,13 @@ public class KMLTX_Presenter
 					}
 				}
 			};
-			XMLReader parser = XMLReaderFactory
-					.createXMLReader("org.apache.xerces.parsers.SAXParser");
-			parser.setContentHandler(saxer);
+
+			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+
+			//
+			// XMLReader parser = XMLReaderFactory
+			// .createXMLReader("org.apache.xerces.parsers.SAXParser");
+			// parser.setContentHandler(saxer);
 
 			// see about format
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -93,7 +100,7 @@ public class KMLTX_Presenter
 
 			// start looping through files
 			File[] fList = sourceP.listFiles();
-			for (int i = 0; i < 500; i++)
+			for (int i = 0; i < 1; i++)
 			{
 				File thisF = fList[i];
 
@@ -106,7 +113,7 @@ public class KMLTX_Presenter
 				String[] legs = thisF.getName().split("_");
 				String timeStr = legs[2].substring(0, 8);
 				Date theDate = df.parse(legs[1] + " " + timeStr);
-				saxer.setDate(theDate);
+				handler.setDate(theDate);
 
 				files++;
 
@@ -114,7 +121,7 @@ public class KMLTX_Presenter
 						+ new Date());
 
 				// right, go for it
-				processThisFile(is, parser);
+				processThisFile(is, parser, handler);
 			}
 
 			System.out.println("output " + places + " for " + files + " files");
@@ -149,6 +156,11 @@ public class KMLTX_Presenter
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		catch (ParserConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		finally
 		{
 
@@ -174,9 +186,9 @@ public class KMLTX_Presenter
 			throws SQLException
 	{
 		// are we in zone?
-		WorldLocation loc = new WorldLocation(coords2.getY(), coords2.getX(), 0d);
-		if(!limits.contains(loc))
-			return;
+//		WorldLocation loc = new WorldLocation(coords2.getY(), coords2.getX(), 0d);
+//		if (!limits.contains(loc))
+//			return;
 		
 		// String query =
 		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
@@ -228,7 +240,7 @@ public class KMLTX_Presenter
 	public static int places = 0;
 	public static int files = 0;
 
-	protected static abstract class MySaxParser extends DefaultHandler
+	protected static abstract class MyHandler extends DefaultHandler
 	{
 		private String name;
 		private Point2D coords;
@@ -277,6 +289,7 @@ public class KMLTX_Presenter
 		public void characters(final char[] ch, final int start, final int length)
 				throws SAXException
 		{
+			String data = "";
 			if (isName)
 			{
 				String name = new String(ch, start, length);
@@ -296,7 +309,9 @@ public class KMLTX_Presenter
 			{
 				try
 				{
-					String data = new String(ch, start, length);
+					if (name.equals("JACKIE"))
+						System.out.println("here2");
+					data = new String(ch, start, length);
 					String[] split = data.split(",");
 					double longVal = Double.valueOf(split[0]);
 					double latVal = Double.valueOf(split[1]);
@@ -304,18 +319,22 @@ public class KMLTX_Presenter
 				}
 				catch (NumberFormatException e)
 				{
-					// System.out.println("number format prob reading pos for " + name);
+					System.out.println("number format prob reading pos for " + name);
 				}
 				catch (java.lang.ArrayIndexOutOfBoundsException aw)
 				{
-					// System.out.println("array index prob reading pos for " + name);
+					System.out.println("array index prob reading pos for " + name
+							+ " from " + data);
 				}
 			}
 			else if (isDesc)
 			{
+				String details = "";
 				try
 				{
-					final String details = new String(ch, start, length);
+					if (name.equals("PEARL RIVER"))
+						System.out.println("here");
+					details = new String(ch, start, length);
 
 					// start off with course & speed
 					int startStr = details.indexOf("&nbsp;") + 6;
@@ -338,7 +357,7 @@ public class KMLTX_Presenter
 				}
 				catch (java.lang.StringIndexOutOfBoundsException aw)
 				{
-					// System.out.println("prob reading desc for " + name);
+					System.out.println("prob reading desc for " + name);
 				}
 
 			}
@@ -347,6 +366,7 @@ public class KMLTX_Presenter
 		boolean isName = false;
 		boolean isCoords = false;
 		boolean isDesc = false;
+		boolean foundPlacemark = false;
 
 		@Override
 		public void startElement(String nsURI, String strippedName, String tagName,
@@ -354,29 +374,37 @@ public class KMLTX_Presenter
 		{
 			isName = isCoords = isDesc = false;
 
-			if (tagName.equals("name"))
+			if (tagName.equals("Placemark"))
 			{
-				isName = true;
-				// ok - go for new placemark
-				places++;
+				foundPlacemark = true;
+				return;
 			}
-			else if (tagName.equals("coordinates"))
+			if (foundPlacemark)
 			{
-				isCoords = true;
-			}
-			else if (tagName.equals("description"))
-			{
-				isDesc = true;
+				if (tagName.equals("name"))
+				{
+					isName = true;
+					// ok - go for new placemark
+					places++;
+				}
+				else if (tagName.equals("coordinates"))
+				{
+					isCoords = true;
+				}
+				else if (tagName.equals("description"))
+				{
+					isDesc = true;
+				}
 			}
 
 		}
 
 	}
 
-	private static void processThisFile(InputStream is, XMLReader parser)
-			throws ZipException, IOException, SAXException
+	private static void processThisFile(InputStream is, SAXParser parser,
+			DefaultHandler handler) throws ZipException, IOException, SAXException
 	{
-		parser.parse(new InputSource(is));
+		parser.parse(is, handler);
 
 		// process the KML
 
