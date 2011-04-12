@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,21 +70,21 @@ public class KMLTX_Presenter
 
 			// see about format
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			
-//			String str = "insert into tracks (latval, longval) values (32.3, 22.4);";
-//			Statement st = _conn.createStatement();
-//			st.execute(str);
-//			System.exit(0);
-			
 
-			String query = "insert into tracks (dateval, nameval, latval, longval," +
-					" courseval, speedval) VALUES (?, ?, ?, ?, ?, ?);";
+			// String str =
+			// "insert into tracks (latval, longval) values (32.3, 22.4);";
+			// Statement st = _conn.createStatement();
+			// st.execute(str);
+			// System.exit(0);
+
+			String query = "insert into tracks2 (dateval, nameval, latval, longval,"
+					+ " courseval, speedval, mmsi) VALUES (?, ?, ?, ?, ?, ?, ?);";
 			System.out.println("query will be:" + query);
 			sql = _conn.prepareStatement(query);
 
 			// start looping through files
 			File[] fList = sourceP.listFiles();
-			for (int i = 0; i < fList.length; i++)
+			for (int i = 0; i < 100; i++)
 			{
 				File thisF = fList[i];
 
@@ -102,7 +101,8 @@ public class KMLTX_Presenter
 
 				files++;
 
-				System.err.println("==" + i + " of " + fList.length + " at:" + new Date());
+				System.err.println("==" + i + " of " + fList.length + " at:"
+						+ new Date());
 
 				// right, go for it
 				processThisFile(is, parser);
@@ -161,7 +161,8 @@ public class KMLTX_Presenter
 	}
 
 	protected static void writeThisToDb(String name2, Date date2,
-			Point2D coords2, Integer index2, Double course2, Double speed2) throws SQLException
+			Point2D coords2, Integer index2, Double course2, Double speed2)
+			throws SQLException
 	{
 		// String query =
 		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
@@ -171,7 +172,7 @@ public class KMLTX_Presenter
 		sql.setDouble(4, coords2.getX());
 		sql.setDouble(5, course2);
 		sql.setDouble(6, speed2);
-		
+		sql.setInt(7, index2);
 		sql.executeUpdate();
 
 		places++;
@@ -219,7 +220,7 @@ public class KMLTX_Presenter
 		private Point2D coords;
 		private Double course;
 		private Double speed;
-		private Integer index;
+		private Integer mmsi;
 		private Date date;
 
 		@Override
@@ -235,13 +236,16 @@ public class KMLTX_Presenter
 				{
 					if (course != null)
 					{
-						writeThis(name, date, coords, index, course, speed);
+						if (mmsi != null)
+						{
+							writeThis(name, date, coords, mmsi, course, speed);
 
-						name = null;
-						coords = null;
-						course = null;
-						speed = null;
-						index = null;
+							name = null;
+							coords = null;
+							course = null;
+							speed = null;
+							mmsi = null;
+						}
 					}
 				}
 			}
@@ -286,11 +290,11 @@ public class KMLTX_Presenter
 				}
 				catch (NumberFormatException e)
 				{
-		//			System.out.println("number format prob reading pos for " + name);
+					// System.out.println("number format prob reading pos for " + name);
 				}
 				catch (java.lang.ArrayIndexOutOfBoundsException aw)
 				{
-		//			System.out.println("array index prob reading pos for " + name);
+					// System.out.println("array index prob reading pos for " + name);
 				}
 			}
 			else if (isDesc)
@@ -316,11 +320,11 @@ public class KMLTX_Presenter
 						return;
 					endStr = details.indexOf("\"", startStr);
 					subStr = details.substring(startStr + "mmsi=".length(), endStr);
-					index = Integer.valueOf(subStr);
+					mmsi = Integer.valueOf(subStr);
 				}
 				catch (java.lang.StringIndexOutOfBoundsException aw)
 				{
-//					System.out.println("prob reading desc for " + name);
+					// System.out.println("prob reading desc for " + name);
 				}
 
 			}
