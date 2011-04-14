@@ -120,7 +120,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
   /////////////////////////////////////////////////
   // sample implementation of a time period
   /////////////////////////////////////////////////
-  public final class BaseTimePeriod implements TimePeriod
+  public class BaseTimePeriod implements TimePeriod
   {
 	/**
 	 * 
