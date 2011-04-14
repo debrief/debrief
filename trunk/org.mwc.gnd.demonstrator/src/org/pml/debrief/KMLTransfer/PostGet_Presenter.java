@@ -28,11 +28,11 @@ public class PostGet_Presenter
 			// check we have a database
 			connectToDatabase();
 
-			String query = "select dateval, nameval, mmsi, longval, latval, courseval, speedval from tracks2 where latval > 58 and latval < 59  and longval < -5.5 and longval > -9.75;";
+			String query = "select dateval, nameval, mmsi, longval, latval, courseval, speedval, dataset from tracks3;";
 			System.out.println("query will be:" + query);
 			sql = _conn.prepareStatement(query);
 			
-			FileWriter outFile = new FileWriter("res.rep");
+			FileWriter outFile = new FileWriter("portland2.rep");
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
 			
@@ -47,12 +47,16 @@ public class PostGet_Presenter
 				double latVal = res.getDouble(ctr++);
 				double course = res.getDouble(ctr++);
 				double speed = res.getDouble(ctr++);
+				int dataset = res.getInt(ctr++);
+				
+				
+				String vName = name + "_" + mmsi + "_" +  dataset;
 				
 				// debrief format: YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 				Date jDate = new Date(date.getTime());
 				String line = "";
 				line += sdf.format(jDate) + " ";
-				line += "\"" + name + "_" + mmsi + "\"" + " ";
+				line += "\"" + vName + "_" + mmsi + "\"" + " ";
 				line += "@@ ";
 				line += latVal + " 0 0.0 N ";
 				line += longVal + " 0 0.0 E ";

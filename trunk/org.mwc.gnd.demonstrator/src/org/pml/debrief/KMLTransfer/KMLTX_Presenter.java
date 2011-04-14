@@ -106,7 +106,7 @@ public class KMLTX_Presenter
 			sql = _conn.prepareStatement(query);
 
 			String query2 = "insert into datasets (ivalue, starttime, endtime, mmsi,"
-					+ " length) VALUES (?, ?, ?, ?, ?);";
+					+ " length, vname) VALUES (?, ?, ?, ?, ?, ?);";
 			System.out.println("query2 will be:" + query2);
 			PreparedStatement dataquery = _conn.prepareStatement(query2);
 
@@ -220,6 +220,7 @@ public class KMLTX_Presenter
 				dataquery.setTimestamp(3, new Timestamp(thisP.getEndDTG().getDate().getTime()));
 				dataquery.setInt(4, integer);
 				dataquery.setInt(5, thisP.getNumPoints());
+				dataquery.setString(6, thisP.getName());
 				
 				dataquery.executeUpdate();
 			}
@@ -260,13 +261,20 @@ public class KMLTX_Presenter
 		 */
 		private static final long serialVersionUID = 1L;
 		static int ctr = 1;
-		private int _myIndex;
+		final private int _myIndex;
 		private int _numPoints = 0;
+		final private String _myName;
 
-		public NumberedTimePeriod(HiResDate startD, HiResDate endD)
+		public NumberedTimePeriod(HiResDate startD, String name)
 		{
-			super(startD, endD);
+			super(startD, startD);
+			_myName = name;
 			_myIndex = ctr++;
+		}
+
+		public String getName()
+		{
+			return _myName;
 		}
 
 		public void increment()
@@ -322,7 +330,7 @@ public class KMLTX_Presenter
 		if (timeP == null)
 		{
 			// ok, create a new period for this time
-			timeP = new NumberedTimePeriod(new HiResDate(date2), new HiResDate(date2));
+			timeP = new NumberedTimePeriod(new HiResDate(date2), name2);
 			periods.add(timeP);
 		}
 		
