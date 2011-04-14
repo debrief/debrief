@@ -8,9 +8,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -20,33 +24,36 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class KMLTX_Presenter
 {
 
-	private final static String filePath = "/Users/ianmayo/Downloads/ais";
+	private final static String filePath = "/Users/ianmayo/Downloads/portland2";
 	private static final String DATABASE_ROOT = "jdbc:postgresql://127.0.0.1/ais";
 	private static Connection _conn;
 	private static PreparedStatement sql;
 	private static WorldArea limits;
+	private static HashMap<Integer, Vector<NumberedTimePeriod>> map;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args)
 	{
+		map = new HashMap<Integer, Vector<NumberedTimePeriod>>();
+
 		try
 		{
 
-			WorldLocation tl = new WorldLocation(59, -9.75, 0d);
-			WorldLocation br = new WorldLocation(58, -5.5, 0d);
+			WorldLocation tl = new WorldLocation(50.863, -2.5, 0d);
+			WorldLocation br = new WorldLocation(50.45, -0.4, 0d);
 			limits = new WorldArea(tl, br);
 
 			// check we have data
@@ -93,17 +100,27 @@ public class KMLTX_Presenter
 			// st.execute(str);
 			// System.exit(0);
 
-			String query = "insert into tracks2 (dateval, nameval, latval, longval,"
-					+ " courseval, speedval, mmsi) VALUES (?, ?, ?, ?, ?, ?, ?);";
+			String query = "insert into tracks3 (dateval, nameval, latval, longval,"
+					+ " courseval, speedval, mmsi, dataset) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 			System.out.println("query will be:" + query);
 			sql = _conn.prepareStatement(query);
 
+			String query2 = "insert into datasets (ivalue, starttime, endtime, mmsi,"
+					+ " length) VALUES (?, ?, ?, ?, ?);";
+			System.out.println("query2 will be:" + query2);
+			PreparedStatement dataquery = _conn.prepareStatement(query2);
+
 			// start looping through files
 			File[] fList = sourceP.listFiles();
-			for (int i = 0; i < fList.length; i++)
+			int len = fList.length;
+			for (int i = 0; i < len; i++)
 			{
 				File thisF = fList[i];
 
+				// check it's not the duff file
+				if(thisF.getName().equals(".DS_Store"))
+					continue;
+				
 				// unzip it to get the KML
 				ZipFile zip = new ZipFile(thisF);
 				ZipEntry contents = zip.entries().nextElement();
@@ -125,6 +142,9 @@ public class KMLTX_Presenter
 			}
 
 			System.out.println("output " + places + " for " + files + " files");
+
+			// now output the datasets
+			outputDatesets(map, dataquery);
 
 		}
 		catch (RuntimeException re)
@@ -181,15 +201,43 @@ public class KMLTX_Presenter
 		}
 	}
 
+	private static void outputDatesets(
+			HashMap<Integer, Vector<NumberedTimePeriod>> map2,
+			PreparedStatement dataquery) throws SQLException
+	{
+		Iterator<Integer> iter = map2.keySet().iterator();
+		while (iter.hasNext())
+		{
+			Integer integer = (Integer) iter.next();
+			Vector<NumberedTimePeriod> periods = map2.get(integer);
+			Iterator<NumberedTimePeriod> pIter = periods.iterator();
+			while (pIter.hasNext())
+			{
+				KMLTX_Presenter.NumberedTimePeriod thisP = (KMLTX_Presenter.NumberedTimePeriod) pIter
+						.next();
+				dataquery.setInt(1, thisP.getIndex());
+				dataquery.setTimestamp(2, new Timestamp(thisP.getStartDTG().getDate().getTime()));
+				dataquery.setTimestamp(3, new Timestamp(thisP.getEndDTG().getDate().getTime()));
+				dataquery.setInt(4, integer);
+				dataquery.setInt(5, thisP.getNumPoints());
+				
+				dataquery.executeUpdate();
+			}
+		}
+	}
+
 	protected static void writeThisToDb(String name2, Date date2,
 			Point2D coords2, Integer index2, Double course2, Double speed2)
 			throws SQLException
 	{
 		// are we in zone?
-//		WorldLocation loc = new WorldLocation(coords2.getY(), coords2.getX(), 0d);
-//		if (!limits.contains(loc))
-//			return;
-		
+		WorldLocation loc = new WorldLocation(coords2.getY(), coords2.getX(), 0d);
+		if (!limits.contains(loc))
+			return;
+
+		// find out if this is a new or old data track
+		int thisDataIndex = getIndexFor(name2, index2, date2);
+
 		// String query =
 		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
 		sql.setTimestamp(1, new java.sql.Timestamp(date2.getTime()));
@@ -199,9 +247,89 @@ public class KMLTX_Presenter
 		sql.setDouble(5, course2);
 		sql.setDouble(6, speed2);
 		sql.setInt(7, index2);
+		sql.setInt(8, thisDataIndex);
 		sql.executeUpdate();
 
 		places++;
+	}
+
+	private static class NumberedTimePeriod extends TimePeriod.BaseTimePeriod
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		static int ctr = 1;
+		private int _myIndex;
+		private int _numPoints = 0;
+
+		public NumberedTimePeriod(HiResDate startD, HiResDate endD)
+		{
+			super(startD, endD);
+			_myIndex = ctr++;
+		}
+
+		public void increment()
+		{
+			_numPoints ++;
+		}
+		
+		public int getNumPoints()
+		{
+			return _numPoints;
+		}
+		
+		public int getIndex()
+		{
+			return _myIndex;
+		}
+	}
+
+	private static int getIndexFor(String name2, Integer mmsi, Date date2)
+	{
+
+		Vector<NumberedTimePeriod> periods = map.get(mmsi);
+
+		if (periods == null)
+		{
+			periods = new Vector<NumberedTimePeriod>();
+			map.put(mmsi, periods);
+		}
+
+		NumberedTimePeriod timeP = null;
+		
+
+		if (periods.size() > 0)
+		{
+			timeP = periods.lastElement();
+			Date lastTime = timeP.getEndDTG().getDate();
+
+			// is it too far back?
+			long delta = lastTime.getTime() - date2.getTime();
+			if (delta < 1000 * 60 * 15)
+			{
+				// cool, in period. extend it
+				timeP.setEndDTG(new HiResDate(date2));
+			}
+			else
+			{
+				// naah, too late. put it in another time period
+				timeP = null;
+			}
+
+		}
+
+		if (timeP == null)
+		{
+			// ok, create a new period for this time
+			timeP = new NumberedTimePeriod(new HiResDate(date2), new HiResDate(date2));
+			periods.add(timeP);
+		}
+		
+		// increment his counter
+		timeP.increment();
+
+		return timeP.getIndex();
 	}
 
 	private static void connectToDatabase()
@@ -309,8 +437,6 @@ public class KMLTX_Presenter
 			{
 				try
 				{
-					if (name.equals("JACKIE"))
-						System.out.println("here2");
 					data = new String(ch, start, length);
 					String[] split = data.split(",");
 					double longVal = Double.valueOf(split[0]);
@@ -332,8 +458,6 @@ public class KMLTX_Presenter
 				String details = "";
 				try
 				{
-					if (name.equals("PEARL RIVER"))
-						System.out.println("here");
 					details = new String(ch, start, length);
 
 					// start off with course & speed
