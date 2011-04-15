@@ -94,6 +94,13 @@ public class KMLTX_Presenter
 			// see about format
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+			// ditch gash
+			String clearTracks = "delete from tracks3";
+			String clearDatasets = "delete from datasets";
+
+			_conn.createStatement().execute(clearTracks);
+			_conn.createStatement().execute(clearDatasets);
+
 			// String str =
 			// "insert into tracks (latval, longval) values (32.3, 22.4);";
 			// Statement st = _conn.createStatement();
@@ -118,27 +125,39 @@ public class KMLTX_Presenter
 				File thisF = fList[i];
 
 				// check it's not the duff file
-				if(thisF.getName().equals(".DS_Store"))
+				if (thisF.getName().equals(".DS_Store"))
 					continue;
-				
+
 				// unzip it to get the KML
-				ZipFile zip = new ZipFile(thisF);
-				ZipEntry contents = zip.entries().nextElement();
-				InputStream is = zip.getInputStream(contents);
+				InputStream is = null;
+				try
+				{
+					ZipFile zip = new ZipFile(thisF);
+					ZipEntry contents = zip.entries().nextElement();
+					is = zip.getInputStream(contents);
+				}
+				catch (ZipException zip)
+				{
+					System.err.println("Failed to read datafile:" + thisF.getName());
+				}
+				
+				if (is != null)
+				{
 
-				// sort out the filename snap_2011-04-11_08/32/00
-				String[] legs = thisF.getName().split("_");
-				String timeStr = legs[2].substring(0, 8);
-				Date theDate = df.parse(legs[1] + " " + timeStr);
-				handler.setDate(theDate);
+					// sort out the filename snap_2011-04-11_08/32/00
+					String[] legs = thisF.getName().split("_");
+					String timeStr = legs[2].substring(0, 8);
+					Date theDate = df.parse(legs[1] + " " + timeStr);
+					handler.setDate(theDate);
 
-				files++;
+					files++;
 
-				System.err.println("==" + i + " of " + fList.length + " at:"
-						+ new Date());
+					System.err.println("==" + i + " of " + fList.length + " at:"
+							+ new Date());
 
-				// right, go for it
-				processThisFile(is, parser, handler);
+					// right, go for it
+					processThisFile(is, parser, handler);
+				}
 			}
 
 			System.out.println("output " + places + " for " + files + " files");
@@ -216,17 +235,21 @@ public class KMLTX_Presenter
 				KMLTX_Presenter.NumberedTimePeriod thisP = (KMLTX_Presenter.NumberedTimePeriod) pIter
 						.next();
 				dataquery.setInt(1, thisP.getIndex());
-				dataquery.setTimestamp(2, new Timestamp(thisP.getStartDTG().getDate().getTime()));
-				dataquery.setTimestamp(3, new Timestamp(thisP.getEndDTG().getDate().getTime()));
+				dataquery.setTimestamp(2, new Timestamp(thisP.getStartDTG().getDate()
+						.getTime()));
+				dataquery.setTimestamp(3, new Timestamp(thisP.getEndDTG().getDate()
+						.getTime()));
 				dataquery.setInt(4, integer);
 				dataquery.setInt(5, thisP.getNumPoints());
 				dataquery.setString(6, thisP.getName());
-				
+
 				dataquery.executeUpdate();
 			}
 		}
 	}
 
+	static HashMap<Integer, WorldLocation> lastLocs = new HashMap<Integer, WorldLocation>();
+	
 	protected static void writeThisToDb(String name2, Date date2,
 			Point2D coords2, Integer index2, Double course2, Double speed2)
 			throws SQLException
@@ -239,6 +262,22 @@ public class KMLTX_Presenter
 		// find out if this is a new or old data track
 		int thisDataIndex = getIndexFor(name2, index2, date2);
 
+		// ok, have a look at the last location
+		WorldLocation lastLoc = lastLocs.get(thisDataIndex);
+		
+		if(lastLoc != null)
+		{
+			if(lastLoc.equals(loc))
+			{
+				// don't bother it's just a duplicate
+				return;
+			}
+		}
+		
+		// remember this loc
+		lastLocs.put(thisDataIndex, loc);
+		
+		
 		// String query =
 		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
 		sql.setTimestamp(1, new java.sql.Timestamp(date2.getTime()));
@@ -279,14 +318,14 @@ public class KMLTX_Presenter
 
 		public void increment()
 		{
-			_numPoints ++;
+			_numPoints++;
 		}
-		
+
 		public int getNumPoints()
 		{
 			return _numPoints;
 		}
-		
+
 		public int getIndex()
 		{
 			return _myIndex;
@@ -305,7 +344,6 @@ public class KMLTX_Presenter
 		}
 
 		NumberedTimePeriod timeP = null;
-		
 
 		if (periods.size() > 0)
 		{
@@ -333,7 +371,7 @@ public class KMLTX_Presenter
 			timeP = new NumberedTimePeriod(new HiResDate(date2), name2);
 			periods.add(timeP);
 		}
-		
+
 		// increment his counter
 		timeP.increment();
 
