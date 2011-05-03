@@ -25,8 +25,8 @@ import org.mwc.cmap.gridharness.data.GriddableSeries;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 
-
-public class TableModel {
+public class TableModel
+{
 
 	/**
 	 * This constant is used to determine the padding (both left and right) for
@@ -46,95 +46,126 @@ public class TableModel {
 
 	private final GridEditorUndoSupport myUndoSupport;
 
-	public TableModel(TableViewer viewer, GridEditorUndoSupport undoSupport) {
+	public TableModel(TableViewer viewer, GridEditorUndoSupport undoSupport)
+	{
 		myViewer = viewer;
 		myUndoSupport = undoSupport;
 	}
 
-	public TableViewer getViewer() {
+	public TableViewer getViewer()
+	{
 		return myViewer;
 	}
 
-	public GridEditorUndoSupport getUndoSupport() {
+	public GridEditorUndoSupport getUndoSupport()
+	{
 		return myUndoSupport;
 	}
 
-	public void setInputSeries(GriddableSeries newSeries) {
+	public void setInputSeries(GriddableSeries newSeries)
+	{
 		removeColumns(newSeries == null);
 		mySeries = newSeries;
-		if (newSeries != null) {
+		if (newSeries != null)
+		{
 			createColumns(myDateTimeColumn == null);
 		}
 	}
 
-	public ColumnBase getColumnData(int columnIndex) {
-		if (columnIndex >= myAllColumns.size()) {
+	public ColumnBase getColumnData(int columnIndex)
+	{
+		if (columnIndex >= myAllColumns.size())
+		{
 			return null;
 		}
 		return myAllColumns.get(columnIndex);
 	}
 
-	public ColumnBase findColumnData(TableColumn tableColumn) {
-		for (ColumnBase next : myAllColumns) {
-			if (next.getTableViewerColumn().getColumn() == tableColumn) {
+	public ColumnBase findColumnData(TableColumn tableColumn)
+	{
+		for (ColumnBase next : myAllColumns)
+		{
+			if (next.getTableViewerColumn().getColumn() == tableColumn)
+			{
 				return next;
 			}
 		}
 		return null;
 	}
 
-	private void removeColumns(boolean removeFixedColumns) {
+	private void removeColumns(boolean removeFixedColumns)
+	{
 		getViewer().getTable().setRedraw(false);
-		try {
-			for (Iterator<ColumnBase> columns = myAllColumns.iterator(); columns.hasNext();) {
+		try
+		{
+			for (Iterator<ColumnBase> columns = myAllColumns.iterator(); columns
+					.hasNext();)
+			{
 				ColumnBase next = columns.next();
-				if (!removeFixedColumns && next.isFixed()) {
+				if (!removeFixedColumns && next.isFixed())
+				{
 					continue;
 				}
 				next.getTableViewerColumn().getColumn().dispose();
-				if (next == myDateTimeColumn) {
+				if (next == myDateTimeColumn)
+				{
 					myDateTimeColumn = null;
 				}
-				if (next == myRowSelectorColumn) {
+				if (next == myRowSelectorColumn)
+				{
 					myRowSelectorColumn = null;
 				}
 				columns.remove();
 			}
-		} finally {
+		}
+		finally
+		{
 			getViewer().getTable().setRedraw(true);
 		}
 	}
 
-	private void createColumns(boolean createFixedCOlumns) {
+	private void createColumns(boolean createFixedCOlumns)
+	{
 		getViewer().getTable().setRedraw(false);
-		try {
-			if (createFixedCOlumns) {
+		try
+		{
+			if (createFixedCOlumns)
+			{
 				myAllColumns.add(myRowSelectorColumn = new RowSelectorColumn(this));
 				myAllColumns.add(myDateTimeColumn = new DateTimeColumn(this, false));
 			}
 			GriddableItemDescriptor[] allAttributes = mySeries.getAttributes();
-			for (int i = 0; i < allAttributes.length; i++) {
-				boolean isLast = (i == allAttributes.length - 1);
-				myAllColumns.add(new DescriptorBasedColumn(this, allAttributes[i], myAllColumns.size(), isLast));
-			}
-		} finally {
+			if (allAttributes != null)
+				for (int i = 0; i < allAttributes.length; i++)
+				{
+					boolean isLast = (i == allAttributes.length - 1);
+					myAllColumns.add(new DescriptorBasedColumn(this, allAttributes[i],
+							myAllColumns.size(), isLast));
+				}
+		}
+		finally
+		{
 			getViewer().getTable().setRedraw(true);
 		}
 	}
 
-	public abstract static class ColumnBase {
+	public abstract static class ColumnBase
+	{
 
 		private final TableModel myModel;
 
-		public ColumnBase(TableModel model) {
+		public ColumnBase(TableModel model)
+		{
 			myModel = model;
 		}
 
-		protected TableViewer getViewer() {
+		protected TableViewer getViewer()
+		{
 			return myModel.getViewer();
 		}
 
-		protected TableModel getModel() {
+		protected TableModel getModel()
+		{
 			return myModel;
 		}
 
@@ -146,16 +177,18 @@ public class TableModel {
 
 		/**
 		 * @return associated {@link GriddableItemDescriptor} for this column or
-		 * 	<code>null</code> if there are no (i.p., for an implicit date/time
-		 * 	column)
+		 *         <code>null</code> if there are no (i.p., for an implicit
+		 *         date/time column)
 		 */
 		public abstract GriddableItemDescriptor getDescriptor();
 
-		protected TableViewerColumn createColumn(String title) {
+		protected TableViewerColumn createColumn(String title)
+		{
 			return createColumn(title, title);
 		}
 
-		protected TableViewerColumn createColumn(String title, String sampleTextHint) {
+		protected TableViewerColumn createColumn(String title, String sampleTextHint)
+		{
 			TableViewerColumn result = new TableViewerColumn(getViewer(), SWT.NONE);
 			TableColumn column = result.getColumn();
 			column.setText(title);
@@ -167,22 +200,27 @@ public class TableModel {
 			return result;
 		}
 
-		protected final Point hintMeasureText(String text) {
+		protected final Point hintMeasureText(String text)
+		{
 			GC gc = new GC(getViewer().getControl().getDisplay());
 			gc.setFont(getViewer().getControl().getFont());
-			try {
+			try
+			{
 				return gc.textExtent(text);
-			} finally {
+			}
+			finally
+			{
 				gc.dispose();
 			}
 		}
 	}
 
 	/**
-	 * Couples the {@link TableViewerColumn} with underlying {@link
-	 * GriddableItemDescriptor}.
+	 * Couples the {@link TableViewerColumn} with underlying
+	 * {@link GriddableItemDescriptor}.
 	 */
-	private static class DescriptorBasedColumn extends ColumnBase {
+	private static class DescriptorBasedColumn extends ColumnBase
+	{
 
 		/**
 		 * Label text for any object that is not a {@link TimeStampedDataItem}
@@ -195,61 +233,85 @@ public class TableModel {
 
 		private LabelProvider myLabelProvider;
 
-		public DescriptorBasedColumn(TableModel model, GriddableItemDescriptor descriptor, int columnIndex, boolean isLastColumn) {
+		public DescriptorBasedColumn(TableModel model,
+				GriddableItemDescriptor descriptor, int columnIndex,
+				boolean isLastColumn)
+		{
 			super(model);
 			myDescriptor = descriptor;
 			String widthEstimator = descriptor.getTitle();
-			if (descriptor instanceof GriddableItemDescriptorExtension) {
-				String dataSample = ((GriddableItemDescriptorExtension) descriptor).getSampleString();
-				if (dataSample != null && dataSample.length() > widthEstimator.length()) {
+			if (descriptor instanceof GriddableItemDescriptorExtension)
+			{
+				String dataSample = ((GriddableItemDescriptorExtension) descriptor)
+						.getSampleString();
+				if (dataSample != null && dataSample.length() > widthEstimator.length())
+				{
 					widthEstimator = dataSample;
 				}
 			}
 			myTableViewerColumn = createColumn(descriptor.getTitle(), widthEstimator);
-			DescriptorEditingSupport editingSupport = new DescriptorEditingSupport(model, myDescriptor);
-			if (isLastColumn) {
-				editingSupport.setTabTraverseTarget(new NextElementFirstColumnTarget(getViewer(), true));
-			} else {
-				editingSupport.setTabTraverseTarget(new SameElementDifferentColumnTarget(getViewer(), columnIndex + 1));
+			DescriptorEditingSupport editingSupport = new DescriptorEditingSupport(
+					model, myDescriptor);
+			if (isLastColumn)
+			{
+				editingSupport.setTabTraverseTarget(new NextElementFirstColumnTarget(
+						getViewer(), true));
+			}
+			else
+			{
+				editingSupport
+						.setTabTraverseTarget(new SameElementDifferentColumnTarget(
+								getViewer(), columnIndex + 1));
 			}
 			myTableViewerColumn.setEditingSupport(editingSupport);
 		}
 
 		@Override
-		public boolean isFixed() {
+		public boolean isFixed()
+		{
 			return false;
 		}
 
 		@Override
-		public TableViewerColumn getTableViewerColumn() {
+		public TableViewerColumn getTableViewerColumn()
+		{
 			return myTableViewerColumn;
 		}
 
-		public GriddableItemDescriptor getDescriptor() {
+		public GriddableItemDescriptor getDescriptor()
+		{
 			return myDescriptor;
 		}
 
 		@Override
-		public ILabelProvider getLabelProvider(Object element) {
-			//XXX: the line below does not work -- there are no meaningful 
-			//implementation of the label providers in actual descriptors
-			//return getDescriptor().getEditor().getLabelFor(element);
+		public ILabelProvider getLabelProvider(Object element)
+		{
+			// XXX: the line below does not work -- there are no meaningful
+			// implementation of the label providers in actual descriptors
+			// return getDescriptor().getEditor().getLabelFor(element);
 
-			//So, for now we will use the double value which is already used for charting
-			if (myLabelProvider == null) {
+			// So, for now we will use the double value which is already used for
+			// charting
+			if (myLabelProvider == null)
+			{
 				myLabelProvider = createChartableLabelProvider();
 			}
 
-			//if chart data is not available, just give up
-			return myLabelProvider != null ? myLabelProvider : getDescriptor().getEditor().getLabelFor(element);
+			// if chart data is not available, just give up
+			return myLabelProvider != null ? myLabelProvider : getDescriptor()
+					.getEditor().getLabelFor(element);
 		}
 
-		private LabelProvider createChartableLabelProvider() {
-			return new LabelProvider() {
+		private LabelProvider createChartableLabelProvider()
+		{
+			return new LabelProvider()
+			{
 
 				@Override
-				public String getText(Object element) {
-					if (false == element instanceof TimeStampedDataItem) {
+				public String getText(Object element)
+				{
+					if (false == element instanceof TimeStampedDataItem)
+					{
 						return UNKNOWN;
 					}
 					TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
@@ -261,50 +323,59 @@ public class TableModel {
 
 	}
 
-	private static class RowSelectorColumn extends ColumnBase {
+	private static class RowSelectorColumn extends ColumnBase
+	{
 
 		private final TableViewerColumn myEmptyColumn;
 
 		private final LabelProvider myLabelProvider;
 
-		public RowSelectorColumn(TableModel tableModel) {
+		public RowSelectorColumn(TableModel tableModel)
+		{
 			super(tableModel);
 			myEmptyColumn = createColumn("");
-			myLabelProvider = new LabelProvider() {
+			myLabelProvider = new LabelProvider()
+			{
 
 				@Override
-				public String getText(Object element) {
+				public String getText(Object element)
+				{
 					return "";
 				}
 			};
 		}
 
 		@Override
-		public boolean isFixed() {
+		public boolean isFixed()
+		{
 			return true;
 		}
 
 		@Override
-		public GriddableItemDescriptor getDescriptor() {
+		public GriddableItemDescriptor getDescriptor()
+		{
 			return null;
 		}
 
 		@Override
-		public TableViewerColumn getTableViewerColumn() {
+		public TableViewerColumn getTableViewerColumn()
+		{
 			return myEmptyColumn;
 		}
 
 		@Override
-		public ILabelProvider getLabelProvider(Object arg0) {
+		public ILabelProvider getLabelProvider(Object arg0)
+		{
 			return myLabelProvider;
 		}
 	}
 
-	private static class DateTimeColumn extends ColumnBase {
+	private static class DateTimeColumn extends ColumnBase
+	{
 
 		/**
-		 * The first column is a table row selector, so the first meaningful
-		 * index is 1
+		 * The first column is a table row selector, so the first meaningful index
+		 * is 1
 		 */
 		public static final int DATE_TIME_COLUMN_INDEX = 1;
 
@@ -324,61 +395,80 @@ public class TableModel {
 
 		private final boolean myAppendMilliseconds;
 
-		public DateTimeColumn(TableModel model, boolean appendMilliseconds) {
+		public DateTimeColumn(TableModel model, boolean appendMilliseconds)
+		{
 			super(model);
 			myAppendMilliseconds = appendMilliseconds;
 			final String SAMPLE_DATE = getSampleDateTimeLabel();
 			myTableViewerColumn = createColumn(DATE_TIME_COLUMN_TITLE, SAMPLE_DATE);
-			DateTimeEditingSupportRich editingSupport = new DateTimeEditingSupportRich(model);
-			editingSupport.setTabTraverseTarget(new SameElementDifferentColumnTarget(getViewer(), DATE_TIME_COLUMN_INDEX + 1));
+			DateTimeEditingSupportRich editingSupport = new DateTimeEditingSupportRich(
+					model);
+			editingSupport.setTabTraverseTarget(new SameElementDifferentColumnTarget(
+					getViewer(), DATE_TIME_COLUMN_INDEX + 1));
 			myTableViewerColumn.setEditingSupport(editingSupport);
 
-			DateTimeCellEditor shouldFit = new DateTimeCellEditor(getViewer().getTable());
+			DateTimeCellEditor shouldFit = new DateTimeCellEditor(getViewer()
+					.getTable());
 			shouldFit.setValue(new Date());
-			Point shouldFitSize = shouldFit.getControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
-			myTableViewerColumn.getColumn().setWidth(Math.max(myTableViewerColumn.getColumn().getWidth(), shouldFitSize.x));
+			Point shouldFitSize = shouldFit.getControl().computeSize(SWT.DEFAULT,
+					SWT.DEFAULT);
+			myTableViewerColumn.getColumn()
+					.setWidth(
+							Math.max(myTableViewerColumn.getColumn().getWidth(),
+									shouldFitSize.x));
 			shouldFit.dispose();
 		}
 
 		@Override
-		public boolean isFixed() {
+		public boolean isFixed()
+		{
 			return true;
 		}
 
 		/**
 		 * @return <code>null</code> because this column had no associated
-		 * 	descriptor.
+		 *         descriptor.
 		 */
 		@Override
-		public GriddableItemDescriptor getDescriptor() {
+		public GriddableItemDescriptor getDescriptor()
+		{
 			return null;
 		}
 
 		@Override
-		public TableViewerColumn getTableViewerColumn() {
+		public TableViewerColumn getTableViewerColumn()
+		{
 			return myTableViewerColumn;
 		}
 
 		@Override
-		public ILabelProvider getLabelProvider(Object element) {
-			if (myDateTimeLabelProvider == null) {
-				myDateTimeLabelProvider = new LabelProvider() {
+		public ILabelProvider getLabelProvider(Object element)
+		{
+			if (myDateTimeLabelProvider == null)
+			{
+				myDateTimeLabelProvider = new LabelProvider()
+				{
 
 					@Override
-					public String getText(Object element) {
+					public String getText(Object element)
+					{
 						HiResDate date = null;
-						if (element instanceof HiResDate) {
+						if (element instanceof HiResDate)
+						{
 							date = (HiResDate) date;
 						}
-						if (element instanceof TimeStampedDataItem) {
+						if (element instanceof TimeStampedDataItem)
+						{
 							date = ((TimeStampedDataItem) element).getDTG();
 						}
-						if (date == null) {
+						if (date == null)
+						{
 							return NOT_A_DATE;
 						}
 						StringBuffer result = new StringBuffer();
 						result.append(FormatDateTime.toString(date.getDate().getTime()));
-						if (myAppendMilliseconds) {
+						if (myAppendMilliseconds)
+						{
 							result.append(" (");
 							result.append(date.getDate().getTime());
 							result.append(" ms)");
@@ -390,67 +480,88 @@ public class TableModel {
 			return myDateTimeLabelProvider;
 		}
 
-		private String getSampleDateTimeLabel() {
+		private String getSampleDateTimeLabel()
+		{
 			HiResDate now = new HiResDate(new Date());
 			return getLabelProvider(now).getText(now);
 		}
 
 	}
 
-	private static class SameElementDifferentColumnTarget implements EditableTarget {
+	private static class SameElementDifferentColumnTarget implements
+			EditableTarget
+	{
 
 		private final int myColumnIndex;
 
 		private final ColumnViewer myViewer;
 
-		public SameElementDifferentColumnTarget(ColumnViewer viewer, int columnIndex) {
+		public SameElementDifferentColumnTarget(ColumnViewer viewer, int columnIndex)
+		{
 			myViewer = viewer;
 			myColumnIndex = columnIndex;
 		}
 
-		public int getColumnIndex() {
+		public int getColumnIndex()
+		{
 			return myColumnIndex;
 		}
 
-		public ColumnViewer getColumnViewer() {
+		public ColumnViewer getColumnViewer()
+		{
 			return myViewer;
 		}
 
-		public Object getElementToEdit(Object actuallyEdited) {
+		public Object getElementToEdit(Object actuallyEdited)
+		{
 			return actuallyEdited;
 		}
 	}
 
-	private static class NextElementFirstColumnTarget implements EditableTarget {
+	private static class NextElementFirstColumnTarget implements EditableTarget
+	{
 
 		private final ColumnViewer myViewer;
 
 		private final boolean myCreateOnDemand;
 
-		public NextElementFirstColumnTarget(ColumnViewer viewer, boolean createOnDemand) {
+		public NextElementFirstColumnTarget(ColumnViewer viewer,
+				boolean createOnDemand)
+		{
 			myViewer = viewer;
 			myCreateOnDemand = createOnDemand;
 		}
 
-		public int getColumnIndex() {
+		public int getColumnIndex()
+		{
 			return DateTimeColumn.DATE_TIME_COLUMN_INDEX;
 		}
 
-		public ColumnViewer getColumnViewer() {
+		public ColumnViewer getColumnViewer()
+		{
 			return myViewer;
 		}
 
-		public Object getElementToEdit(Object actuallyEdited) {
-			if (getColumnViewer().getInput() instanceof GriddableSeries && actuallyEdited instanceof TimeStampedDataItem) {
+		public Object getElementToEdit(Object actuallyEdited)
+		{
+			if (getColumnViewer().getInput() instanceof GriddableSeries
+					&& actuallyEdited instanceof TimeStampedDataItem)
+			{
 				GriddableSeries series = (GriddableSeries) getColumnViewer().getInput();
 				TimeStampedDataItem actualItem = (TimeStampedDataItem) actuallyEdited;
-				if (isLastItem(series, actualItem)) {
+				if (isLastItem(series, actualItem))
+				{
 					return myCreateOnDemand ? cloneActualItem(series, actualItem) : null;
-				} else {
-					ListIterator<TimeStampedDataItem> items = series.getItems().listIterator();
-					while (items.hasNext()) {
+				}
+				else
+				{
+					ListIterator<TimeStampedDataItem> items = series.getItems()
+							.listIterator();
+					while (items.hasNext())
+					{
 						TimeStampedDataItem next = items.next();
-						if (next == actualItem) {
+						if (next == actualItem)
+						{
 							break;
 						}
 					}
@@ -460,14 +571,18 @@ public class TableModel {
 			return null;
 		}
 
-		private Object cloneActualItem(GriddableSeries series, TimeStampedDataItem lastItem) {
+		private Object cloneActualItem(GriddableSeries series,
+				TimeStampedDataItem lastItem)
+		{
 			TimeStampedDataItem copy = series.makeCopy(lastItem);
 			series.insertItem(copy);
 			return copy;
 		}
 
-		private boolean isLastItem(GriddableSeries series, TimeStampedDataItem item) {
-			if (series.getItems().isEmpty()) {
+		private boolean isLastItem(GriddableSeries series, TimeStampedDataItem item)
+		{
+			if (series.getItems().isEmpty())
+			{
 				return false;
 			}
 			List<TimeStampedDataItem> allItems = series.getItems();
