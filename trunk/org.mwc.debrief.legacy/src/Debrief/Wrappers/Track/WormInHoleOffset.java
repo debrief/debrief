@@ -55,7 +55,13 @@ public class WormInHoleOffset
 		{
 			FixWrapper thisP = (FixWrapper) enumer.nextElement();
 
-			if (thisP.getDateTimeGroup().lessThan(dtg))
+			if(thisP.getDateTimeGroup().equals(dtg))
+			{
+				res = new WorldLocation(thisP.getLocation().add(new WorldVector(thisP.getCourse(),
+						MWC.Algorithms.Conversions.m2Degs(-offsetM), 0d)));
+				return res;
+			}
+			else if (thisP.getDateTimeGroup().lessThan(dtg))
 			{
 				backTrack.add(thisP);
 			}
