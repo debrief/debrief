@@ -429,7 +429,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				// ////////////////////////////////////////////////////
 				// step through the track
 				//
-				Collection<Editable> sensorFixes = primaryTrack.getItemsBetween(
+				Collection<Editable> primaryFixes = primaryTrack.getItemsBetween(
 						start_time, end_time);
 
 				// have we found any?. Hey, listen here. The "getItemsBetween" method
@@ -441,7 +441,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 				// we still do a sanity check at the end of this method to stop us
 				// adding
 				// empty data series to the collection.
-				if (sensorFixes != null)
+				if (primaryFixes != null)
 				{
 					// ////////////////////////////////////////////////
 					// CASE 3 - both tracks have time data, relative calc
@@ -449,11 +449,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					// yes, we do have DTG data for this track - hooray!
 
 					// ok, step through the list
-					Iterator<Editable> theseCuts = sensorFixes.iterator();
+					Iterator<Editable> theseFixes = primaryFixes.iterator();
 
-					while (theseCuts.hasNext())
+					while (theseFixes.hasNext())
 					{
-						FixWrapper thisPosition = (FixWrapper) theseCuts.next();
+						FixWrapper thisPosition = (FixWrapper) theseFixes.next();
 
 						Color thisColor = thisPosition.getColor();
 
@@ -463,7 +463,6 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						// is this fix visible?
 						if (thisPosition.getVisible())
 						{
-
 							// ok, now get the sensor
 							WorldLocation sensorLoc = thisSensor.getHost().getBacktraceTo(
 									currentTime, thisSensor.getSensorOffset(),
