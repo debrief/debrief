@@ -36,8 +36,8 @@ public class WormInHoleOffset
 			HiResDate dtg, WorldDistance arrayOffset)
 	{
 		WorldLocation res = null;
-		double offsetM = - arrayOffset.getValueIn(WorldDistance.METRES);
-//		double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));
+		double offsetM = -arrayOffset.getValueIn(WorldDistance.METRES);
+		// double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));
 
 		// check we're in period
 		if (dtg.lessThan(track.getStartDTG()) || dtg.greaterThan(track.getEndDTG()))
@@ -55,10 +55,14 @@ public class WormInHoleOffset
 		{
 			FixWrapper thisP = (FixWrapper) enumer.nextElement();
 
-			if(thisP.getDateTimeGroup().equals(dtg))
+			if ((backTrack.size() == 0) && (thisP.getDateTimeGroup().equals(dtg)))
 			{
-				res = new WorldLocation(thisP.getLocation().add(new WorldVector(thisP.getCourse(),
-						MWC.Algorithms.Conversions.m2Degs(-offsetM), 0d)));
+				// right, this is the first point, and we've matched it already. Just
+				// produce
+				// a vector back down ownship path
+				res = new WorldLocation(thisP.getLocation().add(
+						new WorldVector(thisP.getCourse(), MWC.Algorithms.Conversions
+								.m2Degs(-offsetM), 0d)));
 				return res;
 			}
 			else if (thisP.getDateTimeGroup().lessThan(dtg))
@@ -80,12 +84,12 @@ public class WormInHoleOffset
 			nextPoint = FixWrapper.interpolateFix(backTrack.lastElement(), nextPoint,
 					dtg);
 
-			for (int i = backTrack.size()-1; i >= 0; i--)
+			for (int i = backTrack.size() - 1; i >= 0; i--)
 			{
 				FixWrapper thisI = backTrack.elementAt(i);
 
-				double thisLen = nextPoint.getLocation().subtract(
-						thisI.getFixLocation()).getRange();
+				double thisLen = nextPoint.getLocation()
+						.subtract(thisI.getFixLocation()).getRange();
 				double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
 
 				// is this less than our stub?
@@ -94,8 +98,7 @@ public class WormInHoleOffset
 					// so just interpolate along the path
 					double posDelta = offsetM / thisLenM;
 					double timeDelta = (nextPoint.getDTG().getMicros() - thisI.getDTG()
-							.getMicros())
-							* posDelta;
+							.getMicros()) * posDelta;
 					FixWrapper newMidFix = FixWrapper.interpolateFix(thisI, nextPoint,
 							new HiResDate(0,
 									(long) (nextPoint.getDTG().getMicros() - timeDelta)));
@@ -142,7 +145,8 @@ public class WormInHoleOffset
 			assertEquals("correct points", 5, track.numFixes());
 
 			// get the sensor
-			SensorWrapper sw = (SensorWrapper) track.getSensors().elements().nextElement();
+			SensorWrapper sw = (SensorWrapper) track.getSensors().elements()
+					.nextElement();
 
 			// find the position of the last fix
 			SensorContactWrapper scw = (SensorContactWrapper) sw.getNearestTo(sw
@@ -196,20 +200,20 @@ public class WormInHoleOffset
 					110));
 			fw1.setLabel("fw1");
 			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 0),
-					loc_1.add(getVector(0, 600)), MWC.Algorithms.Conversions
-							.Degs2Rads(90), 120));
+					loc_1.add(getVector(0, 600)),
+					MWC.Algorithms.Conversions.Degs2Rads(90), 120));
 			fw2.setLabel("fw2");
 			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 0),
-					loc_1.add(getVector(45, 849)), MWC.Algorithms.Conversions
-							.Degs2Rads(180), 130));
+					loc_1.add(getVector(45, 849)),
+					MWC.Algorithms.Conversions.Degs2Rads(180), 130));
 			fw3.setLabel("fw3");
 			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 0),
-					loc_1.add(getVector(90, 600)), MWC.Algorithms.Conversions
-							.Degs2Rads(90), 140));
+					loc_1.add(getVector(90, 600)),
+					MWC.Algorithms.Conversions.Degs2Rads(90), 140));
 			fw4.setLabel("fw4");
 			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 0),
-					loc_1.add(getVector(90, 1200)), MWC.Algorithms.Conversions
-							.Degs2Rads(90), 700));
+					loc_1.add(getVector(90, 1200)),
+					MWC.Algorithms.Conversions.Degs2Rads(90), 700));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
 			tw.addFix(fw2);

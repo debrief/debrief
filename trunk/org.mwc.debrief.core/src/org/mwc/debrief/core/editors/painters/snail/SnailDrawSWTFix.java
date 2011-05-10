@@ -31,6 +31,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.FractionPropertyEditor;
+import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -194,15 +195,22 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 			thisR.add(dotsArea);
 
 		// plot the track name
-		if(_plotName)
+		if(getPlotTrackName())
 		{
 			final String msg = fix.getTrackWrapper().getName();
 			
-			// shift the centre point across a bit
-			p.translate(5, 0);
+			WorldLocation fixLoc = fix.getFixLocation();
+			TextLabel trkName = new TextLabel(fixLoc, msg);
+			trkName.setColor(col);
+			// position the track name according to how it's specified in the parent track
+			trkName.setRelativeLocation(fix.getTrackWrapper().getNameLocation());
+			trkName.paint(dest);
 
-			// and draw the text
-			dest.drawText(msg, p.x, p.y);
+			// use the coordinates to indicate how much of the plot has been repainted
+			Point p2 = dest.toScreen(trkName.getAnchor());
+			
+			// shift the centre point across a bit
+			p2.translate(5, 0);
 
 			// somehow we need to include this extended area
 			final int sWid = msg.length() * 6;
