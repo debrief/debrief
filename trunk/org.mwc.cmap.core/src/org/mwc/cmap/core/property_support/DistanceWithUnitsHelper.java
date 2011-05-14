@@ -17,6 +17,8 @@ import MWC.GenericData.WorldDistance;
 
 public class DistanceWithUnitsHelper extends EditorHelper
 {
+	
+	
 	public static class DistanceModel implements ValueWithUnitsDataModel
 	{
 		/** the world distance we're editing
@@ -78,6 +80,38 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		super(WorldDistance.class);
 	}
 
+	/** produce editable version.  In our data model we may rely on a null value to describe
+	 * an attribute.  But, our editor cannot edit null values.  So, if we receive a null
+	 * distance, convert it to a zero length.  
+	 */
+	public Object translateToSWT(Object value)
+	{
+		// right, is it null? if so provide zero world distance
+		if(value == null)
+			value = new WorldDistance(0, WorldDistance.METRES);
+		
+		// ok, done. let the parent look at it - just out of politeness
+		return super.translateToSWT(value);
+	}
+
+	/** produce editable version.  In our data model we may rely on a null value to describe
+	 * an attribute.  But, our editor cannot edit null values.  We convert a null value
+	 * to an editable range - but we also need to be able to convert back.  So convert a 
+	 * zero range to a null value.  
+	 */
+	public Object translateFromSWT(Object value)
+	{
+		if(value != null)
+		{
+			WorldDistance dist = (WorldDistance) value;
+			if(dist.getValue() == 0)
+				value = null;
+		}
+		
+		// ok, done. let the parent look at it - just out of politeness
+		return super.translateFromSWT(value);
+	}
+	
 	/** create an instance of the cell editor suited to our data-type
 	 * 
 	 * @param parent

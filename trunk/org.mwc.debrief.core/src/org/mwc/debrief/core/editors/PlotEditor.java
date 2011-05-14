@@ -72,6 +72,7 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperat
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
 import org.mwc.cmap.core.wizards.EnterBooleanPage;
+import org.mwc.cmap.core.wizards.EnterRangePage;
 import org.mwc.cmap.core.wizards.EnterStringPage;
 import org.mwc.cmap.core.wizards.SelectColorPage;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
@@ -94,6 +95,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
@@ -108,6 +110,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
 
@@ -469,21 +472,44 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		// create the wizard to color/name this
 		SimplePageListWizard wizard = new SimplePageListWizard();
+
+		// right, just have a quick look and see if the sensor has range data -
+		// because
+		// if it doesn't we'll let the user set a default
+		Enumeration<Editable> cuts = thisS.elements();
+		boolean hasRange = false;
+		if (cuts.hasMoreElements())
+		{
+			Editable firstCut = cuts.nextElement();
+			SensorContactWrapper scw = (SensorContactWrapper) firstCut;
+			if (scw.getRange() != null)
+			{
+				hasRange = true;
+			}
+		}
+		final String imagePath = "images/NameSensor.jpg";
+
 		EnterStringPage getName = new EnterStringPage(null, thisS.getName(),
-				"Import Sensor data",
-				"Please provide the name for this sensor",
+				"Import Sensor data", "Please provide the name for this sensor",
 				"a one-word title for this block of sensor contacts (e.g. S2046)",
-				null, null);
+				imagePath, null);
 		SelectColorPage getColor = new SelectColorPage(null, thisS.getColor(),
 				"Import Sensor data", "Now format the new sensor",
-				"The color for this new sensor", null, null);
+				"The default color for the cuts for this new sensor", imagePath, null);
 		EnterBooleanPage getVis = new EnterBooleanPage(null, false,
 				"Import Sensor data",
-				"Please specify if this sensor should be shown once loaded",
-				"yes/no",
-				null, null);
+				"Please specify if this sensor should be displayed once loaded", "yes/no",
+				imagePath, null);
+		WorldDistance defRange = new WorldDistance(5000, WorldDistance.YARDS);
+		EnterRangePage getRange = new EnterRangePage(
+				null,
+				"Import Sensor data",
+				"Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
+				"Default range", defRange, imagePath, null);
 		wizard.addWizard(getName);
 		wizard.addWizard(getColor);
+		if (!hasRange)
+			wizard.addWizard(getRange);
 		wizard.addWizard(getVis);
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
@@ -496,6 +522,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			thisS.setName(getName.getString());
 			thisS.setColor(getColor.getColor());
 			thisS.setVisible(getVis.getBoolean());
+
+			// are we doing range?
+			if (!hasRange)
+			{
+				WorldDistance theRange = getRange.getRange();
+
+				// did a range get entered?
+				if (theRange.getValue() != 0)
+				{
+					Enumeration<Editable> iter = thisS.elements();
+					while (iter.hasMoreElements())
+					{
+						SensorContactWrapper cut = (SensorContactWrapper) iter
+								.nextElement();
+						cut.setRange(new WorldDistance(theRange));
+					}
+				}
+			}
 		}
 	}
 
