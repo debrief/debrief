@@ -44,13 +44,10 @@
   <xsl:param name="preface.autolabel" select="1"/>
 
   <!-- other, general modifications -->
-  <!--  <xsl:param name="age.margin.top" select="'0.3in'"/>
-   <xsl:param name="age.margin.bottom" select="'0.3in'"/>
-   <xsl:param name="ouble.sided" select="1"/>                    -->
-
-
-  <!--<xsl:param name="rootid" select="'user_engine'"></xsl:param>-->
-
+  
+  <xsl:attribute-set name="monospace.verbatim.properties">
+    <xsl:attribute name="wrap-option">wrap</xsl:attribute>
+</xsl:attribute-set>
 
   <xsl:attribute-set name="section.title.level1.properties">
     <xsl:attribute name="font-size">
