@@ -555,7 +555,7 @@
         virtues of Debrief and the Open Source principles behind it, at
         <indexterm>
             <primary>UDT</primary>
-          </indexterm>Undersea Defence Technology 2002 in La Spetzia, Italy.
+          </indexterm>Undersea Defence Technology 2002 in La Spezia, Italy.
         The paper itself is available for viewing at the: <ulink
         url="http://www.debrief.info">Debrief web site</ulink>.</para>
 
@@ -904,7 +904,7 @@ Naval Undersea Warfare Center (NUWC)
                   complex tasks to achieve an overall goals such as:
                   <emphasis>loading data into Debrief</emphasis> or
                   <emphasis>analysing narrative data</emphasis>. The cheat
-                  sheets are accesssed by selecting <guimenuitem>Debrief Cheat
+                  sheets are accessed by selecting <guimenuitem>Debrief Cheat
                   Sheets</guimenuitem> from the <guimenu>Help</guimenu> menu
                   in Debrief NG.</para>
                 </formalpara>
@@ -1730,7 +1730,7 @@ and so on....</programlisting></para>
     <partintro id="IntroPart2">
       <para>You're now ready to start using the more advanced features of
       <application>DebriefNG</application>, the following chapters will guide
-      you through specifc areas of <application>Debrief</application>'s
+      you through specific areas of <application>Debrief</application>'s
       analysis capability.</para>
     </partintro>
 
@@ -2606,7 +2606,7 @@ and so on....</programlisting></para>
             <para>The save operation itself is conducted in a two-stage
             process. If the operation entails saving over an existing file
             (when you just do a plain Save, or Save As over-writing an older
-            version) Debrief first writes the plot to a subtlely different
+            version) Debrief first writes the plot to a subtly different
             filename in the same directory (<filename>plot.xml</filename>
             would get saved to <filename>~plot.tmp</filename>). If the save
             operation completes successfully then the older file is deleted
@@ -3371,7 +3371,7 @@ and so on....</programlisting></para>
                     default highlight properties you are able to select the
                     colour and size of the rectangle to plot. If a track has
                     sensor data present, and the sensor has a non-zero array
-                    offset, then is is possible (via the PlotArrayCentre track
+                    offset, then it is possible (via the PlotArrayCentre track
                     property) to direct Debrief to plot a diagonal cross icon
                     at the array centre.</para>
                   </listitem>
@@ -3902,7 +3902,7 @@ and so on....</programlisting></para>
 
           <para>In addition to mouse-movement, controls have been added to the
           view to adjust the current view depth, heading, pan and zoom.
-          Experiment with moving around the plot using these controls aswell
+          Experiment with moving around the plot using these controls as well
           as the mouse.</para>
 
           <para>The drop-down list provided in the centre of the window
@@ -4521,7 +4521,7 @@ and so on....</programlisting></para>
 
           <para>Also, don't forget that time-variable graphs produced by the
           <link linkend="track_toolbox">Track-Time toolbox</link> can be
-          exported to WMF aswell, as described in Section <xref
+          exported to WMF as well, as described in Section <xref
           linkend="show_time_vars" />, titled <xref
           endterm="show_time_vars_title" linkend="show_time_vars" /> .</para>
         </sect2>
@@ -5111,7 +5111,7 @@ and so on....</programlisting></para>
           Operational Navigation Chart (ONC) series co-produced by the
           military mapping authorities of Australia, Canada, United Kingdom,
           and the United States. The complete database is available on a set
-          of four CD-ROM's and contains more than 1,800 megabytes of vector
+          of four CD-ROMs and contains more than 1,800 megabytes of vector
           data organized into 10 thematic layers. VMap Level 0 includes major
           road and rail networks, hydrologic drainage systems, utility
           networks (cross-country pipelines and communication lines), major
@@ -5854,7 +5854,7 @@ and so on....</programlisting></para>
             offers more than 6 times the detail of the ETOPO-5 dataset. This
             2-minute data is derived from the following sources: <itemizedlist>
                 <listitem>
-                  <para>The seafloor data between latitides 64 North and 72
+                  <para>The seafloor data between latitudes 64 North and 72
                   South is from the work of <emphasis>Smith and Sandwell,
                   1997</emphasis>. These data were obtained from satellite
                   altimetry observations combined with shipboard echo-sounding
@@ -5988,7 +5988,7 @@ and so on....</programlisting></para>
                   be improved by directing the algorithm to skip a number of
                   depth values before performing the next calculation. This
                   may make the contours themselves very slightly more blocky,
-                  though still useable.</para>
+                  though still usable.</para>
                 </listitem>
               </varlistentry>
 
@@ -6308,7 +6308,7 @@ and so on....</programlisting></para>
           editor</title>
 
           <para>Since Autumn 09 Debrief has supported a library of sensor
-          ofsets. These offsets are used to populate a drop-down list of
+          offsets. These offsets are used to populate a drop-down list of
           lengths, used in support of specifying sensor offsets.</para>
 
           <para>Somewhere on your network create a csv-formatted text file
@@ -6345,7 +6345,7 @@ Platform C,-551</screen></para>
           <note>
             <para>Note, if you haven't got a sensor array offsets file
             assigned, you can still enter a value by hand. But, you do not
-            need to specify the metres units. For an array ofset of -400m,
+            need to specify the metres units. For an array offset of -400m,
             just enter -400.</para>
           </note>
         </sect2>
@@ -6493,7 +6493,7 @@ Platform C,-551</screen></para>
             Manager). As blocks of sensor data are selected, they are shown in
             black in the view. Items can be multiple-selected with the
             <keysym>&lt;ctrl&gt;</keysym> key. Once multiple blocks of sensor
-            dara are selected in the layer manager you can right-click on them
+            data are selected in the layer manager you can right-click on them
             and select 'Merge sensors into <emphasis>xxxx</emphasis>'</para>
 
             <para>Also note that whilst by default comes up with a unique
@@ -6579,7 +6579,7 @@ Platform C,-551</screen></para>
                     new sensor, and the target track. Right-click on them and
                     select <guilabel>View sensor range plot</guilabel>.</para>
                   </listitem>
-                </orderedlist>In this mode of use, the algortihm generates a
+                </orderedlist>In this mode of use, the algorithm generates a
               range for each calculated position on the target track. In the
               normal mode (where we have sensor data), a range is calculated
               for each point at which there's a sensor cut (using
@@ -6967,7 +6967,7 @@ Platform C,-551</screen></para>
             show the 'score' for each target depth trialled - normally only
             around 10-20 depths are necessary to reach an optimum.</para>
 
-            <para>Note, during developement, on occasion the optimisation
+            <para>Note, during development, on occasion the optimisation
             algorithm failed to produce a realistic target depth. On each
             occasion this was a symptom of there not being a valid result in
             the available target range (0 to 1000m) - which itself was
@@ -7627,8 +7627,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           Don't worry if you're not quite sure if the bug is actually intended
           behaviour, or if you're unsure whether a proposed new feature would
           'make the cut'. Once your request is emailed it's recorded on the
-          system and an informed debate/discussion can folllow. This ensures
-          requests dont fall through the cracks.</para>
+          system and an informed debate/discussion can follow. This ensures
+          requests don't fall through the cracks.</para>
 
           <para><figure float="0" id="bug_reporting_page">
               <title>Assembla Bug Reporting page</title>
@@ -7856,9 +7856,9 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <para>Thus, the Debrief shortcut (.ini file) has been modified to
           explicitly indicate that the workspace is in the a folder in the
           user login area:<screen>-data
-@user.home/.DebriefNG</screen>The '.' character before the DebriefNG
-          foldername follows a convention that is normally sufficient to make
-          the operating system make the folder hidden by default.<tip>
+@user.home/.DebriefNG</screen>The '.' character before the DebriefNG folder
+          name follows a convention that is normally sufficient to make the
+          operating system make the folder hidden by default.<tip>
               <para>When users are upgrading from older versions of DebriefNG,
               the application will ignore the last workspace location, and
               load a new, blank workspace from the new user directory. If the
@@ -7979,7 +7979,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           not of value to a typical user under normal usage. The log itself is
           called <filename>.log</filename> and is located in the <filename
           class="directory">workspace/metadata</filename> folder within your
-          Workspace (initially, this is within your Debrief NG intallation
+          Workspace (initially, this is within your Debrief NG installation
           directory).</para>
 
           <para>Th error log may be examined for hints to the problem
@@ -8666,7 +8666,7 @@ and entry type can be multi-word if surrounded by quotes (").
               support</para>
             </blockquote></para>
 
-          <para>Whilst it has miliary roots, the KML dialect of XML has
+          <para>Whilst it has military roots, the KML dialect of XML has
           received wide adoption for the recording and distribution of
           positional information. KML extends the GML standard. KML and GML
           provide a number of ways of recording positional data. This section
@@ -9225,7 +9225,8 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/rhumb_line_segments.gif" width="200"/>
+                  <imagedata fileref="figures/rhumb_line_segments.gif"
+                             width="200" />
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -9235,8 +9236,8 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
           the divisions of FT are made sufficiently small, the triangles FaF,
           ABa, BbB ... are themselves small enough to be treated as plane
           triangles. Also, since the course angle at F, A, B, C, ... remains
-          constant by the definition of a rhumb-line, these smal triangles are
-          equal.</para>
+          constant by the definition of a rhumb-line, these small triangles
+          are equal.</para>
         </sect2>
 
         <sect2 id="short_dist_sailing">
@@ -9293,7 +9294,7 @@ departure / d.lat = tan (course)</markup>
             analyst to appraise himself with array performance and determine
             the applicability of the worm in the hole algorithm - though note
             its results are much more accurate than the non-worm in the hole
-            straigtht line model.</para>
+            straight line model.</para>
           </note>
         </sect2>
 
@@ -9312,7 +9313,7 @@ departure / d.lat = tan (course)</markup>
           length of the 400m array falls completely within the 600m
           leg.</para>
 
-          <para>The fourth position is, however, differnent. The straight-lne
+          <para>The fourth position is, however, different. The straight-line
           model plots it back along the reciprocal of the platform heading at
           time 300. The worm in the hole model, however, turns back along the
           ownship track from position 200 to 300. At time 350, the ownship
@@ -9330,14 +9331,14 @@ departure / d.lat = tan (course)</markup>
         </sect2>
 
         <sect2 id="WormAlgorithm">
-          <title>Algortihm</title>
+          <title>Algorithm</title>
 
           <para>The worm in the hole algorithm is implemented as
           follows:<orderedlist>
               <listitem>
                 <para>Determine platform track, the time at which sensor
-                location is required, the specified length offfset, and
-                whether the sensor is 'ticked' for 'worm in the hole
+                location is required, the specified length offset, and whether
+                the sensor is 'ticked' for 'worm in the hole
                 algorithm'.</para>
               </listitem>
 
@@ -9374,7 +9375,7 @@ departure / d.lat = tan (course)</markup>
 
                           <listitem>
                             <para>Interpolate back from nextPoint to the last
-                            item in the backTrack by the timeDelta paramter.
+                            item in the backTrack by the timeDelta parameter.
                             This is the resultant sensor location</para>
                           </listitem>
                         </orderedlist></para>
@@ -9586,9 +9587,9 @@ departure / d.lat = tan (course)</markup>
           expects a user written subroutine called VECOUT. CONREC calls VECOUT
           with the horizontal and vertical coordinates of the start and end
           coordinates of a line segment along with the contour level for that
-          line segment. In the simplest case this is very similar the the
-          usual LINE (x1,y1)-(x2,y2) command in BASIC. See the source code
-          listing below.</para>
+          line segment. In the simplest case this is very similar to the usual
+          LINE (x1,y1)-(x2,y2) command in BASIC. See the source code listing
+          below.</para>
         </sect2>
 
         <sect2 id="conrec_alg">
@@ -9603,7 +9604,7 @@ departure / d.lat = tan (course)</markup>
           four triangular regions by cutting along the diagonals. Each of
           these triangular planes may be bisected by horizontal contour plane.
           The intersection of these two planes is a straight line segment,
-          part of the the contour curve at that contour height.</para>
+          part of the contour curve at that contour height.</para>
 
           <para>Depending on the value of a contour level with respect to the
           height at the vertices of a triangle, certain types of contour lines
@@ -9657,17 +9658,18 @@ departure / d.lat = tan (course)</markup>
               </listitem>
             </orderedlist></para>
 
-          <para>In cases a, b, i and j the two planes do not intersect, ie: no
-          line need be drawn. For cases d and h the two planes intersect along
-          an edge of the triangle and therefore line is drawn between the two
-          vertices that lie on the contour level. Case e requires that a line
-          be drawn from the vertex on the contour level to a point on the
-          opposite edge. This point is determined by the intersection of the
-          contour level with the straight line between the other two vertices.
-          Cases c and f are the most common situations where the line is drawn
-          from one edge to another edge of the triangle. The last possibility
-          or case g above has no really satisfactory solution and fortunately
-          will occur rarely with real arithmetic. <figure id="contour_lines">
+          <para>In cases a, b, i and j the two planes do not intersect, i.e.
+          no line need be drawn. For cases d and h the two planes intersect
+          along an edge of the triangle and therefore line is drawn between
+          the two vertices that lie on the contour level. Case e requires that
+          a line be drawn from the vertex on the contour level to a point on
+          the opposite edge. This point is determined by the intersection of
+          the contour level with the straight line between the other two
+          vertices. Cases c and f are the most common situations where the
+          line is drawn from one edge to another edge of the triangle. The
+          last possibility or case g above has no really satisfactory solution
+          and fortunately will occur rarely with real arithmetic. <figure
+              id="contour_lines">
               <title>Possible line orientations</title>
 
               <mediaobject>
@@ -10060,7 +10062,7 @@ departure / d.lat = tan (course)</markup>
 
       <para>You may add a section entitled "Endorsements", provided it
       contains nothing but endorsements of your Modified Version by various
-      parties--for example, statements of peer review or that the text has
+      parties -- for example, statements of peer review or that the text has
       been approved by an organization as the authoritative definition of a
       standard.</para>
 
@@ -10257,7 +10259,7 @@ departure / d.lat = tan (course)</markup>
           Tactics</abbrev>, a modular simulation suite intended for high-level
           simulation of maritime tactical scenarios by a relatively
           inexperienced user (read: uniformed). ASSET was actually the
-          pre-decessor to Debrief, with the initial Debrief software being
+          predecessor to Debrief, with the initial Debrief software being
           created to analyse ASSET simulation results. Quickly it was
           recognised that Debrief could also be usefully employed in the
           analysis of real exercise tracks. Aaah, how close we came to not
@@ -10284,7 +10286,7 @@ range = Range to target from ownship (yds)</markup>
 </screen></para>
 
           <para>Positive and negative bearing rates are named Right and Left
-          according to naval convention, abreviated to R and L in the
+          according to naval convention, abbreviated to R and L in the
           tote.</para>
         </glossdef>
       </glossentry>
