@@ -11,7 +11,6 @@
   <xsl:param name="paper.type" select="'A4'"/>
   <xsl:param name="alignment">left</xsl:param>
   <xsl:param name="body.font.master">10</xsl:param>
-  <!-- <xsl:param name="body.font.family" select="'sans-serif'"/> -->
 
 
   <!-- get the extensions to work -->
