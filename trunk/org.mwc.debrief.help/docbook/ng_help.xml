@@ -6355,17 +6355,11 @@ Platform C,-551</screen></para>
 
           <para>Sensor data is loaded into Debrief in REP files, just like any
           other Debrief data. The line format is one of: <screen width="70">
-              <markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS
-               H BBB.B RRRR yy..yy xx..xx
- ;; date, ownship name, symbology, sensor lat/long (or the single word NULL),
-    bearing (degs), range(yds), sensor name, label (to end of line)</markup>
+<markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS  H BBB.B RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs), range(yds), sensor name, label (to end of line)</markup>
             </screen> or <screen width="70">
-              <markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS
-               H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
- ;; date, ownship name, symbology, sensor lat/long (or the single word NULL),
-    bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the
-    single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or
-    the single word NULL], sensor name, label (to end of line)</markup>
+<markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or the single word NULL], sensor name, label (to end of line)</markup>
             </screen></para>
 
           <para>As you can see, unlike other Debrief line formats, this format
@@ -8108,7 +8102,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
           <para>The standard data format is as follows <screen width="70">
             <markup>
-12345678901234567890123456789012345678901234567890123456789012345678901234567890
+123456789012345678901234567890123456789012345678901234567890123456789012
 YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             </markup>
           </screen>or since Autumn 2004 multi-word track names can be entered
@@ -8784,7 +8778,7 @@ and entry type can be multi-word if surrounded by quotes (").
         <sect2 id="FlatSchema">
           <title>Schema for Flat File Format</title>
 
-          <programlisting width="74">STRAND Scenario Report 1.00
+          <programlisting>STRAND Scenario Report 1.00
 &lt;Operation_Name&gt;
 &lt;Platform_Name&gt;
 &lt;Ownship_Track_Name&gt;
@@ -8832,22 +8826,15 @@ Prd_Freq Prd_Freq_Acc
   Predicted Target Data Fields
 
 Data Dictionary
-All fields are tab delimited.  All text shown in bold is to be included in the output 
-file exactly as shown.
+All fields are tab delimited.  All text shown in bold is to be included in the output file exactly as shown.
 
 Header Information
-&lt;Operation_Name&gt;     The name of the operation taken from the header Information of 
-                      the own ship file
-&lt;Platform_Name&gt;      The name of the own ship platform taken from the header
-                      information of the own ship track.
-&lt;Ownship_Track_Name&gt; The name of the own ship track taken from the header 
-                      information of the own ship track
-&lt;Sensor_Track_Name&gt;  The name of the sensor track taken from the header information
-                      of the sensor track
-&lt;Measured_Tgt_Name&gt;  The name of the measured target track taken form the target track
-                      header information
-&lt;Predicted_Tgt_Name&gt; The name of the predicted target track taken from the target
-                      track header information
+&lt;Operation_Name&gt;     The name of the operation taken from the header Information of the own ship file
+&lt;Platform_Name&gt;      The name of the own ship platform taken from the headerinformation of the own ship track.
+&lt;Ownship_Track_Name&gt; The name of the own ship track taken from the header information of the own ship track
+&lt;Sensor_Track_Name&gt;  The name of the sensor track taken from the header informationof the sensor track
+&lt;Measured_Tgt_Name&gt;  The name of the measured target track taken form the target trackheader information
+&lt;Predicted_Tgt_Name&gt; The name of the predicted target track taken from the targettrack header information
 &lt;Start_Time&gt;         The time of the first data record in the form:
                       hh:mm:ss &lt;TAB&gt; dd/mm/yyyy
 &lt;End_Time&gt;           The time of the last data record in the form: 
@@ -8856,83 +8843,64 @@ Header Information
 &lt;Range_SIF&gt;          The system integrity factor based on range information
 &lt;Combined_SIF&gt;       The system integrity factor for the whole system
 &lt;Num_Records&gt;        The number of data records in the file's body
-&lt;Geo_Origin_X&gt;       The X component of the geographical origin in cartesian
-                      coordinates
-&lt;Geo_Origin_Y&gt;       The Y component of the geographical origin in cartesian
-                      coordinates
+&lt;Geo_Origin_X&gt;       The X component of the geographical origin in cartesian coordinates
+&lt;Geo_Origin_Y&gt;       The Y component of the geographical origin in cartesiancoordinates
 
 Body Information
-All records consist of a sequence of TAB delimited fields generating a tabular output.  
-Each column will be identified by a title as shown in bold type.
+All records consist of a sequence of TAB delimited fields generating a tabular output.  Each column will be identified by a title as shown in bold type.
 
 &lt;scenario_sample_time&gt; The time of the scenario information contained in the record.
                         Measured in seconds from the start time given in the header.
-&lt;OS_Data_Status&gt;      Flag defining the availability of own ship data built from the
-                        sum of the following codes.
+&lt;OS_Data_Status&gt;      Flag defining the availability of own ship data built from the sum of the following codes.
                         0 = No own ship data, 1 = OS Position, 2 = Os Speed, 
-                        4 = OS Heading.  For example if all own ship data is 
-                        available the status = 1+2+4 = 7
-&lt;OS_X&gt;                The X component of the own ship position in cartesian
-                        coordinates at scenario sample time.  
-                        Use STRANDPos type - integers measuring scenario location
-                        in yards
-&lt;OS_Y&gt;                The Y component of the own ship position in cartesian
-                        coordinates at scenario sample time.
-                        Use STRANDPos type - integers measuring scenario location
-                        in yards
+                        4 = OS Heading.  For example if all own ship data is available the status = 1+2+4 = 7
+&lt;OS_X&gt;                The X component of the own ship position in cartesiancoordinates at scenario sample time.  
+                        Use STRANDPos type - integers measuring scenario locationin yards
+&lt;OS_Y&gt;                The Y component of the own ship position in cartesiancoordinates at scenario sample time.
+                        Use STRANDPos type - integers measuring scenario locationin yards
 &lt;OS_Speed&gt;            The speed of the own ship at scenario_sample_time in knots.
                        Positive float
 &lt;OS_Heading&gt;          The heading of the own ship at scenario_sample_time in degrees.
                        Float in range 0 to 359.99
-&lt;Sensor_Data_Status&gt;  Flag defining the availability of sensor data built from the sum
-                       of the following codes.
+&lt;Sensor_Data_Status&gt;  Flag defining the availability of sensor data built from the sum of the following codes.
                        0 = No sensor data, 1 = Sensor position, 2 = sensor bearing, 
                        4 = sensor frequency, 8 = Sensor Speed, 16 = Sensor Heading,
                        32 = Sensor Type.  For example if all sensor data is available
                        the status = 63
-&lt;Sensor_X&gt;            The X component of the sensor position in cartesian coordinates
-                       at scenario sample time.
+&lt;Sensor_X&gt;            The X component of the sensor position in cartesian coordinates at scenario sample time.
                        Use STRANDPos type - integers measured in yards
-&lt;Sensor_Y&gt;            The Y component of the sensor position in cartesian coordinates
-                       at scenario sample time.
+&lt;Sensor_Y&gt;            The Y component of the sensor position in cartesian coordinates at scenario sample time.
                        Use STRANDPos type - integers measured in yards
-&lt;Sensor_Brg&gt;          The true bearing measured by the sensor in degrees. Float in
-                       range 0 to 359.99
+&lt;Sensor_Brg&gt;          The true bearing measured by the sensor in degrees. 
+					   Float in range 0 to 359.99
 &lt;Sensor_Bacc&gt;         The accuracy of the measured bearing in degrees.  Float in 
                        range 0 to 180.0
 &lt;Sensor_Freq&gt;         The frequency measured by the sensor in hertz. Positive Float
-&lt;Sensor_Facc&gt;         The accuracy of the measured frequency in degrees.  Positive
-                       float
+&lt;Sensor_Facc&gt;         The accuracy of the measured frequency in degrees.  Positive float
 &lt;Sensor_Speed&gt;        The speed of the sensor in knots. Positive float
 &lt;Sensor_Heading&gt;      The heading of the sensor in degrees. Float in range 0 to 359.99
 &lt;Sensor_Type&gt;         The type of sensor the data refers to.  
                        1 character H = hull or T = towed array
-&lt;Msd_status&gt;          Flag defining the availability of measured target data built
-                       from the sum of the following codes.  
+&lt;Msd_status&gt;          Flag defining the availability of measured target data built from the sum of the following codes.  
                        0 = no measured target data, 1 = measured target position, 
                        2 = measured target speed, 4 = measured target heading.
-&lt;Msd_X&gt;               The X component of the measured target position in cartesian
-                       coordinates at scenario sample time. 
+&lt;Msd_X&gt;               The X component of the measured target position in cartesian coordinates at scenario sample time. 
                        Use STRANDPos type - integers measured in yards
-&lt;Msd_Y&gt;               The Y component of the measured target position in cartesian
-                       coordinates at scenario sample time. 
+&lt;Msd_Y&gt;               The Y component of the measured target position in cartesian coordinates at scenario sample time. 
                        Use STRANDPos type - integers measured in yards
 &lt;Msd_Speed&gt;           The measured target speed in knots. Positive float
 &lt;Msd_Heading&gt;         The measured target heading in degrees. Float in range 0 to
                        359.99
-&lt;Prd_status&gt;          Flag defining the availability of predicted target data built
-                       from the sum of the following codes.
+&lt;Prd_status&gt;          Flag defining the availability of predicted target data built from the sum of the following codes.
                        0 = no predicted target data, 1 = predicted position, 
                        2 = predicted  bearing, 4 = predicted bearing accuracy, 
                        8 = predicted range, 16 = predicted range accuracy, 
                        32 = predicted course, 64 = predicted course accuracy, 
                        128 = predicted speed, 256 = predicted speed accuracy, 
                        512 = predicted frequency, 1024 = predicted frequency accuracy 
-&lt;Prd_X&gt;               The X component of the predicted target position in cartesian
-                       coordinates at scenario sample time. 
+&lt;Prd_X&gt;               The X component of the predicted target position in cartesian coordinates at scenario sample time. 
                        Use STRANDPos type - integers measured in yards
-&lt;Prd_Y&gt;               The Y component of the predicted target position in cartesian
-                       coordinates at scenario sample time.
+&lt;Prd_Y&gt;               The Y component of the predicted target position in cartesian coordinates at scenario sample time.
                        Use STRANDPos type - integers measured in yards
 &lt;Prd_Brg&gt;             The predicted target bearing in degrees.  Float in range 0 to
                        359.99
@@ -10896,9 +10864,9 @@ brg = Bearing to target from ownship (degs)
   <!-- ********************************************************************** -->
 
   <colophon id="colophon">
-    <para>Debrief has been authored in DocBook XML version 4.2 using XMetal
-    version 3. Version 6.5.2 of Saxon used version 1.61.2 of the Docbook XSL
-    stylesheets and version 0.20.5 of fop to publish the document to PDF and
+    <para>Debrief has been authored in DocBook XML version 4.5 using XMetal
+    version 3. Version 6.5.2 of Saxon used version 1.72 of the Docbook XSL
+    stylesheets and version 1.0 of fop to publish the document to PDF and
     HTML.</para>
 
     <para>The majority of the text was originally imported from previous
