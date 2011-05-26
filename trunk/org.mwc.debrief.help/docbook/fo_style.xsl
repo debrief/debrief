@@ -44,6 +44,9 @@
   <xsl:param name="preface.autolabel" select="1"/>
 
   <!-- other, general modifications -->
+  	<!-- don't indent the child paragraphs: this helps our preformatted text 
+		fix on the page -->
+	<xsl:param name="body.start.indent" select="0" />
   
   <xsl:attribute-set name="monospace.verbatim.properties">
     <xsl:attribute name="wrap-option">wrap</xsl:attribute>
