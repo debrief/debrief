@@ -8100,14 +8100,14 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           recommended that they are stored in separate files, to ease reading
           and plotting track-data only.</para>
 
-          <para>The standard data format is as follows <screen width="70">
+          <para>The standard data format is as follows <screen>
             <markup>
 123456789012345678901234567890123456789012345678901234567890123456789012
 YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
             </markup>
           </screen>or since Autumn 2004 multi-word track names can be entered
           by enclosing them in double-quotation marks (") and 4-figure year
-          values are supported: <screen id="quoted_track_names" width="70">
+          values are supported: <screen id="quoted_track_names">
             <markup>
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
