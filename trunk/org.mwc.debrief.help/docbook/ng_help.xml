@@ -36,7 +36,7 @@
 
     <edition>Documentation for Debrief NG</edition>
 
-    <pubdate>Winter 2010</pubdate>
+    <pubdate>Summer 2011</pubdate>
 
     <abstract xml:id="contact_details">
       <title>Contact details</title>
@@ -6566,6 +6566,7 @@ Platform C,-551</screen></para>
                   <imageobject>
                     <imagedata fileref="figures/LotsOfTracks.png" width="100%"></imagedata>
                   </imageobject>
+                  <caption>Cumbersome sensor data</caption>
                 </mediaobject>
               </screenshot></para>
 
@@ -6626,6 +6627,27 @@ Platform C,-551</screen></para>
             than 15 seconds Debrief splits the successive data into a new
             tracks. The original and new tracks are then renamed with a "_1",
             "_2" suffix.</para>
+          </sect3>
+          <sect3>
+            <title>Trim length of sensor lines</title>
+            <para>As you'll see in the earlier <emphasis>Cumbersome sensor plot</emphasis>, a lot of
+              sensor data can make a plot difficult to interpret.  If sensor data isn't provided
+              with a range attribute, then sensor lines are drawn out to infinity (or the edge to
+              the viewport - whichever is nearer...).  On a large area plot this may given sensor
+              lines of 10s of nautical miles long.  If in truth the detections are only in the
+              thousands of yards, you may wish to give the sensor data a range. To do this, start by
+              multi-selecting a block of sensor data in the layer manager.  Next, open the
+              properties window - you'll see the elements have zero range.  Just insert an
+              'indicative' value for range. The sensor lines on the plot will now be clipped to that
+              range - greatly reducing plot clutter.<screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/TrimmedTracks.png" width="100%"/>
+                  </imageobject>
+                  <caption>Trimmed sensor data</caption>
+                </mediaobject>
+              </screenshot>
+            </para>
           </sect3>
         </sect2>
 
