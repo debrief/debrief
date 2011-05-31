@@ -4,7 +4,7 @@
   xmlns="http://www.w3.org/TR/xhtml1/transitional"
   exclude-result-prefixes="#default">
 
-  <xsl:import href="file:../../contribs/docbook-xsl-1.72.0/fo/docbook.xsl"/>
+  <xsl:import href="file:../../contribs/docbook-xsl-1.76.1/fo/docbook.xsl"/>
 
   <!-- Add other variable definitions here -->
 
