@@ -313,13 +313,10 @@
               <term>Online updating.</term>
 
               <listitem>
-                <para>If you're connected to a suitable network (MWC or the
-                Internet) Eclipse is able to download &amp; install its own
-                updates. Agencies with large numbers of Eclipse users can
-                provide their own internal update site for Eclipse
-                installations to download updates from.<footnote>
-                    <para>Note,</para>
-                  </footnote></para>
+                <para>If you're connected to a suitable network (MWC or the Internet) Eclipse is
+                  able to download &amp; install its own updates. Agencies with large numbers of
+                  Eclipse users can provide their own internal update site for Eclipse installations
+                  to download updates from.</para>
               </listitem>
             </varlistentry>
 
@@ -10995,15 +10992,16 @@ brg = Bearing to target from ownship (degs)
   <!-- ********************************************************************** -->
 
   <colophon xml:id="colophon">
-    <para>Debrief has been authored in DocBook XML version 4.5 using XMetal
-    version 3. Version 6.5.2 of Saxon used version 1.72 of the Docbook XSL
+    <para>Debrief has been authored in DocBook XML version 5.0 using Oxygen V12.
+    Version 6.5.2 of Saxon used version 1.76 of the Docbook XSL
     stylesheets and version 1.0 of fop to publish the document to PDF and
     HTML.</para>
 
     <para>The majority of the text was originally imported from previous
-    <application>Debrief</application> help-files, but the reviews conducted
-    in the transfer to DocBook have resulted in many corrections and
-    clarifications.</para>
+        <application>Debrief</application> help-files, but the reviews conducted in the transfer to
+      DocBook have resulted in many corrections and clarifications. <uri
+        xlink:href="http://sharp-words.co.uk/">Sharp Words</uri>  provided a  block of
+      tidying/reformatting in Summer 2011, including an update of the sources to Docbook 5.0.</para>
   </colophon>
 </book>
 <!-- 
