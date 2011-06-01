@@ -314,7 +314,7 @@
 
               <listitem>
                 <para>If you're connected to a suitable network (MWC or the
-                Internet) Eclipse is able to download &amp; install it's own
+                Internet) Eclipse is able to download &amp; install its own
                 updates. Agencies with large numbers of Eclipse users can
                 provide their own internal update site for Eclipse
                 installations to download updates from.<footnote>
@@ -373,7 +373,7 @@
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/updated_layer_mgr.jpg"
-                             scalefit="1"></imagedata>
+                             width="147"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -387,7 +387,7 @@
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/updated_time_controller.jpg"
-                             scalefit="1"></imagedata>
+                             width="231"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -406,7 +406,7 @@
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/adding_bookmark.jpg"></imagedata>
+                  <imagedata fileref="figures/adding_bookmark.jpg" width="300"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -416,7 +416,7 @@
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/bookmarks.jpg"></imagedata>
+                  <imagedata fileref="figures/bookmarks.jpg" width="444"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -720,8 +720,7 @@ Naval Undersea Warfare Center (NUWC)
       acknowledged user please forward your details to the Debrief <link
       linkend="project_manager">Project Manager</link> as recorded
       above.</para>
-
-          </sect1>
+    </sect1>
 
     <sect1 xml:id="conventions">
       <title>Document conventions</title>
@@ -873,7 +872,7 @@ Naval Undersea Warfare Center (NUWC)
         </sect2>
 
         <sect2 xml:id="where_to_get_help">
-          <title>Where to get Help on Debrief</title>
+          <title>Where to get help on Debrief</title>
 
           <para>If you get stuck with Debrief, the following sources of
           information are available:<orderedlist>
@@ -929,131 +928,131 @@ Naval Undersea Warfare Center (NUWC)
             to you.</para>
           </note>
         </sect2>
+      </sect1>
 
-        <sect2 xml:id="running_installer">
-          <title>Running installation</title>
+      <sect1 xml:id="running_installer">
+        <title>Performing installation</title>
 
-          <warning>
-            <para>If you already have <application>Debrief NG</application>
-            installed on your machine you should remove it using the
-            <guibutton>Add/Remove Programs</guibutton> button from the
-            <guibutton>Settings</guibutton> button on the
-            <application>Windows</application> <guibutton>Start</guibutton>
-            menu.</para>
-          </warning>
+        <warning>
+          <para>If you already have <application>Debrief NG</application>
+          installed on your machine you should remove it using the
+          <guibutton>Add/Remove Programs</guibutton> button from the
+          <guibutton>Settings</guibutton> button on the
+          <application>Windows</application> <guibutton>Start</guibutton>
+          menu.</para>
+        </warning>
 
-          <para>Once you have downloaded Debrief NG, double-click on
-          <filename>install.exe</filename> and follow the steps provided. You
-          are first met with the welcome screen: <figure
-              xml:id="installer_welcome">
-              <title>Welcome view of the installer</title>
+        <para>Once you have downloaded Debrief NG, double-click on
+        <filename>install.exe</filename> and follow the steps provided. You
+        are first met with the welcome screen: <figure
+            xml:id="installer_welcome">
+            <title>Welcome view of the installer</title>
 
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/install1.png"></imagedata>
-                  </imageobject>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/install1.png" width="315"></imagedata>
+                </imageobject>
 
-                  <textobject>
-                    <phrase>Welcome view of the installer</phrase>
-                  </textobject>
-                </mediaobject>
-              </screenshot>
-            </figure> Click on the <guibutton>Next</guibutton> button to move
-          forward through the screens. The first choice you are offered is the
-          destination of the <application>Debrief</application> files. Unless
-          you have any strong objection this default destination is normally
-          acceptable. <figure xml:id="select_loc">
-              <title>Select Debrief location</title>
+                <textobject>
+                  <phrase>Welcome view of the installer</phrase>
+                </textobject>
+              </mediaobject>
+            </screenshot>
+          </figure> Click on the <guibutton>Next</guibutton> button to move
+        forward through the screens. The first choice you are offered is the
+        destination of the <application>Debrief</application> files. Unless
+        you have any strong objection this default destination is normally
+        acceptable. <figure xml:id="select_loc">
+            <title>Select Debrief location</title>
 
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/install2.png"></imagedata>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure> Next you will see the <guilabel>Pre-Installation
-          Summary</guilabel> dialog which will allow you to step backwards to
-          review installation settings prior to conducting the install.<figure
-              xml:id="pre_install_summary">
-              <title>Pre-installation summary</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/install2.png" width="315"></imagedata>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure> Next you will see the <guilabel>Pre-Installation
+        Summary</guilabel> dialog which will allow you to step backwards to
+        review installation settings prior to conducting the install.<figure
+            xml:id="pre_install_summary">
+            <title>Pre-installation summary</title>
 
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/install3.png"></imagedata>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>After this you will see Debrief being installed onto your
-          machine</para>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/install3.png" width="315"></imagedata>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure>After this you will see Debrief being installed onto your
+        machine</para>
 
-          <para><figure xml:id="install_progress">
-              <title>Debrief installation progress</title>
+        <para><figure xml:id="install_progress">
+            <title>Debrief installation progress</title>
 
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/install4.png"></imagedata>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/install4.png" width="315"></imagedata>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
 
-          <para>Finally you will be greeted with the <guilabel>Installation
-          Complete</guilabel> dialog informing you that everything went
-          ok.</para>
+        <para>Finally you will be greeted with the <guilabel>Installation
+        Complete</guilabel> dialog informing you that everything went
+        ok.</para>
 
-          <para><figure xml:id="install_complete">
-              <title>Debrief installation complete</title>
+        <para><figure xml:id="install_complete">
+            <title>Debrief installation complete</title>
 
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/install5.png"></imagedata>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/install5.png" width="315"></imagedata>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
 
-          <para>It's now time to start
-          <application>Debrief</application></para>
-        </sect2>
+        <para>It's now time to start
+        <application>Debrief</application>.</para>
+      </sect1>
 
-        <sect2 xml:id="setting_location_prefs">
-          <title>Configuring background data</title>
+      <sect1 xml:id="setting_location_prefs">
+        <title>Configuring reference data</title>
 
-          <para>If you want to take advantage of Debrief's support for
-          background datasets, don't forget to read the instructions on how to
-          configure their locations, as below. Note, the VPF and ETOPO
-          datasets probably aren't present in your Debrief installation (due
-          to their size), so you will have to request/load them separately.
-          The world.dat file used for the simple coastline should be in your
-          Debrief installation folder. <itemizedlist>
-              <listitem>
-                <para>VPF instructions are <link
-                linkend="configure_for_vpf">here</link></para>
-              </listitem>
+        <para>If you want to take advantage of Debrief's support for
+        background datasets, don't forget to read the instructions on how to
+        configure their locations, as below. Note, the VPF and ETOPO datasets
+        probably aren't present in your Debrief installation (due to their
+        size), so you will have to request/load them separately. The world.dat
+        file used for the simple coastline should be in your Debrief
+        installation folder. <itemizedlist>
+            <listitem>
+              <para>VPF instructions are <link
+              linkend="configure_for_vpf">here</link></para>
+            </listitem>
 
-              <listitem>
-                <para>ETOPO instructions are <link
-                linkend="etopo_install">here</link></para>
-              </listitem>
+            <listitem>
+              <para>ETOPO instructions are <link
+              linkend="etopo_install">here</link></para>
+            </listitem>
 
-              <listitem>
-                <para>Simple coastline instructions are similar to the
-                above</para>
-              </listitem>
-            </itemizedlist></para>
-        </sect2>
+            <listitem>
+              <para>Simple coastline instructions are similar to the
+              above</para>
+            </listitem>
+          </itemizedlist></para>
       </sect1>
 
       <sect1 xml:id="start_up">
         <title>Start Debrief</title>
 
         <sect2 xml:id="opening_application">
-          <title>Opening Application</title>
+          <title>Opening application</title>
 
           <para>Open the application using the shortcut placed in the Programs
           section of your Start menu. The application may take a couple of
@@ -1276,7 +1275,7 @@ Naval Undersea Warfare Center (NUWC)
       </sect1>
 
       <sect1 xml:id="import_range_data">
-        <title>Importing Track Data</title>
+        <title>Importing track data</title>
 
         <sect2 xml:id="intro_to_replay">
           <title>Introduction to Replay files</title>
@@ -1381,7 +1380,7 @@ Naval Undersea Warfare Center (NUWC)
           <para>Note that the Replay file format just stores sensor readings,
           it does not store any formatting details. Thus, any formatting
           applied to a plot cannot be saved as a Replay file. Thus, Debrief
-          has it's <emphasis>Debrief File Format</emphasis>. This is a more
+          has its <emphasis>Debrief File Format</emphasis>. This is a more
           complex file format that stores a wide range of data-types,
           formatting instructions, and user-interface settings (such as the
           current viewport on the data).</para>
@@ -1719,7 +1718,7 @@ and so on....</programlisting></para>
           missed it. Please report the oversight using the procedure in <xref
           linkend="debrief_bugs" />and we'll correct it.</para>
 
-          <para>Each open Debrief plot has it's own undo buffer - so if the
+          <para>Each open Debrief plot has its own undo buffer - so if the
           undo button appears disabled you must first make sure you've clicked
           on the plot it relates to. Whilst you may have made the edit via the
           Layer Manager, you must still click on the plot before conducting an
@@ -1758,13 +1757,13 @@ and so on....</programlisting></para>
     </partintro>
 
     <chapter xml:id="formatting_data">
-      <title>Manipulating Track Data</title>
+      <title>Manipulating track data</title>
 
       <para>Before you are able to analyse or export plots from your data you
       need to know how to format <indexterm>
           <primary>Formatting</primary>
 
-          <secondary>Track data</secondary>
+          <secondary>track data</secondary>
         </indexterm> what you see to improve its legibility. Learn more about
       formatting tracks in the <emphasis>Editing your data</emphasis>
       cheat-sheet. <note>
@@ -1780,19 +1779,19 @@ and so on....</programlisting></para>
         <title>Property editing</title>
 
         <figure xml:id="properties_view">
-          <title>Properties View</title>
+          <title>Properties view</title>
 
           <screenshot>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/PropertiesView.png" width="200"></imagedata>
+                <imagedata fileref="figures/PropertiesView.png" width="237"></imagedata>
               </imageobject>
             </mediaobject>
           </screenshot>
         </figure>
 
         <sect2 xml:id="edit_track">
-          <title>Edit Track</title>
+          <title>Edit track</title>
 
           <para>Track editing is performed on the <link
           linkend="g_property_window">Properties Window</link>, and is
@@ -1815,7 +1814,7 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="track_shifting">
-          <title>Track Shifting</title>
+          <title>Track shifting</title>
 
           <para>The track-shifting <indexterm>
               <primary>Track Shifting</primary>
@@ -1888,13 +1887,12 @@ and so on....</programlisting></para>
           mark.</para>
 
           <figure xml:id="stacked_dots_view">
-            <title>Stacked Dots View</title>
+            <title>Stacked Dots view</title>
 
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/brg_error.png" scalefit="1"
-                             width="100%"></imagedata>
+                  <imagedata fileref="figures/brg_error.png" width="333"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -2156,7 +2154,7 @@ and so on....</programlisting></para>
           useful for an overview. The vectored chart data discussed later
           provides a much lower resolution of data. <figure
               xml:id="coastline_demo">
-              <title>Sample of default coastline data.</title>
+              <title>Sample of default coastline data</title>
 
               <screenshot>
                 <mediaobject>
@@ -2175,7 +2173,7 @@ and so on....</programlisting></para>
           document, in <xref linkend="view_vpf" />. The image below provides a
           sample of the level of detail supplied. <figure
               xml:id="vectored_Coast_demo">
-              <title>Sample of vectored coastline data.</title>
+              <title>Sample of vectored coastline data</title>
 
               <screenshot>
                 <mediaobject>
@@ -2198,7 +2196,7 @@ and so on....</programlisting></para>
           will try to load an ETOPO-2 dataset first, followed by an ETOPO-5
           dataset if that is unavailable. The image below provides a sample of
           the level of detail supplied. <figure xml:id="ETOPO_Demo">
-              <title>Sample of ETOPO gridded bathymetry.</title>
+              <title>Sample of ETOPO gridded bathymetry</title>
 
               <screenshot>
                 <mediaobject>
@@ -2336,7 +2334,7 @@ and so on....</programlisting></para>
           is dictated by the Maxima and Minima values which specify the
           lengths of its semi-major and semi-minor axes, expressed in
           user-selectable distance units. These values are the distances from
-          the centre of the ellipse to the furthest and closest points on it's
+          the centre of the ellipse to the furthest and closest points on its
           perimeter, respectively. The direction of the ellipse is specified
           by the orientation, expressed in degrees.
           <application>Debrief</application> does not check that the maxima is
@@ -2364,7 +2362,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditPolygon.png"></imagedata>
+                    <imagedata fileref="figures/EditPolygon.png" width="263"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2381,7 +2379,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PathEditor.png"></imagedata>
+                    <imagedata fileref="figures/PathEditor.png" width="269"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2397,7 +2395,7 @@ and so on....</programlisting></para>
           shown in the lower panel. You may then click on the Edit or Select
           Point buttons to either type-in the location of the point or to
           double-click the new location for the point. Double-click on a point
-          to edit it's individual attributes in the <link
+          to edit its individual attributes in the <link
           linkend="properties_view">Properties View</link>, or right-click on
           a point to paste the location currently on the clipboard.</para>
         </sect2>
@@ -2455,7 +2453,7 @@ and so on....</programlisting></para>
 
           <para>To edit any existing annotation, double on it on the
           <glossterm linkend="g_plt">plot</glossterm> or the Layer Manager to
-          select it - it's attributes will then be available from the
+          select it - its attributes will then be available from the
           Properties View. Alternatively, right-click on an item on the Plot
           or Layer Manager, and editable attributes are available from the
           object's drop-down list. Only boolean (true/false) and list-related
@@ -2478,12 +2476,13 @@ and so on....</programlisting></para>
           here they can be reorganised into suitably themed layers via <link
           linkend="cut_copy_paste">cut/paste</link>.<figure
               xml:id="layer_manager">
-              <title>Layer Manager View</title>
+              <title>Layer Manager view</title>
 
               <screenshot xml:id="layMgr_screenshot">
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/LayerManagerView.png"></imagedata>
+                    <imagedata fileref="figures/LayerManagerView.png"
+                               width="279"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2512,11 +2511,11 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="cut_copy_paste">
-          <title>Cut/Copy Paste</title>
+          <title>Cut/Copy and Paste</title>
 
           <para>Items may be cut, copied and pasted between Layers using the
           commands contained in the menus obtained by right-clicking on the
-          item. The cut command may be used on it's own to delete an item.
+          item. The cut command may be used on its own to delete an item.
           Copying items is a quick way of making duplicates of a correctly
           formatted annotation or screen item such as a rectangle or
           ellipse.</para>
@@ -2544,7 +2543,7 @@ and so on....</programlisting></para>
       </sect1>
 
       <sect1 xml:id="save_reopen">
-        <title>Saving &amp; re-opening plots</title>
+        <title>Saving and re-opening plots</title>
 
         <sect2 xml:id="save_Detail">
           <title>Save</title>
@@ -2616,7 +2615,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SaveDialog.png"></imagedata>
+                    <imagedata fileref="figures/SaveDialog.png" width="263"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2657,7 +2656,7 @@ and so on....</programlisting></para>
 
           <para>With a plot already open, you are able to drag a
           <application>Debrief</application> <filename>XML</filename> or
-          <filename>REP</filename> file into it's chart, adding the content to
+          <filename>REP</filename> file into its chart, adding the content to
           the existing session. Dragging multiple files onto the plot area
           adds them all to the existing session. To create a composite plot
           like this, you can start by using Debrief's <emphasis>New Plot
@@ -2813,7 +2812,7 @@ and so on....</programlisting></para>
           for the data points in the infill section is taken from the time
           interval between the first two points of the second segment. On the
           plot, the infill segment is shown as a dotted line, to indicate that
-          it's series of purely calculated positions, and not based on any
+          its series of purely calculated positions, and not based on any
           observed measurements.</para>
         </sect2>
       </sect1>
@@ -2851,7 +2850,7 @@ and so on....</programlisting></para>
             </note></para>
 
           <para>When a set of data is first loaded into the Grid Editor it is
-          shown as a plain table. Click into any cell to edit it's data.
+          shown as a plain table. Click into any cell to edit its data.
           Buttons in the Grid Editor toolbar allow you to insert or delete a
           row. But, the Grid Editor becomes significantly more capable when
           you focus on a single attribute. Do this by clicking on the title
@@ -2895,7 +2894,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ToteLabelled.png"></imagedata>
+                    <imagedata fileref="figures/ToteLabelled.png" width="274"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3057,7 +3056,7 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="more_assigning_tracks">
-          <title>Assigning Tracks</title>
+          <title>Assigning tracks</title>
 
           <para>Assigning primary and secondary tracks is covered in the
           respective <glossterm linkend="g_cheat">Cheat Sheet</glossterm>.
@@ -3077,7 +3076,8 @@ and so on....</programlisting></para>
             </orderedlist><screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LayerManagerView.png"></imagedata>
+                  <imagedata fileref="figures/LayerManagerView.png"
+                             width="279"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -3163,7 +3163,7 @@ and so on....</programlisting></para>
       </sect1>
 
       <sect1 xml:id="controlling_time">
-        <title>Controlling Time</title>
+        <title>Controlling time</title>
 
         <sect2 xml:id="time_controller">
           <title>The Time Controller</title>
@@ -3173,12 +3173,13 @@ and so on....</programlisting></para>
           time, and provides access to a series of time-related functions in
           <application>Debrief</application>.<figure
               xml:id="time_controller_demo">
-              <title>Time Controller View</title>
+              <title>Time Controller view</title>
 
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController.png"></imagedata>
+                    <imagedata fileref="figures/TimeController.png"
+                               width="234"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3356,7 +3357,7 @@ and so on....</programlisting></para>
           </sect3>
 
           <sect3 xml:id="relative_mode">
-            <title>Plotting Modes</title>
+            <title>Plotting modes</title>
 
             <para>The plotting mode affects the origin and orientation of the
             plot. In <emphasis>Normal</emphasis> mode the plot viewport stays
@@ -3395,7 +3396,7 @@ and so on....</programlisting></para>
           </sect3>
 
           <sect3 xml:id="highlight_modes">
-            <title>Highlight Modes</title>
+            <title>Highlight modes</title>
 
             <para>Three highlight modes are provided:<variablelist>
                 <varlistentry>
@@ -3756,7 +3757,7 @@ and so on....</programlisting></para>
         <title>Measuring range and bearing</title>
 
         <sect2 xml:id="more_range">
-          <title>Range &amp; Bearing</title>
+          <title>Range and Bearing</title>
 
           <para>It's worth reminding you at this point about the Range Bearing
           measuring tool <guiicon> <inlinemediaobject>
@@ -3870,12 +3871,12 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="more_initial_view">
-          <title>Initial View</title>
+          <title>Initial view</title>
 
           <para>A new window will open, containing a 3D view of the current
           track data, as shown below (after a little screen-tidying): <figure
               xml:id="voew_3d_demo">
-              <title>Initial 3D View</title>
+              <title>Initial 3D view</title>
 
               <screenshot>
                 <mediaobject>
@@ -3912,7 +3913,7 @@ and so on....</programlisting></para>
               <secondary>Default Views</secondary>
             </indexterm> mouse using the following buttons: <table
               xml:id="mouse_controls">
-              <title>Mouse controls used in 3-D View</title>
+              <title>Mouse controls used in 3-D view</title>
 
               <tgroup cols="2">
                 <thead>
@@ -4128,7 +4129,7 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="mem_leaks">
-          <title>Memory Leaks</title>
+          <title>Memory leaks</title>
 
           <para>The current version of the 3D libraries used in this viewer
           contains memory leaks. In general memory leaks are tidied up in each
@@ -4245,7 +4246,7 @@ and so on....</programlisting></para>
           selected time period. <application>Debrief</application> produces
           the time-variable plot according to the following tables: <table
               frame="sides" xml:id="relative_calculations">
-              <title>Relative Calculations (range, bearing, etc)</title>
+              <title>Relative calculations (range, bearing, etc)</title>
 
               <tgroup cols="3">
                 <thead>
@@ -4281,7 +4282,7 @@ and so on....</programlisting></para>
                 </tbody>
               </tgroup>
             </table><table xml:id="absolute_calcs">
-              <title>Absolute Calculations (range, bearing, etc)</title>
+              <title>Absolute calculations (range, bearing, etc)</title>
 
               <tgroup cols="2">
                 <thead>
@@ -4486,7 +4487,7 @@ and so on....</programlisting></para>
       <!--  Track/time toolbox                                           -->
 
       <sect1 xml:id="track_toolbox">
-        <title xml:id="track_toolbox_title">Track &amp; Time toolbox</title>
+        <title xml:id="track_toolbox_title">Track and Time toolbox</title>
 
         <sect2 xml:id="z_zero_times">
           <title>T-Zero times</title>
@@ -4555,7 +4556,7 @@ and so on....</programlisting></para>
         <title>Exporting images</title>
 
         <sect2 xml:id="more_export_images">
-          <title>Export Images</title>
+          <title>Export images</title>
 
           <para>In addition to <indexterm>
               <primary>WMF</primary>
@@ -4927,7 +4928,7 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="demo_buoyfield_illustration">
-          <title>Example Buoyfield</title>
+          <title>Example buoyfield</title>
 
           <para><figure xml:id="buoy_pattern_demo">
               <title>Example of a buoy-pattern</title>
@@ -4960,7 +4961,7 @@ and so on....</programlisting></para>
           <guilabel>Secondary</guilabel> track, a highlight is drawn around
           the buoy at or immediately after the current time. Additionally, if
           the buoyfield is designated as a secondary track the Tote
-          continuously displays it's range and bearing from the current
+          continuously displays its range and bearing from the current
           location on the primary track.</para>
         </sect2>
 
@@ -4978,10 +4979,10 @@ and so on....</programlisting></para>
     </chapter>
 
     <chapter xml:id="symbol_sets">
-      <title>Symbol Sets</title>
+      <title>Symbol sets</title>
 
       <sect1 xml:id="more_sym_sets">
-        <title>Debrief Symbol Sets</title>
+        <title>Debrief symbol sets</title>
 
         <sect2 xml:id="intro_to_sym_sets">
           <title>Introduction</title>
@@ -5081,10 +5082,10 @@ and so on....</programlisting></para>
     </chapter>
 
     <chapter xml:id="external_datasets">
-      <title>External Datasets</title>
+      <title>External datasets</title>
 
       <sect1 xml:id="vpf_data">
-        <title>Installing VPF Data</title>
+        <title>Installing VPF data</title>
 
         <sect2 xml:id="vpf_intro">
           <title>Introduction</title>
@@ -5341,11 +5342,11 @@ and so on....</programlisting></para>
 
           <para><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/VPF_OpenMap.gif"></imagedata>
+                <imagedata fileref="figures/VPF_OpenMap.gif" width="75"></imagedata>
               </imageobject>
             </inlinemediaobject> <inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/VPF_BBN_2c_primary.jpg"></imagedata>
+                <imagedata fileref="figures/VPF_BBN_2c_primary.jpg" width="86"></imagedata>
               </imageobject>
             </inlinemediaobject></para>
 
@@ -5357,7 +5358,7 @@ and so on....</programlisting></para>
       </sect1>
 
       <sect1 xml:id="view_vpf">
-        <title>Viewing VPF Data</title>
+        <title>Viewing VPF data</title>
 
         <sect2 xml:id="more_view_vpf">
           <title>Introduction</title>
@@ -5387,7 +5388,7 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="create_vpf">
-          <title>Creating VPF Layers</title>
+          <title>Creating VPF layers</title>
 
           <para>Once loaded into a plot configure the VPF data by switching to
           the <guibutton>Layer Manager</guibutton>. In there, open the
@@ -5398,7 +5399,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer1.png"></imagedata>
+                    <imagedata fileref="figures/VPF_Layer1.png" width="237"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5415,7 +5416,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer2.png"></imagedata>
+                    <imagedata fileref="figures/VPF_Layer2.png" width="237"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5433,7 +5434,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer3.png"></imagedata>
+                    <imagedata fileref="figures/VPF_Layer3.png" width="237"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5446,7 +5447,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer4.png"></imagedata>
+                    <imagedata fileref="figures/VPF_Layer4.png" width="270"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -5507,7 +5508,7 @@ and so on....</programlisting></para>
             </figure></para>
 
           <para>Right-click on the <guilabel>Depth Contours</guilabel> entry
-          in the <guilabel>Boundaries</guilabel> layer and switch it's colour
+          in the <guilabel>Boundaries</guilabel> layer and switch its colour
           to <guilabel>Grey</guilabel>. Also switch the
           <guilabel>Contours</guilabel> entry to
           <guilabel>Visible</guilabel>.</para>
@@ -5572,7 +5573,7 @@ and so on....</programlisting></para>
         </sect2>
 
         <sect2 xml:id="vpf_best_practice">
-          <title>VPF Best Practice</title>
+          <title>VPF best practice</title>
 
           <para>There's no doubting the volume of data available through VPF,
           and the VMap Level 0 database in particular. The next level down
@@ -5586,10 +5587,10 @@ and so on....</programlisting></para>
       </sect1>
 
       <sect1 xml:id="configure_vpf">
-        <title>Configuring VPF Defaults</title>
+        <title>Configuring VPF defaults</title>
 
         <sect2 xml:id="more_config_vpf">
-          <title>The Problem</title>
+          <title>The problem</title>
 
           <para>Yes, VPF and VMap in <indexterm>
               <primary>VPF Data</primary>
@@ -5678,7 +5679,6 @@ and so on....</programlisting></para>
           below:</para>
 
           <screen width="70">
-
       &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 
       &lt;plot Created="Thu Jul 19 15:04:41 GMT+01:00 2001" Name="Debrief Plot"&gt;
@@ -5700,8 +5700,7 @@ and so on....</programlisting></para>
         Text"&gt;
       &lt;colour Value="WHITE" /&gt;
       &lt;/vpf_feature&gt;
-              
-            </screen>
+              </screen>
 
           <para>..... and so on, until</para>
 
@@ -5737,9 +5736,7 @@ and so on....</programlisting></para>
       &lt;/session&gt;
       &lt;details Text="Saved with Debrief version dated 19 Jul 01 12:44" /&gt;
       &lt;/plot&gt;
-             
-           
-            </screen>
+                        </screen>
         </sect2>
 
         <sect2 xml:id="step_3_xml">
@@ -5976,7 +5973,7 @@ and so on....</programlisting></para>
 
             <para>These sources are summarised below: <figure
                 xml:id="etopo_sources_demo">
-                <title>ETOPO2 Data Sources</title>
+                <title>ETOPO2 data sources</title>
 
                 <screenshot>
                   <mediaobject>
@@ -6030,7 +6027,7 @@ and so on....</programlisting></para>
                 <term>Visible</term>
 
                 <listitem>
-                  <para>Whether to plot the ETOPO data</para>
+                  <para>Whether to plot the ETOPO data.</para>
                 </listitem>
               </varlistentry>
             </variablelist> The ETOPO-2 dataset provides a few more
@@ -6129,7 +6126,7 @@ and so on....</programlisting></para>
     </chapter>
 
     <chapter xml:id="viewing_narratives">
-      <title>Viewing Narratives</title>
+      <title>Viewing narratives</title>
 
       <sect1 xml:id="narrative_intro">
         <title>Introduction to narrative data</title>
@@ -6246,7 +6243,7 @@ and so on....</programlisting></para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/narr_filter.png" width="100%"></imagedata>
+                    <imagedata fileref="figures/narr_filter.png" width="338"></imagedata>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -6346,10 +6343,10 @@ and so on....</programlisting></para>
             </variablelist></para>
 
           <para>The sticky issue of whether to represent sensor data in
-          absolute coordinates (where each line has it's own origin) or
-          whether to represent the data in relative coordinates (where the
-          sensor origin is assumed to be the current ownship position) is
-          managed through the ability to enter NULL fields for the sensor
+          absolute coordinates (where each line has its own origin) or whether
+          to represent the data in relative coordinates (where the sensor
+          origin is assumed to be the current ownship position) is managed
+          through the ability to enter NULL fields for the sensor
           location.</para>
 
           <para>Support for relative coordinates is provided for two reasons:
@@ -6442,7 +6439,7 @@ Platform C,-551</screen></para>
           view sensor data in the properties window:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/LengthsEditor.png"></imagedata>
+                  <imagedata fileref="figures/LengthsEditor.png" width="308"></imagedata>
                 </imageobject>
               </mediaobject>
             </screenshot></para>
@@ -6460,11 +6457,17 @@ Platform C,-551</screen></para>
 
           <para>Sensor data is loaded into Debrief in REP files, just like any
           other Debrief data. The line format is one of: <screen width="70">
-<markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS  H BBB.B RRRR yy..yy xx..xx
-;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs), range(yds), sensor name, label (to end of line)</markup>
+<markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS  H BBB.B
+ RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL),
+ bearing (degs), range(yds), sensor name, label (to end of line)</markup>
             </screen> or <screen width="70">
-<markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
-;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or the single word NULL], sensor name, label (to end of line)</markup>
+<markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B
+ CCC.C FFF.F RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
+ bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the 
+ single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or
+ the single word NULL], sensor name, label (to end of line)</markup>
             </screen></para>
 
           <para>As you can see, unlike other Debrief line formats, this format
@@ -6512,7 +6515,7 @@ Platform C,-551</screen></para>
               <secondary>Analysing</secondary>
             </indexterm> made visible, since with any reasonable volume of
           sensor data the plot quickly becomes illegible. Sensor data is
-          switched on and off individually by accessing the sensor, via it's
+          switched on and off individually by accessing the sensor, via its
           Track, from the Layer Manager.</para>
 
           <para>It is once in <glossterm linkend="g_snail_trail">snail
@@ -6526,7 +6529,7 @@ Platform C,-551</screen></para>
 
               <listitem>
                 <para>It then examines each list of Sensor data to see if it's
-                visible If it is visible, it plots the current sensor contact
+                visible. If it is visible, it plots the current sensor contact
                 (nearest to the <glossterm linkend="g_tote">Tote</glossterm>
                 time), followed by the sensor contacts as disappearing
                 contacts running back through the length indicated in the
@@ -6565,6 +6568,7 @@ Platform C,-551</screen></para>
                   <imageobject>
                     <imagedata fileref="figures/LotsOfTracks.png" width="100%"></imagedata>
                   </imageobject>
+
                   <caption>Cumbersome sensor data</caption>
                 </mediaobject>
               </screenshot></para>
@@ -6627,26 +6631,32 @@ Platform C,-551</screen></para>
             tracks. The original and new tracks are then renamed with a "_1",
             "_2" suffix.</para>
           </sect3>
+
           <sect3>
             <title>Trim length of sensor lines</title>
-            <para>As you'll see in the earlier <emphasis>Cumbersome sensor plot</emphasis>, a lot of
-              sensor data can make a plot difficult to interpret.  If sensor data isn't provided
-              with a range attribute, then sensor lines are drawn out to infinity (or the edge to
-              the viewport - whichever is nearer...).  On a large area plot this may given sensor
-              lines of 10s of nautical miles long.  If in truth the detections are only in the
-              thousands of yards, you may wish to give the sensor data a range. To do this, start by
-              multi-selecting a block of sensor data in the layer manager.  Next, open the
-              properties window - you'll see the elements have zero range.  Just insert an
-              'indicative' value for range. The sensor lines on the plot will now be clipped to that
-              range - greatly reducing plot clutter.<screenshot>
+
+            <para>As you'll see in the earlier <emphasis>Cumbersome sensor
+            plot</emphasis>, a lot of sensor data can make a plot difficult to
+            interpret. If sensor data isn't provided with a range attribute,
+            then sensor lines are drawn out to infinity (or the edge to the
+            viewport - whichever is nearer...). On a large area plot this may
+            given sensor lines of 10s of nautical miles long. If in truth the
+            detections are only in the thousands of yards, you may wish to
+            give the sensor data a range. To do this, start by multi-selecting
+            a block of sensor data in the layer manager. Next, open the
+            properties window - you'll see the elements have zero range. Just
+            insert an 'indicative' value for range. The sensor lines on the
+            plot will now be clipped to that range - greatly reducing plot
+            clutter.<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TrimmedTracks.png" width="100%"/>
+                    <imagedata fileref="figures/TrimmedTracks.png"
+                               width="100%"></imagedata>
                   </imageobject>
+
                   <caption>Trimmed sensor data</caption>
                 </mediaobject>
-              </screenshot>
-            </para>
+              </screenshot></para>
           </sect3>
         </sect2>
 
@@ -6666,7 +6676,7 @@ Platform C,-551</screen></para>
           sensor range plot' menu item:<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/ViewSensorPlot.png"></imagedata>
+                  <imagedata fileref="figures/ViewSensorPlot.png" width="313"></imagedata>
                 </imageobject>
 
                 <caption>Popup menu with a track plus multiple sensor
@@ -6875,7 +6885,8 @@ Platform C,-551</screen></para>
             follows:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_length_alg.png"></imagedata>
+                    <imagedata fileref="figures/multi_length_alg.png"
+                               width="212"></imagedata>
                   </imageobject>
 
                   <caption>Algorithm used to determine indirect path
@@ -6941,7 +6952,7 @@ Platform C,-551</screen></para>
               </variablelist>These lengths are the calculated as: <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_lengths.png"></imagedata>
+                    <imagedata fileref="figures/multi_lengths.png" width="284"></imagedata>
                   </imageobject>
 
                   <caption>Comparison of acoustic paths</caption>
@@ -6951,7 +6962,7 @@ Platform C,-551</screen></para>
             the overall time delay:<screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/multi_delay.png"></imagedata>
+                    <imagedata fileref="figures/multi_delay.png" width="233"></imagedata>
                   </imageobject>
 
                   <caption>Calculation of time delay</caption>
@@ -7177,7 +7188,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
 
         <sect2 xml:id="rel_tma_data">
-          <title>Relative Data</title>
+          <title>Relative data</title>
 
           <para>When (as described above) Debrief plots data using a range and
           bearing, it follows the following procedure: <itemizedlist>
@@ -7203,7 +7214,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <secondary>Analysing</secondary>
             </indexterm> made visible, since with any reasonable volume of TUA
           data the plot quickly becomes illegible. TUA data is switched on and
-          off individually by accessing the whole TUA track, via it's Track,
+          off individually by accessing the whole TUA track, via its Track,
           from the Layer Manager.</para>
 
           <para>It is once in <glossterm linkend="g_snail_trail">snail
@@ -7745,7 +7756,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         feature-request trackers</para>
 
         <sect2 xml:id="debrief_bugs">
-          <title>Reporting Bugs</title>
+          <title>Reporting bugs</title>
 
           <para>To report a bug, or a feature which you believe is behaving
           incorrectly, you must first register at Assembla. You can either
@@ -7804,10 +7815,10 @@ track name, ellipse orientation (deg from north),  maxima (yds),
       <title>Debrief maintainer's guide</title>
 
       <sect1 xml:id="more_maintainers_guidance">
-        <title>Installation Guidance</title>
+        <title>Installation guidance</title>
 
         <sect2 xml:id="more_install_guidance">
-          <title>System Requirements</title>
+          <title>System requirements</title>
 
           <para><table xml:id="debrief_reqts">
               <title>Requirements for
@@ -7936,7 +7947,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
 
         <sect2 xml:id="more_directory_structure">
-          <title>Directory Structure</title>
+          <title>Directory structure</title>
 
           <para>Debrief installs itself into a <filename>Debrief NG</filename>
           folder in the top level of your C:\ drive.. Within the Debrief NG
@@ -8068,7 +8079,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
       </sect1>
 
       <sect1 xml:id="fault_diagnosis">
-        <title>Fault-Diagnosis Instructions</title>
+        <title>Fault-diagnosis instructions</title>
 
         <sect2 xml:id="more_fault_diagnosis">
           <title>How-to</title>
@@ -8163,7 +8174,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
       </sect1>
 
       <sect1 xml:id="debrief_props">
-        <title xml:id="debrief_props_title">Debrief Properties</title>
+        <title xml:id="debrief_props_title">Debrief properties</title>
 
         <sect2 xml:id="more_deb_props">
           <title>Introduction</title>
@@ -8196,13 +8207,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
     </partintro>
 
     <chapter xml:id="reference">
-      <title>Debrief File Formats</title>
+      <title>Debrief file formats</title>
 
       <sect1 xml:id="replay_file_format">
-        <title>Replay File Format</title>
+        <title>Replay file format</title>
 
         <sect2 xml:id="replay_track_format">
-          <title>Track Data</title>
+          <title>Track data</title>
 
           <para><application>Debrief</application> accepts files in the
           <indexterm>
@@ -8233,19 +8244,16 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           recommended that they are stored in separate files, to ease reading
           and plotting track-data only.</para>
 
-          <para>The standard data format is as follows <screen>
-            <markup>
+          <para>The standard data format is as follows:<screen>            <markup>
 123456789012345678901234567890123456789012345678901234567890123456789012
 YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
-            </markup>
-          </screen>or since Autumn 2004 multi-word track names can be entered
-          by enclosing them in double-quotation marks (") and 4-figure year
-          values are supported: <screen xml:id="quoted_track_names">
-            <markup>
+            </markup> </screen>or since Autumn 2004 multi-word track names can
+          be entered by enclosing them in double-quotation marks (") and
+          4-figure year values are supported: <screen
+          xml:id="quoted_track_names">            <markup>
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
 YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
-            </markup>
-          </screen></para>
+            </markup>      </screen></para>
 
           <para>The field descriptions are: <table frame="all"
               xml:id="debrief_position_structure">
@@ -8563,8 +8571,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
           semi-colons.</para>
 
           <para>The format for the different types of annotations is: <screen
-          width="70">
-            <markup>
+          width="70">            <markup>
 123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890 
 
@@ -8643,8 +8650,7 @@ surrounded by quotes (").
 ;NARRATIVE2:  YYMMDD HHMMSS  TTT.TTT AA..AA XX..XX
  ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name 
 and entry type can be multi-word if surrounded by quotes (").
-            </markup>
-          </screen><note>
+            </markup>   </screen><note>
               <para>Note, when null positions are entered for <glossterm
               linkend="g_sensor">Sensor</glossterm> data, the position is
               taken from the track named in "ownship name". Debrief finds the
@@ -8670,9 +8676,7 @@ and entry type can be multi-word if surrounded by quotes (").
       </sect1>
 
       <sect1 xml:id="debrief_file_format">
-        <title>Debrief File Format</title>
-
-        <para></para>
+        <title>Debrief file format</title>
 
         <sect2 xml:id="more_file_format">
           <title>Introduction</title>
@@ -8762,7 +8766,7 @@ and entry type can be multi-word if surrounded by quotes (").
 
           <para>The XML structure adopted within Debrief is as follows:
           <figure xml:id="debrief_xml">
-              <title>XML File structure in Debrief</title>
+              <title>XML file structure in Debrief</title>
 
               <mediaobject>
                 <imageobject>
@@ -8774,10 +8778,10 @@ and entry type can be multi-word if surrounded by quotes (").
       </sect1>
 
       <sect1 xml:id="Section_KML">
-        <title xml:id="SectionKML_Title">KML File Format</title>
+        <title xml:id="SectionKML_Title">KML file format</title>
 
         <sect2 xml:id="IntroToKML">
-          <title>Introduction to KML File Format</title>
+          <title>Introduction to KML file format</title>
 
           <para><blockquote>
               <attribution><link xlink:href="http://en.wikipedia.org/wiki/Kml"
@@ -8807,7 +8811,7 @@ and entry type can be multi-word if surrounded by quotes (").
         </sect2>
 
         <sect2 xml:id="KML_LineString">
-          <title>LineString KML Files</title>
+          <title>LineString KML files</title>
 
           <para>Handheld GPS systems (including mobile phones) tend to store
           positional data in a <command>Placemark</command> that contains a
@@ -8816,7 +8820,7 @@ and entry type can be multi-word if surrounded by quotes (").
           Debrief makes the following assumptions regarding this
           format:<orderedlist>
               <listitem>
-                <para>If altitude data is missing, it's comma separator will
+                <para>If altitude data is missing, its comma separator will
                 still be present</para>
               </listitem>
 
@@ -8839,7 +8843,7 @@ and entry type can be multi-word if surrounded by quotes (").
         </sect2>
 
         <sect2 xml:id="KML_MultiGeometry">
-          <title>MultiGeometry KML Files</title>
+          <title>MultiGeometry KML files</title>
 
           <para>More capable recording systems tend to store positional data
           in a more refined, time-stamped format - using series of
@@ -8892,12 +8896,10 @@ and entry type can be multi-word if surrounded by quotes (").
       </sect1>
 
       <sect1 xml:id="Section_Flat">
-        <title xml:id="SectionFlat_Title">Flat File Format</title>
+        <title xml:id="SectionFlat_Title">Flat file format</title>
 
         <sect2 xml:id="IntroToFlat">
-          <title>Introduction to Flat File (SAM) Format</title>
-
-          <para></para>
+          <title>Introduction to Flat file (SAM) format</title>
 
           <para>One Debrief user organisation frequently has to use exported
           Debrief tracks in a subsequent analysis application (SAM). This
@@ -8909,7 +8911,7 @@ and entry type can be multi-word if surrounded by quotes (").
         </sect2>
 
         <sect2 xml:id="FlatSchema">
-          <title>Schema for Flat File Format</title>
+          <title>Schema for Flat file format</title>
 
           <programlisting>STRAND Scenario Report 1.00
 &lt;Operation_Name&gt;
@@ -9005,7 +9007,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 &lt;Sensor_Y&gt;            The Y component of the sensor position in cartesian coordinates at scenario sample time.
                        Use STRANDPos type - integers measured in yards
 &lt;Sensor_Brg&gt;          The true bearing measured by the sensor in degrees. 
-					   Float in range 0 to 359.99
+                       Float in range 0 to 359.99
 &lt;Sensor_Bacc&gt;         The accuracy of the measured bearing in degrees.  Float in 
                        range 0 to 180.0
 &lt;Sensor_Freq&gt;         The frequency measured by the sensor in hertz. Positive Float
@@ -9251,8 +9253,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 
           <para>XML documents are easy to create; if you are familiar with
           HTML, you can quickly learn to create one. In this example, XML is
-          used to describe a weather report: <screen>
-              <markup>
+          used to describe a weather report: <screen>              <markup>
                 &lt;weather-report&gt;
                 &lt;date&gt;March 25, 1998&lt;/date&gt;
                 &lt;time&gt;08:00&lt;/time&gt;
@@ -9275,9 +9276,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
                 &lt;uv-index&gt;1&lt;/uv-index&gt;
                 &lt;/measurements&gt;
                 &lt;/weather-report&gt;
-
-              </markup>
-            </screen></para>
+             </markup>          </screen></para>
 
           <para>You can display this data in many different ways, or hand it
           off to other applications for further processing. You can also apply
@@ -9287,7 +9286,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
     </chapter>
 
     <chapter xml:id="chap_debrief_algorithms">
-      <title>Debrief Algorithms</title>
+      <title>Debrief algorithms</title>
 
       <sect1 xml:id="rng_brg_calcs">
         <title>Range/Bearing calculations within Debrief</title>
@@ -9343,7 +9342,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         here is an abbreviated snippet from it:</para>
 
         <sect2 xml:id="rhumb-lines">
-          <title>The Rhumb-Line Formulae</title>
+          <title>The Rhumb-Line formulae</title>
 
           <para>A line on the earth's surface which cuts all meridians at the
           same angle is called a rhumb line.</para>
@@ -9382,8 +9381,8 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
           than 600'. Within this limiting distance, the navigator can obtain
           all he wants to know about the track from the three formulae:</para>
 
-          <para><screen>
-              <markup>departure = d.long cos (mean latitude)   (1)
+          <para><screen> <markup>
+departure = d.long cos (mean latitude)   (1)
 departure = distance sin (course)     (2)
 d.lat = distance cos (course)         (3)
 
@@ -9633,7 +9632,7 @@ departure / d.lat = tan (course)</markup>
       </sect1>
 
       <sect1 xml:id="contouring_algorithm">
-        <title>Contouring Algorithm</title>
+        <title>Contouring algorithm</title>
 
         <para>The contouring algorithm employed within Debrief was originally
         produced by Paul Bourke back in 1987, for submission to the Byte
@@ -9919,7 +9918,7 @@ departure / d.lat = tan (course)</markup>
   <!-- ********************************************************************** -->
 
   <appendix xml:id="gfdl">
-    <title>GNU Free Documentation License</title>
+    <title>GNU free documentation license</title>
 
     <!-- - GNU Project - Free Software Foundation (FSF) -->
 
@@ -10403,7 +10402,7 @@ departure / d.lat = tan (course)</markup>
       </glossentry>
 
       <glossentry xml:id="g_bearing_rate">
-        <glossterm>Bearing Rate</glossterm>
+        <glossterm>Bearing rate</glossterm>
 
         <glossdef>
           <para>Bearing rate within the application is calculated using the
@@ -10447,12 +10446,22 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="G_BUILD_DATE">
-        <glossterm>Build Date</glossterm>
+        <glossterm>Build date</glossterm>
 
         <glossdef>
-          <para>Each copy of Debrief is aware of the date is was built. Find
+          <para>Each copy of Debrief is aware of the date it was built. Find
           this out by selecting <guimenuitem>About</guimenuitem> from the
           <guimenu>Help</guimenu> menu.</para>
+        </glossdef>
+      </glossentry>
+
+      <glossentry xml:id="g_cheat">
+        <glossterm>Cheat sheets</glossterm>
+
+        <glossdef>
+          <para>Cheat sheets guide users through tasks. The task is broken
+          down into steps and presented to the user one step at a time, and
+          the user checks off the steps as he/she completes them.</para>
         </glossdef>
       </glossentry>
 
@@ -10468,7 +10477,7 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="g_coastline_file">
-        <glossterm>Coastline File</glossterm>
+        <glossterm>Coastline file</glossterm>
 
         <glossdef>
           <para>Debrief expects to <indexterm>
@@ -10523,7 +10532,7 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="g_DeadReckoning">
-        <glossterm>Dead Reckoning</glossterm>
+        <glossterm>Dead reckoning</glossterm>
 
         <glossdef>
           <para>Dead reckoning (DR) is the process of estimating one's current
@@ -10537,7 +10546,7 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="g_display_mode">
-        <glossterm>Display Mode</glossterm>
+        <glossterm>Display mode</glossterm>
 
         <glossdef>
           <para>Each of the display modes used on the Debrief plot represents
@@ -10575,16 +10584,6 @@ range = Range to target from ownship (yds)</markup>
         <glossdef>
           <para>Standard for digital topographic data, predominantly
           distributed by the NOAA</para>
-        </glossdef>
-      </glossentry>
-
-      <glossentry xml:id="g_cheat">
-        <glossterm>Cheat Sheets</glossterm>
-
-        <glossdef>
-          <para>Cheat sheets guide users through tasks. The task is broken
-          down into steps and presented to the user one step at a time, and
-          the user checks off the steps as he/she completes them.</para>
         </glossdef>
       </glossentry>
 
@@ -10714,12 +10713,10 @@ range = Range to target from ownship (yds)</markup>
 
         <glossdef>
           <para>Pacific Fleet Weapons Training Facility (see AFWTF). The
-          origin of PFWTF is : <screen>
-              <markup>
+          origin of PFWTF is : <screen>              <markup>
 22º 7.16646' N
 159º 55.17' W
-              </markup>
-            </screen></para>
+           </markup>          </screen></para>
         </glossdef>
       </glossentry>
 
@@ -10767,7 +10764,7 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="g_property_window">
-        <glossterm>Properties Window</glossterm>
+        <glossterm>Properties window</glossterm>
 
         <glossdef>
           <para>A view containing a list of all of the editable properties for
@@ -10777,22 +10774,19 @@ range = Range to target from ownship (yds)</markup>
       </glossentry>
 
       <glossentry xml:id="g_range_rate">
-        <glossterm>Range Rate</glossterm>
+        <glossterm>Range rate</glossterm>
 
         <glossdef>
           <para>Range rate within the application is calculated using the
-          following formula: <screen>
-              <markup>
+          following formula: <screen>              <markup>
 Rdot = (Tspd * cos (Tcrse - brg) - 
 Ospd * cos(Ocrse - brg) /*60
-              </markup>
-            </screen><screen>
+              </markup>          </screen><screen>
               <markup>Rdot = Range Rate (yds/min)
 Tspd, Tcrse = Target course and speed (degs &amp; yps)
 Ospd, Ocrse = Ownship course and speed (degs &amp; yps)
 brg = Bearing to target from ownship (degs)
-              </markup>
-            </screen></para>
+              </markup>       </screen></para>
         </glossdef>
       </glossentry>
 
@@ -10829,7 +10823,7 @@ brg = Bearing to target from ownship (degs)
       </glossentry>
 
       <glossentry xml:id="g_sensor_contact">
-        <glossterm>Sensor Contact</glossterm>
+        <glossterm>Sensor contact</glossterm>
 
         <glossdef>
           <para>This is an individual contact recorded on a sensor, a single
@@ -10848,7 +10842,7 @@ brg = Bearing to target from ownship (degs)
       </glossentry>
 
       <glossentry xml:id="g_slant_range">
-        <glossterm>Slant Range</glossterm>
+        <glossterm>Slant range</glossterm>
 
         <glossdef>
           <para>The line of sight distance between two points, not at the same
@@ -10862,7 +10856,7 @@ brg = Bearing to target from ownship (degs)
       </glossentry>
 
       <glossentry xml:id="g_snail_trail">
-        <glossterm>Snail Trail</glossterm>
+        <glossterm>Snail trail</glossterm>
 
         <glossdef>
           <para>A mode within <application>Debrief</application> where only
@@ -10872,7 +10866,7 @@ brg = Bearing to target from ownship (degs)
       </glossentry>
 
       <glossentry xml:id="g_stepper_control">
-        <glossterm>Stepper Control</glossterm>
+        <glossterm>Stepper control</glossterm>
 
         <glossdef>
           <para>The Stepper Control is the collection of controls at the top
@@ -10905,7 +10899,7 @@ brg = Bearing to target from ownship (degs)
       </glossentry>
 
       <glossentry xml:id="g_tma_solution">
-        <glossterm>TMA Solution</glossterm>
+        <glossterm>TMA solution</glossterm>
 
         <glossdef>
           <para>Warships (submarines in particular) use Target Motion Analysis
