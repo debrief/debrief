@@ -123,7 +123,7 @@
 
 		<!-- produce the FO file, ready for PDF -->
 		<echo message="going from xml to FO" />
-		<property name="docbook.home" value="${rootDir}/contribs/docbook-xsl-1.72.0" />
+		<property name="docbook.home" value="${rootDir}/contribs/docbook-xsl-1.76.1" />
 		<property name="saxon.dir" value="${rootDir}/contribs/saxon6_5_2" />
 		<property name="xml.dir" value="${helpDir}docbook" />
 		<property name="fo.dir" value="fo" />
