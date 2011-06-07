@@ -78,6 +78,15 @@
 
     <revhistory>
       <revision>
+        <revnumber>2.4</revnumber>
+
+        <date>1st June 2011</date>
+
+        <authorinitials>IM</authorinitials>
+
+        <revremark>Full document update/tidying. Update to DocBook 5.0</revremark>
+      </revision>
+      <revision>
         <revnumber>2.3</revnumber>
 
         <date>1st December 2010</date>
@@ -204,7 +213,7 @@
     </revhistory>
 
     <copyright>
-      <year>2000-2009</year>
+      <year>2000-2011</year>
 
       <holder>Maritime Warfare Centre Ltd. Permission is granted to copy,
       distribute and/or modify this document under the terms of the GNU Free
