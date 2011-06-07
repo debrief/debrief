@@ -122,14 +122,11 @@
 		<delete file="${rootDir}/org.mwc.debrief.help/docbook/out.fo" />
 
 		<!-- produce the FO file, ready for PDF -->
-		<echo message="going from xml to FO" />
-		<property name="docbook.home" value="${rootDir}/contribs/docbook-xsl-1.76.1" />
-		<property name="saxon.dir" value="${rootDir}/contribs/saxon6_5_2" />
+		<property name="saxon.dir" value="${rootDir}/contribs/saxon6_5_5" />
 		<property name="xml.dir" value="${helpDir}docbook" />
 		<property name="fo.dir" value="fo" />
+		<echo message="going from xml to FO" />
 		<xslt style="${xml.dir}/fo_style.xsl" classpath="${saxon.dir}/saxon.jar" in="${xml.dir}/ng_help.xml" out="${xml.dir}/out.fo" />
-
-		<echo message="output to fo complete, now going to pdf" />
 
 		<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
 			<classpath>
@@ -141,7 +138,7 @@
 				<pathelement location="${fopDir}/lib/commons-io-1.3.1.jar" />
 			</classpath>
 		</taskdef>
-
+		<echo message="output to fo complete, now going to pdf" />
 		<fop format="application/pdf" basedir="docbook" fofile="docbook/out.fo" outfile="docbook/DebriefNG.pdf" />
 
 		<!-- ditch the fo file, we don't want it in version tracking -->
