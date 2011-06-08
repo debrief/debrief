@@ -188,14 +188,15 @@
 		<echo message="about to log:${sourceDir}" />
 
 		<tstamp>
-			<format property="statsvn.start" pattern="yyyy-MM-dd" />
+			<format property="statsvn.stop" pattern="yyyy-MM-dd" />
 		</tstamp>
 		<tstamp>
-			<format property="statsvn.stop" pattern="yyyy-MM-dd" offset="-60" unit="day" />
+			<format property="statsvn.start" pattern="yyyy-MM-dd" offset="-90" unit="day" />
 		</tstamp>
 
 		<exec executable="svn" dir="${sourceDir}" output="../deploy/cvs/statcvs.xml">
 			<arg line="log" />
+			<arg line="http://subversion.assembla.com/svn/Debrief" />
 			<arg line="-v" />
 			<arg line="--xml" />
 			<arg line="-r {${statsvn.start}}:{${statsvn.stop}}" />
