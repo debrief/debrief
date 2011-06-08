@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,7 +37,7 @@ import MWC.GenericData.WorldLocation;
 public class KMLTX_Presenter
 {
 
-	private final static String filePath = "/Users/ianmayo/Downloads/portland2";
+	private final static String filePath = "/Users/ianmayo/Downloads/portland";
 	private static final String DATABASE_ROOT = "jdbc:postgresql://127.0.0.1/ais";
 	private static Connection _conn;
 	private static PreparedStatement sql;
@@ -70,11 +72,11 @@ public class KMLTX_Presenter
 			MyHandler handler = new MyHandler()
 			{
 				public void writeThis(String name2, Date date2, Point2D coords2,
-						Integer index2, Double course2, Double speed2)
+						Integer index2, Double course2, Double speed2, String color)
 				{
 					try
 					{
-						writeThisToDb(name2, date2, coords2, index2, course2, speed2);
+						writeThisToDb(name2, date2, coords2, index2, course2, speed2, color);
 					}
 					catch (SQLException e)
 					{
@@ -95,7 +97,7 @@ public class KMLTX_Presenter
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 			// ditch gash
-			String clearTracks = "delete from tracks3";
+			String clearTracks = "delete from wednesday";
 			String clearDatasets = "delete from datasets";
 
 			_conn.createStatement().execute(clearTracks);
@@ -107,8 +109,8 @@ public class KMLTX_Presenter
 			// st.execute(str);
 			// System.exit(0);
 
-			String query = "insert into tracks3 (dateval, nameval, latval, longval,"
-					+ " courseval, speedval, mmsi, dataset) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+			String query = "insert into wednesday (dateval, nameval, latval, longval,"
+					+ " courseval, speedval, mmsi, dataset, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 			System.out.println("query will be:" + query);
 			sql = _conn.prepareStatement(query);
 
@@ -119,6 +121,7 @@ public class KMLTX_Presenter
 
 			// start looping through files
 			File[] fList = sourceP.listFiles();
+			Arrays.sort(fList, lastModified);
 			int len = fList.length;
 			for (int i = 0; i < len; i++)
 			{
@@ -140,7 +143,7 @@ public class KMLTX_Presenter
 				{
 					System.err.println("Failed to read datafile:" + thisF.getName());
 				}
-				
+
 				if (is != null)
 				{
 
@@ -152,8 +155,8 @@ public class KMLTX_Presenter
 
 					files++;
 
-					System.err.println("==" + i + " of " + fList.length + " at:"
-							+ new Date());
+//					System.out.println("==" + i + " of " + fList.length + " at:"
+//							+ new Date());
 
 					// right, go for it
 					processThisFile(is, parser, handler);
@@ -220,6 +223,16 @@ public class KMLTX_Presenter
 		}
 	}
 
+	private static final Comparator<File> lastModified = new Comparator<File>()
+	{
+		@Override
+		public int compare(File o1, File o2)
+		{
+			int res = o1.getName().compareTo(o2.getName());
+			return res;
+		}
+	};
+
 	private static void outputDatesets(
 			HashMap<Integer, Vector<NumberedTimePeriod>> map2,
 			PreparedStatement dataquery) throws SQLException
@@ -249,10 +262,10 @@ public class KMLTX_Presenter
 	}
 
 	static HashMap<Integer, WorldLocation> lastLocs = new HashMap<Integer, WorldLocation>();
-	
+
 	protected static void writeThisToDb(String name2, Date date2,
-			Point2D coords2, Integer index2, Double course2, Double speed2)
-			throws SQLException
+			Point2D coords2, Integer index2, Double course2, Double speed2,
+			String color) throws SQLException
 	{
 		// are we in zone?
 		WorldLocation loc = new WorldLocation(coords2.getY(), coords2.getX(), 0d);
@@ -264,31 +277,32 @@ public class KMLTX_Presenter
 
 		// ok, have a look at the last location
 		WorldLocation lastLoc = lastLocs.get(thisDataIndex);
-		
-		if(lastLoc != null)
+
+		if (lastLoc != null)
 		{
-			if(lastLoc.equals(loc))
+			if (lastLoc.equals(loc))
 			{
 				// don't bother it's just a duplicate
 				return;
 			}
 		}
-		
+
 		// remember this loc
 		lastLocs.put(thisDataIndex, loc);
-		
-		
+
 		// String query =
 		// "insert into AIS_tracks (daveVal, name, latVal, longVal, courseVal, speedVal) VALUES (";
-		sql.setTimestamp(1, new java.sql.Timestamp(date2.getTime()));
-		sql.setString(2, name2);
-		sql.setDouble(3, coords2.getY());
-		sql.setDouble(4, coords2.getX());
-		sql.setDouble(5, course2);
-		sql.setDouble(6, speed2);
-		sql.setInt(7, index2);
-		sql.setInt(8, thisDataIndex);
-		sql.executeUpdate();
+		int ctr = 1;
+		sql.setTimestamp(ctr++, new java.sql.Timestamp(date2.getTime()));
+		sql.setString(ctr++, name2);
+		sql.setDouble(ctr++, coords2.getY());
+		sql.setDouble(ctr++, coords2.getX());
+		sql.setDouble(ctr++, course2);
+		sql.setDouble(ctr++, speed2);
+		sql.setInt(ctr++, index2);
+		sql.setInt(ctr++, thisDataIndex);
+		sql.setString(ctr++, color);
+		 sql.executeUpdate();
 
 		places++;
 	}
@@ -334,6 +348,10 @@ public class KMLTX_Presenter
 
 	private static int getIndexFor(String name2, Integer mmsi, Date date2)
 	{
+	if (name2.contains("ALBE"))
+	{
+//		System.out.println("time:" + date2 + " mmsi:" + mmsi + " name:" + name2);
+	}
 
 		Vector<NumberedTimePeriod> periods = map.get(mmsi);
 
@@ -350,9 +368,10 @@ public class KMLTX_Presenter
 			timeP = periods.lastElement();
 			Date lastTime = timeP.getEndDTG().getDate();
 
+
 			// is it too far back?
-			long delta = lastTime.getTime() - date2.getTime();
-			if (delta < 1000 * 60 * 15)
+			long delta = date2.getTime() - lastTime.getTime();
+			if (delta < 1000 * 60 * 30)
 			{
 				// cool, in period. extend it
 				timeP.setEndDTG(new HiResDate(date2));
@@ -361,6 +380,12 @@ public class KMLTX_Presenter
 			{
 				// naah, too late. put it in another time period
 				timeP = null;
+				
+				if (name2.contains("ALBE"))
+				{
+					if (timeP == null)
+						System.out.println("time:" + date2 + " state:" + timeP == null);
+				}
 			}
 
 		}
@@ -422,14 +447,15 @@ public class KMLTX_Presenter
 		private Double speed;
 		private Integer mmsi;
 		private Date date;
+		private String color;
 
 		@Override
 		public void endElement(String arg0, String arg1, String arg2)
 				throws SAXException
 		{
 			super.endElement(arg0, arg1, arg2);
-
-			// ok, check our datai
+			
+				// ok, check our datai
 			if (name != null)
 			{
 				if (coords != null)
@@ -438,13 +464,19 @@ public class KMLTX_Presenter
 					{
 						if (mmsi != null)
 						{
-							writeThis(name, date, coords, mmsi, course, speed);
+							writeThis(name, date, coords, mmsi, course, speed, color);
+							
+							if(name.contains("ALBEMARLE ISLAND"))
+							{
+								System.out.println("name:" + name  + " date:" + date + " mmsi:" + mmsi );
+							}
 
 							name = null;
 							coords = null;
 							course = null;
 							speed = null;
 							mmsi = null;
+							color = null;
 						}
 					}
 				}
@@ -452,7 +484,7 @@ public class KMLTX_Presenter
 		}
 
 		abstract public void writeThis(String name2, Date date2, Point2D coords2,
-				Integer index2, Double course2, Double speed2);
+				Integer index2, Double course2, Double speed2, String color2);
 
 		public void setDate(Date finalDate)
 		{
@@ -478,26 +510,68 @@ public class KMLTX_Presenter
 						this.name = name;
 					}
 				}
+				isName = false;
 			}
 			else if (isCoords)
 			{
+				String[] split = null;
 				try
 				{
 					data = new String(ch, start, length);
-					String[] split = data.split(",");
+					split = data.split(",");
 					double longVal = Double.valueOf(split[0]);
 					double latVal = Double.valueOf(split[1]);
 					coords = new Point2D.Double(longVal, latVal);
 				}
 				catch (NumberFormatException e)
 				{
-					System.out.println("number format prob reading pos for " + name);
+					System.err.println("number format prob reading pos for 1:" + split[0]
+							+ " or 2:" + split[1]);
 				}
 				catch (java.lang.ArrayIndexOutOfBoundsException aw)
 				{
-					System.out.println("array index prob reading pos for " + name
+					System.err.println("array index prob reading pos for " + name
 							+ " from " + data);
 				}
+				isCoords = false;
+			}
+			else if (isStyle)
+			{
+				String details2 = "";
+				details2 = new String(ch, start, length);
+
+				int startChar = details2.indexOf("#") + 1;
+				int endCharA = details2.indexOf("0", startChar);
+				int endCharB = details2.indexOf("1", startChar);
+				int endChar;
+
+				if (endCharA == -1)
+					endChar = endCharB;
+				else if (endCharB == -1)
+					endChar = endCharA;
+				else
+				{
+					endChar = Math.min(endCharA, endCharB);
+				}
+
+				// just check we found anything
+				if (endChar == -1)
+					endChar = details2.length();
+
+				try
+				{
+					color = details2.substring(startChar, endChar);
+
+					if (color.contains("_"))
+						System.out.println("here");
+
+				}
+				catch (StringIndexOutOfBoundsException re)
+				{
+					System.err.println("start:" + startChar + " end:" + endChar + " :"
+							+ details2);
+				}
+				isStyle = false;
 			}
 			else if (isDesc)
 			{
@@ -529,7 +603,7 @@ public class KMLTX_Presenter
 				{
 					System.out.println("prob reading desc for " + name);
 				}
-
+				isDesc = false;
 			}
 		}
 
@@ -537,6 +611,7 @@ public class KMLTX_Presenter
 		boolean isCoords = false;
 		boolean isDesc = false;
 		boolean foundPlacemark = false;
+		private boolean isStyle;
 
 		@Override
 		public void startElement(String nsURI, String strippedName, String tagName,
@@ -564,6 +639,10 @@ public class KMLTX_Presenter
 				else if (tagName.equals("description"))
 				{
 					isDesc = true;
+				}
+				else if (tagName.equals("styleUrl"))
+				{
+					isStyle = true;
 				}
 			}
 

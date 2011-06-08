@@ -28,17 +28,17 @@ public class PostGet_Presenter
 			// check we have a database
 			connectToDatabase();
 
-			String query = "select dateval, nameval, mmsi, longval, latval, courseval, speedval, dataset from tracks3;";
+			String query = "select dateval, nameval, mmsi, longval, latval, courseval, speedval, dataset, color from wednesday;";
 			System.out.println("query will be:" + query);
 			sql = _conn.prepareStatement(query);
-			
-			FileWriter outFile = new FileWriter("portland2.rep");
-			
+
+			FileWriter outFile = new FileWriter("portland6.rep");
+
 			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
-			
+
 			ResultSet res = sql.executeQuery();
-			while(res.next())
-			{ 
+			while (res.next())
+			{
 				int ctr = 1;
 				Timestamp date = res.getTimestamp(ctr++);
 				String name = res.getString(ctr++);
@@ -48,28 +48,30 @@ public class PostGet_Presenter
 				double course = res.getDouble(ctr++);
 				double speed = res.getDouble(ctr++);
 				int dataset = res.getInt(ctr++);
-				
-				
-				String vName = name + "_" + mmsi + "_" +  dataset;
-				
-				// debrief format: YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
+				String color = res.getString(ctr++);
+
+				String symbol = getSymFor(color);
+
+				String vName = name + "_" + mmsi + "_" + dataset;
+
+				// debrief format: YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM
+				// SS.SS H CCC.C SS.S DDD
 				Date jDate = new Date(date.getTime());
 				String line = "";
 				line += sdf.format(jDate) + " ";
-				line += "\"" + vName + "_" + mmsi + "\"" + " ";
-				line += "@@ ";
+				line += "\"" + vName + "\" ";
+				line += "@" + symbol + " ";
 				line += latVal + " 0 0.0 N ";
 				line += longVal + " 0 0.0 E ";
 				line += course + " ";
 				line += speed + " ";
 				line += " 0";
 				line += "\n";
-				
+
 				outFile.write(line);
 			}
-			
-			outFile.close();
 
+			outFile.close();
 
 		}
 		catch (RuntimeException re)
@@ -106,6 +108,30 @@ public class PostGet_Presenter
 		}
 	}
 
+	private static String getSymFor(String color)
+	{
+		final String res;
+		if (color.equals("yellow"))
+			res = "D";
+		else if (color.equals("lightgreen"))
+			res = "B";
+		else if (color.equals("blue"))
+			res = "A";
+		else if (color.equals("red"))
+			res = "C";
+		else if (color.equals("pink"))
+			res = "K";
+		else if (color.equals("lightgray"))
+			res = "F";
+		else if (color.equals("cyan"))
+			res = "H";
+		else if (color.equals("magenta"))
+			res = "E";
+		else 
+			res = "";
+
+		return res;
+	}
 
 	private static void connectToDatabase()
 	{
