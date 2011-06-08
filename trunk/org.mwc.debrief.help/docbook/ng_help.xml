@@ -1912,8 +1912,7 @@ and so on....</programlisting></para>
 
               <listitem>
                 <para>You must have a vessel track as the <link
-                linkend="primary_track">primary track</link> (<xref
-                linkend="primary_track" />) on the <link
+                linkend="primary_track">primary track</link> on the <link
                 linkend="the_tote_area">Tote</link> (not an annotation or
                 other time-related object)</para>
               </listitem>
