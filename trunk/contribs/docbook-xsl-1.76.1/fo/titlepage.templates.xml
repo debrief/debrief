@@ -138,6 +138,7 @@
 	     space-before="&hsize5space;"
 	     font-weight="bold"
 	     font-family="{$title.fontset}"/>
+      <mediaobject/>
       <subtitle
 		text-align="center"
 		font-size="&hsize4;"
