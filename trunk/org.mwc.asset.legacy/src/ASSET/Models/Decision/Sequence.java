@@ -202,7 +202,7 @@ public class Sequence extends Waterfall
    *
    * @param isAlive yes/no
    */
-  public void setIsAlive(boolean isAlive)
+  protected void setIsAlive(boolean isAlive)
   {
     this._isAlive = isAlive;
   }
