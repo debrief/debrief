@@ -22,8 +22,6 @@ abstract public class SwitchHandler extends WaterfallHandler
   {
     super(type, thisDepth);
 
-    _myList = new Switch();
-
     super.addAttributeHandler(new HandleIntegerAttribute(INDEX)
     {
       public void setValue(String name, int value)
