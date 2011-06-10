@@ -27,20 +27,19 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 	// control this, by only allowing Chains to nest 5 deep (at the fifth level,
 	// don't add
 	// the chain and sequence handlers)
-	public final static int MAX_CHAIN_DEPTH = 4;
+	public final static int MAX_CHAIN_DEPTH = 6;
 	public static int _thisChainDepth = 0;
 
 	public WaterfallHandler(int thisDepth)
 	{
 		this(type, thisDepth);
-
-		_myList = new Waterfall();
 	}
 
 	public WaterfallHandler(String title, int thisDepth)
 	{
 		super(title);
 		addHandlers(this, this, thisDepth);
+		_myList = createNewList();
 	}
 
 	/**
@@ -253,9 +252,6 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 
 	public void addModel(final ASSET.Models.DecisionType dec)
 	{
-		if (_myList == null)
-			_myList = createNewList();
-
 		_myList.insertAtFoot(dec);
 	}
 
@@ -269,7 +265,7 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 		setModel(_myList);
 
 		// and reset it, ready for the next chain
-		_myList = null;
+		_myList = createNewList();
 	}
 
 	abstract public void setModel(ASSET.Models.DecisionType dec);
