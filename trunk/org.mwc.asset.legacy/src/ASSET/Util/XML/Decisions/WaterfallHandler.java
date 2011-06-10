@@ -205,10 +205,6 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 				}
 			});
 
-			// int myChainDepth = _thisChainDepth;
-			//
-			// if (_thisChainDepth < MAX_CHAIN_DEPTH)
-			// {
 			_thisChainDepth++;
 
 			list.addHandler(new WorkingTransitHandler(--thisDepth)
@@ -239,9 +235,6 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 					handler.addModel(dec);
 				}
 			});
-			// }
-
-			// _thisChainDepth = myChainDepth++;
 		}
 	}
 
