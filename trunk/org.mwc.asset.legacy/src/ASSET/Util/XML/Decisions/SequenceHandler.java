@@ -25,8 +25,6 @@ abstract public class SequenceHandler extends WaterfallHandler
   {
     super(type, thisDepth);
 
-    _myList = new Sequence();
-    
     addAttributeHandler(new HandleBooleanAttribute(STAY_ALIVE){
       public void setValue(String name, boolean value)
       {
@@ -41,11 +39,9 @@ abstract public class SequenceHandler extends WaterfallHandler
     this(type, thisDepth);
   }
 
-
-  protected BehaviourList createNewList()
+	protected BehaviourList createNewList()
   {
-  	Sequence res = new Sequence();
-    return res;
+		return new Sequence();
   }
 
   abstract public void setModel(ASSET.Models.DecisionType dec);
