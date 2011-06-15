@@ -198,6 +198,15 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
     });
 
 
+    addHandler(new RemoveInAreaObserverHandler()
+    {
+			@Override
+			public void setObserver(final BatchCollator obs)
+			{
+        _myList.add(obs);
+			}
+    });
+
     addHandler(new ProportionDetectedObserverHandler()
     {
       public void setObserver(final ScenarioObserver obs)
@@ -307,6 +316,10 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       else if (observer instanceof DetectionObserver.StopOnProximityDetectionObserver)
       {
         ProximityObserverHandler.exportThis(observer, sens, doc);
+      }
+      else if (observer instanceof RemoveInAreaObserver)
+      {
+      	RemoveInAreaObserverHandler.exportThis(observer, sens, doc);
       }
       else if (observer instanceof ProximityObserver)
       {

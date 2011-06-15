@@ -14,7 +14,6 @@ import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Scenario.Observers.DetectionObserver;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
-import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 
 abstract public class DetectionObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
@@ -172,53 +171,6 @@ abstract public class DetectionObserverHandler extends MWC.Utilities.ReaderWrite
 
   }
 
-  /**
-   * ************************************************************
-   * handle our different types of target handler
-   * *************************************************************
-   */
-  abstract private static class TargetHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-  {
-    TargetType _type = null;
-
-    public TargetHandler(final String myType)
-    {
-      super(myType);
-      addHandler(new TargetTypeHandler()
-      {
-        public void setTargetType(final TargetType type)
-        {
-          _type = type;
-        }
-      });
-    }
-
-    public void elementClosed()
-    {
-      setTargetType(_type);
-      _type = null;
-    }
-
-    abstract public void setTargetType(TargetType type);
-
-    static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                  final org.w3c.dom.Document doc, final String myType)
-    {
-      // create ourselves
-      final org.w3c.dom.Element thisElement = doc.createElement(myType);
-
-      // get data item
-      final TargetType bb = (TargetType) toExport;
-
-      // output it's attributes
-
-      // output the target type
-      TargetTypeHandler.exportThis(bb, thisElement, doc);
-
-      // output it's attributes
-      parent.appendChild(thisElement);
-    }
-  }
 
 
 }

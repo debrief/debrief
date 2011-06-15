@@ -13,7 +13,6 @@ import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.DetectionObserver;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.Plotting.PlotInvestigationSubjectObserver;
-import ASSET.Util.XML.Control.Observers.StopOnDetectionObserverHandler.TargetHandler;
 
 abstract public class PlotInvestigationSubjectObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {

@@ -185,6 +185,7 @@
 			<xs:element name="CSVTrackObserver" type="CSVTrackObserverType"/>
 			<xs:element name="TimeObserver" type="TimeObserverType"/>
 			<xs:element name="ProximityObserver" type="ProximityObserverType"/>
+			<xs:element name="RemoveInAreaObserver" type="RemoveInAreaObserverType"/>
 			<xs:element name="StopOnProximityObserver" type="StopOnProximityObserverType"/>
 			<xs:element name="RemoveDetectedObserver" type="RemoveDetectedObserverType"/>
 			<xs:element name="DetectionObserver" type="DetectionObserverType"/>
@@ -3424,6 +3425,24 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="RemoveInAreaObserverType">
+		<xs:annotation>
+			<xs:documentation>Remove participants that stray into this area. </xs:documentation>
+			<xs:documentation source="UI">Visible: inherited, target,
+				watch. Editable:
+				inherited.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreObserverType">
+				<xs:sequence>
+					<xs:element name="WorldArea" type="WorldAreaType"/>
+					<xs:element name="Watch" type="WatchType"/>
+					<xs:element name="BatchCollator" type="BatchCollatorType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
 	<xs:complexType name="ProximityObserverType">
 		<xs:annotation>
 			<xs:documentation>Keep track of how close we get to vessels of the
