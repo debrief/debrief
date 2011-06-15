@@ -4,7 +4,7 @@
 	<ScenarioGenerator>
 
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="red" number="5">
+			<ParticipantVariance name="red" number="200">
 				<Variance name="target location" id="/Waterfall//shortLocation">
 					<Attribute name="Long">
 						<Range max="4" min="0" />

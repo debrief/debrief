@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="JD Scenario" xmlns="http://www.mwc.org/asset"
 	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
-	ShowActivity="true" ShowName="false" ShowStatus="false" ShowSymbol="false">
+	ShowActivity="false" ShowName="false" ShowStatus="false" ShowSymbol="false">
 	<StepTime Units="minutes" Value="10" />
 	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
@@ -32,6 +32,37 @@
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Sequence Name="ASW Patrol B" StayAlive="true">
+				<WorkingTransit Name="South SIP" NumStops="4"
+					Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="1.7" Long="3.8"></shortLocation>
+						</Point>
+						<Point>
+							<shortLocation Lat="0.3" Long="2.7"></shortLocation>
+						</Point>
+						<Point>
+							<shortLocation Lat="1.5" Long="1.0"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" />
+					<Activity Name="Active periods">
+						<Composite Name="enable active">
+							<ElapsedTime Name="30 mins">
+								<Duration Value="30.0" Units="minutes" />
+							</ElapsedTime>
+							<ChangeSensorLineUp SwitchOn="true" Name="active off"
+								Medium="ActiveBB" />
+						</Composite>
+						<Composite Name="disable active">
+							<ElapsedTime Name="zero time">
+								<Duration Value="0.0" Units="millis" />
+							</ElapsedTime>
+							<ChangeSensorLineUp SwitchOn="false" Name="active off"
+								Medium="ActiveBB" />
+						</Composite>
+					</Activity>
+				</WorkingTransit>
 				<Transit Name="Avoid no-go" Looping="false">
 					<WorldPath>
 						<Point>
@@ -81,20 +112,7 @@
 						</Composite>
 					</Activity>
 				</WorkingTransit>
-				<Transit Name="Passive section" Looping="false">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="1.7" Long="3.8"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="0.3" Long="2.7"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="1.5" Long="1.0"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-				</Transit>
+
 			</Sequence>
 
 			<SurfaceMovementCharacteristics Name="F23 Perf"
@@ -131,23 +149,7 @@
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Sequence Name="ASW Patrol A" StayAlive="true">
-				<Transit Name="Passive patrol" Looping="false">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="1.0" Long="1.0"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="0.3" Long="2.7"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="0.7" Long="3.0"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="1.0" Long="0.6"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-				</Transit>
+
 				<Sequence Name="Patrol loop" StayAlive="true">
 					<WorkingTransit Name="SIP Patrol" NumStops="6"
 						Looping="false">
@@ -189,7 +191,8 @@
 							</Composite>
 						</Activity>
 					</WorkingTransit>
-					<Transit Name="Passive section" Looping="false">
+					<WorkingTransit NumStops="4" Name="Southern SIP"
+						Looping="false">
 						<WorldPath>
 							<Point>
 								<shortLocation Lat="1.7" Long="3.8"></shortLocation>
@@ -202,7 +205,24 @@
 							</Point>
 						</WorldPath>
 						<Speed Value="12" Units="kts" />
-					</Transit>
+						<Activity Name="Active periods">
+							<Composite Name="enable active">
+								<ElapsedTime Name="30 mins">
+									<Duration Value="30.0" Units="minutes" />
+								</ElapsedTime>
+								<ChangeSensorLineUp SwitchOn="true" Name="active off"
+									Medium="ActiveBB" />
+							</Composite>
+							<Composite Name="disable active">
+								<ElapsedTime Name="zero time">
+									<Duration Value="0.0" Units="millis" />
+								</ElapsedTime>
+								<ChangeSensorLineUp SwitchOn="false" Name="active off"
+									Medium="ActiveBB" />
+							</Composite>
+						</Activity>
+
+					</WorkingTransit>
 				</Sequence>
 			</Sequence>
 
@@ -265,10 +285,35 @@
 				<TurningCircle Value="400.0" Units="m" />
 			</SSMovementCharacteristics>
 		</SSN>
+		<BuoyField Name="EAST_BARRIER">
+			<Category Type="BUOY_FIELD" Force="BLUE"
+				Environment="SUBSURFACE" />
+			<SensorFit>
+				<TypedCookieSensor Working="true" DetectionLevel="Detected" Medium="ActiveBB">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="5" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
+			<Status Course="0.0" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="" Long=""></shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Coverage>
+				<TopLeft>
+					<shortLocation Lat="0.5" Long="4"></shortLocation>
+				</TopLeft>
+				<BottomRight>
+					<shortLocation Lat="0" Long="4.05"></shortLocation>
+				</BottomRight>
+			</Coverage>
+		</BuoyField>
 	</Participants>
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
-			<grid PlotLabels="true" Visible="true">
+			<grid PlotLabels="true" Visible="false">
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
 				<Delta Units="minutes" Value="60.0000000" />
 				<colour CustomBlue="102" CustomGreen="102" CustomRed="102"
@@ -300,7 +345,7 @@
 				</br>
 			</rectangle>
 			<rectangle Filled="false" Label="Red NoGo" LabelLocation="Left"
-				LabelVisible="true" LineThickness="0" Visible="true">
+				LabelVisible="true" LineThickness="0" Visible="false">
 				<colour Value="RED" />
 				<fontcolour Value="RED" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
