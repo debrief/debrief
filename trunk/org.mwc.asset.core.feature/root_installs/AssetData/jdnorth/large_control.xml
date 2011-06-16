@@ -48,7 +48,6 @@
 			</Target>
 			<Watch>
 				<TargetType>
-					<Type Name="BLUE" />
 					<Type Name="BUOY_FIELD" />
 				</TargetType>
 			</Watch>
@@ -106,5 +105,20 @@
 			<BatchCollator OnlyBatchReporting="true" Active="true"
 				CollationMethod="LIST" PerCase="false" />
 		</ProportionDetectedObserver>
+		<RemoveInAreaObserver Name="Remove red success" Active="true">
+			<WorldArea>
+				<TopLeft>
+					<shortLocation Lat="0" Long="-1"></shortLocation>
+				</TopLeft>
+				<BottomRight>
+					<shortLocation Lat="-1" Long="5"></shortLocation>
+				</BottomRight>
+			</WorldArea>
+			<Watch>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Watch>
+		</RemoveInAreaObserver>
 	</ObserverList>
 </ScenarioController>
