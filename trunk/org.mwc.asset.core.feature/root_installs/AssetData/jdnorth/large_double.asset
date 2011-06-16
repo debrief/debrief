@@ -247,7 +247,7 @@
 			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="7" Long="6"></shortLocation>
+					<shortLocation Lat="7" Long="4"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
@@ -297,7 +297,7 @@
 				</TypedCookieSensor></SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="" Long=""></shortLocation>
+					<shortLocation Lat="0" Long="4"></shortLocation>
 				</Location>
 				<Speed Value="0.0" Units="m/s" />
 			</Status>
@@ -329,7 +329,7 @@
 				<colour Value="RED" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
 				<centre>
-					<shortLocation Depth="0.000" Lat="7.0000000" Long="6.0000000" />
+					<shortLocation Depth="0.000" Lat="7.0000000" Long="4" />
 				</centre>
 			</textlabel>
 			<rectangle Filled="false" Label="Blue patrol"
@@ -345,7 +345,7 @@
 				</br>
 			</rectangle>
 			<rectangle Filled="false" Label="Red NoGo" LabelLocation="Left"
-				LabelVisible="true" LineThickness="0" Visible="false">
+				LabelVisible="true" LineThickness="0" Visible="true">
 				<colour Value="RED" />
 				<fontcolour Value="RED" />
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
