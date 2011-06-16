@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="results"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="red" number="100">
+				<Variance name="target location" id="/Waterfall//Point[2]/shortLocation">
+					<Attribute name="Long">
+						<Range max="4" min="0" />
+					</Attribute>
+
+				</Variance>
+				<Variance name="red route" id="/Switch">
+					<Attribute name="Index">
+						<Choice>
+							<Value value="1" ></Value>
+							<Value value="2" ></Value>
+						</Choice>
+					</Attribute>
+
+				</Variance>
+		  		<Variance name="west of island" id="/Waterfall[1]//Point[1]/shortLocation">
+					<Attribute name="Long">
+						<Range max="1.9" min="0.12" />
+					</Attribute>
+				</Variance>
+		  		<Variance name="east of island" id="/Waterfall[2]//Point[1]/shortLocation">
+					<Attribute name="Long">
+						<Range max="8" min="5.2" />
+					</Attribute>
+				</Variance>
+				<Variance name="transit speed" id="/Waterfall//Speed">
+					<Attribute name="Value">
+						<Range max="8" min="4" />
+					</Attribute>
+
+				</Variance>
+				<Variance name="random pause" id="/Waterfall/Wait/Duration">
+					<Attribute name="Value">
+						<Range max="0" min="48" />
+					</Attribute>
+
+				</Variance>
+			</ParticipantVariance>
+		</MultiParticipantGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="210" Units="hours"></Duration>
+		</TimeObserver>
+		<TrackPlotObserver Active="false" Name="TrackPlot"
+			show_positions="true">
+			<GridDelta Value="4" Units="nm"></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks"
+			record_detections="true" record_positions="true" Active="false"
+			record_decisions="true">
+
+		</DebriefReplayObserver>
+		<RemoveDetectedObserver Name="Red by buoyfield"
+			Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BUOY_FIELD" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<RemoveDetectedObserver Name="Red by sea"
+			Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="SURFACE" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+				<RemoveDetectedObserver Name="Red by long term"
+			Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<PlotSensorObserver Name="Show detections" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="SUBMARINE"></Type>
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="SURFACE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+		<ProportionDetectedObserver Name="how many red's detected?"
+			Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+			<BatchCollator OnlyBatchReporting="true" Active="true"
+				CollationMethod="LIST" PerCase="false" />
+		</ProportionDetectedObserver>
+		<RemoveInAreaObserver Name="Remove red success" Active="true">
+			<WorldArea>
+				<TopLeft>
+					<shortLocation Lat="0" Long="-1"></shortLocation>
+				</TopLeft>
+				<BottomRight>
+					<shortLocation Lat="-1" Long="5"></shortLocation>
+				</BottomRight>
+			</WorldArea>
+			<Watch>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Watch>
+		</RemoveInAreaObserver>
+	</ObserverList>
+</ScenarioController>
