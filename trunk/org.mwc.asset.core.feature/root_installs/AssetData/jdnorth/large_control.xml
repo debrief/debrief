@@ -4,12 +4,31 @@
 	<ScenarioGenerator>
 
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="red" number="200">
-				<Variance name="target location" id="/Waterfall//shortLocation">
+			<ParticipantVariance name="red" number="100">
+				<Variance name="target location" id="/Waterfall//Point[2]/shortLocation">
 					<Attribute name="Long">
 						<Range max="4" min="0" />
 					</Attribute>
 
+				</Variance>
+				<Variance name="red route" id="/Switch">
+					<Attribute name="Index">
+						<Choice>
+							<Value value="1" ></Value>
+							<Value value="2" ></Value>
+						</Choice>
+					</Attribute>
+
+				</Variance>
+		  		<Variance name="west of island" id="/Waterfall[1]//Point[1]/shortLocation">
+					<Attribute name="Long">
+						<Range max="1.3" min="0.12" />
+					</Attribute>
+				</Variance>
+		  		<Variance name="east of island" id="/Waterfall[2]//Point[1]/shortLocation">
+					<Attribute name="Long">
+						<Range max="3.8" min="2.3" />
+					</Attribute>
 				</Variance>
 				<Variance name="transit speed" id="/Waterfall//Speed">
 					<Attribute name="Value">

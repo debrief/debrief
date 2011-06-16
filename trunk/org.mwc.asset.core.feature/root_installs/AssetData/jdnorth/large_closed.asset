@@ -32,17 +32,13 @@
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Sequence Name="ASW Patrol B" StayAlive="true">
-				<WorkingTransit Name="SIP Patrol"
-					Looping="true">
+				<WorkingTransit Name="SIP Patrol" Looping="true">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="2.0" Long="3.4"></shortLocation>
+							<shortLocation Lat="2.5" Long="0.8"></shortLocation>
 						</Point>
 						<Point>
-							<shortLocation Lat="1.8" Long="2.0"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="2.0" Long="0.6"></shortLocation>
+							<shortLocation Lat="2.2" Long="1.8"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -95,19 +91,18 @@
 			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="0" Long="1"></shortLocation>
+					<shortLocation Lat="0" Long="2"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
 			<Sequence Name="ASW Patrol B" StayAlive="true">
-				<WorkingTransit Name="SIP Patrol"
-					Looping="true">
+				<WorkingTransit Name="SIP Patrol" Looping="true">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="3.5" Long="0.6"></shortLocation>
+							<shortLocation Lat="3.5" Long="3.4"></shortLocation>
 						</Point>
 						<Point>
-							<shortLocation Lat="3.5" Long="3.4"></shortLocation>
+							<shortLocation Lat="3.1" Long="2.6"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
@@ -157,27 +152,57 @@
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
-			<Waterfall Name="">
-				<Wait Name="random pause">
-					<Duration Value="1" Units="hours" />
-				</Wait>
-				<Evade Name="">
-					<Duration Value="10" Units="minutes" />
-					<FleeHeight Value="0.0" Units="ft" />
-					<FleeSpeed Value="12" Units="kts" />
-					<TargetType>
-						<Type Name="BLUE" />
-					</TargetType>
-				</Evade>
-				<Transit Name="" Looping="true">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="0" Long="4"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-				</Transit>
-			</Waterfall>
+			<Switch Name="alternate routes" Index="2">
+				<Waterfall Name="Red transit a">
+					<Wait Name="random pause">
+						<Duration Value="1" Units="hours" />
+					</Wait>
+					<Evade Name="">
+						<Duration Value="10" Units="minutes" />
+						<FleeHeight Value="0.0" Units="ft" />
+						<FleeSpeed Value="12" Units="kts" />
+						<TargetType>
+							<Type Name="BLUE" />
+						</TargetType>
+					</Evade>
+					<Transit Name="" Looping="false">
+						<WorldPath>
+							<Point>
+								<shortLocation Lat="1.5" Long="1"></shortLocation>
+							</Point>
+							<Point>
+								<shortLocation Lat="-3" Long="4"></shortLocation>
+							</Point>
+						</WorldPath>
+						<Speed Value="12" Units="kts" />
+					</Transit>
+				</Waterfall>
+				<Waterfall Name="Red transit b">
+					<Wait Name="random pause">
+						<Duration Value="1" Units="hours" />
+					</Wait>
+					<Evade Name="">
+						<Duration Value="10" Units="minutes" />
+						<FleeHeight Value="0.0" Units="ft" />
+						<FleeSpeed Value="12" Units="kts" />
+						<TargetType>
+							<Type Name="BLUE" />
+						</TargetType>
+					</Evade>
+					<Transit Name="" Looping="false">
+						<WorldPath>
+							<Point>
+								<shortLocation Lat="1.5" Long="3.5"></shortLocation>
+							</Point>
+							<Point>
+								<shortLocation Lat="-3" Long="4"></shortLocation>
+							</Point>
+						</WorldPath>
+						<Speed Value="12" Units="kts" />
+					</Transit>
+				</Waterfall>
+			</Switch>
+
 			<SSMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="kts" />
@@ -192,15 +217,16 @@
 			</SSMovementCharacteristics>
 		</SSN>
 		<BuoyField Name="EAST_BARRIER">
-			<Category Type="BUOY_FIELD" Force="BLUE"
-				Environment="SUBSURFACE" />
+			<Category Type="BUOY_FIELD" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Working="true" DetectionLevel="Detected" Medium="ActiveBB">
+				<TypedCookieSensor Working="true" DetectionLevel="Detected"
+					Medium="ActiveBB">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="5" Units="nm" />
 					</TypedRangeDoublet>
-				</TypedCookieSensor></SensorFit>
+				</TypedCookieSensor>
+			</SensorFit>
 			<Status Course="0.0" Fuel="0.0">
 				<Location>
 					<shortLocation Lat="0" Long="4"></shortLocation>
