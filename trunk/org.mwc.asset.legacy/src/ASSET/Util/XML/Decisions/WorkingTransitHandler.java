@@ -20,7 +20,7 @@ abstract public class WorkingTransitHandler extends TransitHandler
   private final static String ACTIVITY = "Activity";
 
   Sequence _myActivity;
-  int _numStops;
+  int _numStops=-1;
 
   public WorkingTransitHandler(int thisDepth)
   {
@@ -46,7 +46,7 @@ abstract public class WorkingTransitHandler extends TransitHandler
   {
     Transit res = new WorkingTransit(_myActivity, super._myPath, super._speed, super._looping, _numStops);
     _myActivity = null;
-    _numStops = 0;
+    _numStops = -1;
     return res;
   }
 

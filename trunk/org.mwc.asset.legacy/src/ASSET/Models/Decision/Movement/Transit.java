@@ -316,6 +316,8 @@ public class Transit extends CoreDecision implements java.io.Serializable
                 // head back for the start
                 _currentDestination = 0;
               }
+              
+              performReset();
             }
             else
             {
@@ -337,7 +339,14 @@ public class Transit extends CoreDecision implements java.io.Serializable
     return passedNewPoint;
   }
 
-  /**
+  /** we've reached the end, and we're set to continue. do any reset necesary
+   * 
+   */
+  protected void performReset()
+	{
+	}
+
+	/**
    * ok, we now know where we are, and where we're heading for. produce a demanded status
    *
    * @param status         where we are
