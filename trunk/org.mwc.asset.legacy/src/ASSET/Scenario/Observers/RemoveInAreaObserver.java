@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -56,7 +57,7 @@ public class RemoveInAreaObserver extends CoreObserver implements
 	 */
 	private BatchCollatorHelper _batcher = null;
 	private int _myScore;
-	private Vector<ParticipantType> _watchVessels;
+	private ArrayList<ParticipantType> _watchVessels;
 
 	/**
 	 * ************************************************************ constructor
@@ -68,6 +69,7 @@ public class RemoveInAreaObserver extends CoreObserver implements
 		super(myName, isActive);
 		_myArea = targetArea;
 		_myWatch = watchVessel;
+		_watchVessels = new ArrayList<ParticipantType>();
 	}
 
 	/***************************************************************
@@ -180,25 +182,32 @@ public class RemoveInAreaObserver extends CoreObserver implements
 	 *          thje current range (in degrees)
 	 * @param rng2
 	 */
-	protected void handleThisInstance(ScenarioType scenario, final long time,
-			NetworkParticipant part)
+	protected void ditchThese(ScenarioType scenario, final long time,
+			ArrayList<NetworkParticipant> parts)
 	{
-		_myScore++;
-		// tell the attribute helper
-		getAttributeHelper().newData(scenario, time, _myScore);
+		Iterator<NetworkParticipant> it = parts.iterator();
+		while (it.hasNext())
+		{
+			NetworkParticipant part = (NetworkParticipant) it.next();
+			_myScore++;
+			// tell the attribute helper
+			getAttributeHelper().newData(scenario, time, _myScore);
 
-		// and remove him
-		WorldLocation loc = part.getStatus().getLocation();
-		Color hisColor = Category.getColorFor(part.getCategory());
-		LabelWrapper lw = new LabelWrapper(part.getName(), loc, hisColor);
-		lw.setSymbolType("Reference Position");
+			// and remove him
+			WorldLocation loc = part.getStatus().getLocation();
+			Color hisColor = Category.getColorFor(part.getCategory());
+			LabelWrapper lw = new LabelWrapper(part.getName(), loc, hisColor);
+			lw.setSymbolType("Circle");
 
-		if (_myDeadParts == null)
-			_myDeadParts = new Vector<LabelWrapper>(0, 1);
+			if (_myDeadParts == null)
+				_myDeadParts = new Vector<LabelWrapper>(0, 1);
 
-		_myDeadParts.add(lw);
+			_myDeadParts.add(lw);
 
-		scenario.removeParticipant(part.getId());
+			_watchVessels.remove(part);
+
+			scenario.removeParticipant(part.getId());
+		}
 
 	}
 
@@ -242,7 +251,7 @@ public class RemoveInAreaObserver extends CoreObserver implements
 					(int) MWC.Algorithms.Conversions.Degs2m(_myScore));
 		}
 		// clear out lists
-		_watchVessels.removeAllElements();
+		_watchVessels.clear();
 
 		// reset the score
 		_myScore = 0;
@@ -361,6 +370,8 @@ public class RemoveInAreaObserver extends CoreObserver implements
 	public void step(ScenarioType scenario, long newTime)
 	{
 
+		ArrayList<NetworkParticipant> parts = null;
+		
 		// step through our watch vessels
 		final Iterator<ParticipantType> thisV = _watchVessels.iterator();
 		while (thisV.hasNext())
@@ -369,9 +380,16 @@ public class RemoveInAreaObserver extends CoreObserver implements
 
 			if (_myArea.contains(thisWatch.getStatus().getLocation()))
 			{
-				handleThisInstance(scenario, newTime, thisWatch);
+				{
+					if(parts == null)
+						parts = new ArrayList<NetworkParticipant>();
+					
+					parts.add(thisWatch);
+				}
 			}
 		}
+		if(parts != null)
+		ditchThese(scenario, newTime, parts);
 	}
 
 	public String getUnits()
