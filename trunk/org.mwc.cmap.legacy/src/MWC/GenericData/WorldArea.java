@@ -243,10 +243,10 @@ public final class WorldArea implements Serializable
 		else
 		{
 			// first the TL/BR corners
-			double r1 = distanceToSegment(getTopLeft(), getTopRight(), other);
-			double r2 = distanceToSegment(getTopRight(), getBottomRight(), other);
-			double r3 = distanceToSegment(getBottomRight(), getBottomLeft(), other);
-			double r4 = distanceToSegment(getBottomLeft(), getTopLeft(), other);
+			double r1 = distancePointLine(getTopLeft(), getTopRight(), other);
+			double r2 = distancePointLine(getTopRight(), getBottomRight(), other);
+			double r3 = distancePointLine(getBottomRight(), getBottomLeft(), other);
+			double r4 = distancePointLine(getBottomLeft(), getTopLeft(), other);
 
 			res = Math.min(r1, r2);
 			res = Math.min(res, r3);
@@ -255,51 +255,106 @@ public final class WorldArea implements Serializable
 		// sort out the min
 		return res;
 	}
+	
+  /**
+   * Computes the distance from a point p to a line segment AB
+   * This is a modified version of the sources from the Java Topology Suite
+   *
+   * Note: NON-ROBUST!
+   *
+   * @param p the point to compute the distance for
+   * @param A one point of the line
+   * @param B another point of the line (must be different to A)
+   * @return the distance from p to line segment AB
+   */
+  private static double distancePointLine(WorldLocation A, WorldLocation B, WorldLocation p)
+  {
+    // if start==end, then use pt distance
+    if (  A.equals(B) ) return p.rangeFrom(A);
+
+    // otherwise use comp.graphics.algorithms Frequently Asked Questions method
+    /*(1)     	      AC dot AB
+                   r = ---------
+                         ||AB||^2
+		r has the following meaning:
+		r=0 P = A
+		r=1 P = B
+		r<0 P is on the backward extension of AB
+		r>1 P is on the forward extension of AB
+		0<r<1 P is interior to AB
+	*/
+    /** NOTE: we use getLat for .y and getLong for .x */
+
+    double r = ( (p.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (p.getLat() - A.getLat()) * (B.getLat() - A.getLat()) )
+              /
+            ( (B.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (B.getLat() - A.getLat()) * (B.getLat() - A.getLat()) );
+
+    if (r <= 0.0) return p.rangeFrom(A);
+    if (r >= 1.0) return p.rangeFrom(B);
+
+
+    /*(2)
+		     (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay)
+		s = -----------------------------
+		             	L^2
+
+		Then the distance from C to P = |s|*L.
+	*/
+
+    double s = ((A.getLat() - p.getLat()) *(B.getLong() - A.getLong()) - (A.getLong() - p.getLong())*(B.getLat() - A.getLat()) )
+              /
+            ((B.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (B.getLat() - A.getLat()) * (B.getLat() - A.getLat()) );
+
+    return
+      Math.abs(s) *
+      Math.sqrt(((B.getLong() - A.getLong()) * (B.getLong() - A.getLong()) + (B.getLat() - A.getLat()) * (B.getLat() - A.getLat())));
+  }
+	
 
 	/**
 	 * Returns the distance of p3 to the segment defined by p1,p2;
 	 * 
 	 * @return The distance of p3 to the segment defined by p1,p2
 	 */
-	private static double distanceToSegment(WorldLocation p1, WorldLocation p2,
-			WorldLocation p3)
-	{
-
-		final double xDelta = p2.getLong() - p1.getLong();
-		final double yDelta = p2.getLat() - p1.getLat();
-		final double res;
-
-		if ((xDelta == 0) && (yDelta == 0))
-		{
-			// ok, the two corners are the same, we just treat this as a single point
-			res = p1.rangeFrom(p3);
-		}
-		else
-		{
-
-			final double u = ((p3.getLong() - p1.getLong()) * xDelta + (p3.getLat() - p1
-					.getLat()) * yDelta)
-					/ (xDelta * xDelta + yDelta * yDelta);
-
-			final WorldLocation closestPoint;
-			if (u < 0)
-			{
-				closestPoint = p1;
-			}
-			else if (u > 1)
-			{
-				closestPoint = p2;
-			}
-			else
-			{
-				closestPoint = new WorldLocation(p1.getLat() + u * yDelta, p1.getLong()
-						+ u * xDelta, 0);
-			}
-
-			res = closestPoint.rangeFrom(p3);
-		}
-		return res;
-	}
+//	private static double distanceToSegment(WorldLocation p1, WorldLocation p2,
+//			WorldLocation p3)
+//	{
+//
+//		final double xDelta = p2.getLong() - p1.getLong();
+//		final double yDelta = p2.getLat() - p1.getLat();
+//		final double res;
+//
+//		if ((xDelta == 0) && (yDelta == 0))
+//		{
+//			// ok, the two corners are the same, we just treat this as a single point
+//			res = p1.rangeFrom(p3);
+//		}
+//		else
+//		{
+//
+//			final double u = ((p3.getLong() - p1.getLong()) * xDelta + (p3.getLat() - p1
+//					.getLat()) * yDelta)
+//					/ (xDelta * xDelta + yDelta * yDelta);
+//
+//			final WorldLocation closestPoint;
+//			if (u < 0)
+//			{
+//				closestPoint = p1;
+//			}
+//			else if (u > 1)
+//			{
+//				closestPoint = p2;
+//			}
+//			else
+//			{
+//				closestPoint = new WorldLocation(p1.getLat() + u * yDelta, p1.getLong()
+//						+ u * xDelta, 0);
+//			}
+//
+//			res = closestPoint.rangeFrom(p3);
+//		}
+//		return res;
+//	}
 
 	/**
 	 * see if the two areas overlap
@@ -661,6 +716,14 @@ public final class WorldArea implements Serializable
 			dist1 = wa5.rangeFromEdge(new WorldLocation(10, 11, 100));
 			assertEquals("correct range", 1d, dist1, 0.02);
 
+		}
+		
+		public final void testDiffRangeFromEdge()
+		{
+			WorldArea was = new WorldArea(new WorldLocation(0.5, 4.05, 0), new WorldLocation(0, 4.05, 0));
+			WorldLocation tgt =  new WorldLocation(0.127, 0.5, 0);
+			double dist = was.rangeFrom(tgt);
+			assertTrue(dist > 1);
 		}
 
 		public final void testConstructor()
