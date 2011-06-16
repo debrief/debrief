@@ -17,6 +17,8 @@ import MWC.GenericData.*;
 
 public class Evade extends CoreDecision implements java.io.Serializable
 {
+	private static final int DUFF_COURSE = -999;
+
 	/**
 	 * ASSET.Models.Decision.Movement.Evade.UserControlInfo
 	 */
@@ -66,6 +68,12 @@ public class Evade extends CoreDecision implements java.io.Serializable
 	 * a local copy of our editable object
 	 */
 	private MWC.GUI.Editable.EditorType _myEditor = null;
+
+	/**
+	 * the previous course we were on
+	 * 
+	 */
+	private double _previousCourse = DUFF_COURSE;
 
 	/**
 	 * a target we are currently evading
@@ -131,8 +139,8 @@ public class Evade extends CoreDecision implements java.io.Serializable
 						.intValue());
 
 				// what's his bearing rate?
-				WorldVector wv = target.getStatus().getLocation().subtract(
-						status.getLocation());
+				WorldVector wv = target.getStatus().getLocation()
+						.subtract(status.getLocation());
 
 				double brg = wv.getBearing();
 				double rng = wv.getRange();
@@ -240,7 +248,7 @@ public class Evade extends CoreDecision implements java.io.Serializable
 						// take us in the opposite direction, to ensure we're going the
 						// long way....
 
-						// 
+						//
 						if (relBrg < 0)
 						{
 							// he's on our left, go right
@@ -386,7 +394,7 @@ public class Evade extends CoreDecision implements java.io.Serializable
 			{
 				// back to normal handling
 				// do we have any detections?
-				if (detections != null)
+				if ((detections != null) && (detections.size() > 0))
 				{
 					// are there any matching detections
 					DetectionList matches = detections.getDetectionsOf(_myTargetType);
@@ -440,6 +448,10 @@ public class Evade extends CoreDecision implements java.io.Serializable
 									res.setSpeed(_fleeSpeed);
 									_fleeCourse = res.getCourse();
 
+									// store the previous course (if we're not already evading
+									if (_previousCourse == DUFF_COURSE)
+										_previousCourse = status.getCourse();
+
 									super.setLastActivity(de.toString());
 
 									// calculate the flee time
@@ -456,6 +468,23 @@ public class Evade extends CoreDecision implements java.io.Serializable
 					// no detections, reset our variables
 					_finishedFleeing = -1;
 					_fleeCourse = -1;
+
+					// do we have an old flee course?
+					if (_previousCourse != DUFF_COURSE)
+					{
+						// are we on the course yet?
+						double courseDelta = Math.abs(status.getCourse() - _previousCourse);
+						if (courseDelta > 5)
+						{
+							// nope, put us back on it.
+							res = new SimpleDemandedStatus(time, status);
+							res.setCourse(_previousCourse);
+						}
+						else
+						{
+							_previousCourse = DUFF_COURSE;
+						}
+					}
 				}
 			}
 		}
