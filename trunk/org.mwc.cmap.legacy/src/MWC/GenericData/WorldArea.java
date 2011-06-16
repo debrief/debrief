@@ -242,7 +242,6 @@ public final class WorldArea implements Serializable
 			res = 0;
 		else
 		{
-
 			// first the TL/BR corners
 			double r1 = distanceToSegment(getTopLeft(), getTopRight(), other);
 			double r2 = distanceToSegment(getTopRight(), getBottomRight(), other);
@@ -268,32 +267,38 @@ public final class WorldArea implements Serializable
 
 		final double xDelta = p2.getLong() - p1.getLong();
 		final double yDelta = p2.getLat() - p1.getLat();
+		final double res;
 
 		if ((xDelta == 0) && (yDelta == 0))
 		{
-			throw new IllegalArgumentException("p1 and p2 cannot be the same point");
-		}
-
-		final double u = ((p3.getLong() - p1.getLong()) * xDelta + (p3.getLat() - p1
-				.getLat()) * yDelta)
-				/ (xDelta * xDelta + yDelta * yDelta);
-
-		final WorldLocation closestPoint;
-		if (u < 0)
-		{
-			closestPoint = p1;
-		}
-		else if (u > 1)
-		{
-			closestPoint = p2;
+			// ok, the two corners are the same, we just treat this as a single point
+			res = p1.rangeFrom(p3);
 		}
 		else
 		{
-			closestPoint = new WorldLocation(p1.getLat() + u * yDelta, p1.getLong()
-					+ u * xDelta, 0);
-		}
 
-		return closestPoint.rangeFrom(p3);
+			final double u = ((p3.getLong() - p1.getLong()) * xDelta + (p3.getLat() - p1
+					.getLat()) * yDelta)
+					/ (xDelta * xDelta + yDelta * yDelta);
+
+			final WorldLocation closestPoint;
+			if (u < 0)
+			{
+				closestPoint = p1;
+			}
+			else if (u > 1)
+			{
+				closestPoint = p2;
+			}
+			else
+			{
+				closestPoint = new WorldLocation(p1.getLat() + u * yDelta, p1.getLong()
+						+ u * xDelta, 0);
+			}
+
+			res = closestPoint.rangeFrom(p3);
+		}
+		return res;
 	}
 
 	/**
@@ -602,6 +607,7 @@ public final class WorldArea implements Serializable
 		WorldArea wa2;
 		WorldArea wa3;
 		WorldArea wa4;
+		private WorldArea wa5;
 
 		public WorldAreaTest(String val)
 		{
@@ -623,6 +629,7 @@ public final class WorldArea implements Serializable
 			wa2 = new WorldArea(w1, w2);
 			wa3 = new WorldArea(w1, w3);
 			wa4 = new WorldArea(w4, w5);
+			wa5 = new WorldArea(w2, w5);
 		}
 
 		public final void tearDown()
@@ -650,6 +657,8 @@ public final class WorldArea implements Serializable
 			dist1 = wa1.rangeFromEdge(new WorldLocation(11.2, 13, 0));
 			assertEquals("correct range", 1d, dist1, 0.02);
 			dist1 = wa1.rangeFromEdge(new WorldLocation(11, 9, 0));
+			assertEquals("correct range", 1d, dist1, 0.02);
+			dist1 = wa5.rangeFromEdge(new WorldLocation(10, 11, 100));
 			assertEquals("correct range", 1d, dist1, 0.02);
 
 		}
