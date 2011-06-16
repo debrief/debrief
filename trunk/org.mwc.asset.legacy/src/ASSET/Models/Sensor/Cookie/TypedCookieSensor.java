@@ -90,6 +90,9 @@ public class TypedCookieSensor extends CoreSensor
 	protected boolean canDetectThisType(NetworkParticipant ownship,
 			ParticipantType other, EnvironmentType env)
 	{
+		// note, we don't do our type checking here, since in the detectThis method
+		// we will still have to loop through all our types in order to ge the relevant
+		// range doublet.
 		return true;
 	}
 
