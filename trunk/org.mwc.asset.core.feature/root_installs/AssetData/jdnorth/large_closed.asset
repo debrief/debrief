@@ -102,7 +102,7 @@
 							<shortLocation Lat="3.5" Long="3.4"></shortLocation>
 						</Point>
 						<Point>
-							<shortLocation Lat="3.1" Long="2.6"></shortLocation>
+							<shortLocation Lat="2.6" Long="2.8"></shortLocation>
 						</Point>
 					</WorldPath>
 					<Speed Value="12" Units="kts" />
