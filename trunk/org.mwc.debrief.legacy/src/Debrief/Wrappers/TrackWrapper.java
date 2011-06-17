@@ -718,7 +718,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * class containing editable details of a track
 	 */
-	public final class trackInfo extends Editable.EditorType implements Editable.DynamicDescriptors
+	public final class trackInfo extends Editable.EditorType implements
+			Editable.DynamicDescriptors
 	{
 
 		/**
@@ -763,6 +764,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								"whether to interpolate points between known data points",
 								SPATIAL),
 						expertProp("Color", "the track color", FORMAT),
+						expertProp("SymbolColor", "the color of the symbol (when used)",
+								FORMAT),
 						expertProp(
 								"PlotArrayCentre",
 								"highlight the sensor array centre when non-zero array length provided",
@@ -2373,6 +2376,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
+	 * get the color used to plot the symbol
+	 * 
+	 * @return the color
+	 */
+	public final Color getSymbolColor()
+	{
+		return _theSnailShape.getColor();
+	}
+
+	public final void setSymbolColor(Color col)
+	{
+		_theSnailShape.setColor(col);
+	}
+
+	/**
 	 * the colour of the points on the track
 	 * 
 	 * @return the colour
@@ -3048,7 +3066,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// now do our processing
 		_theLabel.setColor(theCol);
-		_theSnailShape.setColor(theCol);
 	}
 
 	/**
@@ -3350,10 +3367,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			// remember the size of the symbol
 			final double scale = _theSnailShape.getScaleVal();
+			// remember the color of the symbol
+			final Color oldCol = _theSnailShape.getColor();
+
 			// replace our symbol with this new one
 			_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-			_theSnailShape.setColor(this.getColor());
-
+			_theSnailShape.setColor(oldCol);
 			_theSnailShape.setScaleVal(scale);
 		}
 	}

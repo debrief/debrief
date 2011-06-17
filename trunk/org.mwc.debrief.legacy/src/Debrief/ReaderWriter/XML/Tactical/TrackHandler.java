@@ -9,6 +9,7 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ public final class TrackHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
+	private static final String SYMBOL_COLOR = "SymbolColor";
 	private static final String SYMBOL_WIDTH = "SYMBOL_WIDTH";
 	private static final String SYMBOL_LENGTH = "SYMBOL_LENGTH";
 	private static final String SOLUTIONS_VISIBLE = "SolutionsVisible";
@@ -49,6 +51,7 @@ public final class TrackHandler extends
 	Debrief.Wrappers.TrackWrapper _myTrack;
 	protected WorldDistance _symWidth;
 	protected WorldDistance _symLength;
+	protected Color _symCol;
 
 	/**
 	 * class which contains list of textual representations of label locations
@@ -89,6 +92,7 @@ public final class TrackHandler extends
 				.getVisible()));
 
 		ColourHandler.exportColour(track.getColor(), trk, doc);
+		ColourHandler.exportColour(track.getSymbolColor(), trk, doc, SYMBOL_COLOR);
 
 		// and the font
 		final java.awt.Font theFont = track.getTrackFont();
@@ -96,12 +100,14 @@ public final class TrackHandler extends
 		{
 			FontHandler.exportFont(theFont, trk, doc);
 		}
-		
+
 		// and the symbol
-		if(track.getSymbolLength() != null)
-			WorldDistanceHandler.exportDistance(SYMBOL_LENGTH, track.getSymbolLength(), trk, doc);
-		if(track.getSymbolWidth() != null)
-			WorldDistanceHandler.exportDistance(SYMBOL_WIDTH, track.getSymbolWidth(), trk, doc);
+		if (track.getSymbolLength() != null)
+			WorldDistanceHandler.exportDistance(SYMBOL_LENGTH,
+					track.getSymbolLength(), trk, doc);
+		if (track.getSymbolWidth() != null)
+			WorldDistanceHandler.exportDistance(SYMBOL_WIDTH, track.getSymbolWidth(),
+					trk, doc);
 
 		// first output any sensor data
 		final Enumeration<Editable> sensors = track.getSensors().elements();
@@ -243,7 +249,23 @@ public final class TrackHandler extends
 			@Override
 			public void setColour(java.awt.Color res)
 			{
+				// nope, give it the track color
 				_myTrack.setColor(res);
+				// has the symbol been set?
+				if (_symCol == null)
+				{
+					_myTrack.setSymbolColor(res);
+				}
+			}
+		});
+
+		addHandler(new ColourHandler(SYMBOL_COLOR)
+		{
+			@Override
+			public void setColour(java.awt.Color res)
+			{
+				_symCol = res;
+				_myTrack.setSymbolColor(res);
 			}
 		});
 
@@ -369,13 +391,13 @@ public final class TrackHandler extends
 				_myTrack.setLineThickness(value);
 			}
 		});
-		
+
 		addHandler(new WorldDistanceHandler(SYMBOL_WIDTH)
 		{
 			@Override
 			public void setWorldDistance(WorldDistance res)
 			{
-				_symWidth =res;
+				_symWidth = res;
 			}
 		});
 
@@ -384,7 +406,7 @@ public final class TrackHandler extends
 			@Override
 			public void setWorldDistance(WorldDistance res)
 			{
-				_symLength =res;
+				_symLength = res;
 			}
 		});
 
@@ -399,17 +421,18 @@ public final class TrackHandler extends
 	public final void elementClosed()
 	{
 		// ok, the symbol should be sorted, do the lengths
-		if(_symLength != null)
+		if (_symLength != null)
 			_myTrack.setSymbolLength(_symLength);
-		if(_symWidth != null)
+		if (_symWidth != null)
 			_myTrack.setSymbolWidth(_symWidth);
-		
+
 		// our layer is complete, add it to the parent!
 		_theLayers.addThisLayer(_myTrack);
 
 		_myTrack = null;
 		_symWidth = null;
 		_symLength = null;
+		_symCol = null;
 	}
 
 	// this is one of ours, so get on with it!

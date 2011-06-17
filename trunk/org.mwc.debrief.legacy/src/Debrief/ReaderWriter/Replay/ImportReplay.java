@@ -560,6 +560,7 @@ public class ImportReplay extends PlainImporterBase
 
 					// get the colour for this track
 					trkWrapper.setColor(thisColor);
+					trkWrapper.setSymbolColor(thisColor);
 
 					// set the sym type for the track
 					String theSymType = replayTrackSymbolFor(rf.theSymbology);
