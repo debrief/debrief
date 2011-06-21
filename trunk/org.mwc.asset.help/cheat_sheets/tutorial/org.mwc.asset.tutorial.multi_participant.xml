@@ -24,10 +24,10 @@
          Now, we don&apos;t want to overwrite our existing control file, so copy/paste our existing <b>trial1.xml</b> using either the keyboard or the menus.  Name the new control file <b>trial_multi_part.xml</b>.
       </description>
    </item>
-   <item
+ <item
          title="Open the scenario controller">
       <description>
-         Next, double-click on our new control file to open it in the xml editor.  Next, open the ScenarioController element and give it a <b>ScenarioGeneator</b> child element. It&apos;s this element that handles generation of both multiple participants and multiple scenarios.
+         Next, double-click on our new control file to open it in the xml editor.  Next, open the ScenarioController element and give it a <b>ScenarioGenerator</b> child element. It&apos;s this element that handles generation of both multiple participants and multiple scenarios.
       </description>
    </item>
    <item
@@ -37,10 +37,10 @@
 Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance</b> describes the variances to apply to a single participant - specified using the participant name.
       </description>
    </item>
-   <item
+<item
          title="Add specification for multi participant generation">
       <description>
-         So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One, and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West.
+        So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One (or whatever you named the fishing vessel), and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West..
       </description>
    </item>
    <item
@@ -52,13 +52,13 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
    <item
          title="Bring on the referee">
       <description>
-         Now that we&apos;ve got lots of fishermen, we&apos;re going to get ASSET to help us see how effectively the frigate searches the area.  We can do this by adding a <b>RemoveDetectedObserver</b> to the <b>ObserverList</b>.  Now, name this as <b>Ditch detected fishermen</b>.  We need to tell this observer which type of vessel to track the detections of (the <b>Watch</b> type), and also what types of participant that vessel is looking for (the <b>Target</b>).  So, set the Target to <b>GREEN</b> and the Watch to <b>BLUE</b>.  Now, <b>RemoveDetectedObserver</b> is an observer that is capable of providing a continuous readout of of its performance measure.  You&apos;ll be using the <b>Live Monitor</b> to track this.
+         Now that we&apos;ve got lots of fishermen, we&apos;re going to get ASSET to help us see how effectively the frigate searches the area.  We can do this by adding a <b>RemoveDetectedObserver</b> to the <b>ObserverList</b>.  Now, name this as <b>Ditch detected fishermen</b>.  We need to tell this observer which type of vessel to track the detections of (the <b>Watch</b> type), and also what types of participant that vessel is looking for (the <b>Target</b>).  So, set the Target to <b>GREEN</b> and the Watch to <b>BLUE</b>.  Now, <b>RemoveDetectedObserver</b> is an observer that is capable of providing a continuous readout of of its performance measure.  You&apos;ll be using the <b>Live Data</b> to track this.
       </description>
    </item>
-   <item
+      <item
          title="Load the new controller file">
       <description>
-         Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see the current tab switch to <b>Multiple Scenarios</b>.  This panel allows a series of scenarios to be run.   Start off by clicking on <b>Generate</b>.  ASSET will now go away and generate multiple participants and scenarios as necessary, finally enabling the <b>Run</b> button.  Note, once the generate is complete, you&apos;ll see that the table of scenarios now also contains a column titled <b>Ditch detected fisherman</b>.  To keep track of this live data, select <b>Live Data</b> from the Show/View menu - then click on the <b>Ditch detected fisherman<b> cell in the <b>Scenario Controller</b> window (to tell the Live Data window what to watch).
+         Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see the current tab switch to <b>Multiple Scenarios</b>.  This panel allows a series of scenarios to be run.   Start off by clicking on <b>Generate</b>.  ASSET will now go away and generate multiple participants and scenarios as necessary, finally enabling the <b>Run</b> button.  Note, once the generate is complete, you&apos;ll see that the table of scenarios now also contains a column titled <b>Ditch detected fisherman</b>.  To keep track of this live data, select <b>Live Data</b> from the Show/View menu - then click on the <b>Ditch detected fisherman</b> cell in the <b>Scenario Controller</b> window (to tell the Live Data window what to watch).
       </description>
    </item>
    <item
