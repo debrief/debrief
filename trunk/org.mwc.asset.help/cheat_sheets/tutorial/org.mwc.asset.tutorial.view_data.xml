@@ -57,6 +57,12 @@
     </description>
  </item>
  <item
+       title="What were the Sensors like?">
+    <description>
+       The HVU didn&apos;t have any sensors, but the SSK has.  Have a look in the <b>SensorFit</b> element.  Here you&apos;ll see a <b>TypedCookieSensor</b>.  This is a very simple sensor type that uses a cookie-cutter range-dependent detection algorithm, with ranges expressed against specific participant types. Here you&apos;ll see the SSK can detect any <b>BLUE</b> participant at 8 nautical miles. This construct could include more <b>TypedRangeDoublet</b> objects to provide different ranges for <b>Carrier</b> and <b>Frigate</b> or any other ASSET category type.
+    </description>
+ </item>
+ <item
        title="View a control file">
     <description>
     Ok, close the scenario file by clicking on the <b>x</b> symbol in the tab above it. Now, double-click on <b>ForceProt.xml</b>. When this opens you&apos;ll see it&apos;s a <b>ScenarioController</b> element that contains two children, a <b>ScenarioGenerator</b> (that describes how random variances should be applied to your scenario), plus an <b>ObserverList</b> that defines a series of control structures that listen to your running scenario - recording observations to file or interacting with the scenario itself.<br/>
