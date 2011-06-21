@@ -15,13 +15,13 @@
    <item
          title="Decide what to change">
       <description>
-         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 100 fishing vessels, all with different start locations, plus with different search speeds.<br/>Fortunately there&apos;s a convenience function for changing the initial location of generated participants, but we have to do a little more computer jiggery-pokery to specify the speed attribute.
+         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 100 fishing vessels, all with different start locations, plus with different search speeds.  What in the scenario file will have to be modified to do this?  Well, it looks like these are all in the <b>Surface</b> / <b>Status</b> element.<br/>Fortunately there&apos;s a convenience function for changing the initial location of generated participants, but we have to do a little more computer jiggery-pokery to specify the speed attribute.have to do a little more computer jiggery-pokery to specify the speed attribute.
       </description>
    </item>
    <item
          title="Create duplicate control file">
       <description>
-         Now, we don&apos;t want to overwrite our existing control file, so copy/paste our existing <b>trial1.xml</b> using either the keyboard or the menus.  Name the new control file <b>trial_multi_part.xml</b>.
+         Now, we don&apos;t want to overwrite our existing control file, so go to the <b>Navigator</b> view and copy/paste our existing <b>trial1.xml</b> using either the keyboard or the menus.  Name the new control file <b>trial_multi_part.xml</b>.
       </description>
    </item>
  <item
