@@ -59,7 +59,7 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
       <item
          title="Load the new controller file">
       <description>
-         Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see the current tab switch to <b>Multiple Scenarios</b>.  This panel allows a series of scenarios to be run.   Start off by clicking on <b>Generate</b>.  ASSET will now go away and generate multiple participants and scenarios as necessary, finally enabling the <b>Run</b> button.  Note, once the generate is complete, you&apos;ll see that the table of scenarios now also contains a column titled <b>Ditch detected fisherman</b>.  To keep track of this live data, select <b>Live Data</b> from the Show/View menu - then click on the <b>Ditch detected fisherman</b> cell in the <b>Scenario Controller</b> window (to tell the Live Data window what to watch).
+  Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see a dialog box opens that displays progress through generating the new (100!) participants.  Once the files have loaded you&apos;ll see that the table of scenarios now also contains a column titled <b>Ditch detected fisherman</b>.  To keep track of this live data, select <b>Live Data</b> from the Show/View menu - then click on the <b>Ditch detected fisherman</b> cell in the <b>Scenario Controller</b> window (to tell the Live Data window what to watch).watch).
       </description>
    </item>
    <item
@@ -71,7 +71,7 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
    <item
          title="Re-run the scenario">
       <description>
-         Ok, back to the scenario.  Click on <b>Run</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 100 fishermen, not one.  As the scenario plays through, to start with your <b>Live Data</b> window will not show any data, but as the blue platform starts detecting green, entries will start to appear on the graph.  After about 10 hours you&apos;ll see that the graph starts to level off,
+  Ok, back to the scenario.  Click on <b>Play</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 100 fishermen, not one.  As the scenario plays through, to start with your <b>Live Data</b> window will not show any data, but as the blue platform starts detecting green, entries will start to appear on the graph.  After about 10 hours you&apos;ll see that the graph starts to level off,el off,
          
       </description>
    </item>
