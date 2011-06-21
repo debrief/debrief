@@ -15,7 +15,7 @@
    <item
          title="Create empty scenario file">
       <description>
-         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  <br/><b>Note:</b> ASSET runs more smoothly if you name scenarios with the <b>.asset</b> suffix. <br/>On the next page, select  <b>Create XML file from an XML template</b>, then indicate that you want a  new Asset Scenario  The file will then open.
+         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML File&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  <br/><b>Note:</b> ASSET runs more smoothly if you name scenarios with the <b>.asset</b> suffix. <br/>On the next page, select  <b>Create XML file from an XML template</b>, then indicate that you want a  new Asset Scenario.  The file will then open.open.
          
       </description>
    </item>
