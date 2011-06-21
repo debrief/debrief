@@ -9,7 +9,7 @@
    <item
          title="View the scenario">
       <description>
-         Once again we&apos;ll start off by opening the scenario file to see what we&apos;re going to change in each scenario.
+         Once again we&apos;ll start off by opening the scenario file (.asset) to see what we&apos;re going to change in each scenario.
       </description>
    </item>
    <item
@@ -27,14 +27,14 @@
    <item
          title="Add scenario generation code">
       <description>
-         Right, open our new scenario control file.  Start off by specifying a new output folder, specify the <b>OutputDirectory</b> attribute as <b>MultiScenarios</b>.  Add a <b>MultiScenarioGenerator</b> element to the <b>ScenarioController</b> element.  Set the <b>Number</b> to 100. Yes, we&apos;re going to create a hundred permutations of our scenario.  Also, set the <b>NameTemplate</b> to <b>ForceProt_</b> to
+Right, open our new scenario control file.  Start off by specifying a new output folder, specify the <b>OutputDirectory</b> attribute as <b>MultiScenarios</b>.  Add a <b>MultiScenarioGenerator</b> element to the <b>ScenarioGenerator</b> element.  Set the <b>Number</b> to 100. Yes, we&apos;re going to create a hundred permutations of our scenario.  Also, set the <b>NameTemplate</b> to <b>ForceProt_</b> to keep our new scenarios easy to recognise
       </description>
    </item>
    <item
          title="Specify the speed variance">
       <description>
-         Next, add a <b>Variance</b> element to the <b>VarianceList</b> element of the MultiScenarioGenerator.  Name this new Variance element <b>SearchSpeed</b> and specify the id as <b>//Wander[@Name=&apos;Count fishing vessels&apos;]/Speed</b>. Yes, that&apos;s a tricky string - so you&apos;re best off copying it diretly from this text.<br/>
- By default the Variance element contains a single <b>LocationArea</b> element.  We don&apos;t want this, so right-click on it and select <b>Replace with</b> an <b>Attribute</b> element.  With our Fishing vessel wander speed we requested a range of values.  In this case we&apos;re going to specify which ones to use.  So, we need to <b>Replace</b> the <b>Range</b> element with a <b>Choice</b> element.  Now give the <b>Choice</b> element 3 <b>Value</b> children, that have values of 4, 8, and 12.
+ Next, add a <b>Variance</b> element to the <b>VarianceList</b> element of the MultiScenarioGenerator.  Name this new Variance element <b>SearchSpeed</b> and specify the id as <b>//Wander[@Name=&apos;Count fishing vessels&apos;]/Speed</b>. Yes, that&apos;s a tricky string - so you&apos;re best off copying it diretly from this text.<br/>
+ By default the Variance element contains a single <b>LocationArea</b> element.  We don&apos;t want this, so right-click on it and select <b>Replace with</b> an <b>Attribute</b> element.  With our Fishing vessel wander speed we requested a range of values.  In this case we&apos;re going to specify which ones to use.  So, we need to replace the <b>Range</b> element with a <b>Choice</b> element (right-click, Replace With).  Now give the <b>Choice</b> element 3 <b>Value</b> children, that have values of 4, 8, and 12. Also set the <b>Name</b> attribute to <b>Value</b>, since it&apos;s the Value attribute that we want to put our data values into.
       </description>
    </item>
    <item
