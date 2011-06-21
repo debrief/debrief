@@ -67,7 +67,7 @@ We&apos;ll leave the sensor fit empty, but we should give it an initial status. 
    <item
          title="Specify the movement characteristics">
       <description>
-         Next up we have to specify how the fishing vessel performs in the SurfaceMovementCharacteristics.  Enter the following data = <b>Name:</b> 9m Fisherman, <b>FuelUsageRate</b> 0.0001, <b>MinSpeed</b>0 Kts, <b>MaxSpeed</b>12 Kts, <b>AccelerationRate</b> 1 kt/sec, <b>DeceleratonRate</b> 1 kt/sec, <b>TurningCircle</b>  400 metres.
+         Next up we have to specify how the fishing vessel performs in the <b>SurfaceMovementCharacteristics</b>.  Enter the following data: <b>Name:</b> 9m Fisherman, <b>FuelUsageRate</b> 0.0001, <b>MinSpeed</b>0 Kts, <b>MaxSpeed</b>12 Kts, <b>AccelerationRate</b> 1 kt/sec, <b>DeceleratonRate</b> 1 kt/sec, <b>TurningCircle</b>  400 metres.metres.
       </description>
    </item>
    <item
