@@ -51,13 +51,19 @@
  </item>
  <item
        href="/org.mwc.asset.help/html/legacy/mod_behaviours.html"
-       title="How do we define the behaviour of a participant">
+       title="And the behaviour of a participant?">
     <description>
            Next down from the status is a really important part of the definition: the behaviour for this participant.  It&apos;s the behaviours that normally form the meat of a tactical simulation problem.  See the help link for this item to get an overview of behaviours.  Unfortunately the HVU has a really boring behaviour definition, so instead of looking at the HVU, move down to the submarine (SSK) participant, named <b>SSK</b>.  The behaviour for the SSK is defined in a <b>Waterfall</b> block - that&apos;s a series of behaviours where the model tests the first one to see if it&apos;s applicable, if it isn&apos;t it moves down the list until it finds an applicable behaviour. This <b>Waterfall</b> has two elements; an <b>Evade</b> and a <b>RectangleWander</b>. As you work your way through the <b>Evade</b> element you&apos;ll see he&apos;s going to travel for 2 hours at -60 feet at 6 knots from any <b>Blue</b> asset.  If he isn&apos;t in contact with any blue assets then the waterfall behaviour passes down to the next element: the <b>RectangleWander</b>. In this element you&apos;ll see he will wander at 4kts and -40m, in a specified area.iours where the model tests the first one to see if it&apos;s applicable, if it isn&apos;t it moves down the list until it finds an applicable behaviour. This <b>Waterfall</b> has two elements; an <b>Evade</b> and a <b>RectangleWander</b>. As you work your way through the <b>Evade</b> element you&apos;ll see he&apos;s going to travel for 2 hours at -60 feet at 6 knots from any <b>Blue</b> asset.  If it isn&apos;t in contact with any blue assets then the waterfall behaviour passes down to the next element: the <b>RectangleWander</b>. In this element you&apos;ll see he will wander at 4kts and -40m, in a specified area. As you work your way through the <b>Evade</b> element you&apos;ll see he&apos;s going to travel for 2 hours at -60 feet at 6 knots from any <b>Blue</b> asset.
     </description>
  </item>
  <item
-       title="What were the Sensors like?">
+       title="But I haven't seen a real sensor">
+    <description>
+       The HVU didn&apos;t have any sensors, but the SSK has.  Have a look in the <b>SensorFit</b> element.  Here you&apos;ll see a <b>TypedCookieSensor</b>.  This is a very simple sensor type that uses a cookie-cutter range-dependent detection algorithm, with ranges expressed against specific participant types. Here you&apos;ll see the SSK can detect any <b>BLUE</b> participant at 8 nautical miles. This construct could include more <b>TypedRangeDoublet</b> objects to provide different ranges for <b>Carrier</b> and <b>Frigate</b> or any other ASSET category type.
+    </description>
+ </item>
+ <item
+       title="And vessel performance?">
     <description>
        The HVU didn&apos;t have any sensors, but the SSK has.  Have a look in the <b>SensorFit</b> element.  Here you&apos;ll see a <b>TypedCookieSensor</b>.  This is a very simple sensor type that uses a cookie-cutter range-dependent detection algorithm, with ranges expressed against specific participant types. Here you&apos;ll see the SSK can detect any <b>BLUE</b> participant at 8 nautical miles. This construct could include more <b>TypedRangeDoublet</b> objects to provide different ranges for <b>Carrier</b> and <b>Frigate</b> or any other ASSET category type.
     </description>
