@@ -15,20 +15,19 @@
    <item
          title="Create empty scenario file">
       <description>
-         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML File&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  <br/><b>Note:</b> ASSET runs more smoothly if you name scenarios with the <b>.asset</b> suffix. <br/>On the next page, select  <b>Create XML file from an XML template</b>, then indicate that you want a  new Asset Scenario.  The file will then open.open.
+         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML File&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  <b>Note:</b> ASSET runs more smoothly if you name scenarios with the <b>.asset</b> suffix. <br/>On the next page, select  <b>Create XML file from an XML template</b>, then indicate that you want a  new Asset Scenario.  The file will then open.
          
       </description>
    </item>
    <item
          title="Admire the editor">
-      <description>
-         Your new scenario will probably open in <b>Source</b> view.  This is ok for geeks, but you may find it easier to use the tree oriented view.  Switch to this by clicking on the <b>Design</b> tab at the foot of the editor pane.  
+      <description>Your new scenario may probably open in <b>Source</b> view.  This is ok for geeks, but you may find it easier to use the tree oriented view.  If you are in the <b>Source</b> view, switch to the graphical view by clicking on the <b>Design</b> tab at the foot of the editor pane.  
 
 Now your in the graphic view, experiment with expanding the <b>Scenario</b>.  
 
 By the way, if you look at ASSET&apos;s <b>Outline</b> view (or click the arrow below) you&apos;ll see an outline view of the current sceanrio.
 
-ASSET&apos;s Properties view is also useful when working with scenario files.  Open the properties view by selecting Window/Show View/Properties.  Now, you are able to edit the attributes for any element selected in the editor view.
+ASSET&apos;s Properties view is also useful when working with scenario files.  Open the properties view by selecting Window/Show View/Properties.  Now, you are able to edit the attributes for any element selected in the editor view.ditor view.
       </description>
       <command
             required="false"
