@@ -9,13 +9,13 @@
    <item
          title="Open Scenario Controller.">
       <description>
-         We manage scenarios from the Scenario Controller view.  Open this from <b>Window/Show View</b> then select <b>Scenario Controller</b>.
+         We manage scenarios from the Scenario Controller view.  If it isn&apos;t open, open the <b>Window/Show View</b> menu, then select <b>Scenario Controller</b>.
       </description>
    </item>
    <item
          title="Load the data files">
-      <description>
-         Next, individually (or collectively) drag and drop our new scenario and control file onto the scenario controller. Once they&apos;ve loaded, you&apos;ll see their filenames in the <b>Scenario</b> and <b>Control file</b> labels. 
+         <description> 
+      Next, individually (or collectively) drag and drop our new scenario and control file onto the scenario controller. Once they&apos;ve loaded, you&apos;ll see their filenames in the <b>Scenario file</b> and <b>Control file</b> labels. 
  <br/>
 You&apos;ll also see that the scenarion controller is showing the <b>Single Scenario</b> tab - since ASSET has recognised what type of scenario we&apos;ve just loaded.  You&apos;ll also see that the status is indicated as <b>Loaded</b>.
       </description>
