@@ -23,11 +23,11 @@
          title="Admire the editor">
       <description>Your new scenario may probably open in <b>Source</b> view.  This is ok for geeks, but you may find it easier to use the tree oriented view.  If you are in the <b>Source</b> view, switch to the graphical view by clicking on the <b>Design</b> tab at the foot of the editor pane.  
 
-Now your in the graphic view, experiment with expanding the <b>Scenario</b>.  
+Now that you&apos;re in the graphic view, experiment with expanding the <b>Scenario</b>.   
 
-By the way, if you look at ASSET&apos;s <b>Outline</b> view (or click the arrow below) you&apos;ll see an outline view of the current sceanrio.
+By the way, if you look at ASSET&apos;s <b>Outline</b> view (or click the arrow below) you&apos;ll see an outline view of the current scenario.
 
-ASSET&apos;s Properties view is also useful when working with scenario files.  Open the properties view by selecting Window/Show View/Properties.  Now, you are able to edit the attributes for any element selected in the editor view.ditor view.
+ASSET&apos;s Properties view is also useful when working with scenario files.  Open the properties view by selecting Window/Show View/Properties.  Now, you are able to edit the attributes for any element selected in the editor view.
       </description>
       <command
             required="false"
