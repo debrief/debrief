@@ -238,8 +238,8 @@ public class SensorMonitor extends ViewPart
 				super.run();
 
 				// ok, open a new view
-				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, ""
-						+ System.currentTimeMillis(), IWorkbenchPage.VIEW_VISIBLE);
+				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR,
+						"" + System.currentTimeMillis(), IWorkbenchPage.VIEW_VISIBLE);
 			}
 
 		};
@@ -371,9 +371,9 @@ public class SensorMonitor extends ViewPart
 
 		String[] fields = null;
 		final long newTime;
-		
+
 		boolean validDetection = false;
-		
+
 		if (evt.getNewValue() instanceof LookupSensorComponentsEvent)
 		{
 			// sort out the lookup fields
@@ -383,13 +383,13 @@ public class SensorMonitor extends ViewPart
 			{ ev.getTgtName(), ev.getStateString(), f(ev.getRP()), f(ev.getRI()),
 					f(ev.getActual()) };
 
-			if(ev.getStateString().equals(DetectionEvent.UNDETECTED_STR))
+			if (ev.getStateString().equals(DetectionEvent.UNDETECTED_STR))
 			{
 				// nope, it's not detected
 			}
 			else
 				validDetection = true;
-			
+
 			newTime = ev.getTime();
 		}
 		else if (evt.getNewValue() instanceof InitialSensorComponentsEvent)
@@ -402,8 +402,8 @@ public class SensorMonitor extends ViewPart
 					f(ev.getOsNoise()), f(ev.getTgtNoise()), f(ev.getRd()),
 					f(ev.getDi()), f(ev.getSE()) };
 			newTime = ev.getTime();
-			
-			if(ev.getSE() > 0)
+
+			if (ev.getSE() > 0)
 				validDetection = true;
 		}
 
@@ -417,7 +417,7 @@ public class SensorMonitor extends ViewPart
 					ev.getTypeCriteria(), Boolean.toString(ev.getDetected()) };
 
 			newTime = ev.getTime();
-			
+
 			// aah, check out if we're only showing valid detections
 			if (ev.getDetected())
 				validDetection = true;
@@ -451,16 +451,21 @@ public class SensorMonitor extends ViewPart
 				}
 			};
 
-			if(!_onlyShowValidDetections.isChecked() || validDetection)
-  			Display.getDefault().asyncExec(doUpdate);
+			if (!_onlyShowValidDetections.isChecked() || validDetection)
+				Display.getDefault().asyncExec(doUpdate);
 
 		}
 	}
 
 	private String f(WorldDistance val)
 	{
-		return GeneralFormat.formatOneDecimalPlace(val
-				.getValueIn(WorldDistance.METRES));
+		final String res;
+		if (val != null)
+			res = GeneralFormat.formatOneDecimalPlace(val
+					.getValueIn(WorldDistance.METRES));
+		else
+			res = "n/a";
+		return res;
 	}
 
 	public void setKeepMonitoring(boolean val)
