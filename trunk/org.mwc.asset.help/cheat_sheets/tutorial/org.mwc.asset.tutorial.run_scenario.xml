@@ -34,12 +34,12 @@
       <description>
          Right, now we&apos;re ready to go.  Click on <b>Init</b> in the Scenario Controller panel - this will configure the scenario listeners.  (the <b>Step</b> and <b>Play</b> buttons should now become enabled).  Next, click once on the <b>Step</b> button.
 <br/>
-A number of things will now have happened.  The Scenario Controller will show the scenario time - and the icon will have dissappeared from the grpahical plot.  Don&apos;t worry, this is just because we were zoomed in too far on the fishing vessel. Click <b>Zoom Out</b> from the main toolbar about a dozen times to show us a wider overview.
+A number of things will now have happened.  The Scenario Controller will show the scenario time - and the icons on the plot will have moved.
       </description>
    </item>   <item
          title="Move forward">
       <description>
-         Now, repeatedly click on the <b>Step</b> button and you&apos;ll see the scenario steadily move forward in time - on all relevant views. On the plot, you&apos;ll also see that the fishing vessel is annotated with its current status.
+         Now, repeatedly click on the <b>Step</b> button and you&apos;ll see the scenario steadily move forward in time - on all relevant views. On the plot, you&apos;ll also see that the vessel are annotated with their current status.
       </description>
    </item>
    <item
@@ -53,6 +53,7 @@ A number of things will now have happened.  The Scenario Controller will show th
       <description>
          There&apos;s one last interactive thing to look at. Open the <b>Vessel Monitor</b> view - this shows us the current status of any participant.  We instruct the vessel monitor which vessel to display by selecting it in the Layer Manager.  Open the tree node representing the scenario (prob <b>Cheat sheet scenario</b>), then select <b>Fisher One</b> from it.  You&apos;ll see the Vessel monitor update to show this participant.
 <br/>
+If the scenario has finished before you get this far, just click on Reload-data-files (it&apos;s the two yellow arrows at the top of the Scenario Controller), then <b>Init</b> and <b>Play</b> again.
 Chances are, you&apos;ll have to do some view re-arranging to see of this information - observe that the vessel monitor rescales to suit the available space.
 <br/>
 If the scenario is still running, every now and then the fisherman will change course - and you&apos;ll see the course change in the vessel monitor.  Yes, it&apos;s quite a boring vessel to watch.
