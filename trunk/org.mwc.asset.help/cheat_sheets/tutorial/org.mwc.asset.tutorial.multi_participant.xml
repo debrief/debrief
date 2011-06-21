@@ -27,7 +27,7 @@
  <item
          title="Open the scenario controller">
       <description>
-         Next, double-click on our new control file to open it in the xml editor.  Next, open the ScenarioController element and give it a <b>ScenarioGenerator</b> child element. It&apos;s this element that handles generation of both multiple participants and multiple scenarios.
+         Next, double-click on our new control file to open it in the xml editor.  Next, open the <b>ScenarioController</b> element and give it a <b>ScenarioGenerator</b> child element. It&apos;s this element that handles generation of both multiple participants and multiple scenarios.
       </description>
    </item>
    <item
