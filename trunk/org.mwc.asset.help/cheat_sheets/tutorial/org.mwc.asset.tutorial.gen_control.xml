@@ -39,15 +39,21 @@
    <item
          title="Add plot generator">
       <description>
-         After time After the time observer, we&apos;re going to create an observer that generates a track plot. Right click on <b>ObserverList</b> and select <b>TrackPlotObserver</b>.  Next, name the observer (something like <b>Track Plot</b>), and give it a delta of 4 nautical miles.  Also, indicate that the plot generator should <b>show_positions</b>.
+         After time After the time observer, we&apos;re going to create an observer that generates a track plot. Right click on <b>ObserverList</b> and select <b>TrackPlotObserver</b>.  Next, name the observer (something like <b>Track Plot</b>), and give it a delta of 4 nautical miles.  Also, use the Properties window to indicate that the plot generator should <b>show_positions</b>.
       </description>
    </item>
    <item
          title="Add Debrief track recorder">
       <description>
-         Lastly, we&apos;re going to create an observer that will record positions, detections, and decisions to a file in Debrief&apos;s Replay file format.<br/>
+         Next, we&apos;re going to create an observer that will record positions, detections, and decisions to a file in Debrief&apos;s Replay file format.<br/>
 So, right-click on ObserverList and select <b>DebriefReplayObserver</b> from the <b>Add Child</b> drop-down.
 <br/>With more complex scenarios, we can instruct this observer in what type of contact to track (using a <b>SubjectToTrack</b> element).  Give the observer a name (&apos;Debrief tracks&apos;).
+      </description>
+   </item>
+   <item
+         title="And we're done">
+      <description>
+      	Lastly, save your work ready for the next step.
       </description>
    </item>
 </cheatsheet>
