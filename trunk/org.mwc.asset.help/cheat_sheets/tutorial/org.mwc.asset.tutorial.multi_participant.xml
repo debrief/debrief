@@ -84,9 +84,9 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
    <item
          title="Watch things unfold in Debrief">
       <description>
-         Now that there are loads of participants in there, it&apos;s a little more interesting to watch in Debrief.  Click on <b>Generate</b> again to reset the scenario. Now, either switch to your existing Debrief plot viewer tab, or open another by clicking on the Scenario Controller&apos;s globe toolbar icon.  Debrief will be empty when it first opens.  Now click on the <b>Name</b> of the current scenario in the Scenario Controller view, and Debrief will open a view of the scenario, with all of those fishermen.
+         Now that there are loads of participants in there, it&apos;s a little more interesting to watch in the plot view.  Click on <b>Reload data files</b> again to reset the scenario. Now, either switch to your existing plot viewer tab, or open another by clicking on the Scenario Controller&apos;s globe toolbar icon.  The plot view will be empty when it first opens.  Now click on the <b>Name</b> of the current scenario in the Scenario Controller view, and Debrief will open a view of the scenario, with all of those fishermen.
 <br/>
-Now, if you click on <b>Run</b> you&apos;ll see of the busy fishermen set off doing their business - being removed from the simulation as they&apos;re detected by the Blue frigate.  What fun!
+Now, if you click on <b>Play</b> you&apos;ll see of the busy fishermen set off doing their business - being removed from the simulation as they&apos;re detected by the Blue frigate.  What fun!
       </description>
    </item>
 </cheatsheet>
