@@ -116,7 +116,7 @@ We&apos;ll leave the sensor fit empty, but we should give it an initial status. 
    <item
          title="Direct the warship">
       <description>
-         To create the placeholder for the Warship&apos;s behaviour, right-click on it and add a <b>Waterfall</b> behaviour.<br/>We&apos;re going to have the warship wandering around the same body of water as the fisherman, so go into the <b>Source</b> view and copy the <b>Wander</b> behaviour, and paste it into the <b>Waterfall</b> of the Frigate.  Back in the <b>Design</b> view, change the name of this Wander behaviour to <b>Count fishing vessels</b>.
+         To create the placeholder for the Warship&apos;s behaviour, right-click on it and add a <b>Waterfall</b> behaviour.<br/>We&apos;re going to have the warship wandering around the same body of water as the fisherman, so go into the <b>Source</b> view and copy the Fisherman&apos;s <b>Wander</b> behaviour, and paste it into the <b>Waterfall</b> of the Frigate (Note: you have to copy right from the start &lt;wander&gt; down  to the end of &lt;/wander&gt;.  Back in the <b>Design</b> view, change the name of this Wander behaviour to <b>Count fishing vessels</b>.hing vessels</b>.
       </description>
    </item>
    <item
