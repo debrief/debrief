@@ -28,7 +28,7 @@
    <item
          title="And Debrief narrative">
       <description>
-         Lastly - still with the Debrief plot viewer open, if you open the <b>Narrative Viewer</b> view, you&apos;ll see a list of decisions made during the scenario. <b>Note</b>, you may have to switch to <b>Tactical Analysis</b> mode to see the Narrative Viewer.  Scroll back and forth with the Time Controller and see the fishing vessel&apos;s current decision state in the Narrative Viewer.
+         Lastly - still with the Debrief plot viewer open, if you open the <b>Narrative Viewer</b> view, you&apos;ll see a list of decisions made during the scenario. <b>Note</b>, you may have to switch to <b>Tactical Analysis</b> perspective (from the Window menu) to see the Narrative Viewer.  Scroll back and forth with the Time Controller and see the two vessels&apos; current decision state in the Narrative Viewer.state in the Narrative Viewer.
       </description>
    </item>
 </cheatsheet>
