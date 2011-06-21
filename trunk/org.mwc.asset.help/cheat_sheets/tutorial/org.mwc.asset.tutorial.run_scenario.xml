@@ -15,21 +15,19 @@
    <item
          title="Load the data files">
          <description> 
-      Next, individually (or collectively) drag and drop our new scenario and control file onto the scenario controller. Once they&apos;ve loaded, you&apos;ll see their filenames in the <b>Scenario file</b> and <b>Control file</b> labels. 
- <br/>
-You&apos;ll also see that the scenarion controller is showing the <b>Single Scenario</b> tab - since ASSET has recognised what type of scenario we&apos;ve just loaded.  You&apos;ll also see that the status is indicated as <b>Loaded</b>.
+      Next, individually (or collectively) drag and drop our new scenario and control file onto the scenario controller. Once they&apos;ve loaded, you&apos;ll see their filenames in the <b>Scenario file</b> and <b>Control file</b> labels.  You will also see the scenario itself listed in the table in the lower half of the scenario controller tab.  Only once scenario is listed - that&apos;s because our control file didn&apos;t specify that scenario generation should happen.  Select this single scenario, and you will see the <b>Init</b> button has become enabled - ready to start the run.
       </description>
    </item>
-   <item
+  <item
          title="Open the plot viewer">
       <description>
-         Just to give a warm feeling that something&apos;s actually happening, open a graphical plot of the scenario by clicking on the Scenario Controller&apos;s globe icon. You&apos;ll see the fishing vessel shown in the centre of the screen, with it&apos;s status shown as inactive.
+         Just to give a warm feeling that something&apos;s actually happening, open a graphical plot of the scenario by clicking on the Scenario Controller&apos;s globe icon. You&apos;ll see the fishing vessel shown in the centre of the screen, with it&apos;s status shown as inactive.  If the fishing vessel doesn&apos;t appear, just select the scenario in the table again - to indicate to the plot what we want to look at.
       </description>
    </item>
    <item
          title="Open the Layer Manager">
       <description>
-         You can also have a look at the scenario in a tree-type view by opening the Layer Manager.  You&apos;ll see that the simulation is represented as two top-level items, one for the scenario itself, and the other for the scenario controller.
+         You can also have a look at the scenario in a tree-type view by opening the Layer Manager.  You&apos;ll see that the simulation is represented as two top-level items, one for the scenario itself, and the other for the scenario controller (generator).
       </description>
    </item>
    <item
