@@ -33,21 +33,21 @@
    <item
          title="Start the run">
       <description>
-         Right, now we&apos;re ready to go.  Switch to the Time Controller.  If the time controller has a row of 7 buttons on it, then it hasn&apos;t seen that we&apos;re actually trying to control a simulation - so select the Scenario Controller once more, which should update the Time Controller.
+         Right, now we&apos;re ready to go.  Click on <b>Init</b> in the Scenario Controller panel - this will configure the scenario listeners.  (the <b>Step</b> and <b>Play</b> buttons should now become enabled.  Next, click once on the <b>Step</b> button.
 <br/>
-Once the time controller has updated (to show just 3 buttons), click the right-hand button once.  A number of things will now have happened.  The Scenario Controller will show the scenario time as it&apos;s Status - and the icon will have dissappeared from the grpahical plot.  Don&apos;t worry, this is just because we were zoomed in too far on the fishing vessel. Click <b>Zoom Out</b> from the main toolbar about a dozen times to show us a wider overview.
+A number of things will now have happened.  The Scenario Controller will show the scenario time - and the icon will have dissappeared from the grpahical plot.  Don&apos;t worry, this is just because we were zoomed in too far on the fishing vessel. Click <b>Zoom Out</b> from the main toolbar about a dozen times to show us a wider overview.
       </description>
    </item>
    <item
          title="Move forward">
       <description>
-         Now, repeatedly push the right-hand (small step) button of the Time Controller and you&apos;ll see the scenario steadily move forward in time - on all relevant views. On the plot, you&apos;ll also see that the fishing vessel is annotated with its current status.
+         Now, repeatedly click on the <b>Step</b> button and you&apos;ll see the scenario steadily move forward in time - on all relevant views. On the plot, you&apos;ll also see that the fishing vessel is annotated with its current status.
       </description>
    </item>
    <item
          title="Start scenario playing forward">
       <description>
-         Now we can get the scenario to play forwards on its own - by clicking on the <b>Play</b> button in the middle of the Time Controller buttons.  You&apos;ll see the scenario start to move forward - incrementing by the 10 minute time step we specified earlier. Zoom out further if the fisherman has wandered off your viewpoint. <b>Note</b>, if you don&apos;t have a zoom out button on the toolbar, select <b>Open Perspective</b> from the View menu, and select <b>Tactical Analysis</b> from the perspectives offered.  ASSET will re-adjust itself to show the Debrief toolbar, after which you can then switch back to <b>Tactical Simulation</b>.
+         Now we can get the scenario to play forwards on its own - by clicking on the <b>Play</b> button.  You&apos;ll see the scenario start to move forward - incrementing by the 10 minute time step we specified earlier. Zoom out further if the fisherman has wandered off your viewpoint. <b>Note</b>, if you don&apos;t have a zoom out button on the toolbar, select <b>Open Perspective</b> from the View menu, and select <b>Tactical Analysis</b> from the perspectives offered.  ASSET will re-adjust itself to show the Debrief toolbar, after which you can then switch back to <b>Tactical Simulation</b>.
       </description>
    </item>
    <item
@@ -63,7 +63,7 @@ If the scenario is still running, every now and then the fisherman will change c
    <item
          title="Run on to the end of the scenario">
       <description>
-         As you&apos;ll remember, we created an observer to stop the scenario after 24 hours.  We&apos;re going to &apos;fast forward&apos; to this finish point. Switch to the TimeController, and quickly press the &apos;little step foward&apos; button lots of times to forward through 24 hours. Eventually, the scenario will stop stepping forwards, and the Scenario Controller will show why the scenario stopped.  Once the scenario does finish, ASSET will produce the track plot we requested.
+         As you&apos;ll remember, we created an observer to stop the scenario after 24 hours.  Eventually, the scenario will stop stepping forwards, and the Scenario Controller will show why the scenario stopped.  Once the scenario does finish, ASSET will produce the track plot we requested.
       </description>
    </item>
 </cheatsheet>
