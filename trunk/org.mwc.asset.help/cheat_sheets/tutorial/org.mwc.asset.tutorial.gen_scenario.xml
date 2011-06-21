@@ -96,7 +96,7 @@ We&apos;ll leave the sensor fit empty, but we should give it an initial status. 
       </description>
    </item>
    <item
-         title="Gvie it a sensor">
+         title="Give it a sensor">
       <description>
          To keep things simple we&apos;re going to give the Frigate a very simple cookie-cutter sensor, that blindly checks the range to the target against its detection range attribute.  So, right-click on <b>SensorFit</b> and add a <b>PlainCookieSensor</b>.  Set the detection range of the sensor to 3 nautical miles.
       </description>
