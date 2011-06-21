@@ -71,8 +71,7 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
    <item
          title="Re-run the scenario">
       <description>
-  Ok, back to the scenario.  Click on <b>Play</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 100 fishermen, not one.  As the scenario plays through, to start with your <b>Live Data</b> window will not show any data, but as the blue platform starts detecting green, entries will start to appear on the graph.  After about 10 hours you&apos;ll see that the graph starts to level off,el off,
-         
+  Ok, back to the scenario.  Click on <b>Play</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 100 fishermen, not one.  As the scenario plays through, to start with your <b>Live Data</b> window will not show any data, but as the blue platform starts detecting green, entries will start to appear on the graph.  After about 10 hours you&apos;ll see that the graph starts to level off.
       </description>
    </item>
    <item
