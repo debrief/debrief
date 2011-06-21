@@ -40,7 +40,7 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
 <item
          title="Add specification for multi participant generation">
       <description>
-        So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One (or whatever you named the fishing vessel), and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West..
+        So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One (or whatever you named the fishing vessel), and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West.
       </description>
    </item>
    <item
@@ -49,6 +49,7 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
          Next we&apos;re going to specify how to vary the Wander speed. Start by adding a <b>Variance</b> element to the <b>ParticipantVariance</b> for Fisher One.  Next, right-click on the <b>LocationArea</b> element and select <b>Replace with</b> an <b>Attribute</b> element.  Name this element as &apos;Vary the wander speed&apos;.  Next. specify that we&apos;re going to vary the attribute through a <b>Range</b> of values from 2 to 10, and use the name <b>Value</b>.  We also need to tell the Variance element what it&apos;s going to apply to, so put <b>/Wander/Speed</b> in the id field.  This phrase follows the XPath regular expression standard - but essentially it just matches XML Element names, with single slashes showing the parent/child relationship, and double-slashes matching against any number of parent/child tiers.
       </description>
    </item>
+   
    <item
          title="Bring on the referee">
       <description>
