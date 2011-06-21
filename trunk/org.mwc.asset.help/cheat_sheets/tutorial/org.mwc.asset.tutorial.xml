@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <compositeCheatsheet name="Getting started with ASSET">
    <taskGroup kind="sequence" name="An introduction to ASSET" skip="false">
+      <intro>
+         This brief collection of cheat sheets will get you up &amp; running with your first use of ASSET. ASSET is an MWC integrated modelling environment that provides tools to design, execute, and analyse tactical simulations.
+      </intro>
       <taskGroup kind="sequence" name="Learning about your environment" skip="false">
          <intro>
-            This brief collection of cheat sheets will get you up &amp; running with
-					your first use of ASSET. ASSET is an MWC integrated modelling
-					environment that provides tools to design, execute, and analyse
-					tactical simulations.
+            Before we launch our simulation project there will be a couple of short safety briefs. Please pay attention.
          </intro>
          <onCompletion>
             <b>Well done, you&apos;ve completed the cheat sheets.</b>
