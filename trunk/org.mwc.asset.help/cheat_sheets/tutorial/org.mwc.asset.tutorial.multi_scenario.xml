@@ -38,7 +38,7 @@ Right, open our new scenario control file.  Start off by specifying a new output
       </description>
    </item>
    <item
-         href="/org.mwc.asset.core/asset_schemas/doc/schema108.html"
+         href="/org.mwc.asset.help/html/legacy/mod_scenario_control.html#obs_batch_collation"
          title="Add a batch-run observer">
       <description>
          Lastly for this scenario controller we&apos;re going to add a new observer - one that collates statistics across a series of model runs. Frequently these batch-run observers are normal observers with optional batch-run functionality.  So, add a <b>ProportionDetectedObserver</b> to the <b>ObserverList</b>.  Name it as <b>Proportion of greens that got detected</b>.  Set the Target type to <b>GREEN</b> and the Watch type to <b>BLUE</b>.  Then add a <b>BatchCollator</b> element to the <b>ProportionDetectedObserver</b>.    Within the batch-collator, specify that <b>OnlyBatchReporting</b> is true, the <b>CollationMethod</b> is <b>AVERAGE</b> and <b>PerCase</b> is true.  Read more on these settings via the adjacent help link.
