@@ -46,7 +46,7 @@
           <mediaobject>
             <imageobject>
               <imagedata fileref="figures/workbench_view.png" format="GIF" align="center"
-                width="700"/>
+                scalefit="1" width="100%"/>
             </imageobject>
           </mediaobject>
         </figure></para>
@@ -69,7 +69,7 @@
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/ASSET_overview.gif" format="GIF" align="center"
-                  width="600"/>
+                  width="100%"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -86,7 +86,7 @@
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/helo_3d_screen.gif" format="GIF" align="center"
-                  width="600"/>
+                  width="100%"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -192,7 +192,7 @@
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/levels_of_analysis.gif" format="GIF" align="center"
-                  width="700"/>
+                  width="100%"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -210,7 +210,7 @@
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/overview_int_debrief.gif" format="GIF" align="center"
-                  width="700"/>
+                  width="100%"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -252,7 +252,7 @@
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/overview_debrief_shot.jpg" format="GIF" align="center"
-                  width=""/>
+                  width="100%"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -297,7 +297,7 @@
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/modular_applications.gif" format="GIF" align="center"
-                    width="700"/>
+                    width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -324,7 +324,7 @@
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/xml_sample.gif" format="GIF" align="center"
-                    width="659"/>
+                    width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -363,7 +363,7 @@
               <mediaobject>
                 <imageobject id="xml_editor">
                   <imagedata fileref="figures/xml_editor.gif" format="GIF" align="center"
-                    width="665"/>
+                    width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -431,7 +431,7 @@
     <bookinfo>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="figures/ASSET_modguide.gif" format="GIF" align="center" width="440"/>
+          <imagedata fileref="figures/ASSET_modguide.gif" format="GIF" align="center" width="100%"/>
         </imageobject>
       </mediaobject>
       <revhistory>
@@ -1256,7 +1256,7 @@
                 <mediaobject id="proploss_diag">
                   <imageobject>
                     <imagedata fileref="figures/proploss_diag.gif" format="GIF" align="center"
-                      width="693"/>
+                      width="100%"/>
                   </imageobject>
                   <textobject>
                     <phrase>Graph showing broadband proploss curve.</phrase>
@@ -1378,7 +1378,7 @@
             <title>ASSET time cycle</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/Vessel_stepping_loop.gif"/>
+                <imagedata  fileref="figures/Vessel_stepping_loop.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -1408,7 +1408,7 @@
                 <title>Illustration of state management within Helo</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/helo_state_transitions.gif"/>
+                    <imagedata fileref="figures/helo_state_transitions.gif" width="100%" scalefit="1"/>
                   </imageobject>
                 </mediaobject>
               </figure></para>
@@ -1744,7 +1744,7 @@
               <mediaobject id="interpolation_graph">
                 <imageobject>
                   <imagedata fileref="figures/interp_noise.gif" format="GIF" align="center"
-                    width="375"/>
+                    width="100%"/>
                 </imageobject>
                 <textobject>
                   <phrase>Graph showing provided and interpolated values.</phrase>
@@ -1880,7 +1880,7 @@
             <title>Overview of vessel maneouvering</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/HighLevelMovement.gif" format="GIF" align="center"/>
+                <imagedata fileref="figures/HighLevelMovement.gif" format="GIF" align="center"   width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -1927,7 +1927,7 @@
                 <title>Flowchart showing turn algorithm</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TurnAlgorithm.gif" format="GIF" align="center"/>
+                    <imagedata fileref="figures/TurnAlgorithm.gif" width="100%" scalefit="1" format="GIF" align="center"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -2058,7 +2058,7 @@
                   <title>Unattainable waypoints</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/unattainable_waypoints.gif"/>
+                      <imagedata fileref="figures/unattainable_waypoints.gif"  width="100%" scalefit="1"/>
                     </imageobject>
                   </mediaobject>
                 </figure></para>
@@ -2116,7 +2116,7 @@
                   <title>Make Waypoint algorithm</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/MakeWaypoint.gif"/>
+                      <imagedata fileref="figures/MakeWaypoint.gif"  width="100%" scalefit="1"/>
                     </imageobject>
                   </mediaobject>
                 </figure></para>
@@ -4093,7 +4093,7 @@
                 <title>Example of aircraft performing dive then climb at default speeds</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ClimbDiveDemo.gif"/>
+                    <imagedata fileref="figures/ClimbDiveDemo.gif"  width="100%" scalefit="1"/>
                   </imageobject>
                 </mediaobject>
               </figure><orderedlist>
@@ -4889,7 +4889,7 @@
                   <title>Example of a barrier buoy-pattern</title>
                   <mediaobject>
                     <imageobject>
-                      <imagedata fileref="figures/field_barrier.gif" width="454"/>
+                      <imagedata fileref="figures/field_barrier.gif" width="100%"/>
                     </imageobject>
                   </mediaobject>
                 </figure></para>
@@ -5009,7 +5009,7 @@
                 <title>Expanding square search</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/exp_square_search.gif"/>
+                    <imagedata fileref="figures/exp_square_search.gif"  width="100%" scalefit="1"/>
                   </imageobject>
                 </mediaobject>
               </figure></para>
@@ -5067,14 +5067,14 @@
                     <title>Expanding square search with all points attainable</title>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/exp_search_1.gif"/>
+                        <imagedata fileref="figures/exp_search_1.gif" width="100%" scalefit="1"/>
                       </imageobject>
                     </mediaobject>
                   </figure><figure float="0" id="exp_diag_2">
                     <title>Expanding square search with inner points omitted (unattainable)</title>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/exp_search_2.gif"/>
+                        <imagedata fileref="figures/exp_search_2.gif" width="100%" scalefit="1"/>
                       </imageobject>
                     </mediaobject>
                   </figure></para>
@@ -5599,7 +5599,7 @@
               <title>Sample of normal distribution (min 60, max 140)</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/GaussianDist.gif"/>
+                  <imagedata fileref="figures/GaussianDist.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -6210,7 +6210,7 @@
             <title>High level Monte Carlo workflow</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/MonteCarloHighLevelWorkflow.gif"/>
+                <imagedata fileref="figures/MonteCarloHighLevelWorkflow.gif"  width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure>The analyst first creates a working scenario file (later to be used as template
@@ -6223,7 +6223,7 @@
             <title>Monte Carlo simulation workflow</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/MonteCarloWorkflow.gif"/>
+                <imagedata fileref="figures/MonteCarloWorkflow.gif"  width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -6304,7 +6304,7 @@
                 <title>XMLSpy opening screenshot</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/xmlspy_1.gif" width="777"/>
+                    <imagedata fileref="figures/xmlspy_1.gif"  width="100%" scalefit="1"/>
                   </imageobject>
                 </mediaobject>
               </figure></para>
@@ -6314,7 +6314,7 @@
                 <title>XML new file dialog</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/xmlspy_2.gif" width="414"/>
+                    <imagedata fileref="figures/xmlspy_2.gif"  width="100%" scalefit="1"/>
                   </imageobject>
                 </mediaobject>
               </figure>As you can see, there are all sorts of files which can be created, but
@@ -6333,7 +6333,7 @@
                 <title>Blank scenario loaded in XMLSPY</title>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/xmlspy_5.gif"/>
+                    <imagedata fileref="figures/xmlspy_5.gif" width="100%" scalefit="1"/>
                   </imageobject>
                 </mediaobject>
               </figure>
@@ -6388,7 +6388,7 @@
               <title>List of available participants</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/xmlspy_6.gif"/>
+                  <imagedata fileref="figures/xmlspy_6.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -6428,7 +6428,7 @@
               <title>Setting the location for the initial status</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/xmlspy_7.gif"/>
+                  <imagedata fileref="figures/xmlspy_7.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -6493,7 +6493,7 @@
               <title>SSK Behaviours</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/xmlspy_7a.gif"/>
+                  <imagedata fileref="figures/xmlspy_7a.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -6518,7 +6518,7 @@
               <title>Initial view of control file</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/xmlspy_8.gif"/>
+                  <imagedata fileref="figures/xmlspy_8.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -6560,7 +6560,7 @@
             <title>Completed control file</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/xmlspy_9.gif"/>
+                <imagedata fileref="figures/xmlspy_9.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -6592,7 +6592,7 @@
           <title>Overview track plot</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/tutorial_track_plot.gif"/>
+              <imagedata fileref="figures/tutorial_track_plot.gif" width="100%" scalefit="1"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -6758,7 +6758,7 @@
             <title>Initial Monte Carlo results</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/tutorial_monte_control3.gif"/>
+                <imagedata fileref="figures/tutorial_monte_control3.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -7518,7 +7518,7 @@
             <title>Overview of submarine search problem</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/SubmarineSearchTutorialDiag.gif"/>
+                <imagedata fileref="figures/SubmarineSearchTutorialDiag.gif"  width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -7960,7 +7960,7 @@
             <title>Screenshot of Workbench application</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/workbench_view.png"/>
+                <imagedata fileref="figures/workbench_view.png"  width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure><variablelist>
@@ -8025,7 +8025,7 @@
           <title>Flow of information within ASSET Factory</title>
           <mediaobject>
             <imageobject>
-              <imagedata fileref="figures/diagram_illustrating_genetic_alg.gif"/>
+              <imagedata fileref="figures/diagram_illustrating_genetic_alg.gif"  width="100%" scalefit="1"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -8085,7 +8085,7 @@
             <title>Screenshot of Workbench application</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/WorkbenchGUI.gif"/>
+                <imagedata fileref="figures/WorkbenchGUI.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure><variablelist>
@@ -8148,7 +8148,7 @@
             <title>Workbench splash screen</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/WorkbenchSplash.gif"/>
+                <imagedata fileref="figures/WorkbenchSplash.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -8161,7 +8161,7 @@
             <title>Monte Carlo file loader</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/WorkbenchMonteCarlo.gif"/>
+                <imagedata fileref="figures/WorkbenchMonteCarlo.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure>As you can see, the Monte Carlo loader has labels indicating the Scenario and
@@ -8185,7 +8185,7 @@
             <title>Participant generation complete</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/WorkbenchLoadedMonteCarlo.gif"/>
+                <imagedata fileref="figures/WorkbenchLoadedMonteCarlo.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -8257,7 +8257,7 @@
             <title>States shown after single step</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/WorkbenchWithStates.gif"/>
+                <imagedata fileref="figures/WorkbenchWithStates.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -8334,7 +8334,7 @@
             <title>Measuring Range and Bearing on the plot</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/WorkbenchRngBrg.gif"/>
+                <imagedata fileref="figures/WorkbenchRngBrg.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -8789,7 +8789,7 @@
             <title>Example of code encapsulation within ASSET</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/Arch_Encapsulation.gif"/>
+                <imagedata fileref="figures/Arch_Encapsulation.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure></para>
@@ -8812,7 +8812,7 @@
               <title>GUI interface for ASSET Workbench</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/Arch_Workbench.gif"/>
+                  <imagedata fileref="figures/Arch_Workbench.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -8881,7 +8881,7 @@
               <title>Inheritance tree for record-to-file observers</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/RecordToFileObservers.gif"/>
+                  <imagedata fileref="figures/RecordToFileObservers.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure></para>
@@ -8899,7 +8899,7 @@
               <title>Remote read-only communications</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/RemoteCommsStructure.gif"/>
+                  <imagedata fileref="figures/RemoteCommsStructure.gif" width="100%" scalefit="1"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -9050,7 +9050,7 @@
             <title>High-level processing for inter-scenario observers</title>
             <mediaobject>
               <imageobject>
-                <imagedata fileref="figures/InterScenarioObserverDiagram.gif"/>
+                <imagedata fileref="figures/InterScenarioObserverDiagram.gif" width="100%" scalefit="1"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -9153,104 +9153,6 @@
             </mediaobject>
           </figure></para>
       </sect1>
-    </chapter>
-  </book>
-  <book id="book_version_info">
-    <title>Version History</title>
-    <chapter id="chap_version_info">
-      <title>ASSET Documentation Set</title>
-      <para>This chapter/book contains a change record of the ASSET documentation set. The content
-        contains a number of control characters, since it is produced automatically from the Version
-        Control System.</para>
-      <formalpara>
-        <title>Last Modified</title>
-        <para>The document was last modified at: $Date: 2004/09/07 15:21:00 $</para>
-      </formalpara>
-      <formalpara>
-        <title>Current version</title>
-        <para>This documentation set is currently at version: $Revision: 1.47 $</para>
-      </formalpara>
-      <formalpara>
-        <title>Change notes</title>
-        <para>
-          <programlisting>
-          $Log: asset_docs.xml,v $
-          Revision 1.70  2004/11/22 10:38:46  Ian.Mayo
-          Minor tidying
-
-          Revision 1.69  2004/11/18 16:17:24  Ian.Mayo
-          Remaining SM bits
-
-          Revision 1.68  2004/11/17 16:20:14  Ian.Mayo
-          Now adding the SM Search control file
-
-          Revision 1.67  2004/11/16 16:22:45  Ian.Mayo
-          Lots more bits
-
-          Revision 1.66  2004/11/12 16:23:49  Ian.Mayo
-          Minor new doc bits, including SSK Recharge
-
-          Revision 1.65  2004/11/09 10:17:47  Ian.Mayo
-          Minor extension to SM search definition
-
-          Revision 1.64  2004/11/05 15:45:40  Ian.Mayo
-          Minor extensions to lookup tables, reflect workbench now starting from .exe
-          Revision 1.63  2004/11/01 16:38:52  Ian.Mayo
-           More sub-search tutorial
-        
-           Revision 1.62  2004/10/18 19:47:34  ian
-  Add tiny bit more on NB
-       Revision 1.61 2004/10/18
-				15:11:17 Ian.Mayo Start narrowband sensor docs Revision 1.60 2004/10/15
-				13:12:35 Ian.Mayo Spell checks from Word Revision 1.58 2004/10/14 15:11:43
-				Ian.Mayo More vessel editors Revision 1.56 2004/10/13 09:36:37 Ian.Mayo More
-				Workbench GUI documentation Revision 1.55 2004/10/11 15:22:28 Ian.Mayo Document
-				use of Workbench for multi-participant runs Revision 1.54 2004/10/07 14:20:18
-				Ian.Mayo Include guidance in increasing memory Revision 1.53 2004/09/30
-				14:28:59 Ian.Mayo Remove manual revision list, finish Force Protection section
-				of tutorial Revision 1.51 2004/09/27 10:10:58 Ian.Mayo Add sample of gaussian
-				dist Revision 1.50 2004/09/23 10:49:40 Ian.Mayo Use XML entities rather than
-				actual characters Revision 1.49 2004/09/22 10:49:44 Ian.Mayo Replace long
-				hyphens with normal ones. Revision 1.48 2004/09/09 07:57:08 Ian.Mayo Insert
-				scenario generation guidance Revision 1.47 2004/09/07 15:21:00 Ian.Mayo Write
-				up intercept, delete Avoid Revision 1.46 2004/08/31 07:30:59 Ian.Mayo Remove
-				stray character Revision 1.45 2004/08/31 07:29:37 Ian.Mayo Switch stylesheet
-				definition - so styles automatically shown when opening in XMetal Revision 1.43
-				2004/08/18 16:39:50 Ian.Mayo Add frequency-list batch processing Revision 1.42
-				2004/08/18 15:45:36 Ian.Mayo Tidying some batch store algorithms, observer
-				which can record Final State Revision 1.39 2004/08/17 13:34:59 Ian.Mayo Update
-				past scenarios to match current schema, extend user guide to complete lookup
-				scenario, update screenshots Revision 1.38 2004/08/12 09:23:24 Ian.Mayo Minor
-				extensions to File Observer explanation Revision 1.37 2004/08/11 15:05:42
-				Ian.Mayo Better inter-scenario recording Revision 1.36 2004/08/11 10:38:21
-				Ian.Mayo Add guidance on inter-scenario observers Revision 1.35 2004/08/09
-				13:24:07 Ian.Mayo Add Ladder Search Revision 1.34 2004/08/05 15:23:48 Ian.Mayo
-				Record investigate behaviour Revision 1.33 2004/05/21 15:24:19 Ian.Mayo More
-				new bits in tutorial/lookup sensors Revision 1.31 2004/02/19 16:40:14 Ian.Mayo
-				Change location for downloading ASSET Revision 1.30 2004/02/18 09:35:31
-				Ian.Mayo More tutorial stuff Revision 1.28 2004/02/16 14:02:36 Ian.Mayo Minor
-				change, also first save after XMetal edit Revision 1.27 2004/02/16 13:58:17
-				Ian.Mayo Add new sensor model Revision 1.26 2003/11/11 11:55:25 Ian.Mayo
-				Include guidance on setting parallel planes, model audit Revision 1.25
-				2003/11/07 14:53:35 Ian.Mayo Include model audit Revision 1.24 2003/11/05
-				13:19:30 Ian.Mayo Correct tutorial mistakes Revision 1.22 2003/09/30 14:24:14
-				Ian.Mayo Remove DTD, since DocBook parser didn&apos;t recognise file reference
-				Revision 1.21 2003/09/30 10:10:57 Ian.Mayo During switch to XMLSpy editing
-				Revision 1.20 2003/09/29 10:22:22 Ian.Mayo Introduce Monte Carlo generation
-				Revision 1.19 2003/09/17 14:21:44 Ian.Mayo describe demo of climb/dive Revision
-				1.18 2003/09/15 09:07:49 Ian.Mayo mod to model authoring process Revision 1.16
-				2003/09/09 16:25:19 Ian.Mayo Document observers, put in more on expanding
-				search Revision 1.15 2003/09/04 15:56:20 Ian.Mayo Lots of putting models into
-				formal paras, started documenting observers Revision 1.14 2003/09/03 14:26:39
-				Ian.Mayo Added states Revision 1.13 2003/08/28 15:34:22 Ian.Mayo improve
-				description of time cycle Revision 1.12 2003/08/26 15:09:10 Ian.Mayo More
-				Merlin, model definition process, rename Chain to Waterfall Revision 1.11
-				2003/08/14 15:33:56 Ian.Mayo extend modelling documentation Revision 1.9
-				2003/08/12 10:48:48 Ian.Mayo Third reformat the program listing
-
-          </programlisting>
-        </para>
-      </formalpara>
     </chapter>
   </book>
 </set>
