@@ -41,7 +41,7 @@
 							<shortLocation Lat="2.2" Long="1.8"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="12" Units="kts" />
+					<Speed Value="9" Units="kts" />
 					<Activity Name="Active periods">
 						<Composite Name="enable active">
 							<ElapsedTime Name="30 mins">
@@ -105,7 +105,7 @@
 							<shortLocation Lat="2.6" Long="2.8"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="12" Units="kts" />
+					<Speed Value="9" Units="kts" />
 					<Activity Name="Active periods">
 						<Composite Name="enable active">
 							<ElapsedTime Name="30 mins">
