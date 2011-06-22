@@ -1,0 +1,2558 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <title>Schema documentation for component Scenario_file:/Users/ianmayo/dev/Debrief361/org.mwc.asset.core/asset_schemas/ASSET.xsd_Element</title>
+      <link rel="stylesheet" href="docHtml.css" type="text/css" /><script type="text/javascript">
+         <!--
+        var propertiesBoxes= new Array('properties_id1', 
+				'properties_id2', 
+				'properties_id6', 
+				'properties_id7', 
+				'properties_id76', 
+				'properties_id441', 
+				'properties_id443', 
+				'properties_id444', 
+				'properties_id445', 
+				'properties_id446', 
+				'properties_id447', 
+				'properties_id448', 
+				'properties_id449', 
+				'properties_id450');
+
+        
+        var usedByBoxes= new Array('usedBy_id443', 
+				'usedBy_id444', 
+				'usedBy_id445', 
+				'usedBy_id446', 
+				'usedBy_id447', 
+				'usedBy_id448', 
+				'usedBy_id449', 
+				'usedBy_id450');
+
+        var sourceBoxes= new Array('source_id1', 
+				'source_id2', 
+				'source_id6', 
+				'source_id7', 
+				'source_id76', 
+				'source_id441', 
+				'source_id443', 
+				'source_id444', 
+				'source_id445', 
+				'source_id446', 
+				'source_id447', 
+				'source_id448', 
+				'source_id449', 
+				'source_id450');
+
+        var instanceBoxes= new Array('instance_id1', 
+				'instance_id7', 
+				'instance_id76');
+
+        
+        var annotationBoxes= new Array('annotations_id1', 
+				'annotations_id2', 
+				'annotations_id6', 
+				'annotations_id7', 
+				'annotations_id76', 
+				'annotations_id441', 
+				'annotations_id443', 
+				'annotations_id444', 
+				'annotations_id445', 
+				'annotations_id446', 
+				'annotations_id447', 
+				'annotations_id448', 
+				'annotations_id449', 
+				'annotations_id450');
+
+        var attributesBoxes= new Array('attributes_id1', 
+				'attributes_id2', 
+				'attributes_id6', 
+				'attributes_id7');
+
+        
+        var button_prefix = 'button_';
+        
+        /**
+        * Returns an element in the current HTML document.
+        *
+        * @param elementID Identifier of HTML element
+        * @return               HTML element object
+        */
+        function getElementObject(elementID) {
+            var elemObj = null;
+            if (document.getElementById) {
+                elemObj = document.getElementById(elementID);
+            }
+            return elemObj;
+        }
+        
+        /**
+        * Switches the state of a collapseable box, e.g.
+        * if it's opened, it'll be closed, and vice versa.
+        *
+        * @param boxID Identifier of box
+        */
+        function switchState(boxID) {
+            var boxObj = getElementObject(boxID);
+            var buttonObj = getElementObject(button_prefix + boxID);
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else if (boxObj.style.display == "none") {
+                // Box is closed, so open it
+                openBox(boxObj, buttonObj);
+            } else if (boxObj.style.display == "block") {
+                // Box is opened, so close it
+                closeBox(boxObj, buttonObj);
+            }
+        }
+        
+        /**
+        * Opens a collapseable box.
+        *
+        * @param boxObj       Collapseable box
+        * @param buttonObj Button controlling box
+        */
+        function openBox(boxObj, buttonObj) {
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else {
+                // Change 'display' CSS property of box
+                boxObj.style.display = "block";
+                
+                // Change text of button
+                if (boxObj.style.display == "block") {
+                    buttonObj.src = "img/btM.gif";
+                }
+            }
+        }
+        
+        /**
+        * Closes a collapseable box.
+        *
+        * @param boxObj       Collapseable box
+        * @param buttonObj Button controlling box
+        */
+        function closeBox(boxObj, buttonObj) {
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else {
+                // Change 'display' CSS property of box
+                boxObj.style.display = "none";
+                
+                // Change text of button
+                if (boxObj.style.display == "none") {
+                    buttonObj.src = "img/btP.gif";
+                }
+            }
+        }
+    
+       function switchStateForAll(buttonObj, boxList) {
+            if (buttonObj == null) {
+                // button not found
+            } else if (buttonObj.value == "+") {
+                // Expand all
+                expandAll(boxList);
+                buttonObj.value = "-";
+            } else if (buttonObj.value == "-") {
+                // Collapse all
+                collapseAll(boxList);
+                buttonObj.value = "+";
+            }
+        }
+        
+        /**
+        * Closes all boxes in a given list.
+        *
+        * @param boxList Array of box IDs
+        */
+        function collapseAll(boxList) {
+            var idx;
+            for (idx = 0; idx < boxList.length; idx++) {
+                var boxObj = getElementObject(boxList[idx]);
+                var buttonObj = getElementObject(button_prefix + boxList[idx]);
+                closeBox(boxObj, buttonObj);
+            }
+        }
+            
+        /**
+        * Open all boxes in a given list.
+        *
+        * @param boxList Array of box IDs
+        */
+        function expandAll(boxList) {
+            var idx;
+            for (idx = 0; idx < boxList.length; idx++) {
+                var boxObj = getElementObject(boxList[idx]);
+                var buttonObj = getElementObject(button_prefix + boxList[idx]);
+                openBox(boxObj, buttonObj);
+            }
+        }
+        
+        /**
+         * Update the message presented in the title of the html page.
+         * - If the documentation was splited by namespace we present something like: "Documentation for namespace 'ns'"
+         * - If the documentation was splited by location we present somehing like: "Documentation for 'Schema.xsd'"
+         * - If no split we always present: "Documentation for 'MainSchema.xsd'"
+         */
+        function updatePageTitle(message) {
+            top.document.title = message;
+        }
+        
+          
+                    
+         /**
+          * Finds an HTML element by its ID and makes it floatable over the normal content.
+          *
+          * @param x_displacement The difference in pixels to the right side of the window from 
+          *           the left side of the element.
+          * @param y_displacement The difference in pixels to the right side of the window from 
+          *           the top of the element.          
+          */
+         function findAndFloat(id, x_displacement, y_displacement){
+
+            var element = getElementObject(id);            
+            
+            window[id + "_obj"] = element;
+            
+            if(document.layers) {
+               element.style = element;
+            }
+            
+            element.current_y = y_displacement;      
+            element.first_time = true;
+         
+            element.floatElement = function(){
+               // It may be closed by an user action.
+                
+               // Target X and Y coordinates.
+               var x, y;
+               
+               var myWidth = 0, myHeight = 0;
+               if( typeof( window.innerWidth ) == 'number' ) {
+                  //Non-IE
+                  myWidth = window.innerWidth;
+                  myHeight = window.innerHeight;
+               } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+                  //IE 6+ in 'standards compliant mode'
+                  myWidth = document.documentElement.clientWidth;
+                  myHeight = document.documentElement.clientHeight;
+               } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+                  //IE 4 compatible
+                  myWidth = document.body.clientWidth;
+                  myHeight = document.body.clientHeight;
+               }
+               
+               
+               x = myWidth - x_displacement;
+               
+               var ns = (navigator.appName.indexOf("Netscape") != -1);               
+               y = ns ? pageYOffset : document.documentElement && document.documentElement.scrollTop ? 
+                  document.documentElement.scrollTop : document.body.scrollTop;               
+               y = y + y_displacement;               
+               
+               // The current y is the current coordinate of the floating element.
+               // This should be at the limit the y target coordinate.
+               this.current_y += (y - this.current_y)/1.25;
+               
+               // Add the pixels constant after the values
+               // and move the element.
+               var px = document.layers ? "" : "px";
+               this.style.left =  x + px;
+               this.style.top =  this.current_y + px;
+                              
+               setTimeout(this.id + "_obj.floatElement()", 100);
+            }
+            
+            element.floatElement();
+            return element;
+          }
+
+         /**
+          * Finds an HTML element by its ID and makes it floatable over the normal content.
+          *
+          * @param x_displacement The difference in pixels to the right side of the window from 
+          *           the left side of the element.
+          * @param y_displacement The difference in pixels to the right side of the window from 
+          *           the top of the element.          
+          */
+         function selectTOCGroupBy(id, isChunked, indexFileLocation, indexFileNamespace, indexFileComponent){
+
+            if (!isChunked) {
+             var selectIds = new Array('toc_group_by_namespace', 'toc_group_by_location', 'toc_group_by_component_type');
+             // Make all the tabs invisible.
+               for (i = 0; i < 3; i++){
+                  var tab = getElementObject(selectIds[i]);
+                  tab.style.display = 'none';
+               }
+               var selTab = getElementObject(id);
+               selTab.style.display = 'block';
+            } else {
+             if (id == 'toc_group_by_namespace') {
+               parent.indexFrame.location = indexFileNamespace;
+             } else  if (id == 'toc_group_by_location') {
+               parent.indexFrame.location = indexFileLocation;
+             } else  if (id == 'toc_group_by_component_type') {
+              parent.indexFrame.location = indexFileComponent;
+             }
+            }
+         }
+          
+
+    --></script></head>
+   <body>
+      <div id="global_controls" class="globalControls" style="position:absolute;right:0;">
+         <table class="rt">
+            <tr>
+               <td class="rt_cornerTopLeft"></td>
+               <td class="rt_lineTop"></td>
+               <td class="rt_cornerTopRight"></td>
+            </tr>
+            <tr>
+               <td class="rt_lineLeft"></td>
+               <td class="rt_content">
+                  <h3>Showing:</h3>
+                  <table>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, annotationBoxes);"
+                                     class="control" /></span><span class="globalControlName">Annotations</span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, instanceBoxes);"
+                                     class="control" /></span><span class="globalControlName">Instances</span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, propertiesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Properties </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, sourceBoxes);"
+                                     class="control" /></span><span class="globalControlName">Source</span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
+                     </tr>
+                  </table>
+                  <div align="right"><span><input type="button"
+                               onclick="getElementObject('global_controls').style.display = 'none';"
+                               value="Close" /></span></div>
+               </td>
+               <td class="rt_lineRight"></td>
+            </tr>
+            <tr>
+               <td class="rt_cornerBottomLeft"></td>
+               <td class="rt_lineBottom"></td>
+               <td class="rt_cornerBottomRight"></td>
+            </tr>
+         </table>
+      </div><a id="id1"></a><div class="componentTitle">Element <span class="qname">Scenario</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id1" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id1');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id1" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Container for an asset scenario</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Visible: name, step time,</span><span class="tI">
+</span><span class="tT">step pause,</span><span class="tI">
+</span><span class="tT">#participants. Editable: step time, step pause</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id1" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id1');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id1" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="ASSET_xsd_Element_Scenario.html#id2" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component StepTime')">StepTime</a></b> , <b><a href="ASSET_xsd_Element_Scenario.html#id6" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component StepPause{0,1}')">StepPause{0,1}</a></b> , <b><a href="ASSET_xsd_Element_Scenario.html#id7" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Environment{0,1}')">Environment{0,1}</a></b> , <b><a href="ASSET_xsd_Element_Scenario.html#id76" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Participants')">Participants</a></b> , <b><a href="ASSET_xsd_Element_Scenario.html#id441" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DebriefLayer{0,1}')">DebriefLayer{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="ASSET_xsd_Element_Scenario.html#id441" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DebriefLayer')">DebriefLayer</a></b>, <b><a href="ASSET_xsd_Element_Scenario.html#id7" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Environment')">Environment</a></b>, <b><a href="ASSET_xsd_Element_Scenario.html#id76" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Participants')">Participants</a></b>, <b><a href="ASSET_xsd_Element_Scenario.html#id6" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component StepPause')">StepPause</a></b>, <b><a href="ASSET_xsd_Element_Scenario.html#id2" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component StepTime')">StepTime</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Instance</b></div>
+                           <div class="floatRight"><input id="button_instance_id1" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('instance_id1');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="instance_id1" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;Scenario</span><span class="tT"> </span><span class="tAN">Case=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Created=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">ShowActivity=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">ShowName=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">ShowStatus=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">ShowSymbol=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">StartTime=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;StepTime</span><span class="tT"> </span><span class="tAN">Units=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Value=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{1,1}</span><span class="tEl">&lt;/StepTime&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;StepPause</span><span class="tT"> </span><span class="tAN">Units=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Value=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/StepPause&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;Environment</span><span class="tT"> </span><span class="tAN">AtmosphericAttenuation=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">LightLevel=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">SeaState=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/Environment&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;Participants</span><span class="tEl">&gt;</span><span class="tT">{1,1}</span><span class="tEl">&lt;/Participants&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;DebriefLayer</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/DebriefLayer&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/Scenario&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id1" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('attributes_id1');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id1" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id445" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Case')">Case</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Where we are conducting multiple permutations of</span><span class="tI">
+</span><span class="tT">a particular</span><span class="tI">
+</span><span class="tT">scenario, this computer-generated attribute contains</span><span class="tI">
+</span><span class="tT">details of the current</span><span class="tI">
+</span><span class="tT">permutation</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id443" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Created')">Created</a></b></td>
+                                    <td><b>xs:dateTime</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Date this file was created (yyyy-mm-ddThh:mm:ss)</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id444" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">The name for this scenario</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id447" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ShowActivity')">ShowActivity</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Whether to include participant activity details</span><span class="tI">
+</span><span class="tT">on plot</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id448" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ShowName')">ShowName</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Whether to include participant names on plot</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id449" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ShowStatus')">ShowStatus</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Whether to include participant status on plot</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id450" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ShowSymbol')">ShowSymbol</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Whether to include participant symbols on plot</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Element_Scenario.html#id446" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component StartTime')">StartTime</a></b></td>
+                                    <td><b>xs:dateTime</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">Model time when this scenario starts</span><span class="tI">
+</span><span class="tT">(yyyy-mm-ddThh:mm:ss).</span><span class="tI">
+</span><span class="tT">The current time will be used if no DTG</span><span class="tI">
+</span><span class="tT">supplied</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id1" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id1');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id1" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"Scenario"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Container for an asset scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tAN"> source=</span><span class="tAV">"http://asset.info/ui"</span><span class="tEl">&gt;</span><span class="tT">Visible: name, step time,
+				step pause,
+				#participants. Editable: step time, step pause</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:complexType</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:sequence</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"StepTime"</span><span class="tAN"> type=</span><span class="tAV">"DurationType"</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+          </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">This represents how long we move forward at each
+							time
+							step</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:element&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"StepPause"</span><span class="tAN"> type=</span><span class="tAV">"DurationType"</span><span class="tAN"> minOccurs=</span><span class="tAV">"0"</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+          </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">How long we pause for before moving to the next
+							time
+							step</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:element&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"Environment"</span><span class="tAN"> type=</span><span class="tAV">"CoreEnvironmentType"</span><span class="tAN"> minOccurs=</span><span class="tAV">"0"</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+          </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The environment for this scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:element&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"Participants"</span><span class="tAN"> type=</span><span class="tAV">"ParticipantsType"</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+          </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The list of vessels/aircraft to be modelled in
+							this
+							scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:element&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"DebriefLayer"</span><span class="tAN"> type=</span><span class="tAV">"DebriefLayerType"</span><span class="tAN"> minOccurs=</span><span class="tAV">"0"</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+          </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The backdrop layers to show</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:element&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:sequence&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"Created"</span><span class="tAN"> type=</span><span class="tAV">"xs:dateTime"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Date this file was created (yyyy-mm-ddThh:mm:ss)</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"Name"</span><span class="tAN"> type=</span><span class="tAV">"xs:string"</span><span class="tAN"> use=</span><span class="tAV">"required"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The name for this scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"Case"</span><span class="tAN"> type=</span><span class="tAV">"xs:string"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Where we are conducting multiple permutations of
+						a particular
+						scenario, this computer-generated attribute contains
+						details of the current
+						permutation</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"StartTime"</span><span class="tAN"> type=</span><span class="tAV">"xs:dateTime"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Model time when this scenario starts
+						(yyyy-mm-ddThh:mm:ss).
+						The current time will be used if no DTG
+						supplied</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowActivity"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant activity details
+						on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowName"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant names on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowStatus"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant status on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowSymbol"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+        </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant symbols on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+      </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;/xs:attribute&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:complexType&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:element&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id2"></a><div class="componentTitle">Element <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / StepTime</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id2" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id2');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id2" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">This represents how long we move forward at each</span><span class="tI">
+</span><span class="tT">time</span><span class="tI">
+</span><span class="tT">step</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_DurationType.html#id3" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DurationType')">DurationType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id2" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id2');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id2" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id2" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('attributes_id2');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id2" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_DurationType.html#id4" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Units')">Units</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_DurationType.html#id5" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Value')">Value</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id2" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id2');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id2" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"StepTime"</span><span class="tAN"> type=</span><span class="tAV">"DurationType"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">This represents how long we move forward at each
+							time
+							step</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:element&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id6"></a><div class="componentTitle">Element <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / StepPause</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id6" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id6');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id6" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">How long we pause for before moving to the next</span><span class="tI">
+</span><span class="tT">time</span><span class="tI">
+</span><span class="tT">step</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_DurationType.html#id3" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DurationType')">DurationType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id6" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id6');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id6" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id6" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('attributes_id6');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id6" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_DurationType.html#id4" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Units')">Units</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_DurationType.html#id5" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Value')">Value</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id6" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id6');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id6" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"StepPause"</span><span class="tAN"> type=</span><span class="tAV">"DurationType"</span><span class="tAN"> minOccurs=</span><span class="tAV">"0"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">How long we pause for before moving to the next
+							time
+							step</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:element&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id7"></a><div class="componentTitle">Element <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / Environment</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id7" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id7');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id7" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">The environment for this scenario</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id8" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component CoreEnvironmentType')">CoreEnvironmentType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id7" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id7');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id7" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id9" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadarLookupEnvironment{0,1}')">RadarLookupEnvironment{0,1}</a></b> , <b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id39" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component VisualLookupEnvironment{0,1}')">VisualLookupEnvironment{0,1}</a></b> , <b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id63" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MADLookupEnvironment{0,1}')">MADLookupEnvironment{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id63" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MADLookupEnvironment')">MADLookupEnvironment</a></b>, <b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id9" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadarLookupEnvironment')">RadarLookupEnvironment</a></b>, <b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id39" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component VisualLookupEnvironment')">VisualLookupEnvironment</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Instance</b></div>
+                           <div class="floatRight"><input id="button_instance_id7" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('instance_id7');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="instance_id7" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;Environment</span><span class="tT"> </span><span class="tAN">AtmosphericAttenuation=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">LightLevel=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">SeaState=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;RadarLookupEnvironment</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/RadarLookupEnvironment&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;VisualLookupEnvironment</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/VisualLookupEnvironment&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;MADLookupEnvironment</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/MADLookupEnvironment&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/Environment&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id7" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('attributes_id7');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id7" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id75" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component AtmosphericAttenuation')">AtmosphericAttenuation</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">The current sea state (0 to 6)</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id74" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component LightLevel')">LightLevel</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">The current light level</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id72" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:token</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">The name of this environment</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="ASSET_xsd_Complex_Type_CoreEnvironmentType.html#id73" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SeaState')">SeaState</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tT">The current sea state (1 to 6)</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id7" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id7');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id7" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"Environment"</span><span class="tAN"> type=</span><span class="tAV">"CoreEnvironmentType"</span><span class="tAN"> minOccurs=</span><span class="tAV">"0"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The environment for this scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:element&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id76"></a><div class="componentTitle">Element <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / Participants</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id76" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id76');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id76" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">The list of vessels/aircraft to be modelled in</span><span class="tI">
+</span><span class="tT">this</span><span class="tI">
+</span><span class="tT">scenario</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id77" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ParticipantsType')">ParticipantsType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id76" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id76');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id76" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id78" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSK{0,1}')">SSK{0,1}</a></b> | <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id409" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Surface{0,1}')">Surface{0,1}</a></b> | <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id414" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Helo{0,1}')">Helo{0,1}</a></b> | <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id421" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component FixedWing{0,1}')">FixedWing{0,1}</a></b> | <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id428" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSN{0,1}')">SSN{0,1}</a></b> | <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id431" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BuoyField{0,1}')">BuoyField{0,1}</a></b> | <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id438" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Torpedo{0,1}')">Torpedo{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id431" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BuoyField')">BuoyField</a></b>, <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id421" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component FixedWing')">FixedWing</a></b>, <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id414" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Helo')">Helo</a></b>, <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id78" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSK')">SSK</a></b>, <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id428" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSN')">SSN</a></b>, <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id409" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Surface')">Surface</a></b>, <b><a href="ASSET_xsd_Complex_Type_ParticipantsType.html#id438" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Torpedo')">Torpedo</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Instance</b></div>
+                           <div class="floatRight"><input id="button_instance_id76" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('instance_id76');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="instance_id76" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;Participants</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;SSK</span><span class="tT"> </span><span class="tAN">ChargeRate=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/SSK&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;Surface</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/Surface&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;Helo</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/Helo&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;FixedWing</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/FixedWing&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;SSN</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/SSN&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;BuoyField</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/BuoyField&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;Torpedo</span><span class="tT"> </span><span class="tAN">id=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">MonteCarloTarget=</span><span class="tAV">""</span><span class="tT"> </span><span class="tAN">Name=</span><span class="tAV">""</span><span class="tEl">&gt;</span><span class="tT">{0,1}</span><span class="tEl">&lt;/Torpedo&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/Participants&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id76" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id76');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id76" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"Participants"</span><span class="tAN"> type=</span><span class="tAV">"ParticipantsType"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The list of vessels/aircraft to be modelled in
+							this
+							scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:element&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id441"></a><div class="componentTitle">Element <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / DebriefLayer</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id441" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id441');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id441" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">The backdrop layers to show</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="ASSET_xsd_Complex_Type_DebriefLayerType.html#id442" target="mainFrame"
+                                 title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DebriefLayerType')">DebriefLayerType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id441" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id441');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id441" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b>ANY element from ANY namespace</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id441" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id441');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id441" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:element</span><span class="tAN"> name=</span><span class="tAV">"DebriefLayer"</span><span class="tAN"> type=</span><span class="tAV">"DebriefLayerType"</span><span class="tAN"> minOccurs=</span><span class="tAV">"0"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The backdrop layers to show</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:element&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id443"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @Created</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id443" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id443');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id443" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Date this file was created (yyyy-mm-ddThh:mm:ss)</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:dateTime</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id443" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id443');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id443" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id443" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id443');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id443" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id443" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id443');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id443" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"Created"</span><span class="tAN"> type=</span><span class="tAV">"xs:dateTime"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Date this file was created (yyyy-mm-ddThh:mm:ss)</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id444"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @Name</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id444" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id444');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id444" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">The name for this scenario</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:string</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id444" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id444');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id444" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>required</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id444" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id444');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id444" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id444" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id444');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id444" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"Name"</span><span class="tAN"> type=</span><span class="tAV">"xs:string"</span><span class="tAN"> use=</span><span class="tAV">"required"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">The name for this scenario</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id445"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @Case</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id445" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id445');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id445" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Where we are conducting multiple permutations of</span><span class="tI">
+</span><span class="tT">a particular</span><span class="tI">
+</span><span class="tT">scenario, this computer-generated attribute contains</span><span class="tI">
+</span><span class="tT">details of the current</span><span class="tI">
+</span><span class="tT">permutation</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:string</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id445" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id445');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id445" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id445" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id445');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id445" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id445" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id445');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id445" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"Case"</span><span class="tAN"> type=</span><span class="tAV">"xs:string"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Where we are conducting multiple permutations of
+						a particular
+						scenario, this computer-generated attribute contains
+						details of the current
+						permutation</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id446"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @StartTime</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id446" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id446');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id446" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Model time when this scenario starts</span><span class="tI">
+</span><span class="tT">(yyyy-mm-ddThh:mm:ss).</span><span class="tI">
+</span><span class="tT">The current time will be used if no DTG</span><span class="tI">
+</span><span class="tT">supplied</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:dateTime</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id446" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id446');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id446" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id446" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id446');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id446" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id446" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id446');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id446" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"StartTime"</span><span class="tAN"> type=</span><span class="tAV">"xs:dateTime"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Model time when this scenario starts
+						(yyyy-mm-ddThh:mm:ss).
+						The current time will be used if no DTG
+						supplied</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id447"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @ShowActivity</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id447" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id447');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id447" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Whether to include participant activity details</span><span class="tI">
+</span><span class="tT">on plot</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:boolean</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id447" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id447');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id447" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id447" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id447');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id447" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id447" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id447');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id447" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowActivity"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant activity details
+						on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id448"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @ShowName</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id448" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id448');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id448" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Whether to include participant names on plot</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:boolean</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id448" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id448');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id448" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id448" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id448');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id448" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id448" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id448');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id448" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowName"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant names on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id449"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @ShowStatus</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id449" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id449');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id449" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Whether to include participant status on plot</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:boolean</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id449" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id449');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id449" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id449" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id449');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id449" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id449" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id449');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id449" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowStatus"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant status on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id450"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                  title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b> / @ShowSymbol</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn"><b>Namespace</b></td>
+                        <td>No namespace</td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id450" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('annotations_id450');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id450" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tT">Whether to include participant symbols on plot</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:boolean</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id450" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('properties_id450');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id450" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id450" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('usedBy_id450');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id450" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Element </td>
+                                    <td><b><a href="ASSET_xsd_Element_Scenario.html#id1" target="mainFrame"
+                                             title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Scenario')">Scenario</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Source</b></div>
+                           <div class="floatRight"><input id="button_source_id450" type="image" src="img/btM.gif" value="-"
+                                     onclick="switchState('source_id450');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="source_id450" style="display:block">
+                              <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                     class="preWrapContainer">
+                                 <tr>
+                                    <td width="100%"><pre><span class="tEl">&lt;xs:attribute</span><span class="tAN"> name=</span><span class="tAV">"ShowSymbol"</span><span class="tAN"> type=</span><span class="tAV">"xs:boolean"</span><span class="tAN"> use=</span><span class="tAV">"optional"</span><span class="tEl">&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;xs:annotation</span><span class="tEl">&gt;</span><span class="tI">
+    </span><span class="tEl">&lt;xs:documentation</span><span class="tEl">&gt;</span><span class="tT">Whether to include participant symbols on plot</span><span class="tEl">&lt;/xs:documentation&gt;</span><span class="tI">
+  </span><span class="tEl">&lt;/xs:annotation&gt;</span><span class="tI">
+</span><span class="tEl">&lt;/xs:attribute&gt;</span></pre></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table>
+      <div class="footer">
+         <hr />
+         <div align="center">XML Schema documentation generated by <a href="http://www.oxygenxml.com" target="_parent"><span class="oXygenLogo"><span class="redX">&lt;</span>o<span class="redX">X</span>ygen<span class="redX">/&gt;</span></span></a><sup>®</sup> XML Editor.
+         </div>
+      </div><script type="text/javascript">
+         <!--                     
+                     // The namespace is the selected option in the TOC combo.
+                    
+                     // Floats the toolbar.
+                     var globalControls = getElementObject("global_controls"); 
+                     
+                     if(globalControls != null){
+	                     var browser=navigator.appName;
+						 var version = parseFloat(navigator.appVersion.split('MSIE')[1]);
+						 
+						 var IE6 = false;
+						 if ((browser=="Microsoft Internet Explorer") && (version < 7)){
+						 	IE6 = true;
+						 }
+	
+	                     //alert (IE6 + " |V| " + version);
+	                     
+	                     if(IE6){
+	                     	// On IE 6 the 'fixed' property is not supported. We must use javascript. 
+	                         globalControls.style.position='absolute';                         
+	                         // The global controls will do not exist in the TOC frame, when chunking.
+	                         findAndFloat("global_controls", 225, 30);    
+	                     } else {
+	                      	  globalControls.style.position='fixed';                     	
+	                     }
+	                     
+	                     globalControls.style.right='0';                       
+                     }
+                --></script></body>
+</html>
