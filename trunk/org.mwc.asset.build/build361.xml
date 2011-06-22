@@ -147,6 +147,8 @@
 
 		<echo message="copying new versions" />
 
+		<mkdir description="placeholder for dist" dir="${usbDest}/AssetNG" />
+		
 		<copy todir="${usbDest}/AssetNG" verbose="true">
 			<fileset dir="${deployDest}/AssetNG" />
 		</copy>
