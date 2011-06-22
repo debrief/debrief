@@ -53,7 +53,7 @@ Right, open our new scenario control file.  Start off by specifying a new output
    <item
          title="Re-run the scenario">
       <description>
-         Right, now you can click on the <b>Run</b> button, and ASSET will work its way through the scenarios.
+         Right, now you can click on the <b>Run all</b> button, and ASSET will work its way through the scenarios.
       </description>
    </item>
    <item
@@ -71,9 +71,9 @@ Right, open our new scenario control file.  Start off by specifying a new output
    <item
          title="Tutorial complete">
       <description>
-         Ready are you? What know you of ready? For eight hundred years have I trained Jedi. My own counsel will I keep on who is to be trained.
+     Ready are you? What know you of ready? For eight hundred years have I trained Jedi. My own counsel will I keep on who is to be trained.
 <br/>
-There again, you&apos;ve managed to complete the tutorial, so you must be fairly competent.  You&apos;ve been introduced to a slice across ASSET modelling, learn more either from the online <b>ASSET Model Reference</b> or from the <b>ASSET Modelling Guide</b> within the <b>Asset Documentation Set</b>.  Both are available if you select <b>Help Contents</b> from the <b>Help menu</b>
+There again, you&apos;ve managed to complete the tutorial, so you must be fairly competent.  You&apos;ve been introduced to a slice across ASSET modelling: learn more either from the online <b>ASSET Model Reference</b> or from the <b>ASSET Modelling Guide</b> within the <b>Asset Documentation Set</b>.  Both are available if you select <b>Help Contents</b> from the <b>Help menu</b></b>
       </description>
    </item>
 </cheatsheet>
