@@ -3914,7 +3914,7 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="Name" type="xs:token" use="required">
+		<xs:attribute name="Name" type="xs:Name" use="required">
 			<xs:annotation>
 				<xs:documentation>A user-friendly name for what we are changing
 				</xs:documentation>
@@ -3945,7 +3945,7 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:choice>
-		<xs:attribute name="name" type="validString" use="required">
+		<xs:attribute name="name" type="xs:Name" use="required">
 			<xs:annotation>
 				<xs:documentation>The attribute name of what we are changing
 				</xs:documentation>
