@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import javax.xml.xpath.XPathExpressionException;
+
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
@@ -401,7 +403,16 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	{
 
 		// hmm, check what type of control file it is
-		String controlType = getFirstNodeName(controlFile);
+		String controlType;
+		try
+		{
+			controlType = getFirstNodeName(controlFile);
+		}
+		catch (Exception e1)
+		{
+			CorePlugin.logError(Status.ERROR, "Whilst loading " + controlFile, e1);
+			return;
+		}
 
 		if (controlType == StandaloneObserverListHandler.type)
 		{
@@ -463,8 +474,16 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			{
 
 				// and let it create some files
-				_myModel.prepareFiles(_controlFileName, _scenarioFileName, System.out,
-						System.err, System.in, montor, _scenarioController.outputDirectory);
+				try
+				{
+					_myModel.prepareFiles(_controlFileName, _scenarioFileName, System.out,
+							System.err, System.in, montor, _scenarioController.outputDirectory);
+				}
+				catch (XPathExpressionException e1)
+				{
+					CorePlugin.logError(Status.ERROR, "Whilst performing scenario generation", e1);
+					return;
+				}
 
 				// and sort out the observers
 				_myModel.prepareControllers(_scenarioController, montor, null);
@@ -522,7 +541,16 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			{
 
 				// ok, examine this file
-				String firstNode = getFirstNodeName(thisName);
+				String firstNode = null;
+				try
+				{
+					firstNode = getFirstNodeName(thisName);
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR, "Whilst loading " + thisName,e);
+					return;
+				}
 
 				if (firstNode != null)
 				{

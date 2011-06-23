@@ -615,7 +615,6 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				{
 					CorePlugin
 							.logError(IStatus.ERROR, "Failed in scenario generation", e);
-					e.printStackTrace();
 				}
 
 				return Status.OK_STATUS;

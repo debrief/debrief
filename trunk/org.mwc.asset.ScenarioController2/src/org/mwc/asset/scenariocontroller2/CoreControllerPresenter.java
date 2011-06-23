@@ -6,6 +6,8 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -71,7 +73,7 @@ public abstract class CoreControllerPresenter
 		void setScenarioName(String name);
 	}
 
-	protected String getFirstNodeName(String SourceXMLFilePath)
+	protected String getFirstNodeName(String SourceXMLFilePath) throws Exception
 	{
 		/* Check whether file is XML or not */
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -87,16 +89,8 @@ public abstract class CoreControllerPresenter
 		}
 		catch (IOException ioe)
 		{
-			// ioe.printStackTrace();
+			CorePlugin.logError(Status.ERROR, "Whilst getting first node in " + SourceXMLFilePath, ioe);
 			return null;
-			// return "Not Valid XML File";
-		}
-		catch (Exception sxe)
-		{
-			// Exception x = sxe;
-			return null;
-			// x.printStackTrace();
-			// return "Not Valid XML File";
 		}
 
 	}
