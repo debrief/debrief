@@ -40,7 +40,7 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
 <item
          title="Add specification for multi participant generation">
       <description>
-        So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One (or whatever you named the fishing vessel), and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West.
+        So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One (or whatever you named the fishing vessel), and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 51/-9 (top-left) to 50/-8 (bottom-right).
       </description>
    </item>
    <item
