@@ -13,6 +13,8 @@ import org.w3c.dom.Document;
 import java.io.*;
 import java.util.Vector;
 
+import javax.xml.xpath.XPathExpressionException;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Ian.Mayo
@@ -66,8 +68,9 @@ public class MultiScenarioCommandLine
    * @param control  the control file
    * @param outputDirectory TODO
    * @return null for success, message for failure
+   * @throws XPathExpressionException 
    */
-  private String setup(String scenario, String control, File outputDirectory)
+  private String setup(String scenario, String control, File outputDirectory) throws XPathExpressionException
   {
     // ok, create our genny
     _myGenny = new ScenarioGenerator();
@@ -276,9 +279,10 @@ public class MultiScenarioCommandLine
    * @param err  error out
    * @param in   input (to receive user input)
    * @return success code (0) or failure codes
+   * @throws XPathExpressionException 
    */
 
-  int processThis(String[] args, PrintStream out, PrintStream err, InputStream in)
+  int processThis(String[] args, PrintStream out, PrintStream err, InputStream in) throws XPathExpressionException
   {
     int resCode = 0;
 
@@ -389,7 +393,16 @@ public class MultiScenarioCommandLine
       bes.reset();
       String[] args = null;
       MultiScenarioCommandLine scen = new MultiScenarioCommandLine();
-      int res = scen.processThis(args, out, err, in);
+      int res = 0;
+			try
+			{
+				res = scen.processThis(args, out, err, in);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
       assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
 
       ////////////////////////////////////////////////////////////
@@ -399,7 +412,15 @@ public class MultiScenarioCommandLine
       bes.reset();
       args = new String[0];
       scen = new MultiScenarioCommandLine();
-      res = scen.processThis(args, out, err, in);
+      try
+			{
+				res = scen.processThis(args, out, err, in);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
       assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
 
       ////////////////////////////////////////////////////////////
@@ -411,7 +432,15 @@ public class MultiScenarioCommandLine
       args[0] = "src/ASSET/Util/MonteCarlo/small_test_scenario.xml";
 
       scen = new MultiScenarioCommandLine();
-      res = scen.processThis(args, out, err, in);
+      try
+			{
+				res = scen.processThis(args, out, err, in);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
       assertEquals("wrong num args error returned", WRONG_PARAMETERS, res);
 
@@ -427,7 +456,15 @@ public class MultiScenarioCommandLine
       args[0] = "src/ASSET/Util/MonteCarlo/small_test_scenario.xml";
       args[1] = "src/ASSET/Util/MonteCarlo/test_variance_invalid.xml";
       scen = new MultiScenarioCommandLine();
-      res = scen.processThis(args, out, err, in);
+      try
+			{
+				res = scen.processThis(args, out, err, in);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
       assertEquals("wrong num args error returned", PROBLEM_LOADING, res);
 
@@ -452,7 +489,16 @@ public class MultiScenarioCommandLine
       args[1] = "src/ASSET/Util/MonteCarlo/test_variance1.xml";
       //      args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
       MultiScenarioCommandLine scen = new MultiScenarioCommandLine();
-      int res = scen.processThis(args, out, err, in);
+      int res = 0;
+			try
+			{
+				res = scen.processThis(args, out, err, in);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
       assertEquals("ran ok", SUCCESS, res);
 
       // check the contents of the error message

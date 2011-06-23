@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.xml.xpath.XPathExpressionException;
+
 import org.w3c.dom.Document;
 
 import ASSET.ScenarioType;
@@ -98,9 +100,10 @@ public class MultiScenarioCore implements ISimulationQue
 	 * @param outputDirectory
 	 *          where to write to
 	 * @return null for success, message for failure
+	 * @throws XPathExpressionException 
 	 */
 	private String setup(String scenario, String control,
-			ASSETProgressMonitor pMon, File outputDirectory)
+			ASSETProgressMonitor pMon, File outputDirectory) throws XPathExpressionException
 	{
 		// ok, create our genny
 		_myGenny = new ScenarioGenerator();
@@ -266,11 +269,12 @@ public class MultiScenarioCore implements ISimulationQue
 	 * @param outputDirectory
 	 *          - where to put the working files
 	 * @return success code (0) or failure codes
+	 * @throws XPathExpressionException 
 	 */
 
 	public int prepareFiles(String controlFile, String scenarioFile,
 			PrintStream out, PrintStream err, InputStream in,
-			ASSETProgressMonitor pMon, File outputDirectory)
+			ASSETProgressMonitor pMon, File outputDirectory) throws XPathExpressionException
 	{
 		int resCode = 0;
 
@@ -455,7 +459,16 @@ public class MultiScenarioCore implements ISimulationQue
 				{
 				}
 			};
-			int res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
+			int res = 0;
+			try
+			{
+				res = scen.prepareFiles(args[0], args[1], out, err, in, pMon, null);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			assertEquals("ran ok", SUCCESS, res);
 
 			// check the contents of the error message

@@ -17,12 +17,14 @@ import java.util.Vector;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import ASSET.Util.SupportTesting;
 import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
@@ -63,8 +65,11 @@ public final class MultiParticipantGenerator
 	/**
 	 * constructor, received a stream containing the list of variances we are
 	 * going to manage
+	 * 
+	 * @throws XPathExpressionException
 	 */
 	public MultiParticipantGenerator(Document doc)
+			throws XPathExpressionException
 	{
 		this();
 
@@ -77,46 +82,52 @@ public final class MultiParticipantGenerator
 
 	/**
 	 * read in the list of variances, and collate them into our list
+	 * 
+	 * @throws XPathExpressionException
 	 */
-	void loadVariances(final Document document)
+	void loadVariances(final Document document) throws XPathExpressionException
 	{
+		XPathExpression xpe = null;
+		;
 		try
 		{
-			XPathExpression xpe = NamespaceContextProvider.createPath("//" + GENERATOR_TYPE);
-			Object result = xpe.evaluate(document, XPathConstants.NODESET);
-
-			if (result != null)
-			{
-				NodeList theNodes = (NodeList) result;
-
-				final Element el = (Element) theNodes.item(0);
-
-				if (el != null)
-				{
-					// build up our list of variances from this document
-					final NodeList lis = el.getElementsByTagName("ParticipantVariance");
-
-					final int len = lis.getLength();
-					for (int i = 0; i < len; i++)
-					{
-						final Element o = (Element) lis.item(i);
-
-						// create this variance
-						final ParticipantVariance xv = new ParticipantVariance(o);
-
-						// and store it
-						_myParticipantVariances.add(xv);
-
-					}
-
-				}
-			}
-
+			xpe = NamespaceContextProvider.createPath("//" + GENERATOR_TYPE);
 		}
-		catch (Exception e)
+		catch (XPathExpressionException e)
 		{
 			e.printStackTrace();
+			return;
 		}
+
+		Object result = xpe.evaluate(document, XPathConstants.NODESET);
+
+		if (result != null)
+		{
+			NodeList theNodes = (NodeList) result;
+
+			final Element el = (Element) theNodes.item(0);
+
+			if (el != null)
+			{
+				// build up our list of variances from this document
+				final NodeList lis = el.getElementsByTagName("ParticipantVariance");
+
+				final int len = lis.getLength();
+				for (int i = 0; i < len; i++)
+				{
+					final Element o = (Element) lis.item(i);
+
+					// create this variance
+					final ParticipantVariance xv = new ParticipantVariance(o);
+
+					// and store it
+					_myParticipantVariances.add(xv);
+
+				}
+
+			}
+		}
+
 	}
 
 	/**
@@ -194,7 +205,7 @@ public final class MultiParticipantGenerator
 			super(val);
 		}
 
-		public final void testLoadVariances()
+		public final void testLoadVariances() throws XPathExpressionException
 		{
 			// create server
 			final MultiParticipantGenerator xv = new MultiParticipantGenerator();
@@ -204,8 +215,7 @@ public final class MultiParticipantGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
 
 			Document doc = null;
 			try
@@ -302,13 +312,13 @@ public final class MultiParticipantGenerator
 			// test the first
 			final Node first = xxc.get(0);
 			// have a look at it
-			assertEquals("first is of correct type", "shortLocation", first
-					.getNodeName());
+			assertEquals("first is of correct type", "shortLocation",
+					first.getNodeName());
 
 			final Node second = xxc.get(3);
 			// have a look at it
-			assertEquals("second is of correct type", "longLocation", second
-					.getNodeName());
+			assertEquals("second is of correct type", "longLocation",
+					second.getNodeName());
 
 			// //////////////////////////////////////////////////////////
 			// move onto the second participant
@@ -338,7 +348,7 @@ public final class MultiParticipantGenerator
 			assertEquals("correct step", 2, xr.getStep().doubleValue(), 0);
 		}
 
-		public final void testPerformVariances()
+		public final void testPerformVariances() throws XPathExpressionException
 		{
 			final MultiParticipantGenerator genny = new MultiParticipantGenerator();
 
@@ -347,8 +357,7 @@ public final class MultiParticipantGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -431,29 +440,34 @@ public final class MultiParticipantGenerator
 			// hey, let's see how we got on
 			try
 			{
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo_001']");
-				NodeList nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
-				Element thisE = (Element)nl.item(0);
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//Participants/*[@Name='bravo_001']");
+				NodeList nl = (NodeList) xp2.evaluate(thisDocument,
+						XPathConstants.NODESET);
+				Element thisE = (Element) nl.item(0);
 				// SupportTesting.outputThis(thisDocument,"have a look at this!");
 				assertEquals("correct name", "bravo_001", thisE.getAttribute("Name"));
 
 				// did we create the last one?
-				xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo_004']");
+				xp2 = NamespaceContextProvider
+						.createPath("//Participants/*[@Name='bravo_004']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
-				thisE = (Element)nl.item(0);
+				thisE = (Element) nl.item(0);
 				assertEquals("correct name", "bravo_004", thisE.getAttribute("Name"));
 
 				// //////////////////////////////////////////////////////////
 				// now the alphas
 				// //////////////////////////////////////////////////////////
-				xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='alpha_001']");
+				xp2 = NamespaceContextProvider
+						.createPath("//Participants/*[@Name='alpha_001']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
-				thisE = (Element)nl.item(0);
+				thisE = (Element) nl.item(0);
 				assertEquals("correct name", "alpha_001", thisE.getAttribute("Name"));
 
-				xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='alpha_006']");
+				xp2 = NamespaceContextProvider
+						.createPath("//Participants/*[@Name='alpha_006']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
-				thisE = (Element)nl.item(0);
+				thisE = (Element) nl.item(0);
 				assertEquals("correct name", "alpha_006", thisE.getAttribute("Name"));
 			}
 			catch (Exception e)
@@ -472,8 +486,7 @@ public final class MultiParticipantGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -511,10 +524,20 @@ public final class MultiParticipantGenerator
 			{
 				genny.loadVariances(ScenarioGenerator.readDocumentFrom(varianceStream));
 			}
-			catch (SAXException e)
+			catch (XPathExpressionException e1)
 			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-															// File Templates.
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (SAXParseException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (SAXException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
 			assertEquals("loaded vars", 2, genny._myParticipantVariances.size(), 0);
@@ -526,7 +549,6 @@ public final class MultiParticipantGenerator
 					.get(0);
 
 			Exception ex = null;
-			
 
 			try
 			{
@@ -545,7 +567,6 @@ public final class MultiParticipantGenerator
 				ex = e;
 			}
 
-
 			// check that an exception got thrown
 			assertNotNull("check no exceptions thrown", ex);
 			assertTrue("it failed to match anything",
@@ -561,8 +582,7 @@ public final class MultiParticipantGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -606,6 +626,11 @@ public final class MultiParticipantGenerator
 				e.printStackTrace(); // To change body of catch statement use Options |
 															// File Templates.
 			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			assertEquals("loaded vars", 2, genny._myParticipantVariances.size(), 0);
 
@@ -616,7 +641,6 @@ public final class MultiParticipantGenerator
 					.get(0);
 
 			Exception ex = null;
-			
 
 			try
 			{

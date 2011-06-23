@@ -39,6 +39,12 @@ public final class XMLAttribute implements XMLObject
 
     // read in the attribute name
     _name = element.getAttribute("name");
+    
+    // name must be a single word phrase
+    if(_name.contains(" "))
+    {
+    	throw new RuntimeException("XML Attribute 'name' field must be one word (" + _name + ")");
+    }
 
     // read in the operation
     final NodeList list = element.getElementsByTagName("Range");

@@ -14,6 +14,8 @@ import org.xml.sax.SAXException;
 import java.io.*;
 import java.util.Vector;
 
+import javax.xml.xpath.XPathExpressionException;
+
 /**
  * *******************************************************************
  * embedded class to handle the core (non-gui) functionality.
@@ -102,7 +104,7 @@ abstract class LoaderCore
   abstract void writeMessage(String msg);
 
 
-  public void buildScenario()
+  public void buildScenario() throws XPathExpressionException
   {
     writeMessage("Building scenario");
 

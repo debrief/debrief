@@ -60,78 +60,71 @@ public final class XMLVariance
 	 */
 	public XMLVariance(final Element myElement)
 	{
-		try
+		// read in the data from this element
+		_myName = myElement.getAttribute(NAME);
+
+		// store the id
+		_myId = myElement.getAttribute(ID);
+
+		// do we have an attribute to edit
+		final NodeList atts = myElement.getElementsByTagName(ATTRIBUTE);
+
+		final int len = atts.getLength();
+		if (len > 0)
 		{
-			// read in the data from this element
-			_myName = myElement.getAttribute(NAME);
+			// yup, it's an attribute
 
-			// store the id
-			_myId = myElement.getAttribute(ID);
+			final Element myNode = (Element) atts.item(0);
+			// good, lets store this attribute
+			_myObject = new XMLAttribute(myNode);
+		}
 
+		// did it work?
+		if (_myObject == null)
+		{
 			// do we have an attribute to edit
-			final NodeList atts = myElement.getElementsByTagName(ATTRIBUTE);
+			final NodeList nodes = myElement.getElementsByTagName("Node");
 
-			final int len = atts.getLength();
-			if (len > 0)
+			final Element myNode = (Element) nodes.item(0);
+
+			if (myNode != null)
 			{
-				// yup, it's an attribute
-
-				final Element myNode = (Element) atts.item(0);
-				// good, lets store this attribute
-				_myObject = new XMLAttribute(myNode);
+				// good, let's store this node
+				_myObject = new XMLNode(myNode);
 			}
-
-			// did it work?
-			if (_myObject == null)
-			{
-				// do we have an attribute to edit
-				final NodeList nodes = myElement.getElementsByTagName("Node");
-
-				final Element myNode = (Element) nodes.item(0);
-
-				if (myNode != null)
-				{
-					// good, let's store this node
-					_myObject = new XMLNode(myNode);
-				}
-			}
-
-			// carry on trying if we've still not found ourselves
-			// did it work?
-			if (_myObject == null)
-			{
-				// do we have an attribute to edit
-				final NodeList nodes = myElement.getElementsByTagName("LocationArea");
-
-				final Element myNode = (Element) nodes.item(0);
-
-				if (myNode != null)
-				{
-					// good, let's store this node
-					_myObject = new LocationArea(myNode);
-				}
-			}
-			// carry on trying if we've still not found ourselves
-			// did it work?
-			if (_myObject == null)
-			{
-				// do we have an attribute to edit
-				final NodeList nodes = myElement.getElementsByTagName("LocationOffset");
-
-				final Element myNode = (Element) nodes.item(0);
-
-				if (myNode != null)
-				{
-					// good, let's store this node
-					_myObject = new LocationOffset(myNode);
-				}
-			}
-
 		}
-		catch (Exception e)
+
+		// carry on trying if we've still not found ourselves
+		// did it work?
+		if (_myObject == null)
 		{
-			e.printStackTrace();
+			// do we have an attribute to edit
+			final NodeList nodes = myElement.getElementsByTagName("LocationArea");
+
+			final Element myNode = (Element) nodes.item(0);
+
+			if (myNode != null)
+			{
+				// good, let's store this node
+				_myObject = new LocationArea(myNode);
+			}
 		}
+		// carry on trying if we've still not found ourselves
+		// did it work?
+		if (_myObject == null)
+		{
+			// do we have an attribute to edit
+			final NodeList nodes = myElement.getElementsByTagName("LocationOffset");
+
+			final Element myNode = (Element) nodes.item(0);
+
+			if (myNode != null)
+			{
+				// good, let's store this node
+				_myObject = new LocationOffset(myNode);
+			}
+		}
+
 	}
 
 	/**

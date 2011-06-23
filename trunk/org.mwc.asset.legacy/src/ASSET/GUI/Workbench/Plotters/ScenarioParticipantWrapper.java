@@ -15,8 +15,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;

@@ -27,6 +27,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -116,9 +117,10 @@ public final class ScenarioGenerator
 	 * @param mWrap
 	 * @param outputDirectory
 	 * @return
+	 * @throws XPathExpressionException 
 	 */
 		public String createScenarios(String templatePath, String controlPath,
-			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
+			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory) throws XPathExpressionException
 	{
 		Document theControlFile = null;
 		String res = null;
@@ -188,10 +190,11 @@ public final class ScenarioGenerator
 	 * @param mWrap
 	 * @param outputDirectory
 	 * @return error message on failure, or null for success
+	 * @throws XPathExpressionException 
 	 */
 	protected String doScenarioGeneration(Document template,
 			Document controlFile, Vector<Document> results,
-			ASSETProgressMonitor mWrap, File outputDirectory)
+			ASSETProgressMonitor mWrap, File outputDirectory) throws XPathExpressionException
 	{
 		String res = null;
 
@@ -513,11 +516,10 @@ public final class ScenarioGenerator
 	 * 
 	 * @param outputDirectory
 	 *          where to put the generated files
+	 * @throws XPathExpressionException 
 	 */
-	protected void setVariances(final Document document, File outputDirectory)
+	protected void setVariances(final Document document, File outputDirectory) throws XPathExpressionException
 	{
-		try
-		{
 			// can we find a scenario generator?
 			XPathExpression xp2 = NamespaceContextProvider.createPath("//"
 					+ MultiScenarioGenerator.GENERATOR_TYPE);
@@ -555,12 +557,6 @@ public final class ScenarioGenerator
 
 			if (outputDirectory != null)
 				setDirectory(outputDirectory.getAbsolutePath());
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 
 		_controlDocument = document;
 
@@ -866,7 +862,7 @@ public final class ScenarioGenerator
 			super(val);
 		}
 
-		public final void testLoadVariances()
+		public final void testLoadVariances() throws XPathExpressionException
 		{
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
@@ -899,7 +895,7 @@ public final class ScenarioGenerator
 					"test_reports/asset_test_output/test_variance1", genny.getDirectory());
 		}
 
-		public final void testPerformVariances()
+		public final void testPerformVariances() throws XPathExpressionException
 		{
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
@@ -966,8 +962,17 @@ public final class ScenarioGenerator
 
 			ScenarioGenerator genny = new ScenarioGenerator();
 
-			String res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-					+ VARIANCE_FILE, list, null, null);
+			String res = null;
+			try
+			{
+				res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
+						+ VARIANCE_FILE, list, null, null);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			assertNull("success - no error", res);
 
@@ -987,8 +992,17 @@ public final class ScenarioGenerator
 
 			ScenarioGenerator genny = new ScenarioGenerator();
 
-			String res = genny.createScenarios(docPath + "test_variance_scnario.xml",
-					docPath + SCENARIO_FILE, list, null, null);
+			String res = null;
+			try
+			{
+				res = genny.createScenarios(docPath + "test_variance_scnario.xml",
+						docPath + SCENARIO_FILE, list, null, null);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			assertNotNull("success - error returned", res);
 			assertTrue("correct error returned",
@@ -997,8 +1011,16 @@ public final class ScenarioGenerator
 			// check there's stuff in the lst
 			assertEquals("got no scenarios", 0, list.size());
 
-			res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-					+ "test_varince1.xml", list, null, null);
+			try
+			{
+				res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
+						+ "test_varince1.xml", list, null, null);
+			}
+			catch (XPathExpressionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			assertNotNull("success - error returned", res);
 			assertTrue("correct error returned", res.indexOf(CONTROL_FILE_ERROR) > -1);
@@ -1066,7 +1088,16 @@ public final class ScenarioGenerator
 				// File Templates.
 			}
 
-			String res = genny.doScenarioGeneration(doc, var, list, null, null);
+			String res = null;
+			try
+			{
+				res = genny.doScenarioGeneration(doc, var, list, null, null);
+			}
+			catch (XPathExpressionException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			assertNull("success - no error", res);
 
