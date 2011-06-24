@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+	<extensionContent id="orgmwcdebriefcore-introExtension"
+		style="css/intro.css" name="Sample Extension" path="firststeps/@">
+		<group style-id="content-group"
+			id="orgmwcdebriefcore-introLink-group">
+			<link label="First steps for Debrief"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/intro.html#intro_welcome"
+				style-id="content-link">
+				<text>Welcome to Debrief, it's background and it's history</text>
+			</link>
+			<link label="Installing and starting Debrief"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/get_start.html"
+				style-id="content-link">
+				<text>How to obtain and install Debrief (including configuring background data)</text>
+			</link>
+			<link label="Grooming track data"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/GroomingTrackData.html"
+				style-id="content-link">
+				<text>How to groom positional data, including removal of jumps</text>
+			</link>			
+			<link label="Debrief file formats"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/reference.html#replay_file_format"
+				style-id="content-link">
+				<text>Use this guidance and you'll be able to get your data smoothly into Debrief</text>
+			</link>					
+		</group>
+	</extensionContent>
+</introContent>

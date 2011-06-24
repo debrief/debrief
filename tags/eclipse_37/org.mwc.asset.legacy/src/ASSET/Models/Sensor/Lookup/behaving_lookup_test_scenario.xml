@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
+<Scenario Created="2001-12-05T21:00:00" Name="Test 1 scenario file" StartTime="2001-12-05T21:00:00" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="d:\dev\Asset\src\schemas\ASSET.xsd">
+	<StepTime Units="seconds" Value="2"/>
+	<Environment AtmosphericAttenuation="FOG" SeaState="1" Name="Test environment"/>
+	<Participants>
+		<Helo Name="HELO_ALPHA">
+			<Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER"/>
+			<SensorFit>
+				<OpticLookupSensor Name="Eyesight" VDR="0.05" MRF="1.05" CRF="0.8" IRF="0.2" id="444">
+					<TBDO Units="seconds" Value="10"/>
+					<CTP Units="seconds" Value="20"/>
+					<ITP Units="seconds" Value="30"/>
+				</OpticLookupSensor>
+				<RadarLookupSensor Name="The radar" VDR="0.04" MRF="1.2" CRF="0" IRF="0" K="1200" id="555">
+					<TBDO Units="seconds" Value="11"/>
+					<CTP Units="seconds" Value="0"/>
+					<ITP Units="seconds" Value="0"/>
+				</RadarLookupSensor>
+			</SensorFit>
+			<Status Course="55" Fuel="99">
+				<Location>
+					<shortLocation Lat="0.47" Long="0.49">
+						<Height Units="m" Value="300"/>
+					</shortLocation>
+				</Location>
+				<Speed Units="ft/s" Value="30"/>
+			</Status>
+			<Waterfall IsActive="true" StayAlive="false" Name="Helo behavious">
+				<BearingTrail Name="find the frigate" TrailBearing="135">
+					<TrailRange Units="m" Value="800"/>
+					<TargetType>
+						<Type Name="RED"/>
+					</TargetType>
+					<AllowableError Units="m" Value="200"/>
+				</BearingTrail>
+				<Move Name="move across a bit" Course="44">
+					<Speed Units="m/s" Value="12"/>
+					<Height Units="m" Value="300"/>
+					<Vector Units="km" Value="2"/>
+				</Move>
+				<Wander Name="just wander around">
+					<Range Units="nm" Value="12"/>
+					<Location>
+						<shortLocation Lat="0.47" Long="0.49">
+							<Height Units="m" Value="300"/>
+						</shortLocation>
+					</Location>
+					<Speed Units="ft/s" Value="30"/>
+					<Height Units="m" Value="300"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<HeloMovementCharacteristics FuelUsageRate="0.0001" Name="RAW CHARACTERISTICS" DefaultTurnRate="3">
+				<MinSpeed Units="m/s" Value="0"/>
+				<MaxSpeed Units="m/s" Value="200"/>
+				<AccelerationRate Units="m/s/s" Value="4"/>
+				<DecelerationRate Units="m/s/s" Value="2"/>
+				<MinHeight Units="m" Value="10"/>
+				<MaxHeight Units="m" Value="300"/>
+				<DefaultClimbRate Units="m/s" Value="6"/>
+				<DefaultDiveRate Units="m/s" Value="40"/>
+				<DefaultClimbSpeed Units="m/s" Value="40"/>
+				<DefaultDiveSpeed Units="m/s" Value="60"/>
+			</HeloMovementCharacteristics>
+		</Helo>
+		<Surface Name="SURFACE_BRAVO">
+			<Category Environment="SURFACE" Force="RED" Type="FRIGATE"/>
+			<SensorFit/>
+			<Status Course="47" Fuel="23">
+				<Location>
+					<shortLocation Lat="0.4735" Long="0.4935">
+						<Height Units="m" Value="20"/>
+					</shortLocation>
+				</Location>
+				<Speed Units="kts" Value="8"/>
+			</Status>
+			<Waterfall StayAlive="false" IsActive="true" Name="Surface behavior">
+				<Wander Name="just wander around">
+					<Range Units="nm" Value="9"/>
+					<Location>
+						<shortLocation Lat="0.5" Long="0.5"/>
+					</Location>
+					<Speed Units="m/s" Value="7"/>
+					<Height Units="m" Value="10"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.055" Name="SSK Man model">
+				<MinSpeed Units="m/s" Value="1"/>
+				<MaxSpeed Units="m/s" Value="24"/>
+				<AccelerationRate Units="m/s/s" Value="1"/>
+				<DecelerationRate Units="m/s/s" Value="1"/>
+				<TurningCircle Units="m" Value="400"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+</Scenario>

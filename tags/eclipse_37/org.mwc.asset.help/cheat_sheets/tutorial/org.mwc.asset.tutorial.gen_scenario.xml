@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Generate a scenario">
+   <intro>
+      <description>
+         <b>In this part of the tutorial you are going to create a new, empty scenario file - then populate it with sample data.  The scenario will describe a frigate looking for a fishing vessel</b>
+      </description>
+   </intro>
+   <item
+         title="Select location for new scenario">
+      <description>
+         Some thinking first.  Have a look in your navigator view, and decide on a location for your new scenario file.  It isn&apos;t all that tidy to put it into the existing AssetData sample data folder, so you could create a new folder in the root of your project (by right-clicking on the root folder and selecting &apos;New Folder&apos;.  The new folder could be called &apos;trials&apos;, for example.
+      </description>
+   </item>
+   <item
+         title="Create empty scenario file">
+      <description>
+         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML File&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  <b>Note:</b> ASSET runs more smoothly if you name scenarios with the <b>.asset</b> suffix. <br/>On the next page, select  <b>Create XML file from an XML template</b>, then indicate that you want a  new Asset Scenario.  The file will then open.
+         
+      </description>
+   </item>
+   <item
+         title="Admire the editor">
+      <description>Your new scenario may probably open in <b>Source</b> view.  This is ok for geeks, but you may find it easier to use the tree oriented view.  If you are in the <b>Source</b> view, switch to the graphical view by clicking on the <b>Design</b> tab at the foot of the editor pane.  
+
+Now that you&apos;re in the graphic view, experiment with expanding the <b>Scenario</b>.   
+
+By the way, if you look at ASSET&apos;s <b>Outline</b> view (or click the arrow below) you&apos;ll see an outline view of the current scenario.w.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ContentOutline)"/>
+   </item>
+   <item
+         href="/org.mwc.asset.core/asset_schemas/doc/schema1.html"
+         title="Edit scenario properties">
+      <description>
+         Youve got big dreams? You want fame? Well, fame costs.  And right here is where you start paying in sweat.
+<br/>
+Well, not quite, but you do have to start typing now.  So, open the Scenario element, and give the scenario a name &apos;Cheat sheet scenario&apos;.  If you switch to the properties view you&apos;ll see the other attributes needed.  Two of these are <b>Created</b> and <b>StartTime</b>. ASSET expects dates in the ISO 8601 date standard: <b>2010-01-12T12:13:14Z</b>.  Put in today&apos;s date as the created attribute, and any old date as the StartTime attribute.
+<br/>
+Next, specify how far in time the scenario should step forward (<b>StepTime</b>). Have a go at five minutes: <b>Minutes</b> are the <b>Unit</b> and 5 is the <b>Value</b>.
+<br/>
+Read more about the attributes of the scenario element using the help link for this step.      </description>
+   </item>
+   <item href="/org.mwc.asset.help/html/legacy/mod_environment.html"
+         title="Specify Environment">
+      <description>
+         Now we have to give the scenario an environment.  Do this by right-clicking on the <b>Scenario</b> and selecting <b>Add child</b> / <b>Environment</b>.  Also, give it a name - how about <b>Atlantic Summer</b>.  Play with the sea state and atmospheric attenuation if you wish.
+<br/> You can learn more about the role of the attributes in the attached help link.
+      </description>
+   </item>
+   <item
+         title="Add simple participant">
+      <description>
+         Next, we have to put something into the scenario.  Right-click on <b>Participants</b> and select <b>Surface</b>.  If you open up the new participant, you&apos;ll see that the compulsary elements have already been included.   Now, give the vessel a name, <b>Fisher One</b> should do.
+      </description>
+   </item>
+   <item
+         title="Tidy the participant">
+      <description>
+         Now it&apos;s time to flesh out a little more of the fishing vessel.  Start off with the category - indicate that it&apos;s a <b>FISHING_VESSEL</b> of the <b>GREEN</b> force and it travels in the <b>SURFACE</b> environment.
+<br/>
+We&apos;ll leave the sensor fit empty, but we should give it an initial status.  Set the <b>Course</b> to 30, then <b>Fuel</b> to 100.  Now set the location to <b>Lat</b> of 50 and <b>Long</b> of <b>-8</b>.  Lastly, specify a <b>Speed</b> of 6 Knots.
+      </description>
+   </item>
+   <item
+         title="Specify the movement characteristics">
+      <description>
+         Next up we have to specify how the fishing vessel performs in the <b>SurfaceMovementCharacteristics</b>.  Enter the following data: <b>Name:</b> 9m Fisherman, <b>FuelUsageRate</b> 0.0001, <b>MinSpeed</b>0 Kts, <b>MaxSpeed</b>12 Kts, <b>AccelerationRate</b> 1 kt/sec, <b>DeceleratonRate</b> 1 kt/sec, <b>TurningCircle</b>  400 metres.
+      </description>
+   </item>
+   <item
+         href="org.mwc.asset.help/html/legacy/mod_struct_behaviours.html#behaviour_sequence"
+         title="Provide participant behaviour">
+      <description>
+         Next, we&apos;re going to indicate what the fishing vessel is up to.  We&apos;re going to make it travel to a fishing ground, and then wander around it.  Do this by right-clicking on the <b>Surface</b> element and selecting <b>Sequence</b> from the Add-Child sub-menu.  See the help link (right) for more on the Sequence behaviour. Name this sequence element &quot;Southern Trawl&quot;.  Also, mark the Sequence behaviour as being &apos;Active&apos; (by setting <b>IsActive</b> true from the properties window).
+      </description>
+   </item>
+   <item
+         title="Next comes the transit.">
+      <description>
+         Right-click on the Sequence element and select <b>Transit</b> from the Add-child drop-down.  Name this transit as &apos;Travel to fishing grounds&apos;, set <b>Looping</b> to false, and fill in the WorldPath&apos;s location as <b>Lat</b> 50.4 and <b>Long</b> -8.8.  Also specify the transit speed as 9 knots.
+      </description>
+   </item>
+   <item
+         title="Gone fishing">
+      <description>
+         Right-click on the <b>Transit</b> element and select <b>Wander</b> from the <b>Add After</b> drop-down.  Fill in the Wander element by specifying the name as &apos;morning trawl&apos;, a speed of 9 knots, the location to 50.4, -8.8.  Specify the height as zero, and set the range to 12 nautical miles.
+      </description>
+   </item>
+   <item
+         title="Now for the warship">
+      <description>
+         Next we&apos;re going to add a warship to the scenario.  Right-click on <b>Participants</b> and select <b>Surface</b> from &apos;add child&apos;.  We&apos;ll name this T23. Next, set its category as a Blue, Surface, Frigate.
+      </description>
+   </item>
+   <item
+         title="Give it a sensor">
+      <description>
+         To keep things simple we&apos;re going to give the Frigate a very simple cookie-cutter sensor, that blindly checks the range to the target against its detection range attribute.  So, right-click on <b>SensorFit</b> and add a <b>PlainCookieSensor</b>.  Set the detection range of the sensor to 3 nautical miles.
+      </description>
+   </item>
+   <item
+         title="Locate the warship">
+      <description>
+         Next, we&apos;ve got to tell the warship where it is.  Go into the <b>Status</b> element and set the location to 50 degs of latitude, and -10 degs of longitude.
+      </description>
+   </item>
+   <item
+         title="Specify the warship movement details">
+      <description>
+         Next, expand the <b>SurfaceMovementCharacteristics</b> item to specify how the warship moves.  I&apos;ve been finding this easier to do in the <b>Source</b> view for the editor - switch by clicking on the tab at the foot of the editor page.  Give the Frigate a max speed of 12 kts, accel and decel rates of 1 kt per second, and a turning circle of 300m.
+      </description>
+   </item>
+   <item
+         title="Direct the warship">
+      <description>
+         To create the placeholder for the Warship&apos;s behaviour, right-click on it and add a <b>Waterfall</b> behaviour.<br/>We&apos;re going to have the warship wandering around the same body of water as the fisherman, so go into the <b>Source</b> view and copy the Fisherman&apos;s <b>Wander</b> behaviour, and paste it into the <b>Waterfall</b> of the Frigate (Note: you have to copy right from the start &lt;wander&gt; down  to the end of &lt;/wander&gt;.  Back in the <b>Design</b> view, change the name of this Wander behaviour to <b>Count fishing vessels</b>.
+      </description>
+   </item>
+   <item
+         title="Done">
+      <description>
+         And we&apos;re done. We&apos;ve got a valid scenario that describes what our fishing vessel and warship do.
+      </description>
+   </item>
+</cheatsheet>

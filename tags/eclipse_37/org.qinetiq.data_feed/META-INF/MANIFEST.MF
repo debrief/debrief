@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Data_feed Plug-in
+Bundle-SymbolicName: org.qinetiq.data_feed; singleton:=true
+Bundle-Version: 1.0.1
+Bundle-Activator: org.qinetiq.data_feed.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy,
+ org.mwc.debrief.legacy,
+ org.mwc.debrief.data_feed
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

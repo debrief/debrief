@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:\dev\Asset\trunk\docs\ASSET.xsd" Created="2004-01-12T13:00:03" Name="Fisherman demo" StartTime="2003-01-24T13:00:03">
+	<StepTime Units="seconds" Value="15"/>
+	<Participants>
+		<Surface Name="FISHER_1" id="55">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="44" Fuel="100">
+				<Location>
+					<shortLocation Lat="25.5" Long="53.5"/>
+				</Location>
+				<Speed Units="kts" Value="6"/>
+			</Status>
+			<Waterfall Name="Fisherman behaviour"  StayAlive="false" IsActive="true">
+				<Wander Name="fisherman's wandering" IsActive="true">
+					<Range Units="nm" Value="40"/>
+					<Location>
+						<shortLocation Lat="25.5" Long="54"/>
+					</Location>
+					<Speed Units="kts" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.0001" Name="FISHING_CHARS">
+				<MinSpeed Units="kts" Value="0"/>
+				<MaxSpeed Units="kts" Value="8"/>
+				<AccelerationRate Units="kt/s" Value="1"/>
+				<DecelerationRate Units="kt/s" Value="2"/>
+				<TurningCircle Units="m" Value="20"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="FISHER_2">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="44" Fuel="100">
+				<Location>
+					<shortLocation Lat="25.6" Long="53.5"/>
+				</Location>
+				<Speed Units="kts" Value="6"/>
+			</Status>
+			<Waterfall Name="Other fisherman wandering" IsActive="true" StayAlive="true">
+				<Wander Name="fisherman's wandering" IsActive="true">
+					<Range Units="nm" Value="40"/>
+					<Location>
+						<shortLocation Lat="25.5" Long="54"/>
+					</Location>
+					<Speed Units="kts" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.0001" Name="FISHING_CHARS">
+				<MinSpeed Units="kts" Value="0"/>
+				<MaxSpeed Units="kts" Value="8"/>
+				<AccelerationRate Units="kt/s" Value="1"/>
+				<DecelerationRate Units="kt/s" Value="2"/>
+				<TurningCircle Units="m" Value="20"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="FISHER_3">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="44" Fuel="100">
+				<Location>
+					<shortLocation Lat="25.4" Long="53.2"/>
+				</Location>
+				<Speed Units="kts" Value="6"/>
+			</Status>
+			<Waterfall Name="Other fisherman wander" IsActive="true" StayAlive="true">
+				<Wander Name="fisherman's wandering" IsActive="true">
+					<Range Units="nm" Value="40"/>
+					<Location>
+						<shortLocation Lat="25.5" Long="54"/>
+					</Location>
+					<Speed Units="kts" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.0001" Name="FISHING_CHARS">
+				<MinSpeed Units="kts" Value="0"/>
+				<MaxSpeed Units="kts" Value="8"/>
+				<AccelerationRate Units="kt/s" Value="1"/>
+				<DecelerationRate Units="kt/s" Value="2"/>
+				<TurningCircle Units="m" Value="20"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Helo Name="Helo_1">
+			<Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER"/>
+			<SensorFit>
+				<OpticLookupSensor Name="Eyesight" VDR="0.05" MRF="1.05" CRF="0.8" IRF="0.2">
+					<TBDO Units="seconds" Value="10"/>
+					<CTP Units="seconds" Value="20"/>
+					<ITP Units="seconds" Value="30"/>
+				</OpticLookupSensor>
+				<RadarLookupSensor Name="Radar" VDR="0.02" MRF="1.2" CRF="0" IRF="0" K="20000">
+					<TBDO Units="seconds" Value="2"/>
+					<CTP Units="seconds" Value="0"/>
+					<ITP Units="seconds" Value="0"/>
+				</RadarLookupSensor>
+			</SensorFit>
+			<Status Course="88" Fuel="100">
+				<Location>
+					<shortLocation Lat="25.7" Long="52.8">
+						<Height Units="m" Value="250"/>
+					</shortLocation>
+				</Location>
+				<Speed Units="kts" Value="150"/>
+			</Status>
+			<Waterfall Name="Helo behaviour" IsActive="true" StayAlive="true">
+				<Trail Name="Close to detection range" IsActive="true">
+					<TrailRange Units="km" Value="3"/>
+					<AllowableError Units="km" Value="1"/>
+					<TargetType>
+						<Type Name="FISHING_VESSEL"/>
+					</TargetType>
+				</Trail>
+				<Wander Name="fisherman's wandering" IsActive="true">
+					<Range Units="nm" Value="40"/>
+					<Location>
+						<shortLocation Lat="25.8" Long="54"/>
+					</Location>
+					<Speed Units="kts" Value="150"/>
+					<Height Units="m" Value="250"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<HeloMovementCharacteristics FuelUsageRate="0.0001" Name="basic helo manoeuvering" DefaultTurnRate="4">
+				<MinSpeed Units="kts" Value="0"/>
+				<MaxSpeed Units="kts" Value="300"/>
+				<AccelerationRate Units="kt/s" Value="2"/>
+				<DecelerationRate Units="kt/s" Value="5"/>
+				<MinHeight Units="m" Value="10"/>
+				<MaxHeight Units="m" Value="600"/>
+				<DefaultClimbRate Units="ft/s" Value="5"/>
+				<DefaultDiveRate Units="ft/s" Value="10"/>
+				<DefaultClimbSpeed Units="kts" Value="20"/>
+				<DefaultDiveSpeed Units="kts" Value="80"/>
+			</HeloMovementCharacteristics>
+		</Helo>
+	</Participants>
+	<DebriefLayer>
+			<layer LineThickness="0" Name="Chart Features" Visible="true">
+				<scale AutoMode="true" DisplayUnits="kyd" Location="BottomLeft" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
+					<colour Value="DARK_GREY"/>
+				</scale>
+			</layer>
+	</DebriefLayer>
+</Scenario>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Bearing Residuals"
+            icon="icons/stacked_dots.png"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.debrief.track_shift.views.BearingResidualsView"
+            id="org.mwc.debrief.track_shift.views.StackedDotsView">
+      </view>         
+      <view
+            name="Frequency Residuals"
+            icon="icons/stacked_dots.png"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.debrief.track_shift.views.FrequencyResidualsView"
+            id="org.mwc.debrief.track_shift.views.FrequencyResidualsView">
+      </view>         
+   </extension>
+</plugin>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+	<extension point="org.eclipse.ui.perspectives">
+		<perspective class="org.mwc.asset.core.ASSETPerspectiveFactory"
+			icon="icons/components.png" id="org.mwc.asset.core.Perspective" name="Tactical Simulation" />
+	</extension>
+	<extension point="org.eclipse.ui.views">
+		<category id="org.mwc.asset.core.simulation.category" name="Tactical Simulation" />
+	</extension>
+		<extension point="org.eclipse.ui.startup">
+		<startup class="org.mwc.asset.core.ASSETPlugin" />
+	</extension>
+	<extension id="ASSET" point="org.eclipse.core.runtime.products">
+		<product application="org.eclipse.ui.ide.workbench" name="AssetNG">
+			<property name="windowImages" value="icons/components.gif">
+			</property>
+			<property name="aboutText"
+				value="Welcome to ASSET NG, from the Maritime Warfare Centre">
+			</property>
+			<property name="aboutImage" value="icons/WorkBenchLogo.gif">
+			</property>
+			<property name="appName" value="AssetNG">
+			</property>
+			<property name="preferenceCustomization" value="plugin_customization.ini">
+			</property>
+		</product>
+	</extension>
+
+	<extension point="org.eclipse.core.contenttype.contentTypes">
+		<content-type base-type="org.eclipse.core.runtime.xml"
+			file-extensions="acon" id="org.mwc.asset.contenttype.ControlFile"
+			name="ASSET Control File" priority="normal">
+			<describer
+				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+				<parameter name="element" value="ScenarioController">
+				</parameter>
+			</describer>
+		</content-type>
+		<content-type base-type="org.eclipse.core.runtime.xml"
+			file-extensions="asset" id="org.mwc.asset.contenttype.ScenarioFile"
+			name="ASSET Scenario File" priority="normal">
+			<describer
+				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+				<parameter name="element" value="Scenario">
+				</parameter>
+			</describer>
+		</content-type>
+
+	</extension>
+
+	<!-- specify the location of the asset schema -->
+	<extension name="create a catalog entry for the ASSET schema"
+		point="org.eclipse.wst.xml.core.catalogContributions">
+		<catalogContribution>
+			<public id="http://www.mwc.org/asset" publicId="http://www.mwc.org/asset"
+				uri="asset_schemas/ASSET.xsd">
+			</public>
+		</catalogContribution>
+	</extension>
+
+	<!--  specify the xml templates we provide to help the model editor -->
+	<extension point="org.eclipse.ui.editors.templates">
+		<include file="templates/xml-templates.xml" />
+	</extension>
+</plugin>
+

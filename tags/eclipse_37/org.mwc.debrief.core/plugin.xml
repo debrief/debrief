@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.158"
+	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
+
+	<runtime>
+		<library name="debrief_core.jar">
+			<export name="*" />
+		</library>
+	</runtime>
+	<extension point="org.eclipse.ui.views">
+		<category id="org.mwc.debrief.core.DebriefCategory" name="Debrief" />
+	</extension>
+
+	<extension point="org.eclipse.ui.editors">
+		<editor name="Debrief Plot Editor" icon="icons/debrief_icon.gif"
+			class="org.mwc.debrief.core.editors.PlotEditor" id="org.mwc.debrief.PlotEditor">
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
+			</contentTypeBinding>
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
+			</contentTypeBinding>
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
+			</contentTypeBinding>
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackFile">
+			</contentTypeBinding>
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive">
+			</contentTypeBinding>
+		</editor>
+	</extension>
+
+	<extension point="org.eclipse.core.contenttype.contentTypes">
+		<content-type base-type="org.eclipse.core.runtime.xml"
+			file-extensions="xml" id="org.mwc.debrief.contenttype.DebriefPlot"
+			name="Debrief Plot File" priority="normal">
+			<describer
+				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+				<parameter name="element" value="plot">
+				</parameter>
+			</describer>
+		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.ReplayTrackFile"
+			file-extensions="rep" name="Replay Track File" priority="normal">
+		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.ReplaySensorFile"
+			file-extensions="dsf" name="Debrief Sensor File" priority="normal">
+		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.KMZTrackArchive"
+			file-extensions="kmz" name="KMZ Track Archive" priority="normal">
+		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.KMZTrackFile"
+			file-extensions="kml" name="KMZ Track File" priority="normal">
+		</content-type>
+	</extension>
+
+
+
+	<requires>
+		<import plugin="org.mwc.cmap.core" />
+  <import plugin="org.mwc.cmap.plotViewer"/>
+		<import plugin="org.mwc.cmap.legacy" />
+		<import plugin="org.mwc.debrief.legacy" />
+  <import plugin="org.mwc.cmap.xyplot"/>
+		<import plugin="org.eclipse.core.runtime" />
+		<import plugin="org.eclipse.core.resources" />
+		<import plugin="org.eclipse.ui" />
+		<import plugin="org.eclipse.ui.ide" />
+		<import plugin="org.eclipse.core.filesystem" />
+  <import plugin="org.eclipse.ui.cheatsheets" version="3.4.0"/>
+
+	</requires>
+	<extension-point id="DebriefPlotLoader" name="Plot Loader"
+		schema="schema/DebriefPlotLoader.exsd" />
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.ReplayLoader"
+			extensions="rep;dsf;dtf" name="ReplayLoader" />
+	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.XMLLoader"
+			extensions="xml" name="Debrief XML Loader" />
+	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.KMLLoader"
+			extensions="kml" name="KML Track File" />
+	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.KMLLoader"
+			extensions="kmz" name="KML Track Archive" />
+	</extension>
+
+
+
+	<extension point="org.eclipse.ui.actionSets">
+		<actionSet id="org.mwc.debrief.core" label="Debrief Actions">
+			<menu id="org.mwc.debrief.core.EditorView" label="&amp;View"
+				path="additions">
+				<groupMarker name="viewRadio" />
+				<groupMarker name="view" />
+				<separator name="sep1" />
+				<groupMarker name="additions" />
+			</menu>
+			<menu id="org.mwc.debrief.core.EditorShapes" label="&amp;Drawing"
+				path="additions">
+				<groupMarker name="shapes" />
+				<separator name="sep1" />
+				<groupMarker name="additions" />
+			</menu>
+			<menu id="org.mwc.debrief.core.EditorFeatures" label="&amp;Chart Features"
+				path="additions">
+				<groupMarker name="features" />
+				<separator name="sep1" />
+				<groupMarker name="additions" />
+			</menu>
+
+
+			<action class="org.mwc.cmap.plotViewer.actions.ZoomIn" icon="icons/zoomin.gif"
+				id="org.mwc.debrief.core.ZoomIn" label="Zoom &amp;In"
+				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
+				state="true" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+			<action class="org.mwc.cmap.plotViewer.actions.Pan" icon="icons/hand.png"
+				id="org.mwc.debrief.core.Pan" label="&amp;Pan"
+				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
+				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+			<action class="org.mwc.cmap.plotViewer.actions.RangeBearing"
+				icon="icons/rng_brg.gif" id="org.mwc.debrief.core.RangeBearing"
+				label="Measure range &amp;bearing" menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
+				style="radio" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+
+			<action class="org.mwc.debrief.core.actions.DragFeature" icon="icons/SelectFeature.png"
+				id="org.mwc.debrief.core.DragFeature" label="&amp;Drag Whole Feature"
+				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
+				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+
+			<action class="org.mwc.debrief.core.actions.DragComponent"
+				icon="icons/SelectComponent.png" id="org.mwc.debrief.core.DragComponent"
+				label="Drag &amp;Component" menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
+				style="radio" toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+
+
+			<action class="org.mwc.debrief.core.actions.DragSegment" icon="icons/SelectSegment.png"
+				id="org.mwc.debrief.core.DragSegment" label="Drag &amp;Track Segment"
+				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
+				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
+
+			<action class="org.mwc.cmap.plotViewer.actions.ZoomOut" icon="icons/zoomout.gif"
+				id="org.mwc.debrief.core.ZoomOut" label="Zoom &amp;Out"
+				menubarPath="org.mwc.debrief.core.EditorView/view" style="push"
+				toolbarPath="org.mwc.debrief.core.EditorView/view" />
+			<action class="org.mwc.cmap.plotViewer.actions.FitToWindow"
+				icon="icons/fit_to_win.gif" id="org.mwc.debrief.core.FitToWindow"
+				label="&amp;Fit to window" menubarPath="org.mwc.debrief.core.EditorView/additions"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorView/additions" />
+			<action class="org.mwc.cmap.plotViewer.actions.Redraw" icon="icons/repaint.gif"
+				id="org.mwc.debrief.core.Redraw" label="&amp;Redraw"
+				menubarPath="org.mwc.debrief.core.EditorView/additions" style="push"
+				toolbarPath="org.mwc.debrief.core.EditorView/additions" />
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
+				icon="icons/vpf.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
+				label="&amp;VPF Layers" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
+				icon="icons/etopo.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
+				label="&amp;ETOPO" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
+				icon="icons/coast.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
+				label="&amp;Coastline" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
+				icon="icons/local_grid.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid"
+				label="&amp;Local Grid" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
+				icon="icons/grid.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertGrid"
+				label="&amp;Grid" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+				icon="icons/grid4w.gif" id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+				label="&amp;4W Grid" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
+				icon="icons/scale.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
+				label="&amp;Scale" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertArc"
+				icon="icons/arc.gif" id="org.mwc.debrief.core.creators.shapes.InsertArc"
+				label="&amp;Arc" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertCircle"
+				icon="icons/circle.gif" id="org.mwc.debrief.core.creators.shapes.InsertCircle"
+				label="&amp;Circle" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertWheel"
+				icon="icons/wheel.png" id="org.mwc.debrief.core.creators.shapes.InsertWheel"
+				label="&amp;Wheel" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertPolygon"
+				icon="icons/polygon.gif" id="org.mwc.debrief.core.creators.shapes.InsertPolygon"
+				label="&amp;Polygon" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertEllipse"
+				icon="icons/ellipse.gif" id="org.mwc.debrief.core.creators.shapes.InsertEllipse"
+				label="&amp;Ellipse" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+				icon="icons/rectangle.gif" id="org.mwc.debrief.core.creators.shapes.InsertRectangle"
+				label="&amp;Rectangle" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertLabel"
+				icon="icons/label.gif" id="org.mwc.debrief.core.creators.shapes.InsertLabel"
+				label="&amp;Label" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+			<action class="org.mwc.debrief.core.creators.shapes.InsertLine"
+				icon="icons/line.gif" id="org.mwc.debrief.core.creators.shapes.InsertLine"
+				label="&amp;Line" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+			<!--
+				<action
+				class="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+				icon="icons/track_segment.gif"
+				id="org.mwc.debrief.core.creators.chartFeatures.InsertLine"
+				label="&amp;Track Segment"
+				menubarPath="org.mwc.debrief.core.EditorShapes/shapes" style="push"
+				toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
+			-->
+
+			<action class="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+				icon="icons/auto_layer.gif" id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+				label="&amp;Manually select target layer" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				state="true" style="toggle" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+
+
+
+			<action class="org.mwc.cmap.plotViewer.actions.ExportWMF"
+				icon="icons/photo_scenery.png" id="org.mwc.debrief.core.ExportWMF"
+				label="&amp;Export WMF" menubarPath="file/additions" style="push" />
+		</actionSet>
+	</extension>
+
+
+	<extension point="org.eclipse.ui.newWizards">
+		<wizard category="org.mwc.cmap.core" class="org.mwc.debrief.core.wizards.NewPlotWizard"
+			icon="icons/sample.gif" id="org.mwc.debrief.core.wizards.NewPlotWizard"
+			name="Debrief Plot" />
+	</extension>
+	<extension id="Debrief" point="org.eclipse.core.runtime.products">
+		<product application="org.eclipse.ui.ide.workbench"
+			description="Debrief Maritime Analysis Software" name="DebriefNG">
+			<property name="appName" value="DebriefNG">
+			</property>
+			<property name="preferenceCustomization" value="plugin_customization.ini">
+			</property>
+			<property name="introTitle" value="Welcome to Debrief NG (with S2R)" />
+			<property name="introBrandingImage" value="product:icons/debrief_icon.gif" />
+			<property name="introBrandingImageText" value="Debrief, from the Maritime Warfare Centre" />
+			<property name="aboutImage" value="icons/DebriefNGlogo.gif">
+			</property>
+			<property name="windowImages" value="icons/icon.gif">
+			</property>
+			<property name="startupForegroundColor" value="000000">
+			</property>
+			<property name="startupMessageRect" value="0,0,0,0">
+			</property>
+			<property name="startupProgressRect" value="0,0,0,0">
+			</property>
+		</product>
+	</extension>
+
+	<extension point="org.eclipse.ui.perspectives">
+		<perspective class="org.mwc.debrief.core.DebriefPerspectiveFactory"
+			icon="icons/debrief_icon.gif" id="org.mwc.debrief.core.Perspective"
+			name="Tactical Analysis" />
+	</extension>
+
+	<extension point="org.eclipse.ui.preferencePages">
+		<page class="org.mwc.debrief.core.preferences.PrefsPage" id="org.mwc.debrief.core.preferences.PrefsPage"
+			category="org.mwc.cmap.core.preferences.CMAPPrefsPage" name="Debrief-specific settings" />
+	</extension>
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="org.mwc.debrief.core.preferences.PreferenceInitializer" />
+	</extension>
+	<extension point="org.eclipse.ui.intro">
+		<introProductBinding introId="org.eclipse.ui.intro.universal"
+			productId="org.mwc.debrief.core.Debrief">
+		</introProductBinding>
+	</extension>
+	<extension point="org.eclipse.ui.intro.configExtension">
+		<configExtension configId="org.eclipse.ui.intro.universalConfig"
+			content="intro_content/debrief_overview.xml">
+		</configExtension>
+	</extension>
+	<extension point="org.eclipse.ui.intro.configExtension">
+		<configExtension configId="org.eclipse.ui.intro.universalConfig"
+			content="intro_content/debrief_tutorials.xml">
+		</configExtension>
+	</extension>
+	<extension point="org.eclipse.ui.intro.configExtension">
+		<configExtension configId="org.eclipse.ui.intro.universalConfig"
+			content="intro_content/debrief_firststeps.xml">
+		</configExtension>
+	</extension>
+	<extension point="org.eclipse.ui.intro.configExtension">
+		<configExtension configId="org.eclipse.ui.intro.universalConfig"
+			content="intro_content/debrief_whatsnew.xml">
+		</configExtension>
+	</extension>
+
+
+</plugin>

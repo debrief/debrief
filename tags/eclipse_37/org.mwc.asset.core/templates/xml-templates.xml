@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+	<template 
+		name="ASSET Scenario" 
+		description="Template for a blank ASSET Scenario"
+		id="www.mwc.org/asset/model-file" 
+		context="xml_new"
+		enabled="true">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Scenario Name="${cursor}"  xmlns="http://www.mwc.org/asset" &gt;
+  &lt;StepTime Units="millis" Value="0.0"/&gt;
+  &lt;Participants/&gt;
+&lt;/Scenario&gt;</template>
+	<template 
+		name="ASSET Control File" 
+		description="Template for a blank ASSET scenario controller file"
+		id="www.mwc.org/asset/control-file" 
+		context="xml_new"
+		enabled="true">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;ScenarioController OutputDirectory="token"  xmlns="http://www.mwc.org/asset" &gt;
+&lt;/ScenarioController&gt;
+</template>
+
+</templates>

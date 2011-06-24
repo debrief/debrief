@@ -1,0 +1,292 @@
+H1
+{
+    FONT-FAMILY: sans-serif;
+    FONT-WEIGHT: bold;
+}
+
+IMG
+{ 
+  border-style: none;
+}
+
+H2
+{
+	color:maroon;	
+}
+H3
+{
+	color: maroon;	
+}
+
+Div.MediaObject
+{
+	text-align: center;	
+}
+
+th { /* Table headers */ 
+     font-family: sans-serif;
+     color: #5B5B5B;
+    font-size: small;
+     }
+
+Div.Figure
+{
+        float: rght;
+	border : 3px outset;
+	text-align : center;
+	padding : 0px 10px 10px 10px;
+	background-color : #F5FFFA;
+	}
+
+Div.TOC, Div.LOT
+{
+	border : 1px solid Gray;
+	background-color : #DCDCDC;
+}
+
+Div.TOC DL DT, Div.TOC DL DT A, Div.TOC DL DT A:Visited
+{
+	color : #BD6800;
+	text-decoration : none;		
+	font-size : small;
+	font-weight: bold;
+}
+
+Div.SideBar
+{
+	background-color : #D3D3D3;
+	border-style : solid;
+	border-width : 1 1 1 1;
+	border-color : #696969;
+	float: right;
+	width:65%;
+}
+
+Div.Sect2
+{
+	padding-left : 40px;
+}
+
+/* highlight a filename */
+TT.filename
+{
+	background-color: #E0E0D0;
+}
+
+/** put in a line above each entry in the glossary, and make the terms stand-out */
+Body.Glossary DT
+{
+	border-top : ridge 2;
+	font-family: sans-serif
+}
+
+/* question hyperlinks */
+I.glossterm
+{
+	cursor: help;
+	text-decoration : none;
+	font-weight: bold;
+	font-style : normal;
+	color : #F48020;
+}
+
+H1.Sect1
+{
+	color : Navy;
+	background-image: url('images/backgnd_kword.gif'); 
+}
+
+H2.Sect2
+{
+	color : Navy;
+	
+	font-family : sans-serif;
+	text-decoration : underline;
+}
+
+
+SPAN.Application
+{
+	font : bold  sans-serif;
+	}
+
+SPAN.guibutton
+{
+    FONT-WEIGHT: bold;
+	font-family: arial;
+	background-color : #DCDCDC;
+}
+
+SPAN.guilabel
+{
+    FONT-WEIGHT: bold;
+	font : "Courier New", Courier, monospace;
+}
+
+DIV.Note
+{
+	border-left : 3px solid Gray;
+	border-right-width : 3px;
+	border-right-style : solid;
+	border-right-color : Gray;
+	background-color : #E6E6FA;
+}
+
+DIV.Tip
+{
+	border-left : 3px solid Gray;
+	border-right-width : 3px;
+	border-right-style : solid;
+	border-right-color : Gray;
+	background-color : White;
+}
+
+
+DIV.Caution
+{
+	border-left : 3px solid Gray;
+	border-right-width : 3px;
+	border-right-style : solid;
+	border-right-color : Gray;
+	background-color : #FFE4E1;
+}
+
+DIV.Warning
+{
+	border-left : 3px solid Gray;
+	border-right-width : 3px;
+	border-right-style : solid;
+	border-right-color : Gray;
+	background-color : #FFFACD;
+}
+
+
+
+UNKNOWN
+{
+    FONT-WEIGHT: bold
+}
+QUESTION
+{
+    FONT-WEIGHT: bold
+}
+Code
+{
+    FONT-FAMILY: Courier-new;
+    FONT-SIZE: 12pt
+}
+TD
+{
+    FONT-FAMILY: Georgia ;
+    FONT-SIZE: 10pt
+}
+P
+{
+    FONT-FAMILY: Georgia ;
+    FONT-SIZE: 10pt
+}
+BODY
+{
+    background-image: url('images/backgnd.gif'); 
+    background-repeat: repeat
+    FONT-FAMILY: sans-serif ;
+    FONT-SIZE: 10pt
+}
+
+A:hover
+{
+    BACKGROUND-COLOR: silver
+}
+/* hyperlinks */
+A:link {
+	COLOR: #3260A1;
+	font-weight : bold;
+}
+A:visited {
+	COLOR: #3260A1;
+		font-weight : bold;
+}
+A:active {
+	COLOR: #cc8000;
+		font-weight : bold;
+
+}
+A:hover {
+	COLOR: #333333;
+		font-weight : bold;
+	border-width: 0;
+	}
+
+A.darkBtn
+{
+    COLOR: silver;
+	Text-decoration: none
+	    FONT-FAMILY: sans-serif ;
+}
+A.darkBtn:hover
+{
+    BACKGROUND-COLOR: silver;
+    COLOR: #555555
+}
+A.lightBtn
+{
+    COLOR: #555555;
+	Text-decoration: none
+
+}
+A.lightBtn:hover
+{
+    BACKGROUND-COLOR: #555555;
+    COLOR: silver
+}
+TR.darkBtn
+{
+	TEXT-ALIGN: CENTER;
+	FONT-SIZE: 8pt;
+        background-image: url('images/backgnd_dark.gif'); 
+        FONT-FAMILY: sans-serif ;
+}
+TR.lightBtn
+{
+	TEXT-ALIGN: CENTER;
+	FONT-SIZE: 8pt;
+	FONT-FAMILY: sans-serif ;
+        background-image: url('images/backgnd_kword.gif'); 
+}
+/* for the page title */
+P.title
+{
+	FONT-SIZE: medium;
+	FONT-WEIGHT: bold;
+	FONT-FAMILY: "Trebuchet ms";
+	color: #004080
+}
+/* for the page title */
+P.subtitle
+{
+	FONT-SIZE: 14pt;
+	FONT-WEIGHT: bold;
+	FONT-FAMILY: "Trebuchet ms";
+	color: #004080
+}
+P.keyword
+{
+	FONT-SIZE: 12pt;
+	FONT-WEIGHT: bold;
+	FONT-FAMILY: "Trebuchet ms";
+	color: #004080
+}
+/* for the return to top page */
+A.return
+{
+	color: #000080;
+	TEXT-ALIGN: RIGHT
+}
+A.return:visited
+{
+}
+/* to shade in the background for the right-hand column in a table which is outside the print range */
+td.Keywords  
+{ 
+    background-image: url('images/backgnd_kword.gif'); 
+}

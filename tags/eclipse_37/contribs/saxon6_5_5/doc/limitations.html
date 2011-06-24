@@ -1,0 +1,58 @@
+<html>
+
+<head>
+
+<title>Limitations in Saxon 6.5.5</title>
+
+<body leftmargin="150" bgcolor="#ddeeff"><font face="Arial, Helvetica, sans-serif">
+<div align=right><a href="index.html">SAXON home page</a></div>
+
+<p><b><font FACE="Arial, Helvetica, sans-serif" color="#FF0080" size="7">
+Limitations</font></b></p>
+
+<p>This page lists areas where Saxon 6.5.5 is known to be non-conformant with
+W3C specifications.</p>
+
+<p>Since Saxon 6.5.5 is now stable and generally reliable, there are no plans to remove these limitations.</p>
+
+<h2>XSLT 1.0 conformance</h2>
+
+
+<ol>
+<li><p>The characters used in the <code>xsl:decimal-format</code> element and the
+picture string of <code>format-number</code> must have Unicode code points
+less than 65535. (This is arguably in conformance with the specification, since XSLT 1.0 refers to
+the specification of the <code>DecimalFormat</code> class in JDK 1.1, which has the same
+limitation.)</p></li>
+
+<li><p>The picture string of
+<code>format-number</code> behaves as implemented in the Java 
+<code>DecimalFormat</code> class for the JDK version in use, whereas
+the XSLT specification mandates that it should behave as specified in JDK 1.1.</p></li>
+
+<li><p>When the <code>version</code> attribute is set to <code>1.1</code>, Saxon
+recognizes certain constructs that were defined in the draft XSLT 1.1 specification;
+XSLT 1.0 requires that such constructs are treated as errors.</p></li>
+
+<li><p>An erratum to the XSLT 1.0 specification states that <code>xsl:copy</code> and <code>xsl:copy-of</code>
+may be used to add a namespace node to a newly constructed element. This works correctly in Saxon, provided
+that the name of the namespace node does not clash with the namespace prefix that Saxon has allocated to the
+element for serialization purposes. (In principle, this namespace prefix should not be present in the result
+tree, and should therefore be incapable of causing a conflict.) More details: see bug 
+<a href="http://sourceforge.net/tracker/index.php?func=detail&aid=637117&group_id=29872&atid=397617">637117</a>.</p></li>
+
+</ol>
+
+<h2>XML 1.0 Conformance</h2>
+
+<p>The default parser is a version of &AElig;lfred. There is one known non-conformance in
+the version of the AElfred parser provided with the Saxon product: it does not enforce the
+constraint that the contents of a general entity must be well-formed. Note, however, that this
+parser does not perform XML validation.</p>
+
+
+<hr>
+<p align="center">Michael H. Kay<br>
+15 October 2005</p>
+</body>
+</html>

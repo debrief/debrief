@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Analysing what was produced">
+   <intro>
+      <description>
+         So, our run is complete, we can now have a look at the outputs.  Now in this instance - we weren&apos;t asking for much, so it shouldn&apos;t take very long.
+      </description>
+   </intro>
+   <item
+         title="Find the output folder">
+      <description>
+         As you&apos;ll remember, we specified that the <b>OutputDirectory</b> should be <b>results</b>. So, in your <b>Navigator</b> view, check for the presence of the <b>results</b> folder.  And have a look inside.
+      </description>
+   </item>
+   <item
+         title="View a results plot">
+      <description>
+         In the results folder you&apos;ll find a number of files.  One of which will be the product of the <b>TrackPlotObserver</b>, a <b>.png</b> file.  Double-click on this file, and Windows will show the image created - produced by Debrief.
+      </description>
+   </item>
+   <item
+         title="View Debrief tracks">
+      <description>
+         As well as Debrief producing a snapshot overview of the run, we can run through the scenario using Debrief.  To do this, double-click on the <b>.rep</b> file in the results folder.  As the plot opens, you may get invited to select between <b>DR</b> and <b>OTG</b> track mode - select OTG.  The file will open in Debrief.  If you select the <b>Time Controller</b> view, you can move back and forth through the scenario. <br/>
+
+      </description>
+   </item>
+   <item
+         title="And Debrief narrative">
+      <description>
+         Lastly - still with the Debrief plot viewer open, if you open the <b>Narrative Viewer</b> view, you&apos;ll see a list of decisions made during the scenario. <b>Note</b>, you may have to switch to <b>Tactical Analysis</b> perspective (from the Window menu) to see the Narrative Viewer.  Scroll back and forth with the Time Controller and see the two vessels&apos; current decision state in the Narrative Viewer.
+      </description>
+   </item>
+</cheatsheet>

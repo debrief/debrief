@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Gridded data editor
+Bundle-SymbolicName: org.mwc.cmap.grideditor;singleton:=true
+Bundle-Version: 1.0.13
+Bundle-Vendor: MWC
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Require-Bundle: 
+ org.eclipse.jface,
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.ibm.icu,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy,
+ org.eclipse.ui.views
+Bundle-Activator: org.mwc.cmap.grideditor.GridEditorPlugin

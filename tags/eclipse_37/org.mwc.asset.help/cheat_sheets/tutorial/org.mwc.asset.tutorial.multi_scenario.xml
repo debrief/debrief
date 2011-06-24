@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Run multi-scenario simulation">
+   <intro>
+      <description>
+         The next step on our path to enlightenment is to ask ASSET to randomly generate a number of scenarios.  To do this, we&apos;re going to add scenario generation elements to the control file.
+      </description>
+   </intro>
+   <item
+         title="View the scenario">
+      <description>
+         Once again we&apos;ll start off by opening the scenario file (.asset) to see what we&apos;re going to change in each scenario.
+      </description>
+   </item>
+   <item
+         title="Decide what to change">
+      <description>
+         The analysis objective we&apos;re going to consider in our multiple scenario generation is to see how the Frigate&apos;s search speed affects how many targets are spotted.  That&apos;s quite simple then, it&apos;s the <b>Value</b> attribute of the <b>Speed</b> element within the <b>Wander</b> behaviour titled <b>Count fishing vessels</b>.
+      </description>
+   </item>
+   <item
+         title="Create duplicate controller file">
+      <description>
+         We&apos;re going to base our multi-scenario simulation on the multi-participant simulation, so make a copy of <b>trial_multi_part.xml</b> titled <b>trial_multi_scen.xml</b>.
+      </description>
+   </item>
+   <item
+         title="Add scenario generation code">
+      <description>
+Right, open our new scenario control file.  Start off by specifying a new output folder, specify the <b>OutputDirectory</b> attribute as <b>MultiScenarios</b>.  Add a <b>MultiScenarioGenerator</b> element to the <b>ScenarioGenerator</b> element.  Set the <b>Number</b> to 100. Yes, we&apos;re going to create a hundred permutations of our scenario.  Also, set the <b>NameTemplate</b> to <b>ForceProt_</b> to keep our new scenarios easy to recognise
+      </description>
+   </item>
+   <item
+         title="Specify the speed variance">
+      <description>
+ Next, add a <b>Variance</b> element to the <b>VarianceList</b> element of the MultiScenarioGenerator.  Name this new Variance element <b>SearchSpeed</b> and specify the id as <b>//Wander[@Name=&apos;Count fishing vessels&apos;]/Speed</b>. Yes, that&apos;s a tricky string - so you&apos;re best off copying it diretly from this text.<br/>
+ By default the Variance element contains a single <b>LocationArea</b> element.  We don&apos;t want this, so right-click on it and select <b>Replace with</b> an <b>Attribute</b> element.  With our Fishing vessel wander speed we requested a range of values.  In this case we&apos;re going to specify which ones to use.  So, we need to replace the <b>Range</b> element with a <b>Choice</b> element (right-click, Replace With).  Now give the <b>Choice</b> element 3 <b>Value</b> children, that have values of 4, 8, and 12. Also set the <b>Name</b> attribute to <b>Value</b>, since it&apos;s the Value attribute that we want to put our data values into.
+      </description>
+   </item>
+   <item
+         href="/org.mwc.asset.help/html/legacy/mod_scenario_control.html#obs_batch_collation"
+         title="Add a batch-run observer">
+      <description>
+         Lastly for this scenario controller we&apos;re going to add a new observer - one that collates statistics across a series of model runs. Frequently these batch-run observers are normal observers with optional batch-run functionality.  So, add a <b>ProportionDetectedObserver</b> to the <b>ObserverList</b>.  Name it as <b>Proportion of greens that got detected</b>.  Set the Target type to <b>GREEN</b> and the Watch type to <b>BLUE</b>.  Then add a <b>BatchCollator</b> element to the <b>ProportionDetectedObserver</b>.    Within the batch-collator, specify that <b>OnlyBatchReporting</b> is true, the <b>CollationMethod</b> is <b>AVERAGE</b> and <b>PerCase</b> is true.  Read more on these settings via the adjacent help link.
+      </description>
+   </item>
+   <item
+         title="Load the new scenario control file">
+      <description>
+         Now drag the <b>trial_multi_scen.xml</b> file in to the <b>Scenario controller</b> view.  You&apos;ll see the name of the control file update. Next, click on <b>Generate</b> to generate the 100 scenarios.  Yes, it may take a couple of seconds.
+      </description>
+   </item>
+   <item
+         title="Re-run the scenario">
+      <description>
+         Right, now you can click on the <b>Run all</b> button, and ASSET will work its way through the scenarios.
+      </description>
+   </item>
+   <item
+         title="Inspect a results output">
+      <description>
+         All of the outputs from the runs will be put in the <b>MultiScenarios</b> folder. In there you&apos;ll see lots of <b>png</b> and <b>rep</b> files.  Feel free to open a couple to see the variety of outputs produced once we&apos;re varying multiple attributes.
+      </description>
+   </item>
+   <item
+         title="Inspect a batch results output">
+      <description>
+         The greater value of the multi-scenario runs, however is the batch run collation.  So go into the <b>MultiScenarios</b> folder, and double-clicl <b>Proportion of greens that got detected.csv</b> file.  ASSET will most likely open <b>Excel</b>, but you could have right-clicked on the item and selected open with text editor.  In the Excel spreadsheet you&apos;ll see a table showing one row per speed choice we supplied, how many random scenarios used that speed setting, and the average proportion of fishing vessels that were detected using that search speed (typically, the faster you search the more targets you&apos;ll find - at least using our very simple cookie-cutter sensor).
+      </description>
+   </item>
+   <item
+         title="Tutorial complete">
+      <description>
+     Ready are you? What know you of ready? For eight hundred years have I trained Jedi. My own counsel will I keep on who is to be trained.
+<br/>
+There again, you&apos;ve managed to complete the tutorial, so you must be fairly competent.  You&apos;ve been introduced to a slice across ASSET modelling: learn more either from the online <b>ASSET Model Reference</b> or from the <b>ASSET Modelling Guide</b> within the <b>Asset Documentation Set</b>.  Both are available if you select <b>Help Contents</b> from the <b>Help menu</b>
+      </description>
+   </item>
+</cheatsheet>

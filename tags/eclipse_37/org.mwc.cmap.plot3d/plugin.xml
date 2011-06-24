@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         id="org.mwc.debrief.core.editors.DebriefActions"
+         name="DebriefActions"
+         point="org.eclipse.ui.actionSets">
+     <actionSet id="org.mwc.cmap.plot3d" label="Debrief 3D actions">
+           <action
+               class="org.mwc.cmap.plot3d.actions.View3d"
+               icon="icons/view3d.gif"
+               id="org.mwc.cmap.plot3d.actions.View3d"
+               label="&amp;View 3d"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>                    
+      </actionSet>
+   </extension>
+   
+     <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            class="org.mwc.cmap.plot3d.views.Plot3dView"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            icon="icons/view3d.gif"
+            id="org.mwc.cmap.plot3d.views.Plot3dView"                
+            name="3D Plot">
+      </view>
+   </extension>   
+
+</plugin>

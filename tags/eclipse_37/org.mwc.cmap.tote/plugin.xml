@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Track Tote"
+            icon="icons/Calculator.gif"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.cmap.tote.views.ToteView"
+            id="org.mwc.cmap.tote.views.ToteView">
+      </view>
+   </extension>
+   
+   <extension-point 
+   		id="ToteCalculation" 
+   		name="Tote Calculation" 
+   		schema="schema/ToteCalculation.exsd"/> 
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="org.mwc.cmap.tote.calculations.SlantRangeCalc"
+            name="Slant range"/>
+   </extension>      		
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.bearingCalc"
+            name="Bearing"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.relBearingCalc"
+            name="Rel Brg"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.atbCalc"
+            name="ATB"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.speedCalc"
+            name="Speed"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.courseCalc"
+            name="Course"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.depthCalc"
+            name="Depth"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.bearingRateCalc"
+            name="Brg Rate"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.timeSecsCalc"
+            name="Time"/>
+   </extension>   
+</plugin>

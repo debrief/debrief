@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+	<extensionContent id="orgmwcdebriefcore-introExtension"
+		style="css/intro.css" name="Sample Extension" path="whatsnew/@">
+		<group style-id="content-group"
+			id="orgmwcdebriefcore-introLink-group">
+			<link label="Whats new for Debrief"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_whats_new.html"
+				id="debrief-whatsnew" style-id="content-link">
+				<text>New features to be found in Debrief NG</text>
+			</link>
+			<link label="Debrief's recent history"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/History.html#TwoThouOnwards"
+				id="debrief-whatsnew" style-id="content-link">
+				<text>Recent changes in Debrief</text>
+			</link>
+		</group>
+	</extensionContent>
+</introContent>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry excluding="org/mwc/asset/comms/xmpp/|org/mwc/asset/comms/kryo/" kind="src" path="src"/>
+	<classpathentry kind="lib" path="libs/restlet/org.restlet.jar" sourcepath="docs/restlet_src"/>
+	<classpathentry kind="src" path="libs"/>
+	<classpathentry kind="src" path="bin"/>
+	<classpathentry kind="lib" path="swt-grouplayout.jar" sourcepath="swt-grouplayout.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

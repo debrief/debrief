@@ -1,0 +1,33 @@
+<project name="Asset_Tests" default="doTests" basedir=".">
+	<property name="build.tests" value="./bin" />
+	<property name="java.class.path" value="libs/junit.jar" />
+	<property name="reports.tests" value="./test_reports/" />
+	<property name="bin.tests" value="./bin" />
+
+
+	<target name="doTests" description="produce the cvs change logs">
+		
+		<delete dir="${reports.tests}" description="ditch the test results directory"/>
+		<mkdir dir="${reports.tests}" description="create the test results directory" />
+		<junit printsummary="no" haltonfailure="no" maxmemory="512M" >
+			<classpath>
+				<pathelement location="${build.tests}" />
+				<pathelement path="libs/junit.jar" />
+				<pathelement path="../org.mwc.cmap.legacy/bin" />
+				<pathelement path="../org.mwc.cmap.legacy/libs/openmap.jar" />
+			</classpath>
+
+			<formatter type="plain" />
+
+			<batchtest fork="yes" todir="${reports.tests}">
+				<fileset dir="${bin.tests}">
+					<include name="**/*Test.class" />
+					<exclude name="**/AllTests.class" />
+					<exclude name="**/*recToDbTest.class" />
+					<exclude name="**/*LaunchWeaponTest.class" />
+					
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+</project>

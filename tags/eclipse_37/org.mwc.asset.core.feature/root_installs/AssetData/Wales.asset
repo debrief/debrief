@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="Force Protection Scenario" xmlns="http://www.mwc.org/asset"
+	StartTime="2010-01-12T12:13:14Z" Created="2010-01-19T12:13:14Z">
+	<StepTime Units="minutes" Value="2"></StepTime>
+	<Environment Name="token" AtmosphericAttenuation="VERY_CLEAR"
+		SeaState="1">
+	</Environment>
+	<Participants>
+		<Surface Name="T23">
+			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="OILER" />
+						<DetectionRange Value="15" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="FISHING_VESSEL" />
+						<DetectionRange Value="7" Units="nm" ></DetectionRange>
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
+			<Status Course="0.0" Fuel="100">
+				<Location>
+					<shortLocation Lat="0" Long="0.25">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="9" Units="kts" />
+			</Status>
+			<Waterfall Name="HVU route">
+				<Transit Name="" Looping="true">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="0" Long="0.25"></shortLocation>
+						</Point>
+						<Point>
+							<shortLocation Lat="4" Long="0.25"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="12" Units="kts" ></Speed>
+				</Transit>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="MOTHER_A">
+			<Category Type="OILER" Force="GREEN" Environment="SURFACE"></Category>
+			<SensorFit></SensorFit>
+			<Status Course="156" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="1" Long="0">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Waterfall Name="Mother behaviour">
+				<RectangleWander Name="Fishing area">
+					<Area>
+						<TopLeft>
+							<shortLocation Lat="4" Long="0"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0" Long="0.2"></shortLocation>
+						</BottomRight>
+					</Area>
+					<Speed Value="6" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</RectangleWander>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="FISHER_A">
+			<Category Type="FISHING_VESSEL" Force="GREEN" Environment="SURFACE"></Category>
+			<SensorFit>
+				<TypedCookieSensor Name="FisherDetections">
+					<TypedRangeDoublet>
+						<Type Name="OILER" />
+						<DetectionRange Value="20" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="FRIGATE" />
+						<DetectionRange Value="10" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="33" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="1" Long="0">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="7" Units="kts" />
+			</Status>
+			<Waterfall Name="Fisher behaviour">
+				<Trail Name="Stay near mother">
+					<TrailRange Value="10" Units="nm" />
+					<AllowableError Value="12" Units="nm" />
+					<TargetType>
+						<Type Name="OILER" />
+					</TargetType>
+				</Trail>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="MOTHER_B">
+			<Category Type="OILER" Force="GREEN" Environment="SURFACE"></Category>
+			<SensorFit></SensorFit>
+			<Status Course="111" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="2" Long="0">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Waterfall Name="Mother behaviour">
+				<RectangleWander Name="Fishing area">
+					<Area>
+						<TopLeft>
+							<shortLocation Lat="4" Long="0"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0" Long="0.2"></shortLocation>
+						</BottomRight>
+					</Area>
+					<Speed Value="6" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</RectangleWander>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="FISHER_B">
+			<Category Type="FISHING_VESSEL" Force="GREEN" Environment="SURFACE"></Category>
+			<SensorFit>
+				<TypedCookieSensor Name="FisherDetections">
+					<TypedRangeDoublet>
+						<Type Name="OILER" />
+						<DetectionRange Value="20" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="FRIGATE" />
+						<DetectionRange Value="10" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="33" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="2" Long="0">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="7" Units="kts" />
+			</Status>
+			<Waterfall Name="Fisher behaviour">
+				<Trail Name="Stay near mother">
+					<TrailRange Value="10" Units="nm" />
+					<AllowableError Value="20" Units="nm" />
+					<TargetType>
+						<Type Name="OILER" />
+					</TargetType>
+				</Trail>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="MOTHER_C">
+			<Category Type="OILER" Force="GREEN" Environment="SURFACE"></Category>
+			<SensorFit></SensorFit>
+			<Status Course="45" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="3" Long="0">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Waterfall Name="Mother behaviour">
+				<RectangleWander Name="Fishing area">
+					<Area>
+						<TopLeft>
+							<shortLocation Lat="4" Long="0"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="0" Long="0.2"></shortLocation>
+						</BottomRight>
+					</Area>
+					<Speed Value="6" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</RectangleWander>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="FISHER_C">
+			<Category Type="FISHING_VESSEL" Force="GREEN" Environment="SURFACE"></Category>
+			<SensorFit>
+				<TypedCookieSensor Name="FisherDetections">
+					<TypedRangeDoublet>
+						<Type Name="OILER" />
+						<DetectionRange Value="20" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="FRIGATE" />
+						<DetectionRange Value="10" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="33" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="3" Long="0">
+						<Height Value="6" Units="m" />
+					</shortLocation>
+				</Location>
+				<Speed Value="7" Units="kts" />
+			</Status>
+			<Waterfall Name="Fisher behaviour">
+				<Trail Name="Stay near mother">
+					<TrailRange Value="10" Units="nm" />
+					<AllowableError Value="12" Units="nm" />
+					<TargetType>
+						<Type Name="OILER" />
+					</TargetType>
+				</Trail>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<Delta Units="nm" Value="20.000" />
+				<colour Value="DARK_GREY" />
+			</grid>
+			<scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft"
+				Name="World Default" ScaleMax="100000" ScaleStep="50000" Visible="true">
+				<colour Value="GREY" />
+			</scale>
+			<rectangle Filled="false" Label="Limits" LabelLocation="Right"
+				LabelVisible="true" LineThickness="2" Visible="true">
+				<colour Value="YELLOW" />
+				<fontcolour Value="YELLOW" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="12" />
+				<tl>
+					<shortLocation Depth="0.000" Lat="4.0000000" Long="0.000000" />
+				</tl>
+				<br>
+					<shortLocation Depth="0.000" Lat="0.0000000" Long="0.2000000" />
+				</br>
+			</rectangle>
+			<textlabel Label="Port Alpha" LabelLocation="Left"
+				LabelVisible="true" Scale="Medium" Symbol="Reference Position"  SymbolVisible="true"
+				Visible="true">
+				<colour Value="RED" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="14" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="3" Long="0" />
+				</centre>
+			</textlabel>
+			<textlabel Label="Port Bravo" LabelLocation="Left"
+				LabelVisible="true" Scale="Medium" Symbol="Reference Position" SymbolVisible="true"
+				Visible="true">
+				<colour Value="RED" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="14" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="2" Long="0" />
+				</centre>
+			</textlabel>
+			<textlabel Label="Port Charlie" LabelLocation="Left"
+				LabelVisible="true" Scale="Medium" Symbol="Reference Position" SymbolVisible="true"
+				Visible="true">
+				<colour Value="RED" />
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="14" />
+				<centre>
+					<shortLocation Depth="0.000" Lat="1" Long="0" />
+				</centre>
+			</textlabel>
+
+
+		</layer>
+	</DebriefLayer>
+</Scenario>

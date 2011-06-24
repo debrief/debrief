@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
+<ScenarioController xmlns="http://www.mwc.org/asset" OutputDirectory="test_reports/asset_test_output/test_variance1">
+	<ObserverList>
+		<TimeObserver Name="run for couple of hours" Active="true">
+			<Duration Units="hours" Value="8"/>
+		</TimeObserver>
+		<TrackPlotObserver Name="get a track plot" Active="true" show_positions="false">
+			<GridDelta Units="nm" Value="5"/>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="do a debrief track" Active="true" record_decisions="false" record_detections="false" record_positions="true"/>
+		<CSVTrackObserver Name="get at the information" Active="true"/>
+	</ObserverList>
+</ScenarioController>

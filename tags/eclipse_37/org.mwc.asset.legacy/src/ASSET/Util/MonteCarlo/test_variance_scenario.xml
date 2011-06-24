@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario xmlns="http://www.mwc.org/asset" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
+  <StepTime Units="seconds" Value="30"/>
+  <Environment Name="first test env" SeaState="3" AtmosphericAttenuation="HAZE" LightLevel="DAYLIGHT">
+    <RadarLookupEnvironment Name="radar environment">
+      <TargetAspectSet>
+        <TargetAspectDatum Type="FRIGATE" DeadAhead="1000" Bow="3000" Beam="4000" Quarter="3000" Astern="1000"/>
+        <TargetAspectDatum Type="CARRIER" DeadAhead="2000" Bow="8000" Beam="10000" Quarter="8000" Astern="2000"/>
+        <TargetAspectDatum Type="SUBMARINE" DeadAhead="0.5" Bow="0.5" Beam="0.5" Quarter="0.5" Astern="0.5"/>
+        <TargetAspectDatum Type="FISHING_VESSEL" DeadAhead="5" Bow="8" Beam="10" Quarter="8" Astern="5"/>
+      </TargetAspectSet>
+      <TargetSeaStateSet UnknownType="1">
+        <TargetSeaStateDatum Type="FRIGATE" SeaState_0="1" SeaState_1="1" SeaState_2="1" SeaState_3="1" SeaState_4="1" SeaState_5="0.95" SeaState_6="0.9"/>
+        <TargetSeaStateDatum Type="CARRIER" SeaState_0="1" SeaState_1="1" SeaState_2="1" SeaState_3="1" SeaState_4="1" SeaState_5="1" SeaState_6="0.95"/>
+        <TargetSeaStateDatum Type="SUBMARINE" SeaState_0="1" SeaState_1="1" SeaState_2="0.8" SeaState_3="0.75" SeaState_4="0.7" SeaState_5="0.5" SeaState_6="0.3"/>
+        <TargetSeaStateDatum Type="FISHING_VESSEL" SeaState_0="1" SeaState_1="1" SeaState_2="0.9" SeaState_3="0.8" SeaState_4="0.75" SeaState_5="0.7" SeaState_6="0.5"/>
+      </TargetSeaStateSet>
+    </RadarLookupEnvironment>
+    <VisualLookupEnvironment Name="visual environment">
+      <VisualAttenuationDatum VeryClear="23" Clear="33" LightHaze="43" Haze="54" Mist="65" Fog="23"/>
+      <TargetVisibilitySet UnknownType="0.1">
+        <TargetVisibilityDatum Type="CARRIER" Visibility="0.2"/>
+        <TargetVisibilityDatum Type="FRIGATE" Visibility="0.2"/>
+        <TargetVisibilityDatum Type="SUBMARINE" Visibility="0.12"/>
+        <TargetVisibilityDatum Type="FISHING_VESSEL" Visibility="0.14"/>
+      </TargetVisibilitySet>
+      <TargetSeaStateSet UnknownType="1">
+        <TargetSeaStateDatum Type="FRIGATE" SeaState_0="1" SeaState_1="1" SeaState_2="1" SeaState_3="1" SeaState_4="1" SeaState_5="0.95" SeaState_6="0.9"/>
+        <TargetSeaStateDatum Type="CARRIER" SeaState_0="1" SeaState_1="1" SeaState_2="1" SeaState_3="1" SeaState_4="1" SeaState_5="1" SeaState_6="0.95"/>
+        <TargetSeaStateDatum Type="SUBMARINE" SeaState_0="1" SeaState_1="1" SeaState_2="0.8" SeaState_3="0.75" SeaState_4="0.7" SeaState_5="0.5" SeaState_6="0.3"/>
+        <TargetSeaStateDatum Type="FISHING_VESSEL" SeaState_0="1" SeaState_1="1" SeaState_2="0.9" SeaState_3="0.8" SeaState_4="0.75" SeaState_5="0.7" SeaState_6="0.5"/>
+      </TargetSeaStateSet>
+      <LightLevelDatum Daylight="23" Dusk="43" MoonlitNight="32" DarkNight="43"/>
+    </VisualLookupEnvironment>
+  </Environment>
+  <Participants>
+    <Helo Name="alpha">
+      <Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER"/>
+      <SensorFit>
+        <OpticLookupSensor Name="Optic Lookup" VDR="12" MRF="12" CRF="12" IRF="12">
+          <TBDO Units="minutes" Value="5"/>
+          <CTP Units="minutes" Value="4"/>
+          <ITP Units="minutes" Value="12"/>
+        </OpticLookupSensor>
+      </SensorFit>
+      <Status Course="22" Fuel="12">
+        <Location>
+          <shortLocation Lat="12.6" Long="11.5">
+            <Height Units="m" Value="180"/>
+          </shortLocation>
+        </Location>
+        <Speed Units="m/s" Value="60"/>
+      </Status>
+      <Waterfall Name="The sequence of behaviours" IsActive="true">
+        <Trail Name="">
+          <TrailRange Units="nm" Value="5"/>
+          <AllowableError Units="nm" Value="1"/>
+          <TargetType>
+            <Type Name="SUBMARINE"/>
+          </TargetType>
+        </Trail>
+        <Wander Name="just wander around">
+          <Range Units="nm" Value="18"/>
+          <Location>
+            <shortLocation Lat="12.7" Long="13.1"/>
+          </Location>
+          <Speed Units="kts" Value="60"/>
+          <Height Units="m" Value="300"/>
+        </Wander>
+      </Waterfall>
+      <RadiatedCharacteristics>
+        <Optic XSectArea="60">
+          <Height Units="m" Value="30"/>
+        </Optic>
+        <Broadband BaseNoiseLevel="40"/>
+      </RadiatedCharacteristics>
+      <HeloMovementCharacteristics FuelUsageRate="0.005" Name="2" DefaultTurnRate="2">
+        <MinSpeed Units="m/s" Value="22"/>
+        <MaxSpeed Units="m/s" Value="33"/>
+        <AccelerationRate Units="m/s/s" Value="12"/>
+        <DecelerationRate Units="m/s/s" Value="12"/>
+        <MinHeight Units="m" Value="0"/>
+        <MaxHeight Units="m" Value="200"/>
+        <DefaultClimbRate Units="ft/s" Value="20"/>
+        <DefaultDiveRate Units="ft/s" Value="20"/>
+        <DefaultClimbSpeed Units="kts" Value="40"/>
+        <DefaultDiveSpeed Units="kts" Value="60"/>
+      </HeloMovementCharacteristics>
+    </Helo>
+    <SSK Name="bravo" ChargeRate="0.15">
+      <Category Environment="AIRBORNE" Force="RED" Type="SUBMARINE"/>
+      <SensorFit>
+        <OpticLookupSensor Name="Optic Lookup" VDR="12" MRF="12" CRF="12" IRF="12">
+          <TBDO Units="minutes" Value="5"/>
+          <CTP Units="minutes" Value="4"/>
+          <ITP Units="minutes" Value="12"/>
+        </OpticLookupSensor>
+      </SensorFit>
+      <Status Course="22" Fuel="93">
+        <Location>
+          <shortLocation Lat="12.7" Long="13.0"/>
+        </Location>
+        <Speed Units="m/s" Value="60"/>
+      </Status>
+      <Waterfall Name="The sequence of behaviours" IsActive="true">
+        <Evade Name="evade helos">
+          <Duration Units="hours" Value="1"/>
+          <FleeHeight Units="m" Value="100"/>
+          <FleeSpeed Units="kts" Value="6"/>
+          <TargetType>
+            <Type Name="HELICOPTER"/>
+          </TargetType>
+        </Evade>
+        <SSKRecharge Name="recharge those old batteries" MinLevel="10" SafeLevel="50">
+          <EvadeThese/>
+          <SnortSpeed Units="kts" Value="4"/>
+        </SSKRecharge>
+        <Wander Name="just wander around">
+          <Range Units="nm" Value="10"/>
+          <Location>
+            <shortLocation Lat="12.7" Long="13.1"/>
+          </Location>
+          <Speed Units="kts" Value="8"/>
+          <Height Units="m" Value="-40"/>
+        </Wander>
+      </Waterfall>
+      <RadiatedCharacteristics>
+        <Optic XSectArea="80">
+          <Height Units="m" Value="30"/>
+        </Optic>
+        <SSKBroadband BaseNoiseLevel="120" SnortNoiseLevel="150"/>
+      </RadiatedCharacteristics>
+      <SSMovementCharacteristics FuelUsageRate="0.006" Name="2">
+        <MinSpeed Units="m/s" Value="0"/>
+        <MaxSpeed Units="m/s" Value="16"/>
+        <AccelerationRate Units="m/s/s" Value="12"/>
+        <DecelerationRate Units="m/s/s" Value="12"/>
+        <MinHeight Units="m" Value="-100"/>
+        <MaxHeight Units="m" Value="0"/>
+        <DefaultClimbRate Units="ft/s" Value="20"/>
+        <DefaultDiveRate Units="ft/s" Value="20"/>
+        <TurningCircle Units="m" Value="600"/>
+      </SSMovementCharacteristics>
+    </SSK>
+    <SSN Name="charlie">
+      <Category Environment="AIRBORNE" Force="RED" Type="SUBMARINE"/>
+      <SensorFit/>
+      <Status Course="22" Fuel="22">
+        <Location>
+          <shortLocation Lat="12.6" Long="13.1"/>
+        </Location>
+        <Speed Units="m/s" Value="60"/>
+      </Status>
+      <Waterfall Name="The sequence of behaviours" IsActive="true">
+        <Wander Name="just wander around">
+          <Range Units="nm" Value="20"/>
+          <Location>
+            <shortLocation Lat="12.7" Long="13.1"/>
+          </Location>
+          <Speed Units="kts" Value="8"/>
+          <Height Units="m" Value="-10"/>
+        </Wander>
+      </Waterfall>
+      <RadiatedCharacteristics/>
+      <SSMovementCharacteristics FuelUsageRate="0.006" Name="2">
+        <MinSpeed Units="m/s" Value="2"/>
+        <MaxSpeed Units="m/s" Value="18"/>
+        <AccelerationRate Units="m/s/s" Value="12"/>
+        <DecelerationRate Units="m/s/s" Value="12"/>
+        <MinHeight Units="m" Value="-100"/>
+        <MaxHeight Units="m" Value="0"/>
+        <DefaultClimbRate Units="ft/s" Value="20"/>
+        <DefaultDiveRate Units="ft/s" Value="20"/>
+        <TurningCircle Units="m" Value="600"/>
+      </SSMovementCharacteristics>
+    </SSN>
+  </Participants>
+</Scenario>

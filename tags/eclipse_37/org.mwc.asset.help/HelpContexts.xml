@@ -1,0 +1,10 @@
+<contexts>
+	<context id="Asset">
+		<description>Getting started with Asset</description>
+		<topic href="html/legacy/start_up.html#navigating_debrief" label="Moving around the Debrief application"/>
+	</context>
+	<context id="ScenarioController" title="Scenario Controller">
+		<description>This is the workbench UI component that lets you manage one or more scenarios, tracking their progress</description>
+		<topic href="html/legacy/user_workbench.html#ScenarioController" label="Introduction to the Scenario controller"/>
+	</context>
+</contexts>
