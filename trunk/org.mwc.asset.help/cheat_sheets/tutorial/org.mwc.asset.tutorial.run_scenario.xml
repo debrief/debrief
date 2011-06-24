@@ -54,7 +54,7 @@ A number of things will now have happened.  The Scenario Controller will show th
          There&apos;s one last interactive thing to look at. Open the <b>Vessel Monitor</b> view - this shows us the current status of any participant.  We instruct the vessel monitor which vessel to display by selecting it in the Layer Manager.  Open the tree node representing the scenario (prob <b>Cheat sheet scenario</b>), then select <b>Fisher One</b> from it.  You&apos;ll see the Vessel monitor update to show this participant.
 <br/>
 If the scenario has finished before you get this far, just click on Reload-data-files (it&apos;s the two yellow arrows at the top of the Scenario Controller), then <b>Init</b> and <b>Play</b> again.
-Chances are, you&apos;ll have to do some view re-arranging to see of this information - observe that the vessel monitor rescales to suit the available space.
+Chances are, you&apos;ll have to do some view re-arranging to see all of this information - observe that the vessel monitor rescales to suit the available space.
 <br/>
 If the scenario is still running, every now and then the fisherman will change course - and you&apos;ll see the course change in the vessel monitor.  Yes, it&apos;s quite a boring vessel to watch.
       </description>
