@@ -11,6 +11,8 @@
   <xsl:param name="paper.type" select="'A4'"/>
   <xsl:param name="alignment">left</xsl:param>
   <xsl:param name="body.font.master">10</xsl:param>
+  <xsl:param name="body.font.family">sans-serif</xsl:param>
+  <xsl:param name="double-sided">1</xsl:param>
 
 
   <!-- get the extensions to work -->
@@ -26,17 +28,17 @@
     part      title
   </xsl:param>
   <xsl:param name="toc.section.depth" select="1"/>
-  <xsl:param name="column.count.index" select="2"/>
-  <xsl:param name="insert.xref.page.number" select="1"/>
+  <xsl:param name="column.count.index" select="3"/>
+  <xsl:param name="insert.xref.page.number" select="yes"/>
 
   <!-- sort out the admonitions (tip icons) -->
 
   <xsl:param name="admon.graphics.path">images/</xsl:param>
   <xsl:param name="admon.graphics" select="1"/>
-  <xsl:param name="admon.graphics.extension" select="'.gif'"/>
-
+  <xsl:param name="admon.graphics.extension" select="'.gif'"/>  
+  
   <!-- numbering -->
-  <xsl:param name="appendix.autolabel" select="1"/>
+  <xsl:param name="appendix.autolabel" select="A"/>
   <xsl:param name="chapter.autolabel" select="1"/>
   <xsl:param name="part.autolabel" select="1"/>
   <xsl:param name="section.autolabel" select="1"/>
