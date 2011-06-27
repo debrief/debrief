@@ -4322,9 +4322,7 @@ and so on....</programlisting></para>
               <imagedata fileref="figures/ExportToWMF.png"></imagedata>
             </imageobject>
           </inlinemediaobject> </guiicon> button writes the current graph to a
-        Windows Metafile in the current WMF_Directory (as configured in the
-        <link linkend="debrief_props_title">Debrief properties file</link>,
-        described in Section <xref linkend="debrief_props" />, and the
+        Windows Metafile in the current WMF_Directory, and the
         <guibutton>Export to Clipboard </guibutton> (<guiicon>
         <inlinemediaobject>
             <imageobject>
