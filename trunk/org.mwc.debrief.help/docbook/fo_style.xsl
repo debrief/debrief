@@ -28,8 +28,10 @@
     part      title
   </xsl:param>
   <xsl:param name="toc.section.depth" select="1"/>
-  <xsl:param name="column.count.index" select="3"/>
   <xsl:param name="insert.xref.page.number" select="yes"/>
+  <xsl:param name="column.count.index" select="2"/>
+  <xsl:param name="column.gap.index" select="'2pt'"/>
+  
 
   <!-- sort out the admonitions (tip icons) -->
 
