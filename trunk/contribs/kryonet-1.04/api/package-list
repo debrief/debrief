@@ -1,0 +1,5 @@
+com.esotericsoftware.kryonet
+com.esotericsoftware.kryonet.compress
+com.esotericsoftware.kryonet.examples.chat
+com.esotericsoftware.kryonet.examples.chatrmi
+com.esotericsoftware.kryonet.rmi
