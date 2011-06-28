@@ -1,6 +1,7 @@
 package org.mwc.asset.comms.kryo;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import org.mwc.asset.comms.kryo.Specs.SomeRequest;
 import org.mwc.asset.comms.kryo.Specs.SomeResponse;
@@ -17,9 +18,17 @@ public class AClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
+		// try to find a server
 		Client client = new Client();
 		client.start();
-		client.connect(5000, "127.0.0.1", 54555, 54777);
+		InetAddress address = client.discoverHost(54777, 2000);
+		System.out.println(address);
+
+		if(address == null)
+			System.exit(1);
+		
+		// did it work?
+		client.connect(5000, address.getHostAddress(), 54555, 54777);
 		
 		Specs.Init(client.getKryo());
 
@@ -39,6 +48,8 @@ public class AClient
 			client.sendTCP(request);
 		}
 		
+		
+		client.stop();
 		
 		
 		
