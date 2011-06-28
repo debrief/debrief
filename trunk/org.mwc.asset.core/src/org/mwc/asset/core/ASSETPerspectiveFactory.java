@@ -26,6 +26,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT,
 				0.4f, editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
+		topLeft.addView(ASSETPlugin.NET_ASSET);
 
 		
 		// split the time one - so we can insert the track tote
