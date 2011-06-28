@@ -20,7 +20,6 @@ public class ServerView extends ViewPart
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "org.mwc.asset.netassetserver.views.ServerView";
 	private ListWrap _myList;
 	@SuppressWarnings("unused")
 	private SPresenter _myPres;
@@ -32,25 +31,28 @@ public class ServerView extends ViewPart
 	{
 	}
 
-	public static class ListWrap extends List implements SView
+	public static class ListWrap implements SView
 	{
 
-		public ListWrap(Composite parent, int style)
+		private List _list;
+
+		public ListWrap(List list)
 		{
-			super(parent, style);
+			_list = list;
 		}
 
 		@Override
 		public void showMessage(Date date, String msg)
 		{
-			this.add(msg);
+			_list.add(msg);
 		}
 
 	}
 
 	public void createPartControl(Composite parent)
 	{
-		_myList = new ListWrap(parent, SWT.NONE);
+		List list = new List(parent, SWT.NONE);
+		_myList = new ListWrap(list);
 		_myPres = new SPresenter(_myList)
 		{
 
@@ -89,7 +91,6 @@ public class ServerView extends ViewPart
 	@Override
 	public void setFocus()
 	{
-		_myList.setFocus();
 	}
 
 }

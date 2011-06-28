@@ -1,6 +1,7 @@
 package org.mwc.asset.netassetserver.views;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
@@ -11,11 +12,12 @@ import ASSET.NetworkScenario;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.minlog.Log.Logger;
 
 public abstract class SPresenter implements ASpecs
 {
 	private SModel _model;
-	@SuppressWarnings("unused")
 	private SView _view;
 
 	public SPresenter(SView view)
@@ -39,6 +41,19 @@ public abstract class SPresenter implements ASpecs
 					connection.sendTCP(response);
 				}
 			});
+			
+			Logger MyLogger = new Logger()
+			{
+				@Override
+				public void log(int arg0, String arg1, String arg2, Throwable arg3)
+				{
+					_view.showMessage(new Date(), arg2);
+					// TODO Auto-generated method stub
+					super.log(arg0, arg1, arg2, arg3);
+				}
+			};
+			Log.setLogger(MyLogger);
+			
 		}
 		catch (IOException e)
 		{
