@@ -544,6 +544,11 @@ public class MultiScenarioCore implements ISimulationQue
 		// return my list of simulations
 		return res;
 	}
+	
+	public Vector<InstanceWrapper> getScenarios()
+	{
+		return _theScenarios;
+	}
 
 	public boolean isRunning()
 	{
@@ -577,6 +582,11 @@ public class MultiScenarioCore implements ISimulationQue
 			commandLine = theCommandLine;
 		}
 
+		public ScenarioType getScenario()
+		{
+			return scenario;
+		}
+		
 		public void initialise(Vector<ScenarioObserver> allObservers,
 				File outputDirectory)
 		{
