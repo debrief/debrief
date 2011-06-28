@@ -69,9 +69,9 @@ public class AServer implements ASpecs
 			public void received(Connection connection, Object object)
 			{
 				ScenarioList response = new ScenarioList();
-				Vector<String> scn = new Vector<String>();
-				scn.add("scn one");
-				scn.add("scn two");
+				Vector<ScenarioItem> scn = new Vector<ScenarioItem>();
+				scn.add(new ScenarioItem("one"));
+				scn.add(new ScenarioItem("two"));
 				response.scenarios = scn;
 				connection.sendTCP(response);
 			}
