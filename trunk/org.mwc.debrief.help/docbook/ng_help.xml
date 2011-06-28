@@ -1286,12 +1286,7 @@ Naval Undersea Warfare Center (NUWC)
         <sect2 xml:id="intro_to_replay">
           <title>Introduction to Replay files</title>
 
-          <para>Debrief reads text files using a format named the <indexterm
-              significance="preferred">
-              <primary>Replay</primary>
-
-              <secondary>Introduction</secondary>
-            </indexterm>Replay file format ( <glossterm
+          <para>Debrief reads text files using a format named the Replay file format ( <glossterm
           linkend="g_replay">Replay</glossterm> was an application used in
           <application>Debrief</application>-style tasks in Royal Navy
           analysis in past years).</para>
@@ -1425,8 +1420,8 @@ and so on....</programlisting></para>
         <sect2 xml:id="import_modes">
           <title>Import modes</title>
 
-          <para><indexterm><primary>DR import mode</primary></indexterm><indexterm><primary>Import modess
-          </primary></indexterm><indexterm><primary>OTG import mode</primary></indexterm>Since the 2009 introduction of extensions to support <link
+          <para><indexterm><primary>DR import mode</primary></indexterm>
+            <indexterm><primary>Import modes</primary></indexterm><indexterm><primary>OTG import mode</primary></indexterm>Since the 2009 introduction of extensions to support <link
           linkend="SingleSidedChanges">Single Sided Reconstruction</link>,
           Debrief is able to import data in either <glossterm
           linkend="g_DeadReckoning">DR</glossterm> or <glossterm
@@ -2152,7 +2147,7 @@ and so on....</programlisting></para>
 
           <para>The <application>Debrief</application> installation includes a
           <indexterm>
-              <primary>Coastline Data</primary>
+              <primary>Coastline</primary>
 
               <secondary>Introduction</secondary>
             </indexterm>low-resolution coastline datafile. Whilst it does
@@ -6139,11 +6134,7 @@ and so on....</programlisting></para>
           <title>Introduction</title>
 
           <para>The term <guilabel>Narrative Data</guilabel> is used
-          <indexterm>
-              <primary>Narrative Data</primary>
-
-              <secondary>Preparing Narrative Data</secondary>
-            </indexterm> within <application>Debrief</application> to refer to
+           within <application>Debrief</application> to refer to
           time-stamped textual data recorded during an exercise.</para>
 
           <para>Typically this data would be narrative data recorded to
@@ -6158,7 +6149,11 @@ and so on....</programlisting></para>
         <sect2 xml:id="preparing_narrative_data">
           <title>Preparing the data</title>
 
-          <para>Narrative data is loaded into Debrief using the ;NARRATIVE and
+          <para><indexterm>
+            <primary>Narrative Data</primary>
+            
+            <secondary>Preparing</secondary>
+          </indexterm>Narrative data is loaded into Debrief using the ;NARRATIVE and
           ;NARRATIVE2 replay file format entries as described at <xref
           linkend="replay_annotation_format" />.</para>
 
@@ -6179,7 +6174,11 @@ and so on....</programlisting></para>
         <sect2 xml:id="viewing_narrative_data">
           <title>Viewing the data</title>
 
-          <para>Once the data is loaded into Debrief, it is displayed in a
+          <para><indexterm>
+            <primary>Narrative Data</primary>
+            
+            <secondary>Viewing</secondary>
+          </indexterm>Once the data is loaded into Debrief, it is displayed in a
           list window - with one entry per line. When stepping through the
           data the "current" entry is highlighted, but the user is also able
           to double-click on an entry to move the Debrief step time to the
@@ -6577,7 +6576,7 @@ Platform C,-551</screen></para>
                 </mediaobject>
               </screenshot></para>
 
-            <para><indexterm><primary>Bulk sensor manager</primary></indexterm>The new <guilabel>Bulk Sensor Manager</guilabel> offers an
+            <para><indexterm><primary>Sensor data</primary><secondary>Bulk data management</secondary></indexterm>The new <guilabel>Bulk Sensor Manager</guilabel> offers an
             opportunity to determine which sensor data has a direction near to
             one of the other tracks currently loaded in Debrief. Before
             opening the Bulk Sensor Manager it's worth telling Debrief which
@@ -8574,7 +8573,11 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
           semi-colon ';'.To put a comment on a line, begin with two
           semi-colons.</para>
 
-          <para>The format for the different types of annotations is: <screen
+          <para><indexterm>
+            <primary>Narrative Data</primary>
+            
+            <secondary>File format</secondary>
+          </indexterm>The format for the different types of annotations is: <screen
           width="70">            <markup>
 123456789012345678901234567890123456789012345678901234567890123456789
 0123456789012345678901234567890 
@@ -9402,7 +9405,7 @@ departure / d.lat = tan (course)</markup>
         <sect2 xml:id="WormOverview">
           <title>Overview</title>
 
-          <para><indexterm><primary>Worm in the hole</primary><secondary>Algorithm</secondary></indexterm>Frequently vehicles in Debrief use sensors with a different
+          <para><indexterm><primary>Algorithms</primary><secondary>Worm in the hole</secondary></indexterm>Frequently vehicles in Debrief use sensors with a different
           datum to the host platform - either because they're several metres
           from the position recorded datum on board the platform, or because
           they're an offboard sensor dragged behind the sensor. For an onboard
@@ -9558,7 +9561,7 @@ departure / d.lat = tan (course)</markup>
         <sect2 xml:id="freq_alg">
           <title>Frequency algorithms</title>
 
-          <para><indexterm><primary>Frequency algorithms</primary></indexterm>In the Single Sided Reconstruction extensions to Debrief
+          <para><indexterm><primary>Algorithms</primary><secondary>Frequency</secondary></indexterm>In the Single Sided Reconstruction extensions to Debrief
           (2009) the use of frequency data in track reconstruction,
           specifically involving the application of Doppler Offsets. The
           algorithms used have been loosely taken from the Royal Naval
@@ -9664,7 +9667,7 @@ departure / d.lat = tan (course)</markup>
         <sect2 xml:id="conrec_intro">
           <title>CONREC</title>
 
-          <para><indexterm><primary>Contouring algorithm</primary></indexterm>To do contouring in software you need to describe the data
+          <para><indexterm><primary>Algorithms</primary><secondary>Contouring</secondary></indexterm>To do contouring in software you need to describe the data
           surface and the contour levels you want to have drawn. The software
           given this information must call the algorithm that calculates the
           line segments that make up a contour curve and then plot these line
@@ -10342,7 +10345,7 @@ departure / d.lat = tan (course)</markup>
     <title>Debrief Glossary</title>
 
     <sect1 xml:id="gloss_intro">
-      <title>Glossary</title>
+      <title>Introduction</title>
 
       <para>This section contains explanations of terms used within
       Debrief</para>
@@ -10979,14 +10982,8 @@ brg = Bearing to target from ownship (degs)
   <!-- ********************************************************************** -->
 
   <!-- ********************************************************************** -->
-
-  <appendix xml:id="app_index">
-    <title>Index</title>
-
-    <para></para>
-
-    <index xml:id="the_index"></index>
-  </appendix>
+  <index xml:id="the_index">  <title>Index</title>
+  </index>
 
   <!-- ********************************************************************** -->
 
