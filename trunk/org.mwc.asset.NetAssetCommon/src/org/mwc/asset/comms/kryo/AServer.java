@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import org.mwc.asset.comms.kryo.common.ASpecs;
 
+import ASSET.NetworkScenario;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -69,9 +71,17 @@ public class AServer implements ASpecs
 			public void received(Connection connection, Object object)
 			{
 				ScenarioList response = new ScenarioList();
-				Vector<ScenarioItem> scn = new Vector<ScenarioItem>();
-				scn.add(new ScenarioItem("one"));
-				scn.add(new ScenarioItem("two"));
+				Vector<NetworkScenario> scn = new Vector<NetworkScenario>();
+				scn.add(new NetworkScenario(){
+					public String getName()
+					{
+						return "a";
+					}});
+				scn.add(new NetworkScenario(){
+					public String getName()
+					{
+						return "b";
+					}});
 				response.scenarios = scn;
 				connection.sendTCP(response);
 			}

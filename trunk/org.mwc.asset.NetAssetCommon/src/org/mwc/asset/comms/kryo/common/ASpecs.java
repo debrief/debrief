@@ -2,6 +2,8 @@ package org.mwc.asset.comms.kryo.common;
 
 import java.util.Vector;
 
+import ASSET.NetworkScenario;
+
 import com.esotericsoftware.kryo.Kryo;
 
 public interface ASpecs
@@ -50,7 +52,7 @@ public interface ASpecs
 
 	public static class ScenarioList implements DataPacket
 	{
-		public Vector<ScenarioItem> scenarios;
+		public Vector<NetworkScenario> scenarios;
 	}
 
 	public static class GetThisScenario implements DataPacket
@@ -64,6 +66,7 @@ public interface ASpecs
 		{
 			kryo.register(Vector.class);
 			kryo.register(GetScenarios.class);
+			kryo.register(NetworkScenario.class);
 			kryo.register(ScenarioList.class);
 			kryo.register(ScenarioItem.class);
 			kryo.register(GetThisScenario.class);
