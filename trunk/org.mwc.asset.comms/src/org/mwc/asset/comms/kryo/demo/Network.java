@@ -1,4 +1,4 @@
-package org.mwc.asset.comms.kryo;
+package org.mwc.asset.comms.kryo.demo;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;

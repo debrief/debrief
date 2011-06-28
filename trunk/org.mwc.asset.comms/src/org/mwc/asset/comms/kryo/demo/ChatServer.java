@@ -1,4 +1,4 @@
-package org.mwc.asset.comms.kryo;
+package org.mwc.asset.comms.kryo.demo;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import org.mwc.asset.comms.kryo.Network;
-import org.mwc.asset.comms.kryo.Network.ChatMessage;
-import org.mwc.asset.comms.kryo.Network.RegisterName;
-import org.mwc.asset.comms.kryo.Network.UpdateNames;
+import org.mwc.asset.comms.kryo.demo.Network;
+import org.mwc.asset.comms.kryo.demo.Network.ChatMessage;
+import org.mwc.asset.comms.kryo.demo.Network.RegisterName;
+import org.mwc.asset.comms.kryo.demo.Network.UpdateNames;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
