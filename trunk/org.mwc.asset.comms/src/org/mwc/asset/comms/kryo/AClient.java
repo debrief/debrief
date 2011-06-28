@@ -40,7 +40,7 @@ public class AClient implements ASpecs
 		   }
 		});
 		
-		for(int i=0;i<500;i++)
+		for(int i=0;i<5;i++)
 		{
 			GetScenarios request = new GetScenarios();
 			client.sendTCP(request);
