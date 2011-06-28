@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import org.mwc.asset.comms.kryo.Specs.SomeRequest;
 import org.mwc.asset.comms.kryo.Specs.SomeResponse;
+import org.mwc.asset.comms.kryo.common.ASpecs;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
-public class AServer
+public class AServer implements ASpecs
 {
 
 
@@ -21,7 +22,7 @@ public class AServer
 	{
 		Server server = new Server();
 		server.start();
-		server.bind(54555, 54777);
+		server.bind(TCP_PORT, UDP_PORT);
 		
 		Specs.Init(server.getKryo());
 		
