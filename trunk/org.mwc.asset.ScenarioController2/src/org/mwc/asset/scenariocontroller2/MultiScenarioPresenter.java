@@ -462,6 +462,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		}
 	}
 
+	public MultiScenarioCore getModel()
+	{
+		return _myModel;
+	}
+	
 	protected void doGenerate()
 	{
 		// disable the genny button, until it's done.

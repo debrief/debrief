@@ -3,6 +3,7 @@ package org.mwc.asset.scenariocontroller2.views;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
@@ -57,8 +58,11 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 
+import ASSET.NetworkScenario;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
+import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
+import ASSET.Scenario.MultiScenarioLister;
 import MWC.GenericData.Duration;
 
 public class MultiScenarioView extends ViewPart implements ISelectionProvider,
@@ -191,12 +195,29 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	private Duration _myPendingStepSize;
 	private FilesDroppedListener _filesDroppedListener;
 	private MultiScenarioPresenter _myPresenter;
+	private MultiScenarioLister _multiScenLister;
 
 	/**
 	 * The constructor.
 	 */
 	public MultiScenarioView()
 	{
+		_multiScenLister = new MultiScenarioLister(){
+
+			@Override
+			public Vector<NetworkScenario> getScenarios()
+			{
+				Vector<NetworkScenario> res = new Vector<NetworkScenario>();
+				// ok, collate the list
+				Vector<InstanceWrapper> sims = _myPresenter.getModel().getScenarios();
+				Iterator<InstanceWrapper> iter = sims.iterator();
+				while (iter.hasNext())
+				{
+					InstanceWrapper inst = iter.next();
+					res.add(inst.getScenario());
+				}
+				return res;
+			}};
 	}
 
 	public void activate()
@@ -405,6 +426,10 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		if (adapter == TimeProvider.class)
 		{
 			res = _timeManager;
+		}
+		else if(adapter == MultiScenarioLister.class)
+		{
+			res = _multiScenLister;
 		}
 		else if (adapter == TimeControlPreferences.class)
 		{
