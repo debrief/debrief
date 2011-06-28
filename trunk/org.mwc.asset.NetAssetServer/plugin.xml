@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Sample Category"
+            id="org.mwc.asset.NetAssetServer">
+      </category>
+      <view
+            name="Net Asset Server"
+            icon="icons/sample.gif"
+            category="org.mwc.asset.NetAssetServer"
+            class="org.mwc.asset.netassetserver.views.ServerView"
+            id="org.mwc.asset.netassetserver.views.ServerView">
+      </view>
+   </extension>
+
+</plugin>

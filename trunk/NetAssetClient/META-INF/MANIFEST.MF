@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NetAssetClient
+Bundle-SymbolicName: org.mwc.asset.NetAssetClient; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.mwc.asset.netassetclient.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.intro
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
