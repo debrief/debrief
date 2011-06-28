@@ -900,7 +900,7 @@ Naval Undersea Warfare Center (NUWC)
                 <formalpara>
                   <title>Cheat sheets</title>
 
-                  <para>A series of online cheat sheets is distributed with
+                  <para><indexterm><primary>Cheat sheets</primary></indexterm>A series of online cheat sheets is distributed with
                   Debrief. These sheets guide the user through a series of
                   complex tasks to achieve an overall goals such as:
                   <emphasis>loading data into Debrief</emphasis> or
@@ -940,7 +940,7 @@ Naval Undersea Warfare Center (NUWC)
         <title>Performing installation</title>
 
         <warning>
-          <para>If you already have <application>Debrief NG</application>
+          <para><indexterm><primary>Installing Debrief</primary></indexterm>If you already have <application>Debrief NG</application>
           installed on your machine you should remove it using the
           <guibutton>Add/Remove Programs</guibutton> button from the
           <guibutton>Settings</guibutton> button on the
@@ -1162,7 +1162,7 @@ Naval Undersea Warfare Center (NUWC)
           <sect3 xml:id="debrief_editors">
             <title>Editors</title>
 
-            <para>Any number of editors can be open at once, but only one can
+            <para><indexterm><primary>Editors</primary></indexterm>Any number of editors can be open at once, but only one can
             be active at a time. The main menu bar and toolbar for Debrief
             contain operations that are applicable to the active editor.
             Initially the active editor will always be the Debrief plot, but
@@ -1179,7 +1179,7 @@ Naval Undersea Warfare Center (NUWC)
           <sect3 xml:id="debrief_views">
             <title>Views</title>
 
-            <para>Views support editors and provide alternative presentations
+            <para><indexterm><primary>Views</primary></indexterm>Views support editors and provide alternative presentations
             as well as ways to navigate the information in your Workbench. For
             example, the <link linkend="navigating_debrief">Navigator</link>
             displays projects and other resources that you are working with,
@@ -1249,7 +1249,7 @@ Naval Undersea Warfare Center (NUWC)
                 <formalpara xml:id="perspectives_note">
                   <title>Perspectives</title>
 
-                  <para>Each Workbench window contains one or more
+                  <para><indexterm><primary>Perspectives</primary></indexterm>Each Workbench window contains one or more
                   perspectives. A perspective defines the initial set and
                   layout of views in the Workbench window. Within the window,
                   each perspective shares the same set of editors. Each
@@ -1425,7 +1425,8 @@ and so on....</programlisting></para>
         <sect2 xml:id="import_modes">
           <title>Import modes</title>
 
-          <para>Since the 2009 introduction of extensions to support <link
+          <para><indexterm><primary>DR import mode</primary></indexterm><indexterm><primary>Import modess
+          </primary></indexterm><indexterm><primary>OTG import mode</primary></indexterm>Since the 2009 introduction of extensions to support <link
           linkend="SingleSidedChanges">Single Sided Reconstruction</link>,
           Debrief is able to import data in either <glossterm
           linkend="g_DeadReckoning">DR</glossterm> or <glossterm
@@ -1496,7 +1497,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="toggle_buttons">
           <title xml:id="toggle_buttons.title">Mouse mode buttons</title>
 
-          <para>The first five buttons represent modes of use and are
+          <para><indexterm><primary>Drag buttons</primary></indexterm>The first five buttons represent modes of use and are
           selectable individually, with only one selected at a time. When one
           does get clicked, it remains depressed, popping up the button
           previously in use. <variablelist>
@@ -1715,7 +1716,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="undo_btn">
           <title>Undo</title>
 
-          <para><application>Debrief</application> contains an unending list
+          <para><indexterm><primary>Undo support</primary></indexterm><application>Debrief</application> contains an unending list
           of undo-able operations, only cleared when the current session is
           closed. Most changes to the <application>Debrief</application> plot
           are undo-able - whether they be creating a new feature, changing an
@@ -1799,7 +1800,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="edit_track">
           <title>Edit track</title>
 
-          <para>Track editing is performed on the <link
+          <para><indexterm><primary>Property editor</primary></indexterm>Track editing is performed on the <link
           linkend="g_property_window">Properties Window</link>, and is
           initiated by selecting the track either from the plot or the Layer
           Manager, as described in the <emphasis>Editing your data</emphasis>
@@ -2475,7 +2476,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="layer_mgr_intro">
           <title>Layer Manager</title>
 
-          <para>The Layer Manager provides a tree-oriented view of all of the
+          <para><indexterm><primary>Layer manager</primary></indexterm>The Layer Manager provides a tree-oriented view of all of the
           editable data within a plot, organised into layers. New items added
           to the plot are placed into a <emphasis>Misc</emphasis> layer. From
           here they can be reorganised into suitably themed layers via <link
@@ -2698,7 +2699,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="ResamplingData">
           <title>Resampling track and sensor data</title>
 
-          <para>On occasion the data loaded into Debrief is of the wrong
+          <para><indexterm><primary>Resampling data</primary></indexterm><indexterm><primary>Track sections</primary><secondary>Resample</secondary></indexterm>On occasion the data loaded into Debrief is of the wrong
           frequency:<variablelist>
               <varlistentry>
                 <term>Too dense</term>
@@ -2744,7 +2745,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="SplitTrackSections">
           <title>Splitting track sections</title>
 
-          <para>Before a jump can be removed from a track, the track must be
+          <para><indexterm><primary>Track sections</primary><secondary>Split</secondary></indexterm>Before a jump can be removed from a track, the track must be
           split. To split a track, first decide where the split should be
           made, and right-click on the point where the split should happen
           (either on the plot or in the layer manager). The popup menu will
@@ -2774,7 +2775,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="JoinTrackSections">
           <title>Joining track sections</title>
 
-          <para>Once track segments have been <link
+          <para><indexterm><primary>Track sections</primary><secondary>Join</secondary></indexterm>Once track segments have been <link
           linkend="DraggingTracks">manipulated</link>, they can be rejoined.
           To rejoin tracks, select them both/all in the layer manager (using
           the <guilabel>Control</guilabel> key as appropriate). Then
@@ -2798,7 +2799,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="CombineTrackSections">
           <title>Combining track sections</title>
 
-          <para>On occasion, once a series of track segments have been built
+          <para><indexterm><primary>Track sections</primary><secondary>Combine</secondary></indexterm>On occasion, once a series of track segments have been built
           up (or created using the Generate TMA wizard) you may with to
           combine them in order to make their management easier. If you wish
           to keep them as individual entities instead of merging them into a
@@ -2828,7 +2829,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="GridIntro">
           <title>Introduction</title>
 
-          <para>Another feature introduced alongside the <link
+          <para><indexterm><primary>Grid editor</primary></indexterm>Another feature introduced alongside the <link
           linkend="SingleSidedChanges">2009 Single-Sided Reconstruction</link>
           extensions is the Grid Editor. This is a tabular editor with an
           associated xy plot that allows bulk editing of data points, together
@@ -2892,7 +2893,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="the_tote_area">
           <title>Tote area</title>
 
-          <para>We'll have a brief explanation of the Tote at this point,
+          <para><indexterm><primary>Track tote</primary></indexterm>We'll have a brief explanation of the Tote at this point,
           using the image below. <figure xml:id="tote_demo">
               <title>The <application>Debrief</application> Tote</title>
 
@@ -2920,9 +2921,9 @@ and so on....</programlisting></para>
           </note>
 
           <para xml:id="primary_track">One <glossterm
-          linkend="g_track">track</glossterm> currently loaded is assigned as
+          linkend="g_track">track</glossterm><indexterm><primary>Primary track</primary></indexterm> currently loaded is assigned as
           the Primary track (the red track in this instance), and then one or
-          more tracks are assigned as Secondary tracks. The primary track
+          more tracks are assigned as <indexterm><primary>Secondary track</primary></indexterm>Secondary tracks. The primary track
           always shows absolute data such as current course, speed and depth.
           With just a single secondary track specified, it also shows relative
           (calculated) data - as illustrated above. The secondary tracks
@@ -3173,7 +3174,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="time_controller">
           <title>The Time Controller</title>
 
-          <para>Time is managed within Debrief through the Time Controller.
+          <para><indexterm><primary>Time controller</primary></indexterm>Time is managed within Debrief through the Time Controller.
           This view displays the current serial time, allows control of that
           time, and provides access to a series of time-related functions in
           <application>Debrief</application>.<figure
@@ -4195,7 +4196,7 @@ and so on....</programlisting></para>
       <sect1 xml:id="show_time_vars">
         <title>Show time-related variables</title>
 
-        <para>Time-variable plots can be opened via the Layer Manager. When
+        <para><indexterm><primary>Time variable plots</primary></indexterm>Time-variable plots can be opened via the Layer Manager. When
         one or more items that are candidate subjects <footnote>
             <para>Items are suitable for inclusion in a time-variable plot
             when they have both temporal and spatial attributes, so this
@@ -5012,7 +5013,7 @@ and so on....</programlisting></para>
             </figure></para>
 
           <note>
-            <para>In summer 2010 a set of scaled symbols were introduced.
+            <para><indexterm><primary>Scaled symbols</primary></indexterm>In summer 2010 a set of scaled symbols were introduced.
             These are not shown at fixed screen sizes, but as representative
             sizes of the subject vessel - so they resize as you zoom in on a
             plot. In summer 2011 the range of vessels represented by scaled
@@ -6400,7 +6401,7 @@ and so on....</programlisting></para>
         <sect2 xml:id="SectWormInHole">
           <title>Worm in the hole</title>
 
-          <para>When examining a Sensor in the properties view, you will see
+          <para><indexterm><primary>Worm in the hole</primary><secondary>Usage</secondary></indexterm>When examining a Sensor in the properties view, you will see
           that in addition to Sensor Offset, there is a 'Worm in the hole' See
           <xref linkend="WormInHole" /> parameter. This is typically used for
           towed arrays, whereby the start of the sensor bearing line is
@@ -6412,7 +6413,7 @@ and so on....</programlisting></para>
           <title xml:id="titleForSensorLengths">Sensor offset lengths
           editor</title>
 
-          <para>Since Autumn 09 Debrief has supported a library of sensor
+          <para><indexterm><primary>Sensor offsets editor</primary></indexterm>Since Autumn 09 Debrief has supported a library of sensor
           offsets. These offsets are used to populate a drop-down list of
           lengths, used in support of specifying sensor offsets.</para>
 
@@ -6576,7 +6577,7 @@ Platform C,-551</screen></para>
                 </mediaobject>
               </screenshot></para>
 
-            <para>The new <guilabel>Bulk Sensor Manager</guilabel> offers an
+            <para><indexterm><primary>Bulk sensor manager</primary></indexterm>The new <guilabel>Bulk Sensor Manager</guilabel> offers an
             opportunity to determine which sensor data has a direction near to
             one of the other tracks currently loaded in Debrief. Before
             opening the Bulk Sensor Manager it's worth telling Debrief which
@@ -6851,7 +6852,7 @@ Platform C,-551</screen></para>
         <sect2 xml:id="multipath_analysis">
           <title xml:id="multipath_title">Multipath analysis</title>
 
-          <para>Should you have access to multipath sensor data of a target
+          <para><indexterm><primary>Multipath</primary><secondary>analysis</secondary></indexterm>Should you have access to multipath sensor data of a target
           vessel from a host platform, Debrief is able to assist in
           determining the target depth. In overview, Debrief allows you to
           compare the measured time interval with one calculated from the
@@ -7761,7 +7762,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         <sect2 xml:id="debrief_bugs">
           <title>Reporting bugs</title>
 
-          <para>To report a bug, or a feature which you believe is behaving
+          <para><indexterm><primary>Bugs</primary><secondary>Submitting</secondary></indexterm> To report a bug, or a feature which you believe is behaving
           incorrectly, you must first register at Assembla. You can either
           create a new account, or login using a number of existing login
           authorities (including Google and Yahoo). Once registered, you can
@@ -8387,7 +8388,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
         <sect2 xml:id="replay_symbology">
           <title>Symbology attributes</title>
 
-          <para>The symbology data field describes the representation required
+          <para><indexterm><primary>Symbology data</primary></indexterm>The symbology data field describes the representation required
           for this vessel track, specifying the colour of track to use and
           symbol-type to represent that vehicle. The Symbol style read in is
           used when tracks are to be shown by using symbol (in 2D or 3D), as
@@ -8806,7 +8807,7 @@ and entry type can be multi-word if surrounded by quotes (").
               support</para>
             </blockquote></para>
 
-          <para>Whilst it has military roots, the KML dialect of XML has
+          <para><indexterm><primary>KML/KMZ Files</primary></indexterm> Whilst it has military roots, the KML dialect of XML has
           received wide adoption for the recording and distribution of
           positional information. KML extends the GML standard. KML and GML
           provide a number of ways of recording positional data. This section
@@ -9063,7 +9064,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         <sect2 xml:id="multi_data_intro">
           <title>Introduction</title>
 
-          <para>The <link linkend="multipath_analysis">Multi Path
+          <para><indexterm><primary>Multipath</primary><secondary>data files</secondary></indexterm>/indexterm> The <link linkend="multipath_analysis">Multi Path
           Analysis</link> view allows a target depth to be estimated by
           visually aligning a calculated set of time delays with a measured
           set. This view requires two additional data files to be loaded. Both
@@ -9294,7 +9295,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
       <sect1 xml:id="rng_brg_calcs">
         <title>Range/Bearing calculations within Debrief</title>
 
-        <para>Ranges and bearings within Debrief are calculated according to
+        <para><indexterm><primary>Range/bearing calculations</primary></indexterm>Ranges and bearings within Debrief are calculated according to
         the Rhumb-Line formulae, taken from the Admiralty Manual of
         Navigation, Volume 2, BR 45(2), Revised 1973, pages 5-11.</para>
 
@@ -9401,7 +9402,7 @@ departure / d.lat = tan (course)</markup>
         <sect2 xml:id="WormOverview">
           <title>Overview</title>
 
-          <para>Frequently vehicles in Debrief use sensors with a different
+          <para><indexterm><primary>Worm in the hole</primary><secondary>Algorithm</secondary></indexterm>Frequently vehicles in Debrief use sensors with a different
           datum to the host platform - either because they're several metres
           from the position recorded datum on board the platform, or because
           they're an offboard sensor dragged behind the sensor. For an onboard
@@ -9557,7 +9558,7 @@ departure / d.lat = tan (course)</markup>
         <sect2 xml:id="freq_alg">
           <title>Frequency algorithms</title>
 
-          <para>In the Single Sided Reconstruction extensions to Debrief
+          <para><indexterm><primary>Frequency algorithms</primary></indexterm>In the Single Sided Reconstruction extensions to Debrief
           (2009) the use of frequency data in track reconstruction,
           specifically involving the application of Doppler Offsets. The
           algorithms used have been loosely taken from the Royal Naval
@@ -9663,7 +9664,7 @@ departure / d.lat = tan (course)</markup>
         <sect2 xml:id="conrec_intro">
           <title>CONREC</title>
 
-          <para>To do contouring in software you need to describe the data
+          <para><indexterm><primary>Contouring algorithm</primary></indexterm>To do contouring in software you need to describe the data
           surface and the contour levels you want to have drawn. The software
           given this information must call the algorithm that calculates the
           line segments that make up a contour curve and then plot these line
