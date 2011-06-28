@@ -3,7 +3,11 @@ package org.mwc.asset.netassetserver.views;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Status;
 import org.mwc.asset.comms.kryo.common.ASpecs;
+import org.mwc.asset.core.ASSETPlugin;
+
+import ASSET.NetworkScenario;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -11,22 +15,25 @@ import com.esotericsoftware.kryonet.Listener;
 public abstract class SPresenter implements ASpecs
 {
 	private SModel _model;
+	@SuppressWarnings("unused")
+	private SView _view;
 
-	public SPresenter()
+	public SPresenter(SView view)
 	{
+		_view = view;
+		
 		// ok, config the model
 		try
 		{
 			_model = new SModel();
-
+			
 			// and sort out the listeners
 			_model.registerHandler(new GetScenarios(), new Listener()
 			{
-
 				@Override
 				public void received(Connection connection, Object object)
 				{
-					Vector<ScenarioItem> res = getScenarios();
+					Vector<NetworkScenario> res = getScenarios();
 					ScenarioList response = new ScenarioList();
 					response.scenarios = res;
 					connection.sendTCP(response);
@@ -35,12 +42,9 @@ public abstract class SPresenter implements ASpecs
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ASSETPlugin.logError(Status.ERROR, "Initialising NetAsset", e);
 		}
 		
-		// also connect up the UI
-
 	}
 	
 	public void finish()
@@ -48,5 +52,5 @@ public abstract class SPresenter implements ASpecs
 		_model.stop();
 	}
 
-	public abstract Vector<ScenarioItem> getScenarios();
+	public abstract Vector<NetworkScenario> getScenarios();
 }

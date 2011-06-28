@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.mwc.asset.NetAssetServer; singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.mwc.asset.netassetserver.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.mwc.asset.core;bundle-version="1.0.17"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
