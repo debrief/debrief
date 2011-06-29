@@ -20,6 +20,8 @@ public class Network {
 		kryo.register(SomeResponse.class);
 		// real ones
 		kryo.register(GetScenarios.class);
+		kryo.register(ScenarioList.class);
+		kryo.register(Class.class);
 	}
 	
 	public static class SomeRequest {
@@ -34,6 +36,18 @@ public class Network {
 	public static class ScenarioList
 	{
 		public Vector<NetworkScenario> list;
+	}
+	
+	/** and our event handler
+	 * 
+	 */
+	public abstract static class AHandler<T>
+	{
+		public void onFailure(Throwable t)
+		{
+			t.printStackTrace();
+		}
+		abstract public void onSuccess(T result);
 	}
 	
 }

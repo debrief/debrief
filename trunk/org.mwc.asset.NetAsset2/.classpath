@@ -5,7 +5,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/kryonet-1.04/asm-3.3.1.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-1.04/kryo-1.04.jar"/>
-	<classpathentry kind="lib" path="libs/kryonet-1.04/kryonet-1.04.jar" sourcepath="libs/kryonet-1.04/kryo/src">
+	<classpathentry kind="lib" path="libs/kryonet-1.04/kryonet-1.04.jar" sourcepath="libs/kryonet-1.04/kryonet/src">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/Users/ianmayo/dev/Debrief_37/org.mwc.asset.NetAsset2/libs/kryonet-1.04/api/"/>
 		</attributes>

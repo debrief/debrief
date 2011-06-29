@@ -27,6 +27,13 @@ public class AServer
 			Network.register(_server);
 			_server.start();
 			_server.bind(Network.TCP_PORT, Network.UDP_PORT);
+			_server.addListener(new Listener(){
+
+				@Override
+				public void received(Connection connection, Object object)
+				{
+					System.err.println("rx:" + object);
+				}});
 		}
 
 		public void addListener(Listener listener)
@@ -49,8 +56,10 @@ public class AServer
 		{
 			public void received(Connection connection, Object object)
 			{
+				System.err.println("rx object");
 				if (object instanceof GetScenarios)
 				{
+					System.err.println("rx get scenarios");
 					ScenarioList res = new ScenarioList();
 					res.list = _dataProvider.getScenarios();
 					connection.sendTCP(res);

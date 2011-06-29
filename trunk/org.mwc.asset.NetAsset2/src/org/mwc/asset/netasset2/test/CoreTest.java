@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.mwc.asset.netasset2.common.Network.GetScenarios;
+import org.mwc.asset.netasset2.common.Network.AHandler;
 import org.mwc.asset.netasset2.core.AClient;
 import org.mwc.asset.netasset2.core.AServer;
 
@@ -22,6 +22,7 @@ public class CoreTest
 	{
 
 		private Vector<String> _events;
+		protected Vector<NetworkScenario> _myList;
 
 		@Override
 		protected void setUp() throws Exception
@@ -41,8 +42,8 @@ public class CoreTest
 			};
 			Log.setLogger(logger);
 		}
-
-		public void testStartup() throws InterruptedException, IOException
+		
+		public void testZConnect()throws InterruptedException, IOException
 		{
 			// check events empty
 			assertEquals("events empty", 0, _events.size());
@@ -73,16 +74,37 @@ public class CoreTest
 			// now real connection
 			client.connect(null);
 			Thread.sleep(100);
+			
+			client.stop();
+			server.stop();
+		}
 
-			assertEquals("events recorded", 6, _events.size());
+		public void testStartup() throws InterruptedException, IOException
+		{
+			// check events empty
+			assertEquals("events empty", 0, _events.size());
+			AServer server = new AServer();
+			assertEquals("events recorded", 1, _events.size());
+			assertEquals("correct start event", "Server opened.",
+					_events.elementAt(0));
+
+			// and now the client
+			AClient client = new AClient();
+			assertEquals("still no more events", 1, _events.size());
+
+			// now real connection
+			client.connect(null);
+			Thread.sleep(100);
+
+			assertEquals("events recorded", 5, _events.size());
 			assertTrue("correct client event",
-					_events.elementAt(2).contains("Discovered server"));
+					_events.elementAt(1).contains("Discovered server"));
 			assertTrue("correct client event",
-					_events.elementAt(3).contains("Connecting"));
+					_events.elementAt(2).contains("Connecting"));
+			assertTrue("correct client event",
+					_events.elementAt(3).contains("connected"));
 			assertTrue("correct client event",
 					_events.elementAt(4).contains("connected"));
-			assertTrue("correct client event",
-					_events.elementAt(5).contains("connected"));
 
 			// ok, give the server some data
 			MultiScenarioLister lister = new MultiScenarioLister(){
@@ -93,15 +115,25 @@ public class CoreTest
 					return getTheScenarios();
 				}};
 			server.setDataProvider(lister);
-			
+
+			assertNull("scen list should be empty", _myList);
+			AHandler<Vector<NetworkScenario>> sHandler = new AHandler<Vector<NetworkScenario>>(){
+
+				@Override
+				public void onSuccess(Vector<NetworkScenario> result)
+				{
+					_myList = result;
+				}};
 			// fire in request for scenarios
-			client.send(new GetScenarios());
+			System.err.println("about to request scenarios");
+			client.getScenarioList(sHandler );
 			Thread.sleep(100);
+			showEvents(_events);
+			
+			assertNotNull("scen list should have data", _myList);
 			
 			showEvents(_events);
 			assertEquals("events recorded", 6, _events.size());
-			
-
 
 			client.stop();
 			server.stop();
