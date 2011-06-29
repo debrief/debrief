@@ -23,24 +23,35 @@ public class AClient
 			Network.register(_client);
 			_client.start();
 
-			InetAddress address = _client.discoverHost(Network.UDP_PORT, 5000);
-			if (address != null)
-				_client.connect(5000, "LOCALHOST", Network.TCP_PORT, Network.UDP_PORT);
+		}
+
+		public void connect(String target) throws IOException
+		{
+			if (target == null)
+			{
+				InetAddress address = _client.discoverHost(Network.UDP_PORT, 3000);
+				if (address != null)
+					target = address.getHostAddress();
+
+			}
+
+			_client.connect(5000, target, Network.TCP_PORT, Network.UDP_PORT);
 		}
 
 		public void addListener(Listener listener)
 		{
 			_client.addListener(listener);
 		}
+
 		public void stop()
 		{
 			_client.stop();
 		}
+
 		public void send(Object data)
 		{
 			_client.sendTCP(data);
 		}
-
 
 	}
 
@@ -62,31 +73,21 @@ public class AClient
 		});
 	}
 
+	public void connect(String target) throws IOException
+	{
+		_model.connect(target);
+	}
+
 	public void stop()
 	{
 		_model.stop();
 	}
+
 	public void testSend()
 	{
 		SomeRequest request = new SomeRequest();
 		request.text = "Here is the request 6!";
 		_model.send(request);
 	}
-
-
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException
-	{
-		AClient client = new AClient();
-
-		System.out.println("pausing");
-		System.in.read();
-
-		client.stop();
-	}
-
 
 }
