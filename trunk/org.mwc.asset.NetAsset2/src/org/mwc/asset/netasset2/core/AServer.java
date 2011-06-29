@@ -11,6 +11,7 @@ import ASSET.Scenario.MultiScenarioLister;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.minlog.Log;
 
 public class AServer
 {
@@ -27,13 +28,6 @@ public class AServer
 			Network.register(_server);
 			_server.start();
 			_server.bind(Network.TCP_PORT, Network.UDP_PORT);
-			_server.addListener(new Listener(){
-
-				@Override
-				public void received(Connection connection, Object object)
-				{
-					System.err.println("rx:" + object);
-				}});
 		}
 
 		public void addListener(Listener listener)
@@ -56,13 +50,15 @@ public class AServer
 		{
 			public void received(Connection connection, Object object)
 			{
-				System.err.println("rx object");
 				if (object instanceof GetScenarios)
 				{
-					System.err.println("rx get scenarios");
+					System.err.println("getS received");
+					Log.info("GetScenarios received");
 					ScenarioList res = new ScenarioList();
-					res.list = _dataProvider.getScenarios();
+			//		res.list = _dataProvider.getScenarios();
+					System.err.println("about to send list");
 					connection.sendTCP(res);
+					System.err.println("sent list");
 				}
 			}
 		});

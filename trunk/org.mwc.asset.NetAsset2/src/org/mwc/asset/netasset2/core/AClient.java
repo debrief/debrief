@@ -3,12 +3,10 @@ package org.mwc.asset.netasset2.core;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
-import org.mwc.asset.netasset2.common.Network.SomeResponse;
 
 import ASSET.NetworkScenario;
 
@@ -99,11 +97,6 @@ public class AClient
 		_model.stop();
 	}
 
-	public void send(Object data)
-	{
-		_model.send(data);
-	}
-
 	public void getScenarioList(
 			final Network.AHandler<Vector<NetworkScenario>> handler)
 	{
@@ -119,8 +112,7 @@ public class AClient
 			}
 		};
 		_model.addListener(new GetScenarios().getClass(), listener);
-		_model.send(theType);
-		// don't bother waiting, the handler will remove itself
+		_model.send(new GetScenarios());
 	}
 
 }

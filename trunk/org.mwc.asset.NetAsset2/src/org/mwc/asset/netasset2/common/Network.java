@@ -5,6 +5,7 @@ import java.util.Vector;
 import ASSET.NetworkScenario;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serialize.CollectionSerializer;
 import com.esotericsoftware.kryonet.EndPoint;
 
 // This class is a convenient place to keep things common to both the client and server.
@@ -21,7 +22,8 @@ public class Network {
 		// real ones
 		kryo.register(GetScenarios.class);
 		kryo.register(ScenarioList.class);
-		kryo.register(Class.class);
+		kryo.register(Vector.class, new CollectionSerializer(kryo));
+		kryo.register(NetworkScenario.class);
 	}
 	
 	public static class SomeRequest {
@@ -35,7 +37,7 @@ public class Network {
 	}
 	public static class ScenarioList
 	{
-		public Vector<NetworkScenario> list;
+		public Vector list;
 	}
 	
 	/** and our event handler
