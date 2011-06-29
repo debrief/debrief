@@ -12,10 +12,36 @@ import com.esotericsoftware.kryonet.Listener;
 
 public class AClient
 {
-	
-	public AClient()
+
+	private Client _client;
+
+	public AClient() throws IOException
 	{
-		
+		_client = new Client();
+		Network.register(_client);
+		_client.start();
+		_client.connect(5000, "LOCALHOST", Network.TCP_PORT, Network.UDP_PORT);
+
+		SomeRequest request = new SomeRequest();
+		request.text = "Here is the request 3!";
+		_client.sendTCP(request);
+
+		_client.addListener(new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				if (object instanceof SomeResponse)
+				{
+					SomeResponse response = (SomeResponse) object;
+					System.out.println(response.text);
+				}
+			}
+		});
+	}
+
+	public void stop()
+	{
+		_client.stop();
 	}
 
 	/**
@@ -24,23 +50,12 @@ public class AClient
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		Client client = new Client();
-		Network.register(client);
-		client.start();
-		client.connect(5000, "LOCALHOST", Network.TCP_PORT, Network.UDP_PORT);
+		AClient client = new AClient();
 
-		SomeRequest request = new SomeRequest();
-		request.text = "Here is the request 2!";
-		client.sendTCP(request);
-		
-		client.addListener(new Listener() {
-		   public void received (Connection connection, Object object) {
-		      if (object instanceof SomeResponse) {
-		         SomeResponse response = (SomeResponse)object;
-		         System.out.println(response.text);
-		      }
-		   }
-		});
+		System.out.println("pausing");
+		System.in.read();
+
+		client.stop();
 	}
 
 }

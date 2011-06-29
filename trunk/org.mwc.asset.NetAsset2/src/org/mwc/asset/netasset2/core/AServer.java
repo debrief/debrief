@@ -27,7 +27,7 @@ public class AServer
 		         System.out.println(request.text);
 
 		         SomeResponse response = new SomeResponse();
-		         response.text = "Thanks!";
+		         response.text = "Thanks:" + request.text;
 		         connection.sendTCP(response);
 		      }
 		   }
