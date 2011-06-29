@@ -55,10 +55,20 @@ public interface ASpecs
 	{
 		public Vector<NetworkScenario> scenarios;
 	}
+	
+	public static class AScenario implements DataPacket
+	{
+		public NetworkScenario scenario;
+	}
 
 	public static class GetThisScenario implements DataPacket
 	{
-		public int id;
+		public GetThisScenario(){};
+		public GetThisScenario(String name)
+		{
+			this.name = name;
+		}
+		public String name;
 	}
 	
 	public static class GetThisParticipant implements DataPacket

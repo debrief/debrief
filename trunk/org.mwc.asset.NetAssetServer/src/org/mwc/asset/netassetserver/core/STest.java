@@ -1,5 +1,6 @@
 package org.mwc.asset.netassetserver.core;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Vector;
 
@@ -8,10 +9,12 @@ import ASSET.NetworkScenario;
 
 public class STest
 {
+	private SPresenter _pres;
+
 	public STest(SView view)
 	{
 		final Vector<NetworkScenario> scens = createScenarios();
-		SPresenter pres = new SPresenter(view)
+		 _pres = new SPresenter(view)
 		{
 
 			@Override
@@ -20,6 +23,7 @@ public class STest
 				return scens;
 			}
 		};
+		
 		
 		
 	}
@@ -72,7 +76,7 @@ public class STest
 		return res;
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		SView view = new SView()
 		{
@@ -83,7 +87,11 @@ public class STest
 				System.out.println("LOG:" + msg);
 			}
 		};
+		@SuppressWarnings("unused")
 		STest tst = new STest(view);
+		
+		System.out.println("Pausing...");
+		System.in.read();
 
 	}
 }
