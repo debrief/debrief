@@ -1,4 +1,4 @@
-package org.mwc.asset.netassetserver.views;
+package org.mwc.asset.netassetserver.core;
 
 import java.util.Date;
 

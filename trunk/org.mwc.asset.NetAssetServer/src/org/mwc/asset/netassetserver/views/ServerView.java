@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.asset.netassetserver.core.SPresenter;
+import org.mwc.asset.netassetserver.core.SView;
 
 import ASSET.NetworkScenario;
 import ASSET.Scenario.MultiScenarioLister;

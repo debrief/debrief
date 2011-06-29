@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.mwc.asset.comms.kryo.common.ASpecs;
 
+import ASSET.NetworkParticipant;
 import ASSET.NetworkScenario;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -76,11 +77,39 @@ public class AServer implements ASpecs
 					public String getName()
 					{
 						return "a";
+					}
+
+					@Override
+					public Integer[] getListOfParticipants()
+					{
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public NetworkParticipant getThisParticipant(int id)
+					{
+						// TODO Auto-generated method stub
+						return null;
 					}});
 				scn.add(new NetworkScenario(){
 					public String getName()
 					{
 						return "b";
+					}
+
+					@Override
+					public Integer[] getListOfParticipants()
+					{
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public NetworkParticipant getThisParticipant(int id)
+					{
+						// TODO Auto-generated method stub
+						return null;
 					}});
 				response.scenarios = scn;
 				connection.sendTCP(response);

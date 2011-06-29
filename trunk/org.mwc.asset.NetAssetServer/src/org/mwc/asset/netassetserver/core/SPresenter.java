@@ -1,4 +1,4 @@
-package org.mwc.asset.netassetserver.views;
+package org.mwc.asset.netassetserver.core;
 
 import java.io.IOException;
 import java.util.Date;
@@ -48,8 +48,6 @@ public abstract class SPresenter implements ASpecs
 				public void log(int arg0, String arg1, String arg2, Throwable arg3)
 				{
 					_view.showMessage(new Date(), arg2);
-					// TODO Auto-generated method stub
-					super.log(arg0, arg1, arg2, arg3);
 				}
 			};
 			Log.setLogger(MyLogger);

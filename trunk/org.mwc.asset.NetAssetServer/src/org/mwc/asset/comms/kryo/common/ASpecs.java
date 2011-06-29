@@ -2,6 +2,7 @@ package org.mwc.asset.comms.kryo.common;
 
 import java.util.Vector;
 
+import ASSET.NetworkParticipant;
 import ASSET.NetworkScenario;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -59,6 +60,12 @@ public interface ASpecs
 	{
 		public int id;
 	}
+	
+	public static class GetThisParticipant implements DataPacket
+	{
+		public int id;
+	}
+	
 
 	public static class Config
 	{
@@ -70,6 +77,7 @@ public interface ASpecs
 			kryo.register(ScenarioList.class);
 			kryo.register(ScenarioItem.class);
 			kryo.register(GetThisScenario.class);
+			kryo.register(NetworkParticipant.class);
 		}
 	}
 }
