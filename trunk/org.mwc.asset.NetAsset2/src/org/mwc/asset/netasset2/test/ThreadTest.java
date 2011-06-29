@@ -1,4 +1,4 @@
-package org.mwc.asset.netasset2.core;
+package org.mwc.asset.netasset2.test;
 
 import java.io.IOException;
 import java.util.Arrays;
