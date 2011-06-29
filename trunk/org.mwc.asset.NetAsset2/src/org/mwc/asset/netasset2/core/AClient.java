@@ -12,6 +12,11 @@ import com.esotericsoftware.kryonet.Listener;
 
 public class AClient
 {
+	
+	public AClient()
+	{
+		
+	}
 
 	/**
 	 * @param args
