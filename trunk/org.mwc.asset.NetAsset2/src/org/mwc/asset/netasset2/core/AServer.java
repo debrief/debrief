@@ -10,17 +10,20 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
-public class AServer 
+public class AServer
 {
+	private Server _server;
 
-	public static void main(String[] args) throws IOException
+
+
+	public AServer() throws IOException
 	{
-		Server server = new Server();
-		Network.register(server);
-		server.start();
-		server.bind(Network.TCP_PORT, Network.UDP_PORT);
+		_server = new Server();
+		Network.register(_server);
+		_server.start();
+		_server.bind(Network.TCP_PORT, Network.UDP_PORT);
 		
-		server.addListener(new Listener() {
+		_server.addListener(new Listener() {
 		   public void received (Connection connection, Object object) {
 		      if (object instanceof SomeRequest) {
 		         SomeRequest request = (SomeRequest)object;
@@ -34,8 +37,25 @@ public class AServer
 		   
 		});
 		
+	}
+	
+	
+
+	public static void main(String[] args) throws IOException
+	{
+		AServer server = new AServer();
 		
 		System.out.println("pausing");
 		System.in.read();
+		
+		
+		server.stop();
+	}
+
+
+
+	private void stop()
+	{
+		_server.stop();
 	}
 }

@@ -1,6 +1,7 @@
 package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.SomeRequest;
@@ -20,7 +21,10 @@ public class AClient
 		_client = new Client();
 		Network.register(_client);
 		_client.start();
-		_client.connect(5000, "LOCALHOST", Network.TCP_PORT, Network.UDP_PORT);
+
+		InetAddress address = _client.discoverHost(54777, 5000);
+		if (address != null)
+			_client.connect(5000, "LOCALHOST", Network.TCP_PORT, Network.UDP_PORT);
 
 		SomeRequest request = new SomeRequest();
 		request.text = "Here is the request 3!";
@@ -38,6 +42,8 @@ public class AClient
 			}
 		});
 	}
+	
+	
 
 	public void stop()
 	{
