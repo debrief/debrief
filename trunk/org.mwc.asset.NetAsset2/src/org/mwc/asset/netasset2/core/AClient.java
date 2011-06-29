@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import org.mwc.asset.netasset2.common.Network;
-import org.mwc.asset.netasset2.common.Network.SomeRequest;
 import org.mwc.asset.netasset2.common.Network.SomeResponse;
 
 import com.esotericsoftware.kryonet.Client;
@@ -22,13 +21,9 @@ public class AClient
 		Network.register(_client);
 		_client.start();
 
-		InetAddress address = _client.discoverHost(54777, 5000);
+		InetAddress address = _client.discoverHost(Network.UDP_PORT, 5000);
 		if (address != null)
 			_client.connect(5000, "LOCALHOST", Network.TCP_PORT, Network.UDP_PORT);
-
-		SomeRequest request = new SomeRequest();
-		request.text = "Here is the request 3!";
-		_client.sendTCP(request);
 
 		_client.addListener(new Listener()
 		{
@@ -62,6 +57,13 @@ public class AClient
 		System.in.read();
 
 		client.stop();
+	}
+
+
+
+	public void send(Object data)
+	{
+		_client.sendTCP(data);
 	}
 
 }

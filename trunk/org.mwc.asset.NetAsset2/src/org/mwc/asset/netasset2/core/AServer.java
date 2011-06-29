@@ -54,7 +54,7 @@ public class AServer
 
 
 
-	private void stop()
+	public void stop()
 	{
 		_server.stop();
 	}
