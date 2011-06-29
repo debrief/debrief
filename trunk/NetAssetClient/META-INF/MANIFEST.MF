@@ -6,6 +6,24 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.mwc.asset.netassetclient.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.ui.intro
+ org.eclipse.ui.intro,
+ org.mwc.asset.legacy;bundle-version="1.0.29",
+ org.mwc.asset.core;bundle-version="1.0.17"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: com.esotericsoftware.kryo,
+ com.esotericsoftware.kryo.compress,
+ com.esotericsoftware.kryo.serialize,
+ com.esotericsoftware.kryo.util,
+ com.esotericsoftware.kryonet,
+ com.esotericsoftware.kryonet.rmi,
+ com.esotericsoftware.minlog,
+ com.esotericsoftware.reflectasm,
+ org.mwc.asset.comms.kryo,
+ org.mwc.asset.comms.kryo.common,
+ org.mwc.asset.comms.kryo.demo,
+ org.mwc.asset.netassetclient,
+ org.mwc.asset.netassetclient.intro,
+ org.mwc.asset.netassetclient.test,
+ org.objectweb.asm,
+ org.objectweb.asm.signature
