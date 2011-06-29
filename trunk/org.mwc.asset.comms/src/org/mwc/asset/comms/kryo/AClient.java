@@ -13,43 +13,43 @@ public class AClient implements ASpecs
 {
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException
 	{
 		// try to find a server
-		Client client = new Client();
+		final Client client = new Client();
 		client.start();
 		InetAddress address = client.discoverHost(UDP_PORT, 2000);
 		System.out.println(address);
 
-		if(address == null)
+		if (address == null)
 			System.exit(1);
-		
+
 		// did it work?
 		client.connect(5000, address.getHostAddress(), TCP_PORT, UDP_PORT);
-		
+
 		ASpecs.Config.init(client.getKryo());
 
-		client.addListener(new Listener() {
-		   public void received (Connection connection, Object object) {
-		      if (object instanceof ScenarioList) {
-		      	ScenarioList response = (ScenarioList)object;
-		         System.out.println("rx:" + response.scenarios.size());
-		      }
-		   }
+		client.addListener(new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				System.out.println("received:" + object);
+				if (object instanceof ScenarioList)
+				{
+					ScenarioList response = (ScenarioList) object;
+					System.out.println("rx:" + response.scenarios.size());
+					client.stop();
+				}
+			}
 		});
-		
-		for(int i=0;i<5;i++)
+
+		for (int i = 0; i < 5; i++)
 		{
 			GetScenarios request = new GetScenarios();
 			client.sendTCP(request);
 		}
-		
-		
-		client.stop();
-		
-		
-		
+
 	}
 }
