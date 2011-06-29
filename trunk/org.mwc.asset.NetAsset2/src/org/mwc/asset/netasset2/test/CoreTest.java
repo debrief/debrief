@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.core.AClient;
 import org.mwc.asset.netasset2.core.AServer;
+
+import ASSET.NetworkParticipant;
+import ASSET.NetworkScenario;
+import ASSET.Scenario.MultiScenarioLister;
 
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
@@ -67,57 +72,86 @@ public class CoreTest
 
 			// now real connection
 			client.connect(null);
-			showEvents(_events);
+			Thread.sleep(100);
 
-			assertEquals("events recorded", 5, _events.size());
+			assertEquals("events recorded", 6, _events.size());
 			assertTrue("correct client event",
 					_events.elementAt(2).contains("Discovered server"));
 			assertTrue("correct client event",
 					_events.elementAt(3).contains("Connecting"));
 			assertTrue("correct client event",
 					_events.elementAt(4).contains("connected"));
+			assertTrue("correct client event",
+					_events.elementAt(5).contains("connected"));
+
+			// ok, give the server some data
+			MultiScenarioLister lister = new MultiScenarioLister(){
+
+				@Override
+				public Vector<NetworkScenario> getScenarios()
+				{
+					return getTheScenarios();
+				}};
+			server.setDataProvider(lister);
 			
-			// ok, try to send something
+			// fire in request for scenarios
+			client.send(new GetScenarios());
+			Thread.sleep(100);
+			
+			showEvents(_events);
+			assertEquals("events recorded", 6, _events.size());
+			
 
-	//		showEvents(_events);
 
-			Thread.sleep(1000);
 			client.stop();
 			server.stop();
 		}
 
+		protected Vector<NetworkScenario> getTheScenarios()
+		{
+			Vector<NetworkScenario> res = new Vector<NetworkScenario>();
+			res.add(new NetworkScenario(){
+				public String getName()
+				{
+					return "aaa";
+				}
+				public Integer[] getListOfParticipants()
+				{
+					return null;
+				}
+				public NetworkParticipant getThisParticipant(int id)
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}});
+			res.add(new NetworkScenario(){
+				public String getName()
+				{
+					return "bbb";
+				}
+				public Integer[] getListOfParticipants()
+				{
+					return null;
+				}
+				public NetworkParticipant getThisParticipant(int id)
+				{
+					// TODO Auto-generated method stub
+					return null;
+				}});
+			return res;
+		}
+
 		protected static void showEvents(Vector<String> events)
 		{
-			synchronized (events)
+			Iterator<String> iter = events.iterator();
+			int ctr = 0;
+			while (iter.hasNext())
 			{
-				Iterator<String> iter = events.iterator();
-				int ctr = 0;
-				while (iter.hasNext())
-				{
-					String string = (String) iter.next();
-					System.out.println(++ctr + " - " + string);
-				}
+				String string = (String) iter.next();
+				System.out.println(++ctr + " - " + string);
 			}
 		}
 	}
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException
-	{
-		AServer server = new AServer();
-
-		AClient client = new AClient();
-
-		client.testSend();
-
-		System.out.println("pausing");
-		System.in.read();
-
-		server.stop();
-		client.stop();
-	}
 
 }

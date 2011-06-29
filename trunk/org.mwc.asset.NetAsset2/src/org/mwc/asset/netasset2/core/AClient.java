@@ -82,12 +82,12 @@ public class AClient
 	{
 		_model.stop();
 	}
-
-	public void testSend()
+	
+	public void send(Object data)
 	{
-		SomeRequest request = new SomeRequest();
-		request.text = "Here is the request 6!";
-		_model.send(request);
+		_model.send(data);
 	}
+
+
 
 }

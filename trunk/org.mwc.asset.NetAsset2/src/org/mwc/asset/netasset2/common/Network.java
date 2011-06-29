@@ -1,5 +1,9 @@
 package org.mwc.asset.netasset2.common;
 
+import java.util.Vector;
+
+import ASSET.NetworkScenario;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
@@ -11,8 +15,11 @@ public class Network {
 	// This registers objects that are going to be sent over the network.
 	static public void register (EndPoint endPoint) {
 		Kryo kryo = endPoint.getKryo();
+		// sample ones
 		kryo.register(SomeRequest.class);
 		kryo.register(SomeResponse.class);
+		// real ones
+		kryo.register(GetScenarios.class);
 	}
 	
 	public static class SomeRequest {
@@ -21,5 +28,12 @@ public class Network {
 	public static class SomeResponse {
 	   public String text;
 	}
-
+	public static class GetScenarios
+	{
+	}
+	public static class ScenarioList
+	{
+		public Vector<NetworkScenario> list;
+	}
+	
 }
