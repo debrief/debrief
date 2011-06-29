@@ -8,4 +8,17 @@ public interface NetworkScenario
 	 * @return
 	 */
 	public String getName();
+
+	/** retrieve list of participants
+	 * 
+	 * @return
+	 */
+  public Integer[] getListOfParticipants();
+  
+  /** get the specified participant
+   * 
+   * @return the subject participant
+   */
+  public NetworkParticipant getThisParticipant(int id);
+
 }

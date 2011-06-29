@@ -160,6 +160,14 @@ public interface ScenarioType extends ScenarioActivityMonitor, NetworkScenario
   ////////////////////////////////////////////////////////
   // participant-related
   ////////////////////////////////////////////////////////
+  
+  /**
+   * Provide a list of id numbers of Participant we contain
+   *
+   * @return list of ids of Participant we contain
+   */
+  public Integer[] getListOfParticipants();
+  
   /**
    * Return a particular Participant - so that the Participant can be controlled directly.  Listeners added/removed. Participants added/removed, etc.
    */
