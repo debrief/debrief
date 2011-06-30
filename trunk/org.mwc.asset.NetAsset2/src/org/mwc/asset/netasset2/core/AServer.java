@@ -13,6 +13,7 @@ import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
 import org.mwc.asset.netasset2.common.Network.ReleasePart;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
+import org.mwc.asset.netasset2.core.AServer.PartListener;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
@@ -103,9 +104,7 @@ public class AServer
 		public void moved(Status newStatus)
 		{
 			// ok, send out the movement details
-			PartUpdate pu = new PartUpdate(_partId, newStatus.getTime(), _scenario);
-
-			System.err.println("moved!!!");
+			PartUpdate pu = new PartUpdate(_partId, newStatus, _scenario);
 			_conn.sendTCP(pu);
 		}
 
@@ -177,6 +176,14 @@ public class AServer
 		{
 			// we can work out the exact index, cool.
 			String index = connStr + partId;
+			
+			// get the listener
+			PartListener pl = _partListeners.get(index);
+			
+			// tell it to stop listening to hte part
+			pl.release();
+			
+			// and forget about it.
 			_partListeners.remove(index);
 		}
 		else
@@ -201,6 +208,8 @@ public class AServer
 				 while (drops.hasNext())
 				{
 					String index = (String) drops.next();
+					PartListener pl = _partListeners.get(index);
+					pl.release();
 					_partListeners.remove(index);
 					
 				}

@@ -5,6 +5,9 @@ import java.util.Vector;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Participants.Category;
+import ASSET.Participants.Status;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serialize.CollectionSerializer;
@@ -33,6 +36,7 @@ public class Network
 		kryo.register(ControlPart.class);
 		kryo.register(ReleasePart.class);
 		kryo.register(PartUpdate.class);
+		kryo.register(LightStatus.class);
 	}
 
 	public static class SomeRequest
@@ -53,6 +57,34 @@ public class Network
 	{
 		public Vector<LightScenario> list;
 		// public Vector list;
+	}
+	
+	public static class LightStatus
+	{
+		public LightStatus(){};
+		public LightStatus(Status status)
+		{
+			dtg = status.getTime();
+			id = status.getId();
+			_lat = status.getLocation().getLat();
+			_long = status.getLocation().getLong();
+			_depth = status.getLocation().getDepth();
+			spdKts = status.getSpeed().getValueIn(WorldSpeed.Kts);
+			courseDegs = status.getCourse();
+		}
+		long dtg;
+		int id;
+		double _lat, _long, _depth;
+		double spdKts;
+		double courseDegs;
+		public Status asStatus()
+		{
+			Status res = new Status(id, dtg);
+			res.setLocation(new WorldLocation(_lat, _long, _depth));
+			res.setSpeed(new WorldSpeed(spdKts, WorldSpeed.Kts));
+			res.setCourse(courseDegs);
+			return res;
+		}
 	}
 
 	public static class LightScenario
@@ -93,18 +125,18 @@ public class Network
 	public static class PartUpdate
 	{
 		public int id;
-		public long dtg;
+		public LightStatus lStatus;
 		public String scenario;
 
 		public PartUpdate()
 		{
 		};
 
-		public PartUpdate(int id, long dtg, String scenario)
+		public PartUpdate(int id, Status status, String scenario)
 		{
 			this.id = id;
-			this.dtg = dtg;
 			this.scenario = scenario;
+			lStatus = new LightStatus(status);
 		}
 
 	}

@@ -193,10 +193,28 @@ public class CoreTest
 			Thread.sleep(200);
 			server.step(scen.name);
 			Thread.sleep(200);
+			server.step(scen.name);
+			Thread.sleep(200);
 			
 			// check we've seen some mvoement
 			assertEquals("movement detected", 2, moveLog.size());
 			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
+			
+			// ok, stop listening
+			// ok, now try to release
+			client.releaseParticipant(scen.name, firstPart.id);
+			Thread.sleep(600);
+
+			assertEquals("no listener", 0, server.getPartListeners().size());
+
+			// do another step anyway
+			server.step(scen.name);
+			Thread.sleep(200);
+			
+			// check we've got the same movement
+			assertEquals("movement detected", 2, moveLog.size());
+			
+			// ok, reconnect, and try driving it...
 
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
@@ -268,6 +286,7 @@ public class CoreTest
 			public void moved(Status newStatus)
 			{
 				_items.add("move:" + newStatus.getTime());
+				System.err.println(newStatus.getTime() + " at:" + newStatus.getLocation());
 			}
 
 			@Override
