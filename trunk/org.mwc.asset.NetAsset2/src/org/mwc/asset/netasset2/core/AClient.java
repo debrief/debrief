@@ -209,4 +209,15 @@ public class AClient
 		_model.send(new GetScenarios());
 	}
 
+	public void demStatus(String scenario, int id, double courseDegs, double speedKts, double depthM)
+	{
+		Network.DemStatus dem = new Network.DemStatus();
+		dem.scenario = scenario;
+		dem.partId = id;
+		dem.courseDegs = courseDegs;
+		dem.speedKts = speedKts;
+		dem.depthM = depthM;
+		_model.send(dem);
+	}
+
 }

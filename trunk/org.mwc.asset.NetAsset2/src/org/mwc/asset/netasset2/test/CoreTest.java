@@ -200,6 +200,9 @@ public class CoreTest
 			assertEquals("movement detected", 2, moveLog.size());
 			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
 			
+			// check the course
+			assertEquals("has correct course",12d, combi.lastStat.getCourse(), 0.001);
+			
 			// ok, stop listening
 			// ok, now try to release
 			client.releaseParticipant(scen.name, firstPart.id);
@@ -215,6 +218,30 @@ public class CoreTest
 			assertEquals("movement detected", 2, moveLog.size());
 			
 			// ok, reconnect, and try driving it...
+			// ok, now try to control the participant
+			client.controlParticipant(scen.name, firstPart.id, combi, combi, combi);
+			Thread.sleep(600);
+			assertEquals("a listener", 1, server.getPartListeners().size());
+			
+			// pl. try driving
+			client.demStatus(scen.name, firstPart.id, 55d, 4d, 0d);	
+			
+			// move forward & look for change in course/speed
+			server.step(scen.name);
+			Thread.sleep(200);
+			server.step(scen.name);
+			Thread.sleep(200);
+			server.step(scen.name);
+			Thread.sleep(200);
+			
+			// check we've seen some mvoement
+			assertEquals("movement detected", 5, moveLog.size());
+			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
+			
+			// check the course
+			assertEquals("has correct course",55d, combi.lastStat.getCourse(), 0.001);
+			assertEquals("has correct speed",4d, combi.lastStat.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+
 
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
@@ -264,6 +291,7 @@ public class CoreTest
 		private static class CombinedListener implements ParticipantMovedListener, ParticipantDetectedListener, ParticipantDecidedListener
 		{
 			private Vector<String> _items;
+			protected Status lastStat;
 
 			public CombinedListener(Vector<String> items)
 			{
@@ -286,6 +314,7 @@ public class CoreTest
 			public void moved(Status newStatus)
 			{
 				_items.add("move:" + newStatus.getTime());
+				lastStat = newStatus;
 				System.err.println(newStatus.getTime() + " at:" + newStatus.getLocation());
 			}
 

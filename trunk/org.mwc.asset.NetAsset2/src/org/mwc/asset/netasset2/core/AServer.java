@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.ControlPart;
+import org.mwc.asset.netasset2.common.Network.DemStatus;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
@@ -17,9 +18,13 @@ import org.mwc.asset.netasset2.core.AServer.PartListener;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
+import ASSET.Models.DecisionType;
+import ASSET.Models.Decision.UserControl;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.MultiScenarioLister;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldSpeed;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -167,6 +172,35 @@ public class AServer
 			}
 		};
 		_model.addListener(new ReleasePart().getClass(), releaseP);
+		Listener demS = new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				DemStatus cp = (DemStatus) object;
+				ParticipantType part = getParticipant(cp.scenario, cp.partId);
+				DecisionType dem = part.getDecisionModel();
+				
+				if(!(dem instanceof UserControl))
+				{
+					UserControl uc2 = new UserControl(0, null, null);
+					part.setDecisionModel(uc2);
+				}
+	
+				 dem = part.getDecisionModel();
+				if(dem instanceof UserControl)
+				{
+					UserControl uc = (UserControl) dem;
+					uc.setCourse(cp.courseDegs);
+					uc.setSpeed(new WorldSpeed(cp.speedKts, WorldSpeed.Kts));
+					uc.setDepth(new WorldDistance(cp.depthM, WorldDistance.METRES));
+				}
+				else
+				{
+					System.err.println("PARTICIPANT IS NOT CONTROLLABLE!");
+				}
+			}
+		};
+		_model.addListener(new DemStatus().getClass(), demS);
 
 	}
 

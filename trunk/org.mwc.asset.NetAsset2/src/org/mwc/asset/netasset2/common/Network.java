@@ -37,6 +37,7 @@ public class Network
 		kryo.register(ReleasePart.class);
 		kryo.register(PartUpdate.class);
 		kryo.register(LightStatus.class);
+		kryo.register(DemStatus.class);
 	}
 
 	public static class SomeRequest
@@ -85,6 +86,16 @@ public class Network
 			res.setCourse(courseDegs);
 			return res;
 		}
+	}
+	
+	public static class DemStatus
+	{
+		public DemStatus(){};
+		public double courseDegs;
+		public double speedKts;
+		public double depthM;
+		public String scenario;
+		public int partId;
 	}
 
 	public static class LightScenario
