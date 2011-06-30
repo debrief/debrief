@@ -206,9 +206,9 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		_multiScenLister = new MultiScenarioLister(){
 
 			@Override
-			public Vector<NetworkScenario> getScenarios()
+			public Vector<ScenarioType> getScenarios()
 			{
-				Vector<NetworkScenario> res = new Vector<NetworkScenario>();
+				Vector<ScenarioType> res = new Vector<ScenarioType>();
 				// ok, collate the list
 				Vector<InstanceWrapper> sims = _myPresenter.getModel().getScenarios();
 				Iterator<InstanceWrapper> iter = sims.iterator();
@@ -216,8 +216,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				{
 					InstanceWrapper inst = iter.next();
 					ScenarioType scen = inst.getScenario();
-					NetworkScenario ns = new NetworkScenario(scen);
-					res.add(ns);
+					res.add(scen);
 				}
 				return res;
 			}};
