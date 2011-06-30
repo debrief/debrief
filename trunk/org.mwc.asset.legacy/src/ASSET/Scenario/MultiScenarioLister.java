@@ -2,9 +2,9 @@ package ASSET.Scenario;
 
 import java.util.Vector;
 
-import ASSET.NetworkScenario;
+import ASSET.ScenarioType;
 
 public interface MultiScenarioLister
 {
-	public Vector<NetworkScenario> getScenarios();
+	public Vector<ScenarioType> getScenarios();
 }
