@@ -9,8 +9,14 @@ import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.ControlPart;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netasset2.common.Network.PartUpdate;
 import org.mwc.asset.netasset2.common.Network.ReleasePart;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
+
+import ASSET.Participants.ParticipantDecidedListener;
+import ASSET.Participants.ParticipantDetectedListener;
+import ASSET.Participants.ParticipantMovedListener;
+import ASSET.Participants.Status;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -86,11 +92,52 @@ public class AClient
 
 	}
 
+	private static class PartListener
+	{
+		final ParticipantMovedListener _mover;
+		final ParticipantDecidedListener _decider;
+		final ParticipantDetectedListener _detector;
+
+		public PartListener(ParticipantMovedListener mover,
+				ParticipantDecidedListener decider, ParticipantDetectedListener detector)
+		{
+			_mover = mover;
+			_decider = decider;
+			_detector = detector;
+		}
+	}
+
 	private CModel _model;
+	private HashMap<String, PartListener> _partListeners;
 
 	public AClient() throws IOException
 	{
 		_model = new CModel();
+		_partListeners = new HashMap<String, PartListener>();
+
+		// setup the step listener
+		Listener mover = new Listener()
+		{
+			@Override
+			public void received(Connection connection, Object object)
+			{
+				PartUpdate pu = (PartUpdate) object;
+
+				String index = pu.scenario + pu.id;
+				PartListener pl = _partListeners.get(index);
+				if (pl != null)
+				{
+					Status newStat = new Status(12, pu.dtg);
+					pl._mover.moved(newStat);
+				}
+				else
+				{
+					System.err.println("LISTENER NOT FOUND FOR:" + index);
+				}
+			}
+		};
+
+		_model.addListener(new PartUpdate().getClass(), mover);
 	}
 
 	public void connect(String target) throws IOException
@@ -102,21 +149,32 @@ public class AClient
 	{
 		_model.stop();
 	}
-	
-	/** user wants to drive this participant
+
+	/**
+	 * user wants to drive this participant
 	 * 
 	 * @param scenarioName
 	 * @param participantId
 	 */
-	public void controlParticipant(String scenarioName, int participantId)
+	public void controlParticipant(String scenarioName, int participantId,
+			ParticipantMovedListener moveL, ParticipantDecidedListener decider,
+			ParticipantDetectedListener detector)
 	{
 		ControlPart cp = new ControlPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
+
+		// ok, register the listener
+		String index = scenarioName + participantId;
+		PartListener pl = new PartListener(moveL, decider, detector);
+		_partListeners.put(index, pl);
+
 		_model.send(cp);
-		
+
 	}
-	/** user wants to release this participant
+
+	/**
+	 * user wants to release this participant
 	 * 
 	 * @param scenarioName
 	 * @param participantId
@@ -126,13 +184,13 @@ public class AClient
 		ReleasePart cp = new ReleasePart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
+
+		String index = scenarioName + participantId;
+		_partListeners.remove(index);
+
 		_model.send(cp);
 	}
 
-	
-
-	
-	
 	public void getScenarioList(
 			final Network.AHandler<Vector<LightScenario>> handler)
 	{

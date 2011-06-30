@@ -57,7 +57,10 @@ public class Network
 
 	public static class LightScenario
 	{
-		public LightScenario(){};
+		public LightScenario()
+		{
+		};
+
 		public LightScenario(ScenarioType scenario)
 		{
 			listOfParticipants = new Vector<LightParticipant>();
@@ -89,14 +92,19 @@ public class Network
 
 	public static class PartUpdate
 	{
-		int id;
-		long dtg;
+		public int id;
+		public long dtg;
+		public String scenario;
 
-		public PartUpdate(){};
-		public PartUpdate(int id, long dtg)
+		public PartUpdate()
+		{
+		};
+
+		public PartUpdate(int id, long dtg, String scenario)
 		{
 			this.id = id;
-			this.dtg =dtg;
+			this.dtg = dtg;
+			this.scenario = scenario;
 		}
 
 	}

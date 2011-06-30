@@ -87,12 +87,14 @@ public class AServer
 		private final Connection _conn;
 		private final ParticipantType _part;
 		private final int _partId;
+		private final String _scenario;
 
-		public PartListener(Connection conn, int partId, ParticipantType part)
+		public PartListener(Connection conn, int partId, ParticipantType part, String scenario)
 		{
 			_conn = conn;
 			_partId = partId;
 			_part = part;
+			_scenario = scenario;
 
 			_part.addParticipantMovedListener(this);
 		}
@@ -101,7 +103,8 @@ public class AServer
 		public void moved(Status newStatus)
 		{
 			// ok, send out the movement details
-			PartUpdate pu = new PartUpdate(_partId, newStatus.getTime());
+			PartUpdate pu = new PartUpdate(_partId, newStatus.getTime(), _scenario);
+
 			System.err.println("moved!!!");
 			_conn.sendTCP(pu);
 		}
@@ -150,7 +153,7 @@ public class AServer
 			{
 				ControlPart cp = (ControlPart) object;
 				ParticipantType part = getParticipant(cp.scenarioName, cp.partId);
-				PartListener pl = new PartListener(connection, cp.partId, part);
+				PartListener pl = new PartListener(connection, cp.partId, part, cp.scenarioName);
 				String index = connection.toString() + cp.partId;
 				_partListeners.put(index, pl);
 			}

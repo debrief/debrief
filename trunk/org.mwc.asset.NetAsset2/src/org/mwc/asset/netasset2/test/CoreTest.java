@@ -13,15 +13,19 @@ import org.mwc.asset.netasset2.core.AServer;
 import ASSET.ScenarioType;
 import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.Movement.Wander;
+import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.SurfaceMovementCharacteristics;
 import ASSET.Models.Vessels.Surface;
 import ASSET.Participants.Category;
 import ASSET.Participants.CoreParticipant;
+import ASSET.Participants.DemandedStatus;
+import ASSET.Participants.ParticipantDecidedListener;
+import ASSET.Participants.ParticipantDetectedListener;
+import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.MultiScenarioLister;
 import MWC.GenericData.Duration;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -162,7 +166,9 @@ public class CoreTest
 			assertEquals("no listeners", 0, server.getPartListeners().size());
 
 			// ok, now try to control the participant
-			client.controlParticipant(scen.name, firstPart.id);
+			Vector<String> moveLog = new Vector<String>();
+			CombinedListener combi = new CombinedListener(moveLog);
+			client.controlParticipant(scen.name, firstPart.id, combi, combi, combi);
 			Thread.sleep(600);
 
 			assertEquals("a listener", 1, server.getPartListeners().size());
@@ -177,7 +183,7 @@ public class CoreTest
 
 			// connect again
 			// ok, now try to control the participant
-			client.controlParticipant(scen.name, firstPart.id);
+			client.controlParticipant(scen.name, firstPart.id, combi, combi, combi);
 			Thread.sleep(600);
 
 			assertEquals("a listener", 1, server.getPartListeners().size());
@@ -187,6 +193,10 @@ public class CoreTest
 			Thread.sleep(200);
 			server.step(scen.name);
 			Thread.sleep(200);
+			
+			// check we've seen some mvoement
+			assertEquals("movement detected", 2, moveLog.size());
+			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
 
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
@@ -233,6 +243,40 @@ public class CoreTest
 			}
 		}
 
+		private static class CombinedListener implements ParticipantMovedListener, ParticipantDetectedListener, ParticipantDecidedListener
+		{
+			private Vector<String> _items;
+
+			public CombinedListener(Vector<String> items)
+			{
+				_items = items;
+			}
+
+			@Override
+			public void newDecision(String description, DemandedStatus dem_status)
+			{
+				_items.add("dec:" + description);
+			}
+
+			@Override
+			public void newDetections(DetectionList detections)
+			{
+				_items.add("det:" + detections.size());
+			}
+
+			@Override
+			public void moved(Status newStatus)
+			{
+				_items.add("move:" + newStatus.getTime());
+			}
+
+			@Override
+			public void restart(ScenarioType scenario)
+			{
+			}
+			
+		}
+		
 		protected Vector<ScenarioType> getScenarioList()
 		{
 			if (_myScenarios == null)
