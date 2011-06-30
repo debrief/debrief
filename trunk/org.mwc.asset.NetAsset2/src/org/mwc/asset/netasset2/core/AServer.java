@@ -1,11 +1,13 @@
 package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
 
+import ASSET.NetworkScenario;
 import ASSET.Scenario.MultiScenarioLister;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -55,7 +57,12 @@ public class AServer
 					System.err.println("getS received");
 					Log.info("GetScenarios received");
 					ScenarioList res = new ScenarioList();
-			//		res.list = _dataProvider.getScenarios();
+					res.list = new Vector<NetworkScenario>();
+					res.list.add(new NetworkScenario("zaa"));
+					res.list.add(new NetworkScenario("bbb"));
+					res.list.add(new NetworkScenario("ccc"));
+
+					// res.list = _dataProvider.getScenarios();
 					System.err.println("about to send list");
 					connection.sendTCP(res);
 					System.err.println("sent list");
@@ -65,15 +72,15 @@ public class AServer
 
 	}
 
-//	public static void main(String[] args) throws IOException
-//	{
-//		AServer server = new AServer();
-//
-//		System.out.println("pausing");
-//		System.in.read();
-//
-//		server.stop();
-//	}
+	// public static void main(String[] args) throws IOException
+	// {
+	// AServer server = new AServer();
+	//
+	// System.out.println("pausing");
+	// System.in.read();
+	//
+	// server.stop();
+	// }
 
 	public void setDataProvider(MultiScenarioLister lister)
 	{

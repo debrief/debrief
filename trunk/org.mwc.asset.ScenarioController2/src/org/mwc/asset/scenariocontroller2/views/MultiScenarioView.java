@@ -59,6 +59,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 
 import ASSET.NetworkScenario;
+import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
@@ -214,7 +215,9 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				while (iter.hasNext())
 				{
 					InstanceWrapper inst = iter.next();
-					res.add(inst.getScenario());
+					ScenarioType scen = inst.getScenario();
+					NetworkScenario ns = new NetworkScenario(scen);
+					res.add(ns);
 				}
 				return res;
 			}};

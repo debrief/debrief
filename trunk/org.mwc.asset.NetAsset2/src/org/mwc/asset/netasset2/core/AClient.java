@@ -2,11 +2,13 @@ package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
+import org.mwc.asset.netasset2.common.Network.ScenarioList;
 
 import ASSET.NetworkScenario;
 
@@ -41,6 +43,10 @@ public class AClient
 					{
 						match.received(connection, object);
 					}
+					else
+					{
+						System.err.println("HANDLER NOT FOUND FOR:" + object);
+					}
 				}
 			});
 		}
@@ -49,7 +55,7 @@ public class AClient
 		{
 			if (target == null)
 			{
-				InetAddress address = _client.discoverHost(Network.UDP_PORT, 3000);
+				InetAddress address = _client.discoverHost(Network.UDP_PORT, 1000);
 				if (address != null)
 					target = address.getHostAddress();
 
@@ -103,15 +109,15 @@ public class AClient
 		final Class<?> theType = new GetScenarios().getClass();
 		final Listener listener = new Listener()
 		{
-			@SuppressWarnings("unchecked")
 			public void received(Connection connection, Object object)
 			{
-				handler.onSuccess((Vector<NetworkScenario>) object);
+				ScenarioList sl = (ScenarioList) object;
+				handler.onSuccess(sl.list);
 				// and forget about ourselves
 				_model.removeListener(theType);
 			}
 		};
-		_model.addListener(new GetScenarios().getClass(), listener);
+		_model.addListener(new ScenarioList().getClass(), listener);
 		_model.send(new GetScenarios());
 	}
 

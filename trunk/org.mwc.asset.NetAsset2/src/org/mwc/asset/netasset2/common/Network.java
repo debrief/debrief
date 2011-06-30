@@ -22,8 +22,8 @@ public class Network {
 		// real ones
 		kryo.register(GetScenarios.class);
 		kryo.register(ScenarioList.class);
-		kryo.register(Vector.class, new CollectionSerializer(kryo));
 		kryo.register(NetworkScenario.class);
+		kryo.register(Vector.class, new CollectionSerializer(kryo));
 	}
 	
 	public static class SomeRequest {
@@ -37,7 +37,8 @@ public class Network {
 	}
 	public static class ScenarioList
 	{
-		public Vector list;
+		public Vector<NetworkScenario> list;
+//		public Vector list;
 	}
 	
 	/** and our event handler

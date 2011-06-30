@@ -1,6 +1,8 @@
 package org.mwc.asset.netasset2.test;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -12,6 +14,7 @@ import ASSET.NetworkParticipant;
 import ASSET.NetworkScenario;
 import ASSET.Scenario.MultiScenarioLister;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
 
@@ -42,8 +45,28 @@ public class CoreTest
 			};
 			Log.setLogger(logger);
 		}
-		
-		public void testZConnect()throws InterruptedException, IOException
+
+		public void testKryo()
+		{
+			Kryo kryo = new Kryo();
+			ByteBuffer buffer = ByteBuffer.allocate(200);
+			buffer.clear();
+			kryo.writeObject(buffer, new Double(12));
+			buffer.flip();
+			Double res = kryo.readObject(buffer, Double.class);
+			assertEquals("correct transfer", new Double(12), res);
+			
+			kryo.register(NetworkScenario.class);
+			buffer.clear();
+			NetworkScenario ns = new NetworkScenario();
+			ns.name="aaa";
+			kryo.writeObject(buffer, ns);
+			buffer.flip();
+			NetworkScenario ns2 = kryo.readObject(buffer, NetworkScenario.class);
+			assertEquals("right name", "aaa", ns2.name);
+		}
+
+		public void testZConnect() throws InterruptedException, IOException
 		{
 			// check events empty
 			assertEquals("events empty", 0, _events.size());
@@ -74,7 +97,7 @@ public class CoreTest
 			// now real connection
 			client.connect(null);
 			Thread.sleep(100);
-			
+
 			client.stop();
 			server.stop();
 		}
@@ -107,37 +130,43 @@ public class CoreTest
 					_events.elementAt(4).contains("connected"));
 
 			// ok, give the server some data
-			MultiScenarioLister lister = new MultiScenarioLister(){
+			MultiScenarioLister lister = new MultiScenarioLister()
+			{
 
 				@Override
 				public Vector<NetworkScenario> getScenarios()
 				{
 					return getTheScenarios();
-				}};
+				}
+			};
 			server.setDataProvider(lister);
 
 			assertNull("scen list should be empty", _myList);
-			AHandler<Vector<NetworkScenario>> sHandler = new AHandler<Vector<NetworkScenario>>(){
-
+			AHandler<Vector<NetworkScenario>> sHandler = new AHandler<Vector<NetworkScenario>>()
+			{
 				@Override
 				public void onSuccess(Vector<NetworkScenario> result)
 				{
 					_myList = result;
-				}};
+				}
+			};
 			// fire in request for scenarios
 			System.err.println("about to request scenarios");
-			client.getScenarioList(sHandler );
+			client.getScenarioList(sHandler);
 			Thread.sleep(300);
-			
-			showEvents(_events);
-			
-	//		assertNotNull("scen list should have data", _myList);
-			
-		//	showEvents(_events);
-	//		assertEquals("events recorded", 6, _events.size());
+
+
+			Thread.sleep(1000);
+			 assertNotNull("scen list should have data", _myList);
+			 assertEquals("scen has correct number", 3, _myList.size());
+			 assertEquals("scen has correct name", "zaa", _myList.elementAt(0).name);
+
+			// showEvents(_events);
+			// assertEquals("events recorded", 6, _events.size());
 
 			System.out.println("pausing");
-			System.in.read();
+			showEvents(_events);
+			Thread.sleep(1000);
 			client.stop();
 			server.stop();
 		}
@@ -145,39 +174,48 @@ public class CoreTest
 		protected Vector<NetworkScenario> getTheScenarios()
 		{
 			Vector<NetworkScenario> res = new Vector<NetworkScenario>();
-			res.add(new NetworkScenario(){
+			res.add(new NetworkScenario()
+			{
 				public String getName()
 				{
 					return "aaa";
 				}
+
 				public Integer[] getListOfParticipants()
 				{
 					return null;
 				}
+
 				public NetworkParticipant getThisParticipant(int id)
 				{
 					// TODO Auto-generated method stub
 					return null;
-				}});
-			res.add(new NetworkScenario(){
+				}
+			});
+			res.add(new NetworkScenario()
+			{
 				public String getName()
 				{
 					return "bbb";
 				}
+
 				public Integer[] getListOfParticipants()
 				{
 					return null;
 				}
+
 				public NetworkParticipant getThisParticipant(int id)
 				{
 					// TODO Auto-generated method stub
 					return null;
-				}});
+				}
+			});
 			return res;
 		}
 
 		protected static void showEvents(Vector<String> events)
 		{
+			System.out.println("=================");
 			Iterator<String> iter = events.iterator();
 			int ctr = 0;
 			while (iter.hasNext())
@@ -187,6 +225,5 @@ public class CoreTest
 			}
 		}
 	}
-
 
 }
