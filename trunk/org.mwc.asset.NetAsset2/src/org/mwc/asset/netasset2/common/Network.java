@@ -2,6 +2,8 @@ package org.mwc.asset.netasset2.common;
 
 import java.util.Vector;
 
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Participants.Category;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -55,18 +57,19 @@ public class Network
 
 	public static class LightScenario
 	{
-		public LightScenario()
+		public LightScenario(){};
+		public LightScenario(ScenarioType scenario)
 		{
-		};
-
-		public LightScenario(String string)
-		{
-			name = string;
 			listOfParticipants = new Vector<LightParticipant>();
-			listOfParticipants.add(new LightParticipant(2, "aa2"));
-			listOfParticipants.add(new LightParticipant(3, "aa3"));
-			listOfParticipants.add(new LightParticipant(4, "aa4"));
-		}
+			name = scenario.getName();
+			Integer[] list = scenario.getListOfParticipants();
+			for (int i = 0; i < list.length; i++)
+			{
+				Integer integer = list[i];
+				ParticipantType pt = scenario.getThisParticipant(integer);
+				listOfParticipants.add(new LightParticipant(pt));
+			}
+		};
 
 		public String name;
 		public Vector<LightParticipant> listOfParticipants;
@@ -106,14 +109,22 @@ public class Network
 
 		public LightParticipant(int Id, String string)
 		{
-			this.Id = Id;
+			this.id = Id;
 			name = string;
 			category = new Category(Category.Force.RED, Category.Environment.SURFACE,
 					Category.Type.SONAR_BUOY);
 			activity = "some activity";
 		}
 
-		public int Id;
+		public LightParticipant(ParticipantType pt)
+		{
+			id = pt.getId();
+			name = pt.getName();
+			category = pt.getCategory();
+			activity = pt.getActivity();
+		}
+
+		public int id;
 		public String name;
 		public Category category;
 		public String activity;

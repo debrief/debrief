@@ -2,6 +2,7 @@ package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
@@ -15,7 +16,6 @@ import org.mwc.asset.netasset2.common.Network.ScenarioList;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
-import ASSET.Models.Vessels.Surface;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.MultiScenarioLister;
@@ -30,7 +30,6 @@ public class AServer
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
 	protected HashMap<String, PartListener> _partListeners;
-	protected ParticipantType _mockPart;
 
 	public static class SModel
 	{
@@ -53,7 +52,6 @@ public class AServer
 				@Override
 				public void received(Connection connection, Object object)
 				{
-					System.err.println("SERVER:" + object.getClass());
 					// ok, see if we have a handler
 					Listener match = _listeners.get(object.getClass());
 					if (match != null)
@@ -96,7 +94,7 @@ public class AServer
 			_conn = conn;
 			_partId = partId;
 			_part = part;
-			
+
 			_part.addParticipantMovedListener(this);
 		}
 
@@ -112,14 +110,14 @@ public class AServer
 		public void restart(ScenarioType scenario)
 		{
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		public void release()
 		{
-		  _part.removeParticipantMovedListener(this);
+			_part.removeParticipantMovedListener(this);
 		}
-		
+
 	}
 
 	public AServer() throws IOException
@@ -132,10 +130,15 @@ public class AServer
 			public void received(Connection connection, Object object)
 			{
 				ScenarioList res = new ScenarioList();
-				res.list = new Vector<LightScenario>();
-				res.list.add(new LightScenario("zaa"));
-				res.list.add(new LightScenario("bbb"));
-				res.list.add(new LightScenario("ccc"));
+				Vector<LightScenario> list = new Vector<LightScenario>();
+				Iterator<ScenarioType> iter = _dataProvider.getScenarios().iterator();
+				while (iter.hasNext())
+				{
+					ScenarioType scen = (ScenarioType) iter.next();
+					list.add(new LightScenario(scen));
+				}
+
+				res.list = list;
 				connection.sendTCP(res);
 			}
 		};
@@ -170,12 +173,23 @@ public class AServer
 	{
 		return _partListeners.keySet();
 	}
-	
+
 	protected ParticipantType getParticipant(String scenarioName, int partId)
 	{
-		if(_mockPart == null)
-			_mockPart = new Surface(23);
-		return _mockPart;
+		Vector<ScenarioType> list = _dataProvider.getScenarios();
+		ParticipantType part = null;
+		Iterator<ScenarioType> iter = list.iterator();
+		while (iter.hasNext())
+		{
+			ScenarioType ns = (ScenarioType) iter.next();
+			if (ns.getName().equals(scenarioName))
+			{
+				part = ns.getThisParticipant(partId);
+				break;
+			}
+		}
+
+		return part;
 	}
 
 	public void setDataProvider(MultiScenarioLister lister)
@@ -186,5 +200,10 @@ public class AServer
 	public void stop()
 	{
 		_model.stop();
+	}
+
+	public void step(String scenarioName)
+	{
+		// get our scenario to move forward
 	}
 }

@@ -7,6 +7,7 @@ Bundle-Activator: org.mwc.asset.netasset2.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
- org.mwc.asset.legacy;bundle-version="1.0.29"
+ org.mwc.asset.legacy;bundle-version="1.0.29",
+ org.mwc.cmap.legacy;bundle-version="1.0.118"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
