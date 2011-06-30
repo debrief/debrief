@@ -1,6 +1,7 @@
 package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
@@ -17,12 +18,14 @@ import com.esotericsoftware.minlog.Log;
 
 public class AServer
 {
+	@SuppressWarnings("unused")
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
 
 	public static class SModel
 	{
 		private Server _server;
+		private HashMap<Class<?>, Listener> _listeners;
 
 		public SModel() throws IOException
 		{
@@ -30,11 +33,39 @@ public class AServer
 			Network.register(_server);
 			_server.start();
 			_server.bind(Network.TCP_PORT, Network.UDP_PORT);
+			
+			_listeners = new HashMap<Class<?>, Listener>();
+
+			// sort out our handler
+			_server.addListener(new Listener()
+			{
+
+				@Override
+				public void received(Connection connection, Object object)
+				{
+					// ok, see if we have a handler
+					Listener match = _listeners.get(object.getClass());
+					if (match != null)
+					{
+						match.received(connection, object);
+					}
+					else
+					{
+						System.err.println("HANDLER NOT FOUND FOR:" + object);
+					}
+				}
+			});
+		}
+		
+
+		public void addListener(Class<?> objectType, Listener listener)
+		{
+			_listeners.put(objectType, listener);
 		}
 
-		public void addListener(Listener listener)
+		public void removeListener(final Class<?> objectType)
 		{
-			_server.addListener(listener);
+			_listeners.remove(objectType);
 		}
 
 		public void stop()
@@ -48,12 +79,10 @@ public class AServer
 	{
 		_model = new SModel();
 
-		_model.addListener(new Listener()
+		Listener getS = new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
-				if (object instanceof GetScenarios)
-				{
 					System.err.println("getS received");
 					Log.info("GetScenarios received");
 					ScenarioList res = new ScenarioList();
@@ -66,21 +95,11 @@ public class AServer
 					System.err.println("about to send list");
 					connection.sendTCP(res);
 					System.err.println("sent list");
-				}
 			}
-		});
+		};
+		_model.addListener(new GetScenarios().getClass(), getS);
 
 	}
-
-	// public static void main(String[] args) throws IOException
-	// {
-	// AServer server = new AServer();
-	//
-	// System.out.println("pausing");
-	// System.in.read();
-	//
-	// server.stop();
-	// }
 
 	public void setDataProvider(MultiScenarioLister lister)
 	{
