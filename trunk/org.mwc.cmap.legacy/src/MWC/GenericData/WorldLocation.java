@@ -188,6 +188,16 @@ public class WorldLocation implements Serializable, Cloneable
 	// //////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////
+
+	/**
+	 * SPECIAL constructor created to help Kryo get locations across the LAN for
+	 * ASSET
+	 */
+	@SuppressWarnings("unused")
+	private WorldLocation()
+	{
+	};
+
 	/**
 	 * create a new location, in World coordinates
 	 * 
@@ -450,12 +460,10 @@ public class WorldLocation implements Serializable, Cloneable
 	{
 		double resLong = pOrigin.getLong()
 				+ (Math.cos((brg)) * (this.getLong() - pOrigin.getLong()) - Math
-						.sin(brg)
-						* (this.getLat() - pOrigin.getLat()));
+						.sin(brg) * (this.getLat() - pOrigin.getLat()));
 		double resLat = pOrigin.getLat()
 				+ (Math.sin((brg)) * (this.getLong() - pOrigin.getLong()) + Math
-						.cos(brg)
-						* (this.getLat() - pOrigin.getLat()));
+						.cos(brg) * (this.getLat() - pOrigin.getLat()));
 		WorldLocation res = new WorldLocation(resLat, resLong, 0d);
 		return res;
 	}
@@ -668,18 +676,18 @@ public class WorldLocation implements Serializable, Cloneable
 			WorldLocation p2 = new WorldLocation(12, 4, 0);
 
 			WorldDistance res = me.perpendicularDistanceBetween(p1, p2);
-			assertEquals("off-track error is correct", 4.0, res
-					.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct", 4.0,
+					res.getValueIn(WorldDistance.DEGS), 0.001);
 
 			p2 = new WorldLocation(9, 2, 0);
 			res = me.perpendicularDistanceBetween(p1, p2);
-			assertEquals("off-track error is correct", 2.5997, res
-					.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct", 2.5997,
+					res.getValueIn(WorldDistance.DEGS), 0.001);
 
 			p2 = new WorldLocation(-4, -4, 0);
 			res = me.perpendicularDistanceBetween(p1, p2);
-			assertEquals("off-track error is correct", 4.9497, res
-					.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct", 4.9497,
+					res.getValueIn(WorldDistance.DEGS), 0.001);
 
 			res = me.rangeFrom(p1, p2);
 			assertEquals("off-track error is correct (using range from operator)",
