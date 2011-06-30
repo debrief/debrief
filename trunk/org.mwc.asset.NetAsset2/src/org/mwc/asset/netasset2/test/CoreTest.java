@@ -2,15 +2,15 @@ package org.mwc.asset.netasset2.test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network.AHandler;
+import org.mwc.asset.netasset2.common.Network.LightParticipant;
+import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.core.AClient;
 import org.mwc.asset.netasset2.core.AServer;
 
-import ASSET.NetworkParticipant;
 import ASSET.NetworkScenario;
 import ASSET.Scenario.MultiScenarioLister;
 
@@ -25,7 +25,7 @@ public class CoreTest
 	{
 
 		private Vector<String> _events;
-		protected Vector<NetworkScenario> _myList;
+		protected Vector<LightScenario> _myList;
 
 		@Override
 		protected void setUp() throws Exception
@@ -55,11 +55,11 @@ public class CoreTest
 			buffer.flip();
 			Double res = kryo.readObject(buffer, Double.class);
 			assertEquals("correct transfer", new Double(12), res);
-			
+
 			kryo.register(NetworkScenario.class);
 			buffer.clear();
 			NetworkScenario ns = new NetworkScenario();
-			ns.name="aaa";
+			ns.name = "aaa";
 			kryo.writeObject(buffer, ns);
 			buffer.flip();
 			NetworkScenario ns2 = kryo.readObject(buffer, NetworkScenario.class);
@@ -136,16 +136,16 @@ public class CoreTest
 				@Override
 				public Vector<NetworkScenario> getScenarios()
 				{
-					return getTheScenarios();
+					return null;
 				}
 			};
 			server.setDataProvider(lister);
 
 			assertNull("scen list should be empty", _myList);
-			AHandler<Vector<NetworkScenario>> sHandler = new AHandler<Vector<NetworkScenario>>()
+			AHandler<Vector<LightScenario>> sHandler = new AHandler<Vector<LightScenario>>()
 			{
 				@Override
-				public void onSuccess(Vector<NetworkScenario> result)
+				public void onSuccess(Vector<LightScenario> result)
 				{
 					_myList = result;
 				}
@@ -155,11 +155,18 @@ public class CoreTest
 			client.getScenarioList(sHandler);
 			Thread.sleep(300);
 
-
 			Thread.sleep(1000);
-			 assertNotNull("scen list should have data", _myList);
-			 assertEquals("scen has correct number", 3, _myList.size());
-			 assertEquals("scen has correct name", "zaa", _myList.elementAt(0).name);
+			assertNotNull("scen list should have data", _myList);
+			assertEquals("scen has correct number", 3, _myList.size());
+			LightScenario scen = _myList.elementAt(0);
+			assertEquals("scen has correct name", "zaa", scen.name);
+			assertEquals("has correct parts", 3, scen.listOfParticipants.size());
+			LightParticipant firstPart = scen.listOfParticipants.firstElement();
+			assertEquals("has correct first part", "aa2", firstPart.name);
+			assertEquals("has correct first id", 2, firstPart.Id);
+
+			// ok, now try to control the participant
+			client.controlParticipant(scen.name, firstPart.Id);
 
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
@@ -169,48 +176,6 @@ public class CoreTest
 			Thread.sleep(1000);
 			client.stop();
 			server.stop();
-		}
-
-		protected Vector<NetworkScenario> getTheScenarios()
-		{
-			Vector<NetworkScenario> res = new Vector<NetworkScenario>();
-			res.add(new NetworkScenario()
-			{
-				public String getName()
-				{
-					return "aaa";
-				}
-
-				public Integer[] getListOfParticipants()
-				{
-					return null;
-				}
-
-				public NetworkParticipant getThisParticipant(int id)
-				{
-					// TODO Auto-generated method stub
-					return null;
-				}
-			});
-			res.add(new NetworkScenario()
-			{
-				public String getName()
-				{
-					return "bbb";
-				}
-
-				public Integer[] getListOfParticipants()
-				{
-					return null;
-				}
-
-				public NetworkParticipant getThisParticipant(int id)
-				{
-					// TODO Auto-generated method stub
-					return null;
-				}
-			});
-			return res;
 		}
 
 		protected static void showEvents(Vector<String> events)

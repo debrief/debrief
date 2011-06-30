@@ -2,15 +2,15 @@ package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
+import org.mwc.asset.netasset2.common.Network.ControlPart;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
+import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netasset2.common.Network.ReleasePart;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
-
-import ASSET.NetworkScenario;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -102,9 +102,39 @@ public class AClient
 	{
 		_model.stop();
 	}
+	
+	/** user wants to drive this participant
+	 * 
+	 * @param scenarioName
+	 * @param participantId
+	 */
+	public void controlParticipant(String scenarioName, int participantId)
+	{
+		ControlPart cp = new ControlPart();
+		cp.scenarioName = scenarioName;
+		cp.partId = participantId;
+		_model.send(cp);
+		
+	}
+	/** user wants to release this participant
+	 * 
+	 * @param scenarioName
+	 * @param participantId
+	 */
+	public void releaseParticipant(String scenarioName, int participantId)
+	{
+		ReleasePart cp = new ReleasePart();
+		cp.scenarioName = scenarioName;
+		cp.partId = participantId;
+		_model.send(cp);
+	}
 
+	
+
+	
+	
 	public void getScenarioList(
-			final Network.AHandler<Vector<NetworkScenario>> handler)
+			final Network.AHandler<Vector<LightScenario>> handler)
 	{
 		final Class<?> theType = new GetScenarios().getClass();
 		final Listener listener = new Listener()

@@ -5,9 +5,9 @@ import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
+import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
 
-import ASSET.NetworkScenario;
 import ASSET.Scenario.MultiScenarioLister;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -57,10 +57,10 @@ public class AServer
 					System.err.println("getS received");
 					Log.info("GetScenarios received");
 					ScenarioList res = new ScenarioList();
-					res.list = new Vector<NetworkScenario>();
-					res.list.add(new NetworkScenario("zaa"));
-					res.list.add(new NetworkScenario("bbb"));
-					res.list.add(new NetworkScenario("ccc"));
+					res.list = new Vector<LightScenario>();
+					res.list.add(new LightScenario("zaa"));
+					res.list.add(new LightScenario("bbb"));
+					res.list.add(new LightScenario("ccc"));
 
 					// res.list = _dataProvider.getScenarios();
 					System.err.println("about to send list");

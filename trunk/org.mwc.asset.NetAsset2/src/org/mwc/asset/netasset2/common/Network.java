@@ -2,19 +2,21 @@ package org.mwc.asset.netasset2.common;
 
 import java.util.Vector;
 
-import ASSET.NetworkScenario;
+import ASSET.Participants.Category;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serialize.CollectionSerializer;
 import com.esotericsoftware.kryonet.EndPoint;
 
 // This class is a convenient place to keep things common to both the client and server.
-public class Network {
+public class Network
+{
 	public static final int UDP_PORT = 54777;
 	public static final int TCP_PORT = 54555;
 
 	// This registers objects that are going to be sent over the network.
-	static public void register (EndPoint endPoint) {
+	static public void register(EndPoint endPoint)
+	{
 		Kryo kryo = endPoint.getKryo();
 		// sample ones
 		kryo.register(SomeRequest.class);
@@ -22,26 +24,96 @@ public class Network {
 		// real ones
 		kryo.register(GetScenarios.class);
 		kryo.register(ScenarioList.class);
-		kryo.register(NetworkScenario.class);
+		kryo.register(LightScenario.class);
+		kryo.register(LightParticipant.class);
+		kryo.register(Category.class);
 		kryo.register(Vector.class, new CollectionSerializer(kryo));
 	}
-	
-	public static class SomeRequest {
-	   public String text;
+
+	public static class SomeRequest
+	{
+		public String text;
 	}
-	public static class SomeResponse {
-	   public String text;
+
+	public static class SomeResponse
+	{
+		public String text;
 	}
+
 	public static class GetScenarios
 	{
 	}
+
 	public static class ScenarioList
 	{
-		public Vector<NetworkScenario> list;
-//		public Vector list;
+		public Vector<LightScenario> list;
+		// public Vector list;
 	}
-	
-	/** and our event handler
+
+	public static class LightScenario
+	{
+		public LightScenario()
+		{
+		};
+
+		public LightScenario(String string)
+		{
+			name = string;
+			listOfParticipants = new Vector<LightParticipant>();
+			listOfParticipants.add(new LightParticipant(2, "aa2"));
+			listOfParticipants.add(new LightParticipant(3, "aa3"));
+			listOfParticipants.add(new LightParticipant(4, "aa4"));
+		}
+
+		public String name;
+		public Vector<LightParticipant> listOfParticipants;
+	}
+
+	public static class ControlPart
+	{
+		public String scenarioName;
+		public int partId;
+	}
+
+	public static class ReleasePart
+	{
+		public String scenarioName;
+		public int partId;
+	}
+
+	public static class PartUpdate
+	{
+
+	}
+
+	public static class LightParticipant
+	{
+		public LightParticipant()
+		{
+		};
+
+		public LightParticipant(int Id, String string)
+		{
+			this.Id = Id;
+			name = string;
+			category = new Category(Category.Force.RED, Category.Environment.SURFACE,
+					Category.Type.SONAR_BUOY);
+			activity = "some activity";
+		}
+
+		public int Id;
+		public String name;
+		public Category category;
+		public String activity;
+	}
+
+	public static class LightNetworkParticipant
+	{
+
+	}
+
+	/**
+	 * and our event handler
 	 * 
 	 */
 	public abstract static class AHandler<T>
@@ -50,7 +122,8 @@ public class Network {
 		{
 			t.printStackTrace();
 		}
+
 		abstract public void onSuccess(T result);
 	}
-	
+
 }
