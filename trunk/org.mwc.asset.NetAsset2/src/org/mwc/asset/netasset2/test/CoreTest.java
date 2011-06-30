@@ -11,11 +11,20 @@ import org.mwc.asset.netasset2.core.AClient;
 import org.mwc.asset.netasset2.core.AServer;
 
 import ASSET.ScenarioType;
+import ASSET.Models.DecisionType;
+import ASSET.Models.Decision.Movement.Wander;
+import ASSET.Models.Movement.SurfaceMovementCharacteristics;
 import ASSET.Models.Vessels.Surface;
 import ASSET.Participants.Category;
 import ASSET.Participants.CoreParticipant;
+import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.MultiScenarioLister;
+import MWC.GenericData.Duration;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
@@ -28,6 +37,7 @@ public class CoreTest
 
 		private Vector<String> _events;
 		protected Vector<LightScenario> _myList;
+		private Vector<ScenarioType> _myScenarios;
 
 		@Override
 		protected void setUp() throws Exception
@@ -47,7 +57,6 @@ public class CoreTest
 			};
 			Log.setLogger(logger);
 		}
-
 
 		public void testZConnect() throws InterruptedException, IOException
 		{
@@ -151,44 +160,53 @@ public class CoreTest
 
 			// check we have no lsitenser....
 			assertEquals("no listeners", 0, server.getPartListeners().size());
-			
+
 			// ok, now try to control the participant
 			client.controlParticipant(scen.name, firstPart.id);
 			Thread.sleep(600);
-			
+
 			assertEquals("a listener", 1, server.getPartListeners().size());
-			
+
 			// ok, now try to release
 			client.releaseParticipant(scen.name, firstPart.id);
 			Thread.sleep(600);
-			
-	//		System.in.read();
-			
+
+			// System.in.read();
+
 			assertEquals("no listener", 0, server.getPartListeners().size());
-			
+
 			// connect again
 			// ok, now try to control the participant
 			client.controlParticipant(scen.name, firstPart.id);
 			Thread.sleep(600);
-			
+
 			assertEquals("a listener", 1, server.getPartListeners().size());
 
 			// move scenario & see if movement occurs...
 			server.step(scen.name);
-			
+			Thread.sleep(200);
+			server.step(scen.name);
+			Thread.sleep(200);
 
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
 
-			System.out.println("pausing");
 			showEvents(_events);
+			System.out.println("pausing");
 			Thread.sleep(1000);
 			System.in.read();
 			client.stop();
 			server.stop();
 		}
 
-		
+		protected static class MyScen extends CoreScenario
+		{
+			public MyScen()
+			{
+				this.setScenarioStepTime(new Duration(5, Duration.MINUTES));
+			}
+		}
+
 		protected static class MyPart extends Surface
 		{
 			/**
@@ -200,44 +218,58 @@ public class CoreTest
 			{
 				super(id);
 				setName("p" + id);
-				this.setCategory(new Category(Category.Force.BLUE, Category.Environment.SURFACE, Category.Type.FRIGATE));
+				this.setCategory(new Category(Category.Force.BLUE,
+						Category.Environment.SURFACE, Category.Type.FRIGATE));
+				WorldLocation centre = new WorldLocation(12, 12, 2);
+				WorldDistance area = new WorldDistance(12, WorldDistance.NM);
+				DecisionType wander = new Wander(centre, area);
+				this.setDecisionModel(wander);
+				Status newStat = new Status(12, 0);
+				newStat.setLocation(new WorldLocation(11, 11, 11));
+				newStat.setCourse(12);
+				newStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+				setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
+				this.setStatus(newStat);
 			}
 		}
-		
+
 		protected Vector<ScenarioType> getScenarioList()
 		{
-			Vector<ScenarioType> res= new Vector<ScenarioType>();
-			
-			CoreScenario scen = new CoreScenario();
-			scen.setName("aaa");
-			CoreParticipant cp = new MyPart(12);
-			CoreParticipant cp2 = new MyPart(13);
-			CoreParticipant cp3 = new MyPart(14);
-			CoreParticipant cp4 = new MyPart(22);
-			CoreParticipant cp5 = new MyPart(23);
-			CoreParticipant cp6 = new MyPart(24);
-			CoreParticipant cp7 = new MyPart(32);
-			CoreParticipant cp8 = new MyPart(33);
-			CoreParticipant cp9 = new MyPart(34);
-			scen.addParticipant(cp.getId(), cp);
-			scen.addParticipant(cp2.getId(), cp2);
-			scen.addParticipant(cp3.getId(), cp3);
-			CoreScenario scen2 = new CoreScenario();
-			scen2.addParticipant(cp4.getId(), cp4);
-			scen2.addParticipant(cp5.getId(), cp5);
-			scen2.addParticipant(cp6.getId(), cp6);
-			scen.setName("aab");
-			CoreScenario scen3 = new CoreScenario();
-			scen3.addParticipant(cp7.getId(), cp7);
-			scen3.addParticipant(cp8.getId(), cp8);
-			scen3.addParticipant(cp9.getId(), cp9);
-			scen.setName("aac");
-			
-			res.add(scen);
-			res.add(scen2);
-			res.add(scen3);
-			
-			return res;
+			if (_myScenarios == null)
+			{
+				_myScenarios = new Vector<ScenarioType>();
+
+				CoreScenario scen = new MyScen();
+				scen.setName("aaa");
+				CoreParticipant cp = new MyPart(12);
+				CoreParticipant cp2 = new MyPart(13);
+				CoreParticipant cp3 = new MyPart(14);
+				CoreParticipant cp4 = new MyPart(22);
+				CoreParticipant cp5 = new MyPart(23);
+				CoreParticipant cp6 = new MyPart(24);
+				CoreParticipant cp7 = new MyPart(32);
+				CoreParticipant cp8 = new MyPart(33);
+				CoreParticipant cp9 = new MyPart(34);
+				scen.addParticipant(cp.getId(), cp);
+				scen.addParticipant(cp2.getId(), cp2);
+				scen.addParticipant(cp3.getId(), cp3);
+				CoreScenario scen2 = new MyScen();
+				scen2.addParticipant(cp4.getId(), cp4);
+				scen2.addParticipant(cp5.getId(), cp5);
+				scen2.addParticipant(cp6.getId(), cp6);
+				scen.setName("aab");
+				CoreScenario scen3 = new MyScen();
+				scen3.addParticipant(cp7.getId(), cp7);
+				scen3.addParticipant(cp8.getId(), cp8);
+				scen3.addParticipant(cp9.getId(), cp9);
+				scen.setName("aac");
+
+				_myScenarios.add(scen);
+				_myScenarios.add(scen2);
+				_myScenarios.add(scen3);
+			}
+
+			return _myScenarios;
 		}
 
 		protected static void showEvents(Vector<String> events)

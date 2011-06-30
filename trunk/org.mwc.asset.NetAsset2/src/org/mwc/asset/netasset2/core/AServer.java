@@ -26,7 +26,6 @@ import com.esotericsoftware.kryonet.Server;
 
 public class AServer
 {
-	@SuppressWarnings("unused")
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
 	protected HashMap<String, PartListener> _partListeners;
@@ -103,6 +102,7 @@ public class AServer
 		{
 			// ok, send out the movement details
 			PartUpdate pu = new PartUpdate(_partId, newStatus.getTime());
+			System.err.println("moved!!!");
 			_conn.sendTCP(pu);
 		}
 
@@ -161,12 +161,48 @@ public class AServer
 			public void received(Connection connection, Object object)
 			{
 				ReleasePart cp = (ReleasePart) object;
-				String index = connection.toString() + cp.partId;
-				_partListeners.remove(index);
+				dropListener(connection.toString(), cp.partId);
 			}
 		};
 		_model.addListener(new ReleasePart().getClass(), releaseP);
 
+	}
+
+	protected void dropListener(String connStr, int partId)
+	{
+		if(partId != -1)
+		{
+			// we can work out the exact index, cool.
+			String index = connStr + partId;
+			_partListeners.remove(index);
+		}
+		else
+		{
+		  // we have to loop thorugh to find the right connection(s)
+			Iterator<String> iter = _partListeners.keySet().iterator();
+			Vector<String> toDrop = new Vector<String>();
+			while (iter.hasNext())
+			{
+				String index = (String) iter.next();
+				if(index.startsWith(connStr))
+				{
+					// ok, ditch it
+					toDrop.add(index);
+				}
+			}
+			
+			// did we find any?
+			if(toDrop.size() > 0)
+			{
+				 Iterator<String> drops = toDrop.iterator();
+				 while (drops.hasNext())
+				{
+					String index = (String) drops.next();
+					_partListeners.remove(index);
+					
+				}
+			}
+		}
 	}
 
 	public Set<String> getPartListeners()
@@ -176,20 +212,30 @@ public class AServer
 
 	protected ParticipantType getParticipant(String scenarioName, int partId)
 	{
-		Vector<ScenarioType> list = _dataProvider.getScenarios();
 		ParticipantType part = null;
+		ScenarioType thisS = getScenario(scenarioName);
+		
+		if(thisS != null)
+			part = thisS.getThisParticipant(partId);
+
+		return part;
+	}
+
+	private ScenarioType getScenario(String scenarioName)
+	{
+		ScenarioType res = null;
+		Vector<ScenarioType> list = _dataProvider.getScenarios();
 		Iterator<ScenarioType> iter = list.iterator();
 		while (iter.hasNext())
 		{
 			ScenarioType ns = (ScenarioType) iter.next();
 			if (ns.getName().equals(scenarioName))
 			{
-				part = ns.getThisParticipant(partId);
+				res = ns;
 				break;
 			}
 		}
-
-		return part;
+		return res;
 	}
 
 	public void setDataProvider(MultiScenarioLister lister)
@@ -204,6 +250,7 @@ public class AServer
 
 	public void step(String scenarioName)
 	{
-		// get our scenario to move forward
+		ScenarioType scen = getScenario(scenarioName);
+		scen.step();
 	}
 }
