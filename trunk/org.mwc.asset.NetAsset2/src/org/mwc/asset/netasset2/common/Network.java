@@ -26,8 +26,11 @@ public class Network
 		kryo.register(ScenarioList.class);
 		kryo.register(LightScenario.class);
 		kryo.register(LightParticipant.class);
-		kryo.register(Category.class);
 		kryo.register(Vector.class, new CollectionSerializer(kryo));
+		kryo.register(Category.class);
+		kryo.register(ControlPart.class);
+		kryo.register(ReleasePart.class);
+		kryo.register(PartUpdate.class);
 	}
 
 	public static class SomeRequest
@@ -83,6 +86,15 @@ public class Network
 
 	public static class PartUpdate
 	{
+		int id;
+		long dtg;
+
+		public PartUpdate(){};
+		public PartUpdate(int id, long dtg)
+		{
+			this.id = id;
+			this.dtg =dtg;
+		}
 
 	}
 

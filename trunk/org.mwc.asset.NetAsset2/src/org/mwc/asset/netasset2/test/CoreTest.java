@@ -165,8 +165,21 @@ public class CoreTest
 			assertEquals("has correct first part", "aa2", firstPart.name);
 			assertEquals("has correct first id", 2, firstPart.Id);
 
+			// check we have no lsitenser....
+			assertEquals("no listeners", 0, server.getPartListeners().size());
+			
 			// ok, now try to control the participant
 			client.controlParticipant(scen.name, firstPart.Id);
+			Thread.sleep(600);
+			
+			assertEquals("a listener", 1, server.getPartListeners().size());
+			
+			// ok, now try to release
+			client.releaseParticipant(scen.name, firstPart.Id);
+			Thread.sleep(600);
+			
+			assertEquals("no listener", 0, server.getPartListeners().size());
+			
 
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
@@ -174,6 +187,7 @@ public class CoreTest
 			System.out.println("pausing");
 			showEvents(_events);
 			Thread.sleep(1000);
+			System.in.read();
 			client.stop();
 			server.stop();
 		}
