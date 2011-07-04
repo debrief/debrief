@@ -30,6 +30,9 @@ public class Network
 		kryo.register(GetScenarios.class);
 		kryo.register(ScenarioList.class);
 		kryo.register(LightScenario.class);
+		kryo.register(ListenScen.class);
+		kryo.register(StopListenScen.class);
+		kryo.register(ScenUpdate.class);
 		kryo.register(LightParticipant.class);
 		kryo.register(Vector.class, new CollectionSerializer(kryo));
 		kryo.register(Category.class);
@@ -133,6 +136,14 @@ public class Network
 
 	public static class ScenUpdate
 	{
+		public ScenUpdate(){};
+		public ScenUpdate(String scenName, String stepped2, long newTime2)
+		{
+			scenarioName = scenName;
+			event = STEPPED;
+			newTime = newTime2;
+		}
+		public String scenarioName;
 		public static final String PLAYING = "Started";
 		public static final String STEPPED = "Stepped";
 		public static final String PAUSED = "Paused";
@@ -142,7 +153,12 @@ public class Network
 		public String event;
 	}
 
-	public static class ListenToScen
+	public static class ListenScen
+	{
+		public String name;
+	}
+	
+	public static class StopListenScen
 	{
 		public String name;
 	}

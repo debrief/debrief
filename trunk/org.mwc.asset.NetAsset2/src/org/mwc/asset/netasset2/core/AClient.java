@@ -6,17 +6,21 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
-import org.mwc.asset.netasset2.common.Network.ListenPart;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netasset2.common.Network.ListenPart;
+import org.mwc.asset.netasset2.common.Network.ListenScen;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
-import org.mwc.asset.netasset2.common.Network.StopListenPart;
+import org.mwc.asset.netasset2.common.Network.ScenUpdate;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
+import org.mwc.asset.netasset2.common.Network.StopListenPart;
+import org.mwc.asset.netasset2.common.Network.StopListenScen;
 
 import ASSET.Participants.ParticipantDecidedListener;
 import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
+import ASSET.Scenario.ScenarioSteppedListener;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -92,6 +96,16 @@ public class AClient
 
 	}
 
+	private static class ScenListener
+	{
+		final ScenarioSteppedListener _stepper;
+
+		public ScenListener(ScenarioSteppedListener stepper)
+		{
+			_stepper = stepper;
+		}
+	}
+
 	private static class PartListener
 	{
 		final ParticipantMovedListener _mover;
@@ -109,11 +123,13 @@ public class AClient
 
 	private CModel _model;
 	private HashMap<String, PartListener> _partListeners;
+	private HashMap<String, ScenListener> _scenListeners;
 
 	public AClient() throws IOException
 	{
 		_model = new CModel();
 		_partListeners = new HashMap<String, PartListener>();
+		_scenListeners = new HashMap<String, ScenListener>();
 
 		// setup the step listener
 		Listener mover = new Listener()
@@ -136,8 +152,29 @@ public class AClient
 				}
 			}
 		};
-
 		_model.addListener(new PartUpdate().getClass(), mover);
+
+		Listener stepL = new Listener()
+		{
+
+			@Override
+			public void received(Connection connection, Object object)
+			{
+				ScenUpdate su = (ScenUpdate) object;
+				String index = su.scenarioName;
+				ScenListener sl = _scenListeners.get(index);
+				
+				System.err.println("RX SCEN UPDATE");
+				
+				// have a look at the event
+				if(su.event.equals(ScenUpdate.STEPPED))
+				{
+					sl._stepper.step(null, su.newTime);
+				}
+			}
+		};
+		_model.addListener(new ScenUpdate().getClass(), stepL);
+
 	}
 
 	public void connect(String target) throws IOException
@@ -171,6 +208,32 @@ public class AClient
 
 		_model.send(cp);
 
+	}
+
+	public void listenToScenario(String scenarioName,
+			ScenarioSteppedListener listener)
+	{
+		// get ready to rx events
+		ScenListener sl = new ScenListener(listener);
+		_scenListeners.put(scenarioName, sl);
+		
+		// register an interest
+		ListenScen ls = new ListenScen();
+		ls.name = scenarioName;
+		_model.send(ls);
+
+}
+
+	public void stopListenToScenario(String scenarioName)
+	{
+		// tell it we're not bothered
+		StopListenScen ls = new StopListenScen();
+		ls.name = scenarioName;
+		_model.send(ls);
+		
+		// ok, done. now stop listening
+		ScenListener sl = _scenListeners.get(scenarioName);
+		_scenListeners.remove(sl);
 	}
 
 	/**
@@ -209,7 +272,8 @@ public class AClient
 		_model.send(new GetScenarios());
 	}
 
-	public void demStatus(String scenario, int id, double courseDegs, double speedKts, double depthM)
+	public void demStatus(String scenario, int id, double courseDegs,
+			double speedKts, double depthM)
 	{
 		Network.DemStatus dem = new Network.DemStatus();
 		dem.scenario = scenario;

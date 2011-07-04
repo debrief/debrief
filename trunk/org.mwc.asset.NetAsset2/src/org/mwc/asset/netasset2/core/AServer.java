@@ -11,9 +11,12 @@ import org.mwc.asset.netasset2.common.Network.DemStatus;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.ListenPart;
+import org.mwc.asset.netasset2.common.Network.ListenScen;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
+import org.mwc.asset.netasset2.common.Network.ScenUpdate;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
 import org.mwc.asset.netasset2.common.Network.StopListenPart;
+import org.mwc.asset.netasset2.common.Network.StopListenScen;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
@@ -22,6 +25,7 @@ import ASSET.Models.Decision.UserControl;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.MultiScenarioLister;
+import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
 
@@ -34,6 +38,7 @@ public class AServer
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
 	protected HashMap<String, PartListener> _partListeners;
+	protected HashMap<String, ScenListener> _scenListeners;
 
 	public static class SModel
 	{
@@ -87,6 +92,42 @@ public class AServer
 
 	}
 
+	protected class ScenListener implements ScenarioSteppedListener
+	{
+		private final Connection connection;
+		private final String scenarioName;
+		private ScenarioType scenario;
+
+		public ScenListener(Connection conn, ScenarioType scenario, String name)
+		{
+			connection = conn;
+			scenarioName = name;
+			this.scenario = scenario;
+			
+			scenario.addScenarioSteppedListener(this);
+		}
+
+		@Override
+		public void step(ScenarioType scenario, long newTime)
+		{
+			ScenUpdate su = new ScenUpdate(scenarioName, ScenUpdate.STEPPED, newTime);
+			connection.sendTCP(su);
+		}
+
+		@Override
+		public void restart(ScenarioType scenario)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void release()
+		{
+			scenario.removeScenarioSteppedListener(this);
+		}
+		
+	}
+	
 	protected class PartListener implements ParticipantMovedListener
 	{
 		private final Connection _conn;
@@ -131,7 +172,42 @@ public class AServer
 	{
 		_model = new SModel();
 		_partListeners = new HashMap<String, PartListener>();
+		_scenListeners = new HashMap<String, ScenListener>();
 
+		Listener listenS = new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				ListenScen ls = (ListenScen) object;
+			
+				// get the secnario
+				ScenarioType scen = getScenario(ls.name);
+				
+				// ok, start listening to this scenario
+				ScenListener sl = new ScenListener(connection, scen, ls.name);
+				
+				// and remember it
+				String index = connection.toString() + ls.name;
+				_scenListeners.put(index, sl);
+			}
+		};
+		_model.addListener(new ListenScen().getClass(), listenS);
+		
+		Listener stopListenS = new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				StopListenScen ls = (StopListenScen) object;
+
+				String index = connection.toString() + ls.name;
+				ScenListener sl = _scenListeners.get(index);
+				sl.release();
+				_scenListeners.remove(sl);
+			}
+		};
+		_model.addListener(new StopListenScen().getClass(), stopListenS);
+
+		
 		Listener getS = new Listener()
 		{
 			public void received(Connection connection, Object object)
@@ -255,6 +331,11 @@ public class AServer
 	public Set<String> getPartListeners()
 	{
 		return _partListeners.keySet();
+	}
+	
+	public HashMap<String, ScenListener> getScenListeners()
+	{
+		return _scenListeners;
 	}
 
 	protected ParticipantType getParticipant(String scenarioName, int partId)

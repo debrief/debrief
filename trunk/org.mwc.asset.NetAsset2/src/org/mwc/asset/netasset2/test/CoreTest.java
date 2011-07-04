@@ -25,6 +25,7 @@ import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.MultiScenarioLister;
+import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -164,6 +165,40 @@ public class CoreTest
 
 			// check we have no lsitenser....
 			assertEquals("no listeners", 0, server.getPartListeners().size());
+			
+			// ok, check scenario listen/release
+			assertEquals("no scen lsiteners", 0, server.getScenListeners().size());
+			Vector<String> stepLog = new Vector<String>();
+			ScenarioSteppedListener sListener = new MySListener(stepLog);
+			client.listenToScenario(scen.name, sListener);
+			Thread.sleep(100);
+			
+			assertEquals("our scen lsitener got registered", 1, server.getScenListeners().size());
+			assertEquals("step evnts empty", 0, stepLog.size());
+			
+			// ok, are we rx step events?
+			server.step(scen.name);
+			Thread.sleep(100);
+			
+			assertEquals("step evnts populated", 1, stepLog.size());
+			
+			// ok, stop listening
+			client.stopListenToScenario(scen.name);
+			
+			// ok, are we rx step events?
+			server.step(scen.name);
+			Thread.sleep(100);			
+			assertEquals("no new step evnts populated", 1, stepLog.size());
+			
+			// ok, start listening again
+			client.listenToScenario(scen.name, sListener);
+			Thread.sleep(100);
+
+			// ok, are we rx step events?
+			server.step(scen.name);
+			Thread.sleep(100);
+			
+			assertEquals("rx new step event", 2, stepLog.size());
 
 			// ok, now try to control the participant
 			Vector<String> moveLog = new Vector<String>();
@@ -197,7 +232,7 @@ public class CoreTest
 			Thread.sleep(200);
 			
 			// check we've seen some mvoement
-			assertEquals("movement detected", 2, moveLog.size());
+			assertEquals("movement detected", 3, moveLog.size());
 			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
 			
 			// check the course
@@ -215,7 +250,7 @@ public class CoreTest
 			Thread.sleep(200);
 			
 			// check we've got the same movement
-			assertEquals("movement detected", 2, moveLog.size());
+			assertEquals("movement detected", 3, moveLog.size());
 			
 			// ok, reconnect, and try driving it...
 			// ok, now try to control the participant
@@ -235,7 +270,7 @@ public class CoreTest
 			Thread.sleep(200);
 			
 			// check we've seen some mvoement
-			assertEquals("movement detected", 5, moveLog.size());
+			assertEquals("movement detected", 6, moveLog.size());
 			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
 			
 			// check the course
@@ -249,14 +284,14 @@ public class CoreTest
 			Thread.sleep(200);
 			server.step(scen.name);
 			Thread.sleep(200);
-			assertEquals("no more steps received", 5, moveLog.size());
+			assertEquals("no more steps received", 6, moveLog.size());
 	
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
 
 			showEvents(_events);
 			System.out.println("pausing");
-	//		System.in.read();
+			System.in.read();
 			client.stop();
 			server.stop();
 		}
@@ -294,6 +329,26 @@ public class CoreTest
 				this.setStatus(newStat);
 			}
 		}
+		
+		public class MySListener implements ScenarioSteppedListener
+		{
+			private Vector<String> _items;
+
+			public MySListener(Vector<String>items)
+			{
+				_items = items;
+			}
+			public void step(ScenarioType scenario, long newTime)
+			{ 
+				_items.add("step to:" + newTime);
+			}
+			
+			@Override
+			public void restart(ScenarioType scenario)
+			{
+				_items.add("restart");
+			}
+		};
 
 		private static class CombinedListener implements ParticipantMovedListener, ParticipantDetectedListener, ParticipantDecidedListener
 		{
