@@ -13,6 +13,8 @@ import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.ListenPart;
 import org.mwc.asset.netasset2.common.Network.ListenScen;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
+import org.mwc.asset.netasset2.common.Network.ReleasePart;
+import org.mwc.asset.netasset2.common.Network.ScenControl;
 import org.mwc.asset.netasset2.common.Network.ScenUpdate;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
 import org.mwc.asset.netasset2.common.Network.StopListenPart;
@@ -35,6 +37,7 @@ import com.esotericsoftware.kryonet.Server;
 
 public class AServer
 {
+	public static final String NETWORK_CONTROL = "Network control";
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
 	protected HashMap<String, PartListener> _partListeners;
@@ -103,7 +106,7 @@ public class AServer
 			connection = conn;
 			scenarioName = name;
 			this.scenario = scenario;
-			
+
 			scenario.addScenarioSteppedListener(this);
 		}
 
@@ -118,22 +121,23 @@ public class AServer
 		public void restart(ScenarioType scenario)
 		{
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public void release()
 		{
 			scenario.removeScenarioSteppedListener(this);
 		}
-		
+
 	}
-	
+
 	protected class PartListener implements ParticipantMovedListener
 	{
 		private final Connection _conn;
 		private final ParticipantType _part;
 		private final int _partId;
 		private final String _scenario;
+		private DecisionType _defaultBehaviour;
 
 		public PartListener(Connection conn, int partId, ParticipantType part,
 				String scenario)
@@ -179,20 +183,20 @@ public class AServer
 			public void received(Connection connection, Object object)
 			{
 				ListenScen ls = (ListenScen) object;
-			
+
 				// get the secnario
 				ScenarioType scen = getScenario(ls.name);
-				
+
 				// ok, start listening to this scenario
 				ScenListener sl = new ScenListener(connection, scen, ls.name);
-				
+
 				// and remember it
 				String index = connection.toString() + ls.name;
 				_scenListeners.put(index, sl);
 			}
 		};
 		_model.addListener(new ListenScen().getClass(), listenS);
-		
+
 		Listener stopListenS = new Listener()
 		{
 			public void received(Connection connection, Object object)
@@ -207,7 +211,32 @@ public class AServer
 		};
 		_model.addListener(new StopListenScen().getClass(), stopListenS);
 
-		
+		Listener controlS = new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				ScenControl ls = (ScenControl) object;
+				ScenarioType st = getScenario(ls.scenarioName);
+				if (ls.instruction.equals(ScenControl.STEP))
+				{
+					st.step();
+				}
+				else if (ls.instruction.equals(ScenControl.PLAY))
+				{
+					st.start();
+				}
+				else if (ls.instruction.equals(ScenControl.PAUSE))
+				{
+					st.pause();
+				}
+				else if (ls.instruction.equals(ScenControl.TERMINATE))
+				{
+					st.stop("Client finish");
+				}
+			}
+		};
+		_model.addListener(new ScenControl().getClass(), controlS);
+
 		Listener getS = new Listener()
 		{
 			public void received(Connection connection, Object object)
@@ -240,7 +269,7 @@ public class AServer
 			}
 		};
 		_model.addListener(new ListenPart().getClass(), listenP);
-		Listener releaseP = new Listener()
+		Listener stopListenP = new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
@@ -248,7 +277,7 @@ public class AServer
 				dropListener(connection.toString(), cp.partId);
 			}
 		};
-		_model.addListener(new StopListenPart().getClass(), releaseP);
+		_model.addListener(new StopListenPart().getClass(), stopListenP);
 		Listener demS = new Listener()
 		{
 			public void received(Connection connection, Object object)
@@ -259,26 +288,56 @@ public class AServer
 
 				if (!(dem instanceof UserControl))
 				{
-					UserControl uc2 = new UserControl(0, null, null);
-					part.setDecisionModel(uc2);
+					// ok, take a safe copy of the decision model
+					// we can work out the exact index, cool.
+					String index = connection.toString() + cp.partId;
+
+					// get the listener
+					PartListener pl = _partListeners.get(index);
+
+					// take a safe copy of the behaviour, so we can later cancel it
+					pl._defaultBehaviour = dem;
+
+					// create a user control behaviour
+					dem = new UserControl(0, null, null);
+					dem.setName(NETWORK_CONTROL);
+					
+					// and assign it
+					part.setDecisionModel(dem);
 				}
 
-				dem = part.getDecisionModel();
-				if (dem instanceof UserControl)
-				{
-					UserControl uc = (UserControl) dem;
-					uc.setCourse(cp.courseDegs);
-					uc.setSpeed(new WorldSpeed(cp.speedKts, WorldSpeed.Kts));
-					uc.setDepth(new WorldDistance(cp.depthM, WorldDistance.METRES));
-				}
-				else
-				{
-					System.err.println("PARTICIPANT IS NOT CONTROLLABLE!");
-				}
+				UserControl uc = (UserControl) dem;
+				uc.setCourse(cp.courseDegs);
+				uc.setSpeed(new WorldSpeed(cp.speedKts, WorldSpeed.Kts));
+				uc.setDepth(new WorldDistance(cp.depthM, WorldDistance.METRES));
 			}
 		};
 		_model.addListener(new DemStatus().getClass(), demS);
 
+		Listener releaseP = new Listener()
+		{
+			public void received(Connection connection, Object object)
+			{
+				ReleasePart cp = (ReleasePart) object;
+				// ok, take a safe copy of the decision model
+				// we can work out the exact index, cool.
+				String index = connection.toString() + cp.partId;
+
+				// get the listener
+				PartListener pl = _partListeners.get(index);
+				
+				// does it have a default behaviour?
+				if(pl._defaultBehaviour  != null)
+				{
+					ParticipantType pt = pl._part;
+					pt.setDecisionModel(pl._defaultBehaviour);
+					// and forget it
+					pl._defaultBehaviour = null;
+				}
+			}
+		};
+		_model.addListener(new ReleasePart().getClass(), releaseP);
+		
 	}
 
 	protected void dropListener(String connStr, int partId)
@@ -332,7 +391,7 @@ public class AServer
 	{
 		return _partListeners.keySet();
 	}
-	
+
 	public HashMap<String, ScenListener> getScenListeners()
 	{
 		return _scenListeners;

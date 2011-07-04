@@ -11,6 +11,8 @@ import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.ListenPart;
 import org.mwc.asset.netasset2.common.Network.ListenScen;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
+import org.mwc.asset.netasset2.common.Network.ReleasePart;
+import org.mwc.asset.netasset2.common.Network.ScenControl;
 import org.mwc.asset.netasset2.common.Network.ScenUpdate;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
 import org.mwc.asset.netasset2.common.Network.StopListenPart;
@@ -163,11 +165,9 @@ public class AClient
 				ScenUpdate su = (ScenUpdate) object;
 				String index = su.scenarioName;
 				ScenListener sl = _scenListeners.get(index);
-				
-				System.err.println("RX SCEN UPDATE");
-				
+
 				// have a look at the event
-				if(su.event.equals(ScenUpdate.STEPPED))
+				if (su.event.equals(ScenUpdate.STEPPED))
 				{
 					sl._stepper.step(null, su.newTime);
 				}
@@ -188,12 +188,12 @@ public class AClient
 	}
 
 	/**
-	 * user wants to drive this participant
+	 * user wants to listen to this participant
 	 * 
 	 * @param scenarioName
 	 * @param participantId
 	 */
-	public void controlParticipant(String scenarioName, int participantId,
+	public void listenPart(String scenarioName, int participantId,
 			ParticipantMovedListener moveL, ParticipantDecidedListener decider,
 			ParticipantDetectedListener detector)
 	{
@@ -210,30 +210,35 @@ public class AClient
 
 	}
 
-	public void listenToScenario(String scenarioName,
+	public void listenScen(String scenarioName,
 			ScenarioSteppedListener listener)
 	{
 		// get ready to rx events
 		ScenListener sl = new ScenListener(listener);
 		_scenListeners.put(scenarioName, sl);
-		
+
 		// register an interest
 		ListenScen ls = new ListenScen();
 		ls.name = scenarioName;
 		_model.send(ls);
+	}
 
-}
-
-	public void stopListenToScenario(String scenarioName)
+	public void stopListenScen(String scenarioName)
 	{
 		// tell it we're not bothered
 		StopListenScen ls = new StopListenScen();
 		ls.name = scenarioName;
 		_model.send(ls);
-		
+
 		// ok, done. now stop listening
 		ScenListener sl = _scenListeners.get(scenarioName);
 		_scenListeners.remove(sl);
+	}
+	
+	public void step(String scenarioName)
+	{
+		ScenControl sc = new ScenControl(scenarioName, ScenControl.STEP);
+		_model.send(sc);
 	}
 
 	/**
@@ -242,7 +247,7 @@ public class AClient
 	 * @param scenarioName
 	 * @param participantId
 	 */
-	public void releaseParticipant(String scenarioName, int participantId)
+	public void stopListenPart(String scenarioName, int participantId)
 	{
 		StopListenPart cp = new StopListenPart();
 		cp.scenarioName = scenarioName;
@@ -282,6 +287,14 @@ public class AClient
 		dem.speedKts = speedKts;
 		dem.depthM = depthM;
 		_model.send(dem);
+	}
+	
+	public void releasePart(String scenario, int partId)
+	{
+		ReleasePart rp = new ReleasePart();
+		rp.scenarioName = scenario;
+		rp.partId = partId;
+		_model.send(rp);
 	}
 
 }

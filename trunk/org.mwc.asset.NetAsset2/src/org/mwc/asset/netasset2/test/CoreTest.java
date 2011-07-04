@@ -9,6 +9,7 @@ import org.mwc.asset.netasset2.common.Network.LightParticipant;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.core.AClient;
 import org.mwc.asset.netasset2.core.AServer;
+import org.mwc.asset.netasset2.test.CoreTest.TrackWrapper_Test.MyPart;
 
 import ASSET.ScenarioType;
 import ASSET.Models.DecisionType;
@@ -36,6 +37,8 @@ import com.esotericsoftware.minlog.Log.Logger;
 
 public class CoreTest
 {
+
+	public static MyPart testParticipant;
 
 	public static class TrackWrapper_Test extends junit.framework.TestCase
 	{
@@ -170,7 +173,7 @@ public class CoreTest
 			assertEquals("no scen lsiteners", 0, server.getScenListeners().size());
 			Vector<String> stepLog = new Vector<String>();
 			ScenarioSteppedListener sListener = new MySListener(stepLog);
-			client.listenToScenario(scen.name, sListener);
+			client.listenScen(scen.name, sListener);
 			Thread.sleep(100);
 			
 			assertEquals("our scen lsitener got registered", 1, server.getScenListeners().size());
@@ -183,7 +186,7 @@ public class CoreTest
 			assertEquals("step evnts populated", 1, stepLog.size());
 			
 			// ok, stop listening
-			client.stopListenToScenario(scen.name);
+			client.stopListenScen(scen.name);
 			
 			// ok, are we rx step events?
 			server.step(scen.name);
@@ -191,7 +194,7 @@ public class CoreTest
 			assertEquals("no new step evnts populated", 1, stepLog.size());
 			
 			// ok, start listening again
-			client.listenToScenario(scen.name, sListener);
+			client.listenScen(scen.name, sListener);
 			Thread.sleep(100);
 
 			// ok, are we rx step events?
@@ -199,36 +202,35 @@ public class CoreTest
 			Thread.sleep(100);
 			
 			assertEquals("rx new step event", 2, stepLog.size());
-
-			// ok, now try to control the participant
+			
+			// next, we want to listen to a participant
 			Vector<String> moveLog = new Vector<String>();
 			CombinedListener combi = new CombinedListener(moveLog);
-			client.controlParticipant(scen.name, firstPart.id, combi, combi, combi);
+			client.listenPart(scen.name, firstPart.id, combi, combi, combi);
 			Thread.sleep(600);
 
 			assertEquals("a listener", 1, server.getPartListeners().size());
 
 			// ok, now try to release
-			client.releaseParticipant(scen.name, firstPart.id);
+			client.stopListenPart(scen.name, firstPart.id);
 			Thread.sleep(600);
 
 			// System.in.read();
-
 			assertEquals("no listener", 0, server.getPartListeners().size());
-
+			
 			// connect again
 			// ok, now try to control the participant
-			client.controlParticipant(scen.name, firstPart.id, combi, combi, combi);
+			client.listenPart(scen.name, firstPart.id, combi, combi, combi);
 			Thread.sleep(600);
 
 			assertEquals("a listener", 1, server.getPartListeners().size());
 
 			// move scenario & see if movement occurs...
-			server.step(scen.name);
+			client.step(scen.name);
 			Thread.sleep(200);
-			server.step(scen.name);
+			client.step(scen.name);
 			Thread.sleep(200);
-			server.step(scen.name);
+			client.step(scen.name);
 			Thread.sleep(200);
 			
 			// check we've seen some mvoement
@@ -240,7 +242,7 @@ public class CoreTest
 			
 			// ok, stop listening
 			// ok, now try to release
-			client.releaseParticipant(scen.name, firstPart.id);
+			client.stopListenPart(scen.name, firstPart.id);
 			Thread.sleep(600);
 
 			assertEquals("no listener", 0, server.getPartListeners().size());
@@ -254,11 +256,12 @@ public class CoreTest
 			
 			// ok, reconnect, and try driving it...
 			// ok, now try to control the participant
-			client.controlParticipant(scen.name, firstPart.id, combi, combi, combi);
+			client.listenPart(scen.name, firstPart.id, combi, combi, combi);
 			Thread.sleep(600);
 			assertEquals("a listener", 1, server.getPartListeners().size());
 			
 			// pl. try driving
+			assertEquals("original dec model", "DefaultWander",testParticipant.getDecisionModel().getName());
 			client.demStatus(scen.name, firstPart.id, 55d, 4d, 0d);	
 			
 			// move forward & look for change in course/speed
@@ -273,12 +276,20 @@ public class CoreTest
 			assertEquals("movement detected", 6, moveLog.size());
 			assertTrue("has movement",moveLog.firstElement().startsWith("move") );
 			
+			// check the model is user control
+			assertEquals("user control dec model", AServer.NETWORK_CONTROL,testParticipant.getDecisionModel().getName());
+			
 			// check the course
 			assertEquals("has correct course",55d, combi.lastStat.getCourse(), 0.001);
 			assertEquals("has correct speed",4d, combi.lastStat.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
-
+			
+			// ok, release control
+			client.releasePart(scen.name, firstPart.id);
+			Thread.sleep(200);
+			assertEquals("original dec model restored", "DefaultWander",testParticipant.getDecisionModel().getName());
+			
 			// check we stop receiving updates
-			client.releaseParticipant(scen.name, firstPart.id);
+			client.stopListenPart(scen.name, firstPart.id);
 			Thread.sleep(50);
 			server.step(scen.name);
 			Thread.sleep(200);
@@ -320,6 +331,7 @@ public class CoreTest
 				WorldLocation centre = new WorldLocation(12, 12, 2);
 				WorldDistance area = new WorldDistance(12, WorldDistance.NM);
 				DecisionType wander = new Wander(centre, area);
+				wander.setName("DefaultWander");
 				this.setDecisionModel(wander);
 				Status newStat = new Status(12, 0);
 				newStat.setLocation(new WorldLocation(11, 11, 11));
@@ -395,7 +407,7 @@ public class CoreTest
 
 				CoreScenario scen = new MyScen();
 				scen.setName("aaa");
-				CoreParticipant cp = new MyPart(12);
+				 testParticipant = new MyPart(12);
 				CoreParticipant cp2 = new MyPart(13);
 				CoreParticipant cp3 = new MyPart(14);
 				CoreParticipant cp4 = new MyPart(22);
@@ -404,7 +416,7 @@ public class CoreTest
 				CoreParticipant cp7 = new MyPart(32);
 				CoreParticipant cp8 = new MyPart(33);
 				CoreParticipant cp9 = new MyPart(34);
-				scen.addParticipant(cp.getId(), cp);
+				scen.addParticipant(testParticipant.getId(), testParticipant);
 				scen.addParticipant(cp2.getId(), cp2);
 				scen.addParticipant(cp3.getId(), cp3);
 				CoreScenario scen2 = new MyScen();

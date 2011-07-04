@@ -33,6 +33,7 @@ public class Network
 		kryo.register(ListenScen.class);
 		kryo.register(StopListenScen.class);
 		kryo.register(ScenUpdate.class);
+		kryo.register(ScenControl.class);
 		kryo.register(LightParticipant.class);
 		kryo.register(Vector.class, new CollectionSerializer(kryo));
 		kryo.register(Category.class);
@@ -40,6 +41,7 @@ public class Network
 		kryo.register(StopListenPart.class);
 		kryo.register(PartUpdate.class);
 		kryo.register(DemStatus.class);
+		kryo.register(ReleasePart.class);
 		kryo.register(WorldSpeed.class);
 		kryo.register(WorldLocation.class);
 		kryo.register(Status.class);
@@ -63,11 +65,12 @@ public class Network
 	{
 		public Vector<LightScenario> list;
 	}
-		
-	/** specify a demanded status for this part
+
+	/**
+	 * specify a demanded status for this part
 	 * 
 	 * @author ianmayo
-	 *
+	 * 
 	 */
 	public static class DemStatus
 	{
@@ -101,10 +104,11 @@ public class Network
 		public Vector<LightParticipant> listOfParticipants;
 	}
 
-	/** we wish to start receiving updates for this participant
+	/**
+	 * we wish to start receiving updates for this participant
 	 * 
 	 * @author ianmayo
-	 *
+	 * 
 	 */
 	public static class ListenPart
 	{
@@ -112,10 +116,11 @@ public class Network
 		public int partId;
 	}
 
-	/** we no longer wish to receive updates for this participant
+	/**
+	 * we no longer wish to receive updates for this participant
 	 * 
 	 * @author ianmayo
-	 *
+	 * 
 	 */
 	public static class StopListenPart
 	{
@@ -123,10 +128,12 @@ public class Network
 		public int partId;
 	}
 
-	/** we no longer wish to control this part, restore it's original decision model
+	/**
+	 * we no longer wish to control this part, restore it's original decision
+	 * model
 	 * 
 	 * @author ianmayo
-	 *
+	 * 
 	 */
 	public static class ReleasePart
 	{
@@ -136,19 +143,23 @@ public class Network
 
 	public static class ScenUpdate
 	{
-		public ScenUpdate(){};
+		public ScenUpdate()
+		{
+		};
+
 		public ScenUpdate(String scenName, String stepped2, long newTime2)
 		{
 			scenarioName = scenName;
 			event = STEPPED;
 			newTime = newTime2;
 		}
+
 		public String scenarioName;
 		public static final String PLAYING = "Started";
 		public static final String STEPPED = "Stepped";
 		public static final String PAUSED = "Paused";
 		public static final String TERMINATED = "Finished";
-		
+
 		public long newTime;
 		public String event;
 	}
@@ -157,12 +168,12 @@ public class Network
 	{
 		public String name;
 	}
-	
+
 	public static class StopListenScen
 	{
 		public String name;
 	}
-	
+
 	public static class ScenControl
 	{
 		public static final String PLAY = "Start";
@@ -171,8 +182,17 @@ public class Network
 		public static final String TERMINATE = "Finish";
 
 		public String instruction;
+		public String scenarioName;
+
+		public ScenControl(){};
+		public ScenControl(String scenarioName, String step2)
+		{
+			this.scenarioName = scenarioName;
+			this.instruction = step2;
+		}
+
 	}
-	
+
 	public static class PartUpdate
 	{
 		public int id;
