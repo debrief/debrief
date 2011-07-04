@@ -242,14 +242,21 @@ public class CoreTest
 			assertEquals("has correct course",55d, combi.lastStat.getCourse(), 0.001);
 			assertEquals("has correct speed",4d, combi.lastStat.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
 
-
+			// check we stop receiving updates
+			client.releaseParticipant(scen.name, firstPart.id);
+			Thread.sleep(50);
+			server.step(scen.name);
+			Thread.sleep(200);
+			server.step(scen.name);
+			Thread.sleep(200);
+			assertEquals("no more steps received", 5, moveLog.size());
+	
 			// showEvents(_events);
 			// assertEquals("events recorded", 6, _events.size());
 
 			showEvents(_events);
 			System.out.println("pausing");
-			Thread.sleep(1000);
-			System.in.read();
+	//		System.in.read();
 			client.stop();
 			server.stop();
 		}

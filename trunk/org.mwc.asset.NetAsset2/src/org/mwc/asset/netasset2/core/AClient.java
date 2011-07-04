@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
-import org.mwc.asset.netasset2.common.Network.ControlPart;
+import org.mwc.asset.netasset2.common.Network.ListenPart;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
-import org.mwc.asset.netasset2.common.Network.ReleasePart;
+import org.mwc.asset.netasset2.common.Network.StopListenPart;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
 
 import ASSET.Participants.ParticipantDecidedListener;
@@ -160,7 +160,7 @@ public class AClient
 			ParticipantMovedListener moveL, ParticipantDecidedListener decider,
 			ParticipantDetectedListener detector)
 	{
-		ControlPart cp = new ControlPart();
+		ListenPart cp = new ListenPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
 
@@ -181,7 +181,7 @@ public class AClient
 	 */
 	public void releaseParticipant(String scenarioName, int participantId)
 	{
-		ReleasePart cp = new ReleasePart();
+		StopListenPart cp = new StopListenPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
 

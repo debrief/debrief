@@ -7,14 +7,13 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
-import org.mwc.asset.netasset2.common.Network.ControlPart;
 import org.mwc.asset.netasset2.common.Network.DemStatus;
 import org.mwc.asset.netasset2.common.Network.GetScenarios;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netasset2.common.Network.ListenPart;
 import org.mwc.asset.netasset2.common.Network.PartUpdate;
-import org.mwc.asset.netasset2.common.Network.ReleasePart;
 import org.mwc.asset.netasset2.common.Network.ScenarioList;
-import org.mwc.asset.netasset2.core.AServer.PartListener;
+import org.mwc.asset.netasset2.common.Network.StopListenPart;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
@@ -95,7 +94,8 @@ public class AServer
 		private final int _partId;
 		private final String _scenario;
 
-		public PartListener(Connection conn, int partId, ParticipantType part, String scenario)
+		public PartListener(Connection conn, int partId, ParticipantType part,
+				String scenario)
 		{
 			_conn = conn;
 			_partId = partId;
@@ -151,27 +151,28 @@ public class AServer
 		};
 		_model.addListener(new GetScenarios().getClass(), getS);
 
-		Listener controlP = new Listener()
+		Listener listenP = new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
-				ControlPart cp = (ControlPart) object;
+				ListenPart cp = (ListenPart) object;
 				ParticipantType part = getParticipant(cp.scenarioName, cp.partId);
-				PartListener pl = new PartListener(connection, cp.partId, part, cp.scenarioName);
+				PartListener pl = new PartListener(connection, cp.partId, part,
+						cp.scenarioName);
 				String index = connection.toString() + cp.partId;
 				_partListeners.put(index, pl);
 			}
 		};
-		_model.addListener(new ControlPart().getClass(), controlP);
+		_model.addListener(new ListenPart().getClass(), listenP);
 		Listener releaseP = new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
-				ReleasePart cp = (ReleasePart) object;
+				StopListenPart cp = (StopListenPart) object;
 				dropListener(connection.toString(), cp.partId);
 			}
 		};
-		_model.addListener(new ReleasePart().getClass(), releaseP);
+		_model.addListener(new StopListenPart().getClass(), releaseP);
 		Listener demS = new Listener()
 		{
 			public void received(Connection connection, Object object)
@@ -179,15 +180,15 @@ public class AServer
 				DemStatus cp = (DemStatus) object;
 				ParticipantType part = getParticipant(cp.scenario, cp.partId);
 				DecisionType dem = part.getDecisionModel();
-				
-				if(!(dem instanceof UserControl))
+
+				if (!(dem instanceof UserControl))
 				{
 					UserControl uc2 = new UserControl(0, null, null);
 					part.setDecisionModel(uc2);
 				}
-	
-				 dem = part.getDecisionModel();
-				if(dem instanceof UserControl)
+
+				dem = part.getDecisionModel();
+				if (dem instanceof UserControl)
 				{
 					UserControl uc = (UserControl) dem;
 					uc.setCourse(cp.courseDegs);
@@ -206,46 +207,46 @@ public class AServer
 
 	protected void dropListener(String connStr, int partId)
 	{
-		if(partId != -1)
+		if (partId != -1)
 		{
 			// we can work out the exact index, cool.
 			String index = connStr + partId;
-			
+
 			// get the listener
 			PartListener pl = _partListeners.get(index);
-			
+
 			// tell it to stop listening to hte part
 			pl.release();
-			
+
 			// and forget about it.
 			_partListeners.remove(index);
 		}
 		else
 		{
-		  // we have to loop thorugh to find the right connection(s)
+			// we have to loop thorugh to find the right connection(s)
 			Iterator<String> iter = _partListeners.keySet().iterator();
 			Vector<String> toDrop = new Vector<String>();
 			while (iter.hasNext())
 			{
 				String index = (String) iter.next();
-				if(index.startsWith(connStr))
+				if (index.startsWith(connStr))
 				{
 					// ok, ditch it
 					toDrop.add(index);
 				}
 			}
-			
+
 			// did we find any?
-			if(toDrop.size() > 0)
+			if (toDrop.size() > 0)
 			{
-				 Iterator<String> drops = toDrop.iterator();
-				 while (drops.hasNext())
+				Iterator<String> drops = toDrop.iterator();
+				while (drops.hasNext())
 				{
 					String index = (String) drops.next();
 					PartListener pl = _partListeners.get(index);
 					pl.release();
 					_partListeners.remove(index);
-					
+
 				}
 			}
 		}
@@ -260,8 +261,8 @@ public class AServer
 	{
 		ParticipantType part = null;
 		ScenarioType thisS = getScenario(scenarioName);
-		
-		if(thisS != null)
+
+		if (thisS != null)
 			part = thisS.getThisParticipant(partId);
 
 		return part;

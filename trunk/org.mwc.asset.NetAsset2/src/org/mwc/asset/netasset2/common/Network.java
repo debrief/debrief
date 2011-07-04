@@ -33,8 +33,8 @@ public class Network
 		kryo.register(LightParticipant.class);
 		kryo.register(Vector.class, new CollectionSerializer(kryo));
 		kryo.register(Category.class);
-		kryo.register(ControlPart.class);
-		kryo.register(ReleasePart.class);
+		kryo.register(ListenPart.class);
+		kryo.register(StopListenPart.class);
 		kryo.register(PartUpdate.class);
 		kryo.register(DemStatus.class);
 		kryo.register(WorldSpeed.class);
@@ -61,14 +61,18 @@ public class Network
 		public Vector<LightScenario> list;
 	}
 		
+	/** specify a demanded status for this part
+	 * 
+	 * @author ianmayo
+	 *
+	 */
 	public static class DemStatus
 	{
-		public DemStatus(){};
+		public String scenario;
+		public int partId;
 		public double courseDegs;
 		public double speedKts;
 		public double depthM;
-		public String scenario;
-		public int partId;
 	}
 
 	public static class LightScenario
@@ -94,18 +98,65 @@ public class Network
 		public Vector<LightParticipant> listOfParticipants;
 	}
 
-	public static class ControlPart
+	/** we wish to start receiving updates for this participant
+	 * 
+	 * @author ianmayo
+	 *
+	 */
+	public static class ListenPart
 	{
 		public String scenarioName;
 		public int partId;
 	}
 
+	/** we no longer wish to receive updates for this participant
+	 * 
+	 * @author ianmayo
+	 *
+	 */
+	public static class StopListenPart
+	{
+		public String scenarioName;
+		public int partId;
+	}
+
+	/** we no longer wish to control this part, restore it's original decision model
+	 * 
+	 * @author ianmayo
+	 *
+	 */
 	public static class ReleasePart
 	{
 		public String scenarioName;
 		public int partId;
 	}
 
+	public static class ScenUpdate
+	{
+		public static final String PLAYING = "Started";
+		public static final String STEPPED = "Stepped";
+		public static final String PAUSED = "Paused";
+		public static final String TERMINATED = "Finished";
+		
+		public long newTime;
+		public String event;
+	}
+
+	public static class ListenToScen
+	{
+		public String name;
+	}
+	
+	public static class ScenControl
+	{
+		public static final String PLAY = "Start";
+		public static final String STEP = "Step";
+		public static final String PAUSE = "Pause";
+		public static final String TERMINATE = "Finish";
+
+		public String instruction;
+	}
+	
 	public static class PartUpdate
 	{
 		public int id;
@@ -152,11 +203,6 @@ public class Network
 		public String name;
 		public Category category;
 		public String activity;
-	}
-
-	public static class LightNetworkParticipant
-	{
-
 	}
 
 	/**
