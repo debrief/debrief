@@ -127,7 +127,7 @@ public class AClient
 				PartListener pl = _partListeners.get(index);
 				if (pl != null)
 				{
-					Status newStat = pu.lStatus.asStatus();
+					Status newStat = pu.lStatus;
 					pl._mover.moved(newStat);
 				}
 				else

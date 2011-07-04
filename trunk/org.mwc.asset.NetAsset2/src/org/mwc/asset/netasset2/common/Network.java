@@ -36,8 +36,10 @@ public class Network
 		kryo.register(ControlPart.class);
 		kryo.register(ReleasePart.class);
 		kryo.register(PartUpdate.class);
-		kryo.register(LightStatus.class);
 		kryo.register(DemStatus.class);
+		kryo.register(WorldSpeed.class);
+		kryo.register(WorldLocation.class);
+		kryo.register(Status.class);
 	}
 
 	public static class SomeRequest
@@ -57,37 +59,8 @@ public class Network
 	public static class ScenarioList
 	{
 		public Vector<LightScenario> list;
-		// public Vector list;
 	}
-	
-	public static class LightStatus
-	{
-		public LightStatus(){};
-		public LightStatus(Status status)
-		{
-			dtg = status.getTime();
-			id = status.getId();
-			_lat = status.getLocation().getLat();
-			_long = status.getLocation().getLong();
-			_depth = status.getLocation().getDepth();
-			spdKts = status.getSpeed().getValueIn(WorldSpeed.Kts);
-			courseDegs = status.getCourse();
-		}
-		long dtg;
-		int id;
-		double _lat, _long, _depth;
-		double spdKts;
-		double courseDegs;
-		public Status asStatus()
-		{
-			Status res = new Status(id, dtg);
-			res.setLocation(new WorldLocation(_lat, _long, _depth));
-			res.setSpeed(new WorldSpeed(spdKts, WorldSpeed.Kts));
-			res.setCourse(courseDegs);
-			return res;
-		}
-	}
-	
+		
 	public static class DemStatus
 	{
 		public DemStatus(){};
@@ -136,7 +109,7 @@ public class Network
 	public static class PartUpdate
 	{
 		public int id;
-		public LightStatus lStatus;
+		public Status lStatus;
 		public String scenario;
 
 		public PartUpdate()
@@ -147,7 +120,7 @@ public class Network
 		{
 			this.id = id;
 			this.scenario = scenario;
-			lStatus = new LightStatus(status);
+			lStatus = status;
 		}
 
 	}
