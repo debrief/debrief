@@ -11,3 +11,9 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.legacy;bundle-version="1.0.118"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: libs/kryonet-1.04/asm-3.3.1.jar,
+ libs/kryonet-1.04/kryo-1.04.jar,
+ libs/kryonet-1.04/kryonet-1.04.jar,
+ libs/kryonet-1.04/minlog-1.2.jar,
+ libs/kryonet-1.04/reflectasm-1.01.jar,
+ .

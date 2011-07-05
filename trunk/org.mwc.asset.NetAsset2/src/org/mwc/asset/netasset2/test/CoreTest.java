@@ -45,7 +45,7 @@ public class CoreTest
 
 		private Vector<String> _events;
 		protected Vector<LightScenario> _myList;
-		private Vector<ScenarioType> _myScenarios;
+		private static Vector<ScenarioType> _myScenarios;
 
 		@Override
 		protected void setUp() throws Exception
@@ -433,7 +433,7 @@ public class CoreTest
 			
 		}
 		
-		protected Vector<ScenarioType> getScenarioList()
+		public static Vector<ScenarioType> getScenarioList()
 		{
 			if (_myScenarios == null)
 			{
@@ -457,12 +457,12 @@ public class CoreTest
 				scen2.addParticipant(cp4.getId(), cp4);
 				scen2.addParticipant(cp5.getId(), cp5);
 				scen2.addParticipant(cp6.getId(), cp6);
-				scen.setName("aab");
+				scen2.setName("aab");
 				CoreScenario scen3 = new MyScen();
 				scen3.addParticipant(cp7.getId(), cp7);
 				scen3.addParticipant(cp8.getId(), cp8);
 				scen3.addParticipant(cp9.getId(), cp9);
-				scen.setName("aac");
+				scen3.setName("aac");
 
 				_myScenarios.add(scen);
 				_myScenarios.add(scen2);

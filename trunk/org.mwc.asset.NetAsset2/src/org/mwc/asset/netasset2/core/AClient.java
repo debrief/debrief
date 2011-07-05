@@ -28,7 +28,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-public class AClient
+public class AClient implements IMClient
 {
 	private static class CModel
 	{
@@ -63,6 +63,11 @@ public class AClient
 			});
 		}
 
+		public java.util.List<java.net.InetAddress> discoverHosts()
+		{
+			return _client.discoverHosts(Network.UDP_PORT, 3000);
+		}
+		
 		public void connect(String target) throws IOException
 		{
 			if (target == null)
@@ -176,12 +181,21 @@ public class AClient
 		_model.addListener(new ScenUpdate().getClass(), stepL);
 
 	}
+	
+	@Override
+	public java.util.List<java.net.InetAddress> discoverHosts()
+	{
+		return _model.discoverHosts();
+	}
 
+
+	@Override
 	public void connect(String target) throws IOException
 	{
 		_model.connect(target);
 	}
 
+	@Override
 	public void stop()
 	{
 		_model.stop();
@@ -193,6 +207,7 @@ public class AClient
 	 * @param scenarioName
 	 * @param participantId
 	 */
+	@Override
 	public void listenPart(String scenarioName, int participantId,
 			ParticipantMovedListener moveL, ParticipantDecidedListener decider,
 			ParticipantDetectedListener detector)
@@ -210,6 +225,7 @@ public class AClient
 
 	}
 
+	@Override
 	public void listenScen(String scenarioName,
 			ScenarioSteppedListener listener)
 	{
@@ -223,6 +239,7 @@ public class AClient
 		_model.send(ls);
 	}
 
+	@Override
 	public void stopListenScen(String scenarioName)
 	{
 		// tell it we're not bothered
@@ -235,6 +252,7 @@ public class AClient
 		_scenListeners.remove(sl);
 	}
 	
+	@Override
 	public void step(String scenarioName)
 	{
 		ScenControl sc = new ScenControl(scenarioName, ScenControl.STEP);
@@ -247,6 +265,7 @@ public class AClient
 	 * @param scenarioName
 	 * @param participantId
 	 */
+	@Override
 	public void stopListenPart(String scenarioName, int participantId)
 	{
 		StopListenPart cp = new StopListenPart();
@@ -259,6 +278,7 @@ public class AClient
 		_model.send(cp);
 	}
 
+	@Override
 	public void getScenarioList(
 			final Network.AHandler<Vector<LightScenario>> handler)
 	{
@@ -277,6 +297,7 @@ public class AClient
 		_model.send(new GetScenarios());
 	}
 
+	@Override
 	public void controlPart(String scenario, int id, double courseDegs,
 			double speedKts, double depthM)
 	{
@@ -289,6 +310,7 @@ public class AClient
 		_model.send(dem);
 	}
 	
+	@Override
 	public void releasePart(String scenario, int partId)
 	{
 		ReleasePart rp = new ReleasePart();

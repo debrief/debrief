@@ -16,7 +16,7 @@ import com.esotericsoftware.kryonet.EndPoint;
 // This class is a convenient place to keep things common to both the client and server.
 public class Network
 {
-	public static final int UDP_PORT = 54777;
+	public static final int UDP_PORT = 54778;
 	public static final int TCP_PORT = 54555;
 
 	// This registers objects that are going to be sent over the network.
