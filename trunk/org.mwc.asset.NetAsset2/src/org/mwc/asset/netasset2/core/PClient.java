@@ -25,6 +25,7 @@ import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.AHandler;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netasset2.common.Network.ScenControl;
 import org.mwc.asset.netasset2.view.IVControl;
 
 import ASSET.ScenarioType;
@@ -167,8 +168,14 @@ public abstract class PClient implements ScenarioSteppedListener
 			_model.stopListenScen(_listeningTo.name);
 		}
 
+		// remember it
 		_listeningTo = scenario;
+		
+		// start listening to it
 		_model.listenScen(scenario.name, this);
+		
+		// enable the timer controls
+		getTimeView().setEnabled(true);
 
 		Display.getCurrent().asyncExec(new Runnable()
 		{
@@ -180,6 +187,17 @@ public abstract class PClient implements ScenarioSteppedListener
 				_view.setParticipants(scenario.listOfParticipants);
 			}
 		});
+	}
+
+	private TimeView getTimeView()
+	{
+		if(_timeV == null)
+		{
+			IViewPart v = getView(TimeView.ID);
+			TimeView t = (TimeView) v;
+			_timeV = t;
+		}
+		return _timeV;
 	}
 
 	protected void serverSelected(String address)
@@ -253,18 +271,8 @@ public abstract class PClient implements ScenarioSteppedListener
 	@Override
 	public void step(ScenarioType scenario, long newTime)
 	{
-		// ok, share the time...
-
-		// get the timer view
-		if (_timeV == null)
-		{
-			IViewPart v = getView(TimeView.ID);
-			TimeView t = (TimeView) v;
-			_timeV = t;
-		}
-		
 		// ok, tell the timer about the time
-		_timeV.setTime(newTime);
+		getTimeView().setTime(newTime);
 	}
 
 	abstract public IViewPart getView(String viewId);
@@ -284,6 +292,32 @@ public abstract class PClient implements ScenarioSteppedListener
 		if(_listeningTo != null)
 		{
 			_model.step(_listeningTo.name);
+		}
+	}
+
+	public void doStop()
+	{
+		if(_listeningTo != null)
+		{
+			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.TERMINATE);
+			_model.controlScen(sc);
+		}
+	}
+
+	public void doPlay()
+	{
+		if(_listeningTo != null)
+		{
+			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PLAY);
+			_model.controlScen(sc);
+		}
+	}
+	public void doPause()
+	{
+		if(_listeningTo != null)
+		{
+			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PAUSE);
+			_model.controlScen(sc);
 		}
 	}
 

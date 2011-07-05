@@ -15,27 +15,31 @@ public class VTime extends Composite implements IVTime
 
 	/**
 	 * Create the composite.
+	 * 
 	 * @param parent
 	 * @param style
 	 */
 	public VTime(Composite parent, int style)
 	{
 		super(parent, style);
-		
+
 		_time = new Text(this, SWT.BORDER);
 		_time.setText("00/00/00 00:00:00");
 		_time.setBounds(0, 0, 163, 19);
-		
+
 		btnStep = new Button(this, SWT.NONE);
 		btnStep.setBounds(0, 19, 55, 28);
+		btnStep.setEnabled(false);
 		btnStep.setText("Step");
-		
-		 btnPlay = new Button(this, SWT.NONE);
-		btnPlay.setText("Play");
+
+		btnPlay = new Button(this, SWT.NONE);
+		btnPlay.setText(IVTime.PLAY);
+		btnPlay.setEnabled(false);
 		btnPlay.setBounds(57, 19, 55, 28);
-		
-		 btnStop = new Button(this, SWT.NONE);
+
+		btnStop = new Button(this, SWT.NONE);
 		btnStop.setText("Stop");
+		btnStop.setEnabled(false);
 		btnStop.setBounds(118, 19, 55, 28);
 
 	}
@@ -51,29 +55,37 @@ public class VTime extends Composite implements IVTime
 	{
 		_time.setText(string);
 	}
-	
+
 	@Override
 	public void addStepListener(SelectionListener listener)
 	{
 		btnStep.addSelectionListener(listener);
 	}
-	
+
 	@Override
 	public void addPlayListener(SelectionListener listener)
 	{
 		btnPlay.addSelectionListener(listener);
 	}
-	
+
 	@Override
 	public void addStopListener(SelectionListener listener)
 	{
 		btnStop.addSelectionListener(listener);
 	}
+
 	@Override
 	public void setPlayLabel(String text)
 	{
 		btnPlay.setText(text);
 	}
 
+	public void setEnabled(boolean val)
+	{
+		super.setEnabled(val);
+		btnStep.setEnabled(val);
+		btnPlay.setEnabled(val);
+		btnStop.setEnabled(val);
+	}
 
 }

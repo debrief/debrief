@@ -98,4 +98,20 @@ public class ConnectView extends ViewPart
 	{
 		pres.doStep();
 	}
+
+	public void stop()
+	{
+		pres.doStop();
+	}
+
+	public void play()
+	{
+		pres.doPlay();
+	}
+
+	public void pause()
+	{
+		pres.doPause();
+	}
+
 }

@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netasset2.common.Network.ScenControl;
 
 import ASSET.Participants.ParticipantDecidedListener;
 import ASSET.Participants.ParticipantDetectedListener;
@@ -37,5 +38,7 @@ public interface IMClient
 	public abstract void connect(String target) throws IOException;
 
 	public abstract java.util.List<java.net.InetAddress> discoverHosts();
+
+	public abstract void controlScen(ScenControl sc);
 
 }

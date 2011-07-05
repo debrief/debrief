@@ -319,4 +319,10 @@ public class MClient implements IMClient
 		_model.send(rp);
 	}
 
+	@Override
+	public void controlScen(ScenControl sc)
+	{
+		_model.send(sc);
+	}
+
 }

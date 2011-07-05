@@ -5,6 +5,9 @@ import org.eclipse.swt.events.SelectionListener;
 public interface IVTime
 {
 
+	String PAUSE = "Pause";
+	String PLAY = "Play";
+
 	void setTime(String string);
 
 	void addStepListener(SelectionListener listener);
@@ -14,5 +17,7 @@ public interface IVTime
 	void addStopListener(SelectionListener listener);
 
 	void setPlayLabel(String text);
+
+	void setEnabled(boolean val);
 
 }
