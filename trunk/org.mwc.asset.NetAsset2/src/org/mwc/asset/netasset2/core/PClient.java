@@ -20,6 +20,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
+import org.mwc.asset.netasset2.PartView;
+import org.mwc.asset.netasset2.PartView.NewDemStatus;
 import org.mwc.asset.netasset2.TimeView;
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.AHandler;
@@ -29,6 +31,12 @@ import org.mwc.asset.netasset2.common.Network.ScenControl;
 import org.mwc.asset.netasset2.view.IVControl;
 
 import ASSET.ScenarioType;
+import ASSET.Models.Detection.DetectionList;
+import ASSET.Participants.DemandedStatus;
+import ASSET.Participants.ParticipantDecidedListener;
+import ASSET.Participants.ParticipantDetectedListener;
+import ASSET.Participants.ParticipantMovedListener;
+import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioSteppedListener;
 
 public abstract class PClient implements ScenarioSteppedListener
@@ -37,6 +45,8 @@ public abstract class PClient implements ScenarioSteppedListener
 	private final IMClient _model;
 	private LightScenario _listeningTo;
 	private TimeView _timeV;
+	private PartView _partV;
+	private CombinedListener _partListener;
 
 	public PClient(IVControl view, IMClient model)
 	{
@@ -45,6 +55,8 @@ public abstract class PClient implements ScenarioSteppedListener
 
 		_view.disableScenarios();
 		_view.disableServers();
+
+		_partListener = new CombinedListener();
 
 		// ok, now listen for the view events
 		_view.addPingListener(new SelectionAdapter()
@@ -89,8 +101,10 @@ public abstract class PClient implements ScenarioSteppedListener
 			@Override
 			public void doubleClick(DoubleClickEvent event)
 			{
-				// TODO Auto-generated method stub
-
+				ISelection sel = event.getSelection();
+				StructuredSelection ss = (StructuredSelection) sel;
+				LightParticipant part = (LightParticipant) ss.getFirstElement();
+				participantSelected(part);
 			}
 		});
 
@@ -164,6 +178,70 @@ public abstract class PClient implements ScenarioSteppedListener
 		});
 	}
 
+	private class CombinedListener implements ParticipantMovedListener,
+			ParticipantDetectedListener, ParticipantDecidedListener
+	{
+		public CombinedListener()
+		{
+		}
+
+		@Override
+		public void newDecision(String description, DemandedStatus dem_status)
+		{
+		}
+
+		@Override
+		public void newDetections(DetectionList detections)
+		{
+		}
+
+		@Override
+		public void moved(Status newStatus)
+		{
+			getPartView().updateStatus(newStatus);
+		}
+
+		@Override
+		public void restart(ScenarioType scenario)
+		{
+		}
+
+	}
+
+	protected void participantSelected(final LightParticipant part)
+	{
+		getPartView().setEnabled(true);
+		getPartView().setParticipant(part.name);
+		
+		// ok, enable the part controller
+		getPartView().setDemStatusListener(new NewDemStatus()
+		{
+
+			@Override
+			public void demanded(double course, double speed, double depth)
+			{
+				if (_listeningTo != null)
+					_model.controlPart(_listeningTo.name, part.id, course, speed, depth);
+			}
+		});
+
+		// also start listening to him
+		if (_listeningTo != null)
+		{
+			_model.listenPart(_listeningTo.name, part.id, _partListener,
+					_partListener, _partListener);
+		}
+	}
+
+	private PartView getPartView()
+	{
+		if (_partV == null)
+		{
+			_partV = (PartView) getView(PartView.ID);
+		}
+		return _partV;
+	}
+
 	protected void scenarioSelected(final LightScenario scenario)
 	{
 		if (_listeningTo != null)
@@ -173,10 +251,10 @@ public abstract class PClient implements ScenarioSteppedListener
 
 		// remember it
 		_listeningTo = scenario;
-		
+
 		// start listening to it
 		_model.listenScen(scenario.name, this);
-		
+
 		// enable the timer controls
 		getTimeView().setEnabled(true);
 
@@ -194,7 +272,7 @@ public abstract class PClient implements ScenarioSteppedListener
 
 	private TimeView getTimeView()
 	{
-		if(_timeV == null)
+		if (_timeV == null)
 		{
 			IViewPart v = getView(TimeView.ID);
 			TimeView t = (TimeView) v;
@@ -286,13 +364,14 @@ public abstract class PClient implements ScenarioSteppedListener
 		// TODO
 	}
 
-	/** trigger a scenario step
+	/**
+	 * trigger a scenario step
 	 * 
 	 * @return
 	 */
 	public void doStep()
 	{
-		if(_listeningTo != null)
+		if (_listeningTo != null)
 		{
 			_model.step(_listeningTo.name);
 		}
@@ -300,7 +379,7 @@ public abstract class PClient implements ScenarioSteppedListener
 
 	public void doStop()
 	{
-		if(_listeningTo != null)
+		if (_listeningTo != null)
 		{
 			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.TERMINATE);
 			_model.controlScen(sc);
@@ -309,15 +388,16 @@ public abstract class PClient implements ScenarioSteppedListener
 
 	public void doPlay()
 	{
-		if(_listeningTo != null)
+		if (_listeningTo != null)
 		{
 			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PLAY);
 			_model.controlScen(sc);
 		}
 	}
+
 	public void doPause()
 	{
-		if(_listeningTo != null)
+		if (_listeningTo != null)
 		{
 			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.PAUSE);
 			_model.controlScen(sc);

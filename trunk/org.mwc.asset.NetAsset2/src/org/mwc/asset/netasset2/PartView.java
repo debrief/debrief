@@ -1,26 +1,30 @@
 package org.mwc.asset.netasset2;
 
-import java.util.Date;
+import java.text.DecimalFormat;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.view.IVTime;
-import org.mwc.asset.netasset2.view.VTime;
+import org.mwc.asset.netasset2.view.IVPart;
+import org.mwc.asset.netasset2.view.VPart;
+
+import ASSET.Participants.Status;
 
 public class PartView extends ViewPart
 {
+
+	public static interface NewDemStatus
+	{
+		public void demanded(double course, double speed, double depth);
+	}
+
 	public static final String ID = "org.mwc.asset.NetAsset2.PartView";
 
-	private IVTime _view;
+	private IVPart _view;
 
-	private ConnectView _connect;
+	private NewDemStatus _listener;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -28,55 +32,25 @@ public class PartView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		_view = new VTime(parent, SWT.NONE);
-
-		_view.addStepListener(new SelectionAdapter()
+		_view = new VPart(parent, SWT.NONE);
+		_view.addSubmitListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				getConnect().step();
-			}
-		});
-		_view.addStopListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				getConnect().stop();
-			}
-		});
-		_view.addPlayListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				// right, what's the current value?
-				Button src = (Button) e.getSource();
-				String label = src.getText();
-				if (label.equals("Play"))
+				if (_listener != null)
 				{
-					getConnect().play();
-					src.setText(IVTime.PAUSE);
-				}
-				else
-				{
-					getConnect().pause();
-					src.setText("Play");
+					_listener.demanded(Double.valueOf(_view.getDemCourse()),
+							Double.valueOf(_view.getDemSpeed()),
+							Double.valueOf(_view.getDemDepth()));
 				}
 			}
 		});
-
 	}
 
-	private ConnectView getConnect()
+	public void setDemStatusListener(NewDemStatus listener)
 	{
-		if (_connect == null)
-		{
-			IViewPart vp = getSite().getPage().findView(ConnectView.ID);
-			_connect = (ConnectView) vp;
-		}
-		return _connect;
+		_listener = listener;
 	}
 
 	/**
@@ -86,26 +60,27 @@ public class PartView extends ViewPart
 	{
 	}
 
-	public void setTime(final long newTime)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				Date dt = new Date(newTime);
-				String date = dt.toString();
-				System.out.println("writing:" + date);
-				_view.setTime(date);
-
-			}
-		});
-	}
-	
 	public void setEnabled(boolean val)
 	{
 		_view.setEnabled(val);
+	}
+
+	DecimalFormat df2 = new DecimalFormat("0.00");
+	
+	public void updateStatus(Status newStatus)
+	{
+		String crse =  df2.format(newStatus.getCourse());
+		String spd = df2.format(newStatus.getSpeed());
+		String depth = df2.format(newStatus.getLocation().getDepth());
+		
+		_view.setActCourse(crse);
+		_view.setActSpeed(spd);
+		_view.setActSpeed(depth);
+	}
+
+	public void setParticipant(String name)
+	{
+		_view.setParticipant(name);
 	}
 
 }
