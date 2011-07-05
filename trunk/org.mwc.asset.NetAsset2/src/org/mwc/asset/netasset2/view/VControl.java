@@ -2,22 +2,21 @@ package org.mwc.asset.netasset2.view;
 
 import java.util.Vector;
 
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 
 public class VControl extends Composite implements IVControl
@@ -66,13 +65,18 @@ public class VControl extends Composite implements IVControl
 
 		TableViewerColumn nameCol = new TableViewerColumn(partViewer, SWT.NONE);
 		TableColumn colName = nameCol.getColumn();
-		colName.setWidth(100);
+		colName.setWidth(50);
 		colName.setText("Name");
 
 		TableViewerColumn catCol = new TableViewerColumn(partViewer, SWT.NONE);
 		TableColumn colCategory = catCol.getColumn();
 		colCategory.setWidth(100);
 		colCategory.setText("Category");
+
+		TableViewerColumn actCol = new TableViewerColumn(partViewer, SWT.NONE);
+		TableColumn colActivity = actCol.getColumn();
+		colActivity.setWidth(100);
+		colActivity.setText("Activity");
 
 		listServerViewer = new ListViewer(grpConnection, SWT.BORDER | SWT.V_SCROLL);
 		listServers = listServerViewer.getList();

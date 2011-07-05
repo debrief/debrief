@@ -31,6 +31,11 @@
             id="org.mwc.asset.NetAsset2.TimeView"
             name="Time">
       </view>
+      <view
+            class="org.mwc.asset.netasset2.PartView"
+            id="org.mwc.asset.NetAsset2.PartView"
+            name="Participant">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -52,7 +57,17 @@
                id="org.mwc.asset.NetAsset2.TimeView"
                minimized="false"
                relationship="bottom"
-               relative="org.eclipse.ui.editorss">
+               relative="org.mwc.asset.NetAsset2.ConnectView">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="*">
+         <view
+               closeable="false"
+               id="org.mwc.asset.NetAsset2.PartView"
+               minimized="false"
+               relationship="bottom"
+               relative="org.mwc.asset.NetAsset2.TimeView">
          </view>
       </perspectiveExtension>
    </extension>

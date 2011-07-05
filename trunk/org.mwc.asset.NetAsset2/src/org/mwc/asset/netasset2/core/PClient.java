@@ -147,6 +147,9 @@ public abstract class PClient implements ScenarioSteppedListener
 				case 1:
 					res = pt.category.toShortString();
 					break;
+				case 2:
+					res = pt.activity;
+					break;
 				default:
 					res = "Other";
 					break;
