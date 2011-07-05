@@ -4,22 +4,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Vector;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.netasset2.core.AClient;
 import org.mwc.asset.netasset2.core.AServer;
 import org.mwc.asset.netasset2.core.IMClient;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.test.CoreTest;
+import org.mwc.asset.netasset2.view.IVClient;
 import org.mwc.asset.netasset2.view.VControl;
 
 import ASSET.ScenarioType;
@@ -27,7 +20,7 @@ import ASSET.Scenario.MultiScenarioLister;
 
 public class View extends ViewPart {
 	public static final String ID = "org.mwc.asset.NetAsset2.view";
-	private VControl controlV;
+	private IVClient controlV;
 	private IMClient model;
 	private PClient pres;
 	private AServer server;

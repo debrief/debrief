@@ -1,5 +1,7 @@
 package org.mwc.asset.netasset2.view;
 
+import java.util.Vector;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -11,9 +13,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ListViewer;
+import org.mwc.asset.netasset2.common.Network.LightParticipant;
 
 public class VControl extends Composite implements IVClient
 {
@@ -23,6 +28,7 @@ public class VControl extends Composite implements IVClient
 	private ListViewer listScenarioViewer;
 	private List listServers;
 	private List listScenarios;
+	private TableViewer partViewer;
 
 	/**
 	 * Create the composite.
@@ -54,25 +60,22 @@ public class VControl extends Composite implements IVClient
 		lblParticipants.setText("Participants");
 		lblParticipants.setBounds(10, 113, 67, 14);
 
-		TableViewer tableViewer = new TableViewer(grpConnection, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		table = tableViewer.getTable();
+		partViewer = new TableViewer(grpConnection, SWT.BORDER | SWT.FULL_SELECTION);
+		table = partViewer.getTable();
 		table.setBounds(10, 129, 240, 81);
 
-		TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer,
-				SWT.NONE);
-		TableColumn colName = tableViewerColumn.getColumn();
+		TableViewerColumn nameCol = new TableViewerColumn(partViewer, SWT.NONE);
+		TableColumn colName = nameCol.getColumn();
 		colName.setWidth(100);
 		colName.setText("Name");
 
-		TableViewerColumn tableViewerColumn_1 = new TableViewerColumn(tableViewer,
-				SWT.NONE);
-		TableColumn colCategory = tableViewerColumn_1.getColumn();
+		TableViewerColumn catCol = new TableViewerColumn(partViewer, SWT.NONE);
+		TableColumn colCategory = catCol.getColumn();
 		colCategory.setWidth(100);
 		colCategory.setText("Category");
 
 		listServerViewer = new ListViewer(grpConnection, SWT.BORDER | SWT.V_SCROLL);
-		 listServers = listServerViewer.getList();
+		listServers = listServerViewer.getList();
 		listServers.setBounds(10, 41, 105, 66);
 
 		listScenarioViewer = new ListViewer(grpConnection, SWT.BORDER
@@ -93,13 +96,13 @@ public class VControl extends Composite implements IVClient
 	{
 		btnPing.addSelectionListener(handler);
 	}
-	
+
 	@Override
 	public ListViewer getServerList()
 	{
 		return listServerViewer;
 	}
-	
+
 	@Override
 	public ListViewer getScenarioList()
 	{
@@ -140,5 +143,29 @@ public class VControl extends Composite implements IVClient
 	public void addScenarioListener(IDoubleClickListener iDoubleClickListener)
 	{
 		listScenarioViewer.addDoubleClickListener(iDoubleClickListener);
+	}
+
+	@Override
+	public void setPartContentProvider(IContentProvider provider)
+	{
+		partViewer.setContentProvider(provider);
+	}
+
+	@Override
+	public void setPartLabelProvider(IBaseLabelProvider labelProvider)
+	{
+		partViewer.setLabelProvider(labelProvider);
+	}
+
+	@Override
+	public void addParticipantListener(IDoubleClickListener listener)
+	{
+		partViewer.addDoubleClickListener(listener);
+	}
+
+	@Override
+	public void setParticipants(Vector<LightParticipant> listOfParticipants)
+	{
+		partViewer.setInput(listOfParticipants); 
 	}
 }

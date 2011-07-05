@@ -100,6 +100,11 @@ public class Network
 			}
 		};
 
+		public String toString()
+		{
+			return name + " (" + listOfParticipants.size() + ")";
+		};
+
 		public String name;
 		public Vector<LightParticipant> listOfParticipants;
 	}
@@ -184,7 +189,10 @@ public class Network
 		public String instruction;
 		public String scenarioName;
 
-		public ScenControl(){};
+		public ScenControl()
+		{
+		};
+
 		public ScenControl(String scenarioName, String step2)
 		{
 			this.scenarioName = scenarioName;
