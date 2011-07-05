@@ -13,7 +13,7 @@ public interface IVPart
 
 	void setActDepth(String val);
 
-	void addSubmitListener(SelectionListener listener);
+	void setSubmitListener(SelectionListener listener);
 
 	String getDemSpeed();
 

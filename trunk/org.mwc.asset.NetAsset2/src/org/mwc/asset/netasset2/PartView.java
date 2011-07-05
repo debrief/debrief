@@ -6,11 +6,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.netasset2.view.IVPart;
 import org.mwc.asset.netasset2.view.VPart;
 
 import ASSET.Participants.Status;
+import MWC.GenericData.WorldSpeed;
 
 public class PartView extends ViewPart
 {
@@ -33,7 +35,7 @@ public class PartView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_view = new VPart(parent, SWT.NONE);
-		_view.addSubmitListener(new SelectionAdapter()
+		_view.setSubmitListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent e)
@@ -69,13 +71,20 @@ public class PartView extends ViewPart
 	
 	public void updateStatus(Status newStatus)
 	{
-		String crse =  df2.format(newStatus.getCourse());
-		String spd = df2.format(newStatus.getSpeed());
-		String depth = df2.format(newStatus.getLocation().getDepth());
+		final String crse =  df2.format(newStatus.getCourse());
+		final String spd = df2.format(newStatus.getSpeed().getValueIn(WorldSpeed.Kts));
+		final String depth = df2.format(newStatus.getLocation().getDepth());
 		
-		_view.setActCourse(crse);
-		_view.setActSpeed(spd);
-		_view.setActSpeed(depth);
+		Display.getDefault().asyncExec(new Runnable(){
+
+			@Override
+			public void run()
+			{
+				_view.setActCourse(crse);
+				_view.setActSpeed(spd);
+				_view.setActDepth(depth);
+			}});
+		
 	}
 
 	public void setParticipant(String name)

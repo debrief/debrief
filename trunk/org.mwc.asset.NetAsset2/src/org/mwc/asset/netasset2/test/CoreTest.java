@@ -345,7 +345,7 @@ public class CoreTest
 		{
 			public MyScen()
 			{
-				this.setScenarioStepTime(new Duration(5, Duration.MINUTES));
+				this.setScenarioStepTime(new Duration(2, Duration.MINUTES));
 				this.setStepTime(new Duration(1, Duration.SECONDS));
 			}
 		}

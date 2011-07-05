@@ -1,6 +1,10 @@
 package org.mwc.asset.netasset2.view;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -24,9 +28,11 @@ public class VPart extends Composite implements IVPart
 	private Label actDepth;
 	private Button newState;
 	private Label partName;
+	private SelectionListener _subListener;
 
 	/**
 	 * Create the composite.
+	 * 
 	 * @param parent
 	 * @param style
 	 */
@@ -34,22 +40,44 @@ public class VPart extends Composite implements IVPart
 	{
 		super(parent, style);
 		setLayout(new FormLayout());
+
+		KeyListener enterListener = new KeyListener()
+		{
+
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				if (e.keyCode == 13)
+				{
+					_subListener.widgetSelected(null);
+				}
+			}
+		};
 		
-		 partName = new Label(this, SWT.NONE);
-		FormData fd_lblNewLabel = new FormData();
-		fd_lblNewLabel.bottom = new FormAttachment(0, 34);
-		fd_lblNewLabel.right = new FormAttachment(0, 212);
-		fd_lblNewLabel.top = new FormAttachment(0, 10);
-		fd_lblNewLabel.left = new FormAttachment(0, 10);
-		partName.setLayoutData(fd_lblNewLabel);
+		partName = new Label(this, SWT.NONE);
+		FormData fd_partName = new FormData();
+		fd_partName.bottom = new FormAttachment(0, 19);
+		fd_partName.right = new FormAttachment(0, 222);
+		fd_partName.top = new FormAttachment(0);
+		fd_partName.left = new FormAttachment(0);
+		partName.setLayoutData(fd_partName);
 		partName.setFont(SWTResourceManager.getFont("Lucida Grande", 14, SWT.BOLD));
 		partName.setText("[Pending]");
-		
 
 		grpState = new Group(this, SWT.NONE);
+		FormData fd_grpState = new FormData();
+		fd_grpState.bottom = new FormAttachment(0, 169);
+		fd_grpState.right = new FormAttachment(0, 210);
+		fd_grpState.top = new FormAttachment(0, 25);
+		fd_grpState.left = new FormAttachment(0, 10);
+		grpState.setLayoutData(fd_grpState);
 		grpState.setText("State");
 		grpState.setLayout(new GridLayout(3, false));
-		grpState.setEnabled(false);
 
 		Label lblProperty = new Label(grpState, SWT.NONE);
 		lblProperty.setText("Property");
@@ -61,57 +89,51 @@ public class VPart extends Composite implements IVPart
 		lblActual.setText("Actual");
 
 		Label lblCourse = new Label(grpState, SWT.NONE);
-		lblCourse.setBounds(0, 0, 59, 14);
 		lblCourse.setText("Course");
 
 		demCourse = new Text(grpState, SWT.BORDER);
 		demCourse.setText("000");
-		demCourse.setBounds(0, 0, 8, 19);
 		demCourse.setEnabled(false);
+		demCourse.addKeyListener(enterListener);
+
+
 
 		actCourse = new Label(grpState, SWT.NONE);
-		actCourse.setBounds(0, 0, 59, 14);
 		actCourse.setText("000");
 
 		Label lblSpeed = new Label(grpState, SWT.NONE);
-		lblSpeed.setBounds(0, 0, 59, 14);
 		lblSpeed.setText("Speed");
 
 		demSpeed = new Text(grpState, SWT.BORDER);
 		demSpeed.setText("000");
-		demSpeed.setBounds(0, 0, 8, 19);
 		demSpeed.setEnabled(false);
+		demSpeed.addKeyListener(enterListener);
 
 		actSpeed = new Label(grpState, SWT.NONE);
-		actSpeed.setSize(59, 14);
 		actSpeed.setText("000");
 
 		Label lblDepth = new Label(grpState, SWT.NONE);
-		lblDepth.setBounds(0, 0, 59, 14);
 		lblDepth.setText("Depth");
 
 		demDepth = new Text(grpState, SWT.BORDER);
 		demDepth.setText("000");
-		demDepth.setSize(8, 19);
 		demDepth.setEnabled(false);
+		demDepth.addKeyListener(enterListener);
+
 
 		actDepth = new Label(grpState, SWT.NONE);
-		actDepth.setBounds(0, 0, 59, 14);
 		actDepth.setText("000");
 
 		Label label = new Label(grpState, SWT.NONE);
-		label.setBounds(0, 0, 59, 14);
 		label.setText("  ");
 
 		Label label_1 = new Label(grpState, SWT.NONE);
-		label_1.setBounds(0, 0, 59, 14);
 		label_1.setText("  ");
 
 		newState = new Button(grpState, SWT.NONE);
-		newState.setBounds(0, 0, 94, 30);
 		newState.setText("Submit");
 
-//		super.setEnabled(false);
+		// super.setEnabled(false);
 	}
 
 	@Override
@@ -139,28 +161,30 @@ public class VPart extends Composite implements IVPart
 	}
 
 	@Override
-	public void addSubmitListener(SelectionListener listener)
+	public void setSubmitListener(SelectionListener listener)
 	{
+		_subListener = listener;
 		newState.addSelectionListener(listener);
 	}
-	
+
 	@Override
 	public String getDemSpeed()
 	{
 		return demSpeed.getText();
 	}
+
 	@Override
 	public String getDemCourse()
 	{
 		return demCourse.getText();
 	}
-	
+
 	@Override
 	public String getDemDepth()
 	{
 		return demDepth.getText();
 	}
-	
+
 	public void setEnabled(boolean val)
 	{
 		super.setEnabled(val);
@@ -175,5 +199,5 @@ public class VPart extends Composite implements IVPart
 	{
 		partName.setText(name);
 	}
-	
+
 }

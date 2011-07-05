@@ -38,6 +38,7 @@ import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioSteppedListener;
+import MWC.GenericData.WorldSpeed;
 
 public abstract class PClient implements ScenarioSteppedListener
 {
@@ -221,7 +222,9 @@ public abstract class PClient implements ScenarioSteppedListener
 			public void demanded(double course, double speed, double depth)
 			{
 				if (_listeningTo != null)
+				{
 					_model.controlPart(_listeningTo.name, part.id, course, speed, depth);
+				}
 			}
 		});
 
