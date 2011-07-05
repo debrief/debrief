@@ -7,7 +7,7 @@ import java.util.Vector;
 import org.mwc.asset.netasset2.common.Network.AHandler;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
-import org.mwc.asset.netasset2.core.AClient;
+import org.mwc.asset.netasset2.core.MClient;
 import org.mwc.asset.netasset2.core.AServer;
 import org.mwc.asset.netasset2.test.CoreTest.TrackWrapper_Test.MyPart;
 
@@ -76,7 +76,7 @@ public class CoreTest
 					_events.elementAt(0));
 
 			// and now the client
-			AClient client = new AClient();
+			MClient client = new MClient();
 			assertEquals("still no more events", 1, _events.size());
 
 			// try with dodgy target
@@ -112,7 +112,7 @@ public class CoreTest
 					_events.elementAt(0));
 
 			// and now the client
-			AClient client = new AClient();
+			MClient client = new MClient();
 			assertEquals("still no more events", 1, _events.size());
 
 			// now real connection

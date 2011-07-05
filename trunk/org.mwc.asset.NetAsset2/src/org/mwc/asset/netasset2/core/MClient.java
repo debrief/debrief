@@ -28,7 +28,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-public class AClient implements IMClient
+public class MClient implements IMClient
 {
 	private static class CModel
 	{
@@ -132,7 +132,7 @@ public class AClient implements IMClient
 	private HashMap<String, PartListener> _partListeners;
 	private HashMap<String, ScenListener> _scenListeners;
 
-	public AClient() throws IOException
+	public MClient() throws IOException
 	{
 		_model = new CModel();
 		_partListeners = new HashMap<String, PartListener>();

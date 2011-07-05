@@ -6,51 +6,65 @@ import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.core.AClient;
+import org.mwc.asset.netasset2.core.MClient;
 import org.mwc.asset.netasset2.core.AServer;
 import org.mwc.asset.netasset2.core.IMClient;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.test.CoreTest;
-import org.mwc.asset.netasset2.view.IVClient;
+import org.mwc.asset.netasset2.view.IVControl;
 import org.mwc.asset.netasset2.view.VControl;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.MultiScenarioLister;
 
-public class View extends ViewPart {
-	public static final String ID = "org.mwc.asset.NetAsset2.view";
-	private IVClient controlV;
+public class ConnectView extends ViewPart
+{
+	public static final String ID = "org.mwc.asset.NetAsset2.ConnectView";
+	private IVControl controlV;
 	private IMClient model;
 	private PClient pres;
-	private AServer server;
+	private AServer testServer;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
 	 */
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent)
+	{
 		controlV = new VControl(parent, SWT.NONE);
 		try
 		{
-			model = new AClient();
-			pres = new PClient(controlV, model);
+			model = new MClient();
+			pres = new PClient(controlV, model)
+			{
+				public IViewPart getView(String viewId)
+				{
+					return findView(viewId);
+				}
+			};
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		// get ourselves a server
 		doDummyWork();
 	}
-	
-	
+
+	private IViewPart findView(String viewId)
+	{
+		IViewPart res = getViewSite().getPage().findView(viewId);
+		return res;
+	}
+
 	private void doDummyWork()
 	{
 		try
 		{
-			server = new AServer();
+			testServer = new AServer();
 			// ok, give the server some data
 			MultiScenarioLister lister = new MultiScenarioLister()
 			{
@@ -61,8 +75,8 @@ public class View extends ViewPart {
 					return CoreTest.TrackWrapper_Test.getScenarioList();
 				}
 			};
-			server.setDataProvider(lister);
-			
+			testServer.setDataProvider(lister);
+
 			// take note of address
 			System.out.println("My address is " + InetAddress.getLocalHost());
 		}
@@ -76,6 +90,12 @@ public class View extends ViewPart {
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void setFocus() {
+	public void setFocus()
+	{
+	}
+
+	public void step()
+	{
+		pres.doStep();
 	}
 }

@@ -19,18 +19,25 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
+import org.mwc.asset.netasset2.TimeView;
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.AHandler;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
-import org.mwc.asset.netasset2.view.IVClient;
+import org.mwc.asset.netasset2.view.IVControl;
 
-public class PClient
+import ASSET.ScenarioType;
+import ASSET.Scenario.ScenarioSteppedListener;
+
+public abstract class PClient implements ScenarioSteppedListener
 {
-	private final IVClient _view;
+	private final IVControl _view;
 	private final IMClient _model;
+	private LightScenario _listeningTo;
+	private TimeView _timeV;
 
-	public PClient(IVClient view, IMClient model)
+	public PClient(IVControl view, IMClient model)
 	{
 		_view = view;
 		_model = model;
@@ -155,6 +162,14 @@ public class PClient
 
 	protected void scenarioSelected(final LightScenario scenario)
 	{
+		if (_listeningTo != null)
+		{
+			_model.stopListenScen(_listeningTo.name);
+		}
+
+		_listeningTo = scenario;
+		_model.listenScen(scenario.name, this);
+
 		Display.getCurrent().asyncExec(new Runnable()
 		{
 
@@ -232,6 +247,43 @@ public class PClient
 				list.add(inetAddress);
 			}
 			_view.enableServers();
+		}
+	}
+
+	@Override
+	public void step(ScenarioType scenario, long newTime)
+	{
+		// ok, share the time...
+
+		// get the timer view
+		if (_timeV == null)
+		{
+			IViewPart v = getView(TimeView.ID);
+			TimeView t = (TimeView) v;
+			_timeV = t;
+		}
+		
+		// ok, tell the timer about the time
+		_timeV.setTime(newTime);
+	}
+
+	abstract public IViewPart getView(String viewId);
+
+	@Override
+	public void restart(ScenarioType scenario)
+	{
+		// TODO
+	}
+
+	/** trigger a scenario step
+	 * 
+	 * @return
+	 */
+	public void doStep()
+	{
+		if(_listeningTo != null)
+		{
+			_model.step(_listeningTo.name);
 		}
 	}
 

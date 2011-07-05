@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 
-public interface IVClient
+public interface IVControl
 {
 
 	public ListViewer getScenarioList();

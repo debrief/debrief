@@ -22,9 +22,14 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="View"
-            class="org.mwc.asset.netasset2.View"
-            id="org.mwc.asset.NetAsset2.view">
+            name="Connect"
+            class="org.mwc.asset.netasset2.ConnectView"
+            id="org.mwc.asset.NetAsset2.ConnectView">
+      </view>
+      <view
+            class="org.mwc.asset.netasset2.TimeView"
+            id="org.mwc.asset.NetAsset2.TimeView"
+            name="Time">
       </view>
    </extension>
    <extension
@@ -32,11 +37,22 @@
       <perspectiveExtension
             targetID="*">
          <view
-               standalone="true"
+               closeable="false"
+               id="org.mwc.asset.NetAsset2.ConnectView"
                minimized="false"
-               relative="org.eclipse.ui.editorss"
                relationship="left"
-               id="org.mwc.asset.NetAsset2.view">
+               relative="org.eclipse.ui.editorss"
+               standalone="true">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="*">
+         <view
+               closeable="false"
+               id="org.mwc.asset.NetAsset2.TimeView"
+               minimized="false"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss">
          </view>
       </perspectiveExtension>
    </extension>

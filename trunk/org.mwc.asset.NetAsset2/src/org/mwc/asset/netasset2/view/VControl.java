@@ -20,7 +20,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ListViewer;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 
-public class VControl extends Composite implements IVClient
+public class VControl extends Composite implements IVControl
 {
 	private Table table;
 	private Button btnPing;
