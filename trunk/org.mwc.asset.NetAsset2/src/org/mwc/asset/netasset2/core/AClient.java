@@ -277,7 +277,7 @@ public class AClient
 		_model.send(new GetScenarios());
 	}
 
-	public void demStatus(String scenario, int id, double courseDegs,
+	public void controlPart(String scenario, int id, double courseDegs,
 			double speedKts, double depthM)
 	{
 		Network.DemStatus dem = new Network.DemStatus();

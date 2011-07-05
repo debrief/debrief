@@ -262,7 +262,7 @@ public class CoreTest
 			
 			// pl. try driving
 			assertEquals("original dec model", "DefaultWander",testParticipant.getDecisionModel().getName());
-			client.demStatus(scen.name, firstPart.id, 55d, 4d, 0d);	
+			client.controlPart(scen.name, firstPart.id, 55d, 4d, 0d);	
 			
 			// move forward & look for change in course/speed
 			server.step(scen.name);
@@ -296,13 +296,47 @@ public class CoreTest
 			server.step(scen.name);
 			Thread.sleep(200);
 			assertEquals("no more steps received", 6, moveLog.size());
-	
-			// showEvents(_events);
-			// assertEquals("events recorded", 6, _events.size());
+
+
+			/////////////////////////////
+			// checking down more than one level
+			/////////////////////////////
+			client.listenPart(scen.name, firstPart.id, combi, combi, combi);
+			assertEquals("original dec model", "DefaultWander",testParticipant.getDecisionModel().getName());
+			client.controlPart(scen.name, firstPart.id, 55d, 4d, 0d);	
+			Thread.sleep(200);
+
+			// check the model is under user control
+			assertEquals("user control dec model", AServer.NETWORK_CONTROL,testParticipant.getDecisionModel().getName());
+			
+			// ok, now step down two levels
+			client.stopListenPart(scen.name, firstPart.id);
+			
+			// check the behaviour got restored
+			Thread.sleep(200);
+			assertEquals("original dec model restored", "DefaultWander",testParticipant.getDecisionModel().getName());
+			
+			// HOW ABOUT TWO LEVELS!
+			client.listenPart(scen.name, firstPart.id, combi, combi, combi);
+			assertEquals("original dec model", "DefaultWander",testParticipant.getDecisionModel().getName());
+			client.controlPart(scen.name, firstPart.id, 55d, 4d, 0d);	
+			Thread.sleep(200);
+
+			// check the model is under user control
+			assertEquals("user control dec model", AServer.NETWORK_CONTROL,testParticipant.getDecisionModel().getName());
+			assertEquals("only one listener", 1, server.getPartListeners().size());
+
+			// ok, collapse it!
+			client.stopListenScen(scen.name);
+			
+			Thread.sleep(200);
+			assertEquals("original dec model restored", "DefaultWander",testParticipant.getDecisionModel().getName());
+			assertEquals("zero listeners", 0, server.getPartListeners().size());
+
 
 			showEvents(_events);
 			System.out.println("pausing");
-			System.in.read();
+//			System.in.read();
 			client.stop();
 			server.stop();
 		}

@@ -37,6 +37,7 @@ import com.esotericsoftware.kryonet.Server;
 
 public class AServer
 {
+	private static final int DUFF_INDEX = -1;
 	public static final String NETWORK_CONTROL = "Network control";
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
@@ -170,6 +171,18 @@ public class AServer
 			_part.removeParticipantMovedListener(this);
 		}
 
+		public void restoreBehaviour()
+		{
+			// does it have a default behaviour?
+			if(_defaultBehaviour  != null)
+			{
+				ParticipantType pt = _part;
+				pt.setDecisionModel(_defaultBehaviour);
+				// and forget it
+				_defaultBehaviour = null;
+			}
+		}
+
 	}
 
 	public AServer() throws IOException
@@ -178,177 +191,86 @@ public class AServer
 		_partListeners = new HashMap<String, PartListener>();
 		_scenListeners = new HashMap<String, ScenListener>();
 
-		Listener listenS = new Listener()
+		_model.addListener(new ListenScen().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				ListenScen ls = (ListenScen) object;
 
-				// get the secnario
-				ScenarioType scen = getScenario(ls.name);
-
-				// ok, start listening to this scenario
-				ScenListener sl = new ScenListener(connection, scen, ls.name);
-
-				// and remember it
-				String index = connection.toString() + ls.name;
-				_scenListeners.put(index, sl);
+				listenToScenario(connection, ls);
 			}
-		};
-		_model.addListener(new ListenScen().getClass(), listenS);
-
-		Listener stopListenS = new Listener()
+		});
+		_model.addListener(new StopListenScen().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				StopListenScen ls = (StopListenScen) object;
 
-				String index = connection.toString() + ls.name;
-				ScenListener sl = _scenListeners.get(index);
-				sl.release();
-				_scenListeners.remove(sl);
+				stopListenToScenario(connection, ls);
 			}
-		};
-		_model.addListener(new StopListenScen().getClass(), stopListenS);
-
-		Listener controlS = new Listener()
+		});
+		_model.addListener(new ScenControl().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				ScenControl ls = (ScenControl) object;
-				ScenarioType st = getScenario(ls.scenarioName);
-				if (ls.instruction.equals(ScenControl.STEP))
-				{
-					st.step();
-				}
-				else if (ls.instruction.equals(ScenControl.PLAY))
-				{
-					st.start();
-				}
-				else if (ls.instruction.equals(ScenControl.PAUSE))
-				{
-					st.pause();
-				}
-				else if (ls.instruction.equals(ScenControl.TERMINATE))
-				{
-					st.stop("Client finish");
-				}
+				controlScenario(ls);
 			}
-		};
-		_model.addListener(new ScenControl().getClass(), controlS);
-
-		Listener getS = new Listener()
+		});
+		_model.addListener(new GetScenarios().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
-				ScenarioList res = new ScenarioList();
-				Vector<LightScenario> list = new Vector<LightScenario>();
-				Iterator<ScenarioType> iter = _dataProvider.getScenarios().iterator();
-				while (iter.hasNext())
-				{
-					ScenarioType scen = (ScenarioType) iter.next();
-					list.add(new LightScenario(scen));
-				}
-
-				res.list = list;
-				connection.sendTCP(res);
+				getScenarios(connection);
 			}
-		};
-		_model.addListener(new GetScenarios().getClass(), getS);
-
-		Listener listenP = new Listener()
+		});
+		_model.addListener(new ListenPart().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				ListenPart cp = (ListenPart) object;
-				ParticipantType part = getParticipant(cp.scenarioName, cp.partId);
-				PartListener pl = new PartListener(connection, cp.partId, part,
-						cp.scenarioName);
-				String index = connection.toString() + cp.partId;
-				_partListeners.put(index, pl);
+				listenToParticipant(connection, cp);
 			}
-		};
-		_model.addListener(new ListenPart().getClass(), listenP);
-		Listener stopListenP = new Listener()
+		});
+		_model.addListener(new StopListenPart().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				StopListenPart cp = (StopListenPart) object;
-				dropListener(connection.toString(), cp.partId);
+				stopListenToPart(connection, cp.partId);
 			}
-		};
-		_model.addListener(new StopListenPart().getClass(), stopListenP);
-		Listener demS = new Listener()
+		});
+		_model.addListener(new DemStatus().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				DemStatus cp = (DemStatus) object;
-				ParticipantType part = getParticipant(cp.scenario, cp.partId);
-				DecisionType dem = part.getDecisionModel();
-
-				if (!(dem instanceof UserControl))
-				{
-					// ok, take a safe copy of the decision model
-					// we can work out the exact index, cool.
-					String index = connection.toString() + cp.partId;
-
-					// get the listener
-					PartListener pl = _partListeners.get(index);
-
-					// take a safe copy of the behaviour, so we can later cancel it
-					pl._defaultBehaviour = dem;
-
-					// create a user control behaviour
-					dem = new UserControl(0, null, null);
-					dem.setName(NETWORK_CONTROL);
-					
-					// and assign it
-					part.setDecisionModel(dem);
-				}
-
-				UserControl uc = (UserControl) dem;
-				uc.setCourse(cp.courseDegs);
-				uc.setSpeed(new WorldSpeed(cp.speedKts, WorldSpeed.Kts));
-				uc.setDepth(new WorldDistance(cp.depthM, WorldDistance.METRES));
+				controlParticipant(connection, cp);
 			}
-		};
-		_model.addListener(new DemStatus().getClass(), demS);
-
-		Listener releaseP = new Listener()
+		});
+		_model.addListener(new ReleasePart().getClass(), new Listener()
 		{
 			public void received(Connection connection, Object object)
 			{
 				ReleasePart cp = (ReleasePart) object;
-				// ok, take a safe copy of the decision model
-				// we can work out the exact index, cool.
-				String index = connection.toString() + cp.partId;
-
-				// get the listener
-				PartListener pl = _partListeners.get(index);
-				
-				// does it have a default behaviour?
-				if(pl._defaultBehaviour  != null)
-				{
-					ParticipantType pt = pl._part;
-					pt.setDecisionModel(pl._defaultBehaviour);
-					// and forget it
-					pl._defaultBehaviour = null;
-				}
+				releaseParticipant(connection, cp.partId);
 			}
-		};
-		_model.addListener(new ReleasePart().getClass(), releaseP);
+		});
 		
 	}
 
-	protected void dropListener(String connStr, int partId)
+	protected void stopListenToPart(Connection connection, int partId)
 	{
-		if (partId != -1)
+		if (partId != DUFF_INDEX)
 		{
 			// we can work out the exact index, cool.
-			String index = connStr + partId;
+			String index = connection.toString() + partId;
 
 			// get the listener
 			PartListener pl = _partListeners.get(index);
+			
+			// restore behaviour, if we're in control
+			pl.restoreBehaviour();
 
 			// tell it to stop listening to hte part
 			pl.release();
@@ -364,7 +286,7 @@ public class AServer
 			while (iter.hasNext())
 			{
 				String index = (String) iter.next();
-				if (index.startsWith(connStr))
+				if (index.startsWith(connection.toString()))
 				{
 					// ok, ditch it
 					toDrop.add(index);
@@ -379,7 +301,13 @@ public class AServer
 				{
 					String index = (String) drops.next();
 					PartListener pl = _partListeners.get(index);
+					// restore behaviour, if we're in control
+					pl.restoreBehaviour();
+
+					// now stop listening to it
 					pl.release();
+					
+					// and forget about it
 					_partListeners.remove(index);
 
 				}
@@ -397,7 +325,7 @@ public class AServer
 		return _scenListeners;
 	}
 
-	protected ParticipantType getParticipant(String scenarioName, int partId)
+	private ParticipantType getParticipant(String scenarioName, int partId)
 	{
 		ParticipantType part = null;
 		ScenarioType thisS = getScenario(scenarioName);
@@ -439,5 +367,121 @@ public class AServer
 	{
 		ScenarioType scen = getScenario(scenarioName);
 		scen.step();
+	}
+
+	private void listenToScenario(Connection connection, ListenScen ls)
+	{
+		// get the secnario
+		ScenarioType scen = getScenario(ls.name);
+
+		// ok, start listening to this scenario
+		ScenListener sl = new ScenListener(connection, scen, ls.name);
+
+		// and remember it
+		String index = connection.toString() + ls.name;
+		_scenListeners.put(index, sl);
+	}
+
+	private void stopListenToScenario(Connection connection, StopListenScen ls)
+	{
+		String index = connection.toString() + ls.name;
+		ScenListener sl = _scenListeners.get(index);
+		sl.release();
+		_scenListeners.remove(sl);
+		
+		// also, cancel any participant listening
+		stopListenToPart(connection, DUFF_INDEX);
+	}
+
+	private void controlScenario(ScenControl ls)
+	{
+		ScenarioType st = getScenario(ls.scenarioName);
+		if (ls.instruction.equals(ScenControl.STEP))
+		{
+			st.step();
+		}
+		else if (ls.instruction.equals(ScenControl.PLAY))
+		{
+			st.start();
+		}
+		else if (ls.instruction.equals(ScenControl.PAUSE))
+		{
+			st.pause();
+		}
+		else if (ls.instruction.equals(ScenControl.TERMINATE))
+		{
+			st.stop("Client finish");
+		}
+	}
+
+	private void getScenarios(Connection connection)
+	{
+		ScenarioList res = new ScenarioList();
+		Vector<LightScenario> list = new Vector<LightScenario>();
+		Iterator<ScenarioType> iter = _dataProvider.getScenarios().iterator();
+		while (iter.hasNext())
+		{
+			ScenarioType scen = (ScenarioType) iter.next();
+			list.add(new LightScenario(scen));
+		}
+
+		res.list = list;
+		connection.sendTCP(res);
+	}
+
+	private void listenToParticipant(Connection connection, ListenPart cp)
+	{
+		ParticipantType part = getParticipant(cp.scenarioName, cp.partId);
+		PartListener pl = new PartListener(connection, cp.partId, part,
+				cp.scenarioName);
+		String index = connection.toString() + cp.partId;
+		_partListeners.put(index, pl);
+	}
+
+	private void controlParticipant(Connection connection, DemStatus cp)
+	{
+		ParticipantType part = getParticipant(cp.scenario, cp.partId);
+		DecisionType dem = part.getDecisionModel();
+
+		if (!(dem instanceof UserControl))
+		{
+			// ok, take a safe copy of the decision model
+			// we can work out the exact index, cool.
+			String index = connection.toString() + cp.partId;
+
+			// get the listener
+			PartListener pl = _partListeners.get(index);
+			
+			if(pl == null)
+				System.err.println("CAN'T FIND PART LISTENER FOR:" + cp.partId);
+
+			// take a safe copy of the behaviour, so we can later cancel it
+			pl._defaultBehaviour = dem;
+
+			// create a user control behaviour
+			dem = new UserControl(0, null, null);
+			dem.setName(NETWORK_CONTROL);
+			
+			// and assign it
+			part.setDecisionModel(dem);
+		}
+
+		UserControl uc = (UserControl) dem;
+		uc.setCourse(cp.courseDegs);
+		uc.setSpeed(new WorldSpeed(cp.speedKts, WorldSpeed.Kts));
+		uc.setDepth(new WorldDistance(cp.depthM, WorldDistance.METRES));
+	}
+
+	private void releaseParticipant(Connection connection, int partId)
+	{
+		// ok, take a safe copy of the decision model
+		// we can work out the exact index, cool.
+		String index = connection.toString() + partId;
+
+		// get the listener
+		PartListener pl = _partListeners.get(index);
+
+		// and put the original behaviour back
+		pl.restoreBehaviour();
 	}
 }
