@@ -66,10 +66,11 @@ public class PartRCPView extends ViewPart
 	}
 
 	DecimalFormat df2 = new DecimalFormat("0.00");
+	DecimalFormat df0 = new DecimalFormat("0");
 	
 	public void updateStatus(Status newStatus)
 	{
-		final String crse =  df2.format(newStatus.getCourse());
+		final String crse =  df0.format(newStatus.getCourse());
 		final String spd = df2.format(newStatus.getSpeed().getValueIn(WorldSpeed.Kts));
 		final String depth = df2.format(newStatus.getLocation().getDepth());
 		
@@ -78,9 +79,9 @@ public class PartRCPView extends ViewPart
 			@Override
 			public void run()
 			{
-				_view.setActCourse(crse);
-				_view.setActSpeed(spd);
-				_view.setActDepth(depth);
+				_view.setActCourse(crse + "\u00B0");
+				_view.setActSpeed(spd + "kts");
+				_view.setActDepth(depth + "m");
 			}});
 		
 	}

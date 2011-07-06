@@ -97,7 +97,7 @@ public class VPart extends Composite implements IVPart
 
 
 		actCourse = new Label(grpState, SWT.NONE);
-		actCourse.setText("000");
+		actCourse.setText("000 00");
 
 		Label lblSpeed = new Label(grpState, SWT.NONE);
 		lblSpeed.setText("Speed");
@@ -108,7 +108,7 @@ public class VPart extends Composite implements IVPart
 		demSpeed.addKeyListener(enterListener);
 
 		actSpeed = new Label(grpState, SWT.NONE);
-		actSpeed.setText("000");
+		actSpeed.setText("000 00");
 
 		Label lblDepth = new Label(grpState, SWT.NONE);
 		lblDepth.setText("Depth");
@@ -120,7 +120,7 @@ public class VPart extends Composite implements IVPart
 
 
 		actDepth = new Label(grpState, SWT.NONE);
-		actDepth.setText("000");
+		actDepth.setText("000 00");
 
 		Label label = new Label(grpState, SWT.NONE);
 		label.setText("  ");
