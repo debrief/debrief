@@ -1,26 +1,24 @@
-package org.mwc.asset.netasset2;
+package org.mwc.asset.netasset2.time;
 
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.view.IVTime;
-import org.mwc.asset.netasset2.view.VTime;
+import org.mwc.asset.netasset2.connect.ConnectRCPView;
 
-public class TimeView extends ViewPart
+public class TimeRCPView extends ViewPart
 {
 	public static final String ID = "org.mwc.asset.NetAsset2.TimeView";
 
 	private IVTime _view;
 
-	private ConnectView _connect;
+	private ConnectRCPView _connect;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -69,12 +67,12 @@ public class TimeView extends ViewPart
 
 	}
 
-	private ConnectView getConnect()
+	private ConnectRCPView getConnect()
 	{
 		if (_connect == null)
 		{
-			IViewPart vp = getSite().getPage().findView(ConnectView.ID);
-			_connect = (ConnectView) vp;
+			IViewPart vp = getSite().getPage().findView(ConnectRCPView.ID);
+			_connect = (ConnectRCPView) vp;
 		}
 		return _connect;
 	}

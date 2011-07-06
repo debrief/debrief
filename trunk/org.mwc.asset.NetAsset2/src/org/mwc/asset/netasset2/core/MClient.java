@@ -116,7 +116,9 @@ public class MClient implements IMClient
 	private static class PartListener
 	{
 		final ParticipantMovedListener _mover;
+		@SuppressWarnings("unused")
 		final ParticipantDecidedListener _decider;
+		@SuppressWarnings("unused")
 		final ParticipantDetectedListener _detector;
 
 		public PartListener(ParticipantMovedListener mover,

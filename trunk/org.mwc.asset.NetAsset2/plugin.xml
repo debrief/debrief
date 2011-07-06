@@ -23,16 +23,16 @@
          point="org.eclipse.ui.views">
       <view
             name="Connect"
-            class="org.mwc.asset.netasset2.ConnectView"
+            class="org.mwc.asset.netasset2.connect.ConnectRCPView"
             id="org.mwc.asset.NetAsset2.ConnectView">
       </view>
       <view
-            class="org.mwc.asset.netasset2.TimeView"
+            class="org.mwc.asset.netasset2.time.TimeRCPView"
             id="org.mwc.asset.NetAsset2.TimeView"
             name="Time">
       </view>
       <view
-            class="org.mwc.asset.netasset2.PartView"
+            class="org.mwc.asset.netasset2.part.PartRCPView"
             id="org.mwc.asset.NetAsset2.PartView"
             name="Participant">
       </view>

@@ -1,4 +1,4 @@
-package org.mwc.asset.netasset2;
+package org.mwc.asset.netasset2.part;
 
 import java.text.DecimalFormat;
 
@@ -8,13 +8,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.view.IVPart;
-import org.mwc.asset.netasset2.view.VPart;
 
 import ASSET.Participants.Status;
 import MWC.GenericData.WorldSpeed;
 
-public class PartView extends ViewPart
+public class PartRCPView extends ViewPart
 {
 
 	public static interface NewDemStatus

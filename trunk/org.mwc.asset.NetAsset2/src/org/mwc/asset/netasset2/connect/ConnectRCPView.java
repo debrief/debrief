@@ -1,4 +1,4 @@
-package org.mwc.asset.netasset2;
+package org.mwc.asset.netasset2.connect;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,16 +13,14 @@ import org.mwc.asset.netasset2.core.AServer;
 import org.mwc.asset.netasset2.core.IMClient;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.test.CoreTest;
-import org.mwc.asset.netasset2.view.IVControl;
-import org.mwc.asset.netasset2.view.VControl;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.MultiScenarioLister;
 
-public class ConnectView extends ViewPart
+public class ConnectRCPView extends ViewPart
 {
 	public static final String ID = "org.mwc.asset.NetAsset2.ConnectView";
-	private IVControl controlV;
+	private IVConnect controlV;
 	private IMClient model;
 	private PClient pres;
 	private AServer testServer;
@@ -33,7 +31,7 @@ public class ConnectView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		controlV = new VControl(parent, SWT.NONE);
+		controlV = new VConnect(parent, SWT.NONE);
 		try
 		{
 			model = new MClient();

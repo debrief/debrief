@@ -1,4 +1,4 @@
-package org.mwc.asset.netasset2.view;
+package org.mwc.asset.netasset2.connect;
 
 import java.util.Vector;
 
@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 
-public class VControl extends Composite implements IVControl
+public class VConnect extends Composite implements IVConnect
 {
 	private Table table;
 	private Button btnPing;
@@ -35,7 +35,7 @@ public class VControl extends Composite implements IVControl
 	 * @param parent
 	 * @param style
 	 */
-	public VControl(Composite parent, int style)
+	public VConnect(Composite parent, int style)
 	{
 		super(parent, style);
 		setLayout(null);

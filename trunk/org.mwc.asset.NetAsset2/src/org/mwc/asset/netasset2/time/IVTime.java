@@ -1,4 +1,4 @@
-package org.mwc.asset.netasset2.view;
+package org.mwc.asset.netasset2.time;
 
 import org.eclipse.swt.events.SelectionListener;
 

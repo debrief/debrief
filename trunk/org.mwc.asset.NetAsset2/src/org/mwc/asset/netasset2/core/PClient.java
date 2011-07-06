@@ -20,15 +20,15 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
-import org.mwc.asset.netasset2.PartView;
-import org.mwc.asset.netasset2.PartView.NewDemStatus;
-import org.mwc.asset.netasset2.TimeView;
 import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.AHandler;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
 import org.mwc.asset.netasset2.common.Network.ScenControl;
-import org.mwc.asset.netasset2.view.IVControl;
+import org.mwc.asset.netasset2.connect.IVConnect;
+import org.mwc.asset.netasset2.part.PartRCPView;
+import org.mwc.asset.netasset2.part.PartRCPView.NewDemStatus;
+import org.mwc.asset.netasset2.time.TimeRCPView;
 
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionList;
@@ -38,18 +38,17 @@ import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioSteppedListener;
-import MWC.GenericData.WorldSpeed;
 
 public abstract class PClient implements ScenarioSteppedListener
 {
-	private final IVControl _view;
+	private final IVConnect _view;
 	private final IMClient _model;
 	private LightScenario _listeningTo;
-	private TimeView _timeV;
-	private PartView _partV;
+	private TimeRCPView _timeV;
+	private PartRCPView _partV;
 	private CombinedListener _partListener;
 
-	public PClient(IVControl view, IMClient model)
+	public PClient(IVConnect view, IMClient model)
 	{
 		_view = view;
 		_model = model;
@@ -236,11 +235,11 @@ public abstract class PClient implements ScenarioSteppedListener
 		}
 	}
 
-	private PartView getPartView()
+	private PartRCPView getPartView()
 	{
 		if (_partV == null)
 		{
-			_partV = (PartView) getView(PartView.ID);
+			_partV = (PartRCPView) getView(PartRCPView.ID);
 		}
 		return _partV;
 	}
@@ -273,12 +272,12 @@ public abstract class PClient implements ScenarioSteppedListener
 		});
 	}
 
-	private TimeView getTimeView()
+	private TimeRCPView getTimeView()
 	{
 		if (_timeV == null)
 		{
-			IViewPart v = getView(TimeView.ID);
-			TimeView t = (TimeView) v;
+			IViewPart v = getView(TimeRCPView.ID);
+			TimeRCPView t = (TimeRCPView) v;
 			_timeV = t;
 		}
 		return _timeV;

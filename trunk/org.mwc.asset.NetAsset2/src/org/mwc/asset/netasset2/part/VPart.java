@@ -1,8 +1,6 @@
-package org.mwc.asset.netasset2.view;
+package org.mwc.asset.netasset2.part;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
