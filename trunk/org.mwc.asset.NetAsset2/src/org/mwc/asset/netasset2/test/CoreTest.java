@@ -91,8 +91,9 @@ public class CoreTest
 			}
 			assertTrue("Exception thrown with dodgy target", errorThrown);
 			assertEquals("events recorded", 2, _events.size());
+			System.err.println("event is:" + _events.elementAt(1));
 			assertTrue("correct client event",
-					_events.elementAt(1).contains("Connecting: /128.3.3.3:54555/54777"));
+					_events.elementAt(1).contains("Connecting: /128.3.3.3:54555/54778"));
 
 			// now real connection
 			client.connect(null);
@@ -160,7 +161,7 @@ public class CoreTest
 			assertNotNull("scen list should have data", _myList);
 			assertEquals("scen has correct number", 3, _myList.size());
 			LightScenario scen = _myList.elementAt(0);
-			assertEquals("scen has correct name", "aac", scen.name);
+			assertEquals("scen has correct name", "aaa", scen.name);
 			assertEquals("has correct parts", 3, scen.listOfParticipants.size());
 			LightParticipant firstPart = scen.listOfParticipants.firstElement();
 			assertEquals("has correct first part", "p12", firstPart.name);
