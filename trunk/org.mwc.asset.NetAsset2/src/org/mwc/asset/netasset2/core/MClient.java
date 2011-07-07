@@ -30,12 +30,12 @@ import com.esotericsoftware.kryonet.Listener;
 
 public class MClient implements IMClient
 {
-	private static class CModel
+	private static class NetClient
 	{
 		private Client _client;
 		private HashMap<Class<?>, Listener> _listeners;
 
-		public CModel() throws IOException
+		public NetClient() throws IOException
 		{
 			_client = new Client();
 			Network.register(_client);
@@ -130,13 +130,13 @@ public class MClient implements IMClient
 		}
 	}
 
-	private CModel _model;
+	private NetClient _model;
 	private HashMap<String, PartListener> _partListeners;
 	private HashMap<String, ScenListener> _scenListeners;
 
 	public MClient() throws IOException
 	{
-		_model = new CModel();
+		_model = new NetClient();
 		_partListeners = new HashMap<String, PartListener>();
 		_scenListeners = new HashMap<String, ScenListener>();
 
