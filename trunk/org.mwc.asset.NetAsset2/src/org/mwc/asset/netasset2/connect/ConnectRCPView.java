@@ -8,9 +8,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.core.MClient;
 import org.mwc.asset.netasset2.core.AServer;
 import org.mwc.asset.netasset2.core.IMClient;
+import org.mwc.asset.netasset2.core.MClient;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.test.CoreTest;
 
@@ -70,7 +70,7 @@ public class ConnectRCPView extends ViewPart
 				@Override
 				public Vector<ScenarioType> getScenarios()
 				{
-					return CoreTest.TrackWrapper_Test.getScenarioList();
+					return CoreTest.getScenarioList();
 				}
 			};
 			testServer.setDataProvider(lister);
