@@ -65,7 +65,7 @@ public class MClient implements IMClient
 
 		public java.util.List<java.net.InetAddress> discoverHosts()
 		{
-			return _client.discoverHosts(Network.UDP_PORT, 3000);
+			return _client.discoverHosts(Network.UDP_PORT, 1000);
 		}
 
 		public void connect(String target) throws IOException

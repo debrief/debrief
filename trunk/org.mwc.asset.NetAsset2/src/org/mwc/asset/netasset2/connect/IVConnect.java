@@ -11,20 +11,24 @@ import org.mwc.asset.netasset2.common.Network.LightScenario;
 
 public interface IVConnect
 {
-	
-	public static interface ClickHandler{
+
+	public static interface ClickHandler
+	{
 		public void clicked();
 	};
-	
-	public static interface ServerSelected{
+
+	public static interface ServerSelected
+	{
 		public void selected(InetAddress address);
 	}
-	
-	public static interface ScenarioSelected{
+
+	public static interface ScenarioSelected
+	{
 		public void selected(LightScenario scenario);
 	}
-	
-	public static interface ParticipantSelected{
+
+	public static interface ParticipantSelected
+	{
 		public void selected(LightParticipant participant);
 	}
 
@@ -34,6 +38,8 @@ public interface IVConnect
 
 	void addScenarioListener(ScenarioSelected iDoubleClickListener);
 
+	void addDisconnectListener(ClickHandler handler);
+
 	void disableServers();
 
 	void enableServers();
@@ -41,6 +47,9 @@ public interface IVConnect
 	void disableScenarios();
 
 	void enableScenarios();
+
+	void disableParticipants();
+	void enableParticipants();
 
 	public void addParticipantListener(ParticipantSelected listener);
 
@@ -53,5 +62,6 @@ public interface IVConnect
 	public void setScenarios(Vector<LightScenario> results);
 
 	void setServers(List<InetAddress> adds);
+
 
 }

@@ -30,13 +30,14 @@ import org.mwc.asset.netasset2.common.Network.LightScenario;
 
 public class VConnect extends Composite implements IVConnect
 {
-	private Table table;
+	private Table partTable;
 	private Button btnPing;
 	private ListViewer listServerViewer;
 	private ListViewer listScenarioViewer;
 	private List listServers;
 	private List listScenarios;
 	private TableViewer partViewer;
+	private Button btnDisconnect;
 
 	/**
 	 * Create the composite.
@@ -62,15 +63,15 @@ public class VConnect extends Composite implements IVConnect
 
 		Label lblScenarios = new Label(grpConnection, SWT.NONE);
 		lblScenarios.setText("Scenarios");
-		lblScenarios.setBounds(133, 27, 59, 14);
+		lblScenarios.setBounds(106, 27, 59, 14);
 
 		Label lblParticipants = new Label(grpConnection, SWT.NONE);
 		lblParticipants.setText("Participants");
 		lblParticipants.setBounds(10, 113, 67, 14);
 
 		partViewer = new TableViewer(grpConnection, SWT.BORDER | SWT.FULL_SELECTION);
-		table = partViewer.getTable();
-		table.setBounds(10, 129, 240, 81);
+		partTable = partViewer.getTable();
+		partTable.setBounds(10, 129, 240, 81);
 
 		TableViewerColumn nameCol = new TableViewerColumn(partViewer, SWT.NONE);
 		TableColumn colName = nameCol.getColumn();
@@ -89,12 +90,20 @@ public class VConnect extends Composite implements IVConnect
 
 		listServerViewer = new ListViewer(grpConnection, SWT.BORDER | SWT.V_SCROLL);
 		listServers = listServerViewer.getList();
-		listServers.setBounds(10, 41, 105, 66);
+		listServers.setBounds(10, 41, 90, 66);
 
 		listScenarioViewer = new ListViewer(grpConnection, SWT.BORDER
 				| SWT.V_SCROLL);
 		listScenarios = listScenarioViewer.getList();
-		listScenarios.setBounds(127, 41, 119, 66);
+		listScenarios.setBounds(106, 41, 140, 66);
+
+		Button button = new Button(grpConnection, SWT.NONE);
+		button.setText("Ping");
+		button.setBounds(10, 0, 47, 28);
+
+		btnDisconnect = new Button(grpConnection, SWT.NONE);
+		btnDisconnect.setText("Disconnect");
+		btnDisconnect.setBounds(160, 13, 90, 28);
 
 	}
 
@@ -108,6 +117,22 @@ public class VConnect extends Composite implements IVConnect
 	public void addPingListener(final ClickHandler handler)
 	{
 		btnPing.addSelectionListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				handler.clicked();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
+	}
+
+	@Override
+	public void addDisconnectListener(final ClickHandler handler)
+	{
+		btnDisconnect.addSelectionListener(new SelectionListener()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
@@ -250,6 +275,7 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
+				listScenarioViewer.getList().removeAll();
 				Iterator<LightScenario> items = results.iterator();
 				while (items.hasNext())
 				{
@@ -274,6 +300,32 @@ public class VConnect extends Composite implements IVConnect
 					InetAddress inetAddress = (InetAddress) items.next();
 					listServerViewer.add(inetAddress);
 				}
+			}
+		});
+	}
+
+	@Override
+	public void disableParticipants()
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				partTable.setEnabled(false);
+			}
+		});
+	}
+
+	@Override
+	public void enableParticipants()
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				partTable.setEnabled(true);
 			}
 		});
 	}

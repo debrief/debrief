@@ -37,7 +37,6 @@ import com.esotericsoftware.kryonet.Server;
 
 public class AServer
 {
-	private static final int DUFF_INDEX = -1;
 	public static final String NETWORK_CONTROL = "Network control";
 	private MultiScenarioLister _dataProvider;
 	private SModel _model;
@@ -261,7 +260,7 @@ public class AServer
 
 	protected void stopListenToPart(Connection connection, int partId)
 	{
-		if (partId != DUFF_INDEX)
+		if (partId != Network.DUFF_INDEX)
 		{
 			// we can work out the exact index, cool.
 			String index = connection.toString() + partId;
@@ -385,7 +384,7 @@ public class AServer
 	private void stopListenToScenario(Connection connection, StopListenScen ls)
 	{
 		// start off with ditching any participant listeners
-		stopListenToPart(connection, DUFF_INDEX);
+		stopListenToPart(connection, Network.DUFF_INDEX);
 
 		// and now the server listeners
 		String index = connection.toString() + ls.name;

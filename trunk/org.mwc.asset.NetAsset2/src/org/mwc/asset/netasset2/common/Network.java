@@ -18,6 +18,7 @@ public class Network
 {
 	public static final int UDP_PORT = 54778;
 	public static final int TCP_PORT = 54555;
+	public static final int DUFF_INDEX = -1;
 
 	// This registers objects that are going to be sent over the network.
 	static public void register(EndPoint endPoint)

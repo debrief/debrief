@@ -83,6 +83,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	public boolean preWindowShellClose()
 	{
 		// ok, now shut down the server-et-al
+		_presenter.disconnect();
 		
 		return super.preWindowShellClose();
 	}

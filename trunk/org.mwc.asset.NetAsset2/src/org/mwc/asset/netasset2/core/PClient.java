@@ -17,6 +17,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.AHandler;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
 import org.mwc.asset.netasset2.common.Network.LightScenario;
@@ -176,6 +177,7 @@ public class PClient implements ScenarioSteppedListener
 		while (iter2.hasNext())
 		{
 			IVConnect ivConnect = (IVConnect) iter2.next();
+			ivConnect.enableParticipants();
 			ivConnect.setParticipants(scenario.listOfParticipants);
 		}
 
@@ -372,6 +374,15 @@ public class PClient implements ScenarioSteppedListener
 			}
 		});
 
+		view.addDisconnectListener(new ClickHandler()
+		{
+			@Override
+			public void clicked()
+			{
+				disconnect();
+			}
+		});
+
 		// and for server selections
 		view.addServerListener(new ServerSelected()
 		{
@@ -469,6 +480,43 @@ public class PClient implements ScenarioSteppedListener
 				return null;
 			}
 		});
+	}
+
+	public void disconnect()
+	{
+		if (_listeningTo != null)
+		{
+			// ok, stop the participant listeners
+			_model.stopListenPart(_listeningTo.name, Network.DUFF_INDEX);
+
+			// and drop the scenario listening
+			_model.stopListenScen(_listeningTo.name);
+			
+			// also disable the relevant bits
+			Iterator<IVConnect> iter = _connectors.iterator();
+			while (iter.hasNext())
+			{
+				IVConnect ivConnect = (IVConnect) iter.next();
+				ivConnect.disableScenarios();
+				ivConnect.disableParticipants();
+				ivConnect.enableServers();
+			}
+			
+			Iterator<IVTime> iter2 = _timers.iterator();
+			while (iter2.hasNext())
+			{
+				IVTime ivTime = (IVTime) iter2.next();
+				ivTime.setEnabled(false);
+			}
+			
+			Iterator<IVPart> iter3 = _partControllers.iterator();
+			while (iter3.hasNext())
+			{
+				IVPart ivPart = (IVPart) iter3.next();
+				ivPart.setEnabled(false);
+			}
+			
+		}
 	}
 
 }
