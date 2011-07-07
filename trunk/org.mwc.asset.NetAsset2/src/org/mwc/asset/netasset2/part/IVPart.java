@@ -1,10 +1,14 @@
 package org.mwc.asset.netasset2.part;
 
-import org.eclipse.swt.events.SelectionListener;
 
 public interface IVPart
 {
 
+	public static interface NewDemStatus
+	{
+		public void demanded(double course, double speed, double depth);
+	}
+	
 	String getDemDepth();
 
 	void setActSpeed(String val);
@@ -13,8 +17,6 @@ public interface IVPart
 
 	void setActDepth(String val);
 
-	void setSubmitListener(SelectionListener listener);
-
 	String getDemSpeed();
 
 	String getDemCourse();
@@ -22,5 +24,7 @@ public interface IVPart
 	void setEnabled(boolean val);
 
 	void setParticipant(String name);
+
+	void setDemStatusListener(NewDemStatus newDemStatus);
 
 }

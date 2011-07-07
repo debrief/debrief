@@ -2,6 +2,7 @@ package org.mwc.asset.netasset2.time;
 
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -51,9 +52,16 @@ public class VTime extends Composite implements IVTime
 	}
 
 	@Override
-	public void setTime(String string)
+	public void setTime(final String string)
 	{
-		_time.setText(string);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				_time.setText(string);
+			}
+		});
 	}
 
 	@Override
@@ -75,17 +83,33 @@ public class VTime extends Composite implements IVTime
 	}
 
 	@Override
-	public void setPlayLabel(String text)
+	public void setPlayLabel(final String text)
 	{
-		btnPlay.setText(text);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+
+				btnPlay.setText(text);
+			}
+		});
 	}
 
-	public void setEnabled(boolean val)
+	public void setEnabled(final boolean val)
 	{
-		super.setEnabled(val);
-		btnStep.setEnabled(val);
-		btnPlay.setEnabled(val);
-		btnStop.setEnabled(val);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				btnStep.setEnabled(val);
+				btnPlay.setEnabled(val);
+				btnStop.setEnabled(val);
+			}
+		});
 	}
 
 }

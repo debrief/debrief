@@ -67,7 +67,7 @@ public class MClient implements IMClient
 		{
 			return _client.discoverHosts(Network.UDP_PORT, 3000);
 		}
-		
+
 		public void connect(String target) throws IOException
 		{
 			if (target == null)
@@ -183,13 +183,12 @@ public class MClient implements IMClient
 		_model.addListener(new ScenUpdate().getClass(), stepL);
 
 	}
-	
+
 	@Override
 	public java.util.List<java.net.InetAddress> discoverHosts()
 	{
 		return _model.discoverHosts();
 	}
-
 
 	@Override
 	public void connect(String target) throws IOException
@@ -228,8 +227,7 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void listenScen(String scenarioName,
-			ScenarioSteppedListener listener)
+	public void listenScen(String scenarioName, ScenarioSteppedListener listener)
 	{
 		// get ready to rx events
 		ScenListener sl = new ScenListener(listener);
@@ -253,11 +251,18 @@ public class MClient implements IMClient
 		ScenListener sl = _scenListeners.get(scenarioName);
 		_scenListeners.remove(sl);
 	}
-	
+
 	@Override
 	public void step(String scenarioName)
 	{
 		ScenControl sc = new ScenControl(scenarioName, ScenControl.STEP);
+		_model.send(sc);
+	}
+
+	@Override
+	public void stop(String scenarioName)
+	{
+		ScenControl sc = new ScenControl(scenarioName, ScenControl.TERMINATE);
 		_model.send(sc);
 	}
 
@@ -274,12 +279,14 @@ public class MClient implements IMClient
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
 
+		// stop listening
+		_model.send(cp);
+
+		// and forget our listener
 		String index = scenarioName + participantId;
 		_partListeners.remove(index);
-
-		_model.send(cp);
 	}
-
+	
 	@Override
 	public void getScenarioList(
 			final Network.AHandler<Vector<LightScenario>> handler)
@@ -311,7 +318,7 @@ public class MClient implements IMClient
 		dem.depthM = depthM;
 		_model.send(dem);
 	}
-	
+
 	@Override
 	public void releasePart(String scenario, int partId)
 	{

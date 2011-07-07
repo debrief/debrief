@@ -1,23 +1,32 @@
 package org.mwc.asset.netasset2.connect;
 
+import java.net.InetAddress;
+import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.mwc.asset.netasset2.common.Network;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
+import org.mwc.asset.netasset2.common.Network.LightScenario;
 
 public class VConnect extends Composite implements IVConnect
 {
@@ -96,57 +105,101 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	public void addPingListener(SelectionAdapter handler)
+	public void addPingListener(final ClickHandler handler)
 	{
-		btnPing.addSelectionListener(handler);
+		btnPing.addSelectionListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				handler.clicked();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
 	}
 
 	@Override
-	public ListViewer getServerList()
+	public void addServerListener(final ServerSelected listener)
 	{
-		return listServerViewer;
-	}
-
-	@Override
-	public ListViewer getScenarioList()
-	{
-		return listScenarioViewer;
-	}
-
-	@Override
-	public void addServerListener(IDoubleClickListener selectionAdapter)
-	{
-		listServerViewer.addDoubleClickListener(selectionAdapter);
+		listServerViewer.addDoubleClickListener(new IDoubleClickListener()
+		{
+			public void doubleClick(DoubleClickEvent event)
+			{
+				ISelection sel = event.getSelection();
+				StructuredSelection ss = (StructuredSelection) sel;
+				InetAddress address = (InetAddress) ss.getFirstElement();
+				listener.selected(address);
+			}
+		});
 	}
 
 	@Override
 	public void disableServers()
 	{
-		listServers.setEnabled(false);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				listServers.setEnabled(false);
+			}
+		});
 	}
 
 	@Override
 	public void enableServers()
 	{
-		listServers.setEnabled(true);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				listServers.setEnabled(true);
+			}
+		});
 	}
 
 	@Override
 	public void disableScenarios()
 	{
-		listScenarios.setEnabled(false);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				listScenarios.setEnabled(false);
+			}
+		});
 	}
 
 	@Override
 	public void enableScenarios()
 	{
-		listScenarios.setEnabled(true);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				listScenarios.setEnabled(true);
+			}
+		});
 	}
 
 	@Override
-	public void addScenarioListener(IDoubleClickListener iDoubleClickListener)
+	public void addScenarioListener(final ScenarioSelected listener)
 	{
-		listScenarioViewer.addDoubleClickListener(iDoubleClickListener);
+		listScenarioViewer.addDoubleClickListener(new IDoubleClickListener()
+		{
+			public void doubleClick(DoubleClickEvent event)
+			{
+				ISelection sel = event.getSelection();
+				StructuredSelection ss = (StructuredSelection) sel;
+				LightScenario scenario = (LightScenario) ss.getFirstElement();
+				listener.selected(scenario);
+			}
+		});
 	}
 
 	@Override
@@ -162,14 +215,66 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	public void addParticipantListener(IDoubleClickListener listener)
+	public void addParticipantListener(final ParticipantSelected listener)
 	{
-		partViewer.addDoubleClickListener(listener);
+		partViewer.addDoubleClickListener(new IDoubleClickListener()
+		{
+			public void doubleClick(DoubleClickEvent event)
+			{
+				ISelection sel = event.getSelection();
+				StructuredSelection ss = (StructuredSelection) sel;
+				LightParticipant part = (LightParticipant) ss.getFirstElement();
+				listener.selected(part);
+			}
+		});
 	}
 
 	@Override
-	public void setParticipants(Vector<LightParticipant> listOfParticipants)
+	public void setParticipants(final Vector<LightParticipant> listOfParticipants)
 	{
-		partViewer.setInput(listOfParticipants); 
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				partViewer.setInput(listOfParticipants);
+			}
+		});
+	}
+
+	@Override
+	public void setScenarios(final Vector<LightScenario> results)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Iterator<LightScenario> items = results.iterator();
+				while (items.hasNext())
+				{
+					Network.LightScenario ls = (Network.LightScenario) items.next();
+					listScenarioViewer.add(ls);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void setServers(final java.util.List<InetAddress> adds)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Iterator<InetAddress> items = adds.iterator();
+				while (items.hasNext())
+				{
+					InetAddress inetAddress = (InetAddress) items.next();
+					listServerViewer.add(inetAddress);
+				}
+			}
+		});
 	}
 }

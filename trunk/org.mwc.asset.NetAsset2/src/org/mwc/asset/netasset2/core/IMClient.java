@@ -41,4 +41,6 @@ public interface IMClient
 
 	public abstract void controlScen(ScenControl sc);
 
+	void stop(String scenarioName);
+
 }

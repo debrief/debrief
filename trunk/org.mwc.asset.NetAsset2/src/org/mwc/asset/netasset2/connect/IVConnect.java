@@ -1,26 +1,38 @@
 package org.mwc.asset.netasset2.connect;
 
+import java.net.InetAddress;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ListViewer;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.mwc.asset.netasset2.common.Network.LightParticipant;
+import org.mwc.asset.netasset2.common.Network.LightScenario;
 
 public interface IVConnect
 {
+	
+	public static interface ClickHandler{
+		public void clicked();
+	};
+	
+	public static interface ServerSelected{
+		public void selected(InetAddress address);
+	}
+	
+	public static interface ScenarioSelected{
+		public void selected(LightScenario scenario);
+	}
+	
+	public static interface ParticipantSelected{
+		public void selected(LightParticipant participant);
+	}
 
-	public ListViewer getScenarioList();
+	void addPingListener(ClickHandler selectionAdapter);
 
-	public ListViewer getServerList();
+	void addServerListener(ServerSelected selectionAdapter);
 
-	void addPingListener(SelectionAdapter selectionAdapter);
-
-	void addServerListener(IDoubleClickListener selectionAdapter);
-
-	void addScenarioListener(IDoubleClickListener iDoubleClickListener);
+	void addScenarioListener(ScenarioSelected iDoubleClickListener);
 
 	void disableServers();
 
@@ -30,12 +42,16 @@ public interface IVConnect
 
 	void enableScenarios();
 
-	public void addParticipantListener(IDoubleClickListener listener);
+	public void addParticipantListener(ParticipantSelected listener);
 
 	public void setPartLabelProvider(IBaseLabelProvider labelProvider);
 
 	public void setPartContentProvider(IContentProvider provider);
 
 	public void setParticipants(Vector<LightParticipant> listOfParticipants);
+
+	public void setScenarios(Vector<LightScenario> results);
+
+	void setServers(List<InetAddress> adds);
 
 }

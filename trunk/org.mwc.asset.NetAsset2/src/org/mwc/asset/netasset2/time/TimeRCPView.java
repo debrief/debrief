@@ -1,24 +1,15 @@
 package org.mwc.asset.netasset2.time;
 
-import java.util.Date;
-
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.connect.ConnectRCPView;
 
-public class TimeRCPView extends ViewPart
+public class TimeRCPView extends ViewPart implements IAdaptable
 {
 	public static final String ID = "org.mwc.asset.NetAsset2.TimeView";
 
 	private IVTime _view;
-
-	private ConnectRCPView _connect;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -27,55 +18,8 @@ public class TimeRCPView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_view = new VTime(parent, SWT.NONE);
-
-		_view.addStepListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				getConnect().step();
-			}
-		});
-		_view.addStopListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				getConnect().stop();
-			}
-		});
-		_view.addPlayListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				// right, what's the current value?
-				Button src = (Button) e.getSource();
-				String label = src.getText();
-				if (label.equals("Play"))
-				{
-					getConnect().play();
-					src.setText(IVTime.PAUSE);
-				}
-				else
-				{
-					getConnect().pause();
-					src.setText("Play");
-				}
-			}
-		});
-
 	}
 
-	private ConnectRCPView getConnect()
-	{
-		if (_connect == null)
-		{
-			IViewPart vp = getSite().getPage().findView(ConnectRCPView.ID);
-			_connect = (ConnectRCPView) vp;
-		}
-		return _connect;
-	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
@@ -84,23 +28,23 @@ public class TimeRCPView extends ViewPart
 	{
 	}
 
-	public void setTime(final long newTime)
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Object getAdapter(Class adapter)
 	{
-		Display.getDefault().asyncExec(new Runnable()
+		Object res = null;
+
+		if (adapter == IVTime.class)
 		{
+			res = _view;
+		}
 
-			@Override
-			public void run()
-			{
-				Date dt = new Date(newTime);
-				String date = dt.toString();
-				System.out.println("writing:" + date);
-				_view.setTime(date);
+		if (res == null)
+			res = super.getAdapter(adapter);
 
-			}
-		});
+		return res;
 	}
-	
+
 	public void setEnabled(boolean val)
 	{
 		_view.setEnabled(val);

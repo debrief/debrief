@@ -384,13 +384,15 @@ public class AServer
 
 	private void stopListenToScenario(Connection connection, StopListenScen ls)
 	{
+		// start off with ditching any participant listeners
+		stopListenToPart(connection, DUFF_INDEX);
+
+		// and now the server listeners
 		String index = connection.toString() + ls.name;
 		ScenListener sl = _scenListeners.get(index);
 		sl.release();
 		_scenListeners.remove(sl);
 		
-		// also, cancel any participant listening
-		stopListenToPart(connection, DUFF_INDEX);
 	}
 
 	private void controlScenario(ScenControl ls)

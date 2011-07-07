@@ -8,7 +8,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
  org.mwc.asset.legacy;bundle-version="1.0.29",
- org.mwc.cmap.legacy;bundle-version="1.0.118"
+ org.mwc.cmap.legacy;bundle-version="1.0.118",
+ org.mwc.cmap.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: libs/kryonet-1.04/asm-3.3.1.jar,

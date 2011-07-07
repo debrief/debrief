@@ -1,8 +1,11 @@
 package org.mwc.asset.netasset2.part;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -10,10 +13,12 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.mwc.asset.netasset2.Activator;
 
 public class VPart extends Composite implements IVPart
 {
@@ -27,6 +32,7 @@ public class VPart extends Composite implements IVPart
 	private Button newState;
 	private Label partName;
 	private SelectionListener _subListener;
+	private NewDemStatus _listener;
 
 	/**
 	 * Create the composite.
@@ -56,7 +62,7 @@ public class VPart extends Composite implements IVPart
 				}
 			}
 		};
-		
+
 		partName = new Label(this, SWT.NONE);
 		FormData fd_partName = new FormData();
 		fd_partName.bottom = new FormAttachment(0, 19);
@@ -94,8 +100,6 @@ public class VPart extends Composite implements IVPart
 		demCourse.setEnabled(false);
 		demCourse.addKeyListener(enterListener);
 
-
-
 		actCourse = new Label(grpState, SWT.NONE);
 		actCourse.setText("000 00");
 
@@ -118,7 +122,6 @@ public class VPart extends Composite implements IVPart
 		demDepth.setEnabled(false);
 		demDepth.addKeyListener(enterListener);
 
-
 		actDepth = new Label(grpState, SWT.NONE);
 		actDepth.setText("000 00");
 
@@ -130,6 +133,29 @@ public class VPart extends Composite implements IVPart
 
 		newState = new Button(grpState, SWT.NONE);
 		newState.setText("Submit");
+		newState.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (_listener != null)
+				{
+					_listener.demanded(Double.valueOf(getDemCourse()),
+							Double.valueOf(getDemSpeed()), Double.valueOf(getDemDepth()));
+				}
+				else
+				{
+					Activator.logError(Status.WARNING, "No dem status listener declared",
+							null);
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
 
 		// super.setEnabled(false);
 	}
@@ -141,28 +167,48 @@ public class VPart extends Composite implements IVPart
 	}
 
 	@Override
-	public void setActSpeed(String val)
+	public void setActSpeed(final String val)
 	{
-		actSpeed.setText(val);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				actSpeed.setText(val);
+			}
+		});
+
 	}
 
 	@Override
-	public void setActCourse(String val)
+	public void setActCourse(final String val)
 	{
-		actCourse.setText(val);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+
+				actCourse.setText(val);
+			}
+		});
 	}
 
 	@Override
-	public void setActDepth(String val)
+	public void setActDepth(final String val)
 	{
-		actDepth.setText(val);
-	}
+		Display.getDefault().asyncExec(new Runnable()
+		{
 
-	@Override
-	public void setSubmitListener(SelectionListener listener)
-	{
-		_subListener = listener;
-		newState.addSelectionListener(listener);
+			@Override
+			public void run()
+			{
+				actDepth.setText(val);
+			}
+		});
+
 	}
 
 	@Override
@@ -183,19 +229,42 @@ public class VPart extends Composite implements IVPart
 		return demDepth.getText();
 	}
 
-	public void setEnabled(boolean val)
+	public void setEnabled(final boolean val)
 	{
-		super.setEnabled(val);
-		demCourse.setEnabled(val);
-		demSpeed.setEnabled(val);
-		demDepth.setEnabled(val);
-		newState.setEnabled(val);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				demCourse.setEnabled(val);
+				demSpeed.setEnabled(val);
+				demDepth.setEnabled(val);
+				newState.setEnabled(val);
+			}
+		});
+
 	}
 
 	@Override
-	public void setParticipant(String name)
+	public void setParticipant(final String name)
 	{
-		partName.setText(name);
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				partName.setText(name);
+			}
+		});
+
+	}
+
+	@Override
+	public void setDemStatusListener(NewDemStatus newDemStatus)
+	{
+		_listener = newDemStatus;
 	}
 
 }
