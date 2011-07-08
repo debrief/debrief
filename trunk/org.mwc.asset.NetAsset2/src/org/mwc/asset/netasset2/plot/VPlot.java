@@ -3,17 +3,16 @@ package org.mwc.asset.netasset2.plot;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.List;
 import org.mwc.asset.netasset2.part.IVPartUpdate;
+import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
+import ASSET.Participants.Status;
 import MWC.GUI.Layers;
 
-public class VPlot implements IVPartUpdate
+public class VPlot implements IVPartUpdate, IVTime
 {
 
-	private List list;
-	
 	/**
 	 * the chart we store/manager
 	 */
@@ -49,19 +48,6 @@ public class VPlot implements IVPartUpdate
 			}};
 	}
 
-	public void setEnabled(final boolean val)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				list.setEnabled(val);
-			}
-		});
-	}
-
 	@Override
 	public void setParticipant(final String name)
 	{
@@ -83,7 +69,7 @@ public class VPlot implements IVPartUpdate
 	}
 
 	@Override
-	public void setActSpeed(final double speedKts)
+	public void newTime(long newTime)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -91,12 +77,13 @@ public class VPlot implements IVPartUpdate
 			@Override
 			public void run()
 			{
+				_myChart.update();
 			}
 		});
 	}
 
 	@Override
-	public void setActCourse(final double courseDegs)
+	public void moved(final Status status)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -104,19 +91,7 @@ public class VPlot implements IVPartUpdate
 			@Override
 			public void run()
 			{
-			}
-		});
-	}
-
-	@Override
-	public void setActDepth(final double depthM)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
+				myPart.setStatus(status);
 			}
 		});
 	}

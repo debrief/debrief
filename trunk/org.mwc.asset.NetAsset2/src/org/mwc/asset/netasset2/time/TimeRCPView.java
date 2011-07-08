@@ -10,6 +10,7 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 	public static final String ID = "org.mwc.asset.NetAsset2.TimeView";
 
 	private IVTime _view;
+	private IVTimeControl _control;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -17,7 +18,9 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 	 */
 	public void createPartControl(Composite parent)
 	{
-		_view = new VTime(parent, SWT.NONE);
+		VTime time = new VTime(parent, SWT.NONE);
+		_control = time;
+		_view = time;
 	}
 
 
@@ -38,6 +41,10 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 		{
 			res = _view;
 		}
+		else if(adapter == IVTimeControl.class)
+		{
+			res = _control;
+		}
 
 		if (res == null)
 			res = super.getAdapter(adapter);
@@ -47,7 +54,7 @@ public class TimeRCPView extends ViewPart implements IAdaptable
 
 	public void setEnabled(boolean val)
 	{
-		_view.setEnabled(val);
+		_control.setEnabled(val);
 	}
 
 }

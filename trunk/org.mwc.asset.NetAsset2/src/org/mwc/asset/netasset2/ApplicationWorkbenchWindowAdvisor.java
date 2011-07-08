@@ -20,6 +20,7 @@ import org.mwc.asset.netasset2.part.IVPartControl;
 import org.mwc.asset.netasset2.part.IVPartUpdate;
 import org.mwc.asset.netasset2.test.CoreTest;
 import org.mwc.asset.netasset2.time.IVTime;
+import org.mwc.asset.netasset2.time.IVTimeControl;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import ASSET.ScenarioType;
@@ -55,7 +56,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	public void preWindowOpen()
 	{
 		IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
-		configurer.setInitialSize(new Point(400, 700));
+		configurer.setInitialSize(new Point(800, 700));
 		configurer.setShowCoolBar(false);
 		configurer.setShowStatusLine(false);
 
@@ -118,6 +119,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 							IWorkbenchPart parentPart)
 					{
 						_presenter.addTimer((IVTime) instance);
+					}
+				});
+		_myPartMonitor.addPartListener(IVTimeControl.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object instance,
+							IWorkbenchPart parentPart)
+					{
+						_presenter.addTimeController((IVTimeControl) instance);
 					}
 				});
 		_myPartMonitor.addPartListener(IVConnect.class, PartMonitor.OPENED,

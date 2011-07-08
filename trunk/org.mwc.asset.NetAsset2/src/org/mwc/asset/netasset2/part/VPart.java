@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.mwc.asset.netasset2.Activator;
+import org.mwc.cmap.gridharness.data.WorldSpeed;
 
 public class VPart extends Composite implements IVPartControl, IVPartUpdate
 {
@@ -175,75 +176,46 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 		// Disable the check that prevents subclassing of SWT components
 	}
 
-	@Override
-	public void setActSpeed(final double speedKts)
+	private void setActSpeed(final double speedKts)
 	{
-		Display.getDefault().asyncExec(new Runnable()
+		if (!actSpeed.isDisposed())
 		{
+			final String spd = df2.format(speedKts);
 
-			@Override
-			public void run()
+			actSpeed.setText(spd + "kts");
+			if (demSpeed.getText().equals(""))
 			{
-				if (!actSpeed.isDisposed())
-				{
-					final String spd = df2.format(speedKts);
-
-					actSpeed.setText(spd + "kts");
-					if (demSpeed.getText().equals(""))
-					{
-						demSpeed.setText(df0.format(speedKts));
-					}
-				}
+				demSpeed.setText(df0.format(speedKts));
 			}
-		});
-
+		}
 	}
 
-	@Override
-	public void setActCourse(final double course)
+	private void setActCourse(final double course)
 	{
-		Display.getDefault().asyncExec(new Runnable()
+		if (!actCourse.isDisposed())
 		{
+			final String crse = df0.format(course);
 
-			@Override
-			public void run()
+			actCourse.setText(crse + "\u00B0");
+			if (demCourse.getText().equals(""))
 			{
-				if (!actCourse.isDisposed())
-				{
-					final String crse = df0.format(course);
-
-					actCourse.setText(crse + "\u00B0");
-					if (demCourse.getText().equals(""))
-					{
-						demCourse.setText(crse);
-					}
-				}
+				demCourse.setText(crse);
 			}
-		});
+		}
 	}
 
-	@Override
-	public void setActDepth(final double depthM)
+	private void setActDepth(final double depthM)
 	{
-		Display.getDefault().asyncExec(new Runnable()
+		if (!actDepth.isDisposed())
 		{
+			final String dpth = df2.format(depthM);
 
-			@Override
-			public void run()
+			actDepth.setText(dpth + "m");
+			if (demDepth.getText().equals(""))
 			{
-				if (!actDepth.isDisposed())
-				{
-					final String dpth = df2.format(depthM);
-
-					actDepth.setText(dpth + "m");
-					if (demDepth.getText().equals(""))
-					{
-						demDepth.setText(df0.format(depthM));
-					}
-				}
+				demDepth.setText(df0.format(depthM));
 			}
-		});
-
+		}
 	}
 
 	@Override
@@ -304,6 +276,22 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 	public void setDemStatusListener(NewDemStatus newDemStatus)
 	{
 		_listener = newDemStatus;
+	}
+
+	@Override
+	public void moved(final ASSET.Participants.Status status)
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				setActCourse(status.getCourse());
+				setActSpeed(status.getSpeed().getValueIn(WorldSpeed.Kts));
+				setActDepth(status.getLocation().getDepth());
+			}
+		});
 	}
 
 }

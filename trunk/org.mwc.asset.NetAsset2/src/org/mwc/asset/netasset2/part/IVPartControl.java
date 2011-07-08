@@ -1,6 +1,5 @@
 package org.mwc.asset.netasset2.part;
 
-
 public interface IVPartControl extends IVPart
 {
 
@@ -8,7 +7,7 @@ public interface IVPartControl extends IVPart
 	{
 		public void demanded(double course, double speed, double depth);
 	}
-	
+
 	String getDemDepth();
 
 	String getDemSpeed();
@@ -16,5 +15,7 @@ public interface IVPartControl extends IVPart
 	String getDemCourse();
 
 	void setDemStatusListener(NewDemStatus newDemStatus);
+
+	void setEnabled(boolean val);
 
 }

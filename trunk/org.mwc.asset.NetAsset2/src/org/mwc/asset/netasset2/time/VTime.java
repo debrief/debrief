@@ -1,5 +1,7 @@
 package org.mwc.asset.netasset2.time;
 
+import java.util.Date;
+
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -7,7 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 
-public class VTime extends Composite implements IVTime
+public class VTime extends Composite implements IVTime, IVTimeControl
 {
 	private Text _time;
 	private Button btnStep;
@@ -34,7 +36,7 @@ public class VTime extends Composite implements IVTime
 		btnStep.setText("Step");
 
 		btnPlay = new Button(this, SWT.NONE);
-		btnPlay.setText(IVTime.PLAY);
+		btnPlay.setText(IVTimeControl.PLAY);
 		btnPlay.setEnabled(false);
 		btnPlay.setBounds(57, 19, 55, 28);
 
@@ -52,14 +54,18 @@ public class VTime extends Composite implements IVTime
 	}
 
 	@Override
-	public void setTime(final String string)
+	public void newTime(final long newTime)
 	{
+		Date dt = new Date(newTime);
+		final String date = dt.toString();
+
+
 		Display.getDefault().asyncExec(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				_time.setText(string);
+				_time.setText(date);
 			}
 		});
 	}

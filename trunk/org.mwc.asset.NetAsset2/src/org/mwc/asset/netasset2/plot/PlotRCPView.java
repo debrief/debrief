@@ -5,12 +5,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.netasset2.part.IVPartUpdate;
+import org.mwc.asset.netasset2.time.IVTime;
 
 public class PlotRCPView extends ViewPart implements IAdaptable
 {
 	public static final String ID = "org.mwc.asset.NetAsset2.PlotView";
 
 	private IVPartUpdate _view;
+	private IVTime _timer;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -18,7 +20,9 @@ public class PlotRCPView extends ViewPart implements IAdaptable
 	 */
 	public void createPartControl(Composite parent)
 	{
-		_view = new VPlot(parent, SWT.NONE);
+		VPlot plot  = new VPlot(parent, SWT.NONE);
+		_view = plot;
+		_timer =plot;
 	}
 
 	/**
@@ -37,17 +41,15 @@ public class PlotRCPView extends ViewPart implements IAdaptable
 		if (adapter == IVPartUpdate.class)
 		{
 			res = _view;
+		}else if(adapter == IVTime.class)
+		{
+			return _timer;
 		}
 
 		if (res == null)
 			res = super.getAdapter(adapter);
 
 		return res;
-	}
-
-	public void setEnabled(boolean val)
-	{
-		_view.setEnabled(val);
 	}
 
 }

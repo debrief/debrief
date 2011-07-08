@@ -1,8 +1,12 @@
 package org.mwc.asset.netasset2.plot;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
+import ASSET.Participants.Status;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -18,10 +22,13 @@ public class NetPartWrapper implements Layer
 	 */
 	private static final long serialVersionUID = 1L;
 	private String _name;
+	private Vector<Status> _history;
+	private WorldArea _myArea;
 
 	public NetPartWrapper(String name)
 	{
 		_name = name;
+		_history = new Vector<Status>();
 	};
 
 	@Override
@@ -81,14 +88,33 @@ public class NetPartWrapper implements Layer
 	public void paint(CanvasType dest)
 	{
 		dest.setColor(Color.red);
-		dest.drawRect(20, 20, 10, 10);
+		dest.drawRect(20, (int)(Math.random()*40d), 10, 10);
+
+		if (_history.size() > 0)
+		{
+			Status st = _history.lastElement();
+			WorldLocation loc = st.getLocation();
+			if (!dest.getProjection().getVisibleDataArea().contains(loc))
+			{
+				dest.getProjection().zoom(0.0);
+			}
+			
+			// but, we plot all of them.
+			Iterator<Status> iter = _history.iterator();
+			while (iter.hasNext())
+			{
+				Status status = (Status) iter.next();
+				Point p2 = dest.toScreen(status.getLocation());
+				dest.drawRect(p2.x, p2.y, 3, 3);
+			}
+
+		}
 	}
 
 	@Override
 	public WorldArea getBounds()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return _myArea;
 	}
 
 	@Override
@@ -138,6 +164,17 @@ public class NetPartWrapper implements Layer
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setStatus(Status status)
+	{
+		WorldLocation loc = status.getLocation();
+		if (_myArea == null)
+			_myArea = new WorldArea(loc, loc);
+		else
+			_myArea.extend(loc);
+
+		_history.add(status);
 	}
 
 }
