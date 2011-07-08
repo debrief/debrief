@@ -365,6 +365,19 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		}
 
 	}
+	
+	/**  clear out all layers
+	 * 
+	 */
+	public void clear()
+	{
+		_theLayers.clear();
+		
+		// and fire the extended event
+		fireExtended(null, null);
+
+	}
+	
 //
 	/**
 	 * get the current number of layers

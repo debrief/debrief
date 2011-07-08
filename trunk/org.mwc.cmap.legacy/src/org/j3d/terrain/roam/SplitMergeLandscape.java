@@ -77,7 +77,8 @@ public class SplitMergeLandscape extends Landscape
     private TreeQueueManager queueManager = new TreeQueueManager();
 
     /** Number of visible triangles */
-    private int triCount = 0;
+    @SuppressWarnings("unused")
+		private int triCount = 0;
 
     /**
      * Creates new Landscape based on the view information and the terrain
