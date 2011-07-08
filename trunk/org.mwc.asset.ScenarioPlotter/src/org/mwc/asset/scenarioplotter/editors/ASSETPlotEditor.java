@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.SubActionBars2;
@@ -69,33 +70,12 @@ public class ASSETPlotEditor extends CorePlotEditor
 			{
 				// right, see what it is
 				ISelection sel = event.getSelection();
-				if (sel instanceof StructuredSelection)
-				{
-					StructuredSelection ss = (StructuredSelection) sel;
-					Object datum = ss.getFirstElement();
-					if (datum instanceof EditableWrapper)
-					{
-						EditableWrapper pw = (EditableWrapper) datum;
-						Editable edd = pw.getEditable();
-						if (edd instanceof ScenarioWrapper)
-						{
-							ScenarioWrapper sw = (ScenarioWrapper) edd;
-
-							// also sort out the scenario component
-							ScenarioType scen = sw.getScenario();
-
-							if (scen != _myScenario)
-							{
-								updateScenario(sw, scen);
-							}
-						}
-
-					}
-				}
+				newSelection(sel);
 
 			}
+
 		};
-		
+
 		_listenForMods = new DataListener()
 		{
 			public void dataModified(Layers theData, Layer changedLayer)
@@ -114,6 +94,33 @@ public class ASSETPlotEditor extends CorePlotEditor
 			}
 		};
 
+	}
+
+	private void newSelection(ISelection sel)
+	{
+		if (sel instanceof StructuredSelection)
+		{
+			StructuredSelection ss = (StructuredSelection) sel;
+			Object datum = ss.getFirstElement();
+			if (datum instanceof EditableWrapper)
+			{
+				EditableWrapper pw = (EditableWrapper) datum;
+				Editable edd = pw.getEditable();
+				if (edd instanceof ScenarioWrapper)
+				{
+					ScenarioWrapper sw = (ScenarioWrapper) edd;
+
+					// also sort out the scenario component
+					ScenarioType scen = sw.getScenario();
+
+					if (scen != _myScenario)
+					{
+						updateScenario(sw, scen);
+					}
+				}
+
+			}
+		}
 	}
 
 	protected void updateScenario(ScenarioWrapper scenarioLayers,
@@ -167,7 +174,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		layers.removeDataExtendedListener(_listenForMods);
 		layers.removeDataModifiedListener(_listenForMods);
 		layers.removeDataReformattedListener(_listenForMods);
-		
+
 		// and forget it in the chart
 		_myChart.setLayers(null);
 	}
@@ -227,7 +234,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public void createPartControl(Composite parent)
 	{
 		super.createPartControl(parent);
-		
+
 		// tell the plotter not to defer paint events
 		getChart().setDeferPaints(false);
 
@@ -259,6 +266,33 @@ public class ASSETPlotEditor extends CorePlotEditor
 		// and start listening
 		setupListeners();
 
+		// see if there's anything to show
+		lookForData();
+
+	}
+
+	private void lookForData()
+	{
+		// ok, cycle through the open views and check if we're after any of them
+		@SuppressWarnings("deprecation")
+		IViewPart[] views = getSite().getWorkbenchWindow().getActivePage()
+				.getViews();
+		for (int i = 0; i < views.length; i++)
+		{
+			IViewPart iViewPart = views[i];
+
+			Object obj = iViewPart.getAdapter(ISelectionProvider.class);
+			if (obj != null)
+			{
+				ISelectionProvider iS = (ISelectionProvider) obj;
+				// have a look at the selection
+				ISelection sel = iS.getSelection();
+				if (sel != null)
+					newSelection(sel);
+			}
+
+			_myPartMonitor.partActivated(iViewPart);
+		}
 	}
 
 	/**
@@ -418,76 +452,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 						}
 					}
 				});
-		//
-		// _myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.ACTIVATED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myScenario != part)
-		// {
-		// // are we already listening to it?
-		// if (_myScenario != null)
-		// stopListeningToThis(_myScenario);
-		//
-		// // ok, let's start listening to it
-		// _myScenario = (ScenarioType) part;
-		// startListeningTo(_myScenario);
-		// }
-		// }
-		// });
-		// _myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myScenario == part)
-		// {
-		// stopListeningToThis(_myScenario);
-		// _myScenario = null;
-		// }
-		// }
-		// });
-		//
-		// _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myLayers != part)
-		// {
-		// // are we already listening to it?
-		// if (_myLayers != null)
-		// stopListeningToThis(_myLayers);
-		//
-		// _myLayers = (Layers) part;
-		//
-		// // give it to the chart
-		// _myChart.setLayers(_myLayers);
-		//
-		// // ok, let's start listening to it
-		// startListeningTo(_myLayers);
-		//
-		// }
-		// }
-		// });
-		// _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myLayers == part)
-		// {
-		// stopListeningToThis(_myLayers);
-		// _myLayers = null;
-		// }
-		// }
-		// });
-
 	}
 
 }
