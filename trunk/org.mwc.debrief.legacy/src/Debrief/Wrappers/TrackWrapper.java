@@ -740,6 +740,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			final MethodDescriptor[] mds =
 			{ method(c, "exportThis", null, "Export Shape"),
+					method(c, "revealAllPositions", null, "Reveal all positions"),
 					method(c, "resetLabels", null, "Reset DTG Labels") };
 
 			return mds;
@@ -2975,6 +2976,28 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		return nearest;
 	}
+	
+	
+	/** utility method to reveal all positions in a track
+	 * 
+	 */
+	@FireReformatted
+	public void revealAllPositions()
+	{
+		SegmentList segments = _thePositions;
+		Enumeration<Editable> theEnum = segments.elements();
+		while (theEnum.hasMoreElements())
+		{
+			TrackSegment seg = (TrackSegment) theEnum.nextElement();
+			Enumeration<Editable> ele = seg.elements();
+			while (ele.hasMoreElements())
+			{
+				Editable editable = (Editable) ele.nextElement();
+				FixWrapper fix = (FixWrapper) editable;
+				fix.setVisible(true);
+			}
+		}
+	}
 
 	/**
 	 * remove the requested item from the track
@@ -3020,7 +3043,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			TrackSegment ts = (TrackSegment) point;
 			ts.setWrapper(null);
 		}
-		else if(point == _mySensors)
+		else if (point == _mySensors)
 		{
 			// ahh, the user is trying to delete all the solution, cycle through them
 			Enumeration<Editable> iter = _mySensors.elements();
@@ -3031,14 +3054,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// tell the sensor wrapper to forget about us
 				TacticalDataWrapper sw = (TacticalDataWrapper) editable;
 				sw.setHost(null);
-				
+
 			}
-			
+
 			// and empty them out
 			_mySensors.removeAllElements();
 
 		}
-		else if(point == _mySolutions)
+		else if (point == _mySolutions)
 		{
 			// ahh, the user is trying to delete all the solution, cycle through them
 			Enumeration<Editable> iter = _mySolutions.elements();
@@ -3049,9 +3072,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// tell the sensor wrapper to forget about us
 				TacticalDataWrapper sw = (TacticalDataWrapper) editable;
 				sw.setHost(null);
-				
+
 			}
-			
+
 			// and empty them out
 			_mySolutions.removeAllElements();
 
