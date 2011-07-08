@@ -186,6 +186,8 @@ public class Network
 		public static final String STEP = "Step";
 		public static final String PAUSE = "Pause";
 		public static final String TERMINATE = "Finish";
+		public static final String FASTER = "FASTER";
+		public static final String SLOWER = "SLOWER";
 
 		public String instruction;
 		public String scenarioName;

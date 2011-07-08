@@ -13,6 +13,9 @@ public interface IVTimeControl
 	void addPlayListener(SelectionListener listener);
 
 	void addStopListener(SelectionListener listener);
+	
+	void addFasterListener(SelectionListener listener);
+	void addSlowerListener(SelectionListener listener);
 
 	void setPlayLabel(String text);
 

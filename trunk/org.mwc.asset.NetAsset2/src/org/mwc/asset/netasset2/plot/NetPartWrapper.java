@@ -80,25 +80,14 @@ public class NetPartWrapper implements Layer
 	@Override
 	public void append(Layer other)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void paint(CanvasType dest)
 	{
-		dest.setColor(Color.red);
-		dest.drawRect(20, (int)(Math.random()*40d), 10, 10);
-
+		dest.setColor(Color.BLUE);
 		if (_history.size() > 0)
 		{
-			Status st = _history.lastElement();
-			WorldLocation loc = st.getLocation();
-			if (!dest.getProjection().getVisibleDataArea().contains(loc))
-			{
-				dest.getProjection().zoom(0.0);
-			}
-			
 			// but, we plot all of them.
 			Iterator<Status> iter = _history.iterator();
 			while (iter.hasNext())
@@ -107,7 +96,6 @@ public class NetPartWrapper implements Layer
 				Point p2 = dest.toScreen(status.getLocation());
 				dest.drawRect(p2.x, p2.y, 3, 3);
 			}
-
 		}
 	}
 

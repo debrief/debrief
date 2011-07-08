@@ -37,7 +37,7 @@ public class Perspective implements IPerspectiveFactory
 
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft",
-				IPageLayout.BOTTOM, 0.2f, "midLeft");
+				IPageLayout.BOTTOM, 0.3f, "midLeft");
 		bottomLeft.addView(PartRCPView.ID);
 
 	}

@@ -418,6 +418,16 @@ public class AServer
 		{
 			st.stop("Client finish");
 		}
+		else if (ls.instruction.equals(ScenControl.FASTER))
+		{
+			int curTime = st.getStepTime();
+			st.setStepTime(curTime / 2);
+		}
+		else if (ls.instruction.equals(ScenControl.SLOWER))
+		{
+			int curTime = st.getStepTime();
+			st.setStepTime(curTime * 2);
+		}
 	}
 
 	private void getScenarios(Connection connection)

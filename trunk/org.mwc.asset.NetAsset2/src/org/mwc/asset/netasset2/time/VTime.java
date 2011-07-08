@@ -8,6 +8,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.RowLayout;
+import swing2swt.layout.FlowLayout;
+import org.eclipse.swt.layout.RowData;
 
 public class VTime extends Composite implements IVTime, IVTimeControl
 {
@@ -15,6 +18,9 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	private Button btnStep;
 	private Button btnPlay;
 	private Button btnStop;
+	private Button btnFaster;
+	private Button btnSlower;
+	private Composite composite;
 
 	/**
 	 * Create the composite.
@@ -25,25 +31,34 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	public VTime(Composite parent, int style)
 	{
 		super(parent, style);
+		setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		_time = new Text(this, SWT.BORDER);
 		_time.setText("00/00/00 00:00:00");
-		_time.setBounds(0, 0, 163, 19);
 
-		btnStep = new Button(this, SWT.NONE);
-		btnStep.setBounds(0, 19, 55, 28);
+		composite = new Composite(this, SWT.NONE);
+		composite.setLayoutData(new RowData(190, 55));
+		composite.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 2));
+
+		btnStep = new Button(composite, SWT.NONE);
 		btnStep.setEnabled(false);
 		btnStep.setText("Step");
 
-		btnPlay = new Button(this, SWT.NONE);
-		btnPlay.setText(IVTimeControl.PLAY);
-		btnPlay.setEnabled(false);
-		btnPlay.setBounds(57, 19, 55, 28);
-
-		btnStop = new Button(this, SWT.NONE);
+		btnStop = new Button(composite, SWT.NONE);
 		btnStop.setText("Stop");
 		btnStop.setEnabled(false);
-		btnStop.setBounds(118, 19, 55, 28);
+
+		btnPlay = new Button(composite, SWT.NONE);
+		btnPlay.setText(IVTimeControl.PLAY);
+		btnPlay.setEnabled(false);
+
+		btnFaster = new Button(composite, SWT.NONE);
+		btnFaster.setText("Faster");
+		btnFaster.setEnabled(false);
+
+		btnSlower = new Button(composite, SWT.NONE);
+		btnSlower.setText("Slower");
+		btnSlower.setEnabled(false);
 
 	}
 
@@ -59,13 +74,13 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 		Date dt = new Date(newTime);
 		final String date = dt.toString();
 
-
 		Display.getDefault().asyncExec(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				_time.setText(date);
+				if (!_time.isDisposed())
+					_time.setText(date);
 			}
 		});
 	}
@@ -97,8 +112,8 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 			@Override
 			public void run()
 			{
-
-				btnPlay.setText(text);
+				if (btnPlay.isDisposed())
+					btnPlay.setText(text);
 			}
 		});
 	}
@@ -111,12 +126,29 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 			@Override
 			public void run()
 			{
-				_time.setEnabled(val);
-				btnStep.setEnabled(val);
-				btnPlay.setEnabled(val);
-				btnStop.setEnabled(val);
+				if (!_time.isDisposed())
+				{
+					_time.setEnabled(val);
+					btnStep.setEnabled(val);
+					btnPlay.setEnabled(val);
+					btnStop.setEnabled(val);
+					btnFaster.setEnabled(val);
+					btnSlower.setEnabled(val);
+				}
 			}
 		});
+	}
+
+	@Override
+	public void addFasterListener(SelectionListener listener)
+	{
+		btnFaster.addSelectionListener(listener);
+	}
+
+	@Override
+	public void addSlowerListener(SelectionListener listener)
+	{
+		btnSlower.addSelectionListener(listener);
 	}
 
 }

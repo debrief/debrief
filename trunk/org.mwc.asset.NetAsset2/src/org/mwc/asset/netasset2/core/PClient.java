@@ -335,6 +335,23 @@ public class PClient implements ScenarioSteppedListener
 				doStop();
 			}
 		});
+		timer.addFasterListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				doFaster();
+			}
+		});
+		timer.addSlowerListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				doSlower();
+			}
+		});
+
 		timer.addPlayListener(new SelectionAdapter()
 		{
 			@Override
@@ -355,6 +372,26 @@ public class PClient implements ScenarioSteppedListener
 				}
 			}
 		});
+	}
+
+	protected void doSlower()
+	{
+		if (_listeningTo != null)
+		{
+			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.SLOWER);
+			_model.controlScen(sc);
+		}
+
+	}
+
+	protected void doFaster()
+	{
+		if (_listeningTo != null)
+		{
+			ScenControl sc = new ScenControl(_listeningTo.name, ScenControl.FASTER);
+			_model.controlScen(sc);
+		}
+
 	}
 
 	public void addTimer(final IVTime timer)

@@ -12,5 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/kryonet-1.04/kryo-1.04.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/kryonet-1.04/minlog-1.2.jar" sourcepath="libs/kryonet-1.04/kryonet/src"/>
 	<classpathentry exported="true" kind="lib" path="libs/kryonet-1.04/reflectasm-1.01.jar"/>
+	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
