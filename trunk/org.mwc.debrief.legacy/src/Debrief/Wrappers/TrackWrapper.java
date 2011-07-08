@@ -740,7 +740,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			final MethodDescriptor[] mds =
 			{ method(c, "exportThis", null, "Export Shape"),
-					method(c, "revealAllPositions", null, "Reveal all positions"),
 					method(c, "resetLabels", null, "Reset DTG Labels") };
 
 			return mds;
@@ -2978,26 +2977,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 	
 	
-	/** utility method to reveal all positions in a track
-	 * 
-	 */
-	@FireReformatted
-	public void revealAllPositions()
-	{
-		SegmentList segments = _thePositions;
-		Enumeration<Editable> theEnum = segments.elements();
-		while (theEnum.hasMoreElements())
-		{
-			TrackSegment seg = (TrackSegment) theEnum.nextElement();
-			Enumeration<Editable> ele = seg.elements();
-			while (ele.hasMoreElements())
-			{
-				Editable editable = (Editable) ele.nextElement();
-				FixWrapper fix = (FixWrapper) editable;
-				fix.setVisible(true);
-			}
-		}
-	}
 
 	/**
 	 * remove the requested item from the track

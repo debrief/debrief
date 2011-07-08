@@ -3,6 +3,7 @@ package Debrief.Wrappers.Track;
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Date;
@@ -12,20 +13,20 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import junit.framework.TestCase;
-
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.NeedsWrappingInLayerManager;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Layers.NeedsWrappingInLayerManager;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
@@ -63,6 +64,28 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		public TrackSegmentInfo(final TrackSegment data)
 		{
 			super(data, data.getName(), "");
+		}
+
+		@Override
+		public final MethodDescriptor[] getMethodDescriptors()
+		{
+
+			// just add the reset color field first
+			final Class<TrackSegment> c = TrackSegment.class;
+			MethodDescriptor[] newMeds =
+			{ method(c, "revealAllPositions", null, "Reveal all positions") };
+
+			final MethodDescriptor[] mds = super.getMethodDescriptors();
+			// we now need to combine the two sets
+			if (mds != null)
+			{
+				final MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
+						+ newMeds.length];
+				System.arraycopy(mds, 0, resMeds, 0, mds.length);
+				System.arraycopy(newMeds, 0, resMeds, mds.length, newMeds.length);
+				newMeds = resMeds;
+			}
+			return newMeds;
 		}
 
 		@Override
@@ -462,6 +485,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			fix.setTrackWrapper(_myTrack);
 			fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
 					_myTrack.getLocationListener());
+		}
+	}
+
+	/**
+	 * utility method to reveal all positions in a track
+	 * 
+	 */
+	@FireReformatted
+	public void revealAllPositions()
+	{
+		Enumeration<Editable> theEnum = elements();
+		while (theEnum.hasMoreElements())
+		{
+			Editable editable = (Editable) theEnum.nextElement();
+			FixWrapper fix = (FixWrapper) editable;
+			fix.setVisible(true);
 		}
 	}
 

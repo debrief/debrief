@@ -6,12 +6,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottables;
 import MWC.GUI.SupportsPropertyListeners;
@@ -220,8 +222,20 @@ public class TrackWrapper_Support
 			{
 				// just add the reset color field first
 				final Class<SegmentList> c = SegmentList.class;
-				final MethodDescriptor[] mds =
-				{ method(c, "mergeAllSegments", null, "Merge all track segments") };
+				MethodDescriptor[] mds =
+				{ method(c, "mergeAllSegments", null, "Merge all track segments"),
+						method(c, "revealAllPositions", null, "Reveal all positions") };
+
+				final MethodDescriptor[] oldMeds = super.getMethodDescriptors();
+				// we now need to combine the two sets
+				if (oldMeds != null)
+				{
+					final MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
+							+ oldMeds.length];
+					System.arraycopy(mds, 0, resMeds, 0, mds.length);
+					System.arraycopy(oldMeds, 0, resMeds, mds.length, oldMeds.length);
+					mds = resMeds;
+				}
 				return mds;
 			}
 
@@ -282,6 +296,27 @@ public class TrackWrapper_Support
 			{
 				TrackSegment first = (TrackSegment) getData().iterator().next();
 				first.setName("Positions");
+			}
+		}
+
+		/**
+		 * utility method to reveal all positions in a track
+		 * 
+		 */
+		@FireReformatted
+		public void revealAllPositions()
+		{
+			Enumeration<Editable> theEnum = elements();
+			while (theEnum.hasMoreElements())
+			{
+				TrackSegment seg = (TrackSegment) theEnum.nextElement();
+				Enumeration<Editable> ele = seg.elements();
+				while (ele.hasMoreElements())
+				{
+					Editable editable = (Editable) ele.nextElement();
+					FixWrapper fix = (FixWrapper) editable;
+					fix.setVisible(true);
+				}
 			}
 		}
 
