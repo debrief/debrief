@@ -3020,6 +3020,43 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			TrackSegment ts = (TrackSegment) point;
 			ts.setWrapper(null);
 		}
+		else if(point == _mySensors)
+		{
+			// ahh, the user is trying to delete all the solution, cycle through them
+			Enumeration<Editable> iter = _mySensors.elements();
+			while (iter.hasMoreElements())
+			{
+				Editable editable = (Editable) iter.nextElement();
+
+				// tell the sensor wrapper to forget about us
+				TacticalDataWrapper sw = (TacticalDataWrapper) editable;
+				sw.setHost(null);
+				
+			}
+			
+			// and empty them out
+			_mySensors.removeAllElements();
+
+		}
+		else if(point == _mySolutions)
+		{
+			// ahh, the user is trying to delete all the solution, cycle through them
+			Enumeration<Editable> iter = _mySolutions.elements();
+			while (iter.hasMoreElements())
+			{
+				Editable editable = (Editable) iter.nextElement();
+
+				// tell the sensor wrapper to forget about us
+				TacticalDataWrapper sw = (TacticalDataWrapper) editable;
+				sw.setHost(null);
+				
+			}
+			
+			// and empty them out
+			_mySolutions.removeAllElements();
+
+		}
+
 		else
 		{
 			// loop through the segments
