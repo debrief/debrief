@@ -1,12 +1,13 @@
 package org.mwc.asset.netasset2.part;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -22,6 +23,9 @@ import org.mwc.asset.netasset2.Activator;
 
 public class VPart extends Composite implements IVPartControl, IVPartUpdate
 {
+	DecimalFormat df2 = new DecimalFormat("0.00");
+	DecimalFormat df0 = new DecimalFormat("0");
+
 	private static final String PENDING = "[Pending]";
 	private Group grpState;
 	private Text demCourse;
@@ -32,7 +36,6 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 	private Label actDepth;
 	private Button newState;
 	private Label partName;
-	private SelectionListener _subListener;
 	private NewDemStatus _listener;
 
 	/**
@@ -85,7 +88,7 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 		grpState.setLayout(new GridLayout(3, false));
 
 		Label lblProperty = new Label(grpState, SWT.NONE);
-		lblProperty.setText("Property");
+		lblProperty.setText("   ");
 
 		Label lblDemanded = new Label(grpState, SWT.NONE);
 		lblDemanded.setText("Demanded");
@@ -97,7 +100,7 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 		lblCourse.setText("Course");
 
 		demCourse = new Text(grpState, SWT.BORDER);
-		demCourse.setText("000");
+		demCourse.setText("000  ");
 		demCourse.setEnabled(false);
 		demCourse.addKeyListener(enterListener);
 
@@ -108,7 +111,7 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 		lblSpeed.setText("Speed");
 
 		demSpeed = new Text(grpState, SWT.BORDER);
-		demSpeed.setText("000");
+		demSpeed.setText("000  ");
 		demSpeed.setEnabled(false);
 		demSpeed.addKeyListener(enterListener);
 
@@ -119,7 +122,7 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 		lblDepth.setText("Depth");
 
 		demDepth = new Text(grpState, SWT.BORDER);
-		demDepth.setText("000");
+		demDepth.setText("000  ");
 		demDepth.setEnabled(false);
 		demDepth.addKeyListener(enterListener);
 
@@ -173,7 +176,7 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 	}
 
 	@Override
-	public void setActSpeed(final String val)
+	public void setActSpeed(final double speedKts)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -181,14 +184,23 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 			@Override
 			public void run()
 			{
-				actSpeed.setText(val);
+				if (!actSpeed.isDisposed())
+				{
+					final String spd = df2.format(speedKts);
+
+					actSpeed.setText(spd + "kts");
+					if (demSpeed.getText().equals(""))
+					{
+						demSpeed.setText(df0.format(speedKts));
+					}
+				}
 			}
 		});
 
 	}
 
 	@Override
-	public void setActCourse(final String val)
+	public void setActCourse(final double course)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -196,14 +208,22 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 			@Override
 			public void run()
 			{
+				if (!actCourse.isDisposed())
+				{
+					final String crse = df0.format(course);
 
-				actCourse.setText(val);
+					actCourse.setText(crse + "\u00B0");
+					if (demCourse.getText().equals(""))
+					{
+						demCourse.setText(crse);
+					}
+				}
 			}
 		});
 	}
 
 	@Override
-	public void setActDepth(final String val)
+	public void setActDepth(final double depthM)
 	{
 		Display.getDefault().asyncExec(new Runnable()
 		{
@@ -211,7 +231,16 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 			@Override
 			public void run()
 			{
-				actDepth.setText(val);
+				if (!actDepth.isDisposed())
+				{
+					final String dpth = df2.format(depthM);
+
+					actDepth.setText(dpth + "m");
+					if (demDepth.getText().equals(""))
+					{
+						demDepth.setText(df0.format(depthM));
+					}
+				}
 			}
 		});
 
@@ -263,6 +292,9 @@ public class VPart extends Composite implements IVPartControl, IVPartUpdate
 			public void run()
 			{
 				partName.setText(name);
+				demCourse.setText("");
+				demSpeed.setText("");
+				demDepth.setText("");
 			}
 		});
 

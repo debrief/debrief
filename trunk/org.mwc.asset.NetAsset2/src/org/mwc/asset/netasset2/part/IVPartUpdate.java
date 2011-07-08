@@ -2,10 +2,10 @@ package org.mwc.asset.netasset2.part;
 
 public interface IVPartUpdate extends IVPart
 {
-	void setActSpeed(String val);
+	void setActSpeed(final double speedKts);
 
-	void setActCourse(String val);
+	void setActCourse(final double courseDegs);
 
-	void setActDepth(String val);
+	void setActDepth(final double depthM);
 
 }

@@ -2,7 +2,6 @@ package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -52,9 +51,6 @@ public class PClient implements ScenarioSteppedListener
 	private Vector<IVPartUpdate> _partUpdaters;
 	private Vector<IVConnect> _connectors;
 
-	DecimalFormat df2 = new DecimalFormat("0.00");
-	DecimalFormat df0 = new DecimalFormat("0");
-
 	public PClient(IMClient model)
 	{
 		_model = model;
@@ -89,13 +85,9 @@ public class PClient implements ScenarioSteppedListener
 		}
 
 		@Override
-		public void moved(Status newStatus)
+		public void moved(final Status newStatus)
 		{
 			// get the status blocks ready
-			final String crse = df0.format(newStatus.getCourse());
-			final String spd = df2.format(newStatus.getSpeed().getValueIn(
-					WorldSpeed.Kts));
-			final String depth = df2.format(newStatus.getLocation().getDepth());
 
 			// now loop through any participant listeners
 			Iterator<IVPartUpdate> iter = _partUpdaters.iterator();
@@ -107,9 +99,9 @@ public class PClient implements ScenarioSteppedListener
 					@Override
 					public void run()
 					{
-						ivPart.setActCourse(crse + "\u00B0");
-						ivPart.setActSpeed(spd + "kts");
-						ivPart.setActDepth(depth + "m");
+						ivPart.setActCourse(newStatus.getCourse());
+						ivPart.setActSpeed(newStatus.getSpeed().getValueIn(WorldSpeed.Kts));
+						ivPart.setActDepth(newStatus.getLocation().getDepth());
 					}
 				});
 			}
