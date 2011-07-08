@@ -10,7 +10,7 @@ public class PartRCPView extends ViewPart
 
 	public static final String ID = "org.mwc.asset.NetAsset2.PartView";
 
-	private IVPart _view;
+	private IVPartControl _view;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -27,7 +27,11 @@ public class PartRCPView extends ViewPart
 	{
 		Object res = null;
 
-		if (adapter == IVPart.class)
+		if (adapter == IVPartControl.class)
+		{
+			res = _view;
+		}
+		else if(adapter == IVPartUpdate.class)
 		{
 			res = _view;
 		}

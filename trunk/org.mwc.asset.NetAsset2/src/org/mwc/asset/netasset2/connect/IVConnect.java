@@ -47,6 +47,9 @@ public interface IVConnect
 	void disableScenarios();
 
 	void enableScenarios();
+	
+	void enableDisconnect();
+	void disableDisconnect();
 
 	void disableParticipants();
 	void enableParticipants();

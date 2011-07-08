@@ -16,7 +16,8 @@ import org.mwc.asset.netasset2.connect.IVConnect;
 import org.mwc.asset.netasset2.core.AServer;
 import org.mwc.asset.netasset2.core.MClient;
 import org.mwc.asset.netasset2.core.PClient;
-import org.mwc.asset.netasset2.part.IVPart;
+import org.mwc.asset.netasset2.part.IVPartControl;
+import org.mwc.asset.netasset2.part.IVPartUpdate;
 import org.mwc.asset.netasset2.test.CoreTest;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -116,7 +117,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
-						storeTimer((IVTime) instance);
+						_presenter.addTimer((IVTime) instance);
 					}
 				});
 		_myPartMonitor.addPartListener(IVConnect.class, PartMonitor.OPENED,
@@ -125,36 +126,30 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
-						storeConnector((IVConnect) instance);
+						_presenter.addConnector((IVConnect) instance);
 					}
 				});
-		_myPartMonitor.addPartListener(IVPart.class, PartMonitor.OPENED,
+		_myPartMonitor.addPartListener(IVPartControl.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
-						storeParticipant((IVPart) instance);
+						_presenter.addPartController((IVPartControl) instance);
+					}
+				});
+		_myPartMonitor.addPartListener(IVPartUpdate.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object instance,
+							IWorkbenchPart parentPart)
+					{
+						_presenter.addPartUpdater((IVPartUpdate) instance);
 					}
 				});
 
 	}
 
-	protected void storeParticipant(IVPart instance)
-	{
-		_presenter.addPart(instance);
-	}
-
-	protected void storeConnector(IVConnect instance)
-	{
-		_presenter.addConnector(instance);
-	}
-
-	protected void storeTimer(IVTime instance)
-	{
-		_presenter.addTimer(instance);
-	}
-	
 
 	private void doDummyWork()
 	{

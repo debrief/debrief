@@ -32,6 +32,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
 
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
@@ -146,7 +147,6 @@ public class AServer
 			_partId = partId;
 			_part = part;
 			_scenario = scenario;
-
 			_part.addParticipantMovedListener(this);
 		}
 
@@ -189,6 +189,8 @@ public class AServer
 		_model = new SModel();
 		_partListeners = new HashMap<String, PartListener>();
 		_scenListeners = new HashMap<String, ScenListener>();
+		
+		_model.addListener(new FrameworkMessage.KeepAlive().getClass(), new Listener(){});
 
 		_model.addListener(new ListenScen().getClass(), new Listener()
 		{
@@ -378,6 +380,8 @@ public class AServer
 
 		// and remember it
 		String index = connection.toString() + ls.name;
+		
+		System.err.println("adding" + index);
 		_scenListeners.put(index, sl);
 	}
 
@@ -389,6 +393,7 @@ public class AServer
 		// and now the server listeners
 		String index = connection.toString() + ls.name;
 		ScenListener sl = _scenListeners.get(index);
+		System.err.println("removing:" + index);
 		sl.release();
 		_scenListeners.remove(sl);
 		

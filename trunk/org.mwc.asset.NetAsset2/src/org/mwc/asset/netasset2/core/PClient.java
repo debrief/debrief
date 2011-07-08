@@ -27,8 +27,9 @@ import org.mwc.asset.netasset2.connect.IVConnect.ClickHandler;
 import org.mwc.asset.netasset2.connect.IVConnect.ParticipantSelected;
 import org.mwc.asset.netasset2.connect.IVConnect.ScenarioSelected;
 import org.mwc.asset.netasset2.connect.IVConnect.ServerSelected;
-import org.mwc.asset.netasset2.part.IVPart;
-import org.mwc.asset.netasset2.part.IVPart.NewDemStatus;
+import org.mwc.asset.netasset2.part.IVPartControl;
+import org.mwc.asset.netasset2.part.IVPartControl.NewDemStatus;
+import org.mwc.asset.netasset2.part.IVPartUpdate;
 import org.mwc.asset.netasset2.time.IVTime;
 
 import ASSET.ScenarioType;
@@ -47,7 +48,8 @@ public class PClient implements ScenarioSteppedListener
 	private LightScenario _listeningTo;
 	private CombinedListener _partListener;
 	private Vector<IVTime> _timers;
-	private Vector<IVPart> _partControllers;
+	private Vector<IVPartControl> _partControllers;
+	private Vector<IVPartUpdate> _partUpdaters;
 	private Vector<IVConnect> _connectors;
 
 	DecimalFormat df2 = new DecimalFormat("0.00");
@@ -60,7 +62,8 @@ public class PClient implements ScenarioSteppedListener
 		_partListener = new CombinedListener();
 
 		// and the list of UI elements
-		_partControllers = new Vector<IVPart>();
+		_partControllers = new Vector<IVPartControl>();
+		_partUpdaters = new Vector<IVPartUpdate>();
 		_timers = new Vector<IVTime>();
 		_connectors = new Vector<IVConnect>();
 
@@ -95,10 +98,10 @@ public class PClient implements ScenarioSteppedListener
 			final String depth = df2.format(newStatus.getLocation().getDepth());
 
 			// now loop through any participant listeners
-			Iterator<IVPart> iter = _partControllers.iterator();
+			Iterator<IVPartUpdate> iter = _partUpdaters.iterator();
 			while (iter.hasNext())
 			{
-				final IVPart ivPart = iter.next();
+				final IVPartUpdate ivPart = iter.next();
 				Display.getDefault().asyncExec(new Runnable()
 				{
 					@Override
@@ -134,10 +137,10 @@ public class PClient implements ScenarioSteppedListener
 		};
 
 		// now loop through any participant listeners
-		Iterator<IVPart> iter = _partControllers.iterator();
+		Iterator<IVPartControl> iter = _partControllers.iterator();
 		while (iter.hasNext())
 		{
-			final IVPart ivPart = iter.next();
+			final IVPartControl ivPart = iter.next();
 
 			ivPart.setEnabled(true);
 			ivPart.setParticipant(part.name);
@@ -147,6 +150,9 @@ public class PClient implements ScenarioSteppedListener
 		// also start listening to him
 		if (_listeningTo != null)
 		{
+			// cancel any existing listners
+			_model.stopListenPart(_listeningTo.name, Network.DUFF_INDEX);
+			
 			_model.listenPart(_listeningTo.name, part.id, _partListener,
 					_partListener, _partListener);
 		}
@@ -163,6 +169,7 @@ public class PClient implements ScenarioSteppedListener
 		_listeningTo = scenario;
 
 		// start listening to it
+		System.err.println("about to listen to:" + scenario.name);
 		_model.listenScen(scenario.name, this);
 
 		// enable the timer controls
@@ -177,8 +184,11 @@ public class PClient implements ScenarioSteppedListener
 		while (iter2.hasNext())
 		{
 			IVConnect ivConnect = (IVConnect) iter2.next();
+			ivConnect.disableScenarios();
+			ivConnect.disableServers();
 			ivConnect.enableParticipants();
 			ivConnect.setParticipants(scenario.listOfParticipants);
+			ivConnect.enableDisconnect();
 		}
 
 	}
@@ -353,10 +363,15 @@ public class PClient implements ScenarioSteppedListener
 		});
 	}
 
-	public void addPart(IVPart instance)
+	public void addPartController(IVPartControl instance)
 	{
 		_partControllers.add(instance);
 	}
+	public void addPartUpdater(IVPartUpdate instance)
+	{
+		_partUpdaters.add(instance);
+	}
+
 
 	public void addConnector(IVConnect view)
 	{
@@ -364,6 +379,7 @@ public class PClient implements ScenarioSteppedListener
 
 		view.disableScenarios();
 		view.disableServers();
+		view.disableDisconnect();
 
 		view.addPingListener(new ClickHandler()
 		{
@@ -497,9 +513,10 @@ public class PClient implements ScenarioSteppedListener
 			while (iter.hasNext())
 			{
 				IVConnect ivConnect = (IVConnect) iter.next();
-				ivConnect.disableScenarios();
 				ivConnect.disableParticipants();
 				ivConnect.enableServers();
+				ivConnect.enableScenarios();
+				ivConnect.disableDisconnect();
 			}
 			
 			Iterator<IVTime> iter2 = _timers.iterator();
@@ -509,12 +526,14 @@ public class PClient implements ScenarioSteppedListener
 				ivTime.setEnabled(false);
 			}
 			
-			Iterator<IVPart> iter3 = _partControllers.iterator();
+			Iterator<IVPartControl> iter3 = _partControllers.iterator();
 			while (iter3.hasNext())
 			{
-				IVPart ivPart = (IVPart) iter3.next();
+				IVPartControl ivPart = (IVPartControl) iter3.next();
 				ivPart.setEnabled(false);
 			}
+			
+			_listeningTo = null;
 			
 		}
 	}

@@ -105,6 +105,7 @@ public class VTime extends Composite implements IVTime
 			@Override
 			public void run()
 			{
+				_time.setEnabled(val);
 				btnStep.setEnabled(val);
 				btnPlay.setEnabled(val);
 				btnStop.setEnabled(val);

@@ -329,4 +329,16 @@ public class VConnect extends Composite implements IVConnect
 			}
 		});
 	}
+
+	@Override
+	public void enableDisconnect()
+	{
+		btnDisconnect.setEnabled(true);
+	}
+
+	@Override
+	public void disableDisconnect()
+	{
+		btnDisconnect.setEnabled(false);
+	}
 }

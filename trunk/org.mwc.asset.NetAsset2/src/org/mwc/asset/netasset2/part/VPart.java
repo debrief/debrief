@@ -20,8 +20,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.mwc.asset.netasset2.Activator;
 
-public class VPart extends Composite implements IVPart
+public class VPart extends Composite implements IVPartControl, IVPartUpdate
 {
+	private static final String PENDING = "[Pending]";
 	private Group grpState;
 	private Text demCourse;
 	private Label actCourse;
@@ -58,7 +59,7 @@ public class VPart extends Composite implements IVPart
 			{
 				if (e.keyCode == 13)
 				{
-					_subListener.widgetSelected(null);
+					fireDemStatus();
 				}
 			}
 		};
@@ -71,7 +72,7 @@ public class VPart extends Composite implements IVPart
 		fd_partName.left = new FormAttachment(0);
 		partName.setLayoutData(fd_partName);
 		partName.setFont(SWTResourceManager.getFont("Lucida Grande", 14, SWT.BOLD));
-		partName.setText("[Pending]");
+		partName.setText(PENDING);
 
 		grpState = new Group(this, SWT.NONE);
 		FormData fd_grpState = new FormData();
@@ -139,16 +140,7 @@ public class VPart extends Composite implements IVPart
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				if (_listener != null)
-				{
-					_listener.demanded(Double.valueOf(getDemCourse()),
-							Double.valueOf(getDemSpeed()), Double.valueOf(getDemDepth()));
-				}
-				else
-				{
-					Activator.logError(Status.WARNING, "No dem status listener declared",
-							null);
-				}
+				fireDemStatus();
 			}
 
 			@Override
@@ -158,6 +150,20 @@ public class VPart extends Composite implements IVPart
 		});
 
 		// super.setEnabled(false);
+	}
+
+	private void fireDemStatus()
+	{
+		if (_listener != null)
+		{
+			_listener.demanded(Double.valueOf(getDemCourse()),
+					Double.valueOf(getDemSpeed()), Double.valueOf(getDemDepth()));
+		}
+		else
+		{
+			Activator.logError(Status.WARNING, "No dem status listener declared",
+					null);
+		}
 	}
 
 	@Override
@@ -241,6 +247,7 @@ public class VPart extends Composite implements IVPart
 				demSpeed.setEnabled(val);
 				demDepth.setEnabled(val);
 				newState.setEnabled(val);
+				partName.setText(PENDING);
 			}
 		});
 

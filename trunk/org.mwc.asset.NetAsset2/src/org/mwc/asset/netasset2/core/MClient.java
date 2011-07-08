@@ -26,6 +26,7 @@ import ASSET.Scenario.ScenarioSteppedListener;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 
 public class MClient implements IMClient
@@ -139,6 +140,9 @@ public class MClient implements IMClient
 		_model = new NetClient();
 		_partListeners = new HashMap<String, PartListener>();
 		_scenListeners = new HashMap<String, ScenListener>();
+
+		// get ready to ignore i'm alive messages...
+		_model.addListener(new FrameworkMessage.KeepAlive().getClass(), new Listener(){});
 
 		// setup the step listener
 		Listener mover = new Listener()
