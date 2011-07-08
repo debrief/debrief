@@ -76,18 +76,21 @@ public class MultiPathModel
 	{
 		TimeSeries res = new TimeSeries("Measured delay");
 
-		// ok, loop through the times
-		Iterator<Observation> iter = deltas.iterator();
-		while (iter.hasNext())
+		if (deltas != null)
 		{
-			Observation thisO = iter.next();
+			// ok, loop through the times
+			Iterator<Observation> iter = deltas.iterator();
+			while (iter.hasNext())
+			{
+				Observation thisO = iter.next();
 
-			// what's this time?
-			HiResDate tNow = thisO.getDate();
-			double delay = thisO.getInterval();
+				// what's this time?
+				HiResDate tNow = thisO.getDate();
+				double delay = thisO.getInterval();
 
-			// and add it
-			res.add(new FixedMillisecond(tNow.getDate().getTime()), delay);
+				// and add it
+				res.add(new FixedMillisecond(tNow.getDate().getTime()), delay);
+			}
 		}
 
 		return res;
@@ -140,15 +143,15 @@ public class MultiPathModel
 				double thisError = Math.pow(valB - valA, 2);
 				runningError += thisError;
 			}
-			
+
 			// log the calculation
-			CorePlugin.logError(Status.INFO,"error:" + (int) (runningError * 10000000d) +  " for " +  param[0], null);
+			CorePlugin.logError(Status.INFO, "error:"
+					+ (int) (runningError * 10000000d) + " for " + param[0], null);
 
 			// done
 			return runningError;
 		}
 	}
-
 
 	public static class RangedMiracleFunction implements MinimisationFunction
 	{
@@ -159,8 +162,8 @@ public class MultiPathModel
 		private RangeValues _ranges;
 		private double _ownDepth;
 
-		public RangedMiracleFunction(RangeValues ranges,
-				SVP svp, TimeDeltas times, double ownDepth)
+		public RangedMiracleFunction(RangeValues ranges, SVP svp, TimeDeltas times,
+				double ownDepth)
 		{
 			_ownDepth = ownDepth;
 			_ranges = ranges;
@@ -176,7 +179,8 @@ public class MultiPathModel
 		public double function(double[] param)
 		{
 			// ok, sort out the calculated times
-			TimeSeries calcTimes = _model.getCalculatedProfileFor(_ranges, _svp, _times, param[0], _ownDepth);
+			TimeSeries calcTimes = _model.getCalculatedProfileFor(_ranges, _svp,
+					_times, param[0], _ownDepth);
 
 			int lenA = _measuredTimes.getItemCount();
 			int lenB = calcTimes.getItemCount();
@@ -200,12 +204,14 @@ public class MultiPathModel
 			}
 
 			// log the calculation
-			CorePlugin.logError(Status.INFO,"error:" + (int) (runningError * 10000000d) +  " for " +  param[0], null);
-			
+			CorePlugin.logError(Status.INFO, "error:"
+					+ (int) (runningError * 10000000d) + " for " + param[0], null);
+
 			// done
 			return runningError;
 		}
 	}
+
 	/**
 	 * get the calculated profile
 	 * 
@@ -381,7 +387,6 @@ public class MultiPathModel
 
 		public static class MyFunc implements MinimisationFunction
 		{
-
 
 			public MyFunc(WatchableList primary, WatchableList secondary, SVP svp,
 					TimeDeltas times)
@@ -602,27 +607,31 @@ public class MultiPathModel
 	{
 		TimeSeries res = new TimeSeries("Calculated delay (TEST)");
 
-		// ok, loop through the times
-		Iterator<Observation> iter = times.iterator();
-		while (iter.hasNext())
+		if (times != null)
 		{
-			Observation thisO = iter.next();
-
-			// what's this time?
-			HiResDate tNow = thisO.getDate();
-			long timeMillis = tNow.getDate().getTime();
-
-			// do we have a range at this time?
-			if (ranges.hasValueAt(timeMillis))
+			// ok, loop through the times
+			Iterator<Observation> iter = times.iterator();
+			while (iter.hasNext())
 			{
+				Observation thisO = iter.next();
 
-				// what's the range separation at this time
-				double sepM = ranges.valueAt(timeMillis);
+				// what's this time?
+				HiResDate tNow = thisO.getDate();
+				long timeMillis = tNow.getDate().getTime();
 
-				// and the delay
-				double time_delay = calculateDelayFor(svp, targetDepth, hostDepth, sepM);
+				// do we have a range at this time?
+				if (ranges.hasValueAt(timeMillis))
+				{
 
-				res.add(new FixedMillisecond(timeMillis), time_delay);
+					// what's the range separation at this time
+					double sepM = ranges.valueAt(timeMillis);
+
+					// and the delay
+					double time_delay = calculateDelayFor(svp, targetDepth, hostDepth,
+							sepM);
+
+					res.add(new FixedMillisecond(timeMillis), time_delay);
+				}
 			}
 		}
 
