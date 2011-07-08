@@ -36,6 +36,11 @@
             id="org.mwc.asset.NetAsset2.PartView"
             name="Participant">
       </view>
+      <view
+            class="org.mwc.asset.netasset2.plot.PlotRCPView"
+            id="org.mwc.asset.NetAsset2.PlotView"
+            name="Plot">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -65,6 +70,16 @@
          <view
                closeable="false"
                id="org.mwc.asset.NetAsset2.PartView"
+               minimized="false"
+               relationship="bottom"
+               relative="org.mwc.asset.NetAsset2.TimeView">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="*">
+         <view
+               closeable="false"
+               id="org.mwc.asset.NetAsset2.PlotView"
                minimized="false"
                relationship="bottom"
                relative="org.mwc.asset.NetAsset2.TimeView">
