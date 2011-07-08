@@ -39,8 +39,6 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 
 	public static final String SENSOR_MONITOR = "org.mwc.asset.SensorMonitor";
 
-	public static final String NET_ASSET = "org.mwc.asset.netassetserver";
-
 	/**
 	 * and the context used to describe our undo list
 	 */
