@@ -82,7 +82,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		fd_topPanel.left = new FormAttachment(0, 3);
 		topPanel.setLayoutData(fd_topPanel);
 		topPanel.setLayout(new RowLayout(SWT.HORIZONTAL));
-		
+
 		grpDataFiles = new Group(topPanel, SWT.NONE);
 		grpDataFiles.setText("Data files");
 		GridLayout gl_grpDataFiles = new GridLayout(1, false);
@@ -100,25 +100,25 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		filenameHolder.setLayout(gl_filenameHolder);
 
 		Label lblScenarioFile = new Label(filenameHolder, SWT.NONE);
-	//	lblScenarioFile.setBounds(0, 0, 59, 14);
+		// lblScenarioFile.setBounds(0, 0, 59, 14);
 		lblScenarioFile.setText("Scenario file:");
 
 		scenarioVal = new Label(filenameHolder, SWT.NONE);
 		scenarioVal.setAlignment(SWT.RIGHT);
 		scenarioVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
 				1, 1));
-//		scenarioVal.setBounds(0, 0, 59, 14);
+		// scenarioVal.setBounds(0, 0, 59, 14);
 		scenarioVal.setText("[pending]                     ");
 
 		Label lblControlFile = new Label(filenameHolder, SWT.NONE);
-//		lblControlFile.setBounds(0, 0, 59, 14);
+		// lblControlFile.setBounds(0, 0, 59, 14);
 		lblControlFile.setText("Control file:");
 
 		controlVal = new Label(filenameHolder, SWT.NONE);
 		controlVal.setAlignment(SWT.RIGHT);
 		controlVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
 				1, 1));
-// 		controlVal.setBounds(0, 0, 59, 14);
+		// controlVal.setBounds(0, 0, 59, 14);
 		controlVal.setText("[pending]               ");
 
 		Group grpManageScenarios = new Group(topPanel, SWT.NONE);
@@ -309,7 +309,8 @@ public class UISkeleton2 extends Composite implements UIDisplay
 		{
 			public void run()
 			{
-				lblTime.setText(time);
+				if (!lblTime.isDisposed())
+					lblTime.setText(time);
 			}
 		});
 	}

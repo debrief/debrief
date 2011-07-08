@@ -447,6 +447,34 @@ public class SimulationTable
 			}
 		});
 	}
+	
+	private EditableWrapper wrapScenario(ScenarioType theScenario)
+	{
+		// better wrap it
+		ScenarioLayer sl = new ScenarioLayer();
+		sl.setScenario(theScenario);
+
+		// right, do we have a wrapper for this object. we cache them so we
+		// aren't always changing
+		ScenarioWrapper sw = _wrappedScenarios.get(theScenario);
+		if (sw == null)
+		{
+			sw = new ScenarioWrapper(_myPresenter, sl);
+
+			// tell it about any backdrop data
+			Layer theBackdrop = theScenario.getBackdrop();
+			if (theBackdrop != null)
+				sw.addThisLayer(theBackdrop);
+
+			_wrappedScenarios.put(theScenario, sw);
+
+			// also tell it about any observers
+			sw.fireNewController();
+
+		}
+
+		return new EditableWrapper(sw);
+	}
 
 	protected void fireNewSelection(ISimulation selection)
 	{
@@ -461,32 +489,9 @@ public class SimulationTable
 		if (newSel instanceof CoreScenario)
 		{
 			ScenarioType theScenario = (ScenarioType) newSel;
-
-			// better wrap it
-			ScenarioLayer sl = new ScenarioLayer();
-			sl.setScenario(theScenario);
-
-			// right, do we have a wrapper for this object. we cache them so we
-			// aren't always changing
-			ScenarioWrapper sw = _wrappedScenarios.get(theScenario);
-			if (sw == null)
-			{
-				sw = new ScenarioWrapper(_myPresenter, sl);
-
-				// tell it about any backdrop data
-				Layer theBackdrop = theScenario.getBackdrop();
-				if (theBackdrop != null)
-					sw.addThisLayer(theBackdrop);
-
-				_wrappedScenarios.put(theScenario, sw);
-
-				// also tell it about any observers
-				sw.fireNewController();
-
-			}
-
+		
 			// ok, now wrap it as an editable
-			EditableWrapper ew = new EditableWrapper(sw);
+			EditableWrapper ew = wrapScenario(theScenario);
 
 			// and as a selection
 			strSel = new StructuredSelection(ew);
@@ -534,6 +539,18 @@ public class SimulationTable
 			return;
 		}
 		mySelectionProvider.setSelection(mySelection);
+	}
+
+	public EditableWrapper getFirstRow()
+	{
+		EditableWrapper res = null;
+		if (myRows.size() > 0)
+		{
+			SimulationRow row = myRows.get(0);
+			res = wrapScenario((ScenarioType) row.getSimulation());
+		}
+
+		return res;
 	}
 
 	private Object getCellValue(Object element, TableColumn tableColumn)

@@ -23,7 +23,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -57,6 +59,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
@@ -94,31 +97,36 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 		public void setInitEnabled(boolean enabled);
 
-		/** set the displayed time
+		/**
+		 * set the displayed time
 		 * 
 		 * @param time
 		 */
 		public void setTime(String time);
 
-		/** indicate what the label is on the play button
+		/**
+		 * indicate what the label is on the play button
 		 * 
 		 * @param text
 		 */
-		public  void setPlayLabel(String text);
+		public void setPlayLabel(String text);
 
-		/** someone wants to know about the init button
+		/**
+		 * someone wants to know about the init button
 		 * 
 		 * @param selectionAdapter
 		 */
 		public void addInitListener(SelectionAdapter selectionAdapter);
 
-		/** someone wants to know about the step button
+		/**
+		 * someone wants to know about the step button
 		 * 
 		 * @param selectionAdapter
 		 */
 		public void addStepListener(SelectionAdapter selectionAdapter);
 
-		/** someone wants to know about the play button
+		/**
+		 * someone wants to know about the play button
 		 * 
 		 * @param selectionAdapter
 		 */
@@ -202,7 +210,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	 */
 	public MultiScenarioView()
 	{
-		_multiScenLister = new MultiScenarioLister(){
+		_multiScenLister = new MultiScenarioLister()
+		{
 
 			@Override
 			public Vector<ScenarioType> getScenarios()
@@ -218,7 +227,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 					res.add(scen);
 				}
 				return res;
-			}};
+			}
+		};
 	}
 
 	public void activate()
@@ -239,7 +249,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	{
 		_filesDroppedListener = listener;
 	}
-	
+
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
@@ -345,10 +355,9 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	public void createPartControl(Composite parent)
 	{
 		// and declare our context sensitive help
-		CorePlugin
-				.declareContextHelp(parent, "org.mwc.asset.help.ScenarioController");
+		CorePlugin.declareContextHelp(parent,
+				"org.mwc.asset.help.ScenarioController");
 
-		
 		// create our UI
 		_myUI = new UISkeleton2(parent, SWT.FILL);
 
@@ -372,7 +381,6 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// know we do it aswell)
 		getSite().setSelectionProvider(this);
 		_simTable.setSelectionProvider(this);
-
 
 		// if we have any pending filenames, get them dropped
 		if (_myPendingFilenames != null)
@@ -411,7 +419,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// and display them
 		manager.add(viewInPlotter);
 		manager.add(actionReloadDatafiles);
-		
+
 		manager.add(new Separator());
 		manager.add(CorePlugin.createOpenHelpAction(
 				"org.mwc.asset.help.ScenarioController", null, this));
@@ -428,7 +436,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		{
 			res = _timeManager;
 		}
-		else if(adapter == MultiScenarioLister.class)
+		else if (adapter == MultiScenarioLister.class)
 		{
 			res = _multiScenLister;
 		}
@@ -784,6 +792,12 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	public void selectFirstRow()
 	{
 		_simTable.selectFirstRow();
+
+		// and mark it as selection
+		EditableWrapper first = _simTable.getFirstRow();
+		IStructuredSelection sl = new StructuredSelection(new EditableWrapper[]{first});
+		System.err.println("sel:" + first);
+		setSelection(sl);
 	}
 
 }
