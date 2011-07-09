@@ -100,7 +100,6 @@ public class TimeDeltas
 			double strength = Double.valueOf(st.nextToken());
 
 			// do the time
-			
 			GregorianCalendar cal2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 			cal2.clear();
 			cal2.set(Calendar.YEAR,year);
@@ -111,9 +110,9 @@ public class TimeDeltas
 			cal2.set(Calendar.SECOND, sec);
 			cal2.set(Calendar.MILLISECOND, milli);
 			
-			
+			// and get the value in seconds
 			long tMillis = cal2.getTimeInMillis();
-			tMillis += milli;
+			// TODO switch to storing millis as a long
 			double tSecs = tMillis / 1000;
 			times.add((double) tSecs);
 			
