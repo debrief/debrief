@@ -279,12 +279,17 @@ public class MultiPathPresenter
 	{
 		TimeSeries res = null;
 		TrackDataProvider tv = getTracks();
-		WatchableList primary = tv.getPrimaryTrack();
-		WatchableList secondary = tv.getSecondaryTracks()[0];
-		if ((primary != null) && (secondary != null))
+		
+		// check we've actually got some tracks
+		if (tv != null)
 		{
-			res = _model.getCalculatedProfileFor(primary, secondary, _svp, _times,
-					val);
+			WatchableList primary = tv.getPrimaryTrack();
+			WatchableList secondary = tv.getSecondaryTracks()[0];
+			if ((primary != null) && (secondary != null))
+			{
+				res = _model.getCalculatedProfileFor(primary, secondary, _svp, _times,
+						val);
+			}
 		}
 		return res;
 	}

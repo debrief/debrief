@@ -9101,16 +9101,19 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         <sect2 xml:id="multi_data_delays">
           <title>Time delays file</title>
 
-          <para>The time-delays data file is a two-column csv text
-          file:</para>
+          <para>The time-delays data file is a multi-column csv text file:</para>
+          <para>
+            <screen>YYYY,MM,DD,HH,MM,SS,mmm,TIME_DELAY(msec),POWER(dB)
+2009,04,22,18,37,00,254,6.797688,22</screen>
+          </para>
 
           <variablelist>
             <varlistentry>
-              <term>time</term>
+              <term>date</term>
 
               <listitem>
-                <para>floating point timestamp (seconds from the start of
-                January 1, 1970)</para>
+                <para>Series of fields recording date and time (including milliseconds) of
+                  observation</para>
               </listitem>
             </varlistentry>
 
@@ -9119,6 +9122,12 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 
               <listitem>
                 <para>floating point time delay (seconds)</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>power</term>
+              <listitem>
+                <para>ignored in current implementation</para>
               </listitem>
             </varlistentry>
           </variablelist>
