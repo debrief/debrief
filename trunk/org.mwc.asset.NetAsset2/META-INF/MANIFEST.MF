@@ -1,11 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NetAsset2
-Bundle-SymbolicName: org.mwc.asset.NetAsset2; singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.mwc.asset.NetAsset2;singleton:=true
+Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.asset.netasset2.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.mwc.asset.NetCore;bundle-version="1.0.0",
  org.junit,
  org.mwc.asset.legacy;bundle-version="1.0.29",
  org.mwc.cmap.legacy;bundle-version="1.0.118",
@@ -13,11 +14,5 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer;bundle-version="1.0.50"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: libs/kryonet-1.04/asm-3.3.1.jar,
- libs/kryonet-1.04/kryo-1.04.jar,
- libs/kryonet-1.04/kryonet-1.04.jar,
- libs/kryonet-1.04/minlog-1.2.jar,
- libs/kryonet-1.04/reflectasm-1.01.jar,
- .,
+Bundle-ClassPath: .,
  swing2swt.jar
-Export-Package: org.mwc.asset.netasset2.core
