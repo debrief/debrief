@@ -774,12 +774,18 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			// is there something there?
 			if (selection != null)
 			{
-				SelectionChangedEvent event = new SelectionChangedEvent(this,
+				final SelectionChangedEvent event = new SelectionChangedEvent(this,
 						_currentSelection);
-				for (ISelectionChangedListener thisL : _selectionListeners)
-				{
-					thisL.selectionChanged(event);
-				}
+				Display.getDefault().asyncExec(new Runnable(){
+
+					@Override
+					public void run()
+					{
+						for (ISelectionChangedListener thisL : _selectionListeners)
+						{
+							thisL.selectionChanged(event);
+						}
+					}});
 			}
 		}
 	}

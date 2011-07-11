@@ -330,7 +330,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	protected void newTime(final long newTime)
 	{
-		Display.getDefault().syncExec(new Runnable()
+		Display.getDefault().asyncExec(new Runnable()
 		{
 			public void run()
 			{
