@@ -24,9 +24,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.mwc.asset.netasset2.common.Network;
-import org.mwc.asset.netasset2.common.Network.LightParticipant;
-import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netCore.common.Network;
+import org.mwc.asset.netCore.common.Network.LightParticipant;
+import org.mwc.asset.netCore.common.Network.LightScenario;
 
 public class VConnect extends Composite implements IVConnect
 {

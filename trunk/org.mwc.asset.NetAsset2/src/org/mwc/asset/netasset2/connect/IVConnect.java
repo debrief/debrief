@@ -6,8 +6,8 @@ import java.util.Vector;
 
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IContentProvider;
-import org.mwc.asset.netasset2.common.Network.LightParticipant;
-import org.mwc.asset.netasset2.common.Network.LightScenario;
+import org.mwc.asset.netCore.common.Network.LightParticipant;
+import org.mwc.asset.netCore.common.Network.LightScenario;
 
 public interface IVConnect
 {
