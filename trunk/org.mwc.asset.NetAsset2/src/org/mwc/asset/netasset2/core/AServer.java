@@ -53,9 +53,6 @@ public class AServer
 		{
 			_server = new Server();
 			Network.register(_server);
-			_server.start();
-			_server.bind(Network.TCP_PORT, Network.UDP_PORT);
-
 			_listeners = new HashMap<Class<?>, Listener>();
 
 			// sort out our handler
@@ -92,6 +89,13 @@ public class AServer
 		public void stop()
 		{
 			_server.stop();
+		}
+		
+		public void start() throws IOException
+		{
+			_server.start();
+			_server.bind(Network.TCP_PORT, Network.UDP_PORT);
+
 		}
 
 	}
@@ -359,6 +363,11 @@ public class AServer
 		_dataProvider = lister;
 	}
 
+	public void start() throws IOException
+	{
+		_model.start();
+	}
+	
 	public void stop()
 	{
 		_model.stop();

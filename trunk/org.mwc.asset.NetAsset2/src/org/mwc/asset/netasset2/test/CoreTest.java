@@ -67,6 +67,7 @@ public class CoreTest extends junit.framework.TestCase
 		// check events empty
 		assertEquals("events empty", 0, _events.size());
 		AServer server = new AServer();
+		server.start();
 		assertEquals("events recorded", 1, _events.size());
 		assertEquals("correct start event", "Server opened.", _events.elementAt(0));
 
@@ -103,6 +104,7 @@ public class CoreTest extends junit.framework.TestCase
 		// check events empty
 		assertEquals("events empty", 0, _events.size());
 		AServer server = new AServer();
+		server.start();
 		assertEquals("events recorded", 1, _events.size());
 		assertEquals("correct start event", "Server opened.", _events.elementAt(0));
 

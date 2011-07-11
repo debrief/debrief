@@ -65,11 +65,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	@Override
 	public void postWindowOpen()
 	{
-		// TODO Auto-generated method stub
 		super.postWindowOpen();
 		
 		// get ourselves a server
-		doDummyWork();
+//		doDummyWork();
 
 		// ok, get ready to learn about open windows
 		setupListeners();
@@ -166,6 +165,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		try
 		{
 			testServer = new AServer();
+			testServer.start();
 			// ok, give the server some data
 			MultiScenarioLister lister = new MultiScenarioLister()
 			{
