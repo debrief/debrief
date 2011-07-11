@@ -12,13 +12,13 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.mwc.asset.netCore.core.AServer;
+import org.mwc.asset.netCore.core.MClient;
+import org.mwc.asset.netCore.test.CoreTest;
 import org.mwc.asset.netasset2.connect.IVConnect;
-import org.mwc.asset.netasset2.core.AServer;
-import org.mwc.asset.netasset2.core.MClient;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.part.IVPartControl;
 import org.mwc.asset.netasset2.part.IVPartUpdate;
-import org.mwc.asset.netasset2.test.CoreTest;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.asset.netasset2.time.IVTimeControl;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -68,7 +68,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		super.postWindowOpen();
 		
 		// get ourselves a server
-//		doDummyWork();
+		doDummyWork();
 
 		// ok, get ready to learn about open windows
 		setupListeners();
