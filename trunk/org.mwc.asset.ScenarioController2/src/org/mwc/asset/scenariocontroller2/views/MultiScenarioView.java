@@ -3,6 +3,7 @@ package org.mwc.asset.scenariocontroller2.views;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -51,6 +52,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.SimulationController.table.SimulationTable;
 import org.mwc.asset.core.ASSETPlugin;
+import org.mwc.asset.netCore.core.AServer;
+import org.mwc.asset.scenariocontroller2.Activator;
 import org.mwc.asset.scenariocontroller2.CoreControllerPresenter.FilesDroppedListener;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.JobWithProgress;
@@ -204,6 +207,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 	private FilesDroppedListener _filesDroppedListener;
 	private MultiScenarioPresenter _myPresenter;
 	private MultiScenarioLister _multiScenLister;
+	private AServer _netServer;
 
 	/**
 	 * The constructor.
@@ -416,7 +420,20 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
 		actionReloadDatafiles.setImageDescriptor(desc);
 
+		Action doNetwork = new Action("Broadcast", SWT.TOGGLE)
+		{
+			@Override
+			public void run()
+			{
+				doNetwork(this.isChecked());
+			}
+		};
+		doNetwork.setToolTipText("Broadcast scenarios on network");
+		doNetwork.setImageDescriptor(Activator
+				.getImageDescriptor("icons/app_link.png"));
+
 		// and display them
+		manager.add(doNetwork);
 		manager.add(viewInPlotter);
 		manager.add(actionReloadDatafiles);
 
@@ -424,6 +441,28 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		manager.add(CorePlugin.createOpenHelpAction(
 				"org.mwc.asset.help.ScenarioController", null, this));
 
+	}
+
+	protected void doNetwork(boolean checked)
+	{
+		System.err.println("network to:" + checked);
+		try
+		{
+			if (_netServer == null)
+			{
+				_netServer = new AServer();
+				_netServer.setDataProvider(_multiScenLister);
+			}
+
+			if (checked)
+				_netServer.start();
+			else
+				_netServer.stop();
+		}
+		catch (IOException e)
+		{
+			ASSETPlugin.logError(Status.ERROR, "Failed to initialise comms", e);
+		}
 	}
 
 	@Override
@@ -776,7 +815,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 			{
 				final SelectionChangedEvent event = new SelectionChangedEvent(this,
 						_currentSelection);
-				Display.getDefault().asyncExec(new Runnable(){
+				Display.getDefault().asyncExec(new Runnable()
+				{
 
 					@Override
 					public void run()
@@ -785,7 +825,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 						{
 							thisL.selectionChanged(event);
 						}
-					}});
+					}
+				});
 			}
 		}
 	}
@@ -801,7 +842,8 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 
 		// and mark it as selection
 		EditableWrapper first = _simTable.getFirstRow();
-		IStructuredSelection sl = new StructuredSelection(new EditableWrapper[]{first});
+		IStructuredSelection sl = new StructuredSelection(new EditableWrapper[]
+		{ first });
 		System.err.println("sel:" + first);
 		setSelection(sl);
 	}
