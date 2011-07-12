@@ -435,6 +435,11 @@ public class AServer
 		else if (ls.instruction.equals(ScenControl.SLOWER))
 		{
 			int curTime = st.getStepTime();
+			
+			// just double-check if we've got zero step time
+			if(curTime == 0)
+				curTime = 500;
+			
 			st.setStepTime(curTime * 2);
 		}
 	}
