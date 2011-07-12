@@ -5,7 +5,8 @@
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-      <application>
+      <application
+            icon="icons/destroyer_256.png">
          <run
                class="org.mwc.asset.netasset2.Client">
          </run>
@@ -104,10 +105,22 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.mwc.asset.NetAsset2.application"
-            name="NetAsset Client">
+            name="NetASSET NG">
          <property
                name="windowImages"
-               value="icons/alt_window_16.gif,icons/alt_window_32.gif">
+               value="icons/destroyer_16.png,icons/destroyer_32.png,icons/destroyer_48.png,icons/destroyer_64.png">
+         </property>
+         <property
+               name="appName"
+               value="NetASSET NG">
+         </property>
+         <property
+               name="aboutImage"
+               value="platform:/plugin/org.mwc.asset.core/icons/WorkBenchLogo.gif">
+         </property>
+         <property
+               name="aboutText"
+               value="Welcome to NetASSET NG, from the Maritime Warfare Centre">
          </property>
       </product>
    </extension>

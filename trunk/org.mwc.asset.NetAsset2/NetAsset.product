@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="NetASSET NG" uid="NetAsset" id="org.mwc.asset.NetAsset2.product" application="org.mwc.asset.NetAsset2.application" version="1.0.1" useFeatures="false" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
+      <text>
+         Welcome to NetASSET NG, from the Maritime Warfare Centre
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+   </configIni>
+
+   <launcherArgs>
+      <programArgs>-data
+@user.home/.NetAsset</programArgs>
+      <vmArgs>-Xms40m -Xmx256m</vmArgs>
+   </launcherArgs>
+
+   <windowImages i16="/org.mwc.asset.NetAsset2/icons/destroyer_16.png" i32="/org.mwc.asset.NetAsset2/icons/destroyer_32.png" i48="/org.mwc.asset.NetAsset2/icons/destroyer_48.png" i64="/org.mwc.asset.NetAsset2/icons/destroyer_64.png"/>
+
+   <splash
+      location="org.mwc.asset.NetAsset2" />
+   <launcher name="NetAsset">
+      <macosx icon="/org.mwc.asset.NetAsset2/icons/Ship.icns"/>
+      <solaris/>
+      <win useIco="true">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <intro introId="org.mwc.debrief.core.intro"/>
+
+   <vm>
+      <macos include="false">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</macos>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</windows>
+   </vm>
+
+   <plugins>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="javax.xml"/>
+      <plugin id="org.apache.xerces"/>
+      <plugin id="org.apache.xml.resolver"/>
+      <plugin id="org.apache.xml.serializer"/>
+      <plugin id="org.eclipse.compare"/>
+      <plugin id="org.eclipse.compare.core"/>
+      <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.databinding"/>
+      <plugin id="org.eclipse.core.databinding.observable"/>
+      <plugin id="org.eclipse.core.databinding.property"/>
+      <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.filebuffers"/>
+      <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.resources"/>
+      <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.debug.core"/>
+      <plugin id="org.eclipse.debug.ui"/>
+      <plugin id="org.eclipse.emf.common"/>
+      <plugin id="org.eclipse.emf.ecore"/>
+      <plugin id="org.eclipse.equinox.app"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.p2.core"/>
+      <plugin id="org.eclipse.equinox.p2.engine"/>
+      <plugin id="org.eclipse.equinox.p2.metadata"/>
+      <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
+      <plugin id="org.eclipse.equinox.p2.repository"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.equinox.security"/>
+      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
+      <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.text"/>
+      <plugin id="org.eclipse.ltk.core.refactoring"/>
+      <plugin id="org.eclipse.ltk.ui.refactoring"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.eclipse.osgi.util"/>
+      <plugin id="org.eclipse.search"/>
+      <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.team.core"/>
+      <plugin id="org.eclipse.team.ui"/>
+      <plugin id="org.eclipse.text"/>
+      <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
+      <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.editors"/>
+      <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.ide"/>
+      <plugin id="org.eclipse.ui.navigator"/>
+      <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor"/>
+      <plugin id="org.eclipse.wst.common.core"/>
+      <plugin id="org.eclipse.wst.common.environment"/>
+      <plugin id="org.eclipse.wst.common.frameworks"/>
+      <plugin id="org.eclipse.wst.common.project.facet.core"/>
+      <plugin id="org.eclipse.wst.common.ui"/>
+      <plugin id="org.eclipse.wst.common.uriresolver"/>
+      <plugin id="org.eclipse.wst.sse.core"/>
+      <plugin id="org.eclipse.wst.sse.ui"/>
+      <plugin id="org.eclipse.wst.validation"/>
+      <plugin id="org.eclipse.wst.xml.core"/>
+      <plugin id="org.eclipse.wst.xml.ui"/>
+      <plugin id="org.hamcrest.core"/>
+      <plugin id="org.junit"/>
+      <plugin id="org.mwc.asset.NetAsset2"/>
+      <plugin id="org.mwc.asset.NetCore"/>
+      <plugin id="org.mwc.asset.core"/>
+      <plugin id="org.mwc.asset.legacy"/>
+      <plugin id="org.mwc.cmap.core"/>
+      <plugin id="org.mwc.cmap.legacy"/>
+      <plugin id="org.mwc.cmap.plotViewer"/>
+      <plugin id="org.mwc.debrief.legacy"/>
+   </plugins>
+
+   <features>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.164"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.28"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.137"/>
+   </features>
+
+
+</product>
