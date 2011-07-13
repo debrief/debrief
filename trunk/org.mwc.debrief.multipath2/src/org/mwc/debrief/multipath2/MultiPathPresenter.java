@@ -162,6 +162,12 @@ public class MultiPathPresenter
 		 * @param listener
 		 */
 		public void addMagicListener(SelectionListener listener);
+
+		/** specify the upper limit for the slider
+		 * 
+		 * @param maxDepth
+		 */
+		public void setSliderMax(int maxDepth);
 	};
 
 	protected final Display _display;
@@ -206,6 +212,10 @@ public class MultiPathPresenter
 			File file = new File(path);
 			String fName = file.getName();
 			_display.setSVPName(fName);
+			
+			// and set the depth slider max value
+			double maxDepth = _svp.getMaxDepth();
+			_display.setSliderMax((int)maxDepth);
 
 		}
 		catch (NumberFormatException e)
@@ -520,10 +530,14 @@ public class MultiPathPresenter
 		{ 60 };
 
 		// convergence tolerance
-		double ftol = 1e-7;
+		double ftol = 1e-8;
 
+		// set the minimum depth
 		min.addConstraint(0, -1, 0d);
-		min.addConstraint(0, 1, 1000);
+		
+		// and the maximum depth
+		double maxDepth = _svp.getMaxDepth();
+		min.addConstraint(0, 1, maxDepth);
 
 		// Nelder and Mead minimisation procedure
 		min.nelderMead(funct, start, step, ftol, 500);
