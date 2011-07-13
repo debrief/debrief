@@ -357,4 +357,10 @@ public class MultiPathView extends ViewPart implements
 		_ui.getSlider().setSelection(value);
 	}
 
+	@Override
+	public void setSliderMax(int maxDepth)
+	{
+		_ui.getSlider().setMaximum(maxDepth);
+	}
+
 }
