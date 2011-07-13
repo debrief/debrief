@@ -9121,7 +9121,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
               <term>time-delay</term>
 
               <listitem>
-                <para>floating point time delay (seconds)</para>
+                <para>floating point time delay (mSecs)</para>
               </listitem>
             </varlistentry>
             <varlistentry>
