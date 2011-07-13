@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.mwc.debrief.multipath2.model.MultiPathModel.CalculationException;
 import org.mwc.debrief.multipath2.model.MultiPathModel.DataFormatException;
 
 import flanagan.interpolation.LinearInterpolation;
@@ -437,9 +438,9 @@ public class SVP
 				svp.getMeanSpeedBetween(0, 22);
 				fail("should not have found index");
 			}
-			catch (RuntimeException e)
+			catch (CalculationException e)
 			{
-				assertEquals("wrong message provided", SHALLOW_FAIL, e.getMessage());
+				assertTrue("wrong message provided", e.getMessage().startsWith(SHALLOW_FAIL));
 			}
 
 			try
