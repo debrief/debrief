@@ -263,34 +263,32 @@ public class MultiPathModel
 			Watchable[] secLocs = secondary.getNearestTo(tNow);
 
 			// do we have data
-			if (priLocs.length == 0)
-				throw new CalculationException("Insufficient primary data");
-			if (secLocs.length == 0)
-				throw new CalculationException("Insufficient secondary data");
-
-			WorldLocation priLoc = priLocs[0].getLocation();
-			WorldLocation secLoc = secLocs[0].getLocation();
-
-			// create a key for this range separation calculation
-			String thisKey = "" + priLoc.getLat() + priLoc.getLong()
-					+ secLoc.getLat() + secLoc.getLong();
-
-			// do we have this key
-			WorldVector sep = _rangeCache.get(thisKey);
-			if (sep == null)
+			if ((priLocs.length > 0) && (secLocs.length > 0))
 			{
-				// nope, better create it then
-				sep = priLoc.subtract(secLoc);
+				WorldLocation priLoc = priLocs[0].getLocation();
+				WorldLocation secLoc = secLocs[0].getLocation();
 
-				// and store it
-				_rangeCache.put(thisKey, sep);
+				// create a key for this range separation calculation
+				String thisKey = "" + priLoc.getLat() + priLoc.getLong()
+						+ secLoc.getLat() + secLoc.getLong();
+
+				// do we have this key
+				WorldVector sep = _rangeCache.get(thisKey);
+				if (sep == null)
+				{
+					// nope, better create it then
+					sep = priLoc.subtract(secLoc);
+
+					// and store it
+					_rangeCache.put(thisKey, sep);
+				}
+				double sepM = MWC.Algorithms.Conversions.Degs2m(sep.getRange());
+
+				double time_delay = calculateDelayFor(svp, targetDepth,
+						priLoc.getDepth(), sepM);
+
+				res.add(new FixedMillisecond(timeVal), time_delay);
 			}
-			double sepM = MWC.Algorithms.Conversions.Degs2m(sep.getRange());
-
-			double time_delay = calculateDelayFor(svp, targetDepth,
-					priLoc.getDepth(), sepM);
-
-			res.add(new FixedMillisecond(timeVal), time_delay);
 		}
 
 		// restore the interpolation settings
@@ -346,6 +344,45 @@ public class MultiPathModel
 	// /////////////////////////////////////////////////
 	public static class IntervalTest extends junit.framework.TestCase
 	{
+		public void testNonMatchTimes()
+		{
+			WorldLocation loc = new WorldLocation(2, 2, 30);
+			LabelWrapper primary = new LabelWrapper("Sensor", loc, Color.red);
+
+			TrackWrapper secondary = new TrackWrapper();
+
+			TimeDeltas deltas = getDeltas();
+
+			HiResDate start = deltas.getStartTime();
+			HiResDate end = deltas.getEndTime();
+			long interval = 10000;
+
+			WorldLocation startLoc = loc.add(new WorldVector(Math.PI, 0.02, 0));
+
+			for (long thisT = start.getDate().getTime() + 92000; thisT <= end
+					.getDate().getTime() + interval; thisT += interval)
+			{
+				HiResDate thisD = new HiResDate(thisT);
+				WorldLocation newLoc = new WorldLocation(startLoc.add(new WorldVector(
+						Math.PI * 1.5, 0.005, 0)));
+				Fix newF = new Fix(thisD, newLoc, 0, 0);
+				FixWrapper newFw = new FixWrapper(newF);
+				secondary.addFix(newFw);
+
+				startLoc = newLoc;
+			}
+
+			SVP svp = getSVP();
+
+			// ok, go for the calc
+			MultiPathModel model = new MultiPathModel();
+			TimeSeries calc = model.getCalculatedProfileFor(primary, secondary, svp,
+					deltas, 44);
+
+			assertNotNull("got some results", calc);
+			assertEquals("correct num return", 369, calc.getItemCount());
+
+		}
 
 		public void testMe()
 		{
@@ -383,6 +420,7 @@ public class MultiPathModel
 					deltas, 44);
 
 			assertNotNull("got some results", calc);
+			assertEquals("correct num return", 379, calc.getItemCount());
 		}
 
 		public static class MyFunc implements MinimisationFunction
@@ -456,6 +494,10 @@ public class MultiPathModel
 			// convergence tolerance
 			double ftol = 1e-2;
 
+			// specify the maximum depth
+			double maxDepth = svp.getMaxDepth();
+			min.addConstraint(0, +1, maxDepth);
+
 			// Nelder and Mead minimisation procedure
 			min.nelderMead(funct, start, step, ftol, 100);
 
@@ -465,6 +507,24 @@ public class MultiPathModel
 			// Output the results to screen
 			System.out.println("Minimum = " + min.getMinimum());
 			System.out.println("Value of x at the minimum = " + param[0]);
+			assertEquals("valid depth", 59, param[0], 1);
+
+			// specify the shallower maximum depth
+			min.removeConstraints();
+			maxDepth = 40;
+			min.addConstraint(0, +1, maxDepth);
+
+			// Nelder and Mead minimisation procedure
+			min.nelderMead(funct, start, step, ftol, 100);
+
+			// get values of y and z at minimum
+			param = min.getParamValues();
+
+			// Output the results to screen
+			System.out.println("Minimum = " + min.getMinimum());
+			System.out.println("Value of x at the minimum = " + param[0]);
+
+			assertEquals("valid depth", 40, param[0], 1);
 
 		}
 
