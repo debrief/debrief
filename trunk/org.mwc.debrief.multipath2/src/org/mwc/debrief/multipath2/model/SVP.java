@@ -122,6 +122,15 @@ public class SVP
 		return zeroSpeed;
 	}
 
+	/** find the maximum depth
+	 * 
+	 * @return
+	 */
+	public double getMaxDepth()
+	{
+		return _depths[_depths.length-1];
+	}
+	
 	/**
 	 * calculate the weighted average speed between the two depths
 	 * 
@@ -168,13 +177,13 @@ public class SVP
 
 			// did we find one?
 			if (before == -1)
-				throw new RuntimeException(SHALLOW_FAIL);
+				throw new MultiPathModel.CalculationException(SHALLOW_FAIL+ " (" + deepDepth + "m)");
 
 			// now find the point after the deep depth
 			int after = pointAfter(deepDepth);
 
 			if (after == -1)
-				throw new RuntimeException(DEEP_FAIL);
+				throw new MultiPathModel.CalculationException (DEEP_FAIL + " (" + deepDepth + "m)");
 
 			double runningMean = -1;
 			double lastDepth = -1;
@@ -440,7 +449,7 @@ public class SVP
 			}
 			catch (RuntimeException e)
 			{
-				assertEquals("wrong message provided", DEEP_FAIL, e.getMessage());
+				assertTrue("wrong message provided", e.getMessage().startsWith(DEEP_FAIL));
 			}
 
 		}
