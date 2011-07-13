@@ -87,17 +87,17 @@ public class TimeDeltas
 
 
 			StringTokenizer st = new StringTokenizer(line, ",");
-			int year = Integer.valueOf(st.nextToken());
-			int month = Integer.valueOf(st.nextToken());
-			int day = Integer.valueOf(st.nextToken());
-			int hour = Integer.valueOf(st.nextToken());
-			int min = Integer.valueOf(st.nextToken());
-			int sec = Integer.valueOf(st.nextToken());
-			int milli = Integer.valueOf(st.nextToken());
+			int year = Integer.valueOf(st.nextToken().trim());
+			int month = Integer.valueOf(st.nextToken().trim());
+			int day = Integer.valueOf(st.nextToken().trim());
+			int hour = Integer.valueOf(st.nextToken().trim());
+			int min = Integer.valueOf(st.nextToken().trim());
+			int sec = Integer.valueOf(st.nextToken().trim());
+			int milli = Integer.valueOf(st.nextToken().trim());
 
-			double delay = Double.valueOf(st.nextToken());
+			double delay = Double.valueOf(st.nextToken().trim());
 			@SuppressWarnings("unused")
-			double strength = Double.valueOf(st.nextToken());
+			double strength = Double.valueOf(st.nextToken().trim());
 
 			// do the time
 			GregorianCalendar cal2 = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
