@@ -6868,9 +6868,11 @@ Platform C,-551</screen></para>
                 </listitem>
 
                 <listitem>
-                  <para>A SVP (Sound Velocity Profile) file for the location
-                  (using the file format defined <link
-                  linkend="multi_data_svp">here</link>)</para>
+                  <para>A SVP (Sound Velocity Profile) file for the location (using the file format
+                    defined in <xref linkend="multi_data_svp"/> ). The maximum depth of the SVP is
+                    interpreted as the depth of the water column: the depth slider is uses this
+                    value as its maximum, and it is used as the maximum permissible value in the
+                    optimisation algorithm. </para>
                 </listitem>
 
                 <listitem>
