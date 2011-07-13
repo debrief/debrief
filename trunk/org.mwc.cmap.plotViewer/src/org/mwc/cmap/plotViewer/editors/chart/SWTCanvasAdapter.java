@@ -715,7 +715,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			// translate the polygon to SWT format
 			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
-			_theDest.drawPolygon(poly);
+			if (poly != null)
+				if (poly.length > 0)
+					_theDest.drawPolygon(poly);
 		}
 	}
 
@@ -947,7 +949,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 	public final void endDraw(final Object theVal)
 	{
-//		_theDest = null;
+		// _theDest = null;
 
 		// and forget the line width
 		_lineWidth = UNSET_LINE_WIDTH;
