@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/kryonet-1.04/asm-3.3.1.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-1.04/kryo-1.04.jar"/>
-	<classpathentry kind="lib" path="libs/kryonet-1.04/kryonet-1.04.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-1.04/minlog-1.2.jar"/>
 	<classpathentry kind="lib" path="libs/kryonet-1.04/reflectasm-1.01.jar"/>
 	<classpathentry kind="output" path="bin"/>
