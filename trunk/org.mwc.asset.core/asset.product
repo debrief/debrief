@@ -97,9 +97,9 @@
    </plugins>
 
    <features>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.164"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.28"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.137"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.138"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.165"/>
    </features>
 
 
