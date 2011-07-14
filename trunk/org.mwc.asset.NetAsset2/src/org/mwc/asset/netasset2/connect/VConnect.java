@@ -312,7 +312,8 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				partTable.setEnabled(false);
+				if (!partTable.isDisposed())
+					partTable.setEnabled(false);
 			}
 		});
 	}
@@ -325,7 +326,8 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				partTable.setEnabled(true);
+				if (!partTable.isDisposed())
+					partTable.setEnabled(true);
 			}
 		});
 	}
@@ -333,12 +335,14 @@ public class VConnect extends Composite implements IVConnect
 	@Override
 	public void enableDisconnect()
 	{
-		btnDisconnect.setEnabled(true);
+		if (!btnDisconnect.isDisposed())
+			btnDisconnect.setEnabled(true);
 	}
 
 	@Override
 	public void disableDisconnect()
 	{
-		btnDisconnect.setEnabled(false);
+		if (!btnDisconnect.isDisposed())
+			btnDisconnect.setEnabled(false);
 	}
 }
