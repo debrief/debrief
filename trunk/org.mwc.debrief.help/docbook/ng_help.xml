@@ -1921,7 +1921,7 @@ and so on....</programlisting></para>
             </screenshot>
           </figure>
 
-          <para xml:id="DotsConstraints">For the track-shifting to work, your
+          <para>For the track-shifting to work, your
           data must be configured as follows:<orderedlist>
               <listitem>
                 <para>You must have a Debrief plot open (duh)</para>
@@ -7351,7 +7351,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           Debrief automatically displays the <guilabel>Bearing
           Residuals</guilabel> view, which displays bearing residual data -
           subject to the constraints listed earlier in <xref
-          linkend="DotsConstraints" />(with the TMA Segment present as the
+            linkend="stacked_dots_view" /> (with the TMA Segment present as the
           secondary track). If your data contains frequency data then you can
           open the <guilabel>Frequency Residuals</guilabel> view, which
           display actual, and calculated frequencies (based on the selected
