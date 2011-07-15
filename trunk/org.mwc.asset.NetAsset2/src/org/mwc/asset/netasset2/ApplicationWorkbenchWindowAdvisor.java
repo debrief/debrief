@@ -23,6 +23,9 @@ import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.asset.netasset2.time.IVTimeControl;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
+import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.minlog.Log.Logger;
+
 import ASSET.ScenarioType;
 import ASSET.Scenario.MultiScenarioLister;
 
@@ -46,6 +49,16 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		{
 			Activator.logError(Status.ERROR, "Failed to create network model", e);
 		}
+		
+		Logger logger = new Logger(){
+
+			@Override
+			public void log(int level, String category, String message, Throwable ex)
+			{
+				Activator.logError(level, message, ex);
+			}};
+		Log.setLogger(logger );
+		Log.set(Log.LEVEL_TRACE);
 	}
 
 	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer)
