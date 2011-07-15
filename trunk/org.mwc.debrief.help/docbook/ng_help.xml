@@ -623,14 +623,14 @@
             <colspec colname="col1" colnum="2" colwidth="1.5*" />
 
             <tbody>
-              <row xml:id="mwc">
+              <row>
                 <entry><para><inlinemediaobject>
                     <imageobject>
                       <imagedata fileref="figures/mwc_crest.gif" width="100"></imagedata>
                     </imageobject>
                   </inlinemediaobject></para></entry>
 
-                <entry xml:id="project_sponsor"><para xml:id="MWC">Debrief
+                <entry xml:id="project_sponsor"><para>Debrief
                 project sponsor. <address>
 <personname>Lt Cdr Bob Mannion RN</personname>
 <otheraddr>Maritime Warfare Centre</otheraddr>
@@ -2670,7 +2670,7 @@ and so on....</programlisting></para>
 
           <para>Track data can arrive at Debrief in vary degrees of quality.
           Traditionally MWC pre-process track data to remove jumps and
-          generally smooth the data (see <xref linkend="MWC" />). The 2009
+          generally smooth the data. The 2009
           Single Sided Reconstruction extensions (see <xref
           linkend="TwoThouOnwards" />) added functionality to Debrief to
           perform elementary track operations, including smoothing and removal
