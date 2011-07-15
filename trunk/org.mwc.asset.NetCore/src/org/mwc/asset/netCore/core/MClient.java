@@ -10,7 +10,8 @@ import org.mwc.asset.netCore.common.Network.GetScenarios;
 import org.mwc.asset.netCore.common.Network.LightScenario;
 import org.mwc.asset.netCore.common.Network.ListenPart;
 import org.mwc.asset.netCore.common.Network.ListenScen;
-import org.mwc.asset.netCore.common.Network.PartUpdate;
+import org.mwc.asset.netCore.common.Network.PartDetection;
+import org.mwc.asset.netCore.common.Network.PartMovement;
 import org.mwc.asset.netCore.common.Network.ReleasePart;
 import org.mwc.asset.netCore.common.Network.ScenControl;
 import org.mwc.asset.netCore.common.Network.ScenUpdate;
@@ -119,7 +120,6 @@ public class MClient implements IMClient
 		final ParticipantMovedListener _mover;
 		@SuppressWarnings("unused")
 		final ParticipantDecidedListener _decider;
-		@SuppressWarnings("unused")
 		final ParticipantDetectedListener _detector;
 
 		public PartListener(ParticipantMovedListener mover,
@@ -150,7 +150,7 @@ public class MClient implements IMClient
 			@Override
 			public void received(Connection connection, Object object)
 			{
-				PartUpdate pu = (PartUpdate) object;
+				PartMovement pu = (PartMovement) object;
 
 				String index = pu.scenario + pu.id;
 				PartListener pl = _partListeners.get(index);
@@ -165,7 +165,27 @@ public class MClient implements IMClient
 				}
 			}
 		};
-		_model.addListener(new PartUpdate().getClass(), mover);
+		_model.addListener(new PartMovement().getClass(), mover);
+		Listener detector = new Listener()
+		{
+			@Override
+			public void received(Connection connection, Object object)
+			{
+				PartDetection pu = (PartDetection) object;
+
+				String index = pu.scenario + pu.id;
+				PartListener pl = _partListeners.get(index);
+				if (pl != null)
+				{
+					pl._detector.newDetections(pu.detections);
+				}
+				else
+				{
+					System.err.println("LISTENER NOT FOUND FOR:" + index);
+				}
+			}
+		};
+		_model.addListener(new PartDetection().getClass(), detector);
 
 		Listener stepL = new Listener()
 		{

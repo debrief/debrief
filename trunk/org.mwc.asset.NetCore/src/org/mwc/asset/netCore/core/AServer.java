@@ -12,7 +12,8 @@ import org.mwc.asset.netCore.common.Network.GetScenarios;
 import org.mwc.asset.netCore.common.Network.LightScenario;
 import org.mwc.asset.netCore.common.Network.ListenPart;
 import org.mwc.asset.netCore.common.Network.ListenScen;
-import org.mwc.asset.netCore.common.Network.PartUpdate;
+import org.mwc.asset.netCore.common.Network.PartDetection;
+import org.mwc.asset.netCore.common.Network.PartMovement;
 import org.mwc.asset.netCore.common.Network.ReleasePart;
 import org.mwc.asset.netCore.common.Network.ScenControl;
 import org.mwc.asset.netCore.common.Network.ScenUpdate;
@@ -24,6 +25,8 @@ import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.UserControl;
+import ASSET.Models.Detection.DetectionList;
+import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.MultiScenarioLister;
@@ -136,7 +139,7 @@ public class AServer
 
 	}
 
-	protected class PartListener implements ParticipantMovedListener
+	protected class PartListener implements ParticipantMovedListener, ParticipantDetectedListener
 	{
 		private final Connection _conn;
 		private final ParticipantType _part;
@@ -152,15 +155,25 @@ public class AServer
 			_part = part;
 			_scenario = scenario;
 			_part.addParticipantMovedListener(this);
+			_part.addParticipantDetectedListener(this);
 		}
 
 		@Override
 		public void moved(Status newStatus)
 		{
 			// ok, send out the movement details
-			PartUpdate pu = new PartUpdate(_partId, newStatus, _scenario);
+			PartMovement pu = new PartMovement(_partId, _scenario, newStatus);
 			_conn.sendTCP(pu);
 		}
+		
+		@Override
+		public void newDetections(DetectionList detections)
+		{
+			PartDetection pd = new PartDetection(_partId, _scenario, detections);
+			_conn.sendTCP(pd);
+		}
+
+
 
 		@Override
 		public void restart(ScenarioType scenario)

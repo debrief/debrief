@@ -4,8 +4,12 @@ import java.util.Vector;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Category;
 import ASSET.Participants.Status;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
@@ -40,11 +44,16 @@ public class Network
 		kryo.register(Category.class);
 		kryo.register(ListenPart.class);
 		kryo.register(StopListenPart.class);
-		kryo.register(PartUpdate.class);
+		kryo.register(PartMovement.class);
+		kryo.register(PartDetection.class);
+		kryo.register(DetectionList.class);
+		kryo.register(TimePeriod.class);
+		kryo.register(DetectionEvent.class);
 		kryo.register(DemStatus.class);
 		kryo.register(ReleasePart.class);
 		kryo.register(WorldSpeed.class);
 		kryo.register(WorldLocation.class);
+		kryo.register(WorldDistance.class);
 		kryo.register(Status.class);
 	}
 
@@ -204,23 +213,39 @@ public class Network
 
 	}
 
-	public static class PartUpdate
+	public static class PartDetection
+	{
+		public int id;
+		public String scenario;
+		public DetectionList detections;
+
+		public PartDetection()
+		{
+		};
+
+		public PartDetection(int id, String scenario, DetectionList detections)
+		{
+			this.id = id;
+			this.scenario = scenario;
+			this.detections = detections;
+		}
+	}
+	public static class PartMovement
 	{
 		public int id;
 		public Status lStatus;
 		public String scenario;
 
-		public PartUpdate()
+		public PartMovement()
 		{
 		};
 
-		public PartUpdate(int id, Status status, String scenario)
+		public PartMovement(int id, String scenario, Status status)
 		{
 			this.id = id;
 			this.scenario = scenario;
 			lStatus = status;
 		}
-
 	}
 
 	public static class LightParticipant

@@ -15,6 +15,8 @@ import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.Movement.Wander;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.SurfaceMovementCharacteristics;
+import ASSET.Models.Sensor.Cookie.TypedCookieSensor;
+import ASSET.Models.Sensor.Cookie.TypedCookieSensor.TypedRangeDoublet;
 import ASSET.Models.Vessels.Surface;
 import ASSET.Participants.Category;
 import ASSET.Participants.CoreParticipant;
@@ -364,23 +366,32 @@ public class CoreTest extends junit.framework.TestCase
 			 */
 		private static final long serialVersionUID = 1L;
 
-		public MyPart(int id)
+		public MyPart(int id, String force)
 		{
 			super(id);
 			setName("p" + id);
-			this.setCategory(new Category(Category.Force.BLUE,
-					Category.Environment.SURFACE, Category.Type.FRIGATE));
+			this.setCategory(new Category(force, Category.Environment.SURFACE,
+					Category.Type.FRIGATE));
 			WorldLocation centre = new WorldLocation(12, 12, 2);
 			WorldDistance area = new WorldDistance(12, WorldDistance.NM);
 			DecisionType wander = new Wander(centre, area);
 			wander.setName("DefaultWander");
 			this.setDecisionModel(wander);
 			Status newStat = new Status(12, 0);
-			newStat.setLocation(new WorldLocation(11, 11, 11));
+			newStat.setLocation(new WorldLocation(11 + Math.random() * 0.23,
+					11 - Math.random() * 0.23, 11));
 			newStat.setCourse(12);
 			newStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
 			setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
 			this.setStatus(newStat);
+
+			Vector<TypedRangeDoublet> rangeDoublets = new Vector<TypedRangeDoublet>();
+			rangeDoublets.add(new TypedRangeDoublet(null, new WorldDistance(10,
+					WorldDistance.NM)));
+			// and a sensor
+			TypedCookieSensor sensor = new TypedCookieSensor(id * 30, rangeDoublets);
+			this.addSensor(sensor);
+
 		}
 	}
 
@@ -452,15 +463,15 @@ public class CoreTest extends junit.framework.TestCase
 
 			CoreScenario scen = new MyScen();
 			scen.setName("aaa");
-			testParticipant = new MyPart(12);
-			CoreParticipant cp2 = new MyPart(13);
-			CoreParticipant cp3 = new MyPart(14);
-			CoreParticipant cp4 = new MyPart(22);
-			CoreParticipant cp5 = new MyPart(23);
-			CoreParticipant cp6 = new MyPart(24);
-			CoreParticipant cp7 = new MyPart(32);
-			CoreParticipant cp8 = new MyPart(33);
-			CoreParticipant cp9 = new MyPart(34);
+			testParticipant = new MyPart(12, Category.Force.RED);
+			CoreParticipant cp2 = new MyPart(13, Category.Force.BLUE);
+			CoreParticipant cp3 = new MyPart(14, Category.Force.BLUE);
+			CoreParticipant cp4 = new MyPart(22, Category.Force.RED);
+			CoreParticipant cp5 = new MyPart(23, Category.Force.BLUE);
+			CoreParticipant cp6 = new MyPart(24, Category.Force.BLUE);
+			CoreParticipant cp7 = new MyPart(32, Category.Force.BLUE);
+			CoreParticipant cp8 = new MyPart(33, Category.Force.RED);
+			CoreParticipant cp9 = new MyPart(34, Category.Force.BLUE);
 			scen.addParticipant(testParticipant.getId(), testParticipant);
 			scen.addParticipant(cp2.getId(), cp2);
 			scen.addParticipant(cp3.getId(), cp3);
