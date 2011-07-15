@@ -80,6 +80,11 @@ public class WorldDistance implements Serializable
   // constructor
   /////////////////////////////////////////////////////////////////
 
+  /** no-op constructor created in support of Kryo networking
+   * 
+   */
+  protected WorldDistance(){};
+  
   /**
    * normal constructor
    *

@@ -146,7 +146,12 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
   ////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////
-
+  
+  /** no-op constructor created in support of Kryo networking
+   * 
+   */
+  protected DetectionEvent(){};
+  		 
 
   /**
    * Constructor
