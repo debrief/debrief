@@ -37,8 +37,8 @@
 
     <pubdate>Summer 2011</pubdate>
 
-    <abstract>
-      <title xml:id="contact_details">Contact details</title>
+    <abstract xml:id="contact_details">
+      <title>Contact details</title>
 
       <para>Should you wish to learn more about
       <application>Debrief</application> please contact one of the
@@ -4411,7 +4411,7 @@ and so on....</programlisting></para>
 
                   <entry colname="col2">Whether to plot absolute or relative
                   times (used when analysing time-zero data). See <xref
-                  linkend="show_time_vars_title" /> .</entry>
+                  linkend="show_time_vars" /> .</entry>
                 </row>
 
                 <row>
@@ -4481,8 +4481,8 @@ and so on....</programlisting></para>
           redraws itself automatically as the time in the Tote changes.</para>
         </sect2>
 
-        <sect2 xml:id="show_time_vars_tZero">
-          <title xml:id="show_time_vars_title">Analysing time-zero data in
+        <sect2>
+          <title>Analysing time-zero data in
           time-variable plot</title>
 
           <para>By default the <indexterm>
@@ -4611,10 +4611,8 @@ and so on....</programlisting></para>
           <application>Debrief</application> installation directory.</para>
 
           <para>Also, don't forget that time-variable graphs produced by the
-          Track-Time toolbox (<xref linkend="track_toolbox" />)can be exported
-          to WMF as well, as described in <xref linkend="show_time_vars" />,
-          titled <xref endterm="show_time_vars_title"
-          linkend="show_time_vars" /> .</para>
+          Track-Time toolbox (see <xref linkend="track_toolbox" />) can be exported
+          to WMF as well, as described in <xref linkend="show_time_vars" />.</para>
         </sect2>
       </sect1>
 
