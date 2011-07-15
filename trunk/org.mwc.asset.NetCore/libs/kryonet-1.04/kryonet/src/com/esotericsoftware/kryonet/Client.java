@@ -419,8 +419,9 @@ public class Client extends Connection implements EndPoint {
 				byte[] ip = address.getAddress();
 				ip[3] = -1; // 255.255.255.0
 				socket.send(new DatagramPacket(data, data.length, InetAddress.getByAddress(ip), udpPort));
-				ip[2] = -1; // 255.255.0.0
-				socket.send(new DatagramPacket(data, data.length, InetAddress.getByAddress(ip), udpPort));
+				// IM: this next line thows a wobbly on our LAN.  don't bother sending it
+//				ip[2] = -1; // 255.255.0.0
+//				socket.send(new DatagramPacket(data, data.length, InetAddress.getByAddress(ip), udpPort));
 			}
 		}
 		if (DEBUG) debug("kryonet", "Broadcasted host discovery on port: " + udpPort);
