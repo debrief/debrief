@@ -168,7 +168,8 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				listServers.setEnabled(false);
+				if (!listServers.isDisposed())
+					listServers.setEnabled(false);
 			}
 		});
 	}
@@ -181,7 +182,8 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				listServers.setEnabled(true);
+				if (!listServers.isDisposed())
+					listServers.setEnabled(true);
 			}
 		});
 	}
@@ -194,7 +196,8 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				listScenarios.setEnabled(false);
+				if (!listScenarios.isDisposed())
+					listScenarios.setEnabled(false);
 			}
 		});
 	}
@@ -207,7 +210,8 @@ public class VConnect extends Composite implements IVConnect
 			@Override
 			public void run()
 			{
-				listScenarios.setEnabled(true);
+				if (!listScenarios.isDisposed())
+					listScenarios.setEnabled(true);
 			}
 		});
 	}
