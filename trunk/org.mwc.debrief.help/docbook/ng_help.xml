@@ -37,7 +37,7 @@
 
     <pubdate>Summer 2011</pubdate>
 
-    <abstract xml:id="contact_details">
+    <abstract>
       <title>Contact details</title>
 
       <para>Should you wish to learn more about
@@ -606,7 +606,7 @@
       </sect2>
     </sect1>
 
-    <sect1 xml:id="users">
+    <sect1 >
       <title>Debrief users</title>
 
       <para>Whilst <application>Debrief</application> was originally developed
@@ -614,7 +614,7 @@
       licensing has led to its adoption by the following organisations and
       companies:</para>
 
-      <para><table frame="none" xml:id="ackUsers">
+      <para><table frame="none"  xml:id="contact_details">
           <title>List of acknowledged Debrief users</title>
 
           <tgroup cols="2">
@@ -2475,7 +2475,7 @@ and so on....</programlisting></para>
               xml:id="layer_manager">
               <title>Layer Manager view</title>
 
-              <screenshot xml:id="layMgr_screenshot">
+              <screenshot>
                 <mediaobject>
                   <imageobject>
                     <imagedata fileref="figures/LayerManagerView.png"
