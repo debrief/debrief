@@ -5,5 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.NetCore"/>
+	<classpathentry kind="lib" path="/org.mwc.asset.NetCore/libs/kryonet-1.04/minlog-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

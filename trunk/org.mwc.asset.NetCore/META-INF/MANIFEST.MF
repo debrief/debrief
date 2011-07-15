@@ -6,20 +6,12 @@ Bundle-Version: 1.0.1
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.120",
  org.mwc.asset.legacy;bundle-version="1.0.30"
-Export-Package: com.esotericsoftware.kryo,
- com.esotericsoftware.kryo.compress,
- com.esotericsoftware.kryo.serialize,
- com.esotericsoftware.kryo.util,
- com.esotericsoftware.kryonet,
- com.esotericsoftware.kryonet.rmi,
- com.esotericsoftware.minlog,
- com.esotericsoftware.reflectasm,
+Export-Package:  com.esotericsoftware.minlog,
  org.mwc.asset.netCore.common,
  org.mwc.asset.netCore.core,
  org.mwc.asset.netCore.test
 Bundle-ClassPath: libs/kryonet-1.04/asm-3.3.1.jar,
  libs/kryonet-1.04/kryo-1.04.jar,
- libs/kryonet-1.04/kryonet-1.04.jar,
  libs/kryonet-1.04/minlog-1.2.jar,
  libs/kryonet-1.04/reflectasm-1.01.jar,
  .
