@@ -15,10 +15,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="lib" path="/org.mwc.asset.NetCore/libs/kryonet-1.04/asm-3.3.1.jar"/>
-	<classpathentry kind="lib" path="/org.mwc.asset.NetCore/libs/kryonet-1.04/kryo-1.04.jar"/>
-	<classpathentry kind="lib" path="/org.mwc.asset.NetCore/libs/kryonet-1.04/kryonet-1.04.jar"/>
-	<classpathentry kind="lib" path="/org.mwc.asset.NetCore/libs/kryonet-1.04/minlog-1.2.jar"/>
-	<classpathentry kind="lib" path="/org.mwc.asset.NetCore/libs/kryonet-1.04/reflectasm-1.01.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
