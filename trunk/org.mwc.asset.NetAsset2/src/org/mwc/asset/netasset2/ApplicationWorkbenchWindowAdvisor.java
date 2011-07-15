@@ -23,11 +23,11 @@ import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.asset.netasset2.time.IVTimeControl;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
-import com.esotericsoftware.minlog.Log;
-import com.esotericsoftware.minlog.Log.Logger;
-
 import ASSET.ScenarioType;
 import ASSET.Scenario.MultiScenarioLister;
+
+import com.esotericsoftware.minlog.Log;
+import com.esotericsoftware.minlog.Log.Logger;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 {
@@ -39,7 +39,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
 	{
 		super(configurer);
-		
+
 		try
 		{
 			MClient model = new MClient();
@@ -49,15 +49,17 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		{
 			Activator.logError(Status.ERROR, "Failed to create network model", e);
 		}
-		
-		Logger logger = new Logger(){
+
+		Logger logger = new Logger()
+		{
 
 			@Override
 			public void log(int level, String category, String message, Throwable ex)
 			{
-				Activator.logError(level, message, ex);
-			}};
-		Log.setLogger(logger );
+				Activator.logError(Status.INFO, message, ex);
+			}
+		};
+		Log.setLogger(logger);
 		Log.set(Log.LEVEL_TRACE);
 	}
 
@@ -79,7 +81,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	public void postWindowOpen()
 	{
 		super.postWindowOpen();
-		
+
 		// get ourselves a server
 		doDummyWork();
 
@@ -90,15 +92,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		triggerListeners();
 
 	}
-	
-	
 
 	@Override
 	public boolean preWindowShellClose()
 	{
 		// ok, now shut down the server-et-al
 		_presenter.disconnect();
-		
+
 		return super.preWindowShellClose();
 	}
 
@@ -171,7 +171,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 				});
 
 	}
-
 
 	private void doDummyWork()
 	{

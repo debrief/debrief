@@ -38,16 +38,25 @@ public class VConnect extends Composite implements IVConnect
 	private List listScenarios;
 	private TableViewer partViewer;
 	private Button btnDisconnect;
+	private Button btnManual;
+	private StringProvider _stringProvider;
 
 	/**
 	 * Create the composite.
 	 * 
 	 * @param parent
 	 * @param style
+	 * @param stringProvider
 	 */
 	public VConnect(Composite parent, int style)
 	{
+		this(parent, style, null);
+	}
+
+	public VConnect(Composite parent, int style, StringProvider stringProvider)
+	{
 		super(parent, style);
+		_stringProvider = stringProvider;
 		setLayout(null);
 
 		Group grpConnection = new Group(this, SWT.NONE);
@@ -90,12 +99,12 @@ public class VConnect extends Composite implements IVConnect
 
 		listServerViewer = new ListViewer(grpConnection, SWT.BORDER | SWT.V_SCROLL);
 		listServers = listServerViewer.getList();
-		listServers.setBounds(10, 41, 90, 66);
+		listServers.setBounds(10, 41, 100, 66);
 
 		listScenarioViewer = new ListViewer(grpConnection, SWT.BORDER
 				| SWT.V_SCROLL);
 		listScenarios = listScenarioViewer.getList();
-		listScenarios.setBounds(106, 41, 140, 66);
+		listScenarios.setBounds(116, 41, 130, 66);
 
 		Button button = new Button(grpConnection, SWT.NONE);
 		button.setText("Ping");
@@ -105,12 +114,32 @@ public class VConnect extends Composite implements IVConnect
 		btnDisconnect.setText("Disconnect");
 		btnDisconnect.setBounds(160, 13, 90, 28);
 
+		btnManual = new Button(grpConnection, SWT.NONE);
+		btnManual.setBounds(63, 0, 67, 28);
+		btnManual.setText("Manual");
+
 	}
 
 	@Override
 	protected void checkSubclass()
 	{
 		// Disable the check that prevents subclassing of SWT components
+	}
+
+	@Override
+	public void addManualListener(final ClickHandler handler)
+	{
+		btnManual.addSelectionListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				handler.clicked();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
 	}
 
 	@Override
@@ -348,5 +377,11 @@ public class VConnect extends Composite implements IVConnect
 	{
 		if (!btnDisconnect.isDisposed())
 			btnDisconnect.setEnabled(false);
+	}
+
+	@Override
+	public String getString(String title, String message)
+	{
+		return _stringProvider.getString(title, message);
 	}
 }

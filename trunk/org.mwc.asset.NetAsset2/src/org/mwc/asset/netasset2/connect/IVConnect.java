@@ -16,6 +16,17 @@ public interface IVConnect
 	{
 		public void clicked();
 	};
+	
+	public static interface StringProvider
+	{
+		/** get a string from the user
+		 * 
+		 * @param title
+		 * @param message
+		 * @return
+		 */
+		public String getString(String title, String message);
+	}
 
 	public static interface ServerSelected
 	{
@@ -65,6 +76,10 @@ public interface IVConnect
 	public void setScenarios(Vector<LightScenario> results);
 
 	void setServers(List<InetAddress> adds);
+
+	void addManualListener(ClickHandler handler);
+
+	String getString(String title, String message);
 
 
 }

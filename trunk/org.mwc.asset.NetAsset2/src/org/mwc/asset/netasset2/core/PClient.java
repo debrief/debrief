@@ -2,6 +2,7 @@ package org.mwc.asset.netasset2.core;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -21,6 +22,7 @@ import org.mwc.asset.netCore.common.Network.LightParticipant;
 import org.mwc.asset.netCore.common.Network.LightScenario;
 import org.mwc.asset.netCore.common.Network.ScenControl;
 import org.mwc.asset.netCore.core.IMClient;
+import org.mwc.asset.netasset2.Activator;
 import org.mwc.asset.netasset2.connect.IVConnect;
 import org.mwc.asset.netasset2.connect.IVConnect.ClickHandler;
 import org.mwc.asset.netasset2.connect.IVConnect.ParticipantSelected;
@@ -55,7 +57,6 @@ public class PClient implements ScenarioSteppedListener
 	public PClient(IMClient model)
 	{
 		_model = model;
-
 		_partListener = new CombinedListener();
 
 		// and the list of UI elements
@@ -426,6 +427,14 @@ public class PClient implements ScenarioSteppedListener
 				pinged();
 			}
 		});
+		
+		view.addManualListener(new ClickHandler(){
+
+			@Override
+			public void clicked()
+			{
+				getHost();
+			}});
 
 		view.addDisconnectListener(new ClickHandler()
 		{
@@ -533,6 +542,29 @@ public class PClient implements ScenarioSteppedListener
 				return null;
 			}
 		});
+	}
+
+	protected void getHost()
+	{
+		IVConnect conny;
+		// have we got a connector?
+		if(_connectors.size() >0)
+		{
+			conny = _connectors.firstElement();
+			String address = conny.getString("Connect to ASSET Server", "Please type in IP address");
+			if(address != null)
+			{
+				try
+				{
+					InetAddress in =  InetAddress.getByName(address);
+					serverSelected(in);
+				}
+				catch (UnknownHostException e)
+				{
+					Activator.logError(org.eclipse.core.runtime.Status.ERROR , "Whilst connecting to ASSET server", e);
+				}
+			}
+		}
 	}
 
 	public void disconnect()

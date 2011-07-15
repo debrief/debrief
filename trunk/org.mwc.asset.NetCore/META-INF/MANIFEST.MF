@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NetCore
 Bundle-SymbolicName: org.mwc.asset.NetCore
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.120",
  org.mwc.asset.legacy;bundle-version="1.0.30"
