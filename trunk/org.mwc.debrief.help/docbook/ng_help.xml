@@ -37,8 +37,8 @@
 
     <pubdate>Summer 2011</pubdate>
 
-    <abstract xml:id="contact_details">
-      <title>Contact details</title>
+    <abstract>
+      <title xml:id="contact_details">Contact details</title>
 
       <para>Should you wish to learn more about
       <application>Debrief</application> please contact one of the
@@ -59,7 +59,7 @@
           </address></para>
       </formalpara>
 
-      <formalpara>
+      <formalpara  xml:id="project_manager">
         <title>Debrief Project Manager</title>
 
         <para><address>
@@ -491,7 +491,7 @@
             <primary>Open Source</primary>
           </indexterm>Open Source status. The adoption of the Open Source
         licensing model affects MWC in a number of ways: <orderedlist>
-            <title>List of Debrief adopters</title>
+            <title>Debrief's Open Source benefits</title>
 
             <listitem>
               <para>Organisations that are currently using
@@ -547,7 +547,7 @@
         <title>Debrief 2001 onwards</title>
 
         <para>At the end of 2000, Ian Mayo, the developer and project manager
-        (see <xref linkend="users" />) of <application>Debrief</application>,
+          (see <xref linkend="contact_details" />) of <application>Debrief</application>,
         left full-time employment at the Maritime Warfare Centre to setup his
         own software development consultancy, <indexterm>
             <primary>PlanetMayo</primary>
@@ -573,7 +573,7 @@
         <indexterm>
             <primary>UDT</primary>
           </indexterm>Undersea Defence Technology 2002 in La Spezia, Italy.
-        The paper itself is available for viewing at the: <link
+        The paper itself is available for viewing at the <link
         xlink:href="http://www.debrief.info"
         xmlns:xlink="http://www.w3.org/1999/xlink">Debrief web
         site</link>.</para>
@@ -647,7 +647,7 @@
                     </imageobject>
                   </inlinemediaobject></para></entry>
 
-                <entry xml:id="project_manager"><para>Debrief project manager.
+                <entry><para>Debrief project manager.
                 <address>
 <personname>Mr Ian Mayo</personname>
 <street>Marlborough Building, HMS Collingwood</street>
@@ -852,30 +852,6 @@ Naval Undersea Warfare Center (NUWC)
           next to <guilabel>Debrief-Installation-Set</guilabel>. Then click on
           <guilabel>install.exe</guilabel> for a windows version of Debrief,
           or <guilabel>install.bin</guilabel> for a unix version.</para>
-
-          <tip>
-            <para>If you already have <application>DebriefNG</application>
-            installed, but just want to install an update, look at the files
-            listed in the <guilabel>Debrief-Updates</guilabel> section of the
-            <guilabel>Latest File Releases</guilabel>. For each new release of
-            Debrief, the significant files are located individually in the
-            <guilabel>Latest File Releases</guilabel>. If you do not wish to
-            download the full Debrief installation, just download these
-            individual files and replace your existing copies with these. It
-            is important to download and use all of the files provided to
-            ensure compatibility.</para>
-          </tip>
-
-          <note>
-            <para>Debrief is also available in source and binary distributions
-            from the SourceForge web-site, in the Debrief-Developer package.
-            These distributions are suited to the software developer wishing
-            to learn more about the structure of Debrief or wishing to extend
-            its functionality. Once either of these distributions are
-            downloaded, unzip them and examine the
-            <filename>readme.txt</filename> file in the top level
-            directory.</para>
-          </note>
         </sect2>
 
         <sect2 xml:id="where_to_get_help">
@@ -931,9 +907,9 @@ Naval Undersea Warfare Center (NUWC)
           <title>Debrief on CD-Rom</title>
 
           <note>
-            <para>If you are unable to download Debrief from the Internet,
-            please contact the Project Manager (see <xref linkend="users" />),
-            and a copy of Debrief on CD-ROM will be forwarded to you.</para>
+            <para>If you are unable to download Debrief from the Internet, please contact the
+              Project Manager (see <xref linkend="contact_details"/>), and a copy of Debrief on
+              CD-ROM will be forwarded to you.</para>
           </note>
         </sect2>
       </sect1>
@@ -2464,7 +2440,7 @@ and so on....</programlisting></para>
           <para>Debrief provides a <emphasis>builder</emphasis> dialog to
           assist in the creation of buoyfields. The creation of <glossterm
           linkend="g_buoyfields">buoyfields</glossterm> is covered later in
-          Handling Buoyfields (see <xref />).</para>
+            Handling Buoyfields (see <xref linkend="handling_buoyfields"/>).</para>
         </sect2>
 
         <sect2 xml:id="general_editing">
@@ -3866,17 +3842,14 @@ and so on....</programlisting></para>
           machine.</para>
 
           <note>
-            <para><application>Debrief</application> contains a set of 3-d
-            models for vessels most frequently analysed at the <glossterm
-            linkend="g_MWC">MWC</glossterm>. If you require a model not
-            currently available, contact the Debrief Project Manager (see
-            <xref linkend="users" />), and it will be added to the queue. If
-            you already hold a copy of the model (as a
-            <filename>.wrl</filename> file in <acronym>VRML</acronym> format),
-            e-mail it in, which will speed up its inclusion. If you select a
-            symbol-type for which there isn't currently a model,
-            <application>Debrief</application> uses a correctly-oriented cone
-            shape to represent the current location and course.</para>
+            <para><application>Debrief</application> contains a set of 3-d models for vessels most
+              frequently analysed at the <glossterm linkend="g_MWC">MWC</glossterm>. If you require
+              a model not currently available, contact the Debrief Project Manager (see <xref
+                linkend="contact_details"/>), and it will be added to the queue. If you already hold
+              a copy of the model (as a <filename>.wrl</filename> file in <acronym>VRML</acronym>
+              format), e-mail it in, which will speed up its inclusion. If you select a symbol-type
+              for which there isn't currently a model, <application>Debrief</application> uses a
+              correctly-oriented cone shape to represent the current location and course.</para>
           </note>
 
           <para>Unfortunately there is not any 3-d data in the sample plots
@@ -3940,7 +3913,7 @@ and so on....</programlisting></para>
             <para>Not all objects viewable on the normal 2-d Debrief plot are
             applicable in 3-dimensions, but most are. If one is absent which
             you think would usefully be shown in 3-d then please approach the
-            Debrief Project Manager (see <xref linkend="users" />).
+            Debrief Project Manager (see <xref linkend="contact_details" />).
             Additionally it is not always clear whether a 2-d item (such as a
             labelled annotation) should be visible in 3-d. Such an instance is
             a labelled annotation added to the 2-d plot to help the
@@ -4652,10 +4625,10 @@ and so on....</programlisting></para>
           <title>History</title>
 
           <important>
-            <para>Now that <application>Debrief</application> includes its own
-            3-D viewer, the export to 3-D functionality has been removed.
-            Should you have any significant desire for this functionality to
-            be replaced, please contact the administrator.</para>
+            <para>Now that <application>Debrief</application> includes its own 3-D viewer, the
+              export to 3-D functionality has been removed. Should you have any significant desire
+              for this functionality to be replaced, please contact the project manager (see <xref
+                linkend="contact_details"/>).</para>
           </important>
         </sect2>
       </sect1>
@@ -7523,7 +7496,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
         <para>As of summer 2001 there are around a dozen users registered on
         the news list, with the <application>Debrief</application> Project
-        Manager (see <xref linkend="users" />) publishing news each time a new
+          Manager (see <xref linkend="contact_details" />) publishing news each time a new
         version of <application>Debrief</application> is made available for
         download.</para>
 
@@ -7565,7 +7538,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           word <emphasis>unsubscribe</emphasis> in the subject line followed
           by the password you were provided with at your initial subscription.
           If you have lost your password please make a request to the Project
-          Manager (see <xref linkend="users" />) to be unsubscribed.</para>
+          Manager (see <xref linkend="contact_details" />) to be unsubscribed.</para>
         </sect2>
 
         <sect2 xml:id="web_based_news">
@@ -7706,8 +7679,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           Be warned, because the full install contains the Etopo data set it
           is well over 150 Mb in size. If you aren't able to perform such a
           download, or you need a formal copy for your IS/IT department please
-          send an e-mail justification to the project manager (see <xref
-          linkend="users" />), and a CD-based copy will be forwarded to you
+          send an e-mail request to the project manager (see <xref
+            linkend="contact_details" />), and a CD-based copy will be forwarded to you
           via snail mail.</para>
         </sect2>
 
@@ -7860,7 +7833,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 
           <para>Once you have submitted the report, you should receive an
           e-mail confirmation of the bug-report, followed by an e-mail from
-          the Project Manager (see <xref linkend="users" />), normally
+          the Project Manager (see <xref linkend="contact_details" />), normally
           containing a time-frame for resolution of the bug.</para>
         </sect2>
 
@@ -7876,7 +7849,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           resolution of feature-requests is normally larger than for bugs, but
           if maintenance effort is being performed in a related area of
           <application>Debrief</application>, and the Project Sponsor (see
-          <xref linkend="project_sponsor" />) is supportive, then the new
+            <xref linkend="contact_details" />) is supportive, then the new
           feature should get added quite quickly.</para>
         </sect2>
       </sect1>
@@ -8200,7 +8173,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <para>Th error log may be examined for hints to the problem
           occurring. The error trace may be viewed in a text editor, and may
           be forwarded back to the Project Manager (see <xref
-          linkend="users" />) via post/e-mail/fax as applicable. The file does
+            linkend="contact_details" />) via post/e-mail/fax as applicable. The file does
           not contain any details of the data being edited, but the file may
           still be inspected before transmission</para>
 
@@ -8234,7 +8207,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             then you will have to resort to reading as much of
                             this Help guidance as practical, and then contacting
                             the Project Manager (see <xref
-                            linkend="users" />).</para>
+                              linkend="contact_details" />).</para>
                           </listitem>
                         </itemizedlist></para>
                     </listitem>
