@@ -142,7 +142,10 @@ public class MClient implements IMClient
 		_scenListeners = new HashMap<String, ScenListener>();
 
 		// get ready to ignore i'm alive messages...
-		_model.addListener(new FrameworkMessage.KeepAlive().getClass(), new Listener(){});
+		_model.addListener(new FrameworkMessage.KeepAlive().getClass(),
+				new Listener()
+				{
+				});
 
 		// setup the step listener
 		Listener mover = new Listener()
@@ -157,7 +160,8 @@ public class MClient implements IMClient
 				if (pl != null)
 				{
 					Status newStat = pu.lStatus;
-					pl._mover.moved(newStat);
+					if (pl._mover != null)
+						pl._mover.moved(newStat);
 				}
 				else
 				{
@@ -177,7 +181,8 @@ public class MClient implements IMClient
 				PartListener pl = _partListeners.get(index);
 				if (pl != null)
 				{
-					pl._detector.newDetections(pu.detections);
+					if (pl._detector != null)
+						pl._detector.newDetections(pu.detections);
 				}
 				else
 				{
@@ -310,7 +315,7 @@ public class MClient implements IMClient
 		String index = scenarioName + participantId;
 		_partListeners.remove(index);
 	}
-	
+
 	@Override
 	public void getScenarioList(
 			final Network.AHandler<Vector<LightScenario>> handler)

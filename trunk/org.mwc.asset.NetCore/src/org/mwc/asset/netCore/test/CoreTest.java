@@ -206,7 +206,8 @@ public class CoreTest extends junit.framework.TestCase
 
 		// next, we want to listen to a participant
 		Vector<String> moveLog = new Vector<String>();
-		CombinedListener combi = new CombinedListener(moveLog);
+		Vector<String> detectLog = new Vector<String>();
+		CombinedListener combi = new CombinedListener(moveLog, detectLog);
 		client.listenPart(scen.name, firstPart.id, combi, combi, combi);
 		Thread.sleep(600);
 
@@ -237,6 +238,9 @@ public class CoreTest extends junit.framework.TestCase
 		// check we've seen some mvoement
 		assertEquals("movement detected", 3, moveLog.size());
 		assertTrue("has movement", moveLog.firstElement().startsWith("move"));
+		
+		// and some dtections
+		assertEquals("detections performed", 3, moveLog.size());
 
 		// check the course
 		assertEquals("has correct course", 12d, combi.lastStat.getCourse(), 0.001);
@@ -378,8 +382,8 @@ public class CoreTest extends junit.framework.TestCase
 			wander.setName("DefaultWander");
 			this.setDecisionModel(wander);
 			Status newStat = new Status(12, 0);
-			newStat.setLocation(new WorldLocation(11 + Math.random() * 0.23,
-					11 - Math.random() * 0.23, 11));
+			newStat.setLocation(new WorldLocation(11 + id /100d,
+					11 - id/100d, 11));
 			newStat.setCourse(12);
 			newStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
 			setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
@@ -419,30 +423,32 @@ public class CoreTest extends junit.framework.TestCase
 	private static class CombinedListener implements ParticipantMovedListener,
 			ParticipantDetectedListener, ParticipantDecidedListener
 	{
-		private Vector<String> _items;
+		private Vector<String> moves;
+		private Vector<String> detects;
 		protected Status lastStat;
 
-		public CombinedListener(Vector<String> items)
+		public CombinedListener(Vector<String> movements, Vector<String> detections)
 		{
-			_items = items;
+			moves = movements;
+			detects = detections;
 		}
 
 		@Override
 		public void newDecision(String description, DemandedStatus dem_status)
 		{
-			_items.add("dec:" + description);
+			moves.add("dec:" + description);
 		}
 
 		@Override
 		public void newDetections(DetectionList detections)
 		{
-			_items.add("det:" + detections.size());
+			detects.add("det:" + detections.size());
 		}
 
 		@Override
 		public void moved(Status newStatus)
 		{
-			_items.add("move:" + newStatus.getTime());
+			moves.add("move:" + newStatus.getTime());
 			lastStat = newStatus;
 			System.err
 					.println(newStatus.getTime() + " at:" + newStatus.getLocation());
