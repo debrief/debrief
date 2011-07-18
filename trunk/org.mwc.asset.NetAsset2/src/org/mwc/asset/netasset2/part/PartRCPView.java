@@ -31,7 +31,7 @@ public class PartRCPView extends ViewPart
 		{
 			res = _view;
 		}
-		else if(adapter == IVPartUpdate.class)
+		else if(adapter == IVPartMovement.class)
 		{
 			res = _view;
 		}

@@ -18,12 +18,13 @@ import org.mwc.asset.netCore.test.CoreTest;
 import org.mwc.asset.netasset2.connect.IVConnect;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.part.IVPartControl;
-import org.mwc.asset.netasset2.part.IVPartUpdate;
+import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.asset.netasset2.time.IVTimeControl;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import ASSET.ScenarioType;
+import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Scenario.MultiScenarioLister;
 
 import com.esotericsoftware.minlog.Log;
@@ -60,7 +61,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 			}
 		};
 		Log.setLogger(logger);
-		Log.set(Log.LEVEL_TRACE);
+		Log.set(Log.LEVEL_INFO);
 	}
 
 	public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer)
@@ -160,13 +161,22 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 						_presenter.addPartController((IVPartControl) instance);
 					}
 				});
-		_myPartMonitor.addPartListener(IVPartUpdate.class, PartMonitor.OPENED,
+		_myPartMonitor.addPartListener(IVPartMovement.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object instance,
 							IWorkbenchPart parentPart)
 					{
-						_presenter.addPartUpdater((IVPartUpdate) instance);
+						_presenter.addPartUpdater((IVPartMovement) instance);
+					}
+				});
+		_myPartMonitor.addPartListener(ParticipantDetectedListener.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object instance,
+							IWorkbenchPart parentPart)
+					{
+						_presenter.addPartDetector((ParticipantDetectedListener) instance);
 					}
 				});
 

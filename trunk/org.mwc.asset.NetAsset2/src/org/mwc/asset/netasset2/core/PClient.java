@@ -30,7 +30,7 @@ import org.mwc.asset.netasset2.connect.IVConnect.ScenarioSelected;
 import org.mwc.asset.netasset2.connect.IVConnect.ServerSelected;
 import org.mwc.asset.netasset2.part.IVPartControl;
 import org.mwc.asset.netasset2.part.IVPartControl.NewDemStatus;
-import org.mwc.asset.netasset2.part.IVPartUpdate;
+import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.asset.netasset2.time.IVTimeControl;
 
@@ -51,7 +51,8 @@ public class PClient implements ScenarioSteppedListener
 	private Vector<IVTime> _timeListeners;
 	private Vector<IVTimeControl> _timeControllers;
 	private Vector<IVPartControl> _partControllers;
-	private Vector<IVPartUpdate> _partUpdaters;
+	private Vector<IVPartMovement> _partMovers;
+	private Vector<ParticipantDetectedListener> _partDetectors;
 	private Vector<IVConnect> _connectors;
 
 	public PClient(IMClient model)
@@ -61,7 +62,8 @@ public class PClient implements ScenarioSteppedListener
 
 		// and the list of UI elements
 		_partControllers = new Vector<IVPartControl>();
-		_partUpdaters = new Vector<IVPartUpdate>();
+		_partMovers = new Vector<IVPartMovement>();
+		_partDetectors = new Vector<ParticipantDetectedListener>();
 		_timeListeners = new Vector<IVTime>();
 		_timeControllers = new Vector<IVTimeControl>();
 		_connectors = new Vector<IVConnect>();
@@ -83,20 +85,32 @@ public class PClient implements ScenarioSteppedListener
 		}
 
 		@Override
-		public void newDetections(DetectionList detections)
+		public void newDetections(final DetectionList detections)
 		{
+			// now loop through any participant listeners
+			Iterator<ParticipantDetectedListener> iter = _partDetectors.iterator();
+			while (iter.hasNext())
+			{
+				final ParticipantDetectedListener ivPart = iter.next();
+				Display.getDefault().asyncExec(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						ivPart.newDetections(detections);
+					}
+				});
+			}
 		}
 
 		@Override
 		public void moved(final Status newStatus)
 		{
-			// get the status blocks ready
-
 			// now loop through any participant listeners
-			Iterator<IVPartUpdate> iter = _partUpdaters.iterator();
+			Iterator<IVPartMovement> iter = _partMovers.iterator();
 			while (iter.hasNext())
 			{
-				final IVPartUpdate ivPart = iter.next();
+				final IVPartMovement ivPart = iter.next();
 				Display.getDefault().asyncExec(new Runnable()
 				{
 					@Override
@@ -139,10 +153,10 @@ public class PClient implements ScenarioSteppedListener
 			ivPart.setDemStatusListener(newDemStatusListener);
 		}
 
-		Iterator<IVPartUpdate> iter2 = _partUpdaters.iterator();
+		Iterator<IVPartMovement> iter2 = _partMovers.iterator();
 		while (iter2.hasNext())
 		{
-			final IVPartUpdate ivPart = iter2.next();
+			final IVPartMovement ivPart = iter2.next();
 			ivPart.setParticipant(part.name);
 		}
 
@@ -406,9 +420,14 @@ public class PClient implements ScenarioSteppedListener
 		_partControllers.add(instance);
 	}
 
-	public void addPartUpdater(IVPartUpdate instance)
+	public void addPartDetector(ParticipantDetectedListener listener)
 	{
-		_partUpdaters.add(instance);
+		_partDetectors.add(listener);
+	}
+
+	public void addPartUpdater(IVPartMovement instance)
+	{
+		_partMovers.add(instance);
 	}
 
 	public void addConnector(IVConnect view)
@@ -427,14 +446,16 @@ public class PClient implements ScenarioSteppedListener
 				pinged();
 			}
 		});
-		
-		view.addManualListener(new ClickHandler(){
+
+		view.addManualListener(new ClickHandler()
+		{
 
 			@Override
 			public void clicked()
 			{
 				getHost();
-			}});
+			}
+		});
 
 		view.addDisconnectListener(new ClickHandler()
 		{
@@ -548,20 +569,22 @@ public class PClient implements ScenarioSteppedListener
 	{
 		IVConnect conny;
 		// have we got a connector?
-		if(_connectors.size() >0)
+		if (_connectors.size() > 0)
 		{
 			conny = _connectors.firstElement();
-			String address = conny.getString("Connect to ASSET Server", "Please type in IP address");
-			if(address != null)
+			String address = conny.getString("Connect to ASSET Server",
+					"Please type in IP address");
+			if (address != null)
 			{
 				try
 				{
-					InetAddress in =  InetAddress.getByName(address);
+					InetAddress in = InetAddress.getByName(address);
 					serverSelected(in);
 				}
 				catch (UnknownHostException e)
 				{
-					Activator.logError(org.eclipse.core.runtime.Status.ERROR , "Whilst connecting to ASSET server", e);
+					Activator.logError(org.eclipse.core.runtime.Status.ERROR,
+							"Whilst connecting to ASSET server", e);
 				}
 			}
 		}

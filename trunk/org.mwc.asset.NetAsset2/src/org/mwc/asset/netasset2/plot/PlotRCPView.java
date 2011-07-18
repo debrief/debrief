@@ -4,14 +4,17 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.netasset2.part.IVPartUpdate;
+import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
+
+import ASSET.Participants.ParticipantDetectedListener;
 
 public class PlotRCPView extends ViewPart implements IAdaptable
 {
 	public static final String ID = "org.mwc.asset.NetAsset2.PlotView";
 
-	private IVPartUpdate _view;
+	private IVPartMovement _mover;
+	private ParticipantDetectedListener _detector;
 	private IVTime _timer;
 
 	/**
@@ -20,9 +23,10 @@ public class PlotRCPView extends ViewPart implements IAdaptable
 	 */
 	public void createPartControl(Composite parent)
 	{
-		VPlot plot  = new VPlot(parent, SWT.NONE);
-		_view = plot;
-		_timer =plot;
+		VPlot plot = new VPlot(parent, SWT.NONE);
+		_mover = plot;
+		_detector = plot;
+		_timer = plot;
 	}
 
 	/**
@@ -38,10 +42,15 @@ public class PlotRCPView extends ViewPart implements IAdaptable
 	{
 		Object res = null;
 
-		if (adapter == IVPartUpdate.class)
+		if (adapter == IVPartMovement.class)
 		{
-			res = _view;
-		}else if(adapter == IVTime.class)
+			res = _mover;
+		}
+		else if (adapter == ParticipantDetectedListener.class)
+		{
+			res = _detector;
+		}
+		else if (adapter == IVTime.class)
 		{
 			return _timer;
 		}

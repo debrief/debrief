@@ -22,7 +22,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.mwc.asset.netasset2.Activator;
 import org.mwc.cmap.gridharness.data.WorldSpeed;
 
-public class VPart extends Composite implements IVPartControl, IVPartUpdate
+public class VPart extends Composite implements IVPartControl, IVPartMovement
 {
 	DecimalFormat df2 = new DecimalFormat("0.00");
 	DecimalFormat df0 = new DecimalFormat("0");

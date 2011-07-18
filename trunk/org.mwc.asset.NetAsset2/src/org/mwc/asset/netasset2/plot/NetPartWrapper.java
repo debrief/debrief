@@ -2,17 +2,23 @@ package org.mwc.asset.netasset2.plot;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Status;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class NetPartWrapper implements Layer
 {
@@ -22,13 +28,21 @@ public class NetPartWrapper implements Layer
 	 */
 	private static final long serialVersionUID = 1L;
 	private String _name;
-	private Vector<Status> _history;
 	private WorldArea _myArea;
+	private Vector<DetectionEvent> _detections;
+
+	private HashMap<Long, CompositeStatusHolder> history;
+
+	private static class CompositeStatusHolder
+	{
+		public Status status;
+		public DetectionList detections;
+	}
 
 	public NetPartWrapper(String name)
 	{
 		_name = name;
-		_history = new Vector<Status>();
+		history = new HashMap<Long, CompositeStatusHolder>();
 	};
 
 	@Override
@@ -86,16 +100,38 @@ public class NetPartWrapper implements Layer
 	public void paint(CanvasType dest)
 	{
 		dest.setColor(Color.BLUE);
-		if (_history.size() > 0)
+		Collection<CompositeStatusHolder> values = history.values();
+		Iterator<CompositeStatusHolder> iter = values.iterator();
+		while (iter.hasNext())
 		{
-			// but, we plot all of them.
-			Iterator<Status> iter = _history.iterator();
-			while (iter.hasNext())
+			CompositeStatusHolder comp = iter.next();
+			Status status = comp.status;
+			long time = status.getTime();
+			// ok, draw the positions at this time
+			WorldLocation currentLoc = status.getLocation();
+			Point p2 = new Point( dest.toScreen(currentLoc));
+			dest.drawRect(p2.x, p2.y, 3, 3);
+			
+			DetectionList detList = comp.detections;
+			if(detList != null)
 			{
-				Status status = (Status) iter.next();
-				Point p2 = dest.toScreen(status.getLocation());
-				dest.drawRect(p2.x, p2.y, 3, 3);
+				Iterator<DetectionEvent> dets = detList.iterator();
+				while(dets.hasNext())
+				{
+					DetectionEvent thisD = dets.next();
+					Float brg = thisD.getBearing();
+					if(brg != null)
+					{
+						double brgRads = MWC.Algorithms.Conversions.Degs2Rads(brg);
+						WorldDistance rng = new WorldDistance(20, WorldDistance.NM);
+						WorldDistance depth = new WorldDistance(0, WorldDistance.METRES);
+						WorldLocation otherEnd = currentLoc.add(new WorldVector(brgRads, rng, depth));
+						Point p3 =  dest.toScreen(otherEnd);
+						dest.drawLine(p2.x, p2.y, p3.x, p3.y);
+					}
+				}
 			}
+
 		}
 	}
 
@@ -154,6 +190,18 @@ public class NetPartWrapper implements Layer
 
 	}
 
+	private CompositeStatusHolder getStat(long time)
+	{
+		CompositeStatusHolder stat = history.get(time);
+		if (stat == null)
+		{
+			stat = new CompositeStatusHolder();
+			history.put(time, stat);
+		}
+
+		return stat;
+	}
+
 	public void setStatus(Status status)
 	{
 		WorldLocation loc = status.getLocation();
@@ -162,7 +210,13 @@ public class NetPartWrapper implements Layer
 		else
 			_myArea.extend(loc);
 
-		_history.add(status);
+		getStat(status.getTime()).status = status;
+	}
+
+	public void addDetections(DetectionList dets)
+	{
+		long endTime = dets.getTimeCoverage().getEndDTG().getDate().getTime();
+		getStat(endTime).detections = dets;
 	}
 
 }

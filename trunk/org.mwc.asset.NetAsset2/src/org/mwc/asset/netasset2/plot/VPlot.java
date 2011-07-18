@@ -5,10 +5,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.mwc.asset.netasset2.part.IVPartUpdate;
+import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
+import ASSET.ScenarioType;
+import ASSET.Models.Detection.DetectionList;
+import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.Status;
 import MWC.GUI.Layers;
 import swing2swt.layout.BorderLayout;
@@ -16,7 +19,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ToolItem;
 
-public class VPlot extends Composite implements IVPartUpdate, IVTime
+public class VPlot extends Composite implements IVPartMovement, IVTime, ParticipantDetectedListener
 {
 
 	/**
@@ -146,5 +149,18 @@ public class VPlot extends Composite implements IVPartUpdate, IVTime
 					_myChart.rescale();
 			}
 		});
+	}
+
+	@Override
+	public void newDetections(DetectionList detections)
+	{
+		myPart.addDetections(detections);
+	}
+
+	@Override
+	public void restart(ScenarioType scenario)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
