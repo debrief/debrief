@@ -99,7 +99,7 @@
    <features>
       <feature id="org.mwc.asset.core.feature" version="1.0.29"/>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.140"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.166"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.167"/>
    </features>
 
 
