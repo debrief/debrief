@@ -358,7 +358,7 @@ public class CoreTest extends junit.framework.TestCase
 	{
 		public MyScen()
 		{
-			this.setScenarioStepTime(new Duration(2, Duration.MINUTES));
+			this.setScenarioStepTime(new Duration(1, Duration.MINUTES));
 			this.setStepTime(new Duration(1, Duration.SECONDS));
 		}
 	}
