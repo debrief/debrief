@@ -24,6 +24,53 @@ import MWC.GenericData.*;
 final class SnailDrawTrack
 {
 
+	/** helper class that assists in the production of a graduated colors that blend into the background
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static class PhasedColorDef
+	{
+		public final float deltaRed;
+		public final float deltaGreen;
+		public final float deltaBlue;
+		public final int startRed;
+		public final int startGreen;
+		public final int startBlue;
+
+		public PhasedColorDef(final Color mainCol, final Color backColor, int numShades)
+		{
+
+      // get the colour of the track
+      /** NOTE that we are working in floats for all of the color
+       * stuff - if we were to work in ints, then when we
+       * want more than 255 shades, the deltas become zero
+       * and the track dissappears.  By working in floats we
+       * can provide very fine deltas, allowing very large numbers
+       * of points to be tidily plotted in the track
+       */
+      float red, green, blue;
+      red = mainCol.getRed();
+      green = mainCol.getGreen();
+      blue = mainCol.getBlue();
+
+      // sort out the r,g,b components of the background colour
+      startRed = backColor.getRed();
+      startGreen = backColor.getGreen();
+      startBlue = backColor.getBlue();
+
+      // now switch r,g,b to their deltas from the back ground colour
+      red -= startRed;
+      green -= startGreen;
+      blue -= startBlue;
+
+      // what are the deltas?
+      deltaRed = red / numShades;
+      deltaGreen = green / numShades;
+      deltaBlue = blue / numShades;
+		}
+	}
+	
   /** the size of points to draw
    */
   private int _pointSize;
@@ -126,45 +173,11 @@ final class SnailDrawTrack
     {
       if(dotPoints.size()>0)
       {
-
-        // get the colour of the track
-        /** NOTE that we are working in floats for all of the color
-         * stuff - if we were to work in ints, then when we
-         * want more than 255 shades, the deltas become zero
-         * and the track dissappears.  By working in floats we
-         * can provide very fine deltas, allowing very large numbers
-         * of points to be tidily plotted in the track
-         */
-        float red, green, blue;
-        final Color mainCol = trk.getColor();
-        red = mainCol.getRed();
-        green = mainCol.getGreen();
-        blue = mainCol.getBlue();
-
-        // sort out the r,g,b components of the background colour
-        float backR, backG, backB;
-        backR = backColor.getRed();
-        backG = backColor.getGreen();
-        backB = backColor.getBlue();
-
-        // now switch r,g,b to their deltas from the back ground colour
-        red -= backR;
-        green -= backG;
-        blue -= backB;
-
-        // how many shades to we need?
-        final float numShades = (float)dotPoints.size()+1;
-
-        // what are the deltas?
-        float dRed, dGreen, dBlue;
-        dRed = red / numShades;
-        dGreen = green / numShades;
-        dBlue = blue / numShades;
-
-        // give our shades valid start values
-        red = backR;
-        green = backG;
-        blue = backB;
+      	PhasedColorDef def = new PhasedColorDef(trk.getColor(), backColor,dotPoints.size()+1 );
+      	float red, green, blue;
+      	red = def.startRed;
+      	green = def.startGreen;
+      	blue = def.startBlue;
 
         // remember the last location
         Point lastLoc=null;
@@ -179,9 +192,9 @@ final class SnailDrawTrack
           if(_fadePoints)
           {
             // produce the next colour
-            red += dRed;
-            green += dGreen;
-            blue += dBlue;
+            red += def.deltaRed;
+            green += def.deltaGreen;
+            blue += def.deltaBlue;
 
             newCol = new  Color((int)red, (int)green, (int) blue);
           }
