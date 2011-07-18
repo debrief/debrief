@@ -27,12 +27,14 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 
@@ -57,6 +59,8 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 	private SnailHighlighter _snailPainter;
 
 	protected HiResDate tNow;
+
+	protected Status _recentStatus;
 
 	@Override
 	protected void checkSubclass()
@@ -98,10 +102,35 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			{
 				if (tNow != null)
 					_snailPainter.paintThisLayer(thisLayer, dest, tNow);
+
 			}
 
 		};
 		_myChart.getCanvasControl().setLayoutData(BorderLayout.CENTER);
+		_myChart.getCanvas().getProjection().setRelativeMode(true, false);
+		_myChart.getCanvas().getProjection()
+				.setRelativeProjectionParent(new RelativeProjectionParent()
+				{
+
+					@Override
+					public double getHeading()
+					{
+						double res = 0;
+						if (_recentStatus != null)
+							res = _recentStatus.getCourse();
+
+						return res;
+					}
+
+					@Override
+					public WorldLocation getLocation()
+					{
+						WorldLocation res = null;
+						if (_recentStatus != null)
+							res = _recentStatus.getLocation();
+						return res;
+					}
+				});
 
 		// specify a snail painter
 
@@ -124,6 +153,21 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			}
 		});
 		btnFitToWin.setText("Fit to win");
+
+		final ToolItem followTrack = new ToolItem(toolBar, SWT.CHECK);
+		followTrack.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				_myChart.getCanvas().getProjection()
+						.setRelativeMode(followTrack.getSelection(), false);
+			}
+
+		});
+		followTrack.setText("O/S Centred");
+		followTrack.setSelection(true);
 
 	}
 
@@ -184,6 +228,10 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			@Override
 			public void run()
 			{
+
+				// remember the status as most recent
+				_recentStatus = status;
+
 				Fix theFix = new Fix();
 				tNow = new HiResDate(status.getTime());
 				theFix.setTime(tNow);
@@ -197,6 +245,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 
 				if (_numUpdates == 2)
 					_myChart.rescale();
+
 			}
 		});
 	}
@@ -215,7 +264,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				break;
 			}
 		}
-		
+
 		// did we find one?
 		if (res == null)
 		{
