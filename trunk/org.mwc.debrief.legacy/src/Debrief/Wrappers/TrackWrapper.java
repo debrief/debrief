@@ -2565,6 +2565,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		if (getVisible())
 		{
+			// check we have some track data, else we won't work
+			if(this.getStartDTG() == null)
+				return;
+			
 			// set the thickness for this track
 			dest.setLineWidth(_lineWidth);
 
