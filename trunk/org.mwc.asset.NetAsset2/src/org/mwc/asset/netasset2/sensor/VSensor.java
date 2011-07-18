@@ -2,6 +2,7 @@ package org.mwc.asset.netasset2.sensor;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.asset.netasset2.time.IVTime;
@@ -23,6 +24,11 @@ public class VSensor extends Composite implements ParticipantDetectedListener, I
 	{
 		super(parent, style);
 		setLayout(new RowLayout(SWT.HORIZONTAL));
+		Button btn = new Button(this, SWT.PUSH);
+		btn.setText(" do me!");
+		
+//		 list = new List(this, SWT.None);
+		
 	}
 
 	@Override
@@ -48,7 +54,9 @@ public class VSensor extends Composite implements ParticipantDetectedListener, I
 	@Override
 	public void newDetections(DetectionList detections)
 	{
-		System.err.println("rx:" + detections.size() + " detections");
+		String var = "rx:" + detections.size() + " detections";
+		System.err.println(var);
+	//	list.add(var);
 	}
 
 	@Override

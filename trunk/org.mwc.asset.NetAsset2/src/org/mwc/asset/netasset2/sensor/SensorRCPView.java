@@ -10,7 +10,7 @@ import ASSET.Participants.ParticipantDetectedListener;
 
 public class SensorRCPView extends ViewPart implements IAdaptable
 {
-	public static final String ID = "org.mwc.asset.NetAsset2.TimeView";
+	public static final String ID = "org.mwc.asset.NetAsset2.SensorView";
 
 	private IVTime _timer;
 	private ParticipantDetectedListener _detector;

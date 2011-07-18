@@ -16,21 +16,26 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="Perspective"
-            class="org.mwc.asset.netasset2.Perspective"
+            class="org.mwc.asset.netasset2.NetAssetPerspective"
             id="org.mwc.asset.NetAsset2.perspective">
       </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Connect"
-            class="org.mwc.asset.netasset2.connect.ConnectRCPView"
-            id="org.mwc.asset.NetAsset2.ConnectView">
-      </view>
-      <view
             class="org.mwc.asset.netasset2.time.TimeRCPView"
             id="org.mwc.asset.NetAsset2.TimeView"
             name="Time">
+      </view>
+      <view
+            class="org.mwc.asset.netasset2.sensor.SensorRCPView"
+            id="org.mwc.asset.NetAsset2.SensorView"
+            name="SensorData">
+      </view>
+      <view
+            name="Connect"
+            class="org.mwc.asset.netasset2.connect.ConnectRCPView"
+            id="org.mwc.asset.NetAsset2.ConnectView">
       </view>
       <view
             class="org.mwc.asset.netasset2.part.PartRCPView"
@@ -45,47 +50,7 @@
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="*">
-         <view
-               closeable="false"
-               id="org.mwc.asset.NetAsset2.ConnectView"
-               minimized="false"
-               relationship="left"
-               relative="org.eclipse.ui.editorss"
-               standalone="true">
-         </view>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="*">
-         <view
-               closeable="false"
-               id="org.mwc.asset.NetAsset2.TimeView"
-               minimized="false"
-               relationship="bottom"
-               relative="org.mwc.asset.NetAsset2.ConnectView">
-         </view>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="*">
-         <view
-               closeable="false"
-               id="org.mwc.asset.NetAsset2.PartView"
-               minimized="false"
-               relationship="bottom"
-               relative="org.mwc.asset.NetAsset2.TimeView">
-         </view>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="*">
-         <view
-               closeable="false"
-               id="org.mwc.asset.NetAsset2.PlotView"
-               minimized="false"
-               relationship="bottom"
-               relative="org.mwc.asset.NetAsset2.TimeView">
-         </view>
-      </perspectiveExtension>
+
    </extension>
    <extension
          point="org.eclipse.ui.menus">
