@@ -61,6 +61,8 @@ package MWC.GUI.VPF;
 //
 
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
@@ -69,6 +71,7 @@ import java.util.Hashtable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GenericData.WorldLocation;
 
 import com.bbn.openmap.layer.vpf.CoverageAttributeTable;
 import com.bbn.openmap.layer.vpf.CoverageTable;
@@ -246,12 +249,30 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
 
       _myWarehouse.setCanvas(g);
 
-      MWC.GenericData.WorldLocation tl = area.getTopLeft();
-      MWC.GenericData.WorldLocation br = area.getBottomRight();
+      // SPECIAL PROCESSING
+      // we determine the bounds of the visible area, but on occasion the perspective
+      // means that areas further from the equator are shown on the plot but they're
+      // outside what's described as the visible area.  So, ensure the bounds rectangle
+      // represents the outer corners of the area
+      
+      // top left
+      Dimension scr = g.getProjection().getScreenArea();
+      WorldLocation tl2 = new WorldLocation(g.getProjection().toWorld(new Point(0, 0)));
+      WorldLocation tl2a = new WorldLocation(g.getProjection().toWorld(new Point(0, scr.height)));
+      tl2.setLong(Math.min(tl2.getLong(), tl2a.getLong()));
+      tl2.setLat(tl2.getLat());
+      
+      // bottom right
+      WorldLocation br2 = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  0)));
+      WorldLocation br2a = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  scr.height)));
+      br2.setLong(Math.max(br2.getLong(), br2a.getLong()));
+      br2.setLat(br2a.getLat());
+      
+      // put the coordinates into bbn objects
+      com.bbn.openmap.LatLonPoint tlp = new com.bbn.openmap.LatLonPoint(tl2.getLat(), tl2.getLong());
+      com.bbn.openmap.LatLonPoint brp = new com.bbn.openmap.LatLonPoint(br2.getLat(), br2.getLong());
 
-      com.bbn.openmap.LatLonPoint tlp = new com.bbn.openmap.LatLonPoint(tl.getLat(), tl.getLong());
-      com.bbn.openmap.LatLonPoint brp = new com.bbn.openmap.LatLonPoint(br.getLat(), br.getLong());
-
+      // how many yards wide is this?
       int data_wid = (int) MWC.Algorithms.Conversions.Degs2Yds(area.getWidth());
 
       java.awt.Dimension dim = g.getProjection().getScreenArea();
