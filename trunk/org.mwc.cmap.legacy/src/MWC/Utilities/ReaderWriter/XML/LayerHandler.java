@@ -148,18 +148,6 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	public void elementClosed()
 	{
-		// check that there is more than one element in this layer
-		int counter = 0;
-		java.util.Enumeration<Editable> enumer = _myLayer.elements();
-		while (enumer.hasMoreElements())
-		{
-			Object val = enumer.nextElement();
-			if (val != null)
-			{
-				counter++;
-				continue;
-			}
-		}
 
 		// our layer is complete, add it to the parent!
 		// note, we no longer allow duplicates, we only want

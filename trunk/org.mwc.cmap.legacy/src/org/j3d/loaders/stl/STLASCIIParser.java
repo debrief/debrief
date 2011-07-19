@@ -93,7 +93,8 @@ class STLASCIIParser extends STLParser
     }
 
 
-    public boolean parse( final URL url, final Component parentComponent )
+    @SuppressWarnings("unused")
+		public boolean parse( final URL url, final Component parentComponent )
     throws InterruptedIOException, IOException
     {
         InputStream stream = null;
@@ -158,7 +159,8 @@ class STLASCIIParser extends STLParser
         return isAscii;
     }
 
-    public boolean parse( final URL url )
+    @SuppressWarnings("unused")
+		public boolean parse( final URL url )
     throws IOException
     {
         InputStream stream = null;

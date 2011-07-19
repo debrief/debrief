@@ -62,7 +62,8 @@ class STLBinaryParser extends STLParser
         }
     }
 
-    public boolean parse( final URL url ) throws IOException
+    @SuppressWarnings("unused")
+		public boolean parse( final URL url ) throws IOException
     {
         InputStream stream = null;
         int length = -1;
@@ -110,7 +111,8 @@ class STLBinaryParser extends STLParser
         return false;
     }
 
-    public boolean parse( final URL url, final Component parentComponent )
+    @SuppressWarnings("unused")
+		public boolean parse( final URL url, final Component parentComponent )
     throws InterruptedIOException, IOException
     {
         InputStream stream = null;

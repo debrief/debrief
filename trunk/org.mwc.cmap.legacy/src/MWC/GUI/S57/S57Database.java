@@ -49,10 +49,6 @@ public class S57Database
 
 	private boolean _dspmLoaded = false;
 
-	/**
-	 * the comment provided with the chart
-	 */
-	private String _comment = "";
 
 	/**
 	 * the vector that's currently being built up.
@@ -120,7 +116,6 @@ public class S57Database
 			/* Loop reading records till there are none left. */
 			/* -------------------------------------------------------------------- */
 			DDFRecord poRecord;
-			int iRecord = 1;
 
 			while ((poRecord = oModule.readRecord()) != null)
 			{
@@ -146,8 +141,6 @@ public class S57Database
 					// and clear the pointer
 					_pendingFeatureRecord = null;
 				}
-
-				iRecord++;
 
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
@@ -559,7 +552,6 @@ public class S57Database
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			Integer factor2d = (Integer) res.get("COMF");
 			Integer factor3d = (Integer) res.get("SOMF");
-			_comment += res.get("COMT");
 
 			_2dFactor = factor2d.doubleValue();
 			_3dFactor = factor3d.doubleValue();
@@ -589,8 +581,8 @@ public class S57Database
 		Vector<HashMap<String, Object>> fields = loadFields(field);
 		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
+			@SuppressWarnings("unused")
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
-			_comment += res.get("COMT");
 		}
 	}
 

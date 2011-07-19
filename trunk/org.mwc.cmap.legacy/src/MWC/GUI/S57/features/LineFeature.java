@@ -42,8 +42,6 @@ public class LineFeature extends S57Feature
 	public void doPaint(CanvasType dest)
 	{
 		dest.setColor(_myColor);
-		int ctr = 0;
-		int xOffset = 0;
 		for (Iterator<Vector<WorldLocation>> iterator = _lines.iterator(); iterator
 				.hasNext();)
 		{
@@ -67,13 +65,11 @@ public class LineFeature extends S57Feature
 				{
 					if (last.equals(pt))
 					{
-						xOffset += 10;
 					}
 					dest.drawLine(last.x, last.y, pt.x, pt.y);
 					// dest.drawText(myFont, "" + ctr, last.x + xOffset, last.y +
 					// yOffset);
 				}
-				ctr++;
 				last = pt;
 			}
 			// and close it.
