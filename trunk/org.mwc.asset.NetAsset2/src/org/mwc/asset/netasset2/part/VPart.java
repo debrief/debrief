@@ -100,10 +100,38 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		Label lblCourse = new Label(grpState, SWT.NONE);
 		lblCourse.setText("Course");
 
-		demCourse = new Text(grpState, SWT.BORDER);
+		Composite demC = new Composite(grpState, SWT.NONE);
+
+		demCourse = new Text(demC, SWT.NONE);
+		demCourse.setLocation(0, 5);
+		demCourse.setSize(35, 20);
 		demCourse.setText("000  ");
 		demCourse.setEnabled(false);
 		demCourse.addKeyListener(enterListener);
+
+		Button incCrse = new Button(demC, SWT.FLAT | SWT.CENTER);
+		incCrse.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
+		incCrse.setBounds(40, 0, 15, 15);
+		incCrse.setText("+");
+		incCrse.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				crseChange(5);
+			}
+		});
+
+		Button decCrse = new Button(demC, SWT.FLAT | SWT.CENTER);
+		decCrse.setText("-");
+		decCrse.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
+		decCrse.setBounds(40, 16, 15, 15);
+		decCrse.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				crseChange(-5);
+			}
+		});
 
 		actCourse = new Label(grpState, SWT.NONE);
 		actCourse.setText("000 00");
@@ -154,6 +182,33 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		});
 
 		// super.setEnabled(false);
+	}
+
+	protected void crseChange(float delta)
+	{
+		// get teh course
+		Float cF = Float.parseFloat(demCourse.getText());
+		cF += delta;
+		
+		// put back in degs
+		if(cF < 0)
+			cF += 360;
+		
+		demCourse.setText("" + cF);
+		fireDemStatus();
+	}
+	protected void spdChange(float delta)
+	{
+		// get teh course
+		Float cF = Float.parseFloat(demSpeed.getText());
+		cF += delta;
+		
+		// put back in degs
+		if(cF < 0)
+			cF = 0f;
+		
+		demSpeed.setText("" + cF);
+		fireDemStatus();
 	}
 
 	private void fireDemStatus()
@@ -293,5 +348,4 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 			}
 		});
 	}
-
 }
