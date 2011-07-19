@@ -14,8 +14,12 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.editors.painters.PlainHighlighter;
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
+import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
 
 import swing2swt.layout.BorderLayout;
 import ASSET.ScenarioType;
@@ -62,6 +66,10 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 
 	protected Status _recentStatus;
 
+	private PlainHighlighter _plainPainter;
+
+	protected TemporalLayerPainter _myPainter;
+
 	@Override
 	protected void checkSubclass()
 	{
@@ -83,6 +91,8 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		toolBar.setLayoutData(BorderLayout.NORTH);
 
 		_snailPainter = new SnailHighlighter(null);
+		_plainPainter = new PlainHighlighter();
+		_myPainter = _snailPainter;
 
 		_myLayers = new Layers();
 		_myChart = new SWTChart(_myLayers, this)
@@ -101,8 +111,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
 			{
 				if (tNow != null)
-					_snailPainter.paintThisLayer(thisLayer, dest, tNow);
-
+					_myPainter.paintThisLayer(thisLayer, dest, tNow);
 			}
 
 		};
@@ -135,6 +144,9 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		// specify a snail painter
 
 		ToolItem btnZoomOut = new ToolItem(toolBar, SWT.NONE);
+		btnZoomOut.setText("Zoom out");
+		btnZoomOut.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/zoomout.gif")));
+		btnZoomOut.setToolTipText("Zoom out");
 		btnZoomOut.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -142,9 +154,10 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				zoomOut();
 			}
 		});
-		btnZoomOut.setText("Zoom out");
 
 		ToolItem btnFitToWin = new ToolItem(toolBar, SWT.NONE);
+		btnFitToWin.setToolTipText("Fit to window");
+		btnFitToWin.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/fit_to_win.gif")));
 		btnFitToWin.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -153,6 +166,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			}
 		});
 		btnFitToWin.setText("Fit to win");
+		new ToolItem(toolBar, SWT.SEPARATOR); // Signals end of group
 
 		final ToolItem followTrack = new ToolItem(toolBar, SWT.CHECK);
 		followTrack.addSelectionListener(new SelectionAdapter()
@@ -167,7 +181,30 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 
 		});
 		followTrack.setText("O/S Centred");
+		followTrack.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/filter.gif")));
 		followTrack.setSelection(true);
+		new ToolItem(toolBar, SWT.SEPARATOR); // Signals end of group
+		
+		ToolItem snail = new ToolItem(toolBar, SWT.RADIO);
+		snail.setText("Snail");
+		snail.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/snail.gif")));
+		snail.setSelection(true);
+		snail.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e)
+			{
+				_myPainter = _snailPainter;
+				_myChart.update();
+			}});
+		ToolItem plain = new ToolItem(toolBar, SWT.RADIO);
+		plain.setText("Plain");
+		plain.setImage(CorePlugin.getImageFromRegistry(DebriefPlugin.getImageDescriptor("icons/normal.gif")));
+		plain.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e)
+			{
+				_myPainter = _plainPainter;
+				_myChart.update();
+			}});
+		new ToolItem(toolBar, SWT.SEPARATOR); // Signals end of group
 
 	}
 
