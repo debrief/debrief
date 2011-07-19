@@ -7,6 +7,7 @@ import org.mwc.asset.netasset2.connect.ConnectRCPView;
 import org.mwc.asset.netasset2.part.PartRCPView;
 import org.mwc.asset.netasset2.plot.PlotRCPView;
 import org.mwc.asset.netasset2.sensor.SensorRCPView;
+import org.mwc.asset.netasset2.sensorV.SensorRCPView2;
 import org.mwc.asset.netasset2.time.TimeRCPView;
 
 public class NetAssetPerspective implements IPerspectiveFactory
@@ -25,6 +26,7 @@ public class NetAssetPerspective implements IPerspectiveFactory
 				0.4f, editorArea);
 		topLeft.addView(ConnectRCPView.ID);
 		topLeft.addView(SensorRCPView.ID);
+		topLeft.addView(SensorRCPView2.ID);
 
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
