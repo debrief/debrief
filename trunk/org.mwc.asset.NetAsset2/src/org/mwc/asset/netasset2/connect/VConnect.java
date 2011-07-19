@@ -66,8 +66,8 @@ public class VConnect extends Composite implements IVConnect
 		lblServers.setBounds(10, 27, 59, 14);
 		lblServers.setText("Servers");
 
-		btnPing = new Button(grpConnection, SWT.NONE);
-		btnPing.setBounds(10, 0, 47, 28);
+		btnPing = new Button(grpConnection, SWT.FLAT);
+		btnPing.setBounds(10, 3, 47, 21);
 		btnPing.setText("Ping");
 
 		Label lblScenarios = new Label(grpConnection, SWT.NONE);
@@ -106,16 +106,12 @@ public class VConnect extends Composite implements IVConnect
 		listScenarios = listScenarioViewer.getList();
 		listScenarios.setBounds(116, 41, 130, 66);
 
-		Button button = new Button(grpConnection, SWT.NONE);
-		button.setText("Ping");
-		button.setBounds(10, 0, 47, 28);
-
-		btnDisconnect = new Button(grpConnection, SWT.NONE);
+		btnDisconnect = new Button(grpConnection, SWT.FLAT);
 		btnDisconnect.setText("Disconnect");
-		btnDisconnect.setBounds(160, 13, 90, 28);
+		btnDisconnect.setBounds(171, 10, 79, 31);
 
-		btnManual = new Button(grpConnection, SWT.NONE);
-		btnManual.setBounds(63, 0, 67, 28);
+		btnManual = new Button(grpConnection, SWT.FLAT);
+		btnManual.setBounds(63, 3, 67, 21);
 		btnManual.setText("Manual");
 
 	}
