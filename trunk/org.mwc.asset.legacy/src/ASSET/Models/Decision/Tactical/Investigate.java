@@ -860,11 +860,6 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			private HashMap<Integer, InvestigateStore> _myStore = new HashMap<Integer, InvestigateStore>();
 
 			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			/**
 			 * find the right store for this type
 			 * 
 			 * @param monitor
