@@ -7,7 +7,7 @@ import org.mwc.asset.netasset2.connect.ConnectRCPView;
 import org.mwc.asset.netasset2.part.PartRCPView;
 import org.mwc.asset.netasset2.plot.PlotRCPView;
 import org.mwc.asset.netasset2.sensor.SensorRCPView;
-import org.mwc.asset.netasset2.sensorV.SensorRCPView2;
+import org.mwc.asset.netasset2.sensor2.SensorRCPView2;
 import org.mwc.asset.netasset2.time.TimeRCPView;
 
 public class NetAssetPerspective implements IPerspectiveFactory

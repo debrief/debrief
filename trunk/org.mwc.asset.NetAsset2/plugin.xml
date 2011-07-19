@@ -33,6 +33,11 @@
             name="SensorData">
       </view>
       <view
+            class="org.mwc.asset.netasset2.sensor2.SensorRCPView2"
+            id="org.mwc.asset.NetAsset2.SensorView2"
+            name="SensorData 2">
+      </view>
+      <view
             name="Connect"
             class="org.mwc.asset.netasset2.connect.ConnectRCPView"
             id="org.mwc.asset.NetAsset2.ConnectView">
