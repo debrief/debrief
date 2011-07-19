@@ -205,7 +205,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				_myChart.update();
 			}});
 		new ToolItem(toolBar, SWT.SEPARATOR); // Signals end of group
-
+		
 	}
 
 	protected void zoomOut()

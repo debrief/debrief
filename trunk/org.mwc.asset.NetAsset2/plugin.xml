@@ -59,6 +59,11 @@
          <menu
                label="File">
             <command
+                  commandId="org.eclipse.ui.window.resetPerspective"
+                  label="Reset perspective"
+                  style="push">
+            </command>
+            <command
                   commandId="org.eclipse.ui.file.exit"
                   label="Exit">
             </command>
