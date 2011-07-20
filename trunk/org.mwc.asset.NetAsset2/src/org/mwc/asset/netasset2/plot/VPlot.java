@@ -32,10 +32,12 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -97,6 +99,8 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		_snailPainter.getSnailProperties().setTrailLength(new Duration(20, Duration.MINUTES));
 
 		_myLayers = new Layers();
+		insertBackData(_myLayers);
+
 		_myChart = new SWTChart(_myLayers, this)
 		{
 			/**
@@ -208,6 +212,19 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 			}});
 		new ToolItem(toolBar, SWT.SEPARATOR); // Signals end of group
 		
+	}
+
+	private void insertBackData(Layers layers)
+	{
+		BaseLayer base = new BaseLayer();
+		base.setName("General");
+		GridPainter gp = new GridPainter();
+		gp.setName("Grid");
+		gp.setDelta(new WorldDistance(5, WorldDistance.NM));
+		gp.setVisible(true);
+		base.add(gp);
+		layers.addThisLayer(base);
+		base.setVisible(true);
 	}
 
 	protected void zoomOut()
