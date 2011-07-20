@@ -8,6 +8,11 @@ package com.esotericsoftware.kryonet.rmi;
  * @author Nathan Sweet <misc@n4te.com>
  */
 public class TimeoutException extends RuntimeException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public TimeoutException () {
 		super();
 	}

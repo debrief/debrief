@@ -1,7 +1,12 @@
 
 package com.esotericsoftware.kryonet.rmi;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.TRACE;
+import static com.esotericsoftware.minlog.Log.WARN;
+import static com.esotericsoftware.minlog.Log.debug;
+import static com.esotericsoftware.minlog.Log.trace;
+import static com.esotericsoftware.minlog.Log.warn;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -40,9 +45,9 @@ import com.esotericsoftware.kryonet.Listener;
 public class ObjectSpace {
 	static private final Object instancesLock = new Object();
 	static ObjectSpace[] instances = new ObjectSpace[0];
-	static private final HashMap<Class, CachedMethod[]> methodCache = new HashMap();
+	static private final HashMap<Class<?>, CachedMethod[]> methodCache = new HashMap<Class<?>, CachedMethod[]>();
 
-	final IntHashMap idToObject = new IntHashMap();
+	final IntHashMap<Object> idToObject = new IntHashMap<Object>();
 	Connection[] connections = {};
 	final Object connectionsLock = new Object();
 
@@ -113,7 +118,7 @@ public class ObjectSpace {
 			connections[i].removeListener(invokeListener);
 
 		synchronized (instancesLock) {
-			ArrayList<Connection> temp = new ArrayList(Arrays.asList(instances));
+			ArrayList<Connection> temp = new ArrayList<Connection>();
 			temp.remove(this);
 			instances = temp.toArray(new ObjectSpace[temp.size()]);
 		}
@@ -148,7 +153,7 @@ public class ObjectSpace {
 		connection.removeListener(invokeListener);
 
 		synchronized (connectionsLock) {
-			ArrayList<Connection> temp = new ArrayList(Arrays.asList(connections));
+			ArrayList<Connection> temp = new ArrayList<Connection>(Arrays.asList(connections));
 			temp.remove(connection);
 			connections = temp.toArray(new Connection[temp.size()]);
 		}
@@ -196,6 +201,7 @@ public class ObjectSpace {
 	 * Identical to {@link #getRemoteObject(Connection, int, Class...)} except returns the object cast to the specified interface
 	 * type. The returned object still implements {@link RemoteObject}.
 	 */
+	@SuppressWarnings("unchecked")
 	static public <T> T getRemoteObject (final Connection connection, int objectID, Class<T> iface) {
 		return (T)getRemoteObject(connection, objectID, new Class[] {iface});
 	}
@@ -217,10 +223,10 @@ public class ObjectSpace {
 	 * side will have the proxy object replaced with the registered object.
 	 * @see RemoteObject
 	 */
-	static public RemoteObject getRemoteObject (Connection connection, int objectID, Class... ifaces) {
+	static public RemoteObject getRemoteObject (Connection connection, int objectID, Class<?>... ifaces) {
 		if (connection == null) throw new IllegalArgumentException("connection cannot be null.");
 		if (ifaces == null) throw new IllegalArgumentException("ifaces cannot be null.");
-		Class[] temp = new Class[ifaces.length + 1];
+		Class<?>[] temp = new Class[ifaces.length + 1];
 		temp[0] = RemoteObject.class;
 		System.arraycopy(ifaces, 0, temp, 1, ifaces.length);
 		return (RemoteObject)Proxy.newProxyInstance(ObjectSpace.class.getClassLoader(), temp, new RemoteInvocationHandler(
@@ -236,7 +242,7 @@ public class ObjectSpace {
 		private int timeoutMillis = 3000;
 		private boolean nonBlocking, ignoreResponses;
 		private Byte lastResponseID;
-		final ArrayList<InvokeMethodResult> responseQueue = new ArrayList();
+		final ArrayList<InvokeMethodResult> responseQueue = new ArrayList<InvokeMethodResult>();
 		private byte nextResponseID = 1;
 		private Listener responseListener;
 
@@ -312,7 +318,7 @@ public class ObjectSpace {
 			if (!hasReturnValue) return null;
 			if (nonBlocking) {
 				if (!ignoreResponses) lastResponseID = invokeMethod.responseID;
-				Class returnType = method.getReturnType();
+				Class<?> returnType = method.getReturnType();
 				if (returnType.isPrimitive()) {
 					if (returnType == int.class) return 0;
 					if (returnType == boolean.class) return Boolean.FALSE;
@@ -402,7 +408,7 @@ public class ObjectSpace {
 			objectID = IntSerializer.get(buffer, true);
 
 			int methodClassID = IntSerializer.get(buffer, true);
-			Class methodClass = kryo.getRegisteredClass(methodClassID).getType();
+			Class<?> methodClass = kryo.getRegisteredClass(methodClassID).getType();
 			byte methodIndex = buffer.get();
 			CachedMethod cachedMethod;
 			try {
@@ -434,23 +440,23 @@ public class ObjectSpace {
 		public Object result;
 	}
 
-	static CachedMethod[] getMethods (Kryo kryo, Class type) {
+	static CachedMethod[] getMethods (Kryo kryo, Class<?> type) {
 		CachedMethod[] cachedMethods = methodCache.get(type);
 		if (cachedMethods != null) return cachedMethods;
 
-		ArrayList<Method> allMethods = new ArrayList();
-		Class nextClass = type;
+		ArrayList<Method> allMethods = new ArrayList<Method>();
+		Class<?> nextClass = type;
 		while (nextClass != null && nextClass != Object.class) {
 			Collections.addAll(allMethods, nextClass.getDeclaredMethods());
 			nextClass = nextClass.getSuperclass();
 		}
-		PriorityQueue<Method> methods = new PriorityQueue(Math.max(1, allMethods.size()), new Comparator<Method>() {
+		PriorityQueue<Method> methods = new PriorityQueue<Method>(Math.max(1, allMethods.size()), new Comparator<Method>() {
 			public int compare (Method o1, Method o2) {
 				// Methods are sorted so they can be represented as an index.
 				int diff = o1.getName().compareTo(o2.getName());
 				if (diff != 0) return diff;
-				Class[] argTypes1 = o1.getParameterTypes();
-				Class[] argTypes2 = o2.getParameterTypes();
+				Class<?>[] argTypes1 = o1.getParameterTypes();
+				Class<?>[] argTypes2 = o2.getParameterTypes();
 				if (argTypes1.length > argTypes2.length) return 1;
 				if (argTypes1.length < argTypes2.length) return -1;
 				for (int i = 0; i < argTypes1.length; i++) {
@@ -476,7 +482,7 @@ public class ObjectSpace {
 			cachedMethod.method = methods.poll();
 
 			// Store the serializer for each final parameter.
-			Class[] parameterTypes = cachedMethod.method.getParameterTypes();
+			Class<?>[] parameterTypes = cachedMethod.method.getParameterTypes();
 			cachedMethod.serializers = new Serializer[parameterTypes.length];
 			for (int ii = 0, nn = parameterTypes.length; ii < nn; ii++)
 				if (Kryo.isFinal(parameterTypes[ii])) cachedMethod.serializers[ii] = kryo.getSerializer(parameterTypes[ii]);
@@ -524,6 +530,7 @@ public class ObjectSpace {
 				IntSerializer.put(buffer, handler.objectID, true);
 			}
 
+			@SuppressWarnings("unchecked")
 			public <T> T readObjectData (ByteBuffer buffer, Class<T> type) {
 				int objectID = IntSerializer.get(buffer, true);
 				Connection connection = (Connection)Kryo.getContext().get("connection");
