@@ -38,7 +38,7 @@ public class VConnect extends Composite implements IVConnect
 	private List listScenarios;
 	private TableViewer partViewer;
 	private Button btnDisconnect;
-	private Button btnManual;
+//	private Button btnManual;
 	private StringProvider _stringProvider;
 
 	/**
@@ -110,9 +110,9 @@ public class VConnect extends Composite implements IVConnect
 		btnDisconnect.setText("Disconnect");
 		btnDisconnect.setBounds(171, 10, 79, 31);
 
-		btnManual = new Button(grpConnection, SWT.FLAT);
-		btnManual.setBounds(63, 3, 67, 21);
-		btnManual.setText("Manual");
+//		btnManual = new Button(grpConnection, SWT.FLAT);
+//		btnManual.setBounds(63, 3, 67, 21);
+//		btnManual.setText("Manual");
 
 	}
 
@@ -125,17 +125,17 @@ public class VConnect extends Composite implements IVConnect
 	@Override
 	public void addManualListener(final ClickHandler handler)
 	{
-		btnManual.addSelectionListener(new SelectionListener()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				handler.clicked();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e)
-			{
-			}
-		});
+//		btnManual.addSelectionListener(new SelectionListener()
+//		{
+//			public void widgetSelected(SelectionEvent e)
+//			{
+//				handler.clicked();
+//			}
+//
+//			public void widgetDefaultSelected(SelectionEvent e)
+//			{
+//			}
+//		});
 	}
 
 	@Override

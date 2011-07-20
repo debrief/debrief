@@ -33,13 +33,11 @@ public class SensorRCPView2 extends ViewPart {
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "org.mwc.asset.NetAsset2.SensorView2";
-
-	private VSensor sensor;
 	
 	private IVTime _timer;
 	private ParticipantDetectedListener _detector;
 
-	
+	private VSensor sensor;
 
 	/**
 	 * The constructor.
@@ -56,9 +54,19 @@ public class SensorRCPView2 extends ViewPart {
 		
 		_timer = sensor;
 		_detector = sensor;
+		
+		makeActions();
+		contributeToActionBars();
+
 	}
 
+	private void makeActions()
+	{
+	}
 
+	private void contributeToActionBars()
+	{
+	}
 
 	@SuppressWarnings("rawtypes")
 	@Override

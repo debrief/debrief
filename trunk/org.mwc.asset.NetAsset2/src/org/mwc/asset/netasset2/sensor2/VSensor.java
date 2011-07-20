@@ -70,20 +70,17 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		ToolBar toolBar = new ToolBar(this, SWT.FLAT | SWT.RIGHT);
 		toolBar.setLayoutData(BorderLayout.NORTH);
 
-//		ToolItem testBtn = new ToolItem(toolBar, SWT.NONE);
-//		testBtn.setText("Test 1");
-//		testBtn.addSelectionListener(new SelectionAdapter()
-//		{
-//
-//			@Override
-//			public void widgetSelected(SelectionEvent e)
-//			{
-//				doTest();
-//			}
-//		});
-
-		ToolItem fitToWin = new ToolItem(toolBar, SWT.NONE);
-		fitToWin.setText("Fit");
+		// ToolItem testBtn = new ToolItem(toolBar, SWT.NONE);
+		// testBtn.setText("Test 1");
+		// testBtn.addSelectionListener(new SelectionAdapter()
+		// {
+		//
+		// @Override
+		// public void widgetSelected(SelectionEvent e)
+		// {
+		// doTest();
+		// }
+		// });
 
 		ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
 		tltmDropdownItem.setText("Visible period");
@@ -102,7 +99,8 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 		// the y axis is common to hi & lo res. Format it here
 		NumberAxis yAxis = new NumberAxis("Degs");
-		yAxis.setRange(0, 360);
+	//	yAxis.setRange(0, 360);
+		yAxis.setAutoRange(true);
 		yAxis.setTickUnit(new NumberTickUnit(45));
 
 		// create a date-formatting axis
@@ -277,15 +275,16 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	public void newDetections(final DetectionList detections)
 	{
 		System.out.println("rx:" + detections.size() + " new detections");
-		Iterator<DetectionEvent> iter = detections.iterator();
-		while (iter.hasNext())
+		if (detections.size() > 0)
 		{
-			DetectionEvent thisD = iter.next();
-			processThis(thisD);
+			Iterator<DetectionEvent> iter = detections.iterator();
+			while (iter.hasNext())
+			{
+				DetectionEvent thisD = iter.next();
+				processThis(thisD);
+			}
 		}
 
-		// check we're showing the correct period
-		setTimePeriod(_visibleTimePeriod);
 	}
 
 	private void processThis(DetectionEvent thisD)
@@ -348,6 +347,9 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	public void newTime(long newTime)
 	{
 		_timeNow = newTime;
+		// check we're showing the correct period
+		setTimePeriod(_visibleTimePeriod);
+
 	}
 
 }
