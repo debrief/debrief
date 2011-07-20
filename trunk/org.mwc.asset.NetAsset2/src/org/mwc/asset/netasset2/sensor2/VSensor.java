@@ -274,7 +274,6 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	@Override
 	public void newDetections(final DetectionList detections)
 	{
-		System.out.println("rx:" + detections.size() + " new detections");
 		if (detections.size() > 0)
 		{
 			Iterator<DetectionEvent> iter = detections.iterator();
@@ -317,9 +316,6 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 			bearing += 360;
 		long newTime = thisD.getTime();
 		FixedMillisecond time = new FixedMillisecond(newTime);
-
-		System.err.println("time:" + new Date(newTime) + " series:" + seriesId
-				+ " on " + bearing);
 
 		try
 		{
