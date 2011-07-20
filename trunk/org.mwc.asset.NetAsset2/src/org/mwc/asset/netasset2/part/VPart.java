@@ -138,7 +138,6 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 
 		Label lblSpeed = new Label(grpState, SWT.NONE);
 		lblSpeed.setText("Speed");
-		
 
 		Composite demS = new Composite(grpState, SWT.NONE);
 
@@ -148,7 +147,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		demSpeed.setText("000  ");
 		demSpeed.setEnabled(false);
 		demSpeed.addKeyListener(enterListener);
-		
+
 		Button incSpd = new Button(demS, SWT.FLAT | SWT.CENTER);
 		incSpd.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incSpd.setBounds(40, 0, 15, 15);
@@ -172,14 +171,13 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 				spdChange(-2);
 			}
 		});
-		
+
 		actSpeed = new Label(grpState, SWT.NONE);
 		actSpeed.setText("000 00");
 
 		Label lblDepth = new Label(grpState, SWT.NONE);
 		lblDepth.setText("Depth");
-		
-		
+
 		Composite demD = new Composite(grpState, SWT.NONE);
 
 		demDepth = new Text(demD, SWT.NONE);
@@ -190,7 +188,8 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		demDepth.addKeyListener(enterListener);
 
 		Button incDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
-		incDepth.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
+		incDepth
+				.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incDepth.setBounds(40, 0, 15, 15);
 		incDepth.setText("+");
 		incDepth.addSelectionListener(new SelectionAdapter()
@@ -203,7 +202,8 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 
 		Button decDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
 		decDepth.setText("-");
-		decDepth.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
+		decDepth
+				.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decDepth.setBounds(40, 16, 15, 15);
 		decDepth.addSelectionListener(new SelectionAdapter()
 		{
@@ -247,35 +247,37 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		// get teh course
 		Float cF = Float.parseFloat(demCourse.getText());
 		cF += delta;
-		
+
 		// put back in degs
-		if(cF < 0)
+		if (cF < 0)
 			cF += 360;
-		if(cF >= 360)
+		if (cF >= 360)
 			cF -= 360;
-		
+
 		demCourse.setText("" + cF);
 		fireDemStatus();
 	}
+
 	protected void spdChange(float delta)
 	{
 		// get teh course
 		Float cF = Float.parseFloat(demSpeed.getText());
 		cF += delta;
-		
+
 		// put back in +ve speeds
-		if(cF < 0)
+		if (cF < 0)
 			cF = 0f;
-		
+
 		demSpeed.setText("" + cF);
 		fireDemStatus();
 	}
+
 	protected void depthChange(float delta)
 	{
 		// get teh course
 		Float cF = Float.parseFloat(demDepth.getText());
 		cF += delta;
-		
+
 		demDepth.setText("" + cF);
 		fireDemStatus();
 	}
@@ -368,11 +370,14 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 			@Override
 			public void run()
 			{
-				demCourse.setEnabled(val);
-				demSpeed.setEnabled(val);
-				demDepth.setEnabled(val);
-				newState.setEnabled(val);
-				partName.setText(PENDING);
+				if (!demCourse.isDisposed())
+				{
+					demCourse.setEnabled(val);
+					demSpeed.setEnabled(val);
+					demDepth.setEnabled(val);
+					newState.setEnabled(val);
+					partName.setText(PENDING);
+				}
 			}
 		});
 
@@ -387,10 +392,13 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 			@Override
 			public void run()
 			{
-				partName.setText(name);
-				demCourse.setText("");
-				demSpeed.setText("");
-				demDepth.setText("");
+				if (!partName.isDisposed())
+				{
+					partName.setText(name);
+					demCourse.setText("");
+					demSpeed.setText("");
+					demDepth.setText("");
+				}
 			}
 		});
 
