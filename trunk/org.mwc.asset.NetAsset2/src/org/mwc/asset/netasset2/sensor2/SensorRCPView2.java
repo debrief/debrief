@@ -1,16 +1,12 @@
 package org.mwc.asset.netasset2.sensor2;
 
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.asset.netasset2.time.IVTime;
+
+import ASSET.Participants.ParticipantDetectedListener;
 
 
 /**
@@ -38,10 +34,10 @@ public class SensorRCPView2 extends ViewPart {
 	 */
 	public static final String ID = "org.mwc.asset.NetAsset2.SensorView2";
 
-	private Action action1;
-	private Action action2;
-
 	private VSensor sensor;
+	
+	private IVTime _timer;
+	private ParticipantDetectedListener _detector;
 
 	
 
@@ -57,52 +53,33 @@ public class SensorRCPView2 extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		sensor = new VSensor(parent, SWT.NONE);
-
-
-		// Create the help context id for the viewer's control
-		makeActions();
-		contributeToActionBars();
-	}
-
-
-
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(new Separator());
-		manager.add(action2);
-	}
-	
-	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
-	}
-
-	private void makeActions() {
-		action1 = new Action() {
-			public void run() {
-			}
-		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		
-		action2 = new Action() {
-			public void run() {
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_timer = sensor;
+		_detector = sensor;
 	}
 
+
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Object getAdapter(Class adapter)
+	{
+		Object res = null;
+
+		if (adapter == IVTime.class)
+		{
+			res = _timer;
+		}
+		else if(adapter == ParticipantDetectedListener.class)
+		{
+			res = _detector;
+		}
+
+		if (res == null)
+			res = super.getAdapter(adapter);
+
+		return res;
+	}
 
 	/**
 	 * Passing the focus request to the viewer's control.

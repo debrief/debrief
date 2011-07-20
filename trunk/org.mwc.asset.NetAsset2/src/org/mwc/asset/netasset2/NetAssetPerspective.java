@@ -6,7 +6,6 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.mwc.asset.netasset2.connect.ConnectRCPView;
 import org.mwc.asset.netasset2.part.PartRCPView;
 import org.mwc.asset.netasset2.plot.PlotRCPView;
-import org.mwc.asset.netasset2.sensor.SensorRCPView;
 import org.mwc.asset.netasset2.sensor2.SensorRCPView2;
 import org.mwc.asset.netasset2.time.TimeRCPView;
 
@@ -25,7 +24,6 @@ public class NetAssetPerspective implements IPerspectiveFactory
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT,
 				0.4f, editorArea);
 		topLeft.addView(ConnectRCPView.ID);
-		topLeft.addView(SensorRCPView.ID);
 		topLeft.addView(SensorRCPView2.ID);
 
 

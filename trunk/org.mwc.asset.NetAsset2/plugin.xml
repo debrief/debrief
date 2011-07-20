@@ -28,11 +28,6 @@
             name="Time">
       </view>
       <view
-            class="org.mwc.asset.netasset2.sensor.SensorRCPView"
-            id="org.mwc.asset.NetAsset2.SensorView"
-            name="SensorData">
-      </view>
-      <view
             class="org.mwc.asset.netasset2.sensor2.SensorRCPView2"
             id="org.mwc.asset.NetAsset2.SensorView2"
             name="SensorData 2">

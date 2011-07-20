@@ -410,29 +410,34 @@ public class PClient implements ScenarioSteppedListener
 
 	}
 
-	public void addTimer(final IVTime timer)
+	public void addTimer(final IVTime listener)
 	{
-		_timeListeners.add(timer);
+		if (!_timeListeners.contains(listener))
+			_timeListeners.add(listener);
 	}
 
-	public void addPartController(IVPartControl instance)
+	public void addPartController(IVPartControl listener)
 	{
-		_partControllers.add(instance);
+		if (!_partControllers.contains(listener))
+			_partControllers.add(listener);
 	}
 
 	public void addPartDetector(ParticipantDetectedListener listener)
 	{
-		_partDetectors.add(listener);
+		if (!_partDetectors.contains(listener))
+			_partDetectors.add(listener);
 	}
 
 	public void addPartUpdater(IVPartMovement instance)
 	{
-		_partMovers.add(instance);
+		if (!_partDetectors.contains(instance))
+			_partMovers.add(instance);
 	}
 
 	public void addConnector(IVConnect view)
 	{
-		_connectors.add(view);
+		if (!_connectors.contains(view))
+			_connectors.add(view);
 
 		view.disableScenarios();
 		view.disableServers();
