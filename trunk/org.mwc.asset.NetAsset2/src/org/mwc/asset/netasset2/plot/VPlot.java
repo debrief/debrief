@@ -36,6 +36,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -93,6 +94,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		_snailPainter = new SnailHighlighter(null);
 		_plainPainter = new PlainHighlighter();
 		_myPainter = _snailPainter;
+		_snailPainter.getSnailProperties().setTrailLength(new Duration(20, Duration.MINUTES));
 
 		_myLayers = new Layers();
 		_myChart = new SWTChart(_myLayers, this)
