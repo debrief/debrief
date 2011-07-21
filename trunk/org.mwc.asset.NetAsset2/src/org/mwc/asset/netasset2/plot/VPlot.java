@@ -1,6 +1,7 @@
 package org.mwc.asset.netasset2.plot;
 
 import java.awt.Color;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 
@@ -96,10 +97,9 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		_snailPainter = new SnailHighlighter(null);
 		_plainPainter = new PlainHighlighter();
 		_myPainter = _snailPainter;
-		_snailPainter.getSnailProperties().setTrailLength(new Duration(20, Duration.MINUTES));
+		_snailPainter.getSnailProperties().setTrailLength(new Duration(30, Duration.MINUTES));
 
 		_myLayers = new Layers();
-		insertBackData(_myLayers);
 
 		_myChart = new SWTChart(_myLayers, this)
 		{
@@ -220,7 +220,8 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		base.setName("General");
 		GridPainter gp = new GridPainter();
 		gp.setName("Grid");
-		gp.setDelta(new WorldDistance(5, WorldDistance.NM));
+		gp.setColor(new Color(30,30,30));
+		gp.setDelta(new WorldDistance(1, WorldDistance.NM));
 		gp.setVisible(true);
 		base.add(gp);
 		layers.addThisLayer(base);
@@ -257,6 +258,10 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				myTrack.setColor(Color.blue);
 				_myLayers.addThisLayer(myTrack);
 
+				// and sort out the background data
+				insertBackData(_myLayers);
+
+
 			}
 		});
 	}
@@ -281,6 +286,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		Display.getDefault().asyncExec(new Runnable()
 		{
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run()
 			{
@@ -297,6 +303,23 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				theFix.setSpeed(status.getSpeed().getValueIn(WorldSpeed.ft_sec / 3));
 				FixWrapper fw = new FixWrapper(theFix);
 				myTrack.addFix(fw);
+				
+				// hmm, should we plot a minute marker?
+				Date dt = tNow.getDate();
+				int mins = dt.getMinutes();
+				int secs = dt.getSeconds();
+				
+				// hmm, should we plot a 10 minute marker?
+				if(mins % 10 == 0)
+				{
+					fw.setLabelShowing(true);
+				}
+				if(secs == 0)
+				{
+					fw.setSymbolShowing(true);
+				}
+				
+				
 				_numUpdates++;
 
 				if (_numUpdates == 2)

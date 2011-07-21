@@ -84,7 +84,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 		super.postWindowOpen();
 
 		// get ourselves a server
-	//	doDummyWork();
+		doDummyWork();
 
 		// ok, get ready to learn about open windows
 		setupListeners();
