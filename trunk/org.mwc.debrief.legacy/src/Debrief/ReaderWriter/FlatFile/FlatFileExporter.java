@@ -36,108 +36,115 @@ import MWC.GenericData.WorldVector;
 public class FlatFileExporter
 {
 
+	// ////////////////////////////////////////////////////////////////
+	// TEST THIS CLASS
+	// ////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		private void dumpToFile(final String str, final String filename)
+		{
+			final File outFile = new File(filename);
+			FileWriter out = null;
+			try
+			{
+				out = new FileWriter(outFile);
+				out.write(str);
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				try
+				{
+					out.close();
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+
+		private String getTestData()
+		{
+			String res = null;
+			try
+			{
+				res = readFileAsString("src/Debrief/ReaderWriter/FlatFile/fakedata.txt");
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+			return res;
+		}
+
+		private String readFileAsString(final String filePath)
+				throws java.io.IOException
+		{
+			final StringBuffer fileData = new StringBuffer(1000);
+			final BufferedReader reader = new BufferedReader(new FileReader(filePath));
+			char[] buf = new char[1024];
+			int numRead = 0;
+			while ((numRead = reader.read(buf)) != -1)
+			{
+				final String readData = String.valueOf(buf, 0, numRead);
+				fileData.append(readData);
+				buf = new char[1024];
+			}
+			reader.close();
+			return fileData.toString();
+		}
+
+		public void testAgainstSample() throws IOException
+		{
+			final String TARGET_STR = getTestData();
+			assertNotNull("test data found", TARGET_STR);
+			final FlatFileExporter fa = new FlatFileExporter();
+			String res = null;
+			try
+			{
+				res = fa.testExport();
+			}
+			catch (final ParseException e)
+			{
+				e.printStackTrace();
+			}
+			assertNotNull("produced string", res);
+			assertEquals("correct string", TARGET_STR, res);
+
+			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
+
+		}
+
+		public void testDateFormat() throws ParseException
+		{
+			final Date theDate = dateFrom("01:45:00	22/12/2002");
+			final String val = formatThis(theDate);
+			assertEquals("correct start date", "01:45:00	22/12/2002", val);
+		}
+
+		public void testExport()
+		{
+
+		}
+	}
+
 	/**
 	 * header line
 	 * 
 	 */
 	private static final String HEADER_LINE = "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc";
-
-	/*
-	 * line break
-	 */
-	private final String BRK = "" + (char) 13 + (char) 10;
-
-	/**
-	 * convenience object to store tab
-	 * 
-	 */
-	final String tab = "\t";
-
-	/**
-	 * export the dataset to a string
-	 * 
-	 * @param primaryTrack
-	 *          the ownship track
-	 * @param secondaryTracks
-	 *          sec tracks = presumed to be just one
-	 * @param period
-	 *          the time period to export
-	 * @param sensorType
-	 *          what sensor type was specified
-	 * @return
-	 */
-	public String export(final WatchableList primaryTrack,
-			final WatchableList[] secondaryTracks, final TimePeriod period,
-			final String sensorType)
-	{
-		String res = null;
-
-		TrackWrapper pTrack = (TrackWrapper) primaryTrack;
-
-		// find the names of visible sensors
-		String sensorName = null;
-		Enumeration<Editable> sensors = pTrack.getSensors().elements();
-		while (sensors.hasMoreElements())
-		{
-			SensorWrapper sw = (SensorWrapper) sensors.nextElement();
-			if (sw.getVisible())
-			{
-				if (sensorName == null)
-					sensorName = sw.getName();
-				else
-					sensorName += "_" + sw.getName();
-			}
-		}
-
-		// and the secondary track
-		TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
-
-		// now the body bits
-		String body = this.getBody(pTrack, secTrack, period, sensorType);
-
-		// count how many items we found
-		int numRows = count(body, BRK);
-
-		// start off with the header bits
-		String header = this.getHeader(primaryTrack.getName(), primaryTrack
-				.getName(), sensorName, secTrack.getName(), period.getStartDTG()
-				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0);
-
-		// and collate it
-		res = header + body;
-
-		return res;
-	}
-
-	/**
-	 * get the first visible sensor
-	 * 
-	 * @param pTrack
-	 *          the track to search for sensors
-	 * @return
-	 */
-	public static SensorWrapper getSubjectSensor(TrackWrapper pTrack)
-	{
-		Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the final
-		// solution
-
-		// loop through collecting cuts from visible sensors
-		Enumeration<Editable> sensors = pTrack.getSensors().elements();
-		while (sensors.hasMoreElements())
-		{
-			SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
-			if (thisS.getVisible())
-			{
-				mySensors.add(thisS);
-			}
-		}
-
-		SensorWrapper mySensor = null;
-		if (mySensors.size() == 1)
-			mySensor = mySensors.firstElement();
-
-		return mySensor;
-	}
 
 	/**
 	 * Count the number of instances of substring within a string.
@@ -163,34 +170,204 @@ public class FlatFileExporter
 	}
 
 	/**
-	 * find the sensor cut nearest to the supplied time
+	 * extract a date from the supplied string, expecting date in the following
+	 * format: HH:mm:ss dd/MM/yyyy
 	 * 
-	 * @param hostTrack
-	 * @param target
+	 * @param dateStr
+	 *          date to convert
+	 * @return string as java date
+	 * @throws ParseException
+	 *           if the string doesn't match
+	 */
+	private static Date dateFrom(final String dateStr) throws ParseException
+	{
+		final DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		Date res = null;
+		res = df.parse(dateStr);
+		return res;
+	}
+
+	/**
+	 * format this date in the prescribed format
+	 * 
+	 * @param val
+	 *          the date to format
+	 * @return the formatted date
+	 */
+	static protected String formatThis(final Date val)
+	{
+		final DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		return df.format(val);
+	}
+
+	private static FixWrapper getFixAt(final TrackWrapper primaryTrack,
+			final HiResDate thisDTG)
+	{
+		FixWrapper priFix = null;
+		final Watchable[] priMatches = primaryTrack.getNearestTo(thisDTG);
+		if (priMatches.length > 0)
+		{
+			priFix = (FixWrapper) priMatches[0];
+		}
+		return priFix;
+	}
+
+	/**
+	 * get the first visible sensor
+	 * 
+	 * @param pTrack
+	 *          the track to search for sensors
 	 * @return
 	 */
-	protected SensorContactWrapper nearestCutTo(SensorWrapper sw, HiResDate target)
+	public static SensorWrapper getSubjectSensor(final TrackWrapper pTrack)
 	{
-		SensorContactWrapper res = null;
-		if (sw.getStartDTG().greaterThan(target) || sw.getEndDTG().lessThan(target))
+		final Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the
+																																					// final
+		// solution
+
+		// loop through collecting cuts from visible sensors
+		final Enumeration<Editable> sensors = pTrack.getSensors().elements();
+		while (sensors.hasMoreElements())
 		{
-			// nope, it's out of our data period
-		}
-		else
-		{
-			Enumeration<Editable> contents = sw.elements();
-			while (contents.hasMoreElements())
+			final SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
+			if (thisS.getVisible())
 			{
-				SensorContactWrapper thisCut = (SensorContactWrapper) contents
-						.nextElement();
-				long thisDate = thisCut.getDTG().getDate().getTime();
-				long thisOffset = Math.abs(thisDate - target.getDate().getTime());
-				if (thisOffset == 0)
-				{
-					res = thisCut;
-				}
+				mySensors.add(thisS);
 			}
 		}
+
+		SensorWrapper mySensor = null;
+		if (mySensors.size() == 1)
+			mySensor = mySensors.firstElement();
+
+		return mySensor;
+	}
+
+	/*
+	 * line break
+	 */
+	private final String BRK = "" + (char) 13 + (char) 10;
+
+	/**
+	 * convenience object to store tab
+	 * 
+	 */
+	final String tab = "\t";
+
+	/**
+	 * produce a tab-separated line of data
+	 * 
+	 * @return
+	 */
+	private String collateLine(final int secs, final int osStat,
+			final double osX_yds, final double osY_yds, final double spdKts,
+			final double headDegs, final int sensorStat, final double sensorX_yds,
+			final double sensorY_yds, final double sensorBrg,
+			final double sensorBacc, final double sensorFreq,
+			final double sensorFacc, final double sensorSpdKts,
+			final double sensorHdg, final String sensorType, final int msdStat,
+			final double msdX_yds, final double msdY_yds, final double msdSpdKts,
+			final double msdHdg, final int prdStat, final double prdX_yds,
+			final double prdY_yds, final double prdBrg, final double prdBrgAcc,
+			final int prdRangeYds, final int prdRangeAcc, final double prdCourse,
+			final double prdCourseAcc, final double prdSpdKts,
+			final double prdSpdAcc, final double prdFreq, final double prdFreqAcc)
+	{
+
+		final NumberFormat dp2 = new DecimalFormat("0.00");
+		final NumberFormat dp1 = new DecimalFormat("0.0");
+		final NumberFormat dp0 = new DecimalFormat("0");
+
+		String res = null;
+		res = secs + tab + osStat + tab + dp2.format(osX_yds) + tab
+				+ dp2.format(osY_yds) + tab + dp2.format(spdKts) + tab
+				+ dp2.format(headDegs) + tab + sensorStat + tab
+				+ dp0.format(sensorX_yds) + tab + dp0.format(sensorY_yds) + tab
+				+ dp1.format(sensorBrg) + tab + sensorBacc + tab + sensorFreq + tab
+				+ sensorFacc + tab + dp1.format(sensorSpdKts) + tab
+				+ dp1.format(sensorHdg) + tab + sensorType + tab + msdStat + tab
+				+ dp1.format(msdX_yds) + tab + dp1.format(msdY_yds) + tab
+				+ dp1.format(msdSpdKts) + tab + dp2.format(msdHdg) + tab + prdStat
+				+ tab + prdX_yds + tab + prdY_yds + tab + prdBrg + tab + prdBrgAcc
+				+ tab + prdRangeYds + tab + prdRangeAcc + tab + prdCourse + tab
+				+ prdCourseAcc + tab + prdSpdKts + tab + prdSpdAcc + tab + prdFreq
+				+ tab + prdFreqAcc;
+
+		return res;
+	}
+
+	/**
+	 * append indicated number of tabs
+	 * 
+	 * @param num
+	 *          how many tabs to create
+	 * @return the series of tabs
+	 */
+	private String createTabs(final int num)
+	{
+		final StringBuffer res = new StringBuffer();
+		for (int i = 0; i < num; i++)
+		{
+			res.append("\t");
+		}
+		return res.toString();
+	}
+
+	/**
+	 * export the dataset to a string
+	 * 
+	 * @param primaryTrack
+	 *          the ownship track
+	 * @param secondaryTracks
+	 *          sec tracks = presumed to be just one
+	 * @param period
+	 *          the time period to export
+	 * @param sensorType
+	 *          what sensor type was specified
+	 * @return
+	 */
+	public String export(final WatchableList primaryTrack,
+			final WatchableList[] secondaryTracks, final TimePeriod period,
+			final String sensorType)
+	{
+		String res = null;
+
+		final TrackWrapper pTrack = (TrackWrapper) primaryTrack;
+
+		// find the names of visible sensors
+		String sensorName = null;
+		final Enumeration<Editable> sensors = pTrack.getSensors().elements();
+		while (sensors.hasMoreElements())
+		{
+			final SensorWrapper sw = (SensorWrapper) sensors.nextElement();
+			if (sw.getVisible())
+			{
+				if (sensorName == null)
+					sensorName = sw.getName();
+				else
+					sensorName += "_" + sw.getName();
+			}
+		}
+
+		// and the secondary track
+		final TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
+
+		// now the body bits
+		final String body = this.getBody(pTrack, secTrack, period, sensorType);
+
+		// count how many items we found
+		final int numRows = count(body, BRK);
+
+		// start off with the header bits
+		final String header = this.getHeader(primaryTrack.getName(), primaryTrack
+				.getName(), sensorName, secTrack.getName(), period.getStartDTG()
+				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0);
+
+		// and collate it
+		res = header + body;
+
 		return res;
 	}
 
@@ -207,14 +384,14 @@ public class FlatFileExporter
 			final TrackWrapper secTrack, final TimePeriod period,
 			final String sensorType)
 	{
-		StringBuffer buffer = new StringBuffer();
+		final StringBuffer buffer = new StringBuffer();
 
 		// right, we're going to loop through the two tracks producing positions
 		// at all the specified times
 
 		// remember the primary interpolation
-		boolean primaryInterp = primaryTrack.getInterpolatePoints();
-		boolean secInterp = secTrack.getInterpolatePoints();
+		final boolean primaryInterp = primaryTrack.getInterpolatePoints();
+		final boolean secInterp = secTrack.getInterpolatePoints();
 
 		// switch in the interpolation
 		primaryTrack.setInterpolatePoints(true);
@@ -223,10 +400,10 @@ public class FlatFileExporter
 		WorldLocation origin = null;
 
 		// sort out the sensor
-		SensorWrapper sensor = getSubjectSensor(primaryTrack);
+		final SensorWrapper sensor = getSubjectSensor(primaryTrack);
 
 		for (long dtg = period.getStartDTG().getDate().getTime(); dtg < period
-				.getEndDTG().getDate().getTime(); dtg+= 1000)
+				.getEndDTG().getDate().getTime(); dtg += 1000)
 		{
 			FixWrapper priFix = null, secFix = null;
 			WorldLocation sensorLoc = null;
@@ -236,58 +413,60 @@ public class FlatFileExporter
 
 			// first the primary track
 			priFix = getFixAt(primaryTrack, thisDTG);
-			
-			// right, we only do this if we have primary data - skip forward a second if we're missing this pos
-			if(priFix == null)
+
+			// right, we only do this if we have primary data - skip forward a second
+			// if we're missing this pos
+			if (priFix == null)
 				continue;
-			
+
 			secFix = getFixAt(secTrack, thisDTG);
 
-			// right, we only do this if we have secondary data - skip forward a second if we're missing this pos
-			if(secFix == null)
+			// right, we only do this if we have secondary data - skip forward a
+			// second if we're missing this pos
+			if (secFix == null)
 				continue;
 
-			
 			sensorLoc = primaryTrack.getBacktraceTo(thisDTG,
 					sensor.getSensorOffset(), sensor.getWormInHole());
 
 			// see if we have a sensor cut at the right time
-			SensorContactWrapper theCut = nearestCutTo(sensor, thisDTG);
+			final SensorContactWrapper theCut = nearestCutTo(sensor, thisDTG);
 
 			if (origin == null)
 				origin = priFix.getLocation();
 
 			// now sort out the spatial components
-			WorldVector priVector = new WorldVector(priFix.getLocation().subtract(
-					origin));
-			WorldVector secVector = new WorldVector(secFix.getLocation().subtract(
-					origin));
-			WorldVector senVector = new WorldVector(sensorLoc.subtract(origin));
+			final WorldVector priVector = new WorldVector(priFix.getLocation()
+					.subtract(origin));
+			final WorldVector secVector = new WorldVector(secFix.getLocation()
+					.subtract(origin));
+			final WorldVector senVector = new WorldVector(sensorLoc.subtract(origin));
 
-			double priRange = MWC.Algorithms.Conversions.Degs2Yds(priVector
+			final double priRange = MWC.Algorithms.Conversions.Degs2Yds(priVector
 					.getRange());
-			double secRange = MWC.Algorithms.Conversions.Degs2Yds(secVector
+			final double secRange = MWC.Algorithms.Conversions.Degs2Yds(secVector
 					.getRange());
-			double senRange = MWC.Algorithms.Conversions.Degs2Yds(senVector
+			final double senRange = MWC.Algorithms.Conversions.Degs2Yds(senVector
 					.getRange());
 
-			double priX = (Math.sin(priVector.getBearing()) * priRange);
-			double priY = Math.cos(priVector.getBearing()) * priRange;
-			double secX = (Math.sin(secVector.getBearing()) * secRange);
-			double secY = (Math.cos(secVector.getBearing()) * secRange);
-			double senX = (Math.sin(senVector.getBearing()) * senRange);
-			double senY = (Math.cos(senVector.getBearing()) * senRange);
+			final double priX = (Math.sin(priVector.getBearing()) * priRange);
+			final double priY = Math.cos(priVector.getBearing()) * priRange;
+			final double secX = (Math.sin(secVector.getBearing()) * secRange);
+			final double secY = (Math.cos(secVector.getBearing()) * secRange);
+			final double senX = (Math.sin(senVector.getBearing()) * senRange);
+			final double senY = (Math.cos(senVector.getBearing()) * senRange);
 
 			// do the calc as long, in case it's massive...
-			long longSecs = (thisDTG.getMicros() - period.getStartDTG().getMicros()) / 1000000;
-			int secs = (int) longSecs;
+			final long longSecs = (thisDTG.getMicros() - period.getStartDTG()
+					.getMicros()) / 1000000;
+			final int secs = (int) longSecs;
 
 			// and the freq
 			double senFreq = -999.9;
 			if ((theCut != null) && (theCut.getHasFrequency()))
 				senFreq = theCut.getFrequency();
 
-			int osStat = 7;
+			final int osStat = 7;
 			int senStat;
 			if (theCut == null)
 				senStat = 0;
@@ -306,9 +485,9 @@ public class FlatFileExporter
 
 			}
 
-			int msdStat = 1 + 2 + 4;
-			int prdStat = 0;
-			
+			final int msdStat = 1 + 2 + 4;
+			final int prdStat = 0;
+
 			final double PRD_FREQ_ACC = -999.9;
 
 			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading Sensor_Status Sensor_X
@@ -318,10 +497,10 @@ public class FlatFileExporter
 			// Prd_Status Prd_X Prd_Y Prd_Brg Prd_Brg_Acc Prd_Range Prd_Range_Acc
 			// Prd_Course Prd_Cacc Prd_Speed Prd_Sacc Prd_Freq Prd_Freq_Acc";
 
-			double msdXyds = secX;
-			double msdYyds = secY;
-			double msdSpdKts = secFix.getSpeed();
-			double msdCourseDegs = secFix.getCourseDegs();
+			final double msdXyds = secX;
+			final double msdYyds = secY;
+			final double msdSpdKts = secFix.getSpeed();
+			final double msdCourseDegs = secFix.getCourseDegs();
 
 			final double prdFreq = -999.9;
 			final double prdSpdAcc = -999.9;
@@ -331,18 +510,19 @@ public class FlatFileExporter
 			final int prdRangeAcc = -999;
 			final int prdRangeYds = -999;
 			final double prdBrgAcc = -999.9;
-			double prdBrg = -999.9;
+			final double prdBrg = -999.9;
 			final double prdYYds = -999.9;
 			final double prdXYds = -999.9;
 			final double sensorFacc = -999.9;
 			final double sensorBacc = -999.9;
 
-			String nextLine = collateLine(secs, osStat, priX, priY,
+			final String nextLine = collateLine(secs, osStat, priX, priY,
 					priFix.getSpeed(), priFix.getCourseDegs(), senStat, senX, senY,
 					theBearing, sensorBacc, senFreq, sensorFacc, senSpd, senHeading,
-					sensorType, msdStat, msdXyds, msdYyds, msdSpdKts, msdCourseDegs, prdStat, prdXYds,
-					prdYYds, prdBrg, prdBrgAcc, prdRangeYds, prdRangeAcc, prdCourse,
-					prdCourseAcc, prdSpdKts, prdSpdAcc, prdFreq, PRD_FREQ_ACC);
+					sensorType, msdStat, msdXyds, msdYyds, msdSpdKts, msdCourseDegs,
+					prdStat, prdXYds, prdYYds, prdBrg, prdBrgAcc, prdRangeYds,
+					prdRangeAcc, prdCourse, prdCourseAcc, prdSpdKts, prdSpdAcc, prdFreq,
+					PRD_FREQ_ACC);
 
 			buffer.append(nextLine);
 			buffer.append(BRK);
@@ -354,80 +534,6 @@ public class FlatFileExporter
 		secTrack.setInterpolatePoints(secInterp);
 
 		return buffer.toString();
-	}
-
-	private static FixWrapper getFixAt(final TrackWrapper primaryTrack,
-			final HiResDate thisDTG)
-	{
-		FixWrapper priFix = null;
-		Watchable[] priMatches = primaryTrack.getNearestTo(thisDTG);
-		if (priMatches.length > 0)
-		{
-			priFix = (FixWrapper) priMatches[0];
-		}
-		return priFix;
-	}
-
-	/**
-	 * append indicated number of tabs
-	 * 
-	 * @param num
-	 *          how many tabs to create
-	 * @return the series of tabs
-	 */
-	private String createTabs(int num)
-	{
-		StringBuffer res = new StringBuffer();
-		for (int i = 0; i < num; i++)
-		{
-			res.append("\t");
-		}
-		return res.toString();
-	}
-
-	/**
-	 * extract a date from the supplied string, expecting date in the following
-	 * format: HH:mm:ss dd/MM/yyyy
-	 * 
-	 * @param dateStr
-	 *          date to convert
-	 * @return string as java date
-	 * @throws ParseException
-	 *           if the string doesn't match
-	 */
-	private static Date dateFrom(String dateStr) throws ParseException
-	{
-		DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
-		df.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Date res = null;
-		res = df.parse(dateStr);
-		return res;
-	}
-
-	/**
-	 * format this date in the prescribed format
-	 * 
-	 * @param val
-	 *          the date to format
-	 * @return the formatted date
-	 */
-	static protected String formatThis(Date val)
-	{
-		DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
-		df.setTimeZone(TimeZone.getTimeZone("GMT"));
-		return df.format(val);
-	}
-
-	private String testExport() throws ParseException
-	{
-		final String StartTime = "04:45:00	20/04/2009";
-		final Date startDate = dateFrom(StartTime);
-		final String endTime = "04:45:05	20/04/2009";
-		final Date endDate = dateFrom(endTime);
-		String res = getHeader("Vessel", "OS track 0100-0330",
-				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321);
-		res += getTestBody();
-		return res;
 	}
 
 	/**
@@ -444,12 +550,13 @@ public class FlatFileExporter
 	 * @param Y_ORIGIN_YDS
 	 * @return
 	 */
-	private String getHeader(final String OWNSHIP, String OS_TRACK_NAME,
-			String SENSOR_NAME, String TGT_NAME, Date startDate, Date endDate,
-			int NUM_RECORDS, int X_ORIGIN_YDS, int Y_ORIGIN_YDS)
+	private String getHeader(final String OWNSHIP, final String OS_TRACK_NAME,
+			final String SENSOR_NAME, final String TGT_NAME, final Date startDate,
+			final Date endDate, final int NUM_RECORDS, final int X_ORIGIN_YDS,
+			final int Y_ORIGIN_YDS)
 	{
 
-		String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
+		final String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
 				+ "MISSION_NAME" + createTabs(33) + BRK + OWNSHIP + createTabs(33)
 				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
 				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
@@ -468,8 +575,8 @@ public class FlatFileExporter
 	 */
 	private String getTestBody()
 	{
-		String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0, -999,
-				-999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6,
+		final String body = collateLine(0, 7, 6.32332, -5555.55, 2.7, 200.1, 0,
+				-999, -999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9, "-999", 6,
 				-999.9, -999.9, 1.1, 11.12, 0, -999.9, -999.9, -999.9, -999.9, -999,
 				-999, -999.9, -999.9, -999.9, -999.9, -999.9, -999.9)
 				+ BRK
@@ -502,144 +609,48 @@ public class FlatFileExporter
 	}
 
 	/**
-	 * produce a tab-separated line of data
+	 * find the sensor cut nearest to the supplied time
 	 * 
+	 * @param hostTrack
+	 * @param target
 	 * @return
 	 */
-	private String collateLine(int secs, int osStat, double osX_yds,
-			double osY_yds, double spdKts, double headDegs, int sensorStat,
-			double sensorX_yds, double sensorY_yds, double sensorBrg,
-			double sensorBacc, double sensorFreq, double sensorFacc,
-			double sensorSpdKts, double sensorHdg, String sensorType, int msdStat,
-			double msdX_yds, double msdY_yds, double msdSpdKts, double msdHdg,
-			int prdStat, double prdX_yds, double prdY_yds, double prdBrg,
-			double prdBrgAcc, int prdRangeYds, int prdRangeAcc, double prdCourse,
-			double prdCourseAcc, double prdSpdKts, double prdSpdAcc, double prdFreq,
-			double prdFreqAcc)
+	protected SensorContactWrapper nearestCutTo(final SensorWrapper sw,
+			final HiResDate target)
 	{
-
-		NumberFormat dp2 = new DecimalFormat("0.00");
-		NumberFormat dp1 = new DecimalFormat("0.0");
-		NumberFormat dp0 = new DecimalFormat("0");
-
-		String res = null;
-		res = secs + tab + osStat + tab + dp2.format(osX_yds) + tab
-				+ dp2.format(osY_yds) + tab + dp2.format(spdKts) + tab
-				+ dp2.format(headDegs) + tab + sensorStat + tab + dp0.format(sensorX_yds)
-				+ tab + dp0.format(sensorY_yds) + tab + dp1.format(sensorBrg) + tab
-				+ sensorBacc + tab + sensorFreq + tab + sensorFacc + tab
-				+ dp1.format(sensorSpdKts) + tab + dp1.format(sensorHdg) + tab
-				+ sensorType + tab + msdStat + tab + dp1.format(msdX_yds) + tab
-				+ dp1.format(msdY_yds) + tab + dp1.format(msdSpdKts) + tab
-				+ dp2.format(msdHdg) + tab + prdStat + tab + prdX_yds + tab + prdY_yds
-				+ tab + prdBrg + tab + prdBrgAcc + tab + prdRangeYds + tab
-				+ prdRangeAcc + tab + prdCourse + tab + prdCourseAcc + tab + prdSpdKts
-				+ tab + prdSpdAcc + tab + prdFreq + tab + prdFreqAcc;
-
+		SensorContactWrapper res = null;
+		if (sw.getStartDTG().greaterThan(target) || sw.getEndDTG().lessThan(target))
+		{
+			// nope, it's out of our data period
+		}
+		else
+		{
+			final Enumeration<Editable> contents = sw.elements();
+			while (contents.hasMoreElements())
+			{
+				final SensorContactWrapper thisCut = (SensorContactWrapper) contents
+						.nextElement();
+				final long thisDate = thisCut.getDTG().getDate().getTime();
+				final long thisOffset = Math.abs(thisDate - target.getDate().getTime());
+				if (thisOffset == 0)
+				{
+					res = thisCut;
+				}
+			}
+		}
 		return res;
 	}
 
-	// ////////////////////////////////////////////////////////////////
-	// TEST THIS CLASS
-	// ////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
+	private String testExport() throws ParseException
 	{
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		public void testExport()
-		{
-
-		}
-
-		private String readFileAsString(String filePath) throws java.io.IOException
-		{
-			StringBuffer fileData = new StringBuffer(1000);
-			BufferedReader reader = new BufferedReader(new FileReader(filePath));
-			char[] buf = new char[1024];
-			int numRead = 0;
-			while ((numRead = reader.read(buf)) != -1)
-			{
-				String readData = String.valueOf(buf, 0, numRead);
-				fileData.append(readData);
-				buf = new char[1024];
-			}
-			reader.close();
-			return fileData.toString();
-		}
-
-		private void dumpToFile(String str, String filename)
-		{
-			File outFile = new File(filename);
-			FileWriter out = null;
-			try
-			{
-				out = new FileWriter(outFile);
-				out.write(str);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				try
-				{
-					out.close();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-		private String getTestData()
-		{
-			String res = null;
-			try
-			{
-				res = readFileAsString("src/Debrief/ReaderWriter/FlatFile/fakedata.txt");
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			return res;
-		}
-
-		public void testAgainstSample() throws IOException
-		{
-			final String TARGET_STR = getTestData();
-			assertNotNull("test data found", TARGET_STR);
-			FlatFileExporter fa = new FlatFileExporter();
-			String res = null;
-			try
-			{
-				res = fa.testExport();
-			}
-			catch (ParseException e)
-			{
-				e.printStackTrace();
-			}
-			assertNotNull("produced string", res);
-			assertEquals("correct string", TARGET_STR, res);
-
-			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
-
-		}
-
-		public void testDateFormat() throws ParseException
-		{
-			Date theDate = dateFrom("01:45:00	22/12/2002");
-			String val = formatThis(theDate);
-			assertEquals("correct start date", "01:45:00	22/12/2002", val);
-		}
+		final String StartTime = "04:45:00	20/04/2009";
+		final Date startDate = dateFrom(StartTime);
+		final String endTime = "04:45:05	20/04/2009";
+		final Date endDate = dateFrom(endTime);
+		String res = getHeader("Vessel", "OS track 0100-0330",
+				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321);
+		res += getTestBody();
+		return res;
 	}
 
 }
