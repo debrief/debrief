@@ -18,9 +18,12 @@ abstract public  class PlainCookieSensorHandler extends CoreSensorHandler
 {
 
   private final static String type = "PlainCookieSensor";
+  private final static String HAS_RANGE = "ProducesRange";
+
   private static final String DETECTION_RANGE = "DetectionRange";
 
   WorldDistance _detRange;
+  boolean _produceRange = true;
 
 
   public PlainCookieSensorHandler()
@@ -35,14 +38,25 @@ abstract public  class PlainCookieSensorHandler extends CoreSensorHandler
         _detRange = res;
       }
     });
+    
+    addAttributeHandler(new HandleBooleanAttribute(HAS_RANGE)
+    {
+      public void setValue(String name, final boolean val)
+      {
+      	_produceRange = val;
+      }
+    });
   }
 
   protected SensorType getSensor(int myId, String myName)
   {
-    final ASSET.Models.Sensor.Cookie.PlainCookieSensor optic = new PlainCookieSensor(myId, _detRange);
-    optic.setName(myName);
+    final ASSET.Models.Sensor.Cookie.PlainCookieSensor cookieS = new PlainCookieSensor(myId, _detRange);
+    cookieS.setName(myName);
+    
+    cookieS.setProducesRange(_produceRange);
 
-    return optic;
+
+    return cookieS;
   }
 
   public void elementClosed()
@@ -51,6 +65,7 @@ abstract public  class PlainCookieSensorHandler extends CoreSensorHandler
     
     // and now clear our data
     _detRange = null;
+    _produceRange = true;
   }
 
   static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,

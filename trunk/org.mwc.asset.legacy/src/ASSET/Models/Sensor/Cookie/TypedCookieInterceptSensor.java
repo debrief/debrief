@@ -310,17 +310,7 @@ public class TypedCookieInterceptSensor extends CoreSensor
 		 */
 		public java.beans.PropertyDescriptor[] getPropertyDescriptors()
 		{
-			try
-			{
-				final java.beans.PropertyDescriptor[] res =
-				{ prop("Name", "the name of this sensor"),
-						prop("DetectionRange", "detection range of this sensor") };
-				return res;
-			}
-			catch (java.beans.IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
+			return super.getPropertyDescriptors();
 		}
 
 	}

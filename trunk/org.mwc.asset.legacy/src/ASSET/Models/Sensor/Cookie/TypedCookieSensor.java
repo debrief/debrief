@@ -1,5 +1,6 @@
 package ASSET.Models.Sensor.Cookie;
 
+import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -42,12 +43,18 @@ public class TypedCookieSensor extends CoreSensor
 	private HashMap<TypedRangeDoublet, DetectionList> _typedDetections;
 
 	private Integer _detectionState = DetectionEvent.DETECTED;
-	
-	
-	/** optional sensor medium
+
+	/**
+	 * optional sensor medium
 	 * 
 	 */
 	private int _medium;
+
+	/**
+	 * whether this sensor is capable of producing range data
+	 * 
+	 */
+	private boolean _produceRange = true;
 
 	/**
 	 * 
@@ -70,6 +77,26 @@ public class TypedCookieSensor extends CoreSensor
 		this(id, rangeDoublets, DetectionEvent.DETECTED);
 	}
 
+	/**
+	 * whether this sensor is capable of producing range values
+	 * 
+	 * @param val
+	 *          yes/no
+	 */
+	public void setProducesRange(boolean val)
+	{
+		_produceRange = val;
+	}
+
+	/**
+	 * whether this sensor is capable of producing range values
+	 * 
+	 * @return yes/no
+	 */
+	public boolean getProducesRange()
+	{
+		return _produceRange;
+	}
 
 	public int getMedium()
 	{
@@ -80,7 +107,7 @@ public class TypedCookieSensor extends CoreSensor
 	{
 		_medium = medium;
 	}
-	
+
 	public Vector<TypedRangeDoublet> getRanges()
 	{
 		return _rangeDoublets;
@@ -91,7 +118,8 @@ public class TypedCookieSensor extends CoreSensor
 			ParticipantType other, EnvironmentType env)
 	{
 		// note, we don't do our type checking here, since in the detectThis method
-		// we will still have to loop through all our types in order to ge the relevant
+		// we will still have to loop through all our types in order to ge the
+		// relevant
 		// range doublet.
 		return true;
 	}
@@ -133,7 +161,7 @@ public class TypedCookieSensor extends CoreSensor
 				// ok, it's worth sorting out the range
 				if (range == null)
 				{
-					range = host.rangeFrom(target.getStatus().getLocation()); 
+					range = host.rangeFrom(target.getStatus().getLocation());
 				}
 
 				if (doublet.canDetect(range))
@@ -145,13 +173,18 @@ public class TypedCookieSensor extends CoreSensor
 					sep = target.getStatus().getLocation()
 							.subtract(host.getStatus().getLocation());
 
-					
 					double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
 							.getBearing());
 
+					final WorldDistance rangeToUse;
+					if (_produceRange)
+						rangeToUse = range;
+					else
+						rangeToUse = null;
+
 					// cool, in contact. write it up.
 					res = new DetectionEvent(time, host.getId(), host.getStatus()
-							.getLocation(), this, range, range, new Float(brgDegs),
+							.getLocation(), this, rangeToUse, rangeToUse, new Float(brgDegs),
 							new Float(super.relativeBearing(host.getStatus().getCourse(),
 									brgDegs)), new Float(1), target.getCategory(), new Float(
 									target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
@@ -290,9 +323,21 @@ public class TypedCookieSensor extends CoreSensor
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res =
-				{ prop("Name", "the name of this sensor"),
-						prop("DetectionRange", "detection range of this sensor") };
+				// get the parent attributes
+				final PropertyDescriptor[] parentAttributes = super.getPropertyDescriptors();
+
+				// get my attributes
+				final PropertyDescriptor[] myAttributes =
+				{ prop("ProducesRange", "whether this sensor can produce range values") };
+
+				// ok, now try to combine the two
+				PropertyDescriptor[] res = new PropertyDescriptor[parentAttributes.length
+				                                      						+ myAttributes.length];
+				// copy the arrays into it
+				System.arraycopy(parentAttributes, 0, res, 0, parentAttributes.length);
+				System.arraycopy(myAttributes, 0, res, parentAttributes.length,
+						myAttributes.length);
+
 				return res;
 			}
 			catch (java.beans.IntrospectionException e)

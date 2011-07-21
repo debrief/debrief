@@ -25,6 +25,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 {
 
   private final static String type = "TypedCookieSensor";
+  private final static String HAS_RANGE = "ProducesRange";
 	private Vector<TypedRangeDoublet> _rangeDoublets;
 	
   String _detectionLevel;
@@ -32,6 +33,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
   
   int _medium = -1;
   private final static String MEDIUM = "Medium";
+  boolean _produceRange = true;
 
   public static EnvironmentType.MediumPropertyEditor _myEditor =
     new EnvironmentType.MediumPropertyEditor();
@@ -53,6 +55,13 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 				_rangeDoublets.add(doublet);
 			}});
     
+    addAttributeHandler(new HandleBooleanAttribute(HAS_RANGE)
+    {
+      public void setValue(String name, final boolean val)
+      {
+      	_produceRange = val;
+      }
+    });
     addAttributeHandler(new HandleAttribute(MEDIUM)
     {
       public void setValue(String name, final String val)
@@ -85,15 +94,13 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
     
     final ASSET.Models.Sensor.Cookie.TypedCookieSensor typedSensor = new TypedCookieSensor(myId, _rangeDoublets, thisDetLevel);
     typedSensor.setName(myName);
+    
+    typedSensor.setProducesRange(_produceRange);
 
     
     // do we have a medium
     if(_medium != -1)
     	typedSensor.setMedium(_medium);
-
-    _rangeDoublets = null;
-    _detectionLevel = null;
-    _medium = -1;
 
     return typedSensor;
   }
@@ -102,6 +109,10 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
   {
     super.elementClosed();
 
+    _rangeDoublets = null;
+    _detectionLevel = null;
+    _medium = -1;
+    _produceRange = true;
   }
 
   static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
