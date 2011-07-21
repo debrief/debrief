@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -38,8 +39,9 @@ public class VConnect extends Composite implements IVConnect
 	private List listScenarios;
 	private TableViewer partViewer;
 	private Button btnDisconnect;
-//	private Button btnManual;
+	// private Button btnManual;
 	private StringProvider _stringProvider;
+	private Button btnSelfHost;
 
 	/**
 	 * Create the composite.
@@ -110,9 +112,13 @@ public class VConnect extends Composite implements IVConnect
 		btnDisconnect.setText("Disconnect");
 		btnDisconnect.setBounds(171, 10, 79, 31);
 
-//		btnManual = new Button(grpConnection, SWT.FLAT);
-//		btnManual.setBounds(63, 3, 67, 21);
-//		btnManual.setText("Manual");
+		btnSelfHost = new Button(grpConnection, SWT.CHECK);
+		btnSelfHost.setBounds(76, 5, 79, 18);
+		btnSelfHost.setText("Self host");
+
+		// btnManual = new Button(grpConnection, SWT.FLAT);
+		// btnManual.setBounds(63, 3, 67, 21);
+		// btnManual.setText("Manual");
 
 	}
 
@@ -125,17 +131,17 @@ public class VConnect extends Composite implements IVConnect
 	@Override
 	public void addManualListener(final ClickHandler handler)
 	{
-//		btnManual.addSelectionListener(new SelectionListener()
-//		{
-//			public void widgetSelected(SelectionEvent e)
-//			{
-//				handler.clicked();
-//			}
-//
-//			public void widgetDefaultSelected(SelectionEvent e)
-//			{
-//			}
-//		});
+		// btnManual.addSelectionListener(new SelectionListener()
+		// {
+		// public void widgetSelected(SelectionEvent e)
+		// {
+		// handler.clicked();
+		// }
+		//
+		// public void widgetDefaultSelected(SelectionEvent e)
+		// {
+		// }
+		// });
 	}
 
 	@Override
@@ -379,5 +385,33 @@ public class VConnect extends Composite implements IVConnect
 	public String getString(String title, String message)
 	{
 		return _stringProvider.getString(title, message);
+	}
+
+	@Override
+	public void addSelfHostListener(final BooleanHandler handler)
+	{
+		btnSelfHost.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				handler.change(btnSelfHost.getSelection());
+			}
+
+		});
+	}
+
+	@Override
+	public void clearServers()
+	{
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				listServerViewer.getList().removeAll();
+			}
+		});
 	}
 }

@@ -1,8 +1,6 @@
 package org.mwc.asset.netasset2;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.graphics.Point;
@@ -12,9 +10,7 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
-import org.mwc.asset.netCore.core.AServer;
 import org.mwc.asset.netCore.core.MClient;
-import org.mwc.asset.netCore.test.CoreTest;
 import org.mwc.asset.netasset2.connect.IVConnect;
 import org.mwc.asset.netasset2.core.PClient;
 import org.mwc.asset.netasset2.part.IVPartControl;
@@ -23,9 +19,7 @@ import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.asset.netasset2.time.IVTimeControl;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
-import ASSET.ScenarioType;
 import ASSET.Participants.ParticipantDetectedListener;
-import ASSET.Scenario.MultiScenarioLister;
 
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
@@ -35,7 +29,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 
 	private PartMonitor _myPartMonitor;
 	private PClient _presenter;
-	private AServer testServer;
 
 	public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer)
 	{
@@ -82,9 +75,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 	public void postWindowOpen()
 	{
 		super.postWindowOpen();
-
-		// get ourselves a server
-		doDummyWork();
 
 		// ok, get ready to learn about open windows
 		setupListeners();
@@ -182,32 +172,5 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor
 
 	}
 
-	private void doDummyWork()
-	{
-		try
-		{
-			testServer = new AServer();
-			testServer.start();
-			// ok, give the server some data
-			MultiScenarioLister lister = new MultiScenarioLister()
-			{
-
-				@Override
-				public Vector<ScenarioType> getScenarios()
-				{
-					return CoreTest.getScenarioList();
-				}
-			};
-			testServer.setDataProvider(lister);
-
-			// take note of address
-			System.out.println("My address is " + InetAddress.getLocalHost());
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 }

@@ -21,7 +21,9 @@ import org.mwc.asset.netCore.common.Network.AHandler;
 import org.mwc.asset.netCore.common.Network.LightParticipant;
 import org.mwc.asset.netCore.common.Network.LightScenario;
 import org.mwc.asset.netCore.common.Network.ScenControl;
+import org.mwc.asset.netCore.core.AServer;
 import org.mwc.asset.netCore.core.IMClient;
+import org.mwc.asset.netCore.test.CoreTest;
 import org.mwc.asset.netasset2.Activator;
 import org.mwc.asset.netasset2.connect.IVConnect;
 import org.mwc.asset.netasset2.connect.IVConnect.ClickHandler;
@@ -41,6 +43,7 @@ import ASSET.Participants.ParticipantDecidedListener;
 import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
+import ASSET.Scenario.MultiScenarioLister;
 import ASSET.Scenario.ScenarioSteppedListener;
 
 public class PClient implements ScenarioSteppedListener
@@ -54,6 +57,8 @@ public class PClient implements ScenarioSteppedListener
 	private Vector<IVPartMovement> _partMovers;
 	private Vector<ParticipantDetectedListener> _partDetectors;
 	private Vector<IVConnect> _connectors;
+
+	private AServer _selfHostServer;
 
 	public PClient(IMClient model)
 	{
@@ -260,13 +265,14 @@ public class PClient implements ScenarioSteppedListener
 		// ok, get any servers
 		List<InetAddress> adds = _model.discoverHosts();
 
-		if (adds != null)
+		// ok, disable the server list, to stop user re-connecting
+		Iterator<IVConnect> iter = _connectors.iterator();
+		while (iter.hasNext())
 		{
-			// ok, disable the server list, to stop user re-connecting
-			Iterator<IVConnect> iter = _connectors.iterator();
-			while (iter.hasNext())
+			IVConnect ivPart = iter.next();
+			
+			if (adds != null)
 			{
-				IVConnect ivPart = iter.next();
 				ivPart.setServers(adds);
 				ivPart.enableServers();
 			}
@@ -452,6 +458,14 @@ public class PClient implements ScenarioSteppedListener
 			}
 		});
 
+		view.addSelfHostListener(new IVConnect.BooleanHandler()
+		{
+			public void change(boolean val)
+			{
+				selfHostChanged(val);
+			}
+		});
+
 		view.addManualListener(new ClickHandler()
 		{
 
@@ -568,6 +582,43 @@ public class PClient implements ScenarioSteppedListener
 				return null;
 			}
 		});
+	}
+
+	protected void selfHostChanged(boolean val)
+	{
+
+		try
+		{
+			if (_selfHostServer == null)
+			{
+				_selfHostServer = new AServer();
+				// ok, give the server some data
+				MultiScenarioLister lister = new MultiScenarioLister()
+				{
+
+					@Override
+					public Vector<ScenarioType> getScenarios()
+					{
+						return CoreTest.getScenarioList();
+					}
+				};
+				_selfHostServer.setDataProvider(lister);
+
+				// take note of address
+				System.out.println("My address is " + InetAddress.getLocalHost());
+			}
+
+			if (val)
+				_selfHostServer.start();
+			else
+				_selfHostServer.stop();
+
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void getHost()
