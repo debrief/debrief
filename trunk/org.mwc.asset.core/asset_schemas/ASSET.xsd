@@ -174,11 +174,9 @@
 				None</xs:documentation>
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="PlotInvestigationSubjectObserver"
-				type="PlotInvestigationSubjectObserverType"/>
+			<xs:element name="PlotInvestigationSubjectObserver" type="PlotInvestigationSubjectObserverType"/>
 			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType"/>
-			<xs:element name="DebriefDeployableSensorLocationObserver"
-				type="DebriefDeployableSensorLocationObserverType"/>
+			<xs:element name="DebriefDeployableSensorLocationObserver" type="DebriefDeployableSensorLocationObserverType"/>
 			<xs:element name="TrackPlotObserver" type="TrackPlotObserverType"/>
 			<xs:element name="ElapsedTimeObserver" type="ElapsedTimeObserverType"/>
 			<xs:element name="FinalStateObserver" type="FinalStateObserverType"/>
@@ -192,8 +190,7 @@
 			<xs:element name="PlotSensorObserver" type="PlotSensorObserverType"/>
 			<xs:element name="PlotDetectionStatusObserver" type="PlotDetectionStatusObserverType"/>
 			<xs:element name="StopOnDetectionObserver" type="StopOnDetectionObserverType"/>
-			<xs:element name="StopOnProximityDetectionObserver"
-				type="StopOnProximityDetectionObserverType"/>
+			<xs:element name="StopOnProximityDetectionObserver" type="StopOnProximityDetectionObserverType"/>
 			<xs:element name="ProportionDetectedObserver" type="ProportionDetectedObserverType"/>
 			<xs:element name="TimeToLaunchObserver" type="TimeToLaunchObserverType"/>
 		</xs:choice>
@@ -275,20 +272,16 @@
 			<xs:extension base="CoreSensorType">
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element name="BroadbandSensor" type="BroadbandSensorType" minOccurs="0"/>
-					<xs:element name="ActiveBroadbandSensor" type="ActiveBroadbandSensorType"
-						minOccurs="0"/>
-					<xs:element name="DippingActiveBroadbandSensor"
-						type="DippingActiveBroadbandSensorType" minOccurs="0"/>
+					<xs:element name="ActiveBroadbandSensor" type="ActiveBroadbandSensorType" minOccurs="0"/>
+					<xs:element name="DippingActiveBroadbandSensor" type="DippingActiveBroadbandSensorType" minOccurs="0"/>
 					<xs:element name="NarrowbandSensor" type="NarrowbandSensorType" minOccurs="0"/>
 					<xs:element name="OpticLookupSensor" type="OpticLookupSensorType" minOccurs="0"/>
 					<xs:element name="PlainCookieSensor" type="PlainCookieSensorType" minOccurs="0"/>
 					<xs:element name="TypedCookieSensor" type="TypedCookieSensorType" minOccurs="0"/>
-					<xs:element name="TypedCookieInterceptSensor" type="TypedCookieInterceptType"
-						minOccurs="0"/>
+					<xs:element name="TypedCookieInterceptSensor" type="TypedCookieInterceptType" minOccurs="0"/>
 					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
 					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
-					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType"
-						minOccurs="0"/>
+					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType" minOccurs="0"/>
 				</xs:choice>
 			</xs:extension>
 		</xs:complexContent>
@@ -460,6 +453,12 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="ProducesRange" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether this sensor produces range data (default = true)
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -475,15 +474,13 @@
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
 				<xs:sequence>
-					<xs:element name="TypedRangeDoublet" type="TypedRangeDatumType"
-						maxOccurs="unbounded" minOccurs="1">
+					<xs:element name="TypedRangeDoublet" type="TypedRangeDatumType" maxOccurs="unbounded" minOccurs="1">
 						<xs:annotation>
 							<xs:documentation>Collection of detection range vs target type
 								items</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-
 				<xs:attribute name="DetectionLevel" type="DetectionLevelType" use="optional">
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this
@@ -505,14 +502,19 @@
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
 				<xs:sequence>
-					<xs:element name="TypedRangeDoublet" type="TypedRangeDatumType"
-						maxOccurs="unbounded" minOccurs="1">
+					<xs:element name="TypedRangeDoublet" type="TypedRangeDatumType" maxOccurs="unbounded" minOccurs="1">
 						<xs:annotation>
 							<xs:documentation>Collection of detection range vs target type
 								items</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="ProducesRange" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether this sensor produces range data (default = true)
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="DetectionLevel" type="DetectionLevelType">
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this
@@ -738,8 +740,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="PredictedRangeDatum" type="PredictedRangeDatumType"
-				maxOccurs="unbounded"/>
+			<xs:element name="PredictedRangeDatum" type="PredictedRangeDatumType" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -776,8 +777,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="TargetVisibilityDatum" type="TargetVisibilityDatumType"
-				maxOccurs="unbounded"/>
+			<xs:element name="TargetVisibilityDatum" type="TargetVisibilityDatumType" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -827,8 +827,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="TargetAspectDatum" type="TargetAspectDatumType" maxOccurs="unbounded"
-			/>
+			<xs:element name="TargetAspectDatum" type="TargetAspectDatumType" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -848,8 +847,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="TargetSeaStateDatum" type="TargetSeaStateDatumType"
-				maxOccurs="unbounded"/>
+			<xs:element name="TargetSeaStateDatum" type="TargetSeaStateDatumType" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attribute name="UnknownType" type="xs:float" use="optional">
 			<xs:annotation>
@@ -973,15 +971,13 @@
 					</xs:annotation>
 				</xs:element>
 			</xs:choice>
-			<xs:element name="RadiatedCharacteristics" type="RadiatedCharacteristicsType"
-				minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="RadiatedCharacteristics" type="RadiatedCharacteristicsType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>The types of radiated noise produced by this
 						participant</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="SelfNoiseCharacteristics" type="SelfNoiseCharacteristicsType"
-				minOccurs="0">
+			<xs:element name="SelfNoiseCharacteristics" type="SelfNoiseCharacteristicsType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>What type of self-noise encountered by this
 						participant</xs:documentation>
@@ -1078,8 +1074,7 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="FixedWingMovementCharacteristics"
-						type="FixedWingMovementCharacteristicsType">
+					<xs:element name="FixedWingMovementCharacteristics" type="FixedWingMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1100,8 +1095,7 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="HeloMovementCharacteristics"
-						type="HeloMovementCharacteristicsType">
+					<xs:element name="HeloMovementCharacteristics" type="HeloMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1147,8 +1141,7 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SSMovementCharacteristics"
-						type="SSMovementCharacteristicsType"/>
+					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1164,8 +1157,7 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SSMovementCharacteristics"
-						type="SSMovementCharacteristicsType">
+					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1193,8 +1185,7 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SSMovementCharacteristics"
-						type="SSMovementCharacteristicsType">
+					<xs:element name="SSMovementCharacteristics" type="SSMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -1215,8 +1206,7 @@
 		<xs:complexContent>
 			<xs:extension base="ParticipantType">
 				<xs:sequence>
-					<xs:element name="SurfaceMovementCharacteristics"
-						type="SurfaceMovementCharacteristicsType">
+					<xs:element name="SurfaceMovementCharacteristics" type="SurfaceMovementCharacteristicsType">
 						<xs:annotation>
 							<xs:documentation>The movement characteristics of this
 								participant</xs:documentation>
@@ -3587,15 +3577,13 @@
 			<xs:documentation> Visible: None. Editable: None</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="MultiScenarioGenerator" type="MultiScenarioGeneratorType"
-				minOccurs="0">
+			<xs:element name="MultiScenarioGenerator" type="MultiScenarioGeneratorType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>To specify that multiple scenarios will be
 						generated</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="MultiParticipantGenerator" type="MultiParticipantGeneratorType"
-				minOccurs="0" maxOccurs="1">
+			<xs:element name="MultiParticipantGenerator" type="MultiParticipantGeneratorType" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>To specify that multiple participants will be
 						generated within
@@ -3673,8 +3661,7 @@
 		<xs:complexContent>
 			<xs:extension base="VarianceListType">
 				<xs:sequence>
-					<xs:element name="ParticipantLocation" type="ParticipantLocatorType"
-						minOccurs="0">
+					<xs:element name="ParticipantLocation" type="ParticipantLocatorType" minOccurs="0">
 						<xs:annotation>
 							<xs:documentation>The area in which to distribute the instances
 							</xs:documentation>
