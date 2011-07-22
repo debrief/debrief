@@ -62,13 +62,11 @@
 		<topic href="html/legacy/tma_data.html#TUA_WIZARD" label="Entering individual TUAs"/>
 		<topic href="html/legacy/tma_data.html#pre_tma_data" label="How to load large volumes of TUAs"/>
 	</context>	
-	
 	<context id="NewSensor">
 		<description>Working with sensor data</description>
 		<topic href="html/legacy/sensor_data.html#sensor_Data_intro" label="Introduction to sensor data"/>
 		<topic href="html/legacy/sensor_data.html#prepare_sensor_data" label="How to get sensor data into Debrief"/>
-	</context>	
-		
+	</context>		
 	<context id="MultipathAnalysis">
 		<description>Analysing multi-path acoustic data</description>
 		<topic href="html/legacy/analyse_sensor_data.html#multipath_analysis" label="Introduction to multi path analysis"/>

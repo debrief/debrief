@@ -6185,10 +6185,21 @@ and so on....</programlisting></para>
         <sect2 xml:id="more_loading_narr">
           <title>Loading the data</title>
 
-          <para>Narrative data is loaded into
-          <application>Debrief</application> in the same way as other data, by
-          dragging and dropping, or using the <guibutton>Import
-          Data</guibutton> button.</para>
+          <para>Narrative data is loaded into <application>Debrief</application> in the same way as
+            other data, by dragging and dropping from a REP file formatted as above, or by using the
+              <emphasis>Generate New Narrative entry</emphasis> wizard.  Open the wizard by either
+            right-clicking on the <emphasis>Narratives</emphasis> entry in the Layer Manager, or by
+            right-clicking in blank area of the Layer Manager if this is the first narrative
+              entry.<figure xml:id="add_narr_data">
+              <title>New narrative entry wizard</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/NewNarrativeEntryWizard.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para>
         </sect2>
 
         <sect2 xml:id="viewing_narrative_data">
