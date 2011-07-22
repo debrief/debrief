@@ -23,6 +23,7 @@ import MWC.GenericData.WorldSpeed;
 public class NewSolutionWizard extends Wizard
 {
 	private static final String PAGE_TITLE = "New solution";
+	
 	// SelectOffsetPage selectOffsetPage;
 	// EnterSolutionPage enterSolutionPage;
 	private HiResDate _tNow;
@@ -50,6 +51,7 @@ public class NewSolutionWizard extends Wizard
 		// do we know the solution wrapper?
 		if (_track != null)
 		{
+			
 			// ok, we need to let the user enter the solution wrapper name
 			namePage = new EnterStringPage(
 					null,
@@ -79,7 +81,7 @@ public class NewSolutionWizard extends Wizard
 				"bearing from ownship to centre of ellipse (degs)", imagePath,
 				helpContext);
 		addPage(rngBearingPage);
-
+		
 		solutionPage = new EnterSolutionPage(null, PAGE_TITLE,
 				"Enter an initial solution\n"
 						+ "This will be stored in the ellipse label", imagePath,
@@ -159,6 +161,7 @@ public class NewSolutionWizard extends Wizard
 		tw.setTMATrack(_tma);
 		tw.setDTG(datePage.getDate());
 		tw.setColor(colorPage.getColor());
+
 
 		String lblStr = sol.getSpeed().toString() + sol.getCourse() + "Degs";
 		tw.setLabel(lblStr);

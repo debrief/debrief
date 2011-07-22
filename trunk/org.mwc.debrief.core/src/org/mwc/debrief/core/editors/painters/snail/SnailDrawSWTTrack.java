@@ -214,14 +214,6 @@ final class SnailDrawSWTTrack
 					}
 				}
 				
-				
-				
-				
-				
-				
-				// keep track of how many points we've plotted
-				int pointCounter = 1;
-
 				// remember the last location
 				Point lastLoc = null;
 				
@@ -316,8 +308,6 @@ final class SnailDrawSWTTrack
 							}
 						}
 					}
-
-					pointCounter++;
 
 					// update the colour for this segment
 					dest.setColor(newCol);
