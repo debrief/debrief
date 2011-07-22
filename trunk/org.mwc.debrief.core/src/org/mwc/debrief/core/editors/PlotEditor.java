@@ -816,7 +816,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			else
 			{
 				// create an empty narrative warpper
-				res = new NarrativeWrapper("Empty", null);
+				res = new NarrativeWrapper("Empty");
 			}
 		}
 		else if (adapter == RelativeProjectionParent.class)
