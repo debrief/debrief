@@ -108,7 +108,7 @@
 					</TypedRangeDoublet>
 				</TypedCookieInterceptSensor>
 				<TypedCookieSensor Medium="PassiveBB"
-					ProducesRange="true" Name="Passive">
+					ProducesRange="false" Name="Passive">
 					<TypedRangeDoublet>
 						<Type Name="BLUE" />
 						<DetectionRange Value="20" Units="nm" />
