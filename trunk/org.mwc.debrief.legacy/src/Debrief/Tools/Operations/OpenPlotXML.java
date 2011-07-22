@@ -1,9 +1,13 @@
 package Debrief.Tools.Operations;
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import Debrief.GUI.Frames.*;
-import java.io.*;
+import java.io.File;
+
+import Debrief.GUI.Frames.Application;
+import Debrief.GUI.Frames.Session;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
 
 
 public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
@@ -110,16 +114,14 @@ public final class OpenPlotXML extends MWC.GUI.Tools.Operations.Open
         Debrief.GUI.Views.PlainView pv = newSession.getCurrentView();
         if(pv instanceof Debrief.GUI.Views.AnalysisView)
         {
-          Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pv;
-          Debrief.GUI.Tote.StepControl stepper = av.getTote().getStepper();
           int len = theData.size();
           for(int i=0;i<len;i++)
           {
             Layer ly = theData.elementAt(i);
             if(ly instanceof Debrief.Wrappers.NarrativeWrapper)
             {
-              Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
-              nw.setStepper(stepper);
+              @SuppressWarnings("unused")
+							Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
             }  // whether this is a narrative
           } // through the layers
         } // whether this is an analysis view

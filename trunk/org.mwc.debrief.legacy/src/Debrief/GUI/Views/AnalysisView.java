@@ -796,8 +796,6 @@ abstract public class AnalysisView extends PlainView implements
 
 		// set the pointer to the step control which we use when creating narrative
 		// objects
-		Debrief.ReaderWriter.Replay.ImportReplay.setStepper(this.getTote()
-				.getStepper());
 		Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(this
 				.getTote().getStepper());
 
@@ -824,7 +822,6 @@ abstract public class AnalysisView extends PlainView implements
 
 				// clear the pointer to the step control which we use when creating
 				// narrative objects
-				Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
 				Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(null);
 
 				// and get the plot to redraw

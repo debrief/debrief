@@ -832,7 +832,6 @@ public abstract class Application implements ToolParent, ActionListener,
 					if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
 					{
 						final Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
-						nw.setStepper(stepper);
 					} // whether this is a narrative
 				} // through the layers
 			} // whether this is an analysis view

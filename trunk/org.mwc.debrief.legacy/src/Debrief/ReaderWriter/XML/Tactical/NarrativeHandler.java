@@ -73,7 +73,7 @@ public final class NarrativeHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(String name, Attributes attributes)
 	{
-		_myNarrative = new Debrief.Wrappers.NarrativeWrapper("", _theStepper);
+		_myNarrative = new Debrief.Wrappers.NarrativeWrapper("");
 
 		super.handleOurselves(name, attributes);
 

@@ -442,14 +442,6 @@ public class ImportReplay extends PlainImporterBase
 	}
 
 	/**
-	 * set the step control to be used for the next import process
-	 */
-	static public void setStepper(Debrief.GUI.Tote.StepControl stepper)
-	{
-		_theStepper = stepper;
-	}
-
-	/**
 	 * parse this line
 	 * 
 	 * @param theLine
@@ -774,7 +766,7 @@ public class ImportReplay extends PlainImporterBase
 				Layer dest = getLayerFor(NARRATIVE_LAYER);
 				if (dest == null)
 				{
-					dest = new NarrativeWrapper(NARRATIVE_LAYER, _theStepper);
+					dest = new NarrativeWrapper(NARRATIVE_LAYER);
 					addLayer(dest);
 				}
 

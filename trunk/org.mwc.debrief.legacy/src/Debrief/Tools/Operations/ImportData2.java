@@ -192,12 +192,6 @@ public final class ImportData2 extends PlainTool {
    */
   public final Action getData()
   {
-
-    // pass a duff stepper control to the NarrativeImporter, since a this point we
-    // may not have a View open, nor a StepControl.  After the "load" operation,
-    // set the step control at that point.
-    Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
-
     /** temporary session variable.  Either use the existing session variable
      * (which was assigned because we only ever read into one session),
      * or create a fresh one each time (if we need to retrieve the variable
@@ -330,7 +324,6 @@ public final class ImportData2 extends PlainTool {
 
       // inform any NarrativeWrapper objects of the StepContorl
       final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) _theSession.getCurrentView();
-      Debrief.GUI.Tote.StepControl stepper = av.getTote().getStepper();
 
       // find any narratives
       int len = _theSession.getData().size();
@@ -339,14 +332,10 @@ public final class ImportData2 extends PlainTool {
         Layer ly = _theSession.getData().elementAt(i);
         if(ly instanceof Debrief.Wrappers.NarrativeWrapper)
         {
-          Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper)ly;
-          nw.setStepper(stepper);
+          @SuppressWarnings("unused")
+					Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper)ly;
         }
       }
-
-
-      // clear the step control pointer temporarily set in the ImportReplay object
-      Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
 
       // instruct the session to rescale, following this import
       _theSession.getData().fireExtended();

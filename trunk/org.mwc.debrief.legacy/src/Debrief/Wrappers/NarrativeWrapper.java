@@ -125,11 +125,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	transient private MWC.GUI.Editable.EditorType _myEditor;
 
 	/**
-	 * the step control which our narrative viewer will listen to.
-	 */
-	transient private Debrief.GUI.Tote.StepControl _myStepper;
-
-	/**
 	 * the line width to draw
 	 */
 	private int _lineWidth = 1;
@@ -151,14 +146,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 * constructor, of course.
 	 * 
 	 * @param title
-	 * @param theStepper
 	 */
-	public NarrativeWrapper(final String title,
-			final Debrief.GUI.Tote.StepControl theStepper)
+	public NarrativeWrapper(final String title)
 	{
 		_myEntries = new java.util.TreeSet<Editable>();
 		_myName = title;
-		_myStepper = theStepper;
 	}
 
 	// //////////////////////////////////////
@@ -289,22 +281,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return true;
 	}
-	
-	/**
-	 * return the StepControl for the session we are currently in
-	 */
-	public final Debrief.GUI.Tote.StepControl getStepper()
-	{
-		return _myStepper;
-	}
-
-	/**
-	 * set the StepControl for the session we are currently operating in
-	 */
-	public final void setStepper(final Debrief.GUI.Tote.StepControl stepper)
-	{
-		_myStepper = stepper;
-	}
 
 	/**
 	 * convenience function to find the narrative entry immediately before the
@@ -354,7 +330,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	@SuppressWarnings("deprecation")
 	public static NarrativeWrapper createDummyData(String title, int len)
 	{
-		NarrativeWrapper res = new NarrativeWrapper(title, null);
+		NarrativeWrapper res = new NarrativeWrapper(title);
 		Date newDate = new Date(2005, 06, (int) (Math.random() * 12),
 				(int) (Math.random() * 13), 33);
 		for (int i = 0; i < len; i++)

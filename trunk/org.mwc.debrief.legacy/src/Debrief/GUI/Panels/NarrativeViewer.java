@@ -216,9 +216,6 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
     setLayout(new BorderLayout());
     add(getForm(), "Center");
 
-    // try to get the stepper
-    _theStepper = _myData.getStepper();
-
     // do we know the stepper?
     if (_theStepper != null)
     {
@@ -893,7 +890,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
   public static void main(final String[] args)
   {
 
-    final NarrativeWrapper nw = new NarrativeWrapper("test", null);
+    final NarrativeWrapper nw = new NarrativeWrapper("test");
     int ct = 1;
     for (int i = 0; i < 15; i++)
     {
