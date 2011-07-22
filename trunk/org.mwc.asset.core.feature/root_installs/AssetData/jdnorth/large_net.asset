@@ -2,129 +2,12 @@
 <Scenario Name="JD Scenario" xmlns="http://www.mwc.org/asset"
 	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
 	ShowActivity="false" ShowName="false" ShowStatus="false" ShowSymbol="false">
-	<StepTime Units="minutes" Value="5" /><StepPause Value="500"
+	<StepTime Units="minutes" Value="1" /><StepPause Value="300"
 		Units="millis" />
 	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 	</Environment>
 	<Participants>
-		<Surface Name="T23B">
-			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
-			<SensorFit>
-				<TypedCookieSensor Working="false" Name="The Active"
-					Medium="ActiveBB">
-					<TypedRangeDoublet>
-						<Type Name="SUBMARINE" />
-						<DetectionRange Value="50" Units="nm" />
-					</TypedRangeDoublet>
-				</TypedCookieSensor>
-				<TypedCookieSensor Working="true" Name="The Passive"
-					Medium="PassiveBB">
-					<TypedRangeDoublet>
-						<Type Name="SUBMARINE" />
-						<DetectionRange Value="5" Units="nm" />
-					</TypedRangeDoublet>
-				</TypedCookieSensor>
-			</SensorFit>
-			<Status Course="0.0" Fuel="0.0">
-				<Location>
-					<shortLocation Lat="0" Long="1"></shortLocation>
-				</Location>
-				<Speed Value="12" Units="kts" />
-			</Status>
-			<Sequence Name="ASW Patrol B" StayAlive="true">
-				<WorkingTransit Name="South SIP" NumStops="4"
-					Looping="false">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="1.7" Long="3.8"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="0.3" Long="2.7"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="1.5" Long="1.0"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-					<Activity Name="Active periods">
-						<Composite Name="enable active">
-							<ElapsedTime Name="30 mins">
-								<Duration Value="30.0" Units="minutes" />
-							</ElapsedTime>
-							<ChangeSensorLineUp SwitchOn="true" Name="active off"
-								Medium="ActiveBB" />
-						</Composite>
-						<Composite Name="disable active">
-							<ElapsedTime Name="zero time">
-								<Duration Value="0.0" Units="millis" />
-							</ElapsedTime>
-							<ChangeSensorLineUp SwitchOn="false" Name="active off"
-								Medium="ActiveBB" />
-						</Composite>
-					</Activity>
-				</WorkingTransit>
-				<Transit Name="Avoid no-go" Looping="false">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="1.0" Long="0.6"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-				</Transit>
-
-				<WorkingTransit Name="SIP Patrol" NumStops="6"
-					Looping="false">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="3.1" Long="2.7"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="3.6" Long="2.4"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="3.5" Long="3"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="2.8" Long="3.5"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="2.7" Long="2.4"></shortLocation>
-						</Point>
-						<Point>
-							<shortLocation Lat="3.1" Long="2.0"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-					<Activity Name="Active periods">
-						<Composite Name="enable active">
-							<ElapsedTime Name="30 mins">
-								<Duration Value="30.0" Units="minutes" />
-							</ElapsedTime>
-							<ChangeSensorLineUp SwitchOn="true" Name="active off"
-								Medium="ActiveBB" />
-						</Composite>
-						<Composite Name="disable active">
-							<ElapsedTime Name="zero time">
-								<Duration Value="0.0" Units="millis" />
-							</ElapsedTime>
-							<ChangeSensorLineUp SwitchOn="false" Name="active off"
-								Medium="ActiveBB" />
-						</Composite>
-					</Activity>
-				</WorkingTransit>
-
-			</Sequence>
-
-			<SurfaceMovementCharacteristics Name="F23 Perf"
-				FuelUsageRate="0.0">
-				<MinSpeed Value="0.0" Units="kts" />
-				<MaxSpeed Value="15.0" Units="kts" />
-				<AccelerationRate Value="1.0" Units="kts/s" />
-				<DecelerationRate Value="1.0" Units="kts/s" />
-				<TurningCircle Value="400.0" Units="m" />
-			</SurfaceMovementCharacteristics>
-		</Surface>
 		<Surface Name="T23A">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
@@ -138,8 +21,53 @@
 				<TypedCookieSensor Working="true" Name="The Passive"
 					Medium="PassiveBB">
 					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="10" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="200" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="0.7" Long="0.6"></shortLocation>
+				</Location>
+				<Speed Value="12" Units="kts" />
+			</Status>
+			<Waterfall Name="Patrol">
+				<Wander Name="">
+					<Range Value="30" Units="nm" />
+					<Location>
+						<shortLocation Lat="0.5" Long="0.2"></shortLocation>
+					</Location>
+					<Speed Value="10" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</Wander>
+			</Waterfall>
+			
+
+			<SurfaceMovementCharacteristics Name="F23 Perf"
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="kts" />
+				<MaxSpeed Value="15.0" Units="kts" />
+				<AccelerationRate Value="1.0" Units="kts/s" />
+				<DecelerationRate Value="1.0" Units="kts/s" />
+				<TurningCircle Value="400.0" Units="m" />
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="T23B">
+			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<TypedCookieSensor Working="false" Name="The Active"
+					Medium="ActiveBB">
+					<TypedRangeDoublet>
 						<Type Name="SUBMARINE" />
-						<DetectionRange Value="5" Units="nm" />
+						<DetectionRange Value="50" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+				<TypedCookieSensor Working="true" Name="The Passive"
+					Medium="PassiveBB">
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="10" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
@@ -149,83 +77,17 @@
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
-			<Sequence Name="ASW Patrol A" StayAlive="true">
-
-				<Sequence Name="Patrol loop" StayAlive="true">
-					<WorkingTransit Name="SIP Patrol" NumStops="6"
-						Looping="false">
-						<WorldPath>
-							<Point>
-								<shortLocation Lat="3.1" Long="2.7"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="3.6" Long="2.4"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="3.5" Long="3"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="2.8" Long="3.5"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="2.7" Long="2.4"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="3.1" Long="2.0"></shortLocation>
-							</Point>
-						</WorldPath>
-						<Speed Value="12" Units="kts" />
-						<Activity Name="Active periods">
-							<Composite Name="enable active">
-								<ElapsedTime Name="30 mins">
-									<Duration Value="30.0" Units="minutes" />
-								</ElapsedTime>
-								<ChangeSensorLineUp SwitchOn="true" Name="active off"
-									Medium="ActiveBB" />
-							</Composite>
-							<Composite Name="disable active">
-								<ElapsedTime Name="zero time">
-									<Duration Value="0.0" Units="millis" />
-								</ElapsedTime>
-								<ChangeSensorLineUp SwitchOn="false" Name="active off"
-									Medium="ActiveBB" />
-							</Composite>
-						</Activity>
-					</WorkingTransit>
-					<WorkingTransit NumStops="4" Name="Southern SIP"
-						Looping="false">
-						<WorldPath>
-							<Point>
-								<shortLocation Lat="1.7" Long="3.8"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="0.3" Long="2.7"></shortLocation>
-							</Point>
-							<Point>
-								<shortLocation Lat="1.5" Long="1.0"></shortLocation>
-							</Point>
-						</WorldPath>
-						<Speed Value="12" Units="kts" />
-						<Activity Name="Active periods">
-							<Composite Name="enable active">
-								<ElapsedTime Name="30 mins">
-									<Duration Value="30.0" Units="minutes" />
-								</ElapsedTime>
-								<ChangeSensorLineUp SwitchOn="true" Name="active off"
-									Medium="ActiveBB" />
-							</Composite>
-							<Composite Name="disable active">
-								<ElapsedTime Name="zero time">
-									<Duration Value="0.0" Units="millis" />
-								</ElapsedTime>
-								<ChangeSensorLineUp SwitchOn="false" Name="active off"
-									Medium="ActiveBB" />
-							</Composite>
-						</Activity>
-
-					</WorkingTransit>
-				</Sequence>
-			</Sequence>
+			<Waterfall Name="Patrol">
+				<Wander Name="">
+					<Range Value="30" Units="nm" />
+					<Location>
+						<shortLocation Lat="0.5" Long="0.8"></shortLocation>
+					</Location>
+					<Speed Value="10" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</Wander>
+			</Waterfall>
+			
 
 			<SurfaceMovementCharacteristics Name="F23 Perf"
 				FuelUsageRate="0.0">
@@ -239,39 +101,29 @@
 		<SSN Name="red">
 			<Category Type="SUBMARINE" Force="RED" Environment="SUBSURFACE" />
 			<SensorFit>
-				<TypedCookieInterceptSensor Medium="ActiveBB">
+				<TypedCookieInterceptSensor Medium="ActiveBB" Name="Intercept">
 					<TypedRangeDoublet>
 						<Type Name="FRIGATE" />
 						<DetectionRange Value="100" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieInterceptSensor>
+				<TypedCookieSensor Medium="PassiveBB"
+					ProducesRange="true" Name="Passive">
+					<TypedRangeDoublet>
+						<Type Name="BLUE" />
+						<DetectionRange Value="20" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
 			</SensorFit>
-			<Status Course="0.0" Fuel="0.0">
+			<Status Course="180" Fuel="0.0">
 				<Location>
-					<shortLocation Lat="7" Long="4"></shortLocation>
+					<shortLocation Lat="2" Long="0.5"></shortLocation>
 				</Location>
 				<Speed Value="12" Units="kts" />
 			</Status>
-			<Waterfall Name="">
-				<Wait Name="random pause">
-					<Duration Value="1" Units="hours" />
-				</Wait>
-				<Evade Name="">
-					<Duration Value="10" Units="minutes" />
-					<FleeHeight Value="0.0" Units="ft" />
-					<FleeSpeed Value="12" Units="kts" />
-					<TargetType>
-						<Type Name="BLUE" />
-					</TargetType>
-				</Evade>
-				<Transit Name="" Looping="true">
-					<WorldPath>
-						<Point>
-							<shortLocation Lat="0" Long="4"></shortLocation>
-						</Point>
-					</WorldPath>
-					<Speed Value="12" Units="kts" />
-				</Transit>
+			<Waterfall Name="Just wander down">
+				<UserControl  Name="user control" Speed="12" Depth="12"
+					Course="170" />
 			</Waterfall>
 			<SSMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
@@ -286,31 +138,6 @@
 				<TurningCircle Value="400.0" Units="m" />
 			</SSMovementCharacteristics>
 		</SSN>
-		<BuoyField Name="EAST_BARRIER">
-			<Category Type="BUOY_FIELD" Force="BLUE"
-				Environment="SUBSURFACE" />
-			<SensorFit>
-				<TypedCookieSensor Working="true" DetectionLevel="Detected" Medium="ActiveBB">
-					<TypedRangeDoublet>
-						<Type Name="RED" />
-						<DetectionRange Value="5" Units="nm" />
-					</TypedRangeDoublet>
-				</TypedCookieSensor></SensorFit>
-			<Status Course="0.0" Fuel="0.0">
-				<Location>
-					<shortLocation Lat="0" Long="4"></shortLocation>
-				</Location>
-				<Speed Value="0.0" Units="m/s" />
-			</Status>
-			<Coverage>
-				<TopLeft>
-					<shortLocation Lat="0.5" Long="4"></shortLocation>
-				</TopLeft>
-				<BottomRight>
-					<shortLocation Lat="0" Long="4.05"></shortLocation>
-				</BottomRight>
-			</Coverage>
-		</BuoyField>
 	</Participants>
 	<DebriefLayer>
 		<layer LineThickness="0" Name="Chart Features" Visible="true">

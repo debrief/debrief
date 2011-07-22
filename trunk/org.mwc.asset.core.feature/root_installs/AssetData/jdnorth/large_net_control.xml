@@ -77,7 +77,7 @@
 				</TargetType>
 			</Watch>
 		</RemoveDetectedObserver>
-		<PlotSensorObserver Name="Show detections" Active="true">
+		<PlotSensorObserver Name="Show blue sensor range" Active="true">
 			<Target>
 				<TargetType>
 					<Type Name="SUBMARINE"></Type>
@@ -86,6 +86,18 @@
 			<Watch>
 				<TargetType>
 					<Type Name="SURFACE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+				<PlotSensorObserver Name="Show red sensor range" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="SURFACE"></Type>
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="SUBMARINE" />
 				</TargetType>
 			</Watch>
 		</PlotSensorObserver>
