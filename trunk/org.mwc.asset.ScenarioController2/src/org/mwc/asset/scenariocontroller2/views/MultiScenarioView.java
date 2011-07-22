@@ -389,6 +389,9 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		// if we have any pending filenames, get them dropped
 		if (_myPendingFilenames != null)
 			_filesDroppedListener.filesDropped(_myPendingFilenames);
+		
+		// fire up the networking
+		doNetwork(true);
 
 	}
 
@@ -428,6 +431,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 				doNetwork(this.isChecked());
 			}
 		};
+		doNetwork.setChecked(true);
 		doNetwork.setToolTipText("Broadcast scenarios on network");
 		doNetwork.setImageDescriptor(Activator
 				.getImageDescriptor("icons/app_link.png"));
