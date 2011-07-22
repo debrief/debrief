@@ -313,13 +313,6 @@ public class ImportReplay extends PlainImporterBase
 	static private final String ANNOTATION_LAYER = "Annotations";
 
 	/**
-	 * the stepper we are currently using. This gets set immediately before the
-	 * import process, and is only valid for a single import. It's static because
-	 * it gets assigned through a static method
-	 */
-	private static Debrief.GUI.Tote.StepControl _theStepper;
-
-	/**
 	 * the prefs provider
 	 * 
 	 */
@@ -879,9 +872,6 @@ public class ImportReplay extends PlainImporterBase
 			// show the message dialog
 			super.readError(fName, lineCounter, "Missing field error", thisLine);
 		}
-
-		// finally clear the stepper, it will get re-assigned for the next import
-		_theStepper = null;
 	}
 
 	private PlainLineImporter getImporterFor(String theLine)

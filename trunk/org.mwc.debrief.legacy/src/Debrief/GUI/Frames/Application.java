@@ -823,14 +823,13 @@ public abstract class Application implements ToolParent, ActionListener,
 			final Debrief.GUI.Views.PlainView pv = newSession.getCurrentView();
 			if (pv instanceof Debrief.GUI.Views.AnalysisView)
 			{
-				final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pv;
-				final Debrief.GUI.Tote.StepControl stepper = av.getTote().getStepper();
 				final int len = theData.size();
 				for (int i = 0; i < len; i++)
 				{
 					final Layer ly = theData.elementAt(i);
 					if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
 					{
+						@SuppressWarnings("unused")
 						final Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
 					} // whether this is a narrative
 				} // through the layers

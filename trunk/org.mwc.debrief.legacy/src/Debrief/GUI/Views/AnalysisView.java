@@ -291,29 +291,56 @@
 
 package Debrief.GUI.Views;
 
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Vector;
+
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.AnalysisTote;
-import Debrief.Tools.Operations.*;
+import Debrief.Tools.Operations.ImportData2;
+import Debrief.Tools.Operations.ImportRangeData;
+import Debrief.Tools.Operations.SavePlotAsXML;
+import Debrief.Tools.Operations.SavePlotXML;
+import Debrief.Tools.Operations.View3dPlot;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.StatusBar;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Toolbar;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Tools.Chart.*;
+import MWC.GUI.Shapes.ArcShape;
+import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PolygonShape;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.MenuItemInfo;
+import MWC.GUI.Tools.Chart.DblClickEdit;
+import MWC.GUI.Tools.Chart.FitToWin;
+import MWC.GUI.Tools.Chart.Pan;
+import MWC.GUI.Tools.Chart.RangeBearing;
+import MWC.GUI.Tools.Chart.Repaint;
+import MWC.GUI.Tools.Chart.RightClickEdit;
+import MWC.GUI.Tools.Chart.WriteMetafile;
+import MWC.GUI.Tools.Chart.ZoomIn;
+import MWC.GUI.Tools.Chart.ZoomOut;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor;
 import MWC.GUI.Tools.Operations.RightClickPasteAdaptor;
 import MWC.GUI.Tools.Operations.ShowVideo;
-import MWC.GUI.Tools.Palette.*;
+import MWC.GUI.Tools.Palette.CreateCoast;
+import MWC.GUI.Tools.Palette.CreateGrid;
+import MWC.GUI.Tools.Palette.CreateLocalGrid;
+import MWC.GUI.Tools.Palette.CreateScale;
+import MWC.GUI.Tools.Palette.CreateTOPO;
+import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldVector;
-
-import java.io.File;
-import java.util.Enumeration;
-import java.util.Vector;
 
 /**
  * a screen layout which represents screen panes necessary for analysis
@@ -794,11 +821,6 @@ abstract public class AnalysisView extends PlainView implements
 
 		_theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
 
-		// set the pointer to the step control which we use when creating narrative
-		// objects
-		Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(this
-				.getTote().getStepper());
-
 		java.io.File[] theFiles = new java.io.File[]
 		{ null };
 		theFiles = (java.io.File[]) files.toArray(theFiles);
@@ -819,10 +841,6 @@ abstract public class AnalysisView extends PlainView implements
 				// _theSession.getData().addThis(newData);
 
 				_theSession.getData().fireExtended();
-
-				// clear the pointer to the step control which we use when creating
-				// narrative objects
-				Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.setStepper(null);
 
 				// and get the plot to redraw
 

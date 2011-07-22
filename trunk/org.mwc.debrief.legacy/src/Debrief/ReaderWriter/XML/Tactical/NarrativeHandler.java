@@ -25,26 +25,12 @@ public final class NarrativeHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-	/**
-	 * temporary variable used to inform the Narrative of the StepControl which it
-	 * should be watching
-	 */
-	static private Debrief.GUI.Tote.StepControl _theStepper;
-
 	static private final String _myType = "narrative";
 
 	private final MWC.GUI.Layers _theLayers;
 
 	// our "working" Narrative
 	Debrief.Wrappers.NarrativeWrapper _myNarrative;
-
-	/**
-	 * temporarily set the step control
-	 */
-	static public void setStepper(Debrief.GUI.Tote.StepControl stepper)
-	{
-		_theStepper = stepper;
-	}
 
 	public NarrativeHandler(MWC.GUI.Layers theLayers)
 	{
