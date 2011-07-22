@@ -126,11 +126,18 @@ abstract public class CoreEditableWizardPage extends WizardPage
 		this(selection, pageName, title, description, null, helpContext);
 	}
 	
+	
+	
 	protected Preferences getPrefs()
 	{
-		String index = this.getClass() + "_" + this.getName();
+		String index = getIndex();
 		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
 		return prefs;
+	}
+
+	protected String getIndex()
+	{
+		return this.getClass() + "_" + this.getName();
 	}
 	
 

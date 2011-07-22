@@ -8,12 +8,15 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.CorePlugin;
+import org.osgi.service.prefs.Preferences;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class EnterDTGPage extends EnterStringPage implements ModifyListener
 {
+	private static final String DATE = "DATE";
+
 	public EnterDTGPage(ISelection selection, HiResDate startDate,
 			String pageTitle, String pageExplanation, String fieldExplanation, String imagePath, String helpContext)
 	{
@@ -24,6 +27,17 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 		// tell the editor we're listening for modifications
 		super.addModifiedListener(this);
 
+		setDefaults();
+	}
+
+	private void setDefaults()
+	{
+		final Preferences prefs = getPrefs();
+
+		if (prefs != null)
+		{
+			_startName = prefs.get(DATE, _startName);
+		}
 	}
 
 	/**
@@ -45,6 +59,17 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 					+ super.getString(), e);
 		}
 		return res;
+	}
+	
+
+	@Override
+	public void dispose()
+	{
+		// try to store some defaults
+		Preferences prefs = getPrefs();
+		prefs.put(DATE, _myWrapper.getName());
+
+		super.dispose();
 	}
 
 	public void modifyText(ModifyEvent e)
