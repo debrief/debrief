@@ -7,6 +7,8 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -30,6 +32,7 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
 
@@ -122,6 +125,14 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	{
 		this(selection, pageName, title, description, null, helpContext);
 	}
+	
+	protected Preferences getPrefs()
+	{
+		String index = this.getClass() + "_" + this.getName();
+		IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
+		return prefs;
+	}
+	
 
 	/**
 	 * Constructor for SampleNewWizardPage.

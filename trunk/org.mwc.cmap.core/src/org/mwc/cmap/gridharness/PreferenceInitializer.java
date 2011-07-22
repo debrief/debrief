@@ -9,6 +9,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
+		@SuppressWarnings("deprecation")
 		IEclipsePreferences preferences = new DefaultScope().getNode(Activator.PLUGIN_ID);
 		preferences.putBoolean(CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, false);
 	}

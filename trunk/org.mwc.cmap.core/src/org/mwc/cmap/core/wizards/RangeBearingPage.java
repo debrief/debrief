@@ -3,12 +3,16 @@ package org.mwc.cmap.core.wizards;
 import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 
 public class RangeBearingPage extends CoreEditableWizardPage
 {
+	private static final String RANGE = "RANGE";
+	private static final String BEARING = "BEARING";
+	private static final String NULL_RANGE = "0,1";
 
 	public static class DataItem implements Editable
 	{
@@ -52,31 +56,64 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	}
 
 	public static String NAME = "Initial Offset";
+
 	DataItem _myWrapper;
 	final private String _rangeTitle;
 	final private String _bearingTitle;
 
 	public RangeBearingPage(ISelection selection, String pageName,
-			String pageDescription, String rangeTitle,String bearingTitle, String imagePath, String helpContext)
+			String pageDescription, String rangeTitle, String bearingTitle,
+			String imagePath, String helpContext)
 	{
 		super(selection, NAME, pageName, pageDescription, imagePath, helpContext,
 				false);
 		_rangeTitle = rangeTitle;
 		_bearingTitle = bearingTitle;
+
+		setDefaults();
 	}
-	
+
+	private void setDefaults()
+	{
+		final Preferences prefs = getPrefs();
+
+		if (prefs != null)
+		{
+			double bearing = prefs.getDouble("BEARING", 0d);
+			String rangeStr = prefs.get(RANGE, NULL_RANGE);
+			String[] parts = rangeStr.split(",");
+			double val = Double.parseDouble(parts[0]);
+			int units = Integer.parseInt(parts[1]);
+			WorldDistance range = new WorldDistance(val, units);
+			setData(range, bearing);
+		}
+	}
+
 	public void setData(WorldDistance range, double bearing)
 	{
 		createMe();
 		_myWrapper.setRange(range);
 		_myWrapper.setBearing(bearing);
 	}
-	
+
 	public WorldDistance getRange()
 	{
 		return _myWrapper.getRange();
 	}
-	
+
+	@Override
+	public void dispose()
+	{
+		// try to store some defaults
+		Preferences prefs = getPrefs();
+		WorldDistance res = this.getRange();
+		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
+		prefs.putDouble(BEARING, _myWrapper.getBearing());
+
+		// TODO Auto-generated method stub
+		super.dispose();
+	}
+
 	public double getBearingDegs()
 	{
 		return _myWrapper.getBearing();
@@ -85,11 +122,8 @@ public class RangeBearingPage extends CoreEditableWizardPage
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
 		PropertyDescriptor[] descriptors =
-		{
-				prop("Range", _rangeTitle,
-						getEditable()),
-				prop("Bearing", _bearingTitle,
-						getEditable()) };
+		{ prop("Range", _rangeTitle, getEditable()),
+				prop("Bearing", _bearingTitle, getEditable()) };
 		return descriptors;
 	}
 

@@ -3,6 +3,7 @@ package org.mwc.cmap.core.wizards;
 import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
@@ -40,6 +41,10 @@ public class EnterRangePage extends CoreEditableWizardPage
 		}
 	}
 
+	private static final String RANGE = "RANGE";
+
+	private static final String NULL_RANGE = "0,1";
+
 	public static String NAME = "EnterRange";
 	DataItem _myWrapper;
 	final private String _rangeTitle;
@@ -52,6 +57,34 @@ public class EnterRangePage extends CoreEditableWizardPage
 				false);
 		_rangeTitle = rangeTitle;
 		_defaultRange = defaultRange;
+
+		setDefaults();
+	}
+
+	private void setDefaults()
+	{
+		final Preferences prefs = getPrefs();
+
+		if (prefs != null)
+		{
+			String speedStr = prefs.get(RANGE, NULL_RANGE);
+			String[] parts = speedStr.split(",");
+			double val = Double.parseDouble(parts[0]);
+			int units = Integer.parseInt(parts[1]);
+			WorldDistance  range = new WorldDistance(val, units);
+			_defaultRange = range;
+		}
+	}	
+	
+	@Override
+	public void dispose()
+	{
+		// try to store some defaults
+		Preferences prefs = getPrefs();
+		WorldDistance res = this.getRange();
+		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
+
+		super.dispose();
 	}
 	
 	public void setRange(WorldDistance range)
