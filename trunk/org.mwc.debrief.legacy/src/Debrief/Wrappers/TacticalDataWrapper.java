@@ -13,6 +13,9 @@
 package Debrief.Wrappers;
 
 import java.awt.Color;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -34,10 +37,229 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		implements MWC.GUI.Layer, SnailDrawTacticalContact.HostedList
 {
 
-	/** specify 3 minute delta
+	// //////////////////////////////////////////////////////////////////
+	// embedded class to allow us to pass the local iterator (Iterator) used
+	// internally
+	// outside as an Enumeration
+	// /////////////////////////////////////////////////////////////////
+	/**
+   *
+   */
+	public static final class IteratorWrapper implements
+			java.util.Enumeration<Editable>
+	{
+		/**
+		 * java.util.Iterator _val
+		 */
+		private final java.util.Iterator<Editable> _val;
+
+		/**
+		 * <init>
+		 * 
+		 * @param iterator
+		 *          parameter for <init>
+		 */
+		public IteratorWrapper(final java.util.Iterator<Editable> iterator)
+		{
+			_val = iterator;
+		}
+
+		/**
+		 * hasMoreElements
+		 * 
+		 * @return the returned boolean
+		 */
+		@Override
+		public final boolean hasMoreElements()
+		{
+			return _val.hasNext();
+
+		}
+
+		/**
+		 * nextElement
+		 * 
+		 * @return the returned Object
+		 */
+		@Override
+		public final Editable nextElement()
+		{
+			return _val.next();
+		}
+	}
+
+	/**
+	 * a specialist linear interpolator class that allows quick (repeated)
+	 * interpolations for a set of similar items
+	 * 
+	 * @author ianmayo
 	 * 
 	 */
-	private static final int THRESHOLD = 3 *  60 * 1000;
+	protected static class LinearInterpolator
+	{
+
+		private final double _startTime;
+		private final double _desiredTime;
+		private final long _timeDelta;
+
+		/**
+		 * Prepare the temporal domain data
+		 */
+		public LinearInterpolator(final Watchable startValue,
+				final Watchable endValue, final double desiredTime)
+		{
+			_desiredTime = desiredTime;
+			_startTime = startValue.getTime().getMicros();
+			_timeDelta = endValue.getTime().getMicros()
+					- startValue.getTime().getMicros();
+		}
+
+		/**
+		 * Return the interpolated value in the supplied domain.
+		 */
+		public double interp(double startVariable, double endVariable)
+		{
+			// do a quick sanity to check to verify if we're an angle passing through
+			// zero
+			// if we don't do this check then it will try to do it the 'short-way'
+			// through 180 degs
+			if (Math.abs(endVariable - startVariable) > 180)
+			{
+				if (startVariable > 180)
+					startVariable -= 360;
+				if (endVariable > 180)
+					endVariable -= 360;
+			}
+
+			final double gradient = (endVariable - startVariable) / (_timeDelta);
+			return startVariable + (_desiredTime - _startTime) * gradient;
+		}
+	}
+
+	protected interface ObjectManipulator
+	{
+		void apply(Object subject, boolean value);
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		public void testDecimate()
+		{
+			final SensorWrapper sw = new SensorWrapper("mySensor");
+			long nowMillis = 3000;
+			for (int i = 0; i < 6; i++)
+			{
+				final SensorContactWrapper scw = new SensorContactWrapper("parent",
+						new HiResDate(nowMillis), new WorldDistance(i, WorldDistance.NM),
+						i, new WorldLocation(1, i, 0), Color.RED, "the label", 0,
+						"other label");
+				sw.add(scw);
+				nowMillis += 16 * 1000;
+			}
+
+			// jump forward a while
+			nowMillis += 5 * 60 * 1000;
+
+			for (int j = 0; j < 6; j++)
+			{
+				final SensorContactWrapper scw = new SensorContactWrapper("parent",
+						new HiResDate(nowMillis), new WorldDistance(j, WorldDistance.NM),
+						j, new WorldLocation(1, j, 0), Color.RED, "the label", 0,
+						"other label");
+				sw.add(scw);
+				nowMillis += 16 * 1000;
+			}
+
+			assertEquals("correct number before", 12, sw._myContacts.size());
+
+			sw.decimate(new HiResDate(20000), 4000000);
+
+			assertEquals("correct number of decimated", 8, sw._myContacts.size());
+		}
+
+		public void testDecimateThroughZero() throws ParseException
+		{
+			final SensorWrapper sw = new SensorWrapper("mySensor");
+
+			SensorContactWrapper scw = new SensorContactWrapper("parent",
+					new HiResDate(DateFormat.getDateTimeInstance()
+							.parse("July 7, 2011 12:34:04 PM GMT").getTime()),
+					new WorldDistance(2, WorldDistance.NM), 13.1, new WorldLocation(1, 3,
+							0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			scw = new SensorContactWrapper("parent", new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:34:54 PM GMT")
+					.getTime()), new WorldDistance(2, WorldDistance.NM), 7.9,
+					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			scw = new SensorContactWrapper("parent", new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:35:32 PM GMT")
+					.getTime()), new WorldDistance(2, WorldDistance.NM), 4.8,
+					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			scw = new SensorContactWrapper("parent", new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:36:36 PM GMT")
+					.getTime()), new WorldDistance(2, WorldDistance.NM), 359.1,
+					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			scw = new SensorContactWrapper("parent", new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:37:24 PM GMT")
+					.getTime()), new WorldDistance(2, WorldDistance.NM), 355.2,
+					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			scw = new SensorContactWrapper("parent", new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:38:18 PM GMT")
+					.getTime()), new WorldDistance(2, WorldDistance.NM), 348.6,
+					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			scw = new SensorContactWrapper("parent", new HiResDate(DateFormat
+					.getDateTimeInstance().parse("July 7, 2011 12:39:04 PM GMT")
+					.getTime()), new WorldDistance(2, WorldDistance.NM), 345.1,
+					new WorldLocation(1, 3, 0), Color.RED, "the label", 0, "other label");
+			sw.add(scw);
+
+			Iterator<Editable> iter = sw._myContacts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
+				System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
+			}
+
+			System.out.println("=================");
+
+			assertEquals("correct number before", 7, sw._myContacts.size());
+
+			final Date startDate = DateFormat.getDateTimeInstance().parse(
+					"July 7, 2011 12:34:00 PM GMT");
+
+			sw.decimate(new HiResDate(60000), startDate.getTime());
+
+			assertEquals("correct number of decimated", 6, sw._myContacts.size());
+
+			iter = sw._myContacts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
+				System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
+			}
+		}
+
+	}
+
+	/**
+	 * specify 3 minute delta
+	 * 
+	 */
+	private static final int THRESHOLD = 3 * 60 * 1000;
 
 	/**
 	 * 
@@ -58,6 +280,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 */
 	private HiResDate _lastVisibleFrequency = new HiResDate(0,
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+
 	/**
 	 * the track representing our host vessel
 	 */
@@ -111,31 +334,87 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		setVisible(false);
 	}
 
-	public HiResDate getVisibleFrequency()
+	/**
+	 * append
+	 * 
+	 * @param layer
+	 *          parameter for append
+	 */
+	@Override
+	public void append(final MWC.GUI.Layer layer)
 	{
-		return _lastVisibleFrequency;
+		// don't bother
 	}
+
+	// //////////////////////////////////////
+	// member methods to meet plain wrapper responsibilities
+	// //////////////////////////////////////
 
 	/**
-	 * change how frequently our data items are dislayed
-	 * 
-	 * @param visibleFrequency
+	 * instruct this object to clear itself out, ready for ditching
 	 */
-	@FireReformatted
-	public void setVisibleFrequency(HiResDate visibleFrequency)
+	@Override
+	public final void closeMe()
 	{
-		_lastVisibleFrequency = visibleFrequency;
+		// do the parent
+		super.closeMe();
 
-		setFixes(new ObjectManipulator()
+		// and the fixes
+		// first ask them to close themselves
+		final java.util.Iterator<Editable> it = _myContacts.iterator();
+		while (it.hasNext())
 		{
-			public void apply(Object subject, boolean value)
+			final Object val = it.next();
+			if (val instanceof MWC.GUI.PlainWrapper)
 			{
-				PlottableWrapperWithTimeAndOverrideableColor pl = (PlottableWrapperWithTimeAndOverrideableColor) subject;
-				pl.setVisible(value);
+				final MWC.GUI.PlainWrapper pw = (MWC.GUI.PlainWrapper) val;
+				pw.closeMe();
 			}
-		}, visibleFrequency);
+		}
+
+		// now ditch them
+		_myContacts.clear();
+
+		// and the other stuff
+		_myEditor = null;
+		_myHost = null;
+		_myTrackName = null;
 
 	}
+
+	@Override
+	public final int compareTo(final Plottable o)
+	{
+		int res = 0;
+		if (o instanceof TacticalDataWrapper)
+		{
+			// check they're both of the same class (one might be sensor whilst
+			// the other's tma)
+			if (o.getClass().toString().equals(this.getClass().toString()))
+			{
+				// compare the names
+				final TacticalDataWrapper sw = (TacticalDataWrapper) o;
+				res = this.getName().compareTo(sw.getName());
+			}
+			else
+			{
+				// they're different types, point that out.
+				res = -1;
+			}
+
+		}
+		else
+		{
+			// just put it after us
+			res = -1;
+		}
+		return res;
+	}
+
+	abstract protected PlottableWrapperWithTimeAndOverrideableColor createItem(
+			PlottableWrapperWithTimeAndOverrideableColor last,
+			PlottableWrapperWithTimeAndOverrideableColor next,
+			LinearInterpolator interp2, long tNow);
 
 	/**
 	 * switch the sample rate of this track to the supplied frequency
@@ -146,9 +425,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 *          the start time (micros), to control where the resamples fall ('on
 	 *          the minute')
 	 */
-	public void decimate(HiResDate theVal, long startTime)
+	public void decimate(final HiResDate theVal, long startTime)
 	{
-		Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
+		final Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
 
 		// get the time interval
 		final long interval = theVal.getMicros();
@@ -162,9 +441,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		startTime = Math.max(startTime, myStart);
 
 		// long startTime = this.getStartDTG().getMicros();
-		long endTime = this.getEndDTG().getMicros();
+		final long endTime = this.getEndDTG().getMicros();
 
-		Enumeration<Editable> _cuts = elements();
+		final Enumeration<Editable> _cuts = elements();
 		if (!_cuts.hasMoreElements())
 			return;
 
@@ -194,7 +473,6 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 				// hey, this really shouldn't have happened, prob ignore it
 			}
 
-
 			// loop through to find this item. are we looking before the first item?
 			while ((_next != null) && (_next.getDTG().getMicros() < tNow))
 			{
@@ -212,18 +490,19 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			}
 			else
 			{
-				
+
 				// right, we appear to be either side of the relevant item
 				// interpolate the values
 				// go for the freq first
-				LinearInterpolator interp = new LinearInterpolator((Watchable) _last,
-						(Watchable) _next, tNow);
-				
-				long timeDelta = _next.getDTG().getDate().getTime() - _last.getDTG().getDate().getTime();
-				if(timeDelta < THRESHOLD)
+				final LinearInterpolator interp = new LinearInterpolator(
+						(Watchable) _last, (Watchable) _next, tNow);
+
+				final long timeDelta = _next.getDTG().getDate().getTime()
+						- _last.getDTG().getDate().getTime();
+				if (timeDelta < THRESHOLD)
 				{
 					// create a new data value
-					PlottableWrapperWithTimeAndOverrideableColor newItem = createItem(
+					final PlottableWrapperWithTimeAndOverrideableColor newItem = createItem(
 							_last, _next, interp, tNow);
 
 					// and store it.
@@ -236,195 +515,12 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		_myContacts.clear();
 
 		// store the new sensor items
-		for (Iterator<PlottableWrapperWithTimeAndOverrideableColor> iterator = newItems
+		for (final Iterator<PlottableWrapperWithTimeAndOverrideableColor> iterator = newItems
 				.iterator(); iterator.hasNext();)
 		{
-			PlottableWrapperWithTimeAndOverrideableColor fix = iterator.next();
+			final PlottableWrapperWithTimeAndOverrideableColor fix = iterator.next();
 			this.add(fix);
 		}
-	}
-
-	abstract protected PlottableWrapperWithTimeAndOverrideableColor createItem(
-			PlottableWrapperWithTimeAndOverrideableColor last,
-			PlottableWrapperWithTimeAndOverrideableColor next,
-			LinearInterpolator interp2, long tNow);
-
-	/**
-	 * instruct this object to clear itself out, ready for ditching
-	 */
-	public final void closeMe()
-	{
-		// do the parent
-		super.closeMe();
-
-		// and the fixes
-		// first ask them to close themselves
-		final java.util.Iterator<Editable> it = _myContacts.iterator();
-		while (it.hasNext())
-		{
-			final Object val = it.next();
-			if (val instanceof MWC.GUI.PlainWrapper)
-			{
-				final MWC.GUI.PlainWrapper pw = (MWC.GUI.PlainWrapper) val;
-				pw.closeMe();
-			}
-		}
-
-		// now ditch them
-		_myContacts.clear();
-
-		// and the other stuff
-		_myEditor = null;
-		_myHost = null;
-		_myTrackName = null;
-
-	}
-
-	// //////////////////////////////////////
-	// member methods to meet plain wrapper responsibilities
-	// //////////////////////////////////////
-
-	/**
-   *
-   *
-   */
-	public final String getName()
-	{
-		return _myName;
-	}
-
-	/**
-	 * setName
-	 * 
-	 * @param name
-	 *          parameter for setName
-	 */
-	public final void setName(final String name)
-	{
-		_myName = name;
-	}
-
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 * 
-	 * @return
-	 */
-	public final int getLineThickness()
-	{
-		return _lineWidth;
-	}
-
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 */
-	public final void setLineThickness(final int val)
-	{
-		_lineWidth = val;
-	}
-
-	/**
-	 * getTrack
-	 * 
-	 * @return the returned TrackWrapper
-	 */
-	public final String getTrackName()
-	{
-		return _myTrackName;
-	}
-
-	/**
-	 * setTrack
-	 * 
-	 * @param name
-	 *          parameter for setTrack
-	 */
-	@FireReformatted
-	public final void setTrackName(final String name)
-	{
-		_myTrackName = name;
-	}
-
-	/**
-	 * set our host track
-	 */
-	public void setHost(final TrackWrapper host)
-	{
-		_myHost = host;
-	}
-
-	/**
-	 * set our host track
-	 */
-	public final TrackWrapper getHost()
-	{
-		return _myHost;
-	}
-
-	/**
-	 * hasEditor
-	 * 
-	 * @return the returned boolean
-	 */
-	public final boolean hasEditor()
-	{
-		return true;
-	}
-
-	/**
-	 * how far away are we from this point? or return -1 if it can't be calculated
-	 * We don't search through our child objects, the searching algorithms do that
-	 * for themselves, since we are a layer
-	 */
-	public double rangeFrom(final MWC.GenericData.WorldLocation other)
-	{
-		double res = -1;
-		if (!getVisible())
-		{
-			// hey, we're invisible, return null
-		}
-		else
-		{
-			final WorldArea area = this.getBounds();
-
-			// did we find a range? we may not have done if all of the
-			// individual sensor lines are not visible
-			if (area != null)
-				res = area.rangeFrom(other);
-		}
-		return res;
-	}
-
-	/**
-	 * paint
-	 * 
-	 * @param canvas
-	 *          parameter for paint
-	 */
-	public final void paint(final MWC.GUI.CanvasType canvas)
-	{
-		if (!getVisible())
-			return;
-
-		// remember the current line width
-		float oldLineWidth = canvas.getLineWidth();
-
-		// set the line width
-		canvas.setLineWidth(_lineWidth);
-
-		// trigger our child sensor contact data items to plot themselves
-		final java.util.Iterator<Editable> it = _myContacts.iterator();
-		while (it.hasNext())
-		{
-			Object next = it.next();
-			final PlottableWrapperWithTimeAndOverrideableColor con = (PlottableWrapperWithTimeAndOverrideableColor) next;
-
-			// ok, plot it - and don't make it keep it simple, lets really go
-			// for it man!
-			con.paint(_myHost, canvas, false);
-		}
-
-		// and restore the line width
-		canvas.setLineWidth(oldLineWidth);
 	}
 
 	// //////////////////////////////////////
@@ -433,105 +529,58 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * ////////////////////////////////////////
 	 */
 
+	@Override
 	public final java.util.Enumeration<Editable> elements()
 	{
 		return new IteratorWrapper(_myContacts.iterator());
 	}
 
 	/**
-	 * removeElement
-	 * 
-	 * @param plottable
-	 *          parameter for removeElement
-	 */
-	public final void removeElement(final MWC.GUI.Editable plottable)
-	{
-		_myContacts.remove(plottable);
-
-		// we also need to update the start/end time
-		_timePeriod = null;
-	}
-
-	/**
-	 * append
-	 * 
-	 * @param layer
-	 *          parameter for append
-	 */
-	public void append(final MWC.GUI.Layer layer)
-	{
-		// don't bother
-	}
-
-	/**
 	 * exportShape
 	 */
+	@Override
 	public final void exportShape()
 	{
 		// don't bother
 	}
 
-	// ///////////////////////////////////////
-	// other member functions
-	// ///////////////////////////////////////
-
-	public final int compareTo(final Plottable o)
+	/**
+	 * filter the list to the specified time period.
+	 */
+	@Override
+	public final void filterListTo(final HiResDate start, final HiResDate end)
 	{
-		int res = 0;
-		if (o instanceof TacticalDataWrapper)
+		final Iterator<Editable> contactWrappers = _myContacts.iterator();
+		while (contactWrappers.hasNext())
 		{
-			// check they're both of the same class (one might be sensor whilst
-			// the other's tma)
-			if (o.getClass().toString().equals(this.getClass().toString()))
+
+			/**
+			 * note, we had trouble with unpredicable behaviour when testing this one.
+			 * We overcame the problem by initialising the dates in the two Gregorian
+			 * calendars.
+			 */
+			final PlottableWrapperWithTimeAndOverrideableColor fw = (PlottableWrapperWithTimeAndOverrideableColor) contactWrappers
+					.next();
+			final HiResDate dtg = fw.getDTG();
+			if ((dtg.greaterThanOrEqualTo(start)) && (dtg.lessThanOrEqualTo(end)))
 			{
-				// compare the names
-				final TacticalDataWrapper sw = (TacticalDataWrapper) o;
-				res = this.getName().compareTo(sw.getName());
+				fw.setVisible(true);
 			}
 			else
 			{
-				// they're different types, point that out.
-				res = -1;
+				fw.setVisible(false);
 			}
-
 		}
-		else
+
+		// do we have any property listeners?
+		if (getSupport() != null)
 		{
-			// just put it after us
-			res = -1;
+			final Debrief.GUI.Tote.StepControl.somePeriod newPeriod = new Debrief.GUI.Tote.StepControl.somePeriod(
+					start, end);
+			getSupport().firePropertyChange(
+					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, newPeriod);
 		}
-		return res;
-	}
 
-	// /////////////////////////////////////////////////////////////////
-	// support for WatchableList interface (required for Snail Trail plotting)
-	// //////////////////////////////////////////////////////////////////
-
-	/**
-	 * get the start DTG of this list
-	 * 
-	 * @return the start DTG, or -1 if not time-related
-	 */
-	public final HiResDate getStartDTG()
-	{
-		if (_timePeriod == null)
-			recalcTimePeriod();
-
-		return _timePeriod.getStartDTG();
-	}
-
-	/**
-	 * we've forgotten our time period, recalc
-	 * 
-	 */
-	private void recalcTimePeriod()
-	{
-		PlottableWrapperWithTimeAndOverrideableColor first = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts
-				.first();
-		PlottableWrapperWithTimeAndOverrideableColor last = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts
-				.last();
-
-		_timePeriod = new TimePeriod.BaseTimePeriod(first.getDTG(), last.getDTG());
 	}
 
 	/**
@@ -539,6 +588,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * 
 	 * @return the end DTG, or -1 if not time-related
 	 */
+	@Override
 	public final HiResDate getEndDTG()
 	{
 		if (_timePeriod == null)
@@ -548,8 +598,18 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	}
 
 	/**
+	 * set our host track
+	 */
+	@Override
+	public final TrackWrapper getHost()
+	{
+		return _myHost;
+	}
+
+	/**
 	 * return the set of items which fall inside the indicated period
 	 */
+	@Override
 	public final java.util.Collection<Editable> getItemsBetween(
 			final HiResDate start, final HiResDate end)
 	{
@@ -593,9 +653,170 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		return res;
 	}
 
-	protected interface ObjectManipulator
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 * 
+	 * @return
+	 */
+	@Override
+	public final int getLineThickness()
 	{
-		void apply(Object subject, boolean value);
+		return _lineWidth;
+	}
+
+	/**
+   *
+   *
+   */
+	@Override
+	public final String getName()
+	{
+		return _myName;
+	}
+
+	/**
+	 * find out the symbol to use for plotting this list in Snail mode
+	 */
+	@Override
+	public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
+	{
+		return null;
+	}
+
+	/**
+	 * get the start DTG of this list
+	 * 
+	 * @return the start DTG, or -1 if not time-related
+	 */
+	@Override
+	public final HiResDate getStartDTG()
+	{
+		if (_timePeriod == null)
+			recalcTimePeriod();
+
+		return _timePeriod.getStartDTG();
+	}
+
+	/**
+	 * getTrack
+	 * 
+	 * @return the returned TrackWrapper
+	 */
+	public final String getTrackName()
+	{
+		return _myTrackName;
+	}
+
+	// ///////////////////////////////////////
+	// other member functions
+	// ///////////////////////////////////////
+
+	public HiResDate getVisibleFrequency()
+	{
+		return _lastVisibleFrequency;
+	}
+
+	// /////////////////////////////////////////////////////////////////
+	// support for WatchableList interface (required for Snail Trail plotting)
+	// //////////////////////////////////////////////////////////////////
+
+	/**
+	 * hasEditor
+	 * 
+	 * @return the returned boolean
+	 */
+	@Override
+	public final boolean hasEditor()
+	{
+		return true;
+	}
+
+	/**
+	 * paint
+	 * 
+	 * @param canvas
+	 *          parameter for paint
+	 */
+	@Override
+	public final void paint(final MWC.GUI.CanvasType canvas)
+	{
+		if (!getVisible())
+			return;
+
+		// remember the current line width
+		final float oldLineWidth = canvas.getLineWidth();
+
+		// set the line width
+		canvas.setLineWidth(_lineWidth);
+
+		// trigger our child sensor contact data items to plot themselves
+		final java.util.Iterator<Editable> it = _myContacts.iterator();
+		while (it.hasNext())
+		{
+			final Object next = it.next();
+			final PlottableWrapperWithTimeAndOverrideableColor con = (PlottableWrapperWithTimeAndOverrideableColor) next;
+
+			// ok, plot it - and don't make it keep it simple, lets really go
+			// for it man!
+			con.paint(_myHost, canvas, false);
+		}
+
+		// and restore the line width
+		canvas.setLineWidth(oldLineWidth);
+	}
+
+	/**
+	 * how far away are we from this point? or return -1 if it can't be calculated
+	 * We don't search through our child objects, the searching algorithms do that
+	 * for themselves, since we are a layer
+	 */
+	@Override
+	public double rangeFrom(final MWC.GenericData.WorldLocation other)
+	{
+		double res = -1;
+		if (!getVisible())
+		{
+			// hey, we're invisible, return null
+		}
+		else
+		{
+			final WorldArea area = this.getBounds();
+
+			// did we find a range? we may not have done if all of the
+			// individual sensor lines are not visible
+			if (area != null)
+				res = area.rangeFrom(other);
+		}
+		return res;
+	}
+
+	/**
+	 * we've forgotten our time period, recalc
+	 * 
+	 */
+	private void recalcTimePeriod()
+	{
+		final PlottableWrapperWithTimeAndOverrideableColor first = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts
+				.first();
+		final PlottableWrapperWithTimeAndOverrideableColor last = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts
+				.last();
+
+		_timePeriod = new TimePeriod.BaseTimePeriod(first.getDTG(), last.getDTG());
+	}
+
+	/**
+	 * removeElement
+	 * 
+	 * @param plottable
+	 *          parameter for removeElement
+	 */
+	@Override
+	public final void removeElement(final MWC.GUI.Editable plottable)
+	{
+		_myContacts.remove(plottable);
+
+		// we also need to update the start/end time
+		_timePeriod = null;
 	}
 
 	/**
@@ -692,174 +913,65 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	}
 
 	/**
-	 * filter the list to the specified time period.
+	 * set our host track
 	 */
-	public final void filterListTo(final HiResDate start, final HiResDate end)
+	public void setHost(final TrackWrapper host)
 	{
-		final Iterator<Editable> contactWrappers = _myContacts.iterator();
-		while (contactWrappers.hasNext())
-		{
-
-			/**
-			 * note, we had trouble with unpredicable behaviour when testing this one.
-			 * We overcame the problem by initialising the dates in the two Gregorian
-			 * calendars.
-			 */
-			final PlottableWrapperWithTimeAndOverrideableColor fw = (PlottableWrapperWithTimeAndOverrideableColor) contactWrappers
-					.next();
-			final HiResDate dtg = fw.getDTG();
-			if ((dtg.greaterThanOrEqualTo(start)) && (dtg.lessThanOrEqualTo(end)))
-			{
-				fw.setVisible(true);
-			}
-			else
-			{
-				fw.setVisible(false);
-			}
-		}
-
-		// do we have any property listeners?
-		if (getSupport() != null)
-		{
-			final Debrief.GUI.Tote.StepControl.somePeriod newPeriod = new Debrief.GUI.Tote.StepControl.somePeriod(
-					start, end);
-			getSupport().firePropertyChange(
-					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, newPeriod);
-		}
-
+		_myHost = host;
 	}
 
 	/**
-	 * find out the symbol to use for plotting this list in Snail mode
+	 * the line thickness (convenience wrapper around width)
 	 */
-	public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
+	public final void setLineThickness(final int val)
 	{
-		return null;
+		_lineWidth = val;
 	}
 
 	/**
-	 * a specialist linear interpolator class that allows quick (repeated)
-	 * interpolations for a set of similar items
+	 * setName
 	 * 
-	 * @author ianmayo
-	 * 
+	 * @param name
+	 *          parameter for setName
 	 */
-	protected static class LinearInterpolator
+	@Override
+	public final void setName(final String name)
 	{
-
-		private double _startTime;
-		private double _desiredTime;
-		private long _timeDelta;
-
-		/**
-		 * Prepare the temporal domain data
-		 */
-		public LinearInterpolator(Watchable startValue, Watchable endValue,
-				double desiredTime)
-		{
-			_desiredTime = desiredTime;
-			_startTime = startValue.getTime().getMicros();
-			_timeDelta = endValue.getTime().getMicros()
-					- startValue.getTime().getMicros();
-		}
-
-		/**
-		 * Return the interpolated value in the supplied domain.
-		 */
-		public double interp(double startVariable, double endVariable)
-		{
-			double gradient = (endVariable - startVariable) / (_timeDelta);
-			return startVariable + (_desiredTime - _startTime) * gradient;
-		}
+		_myName = name;
 	}
 
-	// //////////////////////////////////////////////////////////////////
-	// embedded class to allow us to pass the local iterator (Iterator) used
-	// internally
-	// outside as an Enumeration
-	// /////////////////////////////////////////////////////////////////
 	/**
-   *
-   */
-	public static final class IteratorWrapper implements
-			java.util.Enumeration<Editable>
+	 * setTrack
+	 * 
+	 * @param name
+	 *          parameter for setTrack
+	 */
+	@FireReformatted
+	public final void setTrackName(final String name)
 	{
-		/**
-		 * java.util.Iterator _val
-		 */
-		private final java.util.Iterator<Editable> _val;
-
-		/**
-		 * <init>
-		 * 
-		 * @param iterator
-		 *          parameter for <init>
-		 */
-		public IteratorWrapper(final java.util.Iterator<Editable> iterator)
-		{
-			_val = iterator;
-		}
-
-		/**
-		 * hasMoreElements
-		 * 
-		 * @return the returned boolean
-		 */
-		public final boolean hasMoreElements()
-		{
-			return _val.hasNext();
-
-		}
-
-		/**
-		 * nextElement
-		 * 
-		 * @return the returned Object
-		 */
-		public final Editable nextElement()
-		{
-			return _val.next();
-		}
+		_myTrackName = name;
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
+	/**
+	 * change how frequently our data items are dislayed
+	 * 
+	 * @param visibleFrequency
+	 */
+	@FireReformatted
+	public void setVisibleFrequency(final HiResDate visibleFrequency)
 	{
-		public void testDecimate()
+		_lastVisibleFrequency = visibleFrequency;
+
+		setFixes(new ObjectManipulator()
 		{
-			SensorWrapper sw = new SensorWrapper("mySensor");
-			long nowMillis = 3000;
-			for (int i = 0; i < 6; i++)
+			@Override
+			public void apply(final Object subject, final boolean value)
 			{
-				SensorContactWrapper scw = new SensorContactWrapper("parent",
-						new HiResDate(nowMillis), new WorldDistance(i, WorldDistance.NM),
-						i, new WorldLocation(1, i, 0), Color.RED, "the label", 0,
-						"other label");
-				sw.add(scw);
-				nowMillis += 16 * 1000;
+				final PlottableWrapperWithTimeAndOverrideableColor pl = (PlottableWrapperWithTimeAndOverrideableColor) subject;
+				pl.setVisible(value);
 			}
+		}, visibleFrequency);
 
-			// jump forward a while
-			nowMillis += 5 * 60 * 1000;
-
-			for (int j = 0; j < 6; j++)
-			{
-				SensorContactWrapper scw = new SensorContactWrapper("parent",
-						new HiResDate(nowMillis), new WorldDistance(j, WorldDistance.NM),
-						j, new WorldLocation(1, j, 0), Color.RED, "the label", 0,
-						"other label");
-				sw.add(scw);
-				nowMillis += 16 * 1000;
-			}
-
-			assertEquals("correct number before", 12, sw._myContacts.size());
-
-			sw.decimate(new HiResDate(20000), 4000000);
-
-			assertEquals("correct number of decimated", 8, sw._myContacts.size());
-		}
 	}
 
 }
