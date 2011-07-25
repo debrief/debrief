@@ -1295,9 +1295,8 @@ Naval Undersea Warfare Center (NUWC)
           </example>
 
           <note>
-            <para>Since Autumn 2004 multi-word track names can now be read in
-            if they are surrounded by quotation marks (see <xref
-            linkend="quoted_track_names" />).</para>
+            <para>Since Autumn 2004 multi-word track names can now be read in if they are surrounded
+              by quotation marks (see <xref linkend="replay_track_format"/>).</para>
           </note>
 
           <para>This data has a single vessel location per-line, with

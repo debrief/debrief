@@ -32,6 +32,9 @@
   <xsl:param name="column.count.index" select="2"/>
   <xsl:param name="column.gap.index" select="'2pt'"/>
   
+  <xsl:param name="label.from.part" select="1"/>
+  <xsl:param name="component.label.includes.part.label" select="1"/>
+  <xsl:param name="section.label.includes.part.label" select="1"/>
 
   <!-- sort out the admonitions (tip icons) -->
 
@@ -40,9 +43,9 @@
   <xsl:param name="admon.graphics.extension" select="'.gif'"/>  
   
   <!-- numbering -->
-  <xsl:param name="appendix.autolabel" select="A"/>
+  <xsl:param name="appendix.autolabel" select="'I'"/>
   <xsl:param name="chapter.autolabel" select="1"/>
-  <xsl:param name="part.autolabel" select="1"/>
+  <xsl:param name="part.autolabel" select="'A'"/>
   <xsl:param name="section.autolabel" select="1"/>
   <xsl:param name="preface.autolabel" select="1"/>
 
