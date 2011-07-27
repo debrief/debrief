@@ -9050,9 +9050,9 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
                         0 = No own ship data, 1 = OS Position, 2 = Os Speed, 
                         4 = OS Heading.  For example if all own ship data is available the status = 1+2+4 = 7
 &lt;OS_X&gt;                The X component of the own ship position in cartesiancoordinates at scenario sample time.  
-                        Use STRANDPos type - integers measuring scenario locationin yards
+                        Use STRANDPos type - integers measuring scenario location in yards
 &lt;OS_Y&gt;                The Y component of the own ship position in cartesiancoordinates at scenario sample time.
-                        Use STRANDPos type - integers measuring scenario locationin yards
+                        Use STRANDPos type - integers measuring scenario location in yards
 &lt;OS_Speed&gt;            The speed of the own ship at scenario_sample_time in knots.
                        Positive float
 &lt;OS_Heading&gt;          The heading of the own ship at scenario_sample_time in degrees.
@@ -9071,7 +9071,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 &lt;Sensor_Bacc&gt;         The accuracy of the measured bearing in degrees.  Float in 
                        range 0 to 180.0
 &lt;Sensor_Freq&gt;         The frequency measured by the sensor in hertz. Positive Float
-&lt;Sensor_Facc&gt;         The accuracy of the measured frequency in degrees.  Positive float
+&lt;Sensor_Facc&gt;         The accuracy of the measured frequency in hertz.  Positive float
 &lt;Sensor_Speed&gt;        The speed of the sensor in knots. Positive float
 &lt;Sensor_Heading&gt;      The heading of the sensor in degrees. Float in range 0 to 359.99
 &lt;Sensor_Type&gt;         The type of sensor the data refers to.  
@@ -9101,8 +9101,8 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
                        359.99
 &lt;Prd_Brg_Acc&gt;         The predicted target bearing accuracy in degrees.  Float in 
                        range 0 to 180.0
-&lt;Prd_Range&gt;           The predicted target range in yards  Positive float
-&lt;Prd_Range_Acc&gt;       The predicted target range accuracy in yards  Positive float
+&lt;Prd_Range&gt;           The predicted target range in yards.  Positive float
+&lt;Prd_Range_Acc&gt;       The predicted target range accuracy in yards.  Positive float
 &lt;Prd_Course&gt;          The predicted target course in degrees.  Float in range 0 to 
                        359.99
 &lt;Prd_Cacc&gt;            The accuracy of the predicted course in degrees.  Positive 
