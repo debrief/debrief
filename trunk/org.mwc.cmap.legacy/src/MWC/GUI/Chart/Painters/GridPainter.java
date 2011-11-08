@@ -261,7 +261,8 @@ public class GridPainter implements Plottable, Serializable
 	 */
 	public void setDelta(WorldDistance val)
 	{
-		_myDelta = val;
+		if (val != null)
+			_myDelta = val;
 	}
 
 	/**
@@ -450,8 +451,8 @@ public class GridPainter implements Plottable, Serializable
 		WorldVector symetricUnitOffset = null;
 		if (!_myDelta.isAngular())
 		{
-			symetricUnitOffset = new WorldVector(MWC.Algorithms.Conversions
-					.Degs2Rads(90), deltaDegs, 0);
+			symetricUnitOffset = new WorldVector(
+					MWC.Algorithms.Conversions.Degs2Rads(90), deltaDegs, 0);
 		}
 
 		// ///////////////////////////////////////////////////////////
