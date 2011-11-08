@@ -265,8 +265,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 		res.append(_theSeparator);
 		res.append("4. Select which data parameter is to be plotted");
 		res.append(_theSeparator);
-		res
-				.append("5. Drag an area on the graph to zoom in, and press Fill to rescale");
+		res.append("5. Drag an area on the graph to zoom in, and press Fill to rescale");
 		res.append(_theSeparator);
 
 		return res.toString();
@@ -358,7 +357,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			// retrieve the necessary input data
 			toteCalculation myOperation = theHolder._theCalc;
 
-			// declare the primary track (even though we may end up not using it)
+			// declare the primary track (even though we may end up not using
+			// it)
 			WatchableList thePrimary = null;
 
 			// is this a relative calculation?
@@ -379,7 +379,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			{
 				if (thePrimary != null)
 				{
-					// if it's relative, we use the primary track name in the title
+					// if it's relative, we use the primary track name in the
+					// title
 					theTitle = thePrimary.getName() + " " + theTitle;
 				}
 			}
@@ -399,7 +400,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			NumberAxis yAxis = new NumberAxis(myOperation.getTitle() + " "
 					+ myOperation.getUnits());
 
-			// hmm, see if we are in hi-res mode. If we are, don't use a formatted
+			// hmm, see if we are in hi-res mode. If we are, don't use a
+			// formatted
 			// y-axis, just use the plain long microseconds
 			// value
 			if (HiResDate.inHiResProcessingMode())
@@ -411,8 +413,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				NumberAxis nAxis = new NumberAxis("time (secs.micros)")
 				{
 					/**
-					 * 
-					 */
+                                        *
+                                        */
 					private static final long serialVersionUID = 1L;
 
 					@SuppressWarnings("unused")
@@ -503,13 +505,15 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 		{
 			if (_thePanel instanceof MWC.GUI.Properties.Swing.SwingPropertiesPanel)
 			{
-				// just check if we are using one of our Swing-aware properties panels,
+				// just check if we are using one of our Swing-aware properties
+				// panels,
 				// in which case we will insert the
 				// panel in a floating toolbar.
 
 				// MWC.GUI.Properties.Swing.SwingPropertiesPanel sp =
 				// (MWC.GUI.Properties.Swing.SwingPropertiesPanel) _thePanel;
-				// SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel, theXYPlot);
+				// SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel,
+				// theXYPlot);
 				// sp.addThisPanel(mySwingPlot);
 			}
 			else
@@ -562,13 +566,15 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 						Color thisColor, boolean connectToPrevious,
 						ColouredDataItem.OffsetProvider provider1)
 				{
-					// HI-RES NOT DONE - FixedMillisecond should be converted some-how to
+					// HI-RES NOT DONE - FixedMillisecond should be converted
+					// some-how to
 					// FixedMicroSecond
 					TimeSeriesDataItem newItem = new ColouredDataItem(
 							new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data,
 							thisColor, connectToPrevious, provider1);
-					
-					// To change body of implemented methods use File | Settings | File
+
+					// To change body of implemented methods use File | Settings
+					// | File
 					// Templates.
 					TimeSeries theSeries = (TimeSeries) thisSeries;
 					theSeries.add(newItem);
@@ -579,7 +585,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				{
 					TimeSeriesCollection coll = (TimeSeriesCollection) collection;
 					coll.addSeries((TimeSeries) thisSeries);
-					
+
 				}
 			};
 
@@ -595,13 +601,15 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 						Color thisColor, boolean connectToPrevious,
 						ColouredDataItem.OffsetProvider provider1)
 				{
-					// HI-RES NOT DONE - FixedMillisecond should be converted some-how to
+					// HI-RES NOT DONE - FixedMillisecond should be converted
+					// some-how to
 					// FixedMicroSecond
 					ColouredDataItem newItem = new ColouredDataItem(new FixedMillisecond(
 							theTime.getDate().getTime()), data, thisColor, connectToPrevious,
 							provider1);
 
-					// To change body of implemented methods use File | Settings | File
+					// To change body of implemented methods use File | Settings
+					// | File
 					// Templates.
 					TimeSeries theSeries = (TimeSeries) thisSeries;
 					theSeries.add(newItem);
@@ -626,7 +634,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			// is this a relative calculation?
 			if (myOperation.isARelativeCalculation())
 			{
-				// yes, but we don't bother with the primary track, see if this is it
+				// yes, but we don't bother with the primary track, see if this
+				// is it
 				if (thisSecondaryTrack == primaryTrack)
 				{
 					// drop out, and wait for the next cycle
@@ -643,11 +652,14 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			// indicator for whether we join this data point to the previous one
 			boolean connectToPrevious = false;
 
-			// have we found any?. Hey, listen here. The "getItemsBetween" method may
+			// have we found any?. Hey, listen here. The "getItemsBetween"
+			// method may
 			// return
-			// data items, but we may still not be able to do the calc (such as if we
+			// data items, but we may still not be able to do the calc (such as
+			// if we
 			// have "NaN" for depth). So
-			// we still do a sanity check at the end of this method to stop us adding
+			// we still do a sanity check at the end of this method to stop us
+			// adding
 			// empty data series to the collection.
 			if (ss != null)
 			{
@@ -667,29 +679,35 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				}
 
 				seriesColor = thisSecondaryTrack.getColor();
-				
-				// split into separate processing here, depending on where we're looking
+
+				// split into separate processing here, depending on where we're
+				// looking
 				// at a relative calculation
 				if (myOperation.isARelativeCalculation())
 				{
 					// yes, it is a relative calculation.
 
-					// Find out if it's a special case (where we don't have time data)
+					// Find out if it's a special case (where we don't have time
+					// data)
 					if (thisSecondaryTrack.getStartDTG() == null)
 					{
-						// do we have any primary data to fall back on (to decide the times
+						// do we have any primary data to fall back on (to
+						// decide the times
 						// for
 						// data points)
 						if (primaryTrack.getStartDTG() == null)
 						{
 
 							// ////////////////////////////////////////////////
-							// CASE 1 - neither track has time data, relative calc
+							// CASE 1 - neither track has time data, relative
+							// calc
 							// ////////////////////////////////////////////////
 
-							// so, we don't have primary or secondary data. produce data
+							// so, we don't have primary or secondary data.
+							// produce data
 							// values at the start and end of the track
-							// produce data points at the primary track locations
+							// produce data points at the primary track
+							// locations
 							Iterator<Editable> it = ss.iterator();
 							Watchable theSecondaryPoint = (Watchable) it.next();
 
@@ -714,12 +732,15 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 						{
 
 							// ////////////////////////////////////////////////
-							// CASE 2 - secondary track has time data, relative calc
+							// CASE 2 - secondary track has time data, relative
+							// calc
 							// ////////////////////////////////////////////////
 
-							// so, we do have time data for the secondary track, but not on
+							// so, we do have time data for the secondary track,
+							// but not on
 							// the primary track
-							// therefore we produce data points at the primary track locations
+							// therefore we produce data points at the primary
+							// track locations
 							Watchable[] theSecondaryPoints = thisSecondaryTrack
 									.getNearestTo(start_time);
 							Watchable theSecondaryPoint = theSecondaryPoints[0];
@@ -739,7 +760,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 									HiResDate currentTime = thisPrimary.getTime();
 
-									// and add the new data point (if we have to)
+									// and add the new data point (if we have
+									// to)
 									connectToPrevious = createDataPoint(theCalculation,
 											thisPrimary, theSecondaryPoint, currentTime,
 											connectToPrevious, thisColor, thisSeries, provider,
@@ -763,9 +785,12 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 						// ok, step through the list
 						Iterator<Editable> it = ss.iterator();
 
-						// remember the last point - used to check if we're passing through
+						// remember the last point - used to check if we're
+						// passing through
 						// zero degs
-						double lastSecondaryValue = Double.NaN; // we we're using NaN but it
+						double lastSecondaryValue = Double.NaN; // we we're
+																										// using NaN but
+																										// it
 						// was failing the equality
 						// test
 						HiResDate lastTime = null;
@@ -785,36 +810,40 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 								// the point on the primary track we work with
 								Watchable thisPrimary = null;
 
-								// find the fix on the primary track which is nearest in
+								// find the fix on the primary track which is
+								// nearest in
 								// time to this one (if we need to)
 								Watchable[] nearList;
 
 								// temp switch on interpolation
 								Boolean oldInterp = null;
-								if(primaryTrack instanceof TrackWrapper)
+								if (primaryTrack instanceof TrackWrapper)
 								{
 									TrackWrapper tw = (TrackWrapper) primaryTrack;
 									oldInterp = tw.getInterpolatePoints();
 									tw.setInterpolatePoints(true);
 								}
-								
+
 								// find it's nearest point on the primary track
 								nearList = primaryTrack.getNearestTo(currentTime);
-								
+
 								// and restore the interpolate points setting
-								if(oldInterp != null)
+								if (oldInterp != null)
 								{
 									TrackWrapper tw = (TrackWrapper) primaryTrack;
 									tw.setInterpolatePoints(oldInterp.booleanValue());
 								}
 
-								// yes. right, we only perform a calc if we have primary data
+								// yes. right, we only perform a calc if we have
+								// primary data
 								// for this point
 								if (nearList.length == 0)
 								{
-									// remember that the next point doesn't connect to it's
+									// remember that the next point doesn't
+									// connect to it's
 									// previous one
-									// since we want to show the gap represented by this datum
+									// since we want to show the gap represented
+									// by this datum
 									connectToPrevious = false;
 
 									// drop out, and wait for the next cycle
@@ -826,25 +855,28 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 								}
 
 								// ////////////////////////////////////////////////
-								// NOW PUT IN BIT TO WRAP THROUGH ZERO WHERE APPLICABLE
+								// NOW PUT IN BIT TO WRAP THROUGH ZERO WHERE
+								// APPLICABLE
 								// ////////////////////////////////////////////////
 
 								// produce the new calculated value
 								double thisVal = theCalculation.calculate(thisSecondary,
 										thisPrimary, currentTime);
 
-								// SPECIAL HANDLING - do we need to check if this data passes
+								// SPECIAL HANDLING - do we need to check if
+								// this data passes
 								// through 360 degs?
 								if (theCalculation.isWrappableData())
 								{
 									// add extra points, if we need to
-									connectToPrevious = insertWrappingPoints(lastSecondaryValue,
-											thisVal, lastTime, currentTime, thisColor, thisSeries,
-											connectToPrevious, provider, theAdder,
-											myOperation._clipMax);
+									connectToPrevious = insertWrappingPoints(theCalculation,
+											lastSecondaryValue, thisVal, lastTime, currentTime,
+											thisColor, thisSeries, connectToPrevious, provider,
+											theAdder, myOperation._clipMax);
 								}
 								// ////////////////////////////////////////////////
-								// THANK YOU, WE'RE PLEASED TO RETURN YOU TO YOUR NORMAL PROGRAM
+								// THANK YOU, WE'RE PLEASED TO RETURN YOU TO
+								// YOUR NORMAL PROGRAM
 								// ////////////////////////////////////////////////
 
 								// and add the new data point (if we have to)
@@ -862,7 +894,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				}
 				else
 				{
-					// so, this is an absolute calculation - we don't need to worry about
+					// so, this is an absolute calculation - we don't need to
+					// worry about
 					// the primry
 					// track
 
@@ -874,7 +907,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 						// CASE 4 - no time data, non-relative calculation
 						// ////////////////////////////////////////////////
 
-						// it's ok. It we don't have time related data for this point we
+						// it's ok. It we don't have time related data for this
+						// point we
 						// just create
 						// data points for it at the start & end of the track
 
@@ -898,9 +932,12 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 						// ok, step through the list
 						Iterator<Editable> it = ss.iterator();
 
-						// remember the last point - used to check if we're passing through
+						// remember the last point - used to check if we're
+						// passing through
 						// zero degs
-						double lastSecondaryValue = Double.NaN; // we we're using NaN but it
+						double lastSecondaryValue = Double.NaN; // we we're
+																										// using NaN but
+																										// it
 						// was failing the equality
 						// test
 						HiResDate lastTime = null;
@@ -919,14 +956,16 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 							double thisVal = theCalculation.calculate(thisSecondary, null,
 									currentTime);
 
-							// SPECIAL HANDLING - do we need to check if this data passes
+							// SPECIAL HANDLING - do we need to check if this
+							// data passes
 							// through 360 degs?
 							if (theCalculation.isWrappableData())
 							{
 								// add extra points, if we need to
-								connectToPrevious = insertWrappingPoints(lastSecondaryValue,
-										thisVal, lastTime, currentTime, thisColor, thisSeries,
-										connectToPrevious, provider, theAdder, myOperation._clipMax);
+								connectToPrevious = insertWrappingPoints(theCalculation,
+										lastSecondaryValue, thisVal, lastTime, currentTime,
+										thisColor, thisSeries, connectToPrevious, provider,
+										theAdder, myOperation._clipMax);
 							}
 
 							// is this fix visible?
@@ -947,7 +986,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 					} // whether there was time-related data for this track
 				} // whether this was a relative calculation
 
-				// if the series if empty, set it to null, rather than create one of
+				// if the series if empty, set it to null, rather than create
+				// one of
 				// empty length
 				if (thisSeries instanceof XYSeries)
 				{
@@ -982,6 +1022,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 * method to decide if we need to insert extra (non-joined) points to reflect
 	 * fact that data wraps through 360 degs
 	 * 
+	 * @param theCalculation
+	 * 
 	 * @param lastSecondaryValue
 	 *          the last value calculated
 	 * @param thisVal
@@ -1000,19 +1042,23 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 * @param clipMax
 	 * @return whether the next line segment should connect to this one
 	 */
-	private static boolean insertWrappingPoints(double lastSecondaryValue,
-			double thisVal, HiResDate lastTime, HiResDate currentTime,
-			Color thisColor, Series thisSeries, boolean connectToPrevious,
-			ColouredDataItem.OffsetProvider provider, VersatileSeriesAdder theAdder,
-			double clipMax)
+	private static boolean insertWrappingPoints(toteCalculation theCalculation,
+			double lastSecondaryValue, double thisVal, HiResDate lastTime,
+			HiResDate currentTime, Color thisColor, Series thisSeries,
+			boolean connectToPrevious, ColouredDataItem.OffsetProvider provider,
+			VersatileSeriesAdder theAdder, double clipMax)
 	{
 		// is this the first point?
 		if ((!Double.isNaN(lastSecondaryValue)))
 		{
+
+			final boolean beyondThreshold = Math.abs(thisVal - lastSecondaryValue) > COURSE_THRESHOLD;
+
 			// how far is this from the previous value
-			if (Math.abs(thisVal - lastSecondaryValue) > COURSE_THRESHOLD)
+			if (beyondThreshold)
 			{
-				// oooh, we've passed through zero since the last value. Create two data
+				// oooh, we've passed through zero since the last value. Create
+				// two data
 				// points
 				// to simulate the data passing through zero degrees
 				double startCourse = lastSecondaryValue;
@@ -1020,10 +1066,13 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				long startTime = lastTime.getMicros();
 				long endTime = currentTime.getMicros();
 
-				long zeroTime = ShowTimeVariablePlot3.calcCrossingTime(startTime,
-						endTime, startCourse, endCourse);
+				long zeroTime;
 
-				// just check that zero time isn't equal to either of the ends. if it
+				zeroTime = ShowTimeVariablePlot3.calcZeroCrossingTime(startTime,
+						endTime, startCourse, endCourse, clipMax);
+
+				// just check that zero time isn't equal to either of the ends.
+				// if it
 				// is, move it forward or back
 				// one milli
 				boolean shiftZeroUp = false;
@@ -1041,14 +1090,14 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				double firstCourse;
 				double secondCourse;
 
-				if (startCourse > 180)
+				if (startCourse > clipMax - 180)
 				{
 					firstCourse = clipMax;
-					secondCourse = 0;
+					secondCourse = clipMax - 360;
 				}
 				else
 				{
-					firstCourse = 0;
+					firstCourse = clipMax - 360;
 					secondCourse = clipMax;
 				}
 
@@ -1080,15 +1129,24 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 				try
 				{
-					// now that we use the inverse of the firstPoint value to
-					// indicate whether to join the point to it's previous one.
+					// now that we use the inverse of the firstPoint value
+					// to
+					// indicate whether to join the point to it's previous
+					// one.
 					theAdder.add(thisSeries, firstDate, firstCourse, thisColor, true,
 							provider);
 
-					// now that we use the inverse of the firstPoint value to
-					// indicate whether to join the point to it's previous one.
+					// now that we use the inverse of the firstPoint value
+					// to
+					// indicate whether to join the point to it's previous
+					// one.
 					theAdder.add(thisSeries, secondDate, secondCourse, thisColor, false,
 							provider);
+
+					// right, we're about to cross zero degrees, don't connect
+					// to
+					// the next
+					connectToPrevious = true;
 
 				}
 				catch (Exception e)
@@ -1097,9 +1155,6 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 							"Failed to insert chart point (duplicate of previous point)",
 							false);
 				}
-
-				// right, we're about to cross zero degrees, don't connect to the next
-				connectToPrevious = true;
 
 			}
 		}
@@ -1118,25 +1173,48 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 	 *          the last course value
 	 * @param currentCourse
 	 *          the current course value
+	 * @param clipMax
 	 * @return the time at which the course would pass through zero
 	 */
-	private static final long calcCrossingTime(final long last_time,
-			final long current_time, double lastCourse, double currentCourse)
+	private static final long calcZeroCrossingTime(final long last_time,
+			final long current_time, double lastCourse, double currentCourse,
+			double clipMax)
 	{
 		long res = 0;
+		double delta, range;
 
-		// put the courses into the correct "frame"
-		if (lastCourse > 180)
-			lastCourse -= 360;
+		if (clipMax == 180d)
+		{
+			// put the courses into the correct "frame"
+			if (lastCourse < 0)
+				lastCourse += 360;
 
-		if (currentCourse > 180)
-			currentCourse -= 360;
+			if (currentCourse < 0)
+				currentCourse += 360;
 
-		// find the total course change
-		double range = currentCourse - lastCourse;
+			// find the total course change
+			range = currentCourse - lastCourse;
 
-		// how far through this is zero?
-		double delta = 0 - lastCourse;
+			// how far through this is zero?
+			delta = 180 - lastCourse;
+
+		}
+		else
+		{
+			// put the courses into the correct "frame"
+			if (lastCourse > 180)
+				lastCourse -= 360;
+
+			if (currentCourse > 180)
+				currentCourse -= 360;
+
+			// find the total course change
+			range = currentCourse - lastCourse;
+
+			// how far through this is zero?
+			delta = 0 - lastCourse;
+
+		}
 
 		// and as a proportion?
 		double proportion = delta / range;
@@ -1163,7 +1241,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			ColouredDataItem.OffsetProvider provider, VersatileSeriesAdder theAdder)
 	{
 
-		// Note, we ignore the value of connect to previous, since we are creating
+		// Note, we ignore the value of connect to previous, since we are
+		// creating
 		// the whole
 		// series in this method
 
@@ -1210,7 +1289,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 				Color thisColor, boolean connectToPrevious,
 				ColouredDataItem.OffsetProvider provider);
 
-		void addSeries(AbstractSeriesDataset collection, Series thisSeries, Color defaultColor);
+		void addSeries(AbstractSeriesDataset collection, Series thisSeries,
+				Color defaultColor);
 	}
 
 	/**
@@ -1255,7 +1335,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 			theAdder.add(thisSeries, currentTime, data, thisColor, connectToPrevious,
 					provider);
 
-			// right, we've displayed a valid point, allow the next one to connect to
+			// right, we've displayed a valid point, allow the next one to
+			// connect to
 			// this
 			connectToPrevious = true;
 		}
