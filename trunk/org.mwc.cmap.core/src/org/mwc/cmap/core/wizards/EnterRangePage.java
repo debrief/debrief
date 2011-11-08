@@ -82,6 +82,9 @@ public class EnterRangePage extends CoreEditableWizardPage
 		// try to store some defaults
 		Preferences prefs = getPrefs();
 		WorldDistance res = this.getRange();
+		if(res == null)
+			res = new WorldDistance(0, WorldDistance.YARDS);
+		
 		prefs.put(RANGE, "" + res.getValue() + "," + res.getUnits());
 
 		super.dispose();
