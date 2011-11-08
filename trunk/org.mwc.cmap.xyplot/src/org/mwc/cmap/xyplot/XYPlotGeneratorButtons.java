@@ -333,6 +333,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// ////////////////////////////////////////////////
 							// get the title to use
 							String theTitle = myOperation.getTitle() + " vs Time plot";
+							
+							// if we just got one track - put the name in the title
+							if(subjects.length == 1)
+								theTitle = subjects[0].getName() + " " + theTitle;
 
 							// is this a relative operation
 							if (theHolder.isARelativeCalculation())
