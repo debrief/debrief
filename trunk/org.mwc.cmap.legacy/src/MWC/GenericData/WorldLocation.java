@@ -1,146 +1,6 @@
-// Copyright MWC 1999, Debrief 3 Project
-// $RCSfile: WorldLocation.java,v $
-// @author $Author: Ian.Mayo $
-// @version $Revision: 1.7 $
-// $Log: WorldLocation.java,v $
-// Revision 1.7  2006/05/02 13:43:05  Ian.Mayo
-// Correct typo
-//
-// Revision 1.6  2006/04/21 07:44:30  Ian.Mayo
-// More useful range-from method
-//
-// Revision 1.5  2005/03/09 14:57:33  Ian.Mayo
-// Add method to calculate the perpendicular distance off track.
-//
-// Revision 1.4  2004/11/01 11:35:21  Ian.Mayo
-// Move the relative location convenience class into here
-//
-// Revision 1.3  2004/08/31 09:38:29  Ian.Mayo
-// Rename inner static tests to match signature **Test to make automated testing more consistent
-//
-// Revision 1.2  2004/05/24 16:27:36  Ian.Mayo
-// Commit updates from home
-//
-// Revision 1.1.1.1  2004/03/04 20:31:14  ian
-// no message
-//
-// Revision 1.1.1.1  2003/07/17 10:07:01  Ian.Mayo
-// Initial import
-//
-// Revision 1.7  2003-03-14 08:35:18+00  ian_mayo
-// Use optimised subtract method for WorldLocation
-//
-// Revision 1.6  2003-01-17 15:11:10+00  ian_mayo
-// Handle missing depth data
-//
-// Revision 1.5  2002-11-13 13:14:43+00  ian_mayo
-// added isValid flag
-//
-// Revision 1.4  2002-10-11 08:34:50+01  ian_mayo
-// IntelliJ optimisations
-//
-// Revision 1.3  2002-09-24 11:01:16+01  ian_mayo
-// tidy up doc comments
-//
-// Revision 1.2  2002-05-28 09:25:33+01  ian_mayo
-// after switch to new system
-//
-// Revision 1.1  2002-05-28 09:15:16+01  ian_mayo
-// Initial revision
-//
-// Revision 1.1  2002-04-11 14:02:35+01  ian_mayo
-// Initial revision
-//
-// Revision 1.6  2002-03-12 15:29:19+00  administrator
-// Stop toString being final, so that we can over-ride it in our Path editor
-//
-// Revision 1.5  2001-11-14 19:51:02+00  administrator
-// Change to printing style
-//
-// Revision 1.4  2001-10-22 14:50:43+01  administrator
-// Setup the tests correctly (specifying the correct earth model)
-//
-// Revision 1.3  2001-09-24 10:04:59+01  administrator
-// Complete removal of old format Assert methods
-//
-// Revision 1.2  2001-09-23 09:07:47+01  administrator
-// updated JUnit assert code
-//
-// Revision 1.1  2001-08-21 12:11:07+01  administrator
-// Add improved "equals" method, which will over-ride the Object method
-//
-// Revision 1.0  2001-07-17 08:46:39+01  administrator
-// Initial revision
-//
-// Revision 1.4  2001-06-04 09:29:07+01  novatech
-// add accessor method to let us modify the earth model used
-//
-// Revision 1.3  2001-01-21 21:39:51+00  novatech
-// add JUnit testing
-//
-// Revision 1.2  2001-01-18 13:22:41+00  novatech
-// optimisations to reduce object creation
-//
-// Revision 1.1  2001-01-03 13:43:11+00  novatech
-// Initial revision
-//
-// Revision 1.1.1.1  2000/12/12 21:42:40  ianmayo
-// initial version
-//
-// Revision 1.7  2000-09-27 14:32:11+01  ian_mayo
-// add new constructor, taking fewer parameters
-//
-// Revision 1.6  2000-07-07 09:59:33+01  ian_mayo
-// check that earth model is declared before we start doing calcs
-//
-// Revision 1.5  2000-04-19 11:39:50+01  ian_mayo
-// make methods final, switch to EarthModel calcs
-//
-// Revision 1.4  2000-03-07 10:10:40+00  ian_mayo
-// Make lat,long,depth package visible, not private
-//
-// Revision 1.3  1999-12-03 14:37:13+00  ian_mayo
-// tidy up location returned
-//
-// Revision 1.2  1999-11-09 10:16:42+00  ian_mayo
-// show units in comment for rangeFrom calculation
-//
-// Revision 1.1  1999-10-12 15:37:14+01  ian_mayo
-// Initial revision
-//
-// Revision 1.1  1999-07-27 10:50:53+01  administrator
-// Initial revision
-//
-// Revision 1.5  1999-07-27 09:23:55+01  administrator
-// allowed setting of lat/long/depth and created "addToMe" method
-//
-// Revision 1.4  1999-07-23 14:03:53+01  administrator
-// Updating MWC utilities, & catching up on changes (removed deprecated code from PtPlot)
-//
-// Revision 1.3  1999-07-19 12:40:33+01  administrator
-// added storage of sub-second time data (Switched to storing as Long rather than java.utils.Date)
-//
-// Revision 1.2  1999-07-12 08:09:20+01  administrator
-// Property editing added
-//
-// Revision 1.1  1999-07-07 11:10:11+01  administrator
-// Initial revision
-//
-// Revision 1.1  1999-06-16 15:38:02+01  sm11td
-// Initial revision
-//
-// Revision 1.3  1999-06-01 16:49:20+01  sm11td
-// Reading in tracks aswell as fixes, commenting large portions of source code
-//
-// Revision 1.2  1999-02-04 08:02:23+00  sm11td
-// Plotting to canvas, scaling canvas,
-//
-// Revision 1.1  1999-01-31 13:32:59+00  sm11td
-// Initial revision
-//
-
 package MWC.GenericData;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
@@ -611,21 +471,74 @@ public class WorldLocation implements Serializable, Cloneable
 	protected WorldDistance perpendicularDistanceBetween(WorldLocation lineStart,
 			WorldLocation lineEnd)
 	{
-		// sort out known angles
-		double thetaOne = lineEnd.bearingFrom(lineStart);
-		double thetaTwo = Math.PI - lineStart.bearingFrom(this);
-		double thetaThree = thetaOne + thetaTwo;
-
-		// and the single known distance
-		double rangeToP1 = lineStart.rangeFrom(this);
-
-		// now do our trig.
-		double sinThetaThree = Math.abs(Math.sin(thetaThree));
-		WorldDistance distance = new WorldDistance(rangeToP1 * sinThetaThree,
-				WorldDistance.DEGS);
+		
+		Point2D pStart = new Point2D.Double(lineStart.getLong(), lineStart.getLat());
+		Point2D pEnd = new Point2D.Double(lineEnd.getLong(), lineEnd.getLat());
+		Point2D tgt = new Point2D.Double(this.getLong(), this.getLat());
+		
+		double res = distanceToSegment(pStart, pEnd, tgt);
+		WorldDistance distance = new WorldDistance(res, WorldDistance.DEGS);
+		
+		//Note: we were using an algorithm to calculate the dist to a point on a continuous line, not
+		// a line segment.  The above code class the correct algorithm.
+//		// sort out known angles
+//		double thetaOne = lineEnd.bearingFrom(lineStart);
+//		double thetaTwo = Math.PI - lineStart.bearingFrom(this);
+//		double thetaThree = thetaOne + thetaTwo;
+//
+//		// and the single known distance
+//		double rangeToP1 = lineStart.rangeFrom(this);
+//
+//		// now do our trig.
+//		double sinThetaThree = Math.abs(Math.sin(thetaThree));
+//		WorldDistance distance = new WorldDistance(rangeToP1 * sinThetaThree,
+//				WorldDistance.DEGS);
 
 		// sorted.
 		return distance;
+	}
+
+	/** algorithm taken from DistancePoint.java
+	 * DistancePointSegmentExample, calculate distance to line
+   * Copyright (C) 2008 Pieter Iserbyt <pieter.iserbyt@gmail.com>
+   * Alogrithm found via Stack Overflow page at: http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+   * 
+	 * @param lineStart point (in degs) for line start
+	 * @param lineEnd point (in degs) for line end
+	 * @param tgtPoint point (in degs) for point of interest
+	 * @return distance in degs from line to point
+	 */
+	private static double distanceToSegment(Point2D lineStart, Point2D lineEnd, Point2D tgtPoint)
+	{
+
+		final double xDelta = lineEnd.getX() - lineStart.getX();
+		final double yDelta = lineEnd.getY() - lineStart.getY();
+
+		if ((xDelta == 0) && (yDelta == 0))
+		{
+			throw new IllegalArgumentException("lineStart and lineEnd cannot be the same point");
+		}
+
+		final double u = ((tgtPoint.getX() - lineStart.getX()) * xDelta + (tgtPoint.getY() - lineStart.getY())
+				* yDelta)
+				/ (xDelta * xDelta + yDelta * yDelta);
+
+		final Point2D closestPoint;
+		if (u < 0)
+		{
+			closestPoint = lineStart;
+		}
+		else if (u > 1)
+		{
+			closestPoint = lineEnd;
+		}
+		else
+		{
+			closestPoint = new Point2D.Double(lineStart.getX() + u * xDelta, lineStart.getY() + u
+					* yDelta);
+		}
+
+		return closestPoint.distance(tgtPoint);
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -914,3 +827,4 @@ public class WorldLocation implements Serializable, Cloneable
 	}
 
 }
+ 
