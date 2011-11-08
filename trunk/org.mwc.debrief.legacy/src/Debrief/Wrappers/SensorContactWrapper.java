@@ -146,6 +146,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
@@ -923,7 +924,7 @@ public final class SensorContactWrapper extends
 	public final double rangeFrom(final MWC.GenericData.WorldLocation other)
 	{
 		// return the distance from each end
-		double res = Double.MAX_VALUE;
+		double res = Plottables.INVALID_RANGE;
 
 		if (getVisible())
 		{

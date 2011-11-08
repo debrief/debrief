@@ -89,6 +89,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
@@ -844,7 +845,7 @@ public final class TMAContactWrapper extends
 	public final double rangeFrom(final WorldLocation other)
 	{
 		// return the distance from each end
-		double res = Double.MAX_VALUE;
+		double res = Plottables.INVALID_RANGE;
 
 		if (getVisible())
 		{
