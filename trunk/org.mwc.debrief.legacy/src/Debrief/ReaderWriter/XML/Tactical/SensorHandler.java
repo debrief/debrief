@@ -84,7 +84,9 @@ abstract public class SensorHandler extends
 		{
 			public void setWorldDistance(WorldDistance value)
 			{
-				_mySensor.setSensorOffset(new WorldDistance.ArrayLength(value));
+				// just check it contains a credible value
+				if (value.getValue() > 0)
+					_mySensor.setSensorOffset(new WorldDistance.ArrayLength(value));
 			}
 		});
 
