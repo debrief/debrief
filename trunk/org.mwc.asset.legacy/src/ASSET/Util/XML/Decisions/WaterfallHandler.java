@@ -50,6 +50,27 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 	{
 		if (thisDepth > 0)
 		{
+			list.addHandler(new PatternLadder2_SearchHandler()
+			{
+				public void setModel(final ASSET.Models.DecisionType dec)
+				{
+					handler.addModel(dec);
+				}
+			});
+			list.addHandler(new PatternInwardSpiral_SearchHandler()
+			{
+				public void setModel(final ASSET.Models.DecisionType dec)
+				{
+					handler.addModel(dec);
+				}
+			});
+			list.addHandler(new PatternOutwardSpiral_SearchHandler()
+			{
+				public void setModel(final ASSET.Models.DecisionType dec)
+				{
+					handler.addModel(dec);
+				}
+			});
 			list.addHandler(new LadderSearchHandler()
 			{
 				public void setModel(final ASSET.Models.DecisionType dec)
@@ -301,8 +322,14 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 			TrailHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof ExpandingSquareSearch)
 			ExpandingSquareSearchHandler.exportThis(dec, thisPart, doc);
-		else if (dec instanceof LadderSearch)
+		else if (dec instanceof PatternSearch_Ladder)
 			LadderSearchHandler.exportThis(dec, thisPart, doc);
+		else if (dec instanceof PatternSearch_OutwardSpiral)
+			PatternOutwardSpiral_SearchHandler.exportThis(dec, thisPart, doc);
+		else if (dec instanceof PatternSearch_InwardSpiral)
+			PatternInwardSpiral_SearchHandler.exportThis(dec, thisPart, doc);
+		else if (dec instanceof PatternSearch_Ladder2)
+			PatternLadder2_SearchHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof WorkingTransit)
 			WorkingTransitHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof TransitWaypoint)

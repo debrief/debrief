@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="AreaResults"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="FisherOne" number="100">
+				<Variance name="Vary course" id="Status">
+					<Attribute name="Course">
+						<Range max="0.0" min="359.9" />
+					</Attribute>
+
+				</Variance>
+				<ParticipantLocation>
+					<WorldArea>
+						<TopLeft>
+							<relativeLocation>
+								<North Value="160.0" Units="nm" />
+								<East Value="0" Units="nm" />
+							</relativeLocation>							
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Value="0.0" Units="nm" />
+								<East Value="160.0" Units="nm" />
+							</relativeLocation>							
+						</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+		</MultiParticipantGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Doomsday Timer" Active="true">
+			<Duration Value="6" Units="days" />
+		</TimeObserver>
+		<TrackPlotObserver Active="false" Name="TrackPlot"
+			show_positions="true">
+			<GridDelta Value="4" Units="nm"></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks"
+			record_detections="true" record_positions="true" Active="true"
+			record_decisions="true">
+		</DebriefReplayObserver>
+		<RemoveDetectedObserver PlotTheDead="true"
+			Name="Red detections" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<PlotSensorObserver Name="Show Blue Range" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+	</ObserverList>
+</ScenarioController>

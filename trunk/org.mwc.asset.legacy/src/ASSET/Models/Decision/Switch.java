@@ -1,5 +1,6 @@
 package ASSET.Models.Decision;
 
+import ASSET.Models.DecisionType;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
@@ -89,7 +90,7 @@ public class Switch extends Waterfall
 
     if (this.getIsAlive())
     {
-      Waterfall ourDecision = (Waterfall) _myDecisions.elementAt(getIndex() -1);
+      DecisionType ourDecision = _myDecisions.elementAt(getIndex() -1);
       res = ourDecision.decide(status, chars, demStatus, detections, monitor, time);
 
 

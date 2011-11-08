@@ -5,7 +5,7 @@ import java.io.*;
 import ASSET.*;
 import ASSET.Models.SensorType;
 import ASSET.Models.Decision.*;
-import ASSET.Models.Decision.Tactical.LadderSearch;
+import ASSET.Models.Decision.Tactical.PatternSearch_Ladder;
 import ASSET.Models.Detection.*;
 import ASSET.Models.Environment.*;
 import ASSET.Models.Sensor.SensorList;
@@ -602,7 +602,7 @@ public class MADLookupSensor extends LookupSensor
       Waterfall wat = (Waterfall) helo.getDecisionModel();
       Sequence seq = (Sequence) wat.getModels().elementAt(1);
       assertEquals("all loaded", 3, seq.getModels().size());
-      assertTrue("ladder loaded", seq.getModels().elementAt(2) instanceof LadderSearch);
+      assertTrue("ladder loaded", seq.getModels().elementAt(2) instanceof PatternSearch_Ladder);
 
       helo.addParticipantDetectedListener(new ParticipantDetectedListener()
       {

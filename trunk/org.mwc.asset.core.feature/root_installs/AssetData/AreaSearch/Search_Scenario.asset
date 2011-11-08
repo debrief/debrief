@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="Area search scenario" xmlns="http://www.mwc.org/asset"
+	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
+	ShowName="false" ShowActivity="false" ShowSymbol="true">
+	<StepTime Units="minutes" Value="5" />
+	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
+		SeaState="1">
+	</Environment>
+	<Participants>
+		<Surface Name="FisherOne">
+			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE"></Category>
+			<SensorFit></SensorFit>
+			<Status Course="30" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="50" Long="-8"></shortLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Sequence Name="Southern Trawl" IsActive="true">
+				<RectangleWander Name="Random patrol">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Value="160.0" Units="nm" />
+								<East Value="0.0" Units="nm" />
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Value="0.0" Units="nm" />
+								<East Value="160.0" Units="nm" />
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Value="6" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</RectangleWander>
+			</Sequence>
+			<SurfaceMovementCharacteristics Name="9m fisherman"
+				FuelUsageRate="0.0001">
+				<MinSpeed Value="0.0" Units="kts"></MinSpeed>
+				<MaxSpeed Value="12" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="400" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="T23">
+			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="RED" />
+						<DetectionRange Value="20" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor>
+			</SensorFit>
+			<Status Course="0.0" Fuel="0.0">
+				<Location>
+					<relativeLocation>
+						<North Value="0.0" Units="nm" />
+						<East Value="0.0" Units="nm" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="12" Units="kts" />
+			</Status>
+			<Waterfall Name="T23 Search">
+				
+				<Switch Name="Do a search" Index="3">
+				<OutwardSpiralSearch Name="160_Outward">
+					<TrackSpacing Value="20" Units="nm" />
+					<Width Value="160" Units="nm" />
+					<Height Value="160" Units="nm" />
+				</OutwardSpiralSearch>
+				<InwardSpiralSearch Name="160_Inward">
+					<TrackSpacing Value="20" Units="nm" />
+					<Width Value="160" Units="nm" />
+					<Height Value="160" Units="nm" />
+				</InwardSpiralSearch>
+								<LadderSearch2 Name="160_Ladder">
+					<TrackSpacing Value="20" Units="nm" />
+					<Width Value="160" Units="nm" />
+					<Height Value="160" Units="nm" />
+				</LadderSearch2>
+				
+				</Switch>
+			</Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="kts" />
+				<MaxSpeed Value="15.0" Units="kts" />
+				<AccelerationRate Value="1.0" Units="kts/s" />
+				<DecelerationRate Value="1.0" Units="kts/s" />
+				<TurningCircle Value="400.0" Units="m" />
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
+				<Delta Units="nm" Value="50" />
+				<colour Value="DARK_GREY" />
+			</grid>
+			<scale AutoMode="true" DisplayUnits="nm" Location="BottomLeft"
+				Name="World Default" ScaleMax="200" ScaleStep="20" Visible="true">
+				<colour Value="GREY" />
+			</scale>
+		</layer>
+	</DebriefLayer>
+</Scenario>

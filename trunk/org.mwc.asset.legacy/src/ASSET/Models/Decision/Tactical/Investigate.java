@@ -1384,7 +1384,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			bottomRight.setDepth(1000);
 			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
 
-			ASSET.Models.Decision.Tactical.LadderSearch ladder = new LadderSearch(
+			PatternSearch_Core ladder = new PatternSearch_Ladder(
 					90.0, new Integer(4), new WorldLocation(0, 0, 0), new WorldDistance(
 							10, WorldDistance.NM), new WorldDistance(30, WorldDistance.NM),
 					new WorldDistance(500, WorldDistance.FT), null,

@@ -9,7 +9,8 @@ package ASSET.Util.XML.Decisions;
  * @version 1.0
  */
 
-import ASSET.Models.Decision.Tactical.LadderSearch;
+import ASSET.Models.Decision.Tactical.PatternSearch_Ladder;
+import ASSET.Models.Decision.Tactical.PatternSearch_Core;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
 import ASSET.Util.XML.Utils.ASSETLocationHandler;
 import MWC.GenericData.WorldDistance;
@@ -108,7 +109,7 @@ abstract public class LadderSearchHandler extends CoreDecisionHandler
 
   public final void elementClosed()
   {
-    final LadderSearch ess = new LadderSearch(_ladderAxis, _numLegs,
+    final PatternSearch_Core ess = new PatternSearch_Ladder(_ladderAxis, _numLegs,
                                               _origin, _spacing, _legLength, _searchHeight, _searchSpeed, null);
 
     super.setAttributes(ess);
@@ -131,7 +132,7 @@ abstract public class LadderSearchHandler extends CoreDecisionHandler
     final org.w3c.dom.Element thisPart = doc.createElement(type);
 
     // get data item
-    final LadderSearch bb = (LadderSearch) toExport;
+    final PatternSearch_Ladder bb = (PatternSearch_Ladder) toExport;
 
     // first the parents
     CoreDecisionHandler.exportThis(bb, thisPart, doc);
