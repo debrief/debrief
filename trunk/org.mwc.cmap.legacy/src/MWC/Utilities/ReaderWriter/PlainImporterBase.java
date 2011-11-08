@@ -233,34 +233,8 @@ public abstract class PlainImporterBase implements PlainImporter
 	 */
 	public void startExport(Plottable item)
 	{
-		java.awt.datatransfer.Clipboard cl = java.awt.Toolkit.getDefaultToolkit()
-				.getSystemClipboard();
-	
-		// see if there is currently text on the cliboard
-		// since we will 'add' rather than 'replace' it if so.
-		java.awt.datatransfer.Transferable tr = cl.getContents(this);
-	
-		// was there anything on the clipboard?
-		if (tr != null)
-		{
-			if (tr.isDataFlavorSupported(java.awt.datatransfer.DataFlavor.stringFlavor))
-			{
-				try
-				{
-					// get the current contents
-					Object oj = tr.getTransferData(java.awt.datatransfer.DataFlavor.stringFlavor);
-					_beingExported = new StringBuffer((String) oj);
-				}
-				catch (Exception e)
-				{
-					MWC.Utilities.Errors.Trace.trace(e);
-				}
-			}
-			else
-			{
-				// don't bother, lets just put the string on the clipboard
-			}
-		}
+		// clear the output buffer
+		_beingExported = null;
 	}
 
 	/**
