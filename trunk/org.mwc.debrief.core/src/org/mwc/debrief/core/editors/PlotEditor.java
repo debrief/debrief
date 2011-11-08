@@ -529,7 +529,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				WorldDistance theRange = getRange.getRange();
 
 				// did a range get entered?
-				if (theRange.getValue() != 0)
+				if ((theRange != null) && (theRange.getValue() != 0))
 				{
 					Enumeration<Editable> iter = thisS.elements();
 					while (iter.hasMoreElements())
