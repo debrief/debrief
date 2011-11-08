@@ -120,6 +120,9 @@ public final class MultiScenarioGenerator
 				_myFileTemplate = el.getAttribute(NAME_TEMPLATE);
 				String numPerms = el.getAttribute(NUMBER_PERMS);
 				_numPerms = Integer.parseInt(numPerms);
+				
+				// NOTE: there is also an Active attribute, but we actually use that at a level of processing above this:
+				// to decide if we bother with multi-sceanrio genny at all
 
 				String maxPerms = el.getAttribute(MAX_INSTANCES);
 				if (maxPerms != "")

@@ -1009,6 +1009,13 @@
 					special Monte Carlo processing</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="PaintDecisions" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Flag to indicate that  when shown graphically the
+				viewer application should attempt to display any spatial decision-related data
+				for this participant </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<!-- -->
 	<!-- declare instances of the vessel types so we can create them externally -->
@@ -2090,6 +2097,12 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+						<xs:element name="Terminate" type="TerminateType">
+							<xs:annotation>
+								<xs:documentation>Suspend the simulation (typically found at the end of a sequence)
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 						<xs:element name="Composite" type="CompositeType">
 							<xs:annotation>
 								<xs:documentation>This architectural behaviour contains a
@@ -2128,6 +2141,11 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+						<xs:element name="SawSearch" type="SawSearchType">
+							<xs:annotation>
+								<xs:documentation>Sawtooth search pattern</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 						<xs:element name="LadderSearch" type="LadderSearchType">
 							<xs:annotation>
 								<xs:documentation>Ladder search (also called a creeping line
@@ -2136,20 +2154,18 @@
 						</xs:element>
 						<xs:element name="LadderSearch2" type="LadderSearch2Type">
 							<xs:annotation>
-								<xs:documentation>Updated Ladder search (also called a creeping line
+								<xs:documentation>Fresh implementation of  Ladder search (also called a creeping line
 									ahead)</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="InwardSpiralSearch" type="InwardSpiralSearchType">
 							<xs:annotation>
-								<xs:documentation>Updated Ladder search (also called a creeping line
-									ahead)</xs:documentation>
+								<xs:documentation>Inward spiral search</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="OutwardSpiralSearch" type="OutwardSpiralSearchType">
 							<xs:annotation>
-								<xs:documentation>Updated Ladder search (also called a creeping line
-									ahead)</xs:documentation>
+								<xs:documentation>Outward spiral search</xs:documentation>
 							</xs:annotation>
 						</xs:element>
 						<xs:element name="ExpandingSquareSearch" type="ExpandingSquareSearchType">
@@ -2276,6 +2292,18 @@
 					<xs:element name="FleeSpeed" type="SpeedType"/>
 					<xs:element name="TargetType" type="TargetTypeType"/>
 				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TerminateType">
+		<xs:annotation>
+			<xs:documentation>Terminate current simulation</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited
+				Editable: course, speed, depth
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DecisionModelType">
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2948,6 +2976,54 @@
 	<xs:complexType name="LadderSearch2Type">
 		<xs:annotation>
 			<xs:documentation>Conduct updated ladder search</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited, search
+				speed
+				Editable: inherited</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DecisionModelType">
+				<xs:sequence>
+					<xs:element name="StartPoint" type="LocationType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The start point for the search. Omit to use current vehicle location
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="TrackSpacing" type="WorldDistanceType" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The gap between the rungs of our ladder
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Width" type="WorldDistanceType" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The width of the area to be covered</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Height" type="WorldDistanceType" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>The height of the area to be covered</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SearchHeight" type="WorldDistanceType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The (optional) height to search at
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="SearchSpeed" type="SpeedType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The (optional) speed to search at
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SawSearchType">
+		<xs:annotation>
+			<xs:documentation>Conduct saw search</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible: inherited, search
 				speed
 				Editable: inherited</xs:documentation>
@@ -3770,6 +3846,12 @@
 			</xs:annotation>
 			<xs:element name="VarianceList" type="VarianceListType"/>
 		</xs:sequence>
+		<xs:attribute name="Active" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>Whether to bother with scenario generation
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="NameTemplate" type="validString" use="required">
 			<xs:annotation>
 				<xs:documentation>The suffix to append each new file. Use %i for an

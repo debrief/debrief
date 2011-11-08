@@ -18,10 +18,12 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
 {
 
   public static final String NAME = "Name";
+  public static final String PAINT_DECISIONS = "PaintDecisions";
   public static final String MONTE_CARLO_TARGET = "MonteCarloTarget";
 
   String _myName;
   boolean _isMonteCarlo = false;
+  Boolean _paintDecisions = null;  
   int _myId = ASSET.ScenarioType.INVALID_ID;
   ASSET.Participants.Category _myCategory;
   ASSET.Participants.Status _myStatus;
@@ -61,6 +63,14 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
       public void setValue(String name, final boolean val)
       {
         _isMonteCarlo = val;
+      }
+    });
+
+    super.addAttributeHandler(new HandleBooleanAttribute(PAINT_DECISIONS)
+    {
+      public void setValue(String name, final boolean val)
+      {
+      	_paintDecisions = val;
       }
     });
 
@@ -116,14 +126,6 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
       }
     });
 
-
-//    addHandler(new ASSET.Util.XML.Movement.MovementCharsHandler()
-//    {
-//      public void setMovement(final ASSET.Models.Movement.MovementCharacteristics chars)
-//      {
-//        _myMoves = chars;
-//      }
-//    });
     addHandler(new ASSET.Util.XML.Vessels.Util.RadiatedCharsHandler()
     {
       public void setRadiation(final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics chars)
@@ -182,6 +184,9 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
     thisPart.setRadiatedChars(_myRads);
     thisPart.setSelfNoise(_mySelfNoise);
     
+    if(_paintDecisions != null)
+    	thisPart.setPaintDecisions(_paintDecisions);
+    
     if(_myMovement != null)
     	thisPart.setMovementModel(_myMovement);
 
@@ -193,6 +198,7 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
 
     // clear local vars
     _myId = ASSET.ScenarioType.INVALID_ID;
+    _paintDecisions = null;
     _isMonteCarlo = false;
     _myName = null;
     _myCategory = null;

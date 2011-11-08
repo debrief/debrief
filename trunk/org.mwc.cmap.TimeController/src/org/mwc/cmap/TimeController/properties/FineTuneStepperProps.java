@@ -11,11 +11,6 @@ import MWC.GenericData.HiResDate;
 public class FineTuneStepperProps implements Editable 
 {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
 	/** the slider we're controlling
 	 * 
 	 */

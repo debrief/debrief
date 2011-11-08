@@ -38,7 +38,7 @@ public class HighLevelDemandedStatus extends DemandedStatus
   /**
    * location index to mark that path is complete
    */
-  private static final int PATH_COMPLETE = -1;
+  public static final int PATH_COMPLETE = -1;
 
   /**
    * whether to follow through points in reverse

@@ -191,4 +191,16 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
    */
   boolean radiatesThisNoise(int medium);
 
+  /** whether to paint decisions if this participant is shown graphically
+   * 
+   * @param paintDecisions
+   */
+	public  void setPaintDecisions(boolean paintDecisions);
+
+  /** whether to paint decisions if this participant is shown graphically
+   * 
+   * @param paintDecisions
+   */
+	public  boolean getPaintDecisions();
+
 }

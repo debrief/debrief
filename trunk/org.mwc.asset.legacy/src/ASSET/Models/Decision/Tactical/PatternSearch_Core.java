@@ -1,5 +1,9 @@
 package ASSET.Models.Decision.Tactical;
 
+import java.awt.Point;
+import java.util.Iterator;
+
+import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.Movement.TransitWaypoint;
 import ASSET.Models.Detection.DetectionList;
@@ -9,12 +13,14 @@ import ASSET.Models.Movement.OnTopWaypoint;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
+import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
 
-public abstract class PatternSearch_Core extends CoreDecision
+public abstract class PatternSearch_Core extends CoreDecision implements
+		DecisionType.Paintable
 {
 
 	/**
@@ -300,7 +306,8 @@ public abstract class PatternSearch_Core extends CoreDecision
 	}
 
 	public PatternSearch_Core(String name, WorldLocation myOrigin,
-			WorldDistance searchHeight, WorldSpeed searchSpeed, WorldDistance trackSpacing, WorldDistance height, WorldDistance width)
+			WorldDistance searchHeight, WorldSpeed searchSpeed,
+			WorldDistance trackSpacing, WorldDistance height, WorldDistance width)
 	{
 		super(name);
 		_myOrigin = myOrigin;
@@ -439,6 +446,55 @@ public abstract class PatternSearch_Core extends CoreDecision
 	public final void setTrackSpacing(final WorldDistance _trackSpacing)
 	{
 		this._trackSpacing = _trackSpacing;
+	}
+
+	@Override
+	public void paint(CanvasType dest)
+	{
+		// ok, do we have a route?
+		if (_myRoute != null)
+		{
+			// does it have any points?
+			if (_myRoute.getDestinations().getPoints().size() > 0)
+			{
+				// ok, make it a feint line
+				dest.setLineStyle(CanvasType.SHORT_DASHES);
+
+				// ok, go for it
+				Iterator<WorldLocation> pts = _myRoute.getDestinations().getPoints()
+						.iterator();
+				Point lastP = null;
+				while (pts.hasNext())
+				{
+					WorldLocation thisP = pts.next();
+					Point pt = dest.toScreen(thisP);
+
+					if (lastP != null)
+					{
+						dest.drawLine(lastP.x, lastP.y, pt.x, pt.y);
+					}
+
+					// is this the current target?
+					boolean painted = false;
+					int index = _myRoute.getCurrentDestinationIndex();
+					if (index != HighLevelDemandedStatus.PATH_COMPLETE)
+					{
+						WorldLocation tgt = _myRoute.getDestinations().getLocationAt(index);
+						if (tgt.equals(thisP))
+						{
+							// shade it in solid
+							dest.fillRect(pt.x - 3, pt.y - 3, 7, 7);
+							painted = true;
+						}
+					}
+					if (!painted)
+					{
+						dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
+					}
+					lastP = new Point(pt);
+				}
+			}
+		}
 	}
 
 }

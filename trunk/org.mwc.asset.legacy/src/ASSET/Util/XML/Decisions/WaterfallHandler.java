@@ -50,6 +50,13 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 	{
 		if (thisDepth > 0)
 		{
+			list.addHandler(new PatternSaw_SearchHandler()
+			{
+				public void setModel(final ASSET.Models.DecisionType dec)
+				{
+					handler.addModel(dec);
+				}
+			});
 			list.addHandler(new PatternLadder2_SearchHandler()
 			{
 				public void setModel(final ASSET.Models.DecisionType dec)
@@ -204,6 +211,13 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 					handler.addModel(dec);
 				}
 			});
+			list.addHandler(new TerminateHandler()
+			{
+				public void setModel(final ASSET.Models.DecisionType dec)
+				{
+					handler.addModel(dec);
+				}
+			});
 			list.addHandler(new MoveHandler()
 			{
 				public void setModel(final ASSET.Models.DecisionType dec)
@@ -326,6 +340,8 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 			LadderSearchHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof PatternSearch_OutwardSpiral)
 			PatternOutwardSpiral_SearchHandler.exportThis(dec, thisPart, doc);
+		else if (dec instanceof PatternSearch_Saw)
+			PatternSaw_SearchHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof PatternSearch_InwardSpiral)
 			PatternInwardSpiral_SearchHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof PatternSearch_Ladder2)
@@ -357,9 +373,9 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 		else if (dec instanceof UserControl)
 			UserControlHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof Move)
-			UserControlHandler.exportThis(dec, thisPart, doc);
-		else if (dec instanceof CircularDatumSearchHandler)
-			UserControlHandler.exportThis(dec, thisPart, doc);
+			MoveHandler.exportThis(dec, thisPart, doc);
+		else if (dec instanceof CircularDatumSearch)
+			CircularDatumSearchHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof Sequence)
 			SequenceHandler.exportSequence(dec, thisPart, doc);
 		else if (dec instanceof Waterfall)

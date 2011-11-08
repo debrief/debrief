@@ -2,22 +2,36 @@
 <Scenario Name="Area search scenario" xmlns="http://www.mwc.org/asset"
 	Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1"
 	ShowName="false" ShowActivity="false" ShowSymbol="true">
-	<StepTime Units="minutes" Value="5" />
+	<StepTime Units="minutes" Value="5" /><StepPause Value="200"
+		Units="millis" />
 	<Environment Name="Atlantic Summer" AtmosphericAttenuation="VERY_CLEAR"
 		SeaState="1">
 	</Environment>
 	<Participants>
 		<Surface Name="FisherOne">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE"></Category>
-			<SensorFit></SensorFit>
+			<SensorFit>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="BLUE" />
+						<DetectionRange Value="35" Units="nm" />
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
 			<Status Course="30" Fuel="0.0">
 				<Location>
 					<shortLocation Lat="50" Long="-8"></shortLocation>
 				</Location>
 				<Speed Value="0" Units="kts" />
 			</Status>
-			<Sequence Name="Southern Trawl" IsActive="true">
-				<RectangleWander Name="Random patrol">
+			<Waterfall Name="Southern Trawl" IsActive="true">
+				<Evade Name="">
+					<Duration Value="15" Units="minutes" />
+					<FleeHeight Value="0.0" Units="ft" />
+					<FleeSpeed Value="6" Units="kts" />
+					<TargetType>
+						<Type Name="BLUE" />
+					</TargetType>
+				</Evade><RectangleWander Name="Random patrol">
 					<Area>
 						<TopLeft>
 							<relativeLocation>
@@ -35,7 +49,8 @@
 					<Speed Value="6" Units="kts" />
 					<Height Value="0.0" Units="ft" />
 				</RectangleWander>
-			</Sequence>
+				
+			</Waterfall>
 			<SurfaceMovementCharacteristics Name="9m fisherman"
 				FuelUsageRate="0.0001">
 				<MinSpeed Value="0.0" Units="kts"></MinSpeed>
@@ -45,7 +60,7 @@
 				<TurningCircle Value="400" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
-		<Surface Name="T23">
+		<Surface Name="T23" PaintDecisions="true">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor>
@@ -62,29 +77,30 @@
 						<East Value="0.0" Units="nm" />
 					</relativeLocation>
 				</Location>
-				<Speed Value="12" Units="kts" />
+				<Speed Value="14" Units="kts" />
 			</Status>
-			<Waterfall Name="T23 Search">
-				
-				<Switch Name="Do a search" Index="3">
-				<OutwardSpiralSearch Name="160_Outward">
-					<TrackSpacing Value="20" Units="nm" />
-					<Width Value="160" Units="nm" />
-					<Height Value="160" Units="nm" />
-				</OutwardSpiralSearch>
-				<InwardSpiralSearch Name="160_Inward">
-					<TrackSpacing Value="20" Units="nm" />
-					<Width Value="160" Units="nm" />
-					<Height Value="160" Units="nm" />
-				</InwardSpiralSearch>
-								<LadderSearch2 Name="160_Ladder">
-					<TrackSpacing Value="20" Units="nm" />
-					<Width Value="160" Units="nm" />
-					<Height Value="160" Units="nm" />
-				</LadderSearch2>
-				
+			<Sequence Name="T23 Search">
+
+				<Switch Name="Do a search" Index="2">
+					<OutwardSpiralSearch Name="160_Outward">
+						<TrackSpacing Value="20" Units="nm" />
+						<Width Value="160" Units="nm" />
+						<Height Value="160" Units="nm" />
+					</OutwardSpiralSearch>
+					<InwardSpiralSearch Name="160_Inward">
+						<TrackSpacing Value="20" Units="nm" />
+						<Width Value="160" Units="nm" />
+						<Height Value="160" Units="nm" />
+					</InwardSpiralSearch>
+					<LadderSearch2 Name="160_Ladder">
+						<TrackSpacing Value="20" Units="nm" />
+						<Width Value="160" Units="nm" />
+						<Height Value="160" Units="nm" />
+					</LadderSearch2>
+
 				</Switch>
-			</Waterfall>
+				<Terminate Name="Search done" />
+			</Sequence>
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
 				<MinSpeed Value="0.0" Units="kts" />
@@ -99,7 +115,7 @@
 		<layer LineThickness="0" Name="Chart Features" Visible="true">
 			<grid PlotLabels="true" Units="degs" Visible="true">
 				<font Bold="false" Family="Sans Serif" Italic="false" Size="8" />
-				<Delta Units="nm" Value="50" />
+				<Delta Units="minutes" Value="50" />
 				<colour Value="DARK_GREY" />
 			</grid>
 			<scale AutoMode="true" DisplayUnits="nm" Location="BottomLeft"

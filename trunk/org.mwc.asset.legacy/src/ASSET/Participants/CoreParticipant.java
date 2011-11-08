@@ -81,6 +81,11 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	private ASSET.Models.DecisionType _decisionModel;
 
+	/** whether to paint decisions for this object
+	 * 
+	 */
+	private boolean _paintDecisions;
+	
 	/**
 	 * my radiation characteristics
 	 */
@@ -990,6 +995,18 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 					this.newDetectionList);
 
 		}
+	}
+
+	@Override
+	public boolean getPaintDecisions()
+	{
+		return _paintDecisions;
+	}
+
+	@Override
+	public void setPaintDecisions(boolean paintDecisions)
+	{
+		_paintDecisions = paintDecisions;
 	}
 
 }

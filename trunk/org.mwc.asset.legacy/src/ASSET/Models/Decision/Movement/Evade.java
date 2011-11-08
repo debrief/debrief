@@ -35,9 +35,9 @@ public class Evade extends CoreDecision implements java.io.Serializable
 	private Duration _fleePeriod;
 
 	/**
-	 * the speed to flee at
+	 * the speed to flee at 
 	 */
-	private double _fleeSpeed;
+	private WorldSpeed _fleeSpeed;
 
 	/**
 	 * the Height to flee at
@@ -96,7 +96,7 @@ public class Evade extends CoreDecision implements java.io.Serializable
 	{
 		super("Evade");
 		_fleePeriod = fleePeriod;
-		_fleeSpeed = fleeSpeed.getValueIn(WorldSpeed.Kts);
+		_fleeSpeed = fleeSpeed;
 		_fleeHeight = fleeHeight.getValueIn(WorldDistance.METRES);
 		_myTargetType = target;
 	}
@@ -546,11 +546,11 @@ public class Evade extends CoreDecision implements java.io.Serializable
 	}
 
 	/**
-	 * the speed to flee at (m/sec)
+	 * the speed to flee at
 	 */
 	public void setFleeSpeed(final WorldSpeed newFleeSpeed)
 	{
-		_fleeSpeed = newFleeSpeed.getValueIn(WorldSpeed.M_sec);
+		_fleeSpeed = newFleeSpeed;
 	}
 
 	/**
@@ -558,7 +558,7 @@ public class Evade extends CoreDecision implements java.io.Serializable
 	 */
 	public WorldSpeed getFleeSpeed()
 	{
-		return new WorldSpeed(_fleeSpeed, WorldSpeed.M_sec);
+		return _fleeSpeed;
 	}
 
 	/**

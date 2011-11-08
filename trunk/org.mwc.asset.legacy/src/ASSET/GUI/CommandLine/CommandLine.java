@@ -4,14 +4,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
@@ -20,6 +25,8 @@ import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.SupportTesting;
 import ASSET.Util.MonteCarlo.MultiScenarioGenerator;
+import ASSET.Util.MonteCarlo.ScenarioGenerator;
+import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GenericData.WorldLocation;
 
@@ -640,28 +647,46 @@ public class CommandLine
 			throws FileNotFoundException
 	{
 		boolean multiScenario = false;
-
-		// does this contain a nulti-scenario generator?
-
-		// first read the file into a string
-		FileReader fr = new FileReader(controlFile);
-
-		char[] charArray = new char[30000];
+		
+		FileInputStream fis = new FileInputStream(controlFile);
+		Document document;
 		try
 		{
-			fr.read(charArray);
+			document = ScenarioGenerator.readDocumentFrom(fis);
+
+			
+			// can we find a scenario generator?
+			XPathExpression xp2 = NamespaceContextProvider.createPath("//"
+					+ MultiScenarioGenerator.GENERATOR_TYPE);
+			Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+
+			if (el != null)
+			{
+				// just see if it's active. If there's an 'Active' attribute and it's set
+				// to true, or if there's no 'Active' attribute - do the genny
+				String isActive = el.getAttribute("Active");
+				if ((isActive == null) || (isActive.equals("")) || (isActive != null)
+						&& (Boolean.valueOf(isActive).booleanValue()))
+					multiScenario = true;
+			}
 		}
-		catch (IOException e)
+		catch (SAXParseException e1)
 		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		catch (SAXException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		catch (XPathExpressionException e)
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String str = new String(charArray);
 
-		// ok, now have a look inside it.
-		if (str.indexOf(MultiScenarioGenerator.GENERATOR_TYPE) > 0)
-		{
-			multiScenario = true;
-		}
+		
 		return multiScenario;
 	}
 }

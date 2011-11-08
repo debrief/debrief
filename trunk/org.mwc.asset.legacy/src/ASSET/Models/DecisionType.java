@@ -1,6 +1,7 @@
 package ASSET.Models;
 
 import ASSET.Participants.Status;
+import MWC.GUI.CanvasType;
 
 /**
  * Title:
@@ -20,6 +21,15 @@ import ASSET.Participants.Status;
 
 public interface DecisionType extends MWC.GUI.Editable, MWCModel {
 
+	
+	/** interface for if a decision type is paint-able
+	 * 
+	 */
+	public static interface Paintable
+	{
+		public void paint(CanvasType dest);
+	}
+	
   /** decide the course of action to take, or return null to no be used
    * @param status the current status of the participant
    * @param chars the movement chars of this vehicle

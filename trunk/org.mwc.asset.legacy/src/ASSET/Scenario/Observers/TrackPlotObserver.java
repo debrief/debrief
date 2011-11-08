@@ -243,9 +243,12 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 		final File outputFilename = new File(thePath);
 
 		// do we have any data?
-		if(_myTracks == null)
+		if (_myTracks == null)
+		{
+			System.err.println("NO TRACKS FOR TRACK PLOT OBSERVER");
 			return;
-		
+		}
+
 		if (_myTracks.size() > 0)
 		{
 
@@ -263,7 +266,10 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 					+ " with address" + outputFilename);
 
 		// clear the objects
-		_myTracks.clear();
+		if (_myTracks != null)
+		{
+			_myTracks.clear();
+		}
 		_myTracks = null;
 
 		// clear the coverage
@@ -577,9 +583,9 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 			ParticipantType pt)
 	{
 		// we may not even have any tracks. just check
-		if(_myTracks == null)
+		if (_myTracks == null)
 			return;
-		
+
 		// do we hold this participant
 		Track trk = (Track) _myTracks.get(pt);
 
@@ -780,8 +786,8 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 			File file = new File(directoryName + fileName);
 			assertTrue("file got created", file.exists());
 			System.out.println("file size is:" + file.length());
-			assertEquals("file is of correct size", (float) 7540, (float) file
-					.length(), 400);
+			assertEquals("file is of correct size", (float) 7540,
+					(float) file.length(), 400);
 		}
 	}
 

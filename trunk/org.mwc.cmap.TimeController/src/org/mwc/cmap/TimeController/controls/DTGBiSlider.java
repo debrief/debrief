@@ -18,8 +18,8 @@ import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
 import com.borlander.rac353542.bislider.cdata.CalendarDateSuite.CalendarDateModel;
 
 public class DTGBiSlider
-{	
-	
+{
+
 	public static interface DoFineControl
 	{
 		public void adjust(boolean isMax);
@@ -52,7 +52,8 @@ public class DTGBiSlider
 
 	/**
 	 * constructor - get things going
-	 * @param fineControl 
+	 * 
+	 * @param fineControl
 	 * 
 	 * @param parent
 	 * @param style
@@ -83,8 +84,8 @@ public class DTGBiSlider
 		CalendarDateSuite suite = new CalendarDateSuite();
 		_dateModel = suite.createDataModel(yearAgo, yearFromNow, threeMonthesAgo,
 				fourMonthesFromNow);
-//		_dateModel.setSegmentCount(3);
-//		_dateModel.setSegmentLength(1000* 60 * 60);
+		// _dateModel.setSegmentCount(3);
+		// _dateModel.setSegmentLength(1000* 60 * 60);
 
 		// sort out the UI model
 		_uiModel = (DefaultBiSliderUIModel) suite.createUIModel();
@@ -92,11 +93,10 @@ public class DTGBiSlider
 		// do a bit of ui fiddling
 		_uiModel.setHasLabelsAboveOrLeft(true);
 		_uiModel.setHasLabelsBelowOrRight(false);
-		
+
 		_uiModel.setLabelInsets(50);
 		_uiModel.setNonLabelInsets(20);
-		
-		
+
 		// update the UI labels
 		_uiModel.setLabelProvider(new BiSliderLabelProvider()
 		{
@@ -122,10 +122,10 @@ public class DTGBiSlider
 				{
 					return;
 				}
-				
+
 				// nope, get on with it
 				myInCompositeUpdate = moreChangesExpectedInNearFuture;
-				
+
 				// is this a "drop" event
 				if (!moreChangesExpectedInNearFuture)
 				{
@@ -133,15 +133,13 @@ public class DTGBiSlider
 					outputValues();
 				}
 			}
-		});		
+		});
 
-		
 		// great, now it's ready for the actual BiSlider control
-		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
-				_uiModel, fineControl);
-		
-	}
+		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl,
+				_dateModel, _uiModel, fineControl);
 
+	}
 
 	public Composite getControl()
 	{
@@ -150,12 +148,16 @@ public class DTGBiSlider
 
 	public void updateOuterRanges(TimePeriod period)
 	{
+
 		_minVal = period.getStartDTG();
 		_maxVal = period.getEndDTG();
 
 		Date firstDate = _minVal.getDate();
 		Date lastDate = _maxVal.getDate();
-		_dateModel.setTotalRange(firstDate, lastDate);
+
+		// look out for special case where dates are equal
+		if (!firstDate.equals(lastDate))
+			_dateModel.setTotalRange(firstDate, lastDate);
 
 	}
 
@@ -171,7 +173,8 @@ public class DTGBiSlider
 		// repaint();
 	}
 
-	public void updateSelectedRanges(HiResDate minSelectedDate, HiResDate maxSelectedDate)
+	public void updateSelectedRanges(HiResDate minSelectedDate,
+			HiResDate maxSelectedDate)
 	{
 		Date firstDate = minSelectedDate.getDate();
 		Date lastDate = maxSelectedDate.getDate();
@@ -219,16 +222,18 @@ public class DTGBiSlider
 	{
 		_dateModel.setSegmentLength(size);
 	}
-	
-	/** the currently indicated time period (or null for no selection)
+
+	/**
+	 * the currently indicated time period (or null for no selection)
 	 * 
 	 * @return
 	 */
 	public TimePeriod getPeriod()
 	{
-		TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(_dateModel.getUserMinimumDate()), 
-				new HiResDate(_dateModel.getUserMaximumDate()));
-		
+		TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(
+				_dateModel.getUserMinimumDate()), new HiResDate(
+				_dateModel.getUserMaximumDate()));
+
 		return res;
 	}
 }

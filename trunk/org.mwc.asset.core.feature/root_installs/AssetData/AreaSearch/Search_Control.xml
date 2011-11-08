@@ -2,8 +2,20 @@
 <ScenarioController OutputDirectory="AreaResults"
 	xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
+		<MultiScenarioGenerator Number="3" NameTemplate="SCEN_">
+			<VarianceList>
+				<Variance name="Vary blue search" id="//Sequence/Switch">
+					<Attribute name="Index">
+						<Choice>
+							<Value value="1" /><Value value="2" /><Value
+								value="3" />
+						</Choice>
+						
+					</Attribute>
+				</Variance></VarianceList>
+		</MultiScenarioGenerator>
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="FisherOne" number="100">
+			<ParticipantVariance name="FisherOne" number="10">
 				<Variance name="Vary course" id="Status">
 					<Attribute name="Course">
 						<Range max="0.0" min="359.9" />
@@ -38,7 +50,7 @@
 			<GridDelta Value="4" Units="nm"></GridDelta>
 		</TrackPlotObserver>
 		<DebriefReplayObserver Name="Debrief tracks"
-			record_detections="true" record_positions="true" Active="true"
+			record_detections="true" record_positions="true" Active="false"
 			record_decisions="true">
 		</DebriefReplayObserver>
 		<RemoveDetectedObserver PlotTheDead="true"
@@ -54,7 +66,7 @@
 				</TargetType>
 			</Watch>
 		</RemoveDetectedObserver>
-		<PlotSensorObserver Name="Show Blue Range" Active="true">
+		<PlotSensorObserver Name="Show Blue Range" Active="true" ShadeCircle="true">
 			<Target>
 				<TargetType>
 					<Type Name="RED" />
@@ -63,6 +75,18 @@
 			<Watch>
 				<TargetType>
 					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+				<PlotSensorObserver Name="Show Red sensor range" Active="false">
+			<Target>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="RED" />
 				</TargetType>
 			</Watch>
 		</PlotSensorObserver>

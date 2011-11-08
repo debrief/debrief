@@ -109,7 +109,8 @@ public final class ScenarioGenerator
 	{
 	}
 
-	/** load the two files, and generate the scenarios
+	/**
+	 * load the two files, and generate the scenarios
 	 * 
 	 * @param templatePath
 	 * @param controlPath
@@ -117,10 +118,11 @@ public final class ScenarioGenerator
 	 * @param mWrap
 	 * @param outputDirectory
 	 * @return
-	 * @throws XPathExpressionException 
+	 * @throws XPathExpressionException
 	 */
-		public String createScenarios(String templatePath, String controlPath,
-			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory) throws XPathExpressionException
+	public String createScenarios(String templatePath, String controlPath,
+			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
+			throws XPathExpressionException
 	{
 		Document theControlFile = null;
 		String res = null;
@@ -190,11 +192,12 @@ public final class ScenarioGenerator
 	 * @param mWrap
 	 * @param outputDirectory
 	 * @return error message on failure, or null for success
-	 * @throws XPathExpressionException 
+	 * @throws XPathExpressionException
 	 */
 	protected String doScenarioGeneration(Document template,
 			Document controlFile, Vector<Document> results,
-			ASSETProgressMonitor mWrap, File outputDirectory) throws XPathExpressionException
+			ASSETProgressMonitor mWrap, File outputDirectory)
+			throws XPathExpressionException
 	{
 		String res = null;
 
@@ -270,8 +273,7 @@ public final class ScenarioGenerator
 
 				String asString = ScenarioGenerator.writeToString(thisDoc);
 
-				NodeList list = thisDoc
-						.getElementsByTagName(ScenarioHandler.type);
+				NodeList list = thisDoc.getElementsByTagName(ScenarioHandler.type);
 				Element scen = (Element) list.item(0);
 				String scen_name = scen
 						.getAttribute(MultiScenarioGenerator.SCENARIO_NAME_ATTRIBUTE);
@@ -495,17 +497,17 @@ public final class ScenarioGenerator
 	// else
 	// return string;
 	// }
-	
+
 	public boolean isMultiParticipant()
 	{
 		return _participantGenny != null;
 	}
-	
+
 	public boolean isMultiScenario()
 	{
 		return _scenarioGenny != null;
 	}
-	
+
 	public boolean isInitialised()
 	{
 		return _controlDocument != null;
@@ -516,47 +518,53 @@ public final class ScenarioGenerator
 	 * 
 	 * @param outputDirectory
 	 *          where to put the generated files
-	 * @throws XPathExpressionException 
+	 * @throws XPathExpressionException
 	 */
-	protected void setVariances(final Document document, File outputDirectory) throws XPathExpressionException
+	protected void setVariances(final Document document, File outputDirectory)
+			throws XPathExpressionException
 	{
-			// can we find a scenario generator?
-			XPathExpression xp2 = NamespaceContextProvider.createPath("//"
-					+ MultiScenarioGenerator.GENERATOR_TYPE);
-			Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+		// can we find a scenario generator?
+		XPathExpression xp2 = NamespaceContextProvider.createPath("//"
+				+ MultiScenarioGenerator.GENERATOR_TYPE);
+		Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			if (el != null)
-			{
+		if (el != null)
+		{
+			// just see if it's active. If there's an 'Active' attribute and it's set
+			// to true, or if there's no 'Active' attribute - do the genny
+			String isActive = el.getAttribute("Active");
+			if ((isActive == null) || (isActive.equals("")) || (isActive != null)
+					&& (Boolean.valueOf(isActive).booleanValue()))
 				this._scenarioGenny = new MultiScenarioGenerator(document);
-			}
+		}
 
-			// can we find a scenario generator?
-			xp2 = NamespaceContextProvider.createPath("//"
-					+ MultiParticipantGenerator.GENERATOR_TYPE);
-			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
-			if (el != null)
-			{
-				this._participantGenny = new MultiParticipantGenerator(document);
-			}
+		// can we find a scenario generator?
+		xp2 = NamespaceContextProvider.createPath("//"
+				+ MultiParticipantGenerator.GENERATOR_TYPE);
+		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+		if (el != null)
+		{
+			this._participantGenny = new MultiParticipantGenerator(document);
+		}
 
-			xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
-			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+		xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
+		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			// retrieve our working values
-			xp2 = NamespaceContextProvider.createPath("//ScenarioController");
-			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+		// retrieve our working values
+		xp2 = NamespaceContextProvider.createPath("//ScenarioController");
+		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			if (el != null)
-			{
-				setDirectory(el.getAttribute(OUTPUT_DIRECTORY));
-				String theSeedStr = el.getAttribute(RANDOM_SEED);
-				if (theSeedStr != null)
-					if (theSeedStr.length() > 0)
-						_theSeed = Integer.valueOf(theSeedStr);
-			}
+		if (el != null)
+		{
+			setDirectory(el.getAttribute(OUTPUT_DIRECTORY));
+			String theSeedStr = el.getAttribute(RANDOM_SEED);
+			if (theSeedStr != null)
+				if (theSeedStr.length() > 0)
+					_theSeed = Integer.valueOf(theSeedStr);
+		}
 
-			if (outputDirectory != null)
-				setDirectory(outputDirectory.getAbsolutePath());
+		if (outputDirectory != null)
+			setDirectory(outputDirectory.getAbsolutePath());
 
 		_controlDocument = document;
 
@@ -582,12 +590,12 @@ public final class ScenarioGenerator
 	{
 		_myDirectory = dir;
 	}
-	
+
 	private String getDirectory()
 	{
 		return _myDirectory;
 	}
-	
+
 	/**
 	 * set the document which we are going to be changing
 	 */
@@ -1124,8 +1132,8 @@ public final class ScenarioGenerator
 			genny.writeTheseToFile(list, true);
 
 			// and check that the touch file has been deleted
-			assertFalse("check that the touch file has been deleted", touchFile
-					.exists());
+			assertFalse("check that the touch file has been deleted",
+					touchFile.exists());
 		}
 
 		/**

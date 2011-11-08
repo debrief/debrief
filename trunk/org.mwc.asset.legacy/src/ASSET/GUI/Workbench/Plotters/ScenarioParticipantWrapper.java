@@ -2,9 +2,13 @@ package ASSET.GUI.Workbench.Plotters;
 
 import java.awt.Point;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import ASSET.ScenarioType;
+import ASSET.Models.DecisionType;
+import ASSET.Models.DecisionType.Paintable;
+import ASSET.Models.Decision.Waterfall;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Vessels.SonarBuoyField;
@@ -67,6 +71,12 @@ public class ScenarioParticipantWrapper implements
 	private boolean _showDetections = false;
 
 	/**
+	 * whether to display any behaviours that have figurative view
+	 * 
+	 */
+	private boolean _showBehaviour = false;
+
+	/**
 	 * whether we're visible
 	 */
 	private boolean _visible = true;
@@ -100,6 +110,9 @@ public class ScenarioParticipantWrapper implements
 	{
 		// remember the participant
 		_myPart = part;
+		
+		// take a local copy of whether decisions should be painted
+		_showBehaviour = _myPart.getPaintDecisions();
 
 		// try to get the initial location
 		final ASSET.Participants.Status stat = part.getStatus();
@@ -297,12 +310,12 @@ public class ScenarioParticipantWrapper implements
 					SonarBuoyField field = (SonarBuoyField) _myPart;
 					// is it alive?
 					long tNow = field.getStatus().getTime();
-					if(!field.isActiveAt(tNow))
+					if (!field.isActiveAt(tNow))
 					{
 						amAlive = false;
 					}
-					
-					if(!amAlive)
+
+					if (!amAlive)
 						dest.setLineStyle(CanvasType.DOTTED);
 					else
 						dest.setLineStyle(CanvasType.SOLID);
@@ -346,8 +359,47 @@ public class ScenarioParticipantWrapper implements
 				{
 					paintDetections(dest, pt);
 				}
+
+				// lastly lastly the behavious
+				if (_showBehaviour)
+				{
+					paintBehaviours(dest);
+				}
 			}
 		}
+	}
+
+	private void paintBehaviours(final CanvasType dest)
+	{
+		// ok, cycle through the behaviours
+    DecisionType dm = _myPart.getDecisionModel();
+
+    // see how we get on
+  	paintThisBehaviour(dest, dm);
+	}
+
+	private void paintThisBehaviour(final CanvasType dest, final DecisionType dm)
+	{
+    if(dm instanceof Waterfall)
+    {
+    	Waterfall w = (Waterfall)dm;
+    	Vector<DecisionType> decs = w.getModels();
+    	Iterator<DecisionType> iter = decs.iterator();
+    	while(iter.hasNext())
+    	{
+    		DecisionType next = iter.next();
+    		paintThisBehaviour(dest, next);
+    	}
+    }
+    else
+    {
+    	// ok, we've got an actual behaviour
+    	if(dm instanceof DecisionType.Paintable)
+    	{
+    		DecisionType.Paintable pt = (Paintable) dm;
+    		pt.paint(dest);
+    	}
+    }
 	}
 
 	/**
@@ -491,6 +543,7 @@ public class ScenarioParticipantWrapper implements
 				final java.beans.PropertyDescriptor[] res =
 				{ prop("ShowContacts", "show contacts for this participant"),
 						prop("Visible", "whether to show this participant"),
+						prop("ShowBehaviour", "whether to plot any applicable behaviours"),
 						prop("Name", "name of this participant"), };
 				return res;
 			}
@@ -585,6 +638,16 @@ public class ScenarioParticipantWrapper implements
 	public void setName(String val)
 	{
 		_myPart.setName(val);
+	}
+
+	public boolean isShowBehaviour()
+	{
+		return _showBehaviour;
+	}
+
+	public void setShowBehaviour(boolean showBehaviour)
+	{
+		_showBehaviour = showBehaviour;
 	}
 
 }
