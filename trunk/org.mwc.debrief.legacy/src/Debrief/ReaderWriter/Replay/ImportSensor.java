@@ -187,6 +187,14 @@ final class ImportSensor implements PlainLineImporter {
 
     brg = Double.valueOf(st.nextToken()).doubleValue();
     rng = Double.valueOf(st.nextToken()).doubleValue();
+    
+    // only store a sensor range if a legitimate one was passed in
+    WorldDistance sensorRng;
+    if(rng != 0)
+    	sensorRng = new WorldDistance(rng, WorldDistance.YARDS);
+    else
+    	sensorRng = null;
+ 
 
     // get the (possibly multi-word) track name
     sensorName = ImportFix.checkForQuotedTrackName(st);
@@ -204,7 +212,7 @@ final class ImportSensor implements PlainLineImporter {
 
     // create the contact object
     SensorContactWrapper data =
-        new SensorContactWrapper(theTrack, theDtg, new WorldDistance(rng, WorldDistance.YARDS), brg, origin, theColor, theText, theStyle, sensorName);
+        new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin, theColor, theText, theStyle, sensorName);
 
     return data;
   }
