@@ -159,8 +159,8 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		MWC.GenericData.Watchable,
-		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe, TimeStampedDataItem
+		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
+		DoNotHighlightMe, TimeStampedDataItem
 {
 	/**
 	 * 
@@ -372,9 +372,9 @@ public final class SensorContactWrapper extends
 				TrackWrapper parentTrack = (TrackWrapper) parent;
 
 				// get the origin
-				_calculatedOrigin = parentTrack.getBacktraceTo(_DTG, _mySensor.getSensorOffset(), _mySensor.getWormInHole());
+				_calculatedOrigin = parentTrack.getBacktraceTo(_DTG,
+						_mySensor.getSensorOffset(), _mySensor.getWormInHole());
 
-	
 			}
 
 		}
@@ -408,9 +408,9 @@ public final class SensorContactWrapper extends
 			{
 				WorldArea totalArea = new WorldArea(outerEnvelope);
 				totalArea.extend(_calculatedOrigin);
-				
+
 				// just use the maximum dimension of the plot
-				rangeToUse = 2* Math.max(totalArea.getWidth(),totalArea.getHeight());
+				rangeToUse = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
 			}
 			else
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
@@ -438,15 +438,16 @@ public final class SensorContactWrapper extends
 			{
 				WorldArea totalArea = new WorldArea(outerEnvelope);
 				totalArea.extend(_calculatedOrigin);
-				
+
 				// just use the maximum dimension of the plot
-				rangeToUse = 2* Math.max(totalArea.getWidth(),totalArea.getHeight());
+				rangeToUse = 2 * Math.max(totalArea.getWidth(), totalArea.getHeight());
 			}
 			else
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
-			
+
 			// also do the far end
-			res = _calculatedOrigin.add(new WorldVector(_bearingAmbig, rangeToUse, 0d));
+			res = _calculatedOrigin
+					.add(new WorldVector(_bearingAmbig, rangeToUse, 0d));
 		}
 
 		return res;
@@ -471,7 +472,7 @@ public final class SensorContactWrapper extends
 	{
 		return _DTG;
 	}
-	
+
 	/**
 	 * set the time
 	 */
@@ -555,8 +556,8 @@ public final class SensorContactWrapper extends
 		// do we need an origin
 		final WorldLocation origin = getCalculatedOrigin(track);
 
-		final TimePeriod trackPeriod = new TimePeriod.BaseTimePeriod(track
-				.getStartDTG(), track.getEndDTG());
+		final TimePeriod trackPeriod = new TimePeriod.BaseTimePeriod(
+				track.getStartDTG(), track.getEndDTG());
 		if (!trackPeriod.contains(this.getTime()))
 		{
 			// don't bother trying to plot it, we're outside the parent period
@@ -588,8 +589,8 @@ public final class SensorContactWrapper extends
 		// do we have an ambiguous bearing
 		if (this.getHasAmbiguousBearing())
 		{
-			final WorldLocation theOtherFarEnd = getAmbiguousFarEnd(dest.getProjection()
-					.getDataArea());
+			final WorldLocation theOtherFarEnd = getAmbiguousFarEnd(dest
+					.getProjection().getDataArea());
 			final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
 			// draw the line
 			dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
@@ -931,9 +932,18 @@ public final class SensorContactWrapper extends
 			WorldArea outerEnvelope = null;
 
 			// get the range from the origin
-			
 
-			res = getCalculatedOrigin(null).rangeFrom(other);
+			// find our origin
+			WorldLocation theOrigin = getCalculatedOrigin(null);
+			
+			// did we manage it?
+			if (theOrigin == null)
+			{
+				// nope, poss because we don't have a position for this time
+				return INVALID_RANGE;
+			}
+			else
+				res = theOrigin.rangeFrom(other);
 
 			// create a monster world area - so we can extend the line
 			outerEnvelope = new WorldArea(_calculatedOrigin, _calculatedOrigin);
@@ -1114,7 +1124,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * the definition of what is editable about this object
 	 */
-	public static final class SensorContactInfo extends Griddable		
+	public static final class SensorContactInfo extends Griddable
 	{
 
 		/**
@@ -1136,12 +1146,11 @@ public final class SensorContactWrapper extends
 				final PropertyDescriptor[] res =
 				{
 						prop("Label", "the label for this data item", FORMAT),
-						prop("Visible", "whether this sensor contact data is visible", FORMAT),
+						prop("Visible", "whether this sensor contact data is visible",
+								FORMAT),
 						prop("Frequency", "the frequency measurement for this data item",
-								OPTIONAL),
-						prop("Bearing", "bearing to target", SPATIAL),
-						prop("AmbiguousBearing", "ambiguous bearing to target", SPATIAL),
-				};
+								OPTIONAL), prop("Bearing", "bearing to target", SPATIAL),
+						prop("AmbiguousBearing", "ambiguous bearing to target", SPATIAL), };
 
 				return res;
 
@@ -1150,7 +1159,8 @@ public final class SensorContactWrapper extends
 			{
 				return super.getPropertyDescriptors();
 			}
-		}		
+		}
+
 		/**
 		 * The things about these Layers which are editable. We don't really use
 		 * this list, since we have our own custom editor anyway
@@ -1164,7 +1174,8 @@ public final class SensorContactWrapper extends
 				final PropertyDescriptor[] res =
 				{
 						prop("Label", "the label for this data item", FORMAT),
-						prop("Visible", "whether this sensor contact data is visible", FORMAT),
+						prop("Visible", "whether this sensor contact data is visible",
+								FORMAT),
 						prop("LabelVisible",
 								"whether the label for this contact is visible", FORMAT),
 						prop("Color", "the color for this sensor contact", FORMAT),
@@ -1240,7 +1251,6 @@ public final class SensorContactWrapper extends
 					new DitchAmbiguousBearing(false, "Keep starboard bearing") };
 			return res;
 		}
-
 
 	}
 
@@ -1327,7 +1337,7 @@ public final class SensorContactWrapper extends
 			final WorldVector test_other_vector = new WorldVector(
 					MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
 			final WorldLocation test_other_end = origin.add(test_other_vector);
-			
+
 			SensorWrapper sw = new SensorWrapper("dummy");
 			sw.setHost(new TrackWrapper());
 			ed.setSensor(sw);
@@ -1374,7 +1384,8 @@ public final class SensorContactWrapper extends
 			assertEquals("should be fix location", locationRes, wl);
 
 			// now give it an offset
-			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1, WorldDistance.DEGS)));
+			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1,
+					WorldDistance.DEGS)));
 			sw.setWormInHole(false);
 
 			// and try again
@@ -1383,14 +1394,16 @@ public final class SensorContactWrapper extends
 			assertEquals("should be offset location", locationBitNorth, wl);
 
 			// and try again, with a negative offset
-			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(-1, WorldDistance.DEGS)));
+			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(-1,
+					WorldDistance.DEGS)));
 			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be offset location", locationBitSouth, wl);
 
 			// and try again, giving the host a course this time
 			fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
-			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1, WorldDistance.DEGS)));
+			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1,
+					WorldDistance.DEGS)));
 			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be centre of rectangle", locationBitEast, wl);
