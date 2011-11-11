@@ -25,7 +25,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -71,8 +70,9 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	public void generate(IMenuManager parent, Layers theLayers,
 			Layer[] parentLayers, final Editable[] subjects)
 	{
-		final Vector<SensorWrapper> candidates = new Vector<SensorWrapper>(0, 1);
-		TrackWrapper tmpPrimary = null;
+		final Vector<SensorWrapper> sensorCandidates = new Vector<SensorWrapper>(0,
+				1);
+		final Vector<TrackWrapper> trackCandidates = new Vector<TrackWrapper>(0, 1);
 		boolean duffItemFound = false;
 
 		// right, go through the items and have a nice look at them
@@ -84,7 +84,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			if (thisE instanceof SensorWrapper)
 			{
 				// cool, go for it
-				candidates.add((SensorWrapper) thisE);
+				sensorCandidates.add((SensorWrapper) thisE);
 			}
 			else if (thisE instanceof SplittableLayer)
 			{
@@ -100,7 +100,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						// is this a sensor wrapper layer?
 						if (thisC instanceof SensorWrapper)
 						{
-							candidates.add((SensorWrapper) thisC);
+							sensorCandidates.add((SensorWrapper) thisC);
 						}
 					}
 				}
@@ -108,34 +108,26 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			else if (thisE instanceof TrackWrapper)
 			{
 				// aah, have we already got a primary?
-				if (tmpPrimary == null)
-					tmpPrimary = (TrackWrapper) thisE;
-				else
-				{
-					// can't do it for two target tracks - drop out
-					duffItemFound = true;
-				}
+				trackCandidates.add((TrackWrapper) thisE);
 			}
 			else
 				duffItemFound = true;
 		}
 
-		if ((candidates.size() >= 1))
+		if ((trackCandidates.size() >= 1) && (sensorCandidates.size() >= 1))
 		{
 			if (duffItemFound)
 			{
 				return;
 			}
-			else if (tmpPrimary == null)
+			if ((trackCandidates.size() > 1) && (sensorCandidates.size() > 1))
 			{
-				return;
+				return; // we can't generate multiple sensors versus multiple tracks
 			}
 			else
 			{
-				final TrackWrapper primary = tmpPrimary;
-
 				// ok, create the action
-				Action viewPlot = getAction(candidates, primary);
+				Action viewPlot = getAction(sensorCandidates, trackCandidates);
 
 				// ok - set the image descriptor
 				viewPlot.setImageDescriptor(DebriefPlugin
@@ -151,16 +143,26 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 * wrap the action generation bits in a convenience method (suitable for
 	 * overring in tests)
 	 * 
-	 * @param candidates
+	 * @param sensorCandidates
 	 *          the sensors to measure the range from
-	 * @param primary
-	 *          the track to measure to
+	 * @param trackCandidates
+	 *          the tracks to measure to
 	 * @return
 	 */
-	protected Action getAction(final Vector<SensorWrapper> candidates,
-			final TrackWrapper primary)
+	protected Action getAction(final Vector<SensorWrapper> sensorCandidates,
+			final Vector<TrackWrapper> trackCandidates)
 	{
-		return new Action("View sensor range plot")
+		final String title;
+		if (sensorCandidates.size() > 1)
+			title = "View sensor range plot (one track versus several sensors)";
+		else if (trackCandidates.size() == 1)
+			title = "View sensor range plot (one sensor versus one track)";
+		else
+		{
+			title = "View sensor range plot (one sensor versus several tracks)";
+		}
+
+		return new Action(title)
 		{
 			public void run()
 			{
@@ -232,25 +234,55 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						return;
 					}
 
-					// aah. does the primary track have it's own time period?
-					if (primary != null)
-					{
-						if (primary.getStartDTG() != null)
-							startTime = primary.getStartDTG();
+					TrackWrapper primaryTrack = trackCandidates.firstElement();
 
-						if (primary.getEndDTG() != null)
-							endTime = primary.getEndDTG();
+					// aah. does the primary track have it's own time period?
+					if (primaryTrack != null)
+					{
+						if (primaryTrack.getStartDTG() != null)
+							startTime = primaryTrack.getStartDTG();
+
+						if (primaryTrack.getEndDTG() != null)
+							endTime = primaryTrack.getEndDTG();
 					}
 
-					// right, now for the data
-					AbstractSeriesDataset ds = getDataSeries(primary, candidates,
-							startTime, endTime);
+					TimeSeriesCollection theSeriesCollection = new TimeSeriesCollection();
+
+					boolean multiTrackRun = trackCandidates.size() > 1;
+
+					// is this a multi-track run?
+					if (multiTrackRun)
+					{
+						// multi-track run, go through them
+						Iterator<TrackWrapper> iter = trackCandidates.iterator();
+						while (iter.hasNext())
+						{
+							TrackWrapper thisTrack = (TrackWrapper) iter.next();
+
+							// do run for this track
+							addDataSeries(thisTrack, sensorCandidates, startTime, endTime,
+									theSeriesCollection, !multiTrackRun);
+
+						}
+					}
+					else
+					{
+						// single track run, do as normal
+						addDataSeries(primaryTrack, sensorCandidates, startTime, endTime,
+								theSeriesCollection, !multiTrackRun);
+					}
 
 					// aah, did it work?
-					if (ds != null)
-					{ // get the title to use
-						String theTitle = "(Sensor) Range to " + primary.getName()
-								+ " vs Time plot";
+					if (theSeriesCollection.getSeriesCount() >= 1)
+					{
+						// get the title to use
+						String theTitle;
+						if (multiTrackRun)
+							theTitle = "(Sensor) Range to " + sensorCandidates.firstElement().getName()
+							+ " vs Time plot";
+						else
+							theTitle = "(Sensor) Range to " + primaryTrack.getName()
+									+ " vs Time plot";
 
 						// and the plot itself
 						String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
@@ -259,7 +291,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						// ok, try to retrieve the view
 						IViewReference plotRef = page.findViewReference(plotId, theTitle);
 						XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-						plotter.showPlot(theTitle, ds, "Range (m)", null, thePlotId);
+						plotter.showPlot(theTitle, theSeriesCollection, "Range (m)", null,
+								thePlotId);
 					}
 					else
 					{
@@ -288,6 +321,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 *          the start time selected
 	 * @param end_time
 	 *          the end time selected
+	 * @param useSensorName
+	 *          whether to label the lines with the sensor name or the track name
 	 * @return the dataset to plot
 	 * @see toteCalculation#isWrappableData
 	 * @see toteCalculation#calculate(Watchable primary,Watchable
@@ -296,12 +331,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 * @see WatchableList#getItemsBetween(HiResDate start,HiResDate end)
 	 * @see TimeSeriesCollection#addSeries(BasicTimeSeries series)
 	 */
-	private static TimeSeriesCollection getDataSeries(
-			final TrackWrapper primaryTrack, final Vector<SensorWrapper> theSensors,
-			HiResDate start_time, HiResDate end_time)
+	private static void addDataSeries(final TrackWrapper primaryTrack,
+			final Vector<SensorWrapper> theSensors, HiResDate start_time,
+			HiResDate end_time, TimeSeriesCollection theSeriesCollection,
+			boolean useSensorName)
 	{
-
-		TimeSeriesCollection theSeriesCollection = new TimeSeriesCollection();
 
 		// calculate the data variables for our tracks
 		final Enumeration<SensorWrapper> iter = theSensors.elements();
@@ -310,7 +344,12 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			SensorWrapper thisSensor = (SensorWrapper) iter.nextElement();
 
 			// ok, now collate the data
-			TimeSeries thisSeries = new TimeSeries(thisSensor.getName());
+			String nameToUse;
+			if (useSensorName)
+				nameToUse = thisSensor.getName();
+			else
+				nameToUse = primaryTrack.getName();
+			TimeSeries thisSeries = new TimeSeries(nameToUse);
 
 			// SPECIAL CASE - is this an empty sensor, created just to produce this
 			// plt?
@@ -349,7 +388,11 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						SensorContactWrapper thisSecondary = (SensorContactWrapper) theseCuts
 								.next();
 
-						Color thisColor = thisSecondary.getColor();
+						Color thisColor;
+						if (useSensorName)
+							thisColor = thisSecondary.getColor();
+						else
+							thisColor = primaryTrack.getColor();
 
 						// what's the current time?
 						HiResDate currentTime = thisSecondary.getTime();
@@ -519,14 +562,12 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 		if (theSeriesCollection.getSeriesCount() == 0)
 			theSeriesCollection = null;
-
-		return theSeriesCollection;
 	}
 
 	public static class TestCalcs extends TestCase
 	{
 		protected Vector<SensorWrapper> _candidates;
-		protected TrackWrapper _primary;
+		protected Vector<TrackWrapper> _primary;
 
 		public void testIt()
 		{
@@ -567,8 +608,10 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			sensors.add(s2);
 			HiResDate start_time = target.getStartDTG();
 			HiResDate end_time = target.getEndDTG();
-			TimeSeriesCollection data = GenerateSensorRangePlot.getDataSeries(target,
-					sensors, start_time, end_time);
+
+			TimeSeriesCollection data = new TimeSeriesCollection();
+			GenerateSensorRangePlot.addDataSeries(target, sensors, start_time,
+					end_time, data, true);
 
 			assertNotNull("got dataset", data);
 			assertEquals("got correct num of series", 2, data.getSeriesCount());
@@ -611,7 +654,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 			GenerateSensorRangePlot plot = new GenerateSensorRangePlot()
 			{
 				protected Action getAction(Vector<SensorWrapper> candidates,
-						TrackWrapper primary)
+						Vector<TrackWrapper> primary)
 				{
 					_candidates = candidates;
 					_primary = primary;

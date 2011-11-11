@@ -6725,45 +6725,41 @@ Platform C,-551</screen></para>
               </mediaobject>
             </screenshot></para>
 
-          <para>Note, the Sensor Range Plot reflects the sensor offset length,
-          plus whether the 'Worm in the hole' (see <xref
-          linkend="SectWormInHole" />) property is set for each sensor. <tip>
-              <para>On occasion you may wish to view a sensor range plot of a
-              sensor for which you haven't loaded sensor data. That is, you've
-              loaded &amp; displayed hull-mounted sonar data, but you wish to
-              know the range from the centre of the array to the target. Do
-              this as follows:<orderedlist>
+          <para>Note, the Sensor Range Plot reflects the sensor offset length, plus whether the
+            'Worm in the hole' (see <xref linkend="SectWormInHole"/>) property is set for each
+            sensor. <tip>
+              <para>On occasion you may wish to view a sensor range plot of a sensor for which you
+                haven't loaded sensor data. That is, you've loaded &amp; displayed hull-mounted
+                sonar data, but you wish to know the range from the centre of the array to the
+                target. Do this as follows:<orderedlist>
                   <listitem>
-                    <para>Right-click on the ownship track, select 'Add new
-                    sensor'</para>
+                    <para>Right-click on the ownship track, select 'Add new sensor'</para>
                   </listitem>
-
                   <listitem>
-                    <para>Name the new sensor using the wizard, and specify
-                    its default color</para>
+                    <para>Name the new sensor using the wizard, and specify its default color</para>
                   </listitem>
-
                   <listitem>
-                    <para>Now select the new sensor in the layer manager - in
-                    order that you can edit its properties. In the property
-                    window set the correct sensor offset distance (remember
-                    it's in metres, and specify negative values to represent a
-                    trailing array), and mark that it should use a 'worm in
-                    the hole' algorithm</para>
+                    <para>Now select the new sensor in the layer manager - in order that you can
+                      edit its properties. In the property window set the correct sensor offset
+                      distance (remember it's in metres, and specify negative values to represent a
+                      trailing array), and mark that it should use a 'worm in the hole'
+                      algorithm</para>
                   </listitem>
-
                   <listitem>
-                    <para>Now, back to the layer manager - multi-select the
-                    new sensor, and the target track. Right-click on them and
-                    select <guilabel>View sensor range plot</guilabel>.</para>
+                    <para>Now, back to the layer manager - multi-select the new sensor, and the
+                      target track. Right-click on them and select <guilabel>View sensor range
+                        plot</guilabel>.</para>
                   </listitem>
-                </orderedlist>In this mode of use, the algorithm generates a
-              range for each calculated position on the target track. In the
-              normal mode (where we have sensor data), a range is calculated
-              for each point at which there's a sensor cut (using
-              interpolation to determine the position of the target
-              track).</para>
-            </tip></para>
+                </orderedlist>In this mode of use, the algorithm generates a range for each
+                calculated position on the target track. In the normal mode (where we have sensor
+                data), a range is calculated for each point at which there's a sensor cut (using
+                interpolation to determine the position of the target track).</para>
+            </tip><note>
+              <para>Debrief is able to produce a plot of multiple sensors against on track, or the
+                range from one sensor to multiple tracks - but it can't calculate the ranges for
+                multiple sensors against multiple tracks.  That would be just ridiculus.  Your brain
+                would explode, honest.</para>
+            </note></para>
         </sect2>
 
         <sect2 xml:id="manage_ambiguous">
