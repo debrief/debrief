@@ -64,3 +64,7 @@ trunk/org.mwc.debrief.SensorFusion/javaCompiler...args
 trunk/org.mwc.debrief.track_shift/build.xml
 trunk/org.mwc.debrief.track_shift/javaCompiler...args
 trunk/org.mwc.debrief.help/docbook/out.fo
+trunk/org.mwc.cmap.LiveDataMonitor/bin/org/mwc/cmap/LiveDataMonitor/views/LiveDataMonitor$5.class
+trunk/org.mwc.cmap.LiveDataMonitor/bin/org/mwc/cmap/LiveDataMonitor/views/LiveDataMonitor$SimMonitor$1$1.class
+trunk/org.mwc.cmap.LiveDataMonitor/bin/org/mwc/cmap/LiveDataMonitor/views/LiveDataMonitor$SimMonitor$1.class
+trunk/org.mwc.cmap.LiveDataMonitor/bin/org/mwc/cmap/LiveDataMonitor/views/LiveDataMonitor$SimMonitor.class
