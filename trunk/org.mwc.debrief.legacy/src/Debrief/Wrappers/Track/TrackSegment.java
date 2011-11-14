@@ -141,6 +141,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	private int _lineStyle = CanvasType.SOLID;
 
+	public static final String TMA_LEADER = "TMA_";
+
 	/**
 	 * how this line is plotted
 	 * 
@@ -845,11 +847,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	public HiResDate startDTG()
 	{
+		HiResDate res = null;
 		final Collection<Editable> items = getData();
 		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
-		final Editable first = sortedItems.first();
-		final FixWrapper fw = (FixWrapper) first;
-		return fw.getDateTimeGroup();
+		if ((sortedItems != null) && (sortedItems.size() > 0))
+		{
+			final Editable first = sortedItems.first();
+			final FixWrapper fw = (FixWrapper) first;
+			res = fw.getDateTimeGroup();
+		}
+		return res;
 	}
 
 	/**
@@ -971,11 +978,17 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					rel.setOffset(newOffset);
 				}
 
-				// lastly, reset the track name
-				rel.sortOutDate(startDTG);
+				// is our name date-oriented?
+				if (rel.getName().startsWith(TMA_LEADER))
+				{
+					// yes, calculate a new one
 
-				// and change the track name
-				rel._myTrack.setName(rel.getName());
+					// lastly, reset the track name
+					rel.sortOutDate(startDTG);
+
+					// and change the track name
+					rel._myTrack.setName(rel.getName());
+				}
 			}
 
 		}
