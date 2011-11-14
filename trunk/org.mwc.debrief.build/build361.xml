@@ -6,8 +6,10 @@
 
 	<!-- and deploy it to the right place -->
 	<property name="deployDest" value="../deploy" />
-	<property name="zipFile" value="DebriefNG-win32.win32.x86.zip" />
-	<property name="debriefDest" value="${deployDest}/${zipFile}" />
+	<property name="zipFile32" value="DebriefNG-win32.win32.x86.zip" />
+	<property name="zipFile64" value="DebriefNG-win32.win32.x86_64.zip" />
+	<property name="debriefDest32" value="${deployDest}/${zipFile32}" />
+	<property name="debriefDest64" value="${deployDest}/${zipFile64}" />
 	<property name="repoDest" value="${deployDest}/Repository" />
 	<property name="osxExe" value="${deployDest}/DebriefNG/DebriefNG.app/Contents/MacOS/DebriefNG" />
 
@@ -70,7 +72,7 @@
 			<condition>
 				<not>
 					<resourcecount count="1">
-						<fileset id="fs" dir="../deploy" includes="${zipFile}" />
+						<fileset id="fs" dir="../deploy" includes="${zipFile32}" />
 					</resourcecount>
 				</not>
 			</condition>
@@ -98,12 +100,15 @@
 		<scp file="${datedDist}" verbose="true" password="${sfPassword}" todir="ianmayo,debrief@frs.sourceforge.net:/home/frs/project/d/de/debrief/Debrief_Installation_Set/DebriefNG" />
 
 		<!-- and put the name back -->
-		<move file="${datedDist}" tofile="${buildDirectory}/${buildLabel}/${zipFile}" />
+		<move file="${datedDist}" tofile="${buildDirectory}/${buildLabel}/${zipFile32}" />
 	</target>
 
 	<target name="move_files_to_deploy_directory">
-		<copy tofile="${debriefDest}">
-			<fileset file="${buildDirectory}/${buildLabel}/${zipFile}" />
+		<copy tofile="${debriefDest32}">
+			<fileset file="${buildDirectory}/${buildLabel}/${zipFile32}" />
+		</copy>
+		<copy tofile="${debriefDest64}">
+			<fileset file="${buildDirectory}/${buildLabel}/${zipFile64}" />
 		</copy>
 		<copy todir="${repoDest}">
 			<fileset dir="${buildDirectory}/buildRepo" />
@@ -112,7 +117,8 @@
 
 	<target name="provide_custom_versions">
 		<!-- now unzip the dist, just in case anyone wants it that way -->
-		<unzip src="${debriefDest}" dest="${deployDest}" />
+		<unzip src="${debriefDest32}" dest="${deployDest}" />
+		<unzip src="${debriefDest64}" dest="${deployDest}/DebriefNG_64" />
 
 		<!-- and zip the repo, to help move it -->
 		<zip basedir="${repoDest}" destfile="${deployDest}/Repository.zip" />
