@@ -7,6 +7,7 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,11 +27,36 @@ public class FlatFilenameWizardPage extends WizardPage
 	public static final String PAGENAME = "FlatFileExport";
 
 	protected String _filePath;
-	protected String _sensorType;
+	/**
+	 * the type of the first sensor
+	 * 
+	 */
+	protected String _sensorType1;
 
+	/**
+	 * the type of the second sensor
+	 * 
+	 */
+	protected String _sensorType2;
+
+	/** the protective marking on the data
+	 * 
+	 */
+	private String _protMarking;
+
+	
 	private DirectoryFieldEditor _fileFieldEditor;
 
-	private RadioGroupFieldEditor _sensorTypeEditor;
+	private RadioGroupFieldEditor _sensor1TypeEditor;
+	private RadioGroupFieldEditor _sensor2TypeEditor;
+	private StringFieldEditor _protMarkingEditor;
+
+	/**
+	 * how many sensors to support
+	 * 
+	 */
+	private int _numSensors;
+
 
 	public static final String FILE_SUFFIX = "txt";
 
@@ -39,9 +65,10 @@ public class FlatFilenameWizardPage extends WizardPage
 	 * 
 	 * @param pageName
 	 */
-	public FlatFilenameWizardPage()
+	public FlatFilenameWizardPage(int numSensors)
 	{
 		super(PAGENAME);
+		_numSensors = 2;
 		setTitle("Export data to flat file");
 		setDescription("This wizard allows you to indicate the type of sensor used, and the "
 				+ "directory\nin which to place the output file. "
@@ -65,7 +92,9 @@ public class FlatFilenameWizardPage extends WizardPage
 		layout.verticalSpacing = 9;
 
 		String filenameKey = "Debrief.FlatFileOutput";
-		String sensorKey = "Debrief.FlatFileSensorType";
+		String sensor1Key = "Debrief.FlatFileSensorType1";
+		String sensor2Key = "Debrief.FlatFileSensorType2";
+		String protMarkKey = "Debrief.FlatFileProtMarking";
 
 		String title = "Output directory:";
 		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
@@ -97,21 +126,57 @@ public class FlatFilenameWizardPage extends WizardPage
 		{ "Towed Array", "T" },
 		{ "Hull mounted array", "H" } };
 
-		_sensorTypeEditor = new RadioGroupFieldEditor(sensorKey, "Sensor type:", 2,
-				sensorTypes, container)
+		// sort out the first sensor
+		_sensor1TypeEditor = new RadioGroupFieldEditor(sensor1Key,
+				"Sensor 1 type:", 2, sensorTypes, container)
 		{
 			protected void fireValueChanged(String property, Object oldValue,
 					Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
-				_sensorType = (String) newValue;
+				_sensorType1 = (String) newValue;
 				dialogChanged();
 			}
 		};
+		_sensor1TypeEditor.setPreferenceStore(getPreferenceStore());
+		_sensor1TypeEditor.load();
+		_sensorType1 = sensorTypes[0][1];
 
-		_sensorTypeEditor.setPreferenceStore(getPreferenceStore());
-		_sensorTypeEditor.load();
-		_sensorType = sensorTypes[0][1];
+
+		// and now the second sensor
+		if (_numSensors > 1)
+		{
+			_sensor2TypeEditor = new RadioGroupFieldEditor(sensor2Key,
+					"Sensor 2 type:", 2, sensorTypes, container)
+			{
+				protected void fireValueChanged(String property, Object oldValue,
+						Object newValue)
+				{
+					super.fireValueChanged(property, oldValue, newValue);
+					_sensorType2 = (String) newValue;
+					dialogChanged();
+				}
+			};
+			_sensor2TypeEditor.setPreferenceStore(getPreferenceStore());
+			_sensor2TypeEditor.load();
+			_sensorType2 = sensorTypes[0][1];
+			
+			// we also want to specify the prot marking editor
+			_protMarkingEditor = new StringFieldEditor(protMarkKey, "Protective Marking:",  container)
+			{
+				protected void fireValueChanged(String property, Object oldValue,
+						Object newValue)
+				{
+					super.fireValueChanged(property, oldValue, newValue);
+					_protMarking = (String) newValue;
+					dialogChanged();
+				}
+			};
+			_protMarkingEditor.setPreferenceStore(getPreferenceStore());
+			_protMarkingEditor.load();
+			_protMarking = "PENDING";
+			
+		}
 
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
@@ -139,24 +204,31 @@ public class FlatFilenameWizardPage extends WizardPage
 			updateStatus("Target directory must be specified");
 			return;
 		}
-		
+
 		// just check it's a directory, not a file
 		File testFile = new File(targetDir);
-		if(!testFile.isDirectory())
+		if (!testFile.isDirectory())
 		{
 			updateStatus("Target must be a directory, not a file");
 			return;
 		}
 
-		final String sensorType = getSensorType();
-		if (sensorType == null)
+		final String sensorType1 = getSensor1Type();
+		if (sensorType1 == null)
 		{
-			updateStatus("Sensor type must be selected");
+			updateStatus("Sensor 1 type must be selected");
+			return;
+		}
+
+		final String sensorType2 = getSensor2Type();
+		if (sensorType2 == null)
+		{
+			updateStatus("Sensor 2 type must be selected");
 			return;
 		}
 
 		// so, we've got valid data. better store them
-		_sensorTypeEditor.store();
+		_sensor1TypeEditor.store();
 		_fileFieldEditor.store();
 
 		updateStatus(null);
@@ -172,11 +244,30 @@ public class FlatFilenameWizardPage extends WizardPage
 	 * 
 	 * @return
 	 */
-	public String getSensorType()
+	public String getSensor1Type()
 	{
-		return _sensorType;
+		return _sensorType1;
 	}
 
+	/**
+	 * retrieve the selected sensor type
+	 * 
+	 * @return
+	 */
+	public String getSensor2Type()
+	{
+		return _sensorType2;
+	}
+
+	/** get the protective marking on the data
+	 * 
+	 * @return
+	 */
+	public String getProtMarking()
+	{
+		return _protMarking;
+	}
+	
 	private void updateStatus(String message)
 	{
 		setErrorMessage(message);
@@ -189,4 +280,5 @@ public class FlatFilenameWizardPage extends WizardPage
 		else
 			setPageComplete(false);
 	}
+
 }

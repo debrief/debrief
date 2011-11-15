@@ -10,7 +10,7 @@ public class ExportToFlatFile2 extends ExportToFlatFile
 
 	public ExportToFlatFile2()
 	{
-		super("Export to flat file (SAM twin sensor format)", 2);
+		super("Export to flat file (SAM twin sensor format)", "1.01", true);
 	}
 }
 

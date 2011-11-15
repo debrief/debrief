@@ -28,18 +28,21 @@ import MWC.GenericData.WatchableList;
 
 public class ExportToFlatFile extends TimeControllerOperation
 {
-	/** * the flat-file format we're going to use *Ê */
-	private final int _fileVersion;
+	/**
+	 * the flat-file format we're going to use
+	 */
+	private final String _fileVersion;
 
-	protected ExportToFlatFile(String title, int fileVersion)
+	protected ExportToFlatFile(String title, String fileVersion,
+			boolean doubleSensor)
 	{
-		super(title, true, true, true);
+		super(title, true, !doubleSensor, doubleSensor, true);
 		_fileVersion = fileVersion;
 	}
 
 	public ExportToFlatFile()
 	{
-		this("Export to flat file (SAM Format)", 1);
+		this("Export to flat file (SAM Format)", "1.0", false);
 	}
 
 	@Override
@@ -55,7 +58,12 @@ public class ExportToFlatFile extends TimeControllerOperation
 		// sort out the destination file name
 		String filePath = null;
 		// sort out what type of file it is
-		String sensorType = null;
+		String sensor1Type = null;
+		String sensor2Type = null;
+
+		// the protective marking on the data
+		String protMarking = null;
+
 		// just check that at least one of the sensors has an offset
 		TrackWrapper primary = (TrackWrapper) primaryTrack;
 		BaseLayer sensors = primary.getSensors();
@@ -85,8 +93,17 @@ public class ExportToFlatFile extends TimeControllerOperation
 			if (res == MessageDialog.CANCEL)
 				return;
 		}
+
+		// how many sensors for this data-type?
+		int numSensors;
+		if (_fileVersion.equals("1.0"))
+			numSensors = 1;
+		else
+			numSensors = 2;
+
+		// prepare the export wizard
 		SimplePageListWizard wizard = new SimplePageListWizard();
-		wizard.addWizard(new FlatFilenameWizardPage());
+		wizard.addWizard(new FlatFilenameWizardPage(numSensors));
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
@@ -101,20 +118,15 @@ public class ExportToFlatFile extends TimeControllerOperation
 				if (exportPage.isPageComplete())
 				{
 					filePath = exportPage.getFileName();
-					sensorType = exportPage.getSensorType();
+					sensor1Type = exportPage.getSensor1Type();
+					sensor2Type = exportPage.getSensor2Type();
+					protMarking = exportPage.getProtMarking();
 				}
 			}
 			FlatFileExporter ff = new FlatFileExporter();
-			String theData = null;
-			switch (_fileVersion)
-			{
-			case 1:
-				theData = ff.export(primaryTrack, secondaryTracks, period, sensorType);
-				break;
-			case 2:
-				theData = ff.export(primaryTrack, secondaryTracks, period, sensorType);
-				break;
-			}
+			String theData = ff.export(primaryTrack, secondaryTracks, period,
+					sensor1Type, sensor2Type, _fileVersion, protMarking);
+
 			// now write the data to file
 			final String HOST_NAME = primaryTrack.getName();
 			final String HOST_DATE = MWC.Utilities.TextFormatting.FormatRNDateTime

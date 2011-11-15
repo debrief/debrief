@@ -32,7 +32,7 @@ public class ExportDopplerShift extends TimeControllerOperation
 
 	public ExportDopplerShift()
 	{
-		super(ACTION_NAME, true, false, true);
+		super(ACTION_NAME, true, false,false, true);
 	}
 
 	@Override

@@ -114,7 +114,7 @@ public class FlatFileExporter
 			String res = null;
 			try
 			{
-				res = fa.testExport();
+				res = fa.testExport("V1.0");
 			}
 			catch (final ParseException e)
 			{
@@ -324,13 +324,19 @@ public class FlatFileExporter
 	 *          sec tracks = presumed to be just one
 	 * @param period
 	 *          the time period to export
-	 * @param sensorType
-	 *          what sensor type was specified
+	 * @param sensor1Type
+	 *          what type was specified for sensor 2
+	 * @param sensor2Type
+	 *          what type was specified for sensor 2 
+	 * @param fileVersion 
+	 * 					which SAM version to use
+	 * @param protMarking
+	 * 					the protective marking on the data
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period,
-			final String sensorType)
+			final String sensor1Type, String sensor2Type, String fileVersion, String protMarking)
 	{
 		String res = null;
 
@@ -355,7 +361,7 @@ public class FlatFileExporter
 		final TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
 
 		// now the body bits
-		final String body = this.getBody(pTrack, secTrack, period, sensorType);
+		final String body = this.getBody(pTrack, secTrack, period, sensor1Type, fileVersion);
 
 		// count how many items we found
 		final int numRows = count(body, BRK);
@@ -363,7 +369,7 @@ public class FlatFileExporter
 		// start off with the header bits
 		final String header = this.getHeader(primaryTrack.getName(), primaryTrack
 				.getName(), sensorName, secTrack.getName(), period.getStartDTG()
-				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0);
+				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0, fileVersion);
 
 		// and collate it
 		res = header + body;
@@ -378,11 +384,12 @@ public class FlatFileExporter
 	 * @param secTrack
 	 * @param period
 	 * @param sensorType
+	 * @param fileVersion : which SAM file to support
 	 * @return
 	 */
 	private String getBody(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
-			final String sensorType)
+			final String sensorType, String fileVersion)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
@@ -548,12 +555,13 @@ public class FlatFileExporter
 	 * @param NUM_RECORDS
 	 * @param X_ORIGIN_YDS
 	 * @param Y_ORIGIN_YDS
+	 * @param fileVersion which SAM format to use
 	 * @return
 	 */
 	private String getHeader(final String OWNSHIP, final String OS_TRACK_NAME,
 			final String SENSOR_NAME, final String TGT_NAME, final Date startDate,
 			final Date endDate, final int NUM_RECORDS, final int X_ORIGIN_YDS,
-			final int Y_ORIGIN_YDS)
+			final int Y_ORIGIN_YDS, final String fileVersion)
 	{
 
 		final String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
@@ -641,14 +649,14 @@ public class FlatFileExporter
 		return res;
 	}
 
-	private String testExport() throws ParseException
+	private String testExport(String fileVersion) throws ParseException
 	{
 		final String StartTime = "04:45:00	20/04/2009";
 		final Date startDate = dateFrom(StartTime);
 		final String endTime = "04:45:05	20/04/2009";
 		final Date endDate = dateFrom(endTime);
 		String res = getHeader("Vessel", "OS track 0100-0330",
-				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321);
+				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321,fileVersion );
 		res += getTestBody();
 		return res;
 	}

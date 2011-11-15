@@ -50,6 +50,13 @@ public abstract class TimeControllerOperation
 	 * 
 	 */
 	private final boolean _singleSensor;
+
+	/**
+	 * whether there should just be two sensors on the primary track
+	 * 
+	 */
+	private final boolean _doubleSensor;
+
 	
 	/** 
 	 * whether there must be visible sensor data visible in the specified time period
@@ -64,11 +71,12 @@ public abstract class TimeControllerOperation
 	 *          what we put on the menu and the dialog
 	 */
 	protected TimeControllerOperation(String operationName,
-			boolean requireSensor, boolean singleSensor, boolean  requiresSensorData)
+			boolean requireSensor, boolean singleSensor, boolean doubleSensor,  boolean  requiresSensorData)
 	{
 		_operationName = operationName;
 		_requireSensor = requireSensor;
 		_singleSensor = singleSensor;
+		_doubleSensor = doubleSensor;
 		_requiresSensorData = requiresSensorData;
 	}
 
