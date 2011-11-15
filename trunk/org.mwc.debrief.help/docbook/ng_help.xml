@@ -3463,8 +3463,10 @@ and so on....</programlisting></para>
                   <term>Range Ring Highlight</term>
 
                   <listitem>
-                    <para>This mode shows a series of rings around the current
-                    location. The editable properties are listed below.</para>
+                    <para>This mode shows a series of <indexterm>
+                        <primary>Range Ring</primary>
+                      </indexterm> around the current location. The editable properties are listed
+                      below.</para>
                   </listitem>
                 </varlistentry>
               </variablelist></para>
