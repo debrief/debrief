@@ -88,6 +88,7 @@ import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 import org.mwc.debrief.core.operations.ExportDopplerShift;
 import org.mwc.debrief.core.operations.ExportTimeDataToClipboard;
 import org.mwc.debrief.core.operations.ExportToFlatFile;
+import org.mwc.debrief.core.operations.ExportToFlatFile2;
 import org.mwc.debrief.core.operations.PlotOperations;
 import org.osgi.framework.Bundle;
 
@@ -201,6 +202,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		_timeControllerOperations = new org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore();
 		_timeControllerOperations.add(new ExportTimeDataToClipboard());
 		_timeControllerOperations.add(new ExportToFlatFile());
+		_timeControllerOperations.add(new ExportToFlatFile2());
 		_timeControllerOperations.add(new ExportDopplerShift());
 
 		_layerPainterManager = new LayerPainterManager(_trackDataProvider);

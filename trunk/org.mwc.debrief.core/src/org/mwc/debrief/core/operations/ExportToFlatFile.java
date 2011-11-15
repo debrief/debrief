@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Enumeration;
-
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -19,7 +18,6 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.wizards.FlatFilenameWizardPage;
-
 import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -30,10 +28,18 @@ import MWC.GenericData.WatchableList;
 
 public class ExportToFlatFile extends TimeControllerOperation
 {
+	/** * the flat-file format we're going to use *Ê */
+	private final int _fileVersion;
+
+	protected ExportToFlatFile(String title, int fileVersion)
+	{
+		super(title, true, true, true);
+		_fileVersion = fileVersion;
+	}
 
 	public ExportToFlatFile()
 	{
-		super("Export to flat file (SAM Format)", true, true, true);
+		this("Export to flat file (SAM Format)", 1);
 	}
 
 	@Override
@@ -48,10 +54,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 	{
 		// sort out the destination file name
 		String filePath = null;
-
 		// sort out what type of file it is
 		String sensorType = null;
-
 		// just check that at least one of the sensors has an offset
 		TrackWrapper primary = (TrackWrapper) primaryTrack;
 		BaseLayer sensors = primary.getSensors();
@@ -73,22 +77,20 @@ public class ExportToFlatFile extends TimeControllerOperation
 			String[] labels = new String[]
 			{ "Yes", "No" };
 			int index = 1;
-			int imageType = MessageDialog.QUESTION;
-			// check the user knows what he's doing
+			int imageType = MessageDialog.QUESTION; // check the user knows what he's
+																							// doing
 			MessageDialog dl = new MessageDialog(shell, title, image, message,
 					imageType, labels, index);
 			int res = dl.open();
 			if (res == MessageDialog.CANCEL)
 				return;
 		}
-
 		SimplePageListWizard wizard = new SimplePageListWizard();
 		wizard.addWizard(new FlatFilenameWizardPage());
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
 		dialog.open();
-
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
 		{
@@ -102,20 +104,23 @@ public class ExportToFlatFile extends TimeControllerOperation
 					sensorType = exportPage.getSensorType();
 				}
 			}
-
 			FlatFileExporter ff = new FlatFileExporter();
-			String theData = ff.export(primaryTrack, secondaryTracks, period,
-					sensorType);
-
+			String theData = null;
+			switch (_fileVersion)
+			{
+			case 1:
+				theData = ff.export(primaryTrack, secondaryTracks, period, sensorType);
+				break;
+			case 2:
+				theData = ff.export(primaryTrack, secondaryTracks, period, sensorType);
+				break;
+			}
 			// now write the data to file
-
 			final String HOST_NAME = primaryTrack.getName();
 			final String HOST_DATE = MWC.Utilities.TextFormatting.FormatRNDateTime
 					.toMediumString(period.getStartDTG().getDate().getTime());
-
 			final String fileName = filePath + File.separator + HOST_NAME + "_"
 					+ HOST_DATE + "." + FlatFilenameWizardPage.FILE_SUFFIX;
-
 			BufferedWriter out = null;
 			try
 			{
@@ -128,7 +133,6 @@ public class ExportToFlatFile extends TimeControllerOperation
 			{
 				DebriefPlugin.logError(Status.ERROR, "Unable to find output file:"
 						+ fileName, e);
-
 			}
 			catch (IOException e)
 			{
@@ -147,9 +151,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 					DebriefPlugin.logError(Status.ERROR, "Whilst closing output file:"
 							+ fileName, e);
 				}
+
 			}
 		}
-
 	}
-
 }
