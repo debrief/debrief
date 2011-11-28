@@ -76,7 +76,8 @@ import MWC.GUI.ETOPO.ETOPO_2_Minute;
  * 
  * @see MWC.GUI.Chart.Painters.ETOPOPainter
  */
-public class CreateTOPO extends PlainCreateLayer {
+public class CreateTOPO extends PlainCreateLayer
+{
 
 	/**
 	 * static copy of parent, so we can retrieve the path
@@ -102,7 +103,8 @@ public class CreateTOPO extends PlainCreateLayer {
 	 */
 	public CreateTOPO(MWC.GUI.ToolParent theParent,
 			MWC.GUI.Properties.PropertiesPanel thePanel, Layers theData,
-			MWC.GUI.PlainChart theChart) {
+			MWC.GUI.PlainChart theChart)
+	{
 		super(theParent, thePanel, theData, theChart, "TOPO Gridded Bathy",
 				"images/etopo.gif");
 
@@ -110,12 +112,12 @@ public class CreateTOPO extends PlainCreateLayer {
 	}
 
 	/**
-	 * initialise the tool, so that it knows where to get it's layers
-	 * information
+	 * initialise the tool, so that it knows where to get it's layers information
 	 * 
 	 * @param theParent
 	 */
-	public static void initialise(ToolParent theParent) {
+	public static void initialise(ToolParent theParent)
+	{
 		_myParent = theParent;
 	}
 
@@ -123,10 +125,12 @@ public class CreateTOPO extends PlainCreateLayer {
 	 * get the current ETOPO path
 	 * 
 	 */
-	public static String getETOPOPath() {
+	public static String getETOPOPath()
+	{
 
 		// do we have a parent?
-		if (_myParent == null) {
+		if (_myParent == null)
+		{
 			System.err
 					.println("Parent has not been set up for CreateTOPO.  Implementation fault");
 			return null;
@@ -144,11 +148,12 @@ public class CreateTOPO extends PlainCreateLayer {
 	}
 
 	/**
-	 * create this item. The Layers object will know to put this layer at the
-	 * back because of it's BackgroundLayer marker interface
+	 * create this item. The Layers object will know to put this layer at the back
+	 * because of it's BackgroundLayer marker interface
 	 * 
 	 */
-	protected Layer createItem(MWC.GUI.PlainChart theChart) {
+	protected Layer createItem(MWC.GUI.PlainChart theChart)
+	{
 		// todo: overcome problem caused by loading ETOPO twice
 
 		return loadBathyData(theChart.getLayers());
@@ -158,7 +163,8 @@ public class CreateTOPO extends PlainCreateLayer {
 	 * static do we have data?
 	 * 
 	 */
-	public static boolean check2MinBathyData() {
+	public static boolean check2MinBathyData()
+	{
 		String newPath = getETOPOPath();
 
 		boolean res = false;
@@ -169,7 +175,8 @@ public class CreateTOPO extends PlainCreateLayer {
 
 		// hmm, we've either got a full path, or just the directory and we need
 		// to append the file itself
-		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath)) {
+		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath))
+		{
 			res = true;
 		}
 
@@ -180,7 +187,8 @@ public class CreateTOPO extends PlainCreateLayer {
 	 * static class which allows other layers to load data
 	 * 
 	 */
-	public static Layer load2MinBathyData() {
+	public static Layer load2MinBathyData()
+	{
 		String newPath = getETOPOPath();
 
 		Layer res = null;
@@ -191,13 +199,18 @@ public class CreateTOPO extends PlainCreateLayer {
 
 		// hmm, we've either got a full path, or just the directory and we need
 		// to append the file itself
-		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath)) {
+		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath))
+		{
 			res = new ETOPO_2_Minute(newPath);
-		} else {
-			MWC.GUI.Dialogs.DialogFactory
-					.showMessage(
-							"2 minute bathy Not Found",
-							"Sorry neither of the ETOPO datafiles can be found. Please check the ETOPO section of the userguide.");
+		}
+		else
+		{
+			_myParent
+					.logError(
+							ToolParent.ERROR,
+							"2 minute bathy Not Found:"
+									+ "Sorry neither of the ETOPO datafiles can be found. Please check the ETOPO section of the userguide.",
+							null);
 		}
 
 		return res;
@@ -207,18 +220,24 @@ public class CreateTOPO extends PlainCreateLayer {
 	 * static class which allows other layers to load data
 	 * 
 	 */
-	public static Layer loadBathyData(Layers theLayers) {
+	public static Layer loadBathyData(Layers theLayers)
+	{
 		String newPath = getETOPOPath();
 
 		Layer res = null;
 
 		// right, see if we can find either of the ETOPO datasets.
 		// try the 5 2 minute first
-		if (ETOPO_2_Minute.dataFileExists(newPath)) {
+		if (ETOPO_2_Minute.dataFileExists(newPath))
+		{
 			res = new ETOPO_2_Minute(newPath);
-		} else if (ETOPOPainter.dataFileExists(newPath)) {
+		}
+		else if (ETOPOPainter.dataFileExists(newPath))
+		{
 			res = new ETOPOPainter(newPath, theLayers);
-		} else {
+		}
+		else
+		{
 			MWC.GUI.Dialogs.DialogFactory
 					.showMessage(
 							"ETOPO Not Found",

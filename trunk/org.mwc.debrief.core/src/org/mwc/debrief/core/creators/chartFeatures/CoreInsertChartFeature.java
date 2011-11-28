@@ -87,76 +87,84 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		{
 			// ok, get our layer name
 			final String myLayer = getLayerName();
-			
+
 			// drop out if we don't have a target layer (the user may have cancelled)
-			if(myLayer == null)
+			if (myLayer == null)
 				return null;
 
 			// ok - get the object we're going to insert
 			Plottable thePlottable = getPlottable(theChart);
 
-			// lastly, get the data
-			Layers theData = theChart.getLayers();
-
-			// aah, and the misc layer, in which we will store the shape
-			Layer theLayer = null;
-
-			// hmm, do we want to insert ourselves as a layer?
-			if (!_isTopLevelLayer)
-			{
-				theLayer = theData.findLayer(myLayer);
-
-				// did we find it?
-				if (theLayer == null)
-				{
-					// nope, better create it.
-					theLayer = new BaseLayer();
-					theLayer.setName(myLayer);
-					theData.addThisLayer(theLayer);
-				}
-			}
-
-			// and put it into an action (so we can undo it)
-			res = new PlainCreate.CreateLabelAction(null, theLayer, theChart
-					.getLayers(), thePlottable)
+			if (thePlottable != null)
 			{
 
-				public void execute()
-				{
-					// generate the object
-					super.execute();
+				// lastly, get the data
+				Layers theData = theChart.getLayers();
 
-					// right, does the user want me to auto-select the newly created item?
-					String autoSelectStr = CorePlugin.getToolParent().getProperty(
-							PrefsPage.PreferenceConstants.AUTO_SELECT);
-					boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
-					if (autoSelect)
+				// aah, and the misc layer, in which we will store the shape
+				Layer theLayer = null;
+
+				// hmm, do we want to insert ourselves as a layer?
+				if (!_isTopLevelLayer)
+				{
+					theLayer = theData.findLayer(myLayer);
+
+					// did we find it?
+					if (theLayer == null)
 					{
-
-						// ok, now open the properties window
-						try
-						{
-							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-									.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
-						} catch (PartInitException e)
-						{
-							CorePlugin.logError(Status.WARNING,
-									"Failed to open properties view", e);
-						}
-
-						// find the editor
-						IChartBasedEditor editor = getEditor();
-
-						// highlight the editor
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-								.getActivePage().activate((IWorkbenchPart) editor);
-
-						// select the shape
-						editor.selectPlottable(_theShape, _theLayer);
+						// nope, better create it.
+						theLayer = new BaseLayer();
+						theLayer.setName(myLayer);
+						theData.addThisLayer(theLayer);
 					}
 				}
-			};
-		} else
+
+				// and put it into an action (so we can undo it)
+				res = new PlainCreate.CreateLabelAction(null, theLayer,
+						theChart.getLayers(), thePlottable)
+				{
+
+					public void execute()
+					{
+						// generate the object
+						super.execute();
+
+						// right, does the user want me to auto-select the newly created
+						// item?
+						String autoSelectStr = CorePlugin.getToolParent().getProperty(
+								PrefsPage.PreferenceConstants.AUTO_SELECT);
+						boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
+						if (autoSelect)
+						{
+
+							// ok, now open the properties window
+							try
+							{
+								PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+										.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
+							}
+							catch (PartInitException e)
+							{
+								CorePlugin.logError(Status.WARNING,
+										"Failed to open properties view", e);
+							}
+
+							// find the editor
+							IChartBasedEditor editor = getEditor();
+
+							// highlight the editor
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+									.getActivePage().activate((IWorkbenchPart) editor);
+
+							// select the shape
+							editor.selectPlottable(_theShape, _theLayer);
+						}
+					}
+				};
+			}
+
+		}
+		else
 		{
 			// we haven't got an area, inform the user
 			CorePlugin
