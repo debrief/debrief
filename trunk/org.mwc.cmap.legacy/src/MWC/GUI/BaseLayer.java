@@ -191,6 +191,7 @@ public class BaseLayer extends Plottables implements Layer
 	 */
 	public BaseLayer()
 	{
+		// this layer isn't ordered by default
 		this(false);
 	}
 
@@ -211,6 +212,8 @@ public class BaseLayer extends Plottables implements Layer
 	// member functions
 	// //////////////////////////////////////////////////////////
 
+	
+	
 	public void append(Layer other)
 	{
 		if (other instanceof BaseLayer)
@@ -218,6 +221,17 @@ public class BaseLayer extends Plottables implements Layer
 			BaseLayer bl = (BaseLayer) other;
 			super.append(bl);
 		}
+	}
+
+	@Override
+	public void setName(String theName)
+	{
+		super.setName(theName);
+		
+		// special handling.  If this the chart features layer, we will double-buffer it, so VPF redraws
+		// more quickly
+		if(theName.equals(Layers.CHART_FEATURES))
+			setBuffered(true);
 	}
 
 	/**
@@ -394,7 +408,8 @@ public class BaseLayer extends Plottables implements Layer
 						prop("Visible", "the Layer visibility", VISIBILITY),
 						prop("Name", "the name of the Layer", FORMAT),
 						prop("LineThickness", "the thickness of lines in this layer",
-								FORMAT), };
+								FORMAT),
+						prop("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT), };
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);

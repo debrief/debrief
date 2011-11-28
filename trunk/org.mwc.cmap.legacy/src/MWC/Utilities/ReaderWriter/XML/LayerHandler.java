@@ -153,7 +153,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		// note, we no longer allow duplicates, we only want
 		// one Chart Features, for example
 		_theLayers.addThisLayer(_myLayer);
-
+		
 		// now, we may well have already had a layer of this name - particularly
 		// the "Chart Features" one.
 		// if this has happened, we need to update it's visibility with our one
