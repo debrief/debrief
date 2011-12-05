@@ -12,6 +12,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -60,6 +61,19 @@ public class FlatFilenameWizardPage extends WizardPage
 
 	public static final String FILE_SUFFIX = "txt";
 
+	private static final String SINGLE_SENSOR = "This wizard allows you to indicate the type of sensor used, and the "
+			+ "directory\nin which to place the output file. "
+			+ "The output file will take the name of the primary \nfile with a "
+			+ FILE_SUFFIX
+			+ " suffix added. See online help for more details on the export format.";
+
+	private static final String DOUBLE_SENSOR = "This wizard allows you to indicate the type of sensors used, " +
+			"and the "
+			+ "directory\nin which to place the output file. "
+			+ "The output file will take the name of the primary \nfile with a "
+			+ FILE_SUFFIX
+			+ " suffix added. See online help for more details on the export format.";
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -68,13 +82,15 @@ public class FlatFilenameWizardPage extends WizardPage
 	public FlatFilenameWizardPage(int numSensors)
 	{
 		super(PAGENAME);
-		_numSensors = 2;
+		_numSensors = numSensors;
 		setTitle("Export data to flat file");
-		setDescription("This wizard allows you to indicate the type of sensor used, and the "
-				+ "directory\nin which to place the output file. "
-				+ "The output file will take the name of the primary \nfile with a "
-				+ FILE_SUFFIX
-				+ " suffix added. See online help for more details on the export format.");
+		final String msgStr;
+		if(numSensors == 1)
+			msgStr = SINGLE_SENSOR;
+		else
+			msgStr = DOUBLE_SENSOR;
+		setDescription(msgStr);
+		
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
@@ -112,9 +128,19 @@ public class FlatFilenameWizardPage extends WizardPage
 				dialogChanged();
 
 			}
+
+			@Override
+			protected boolean doCheckState()
+			{
+				return _filePath != null;
+			}
+			
+			
 		};
 		_fileFieldEditor.fillIntoGrid(container, 3);
 		_fileFieldEditor.setPreferenceStore(getPreferenceStore());
+		_fileFieldEditor.setPage(this);
+		_fileFieldEditor.setEmptyStringAllowed(false);
 		_fileFieldEditor.load();
 
 		// store the current editor value
@@ -141,6 +167,9 @@ public class FlatFilenameWizardPage extends WizardPage
 		_sensor1TypeEditor.setPreferenceStore(getPreferenceStore());
 		_sensor1TypeEditor.load();
 		_sensorType1 = sensorTypes[0][1];
+		
+		@SuppressWarnings("unused")
+		Label lbl = new Label(container,SWT.None);
 
 
 		// and now the second sensor
@@ -160,6 +189,9 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor2TypeEditor.setPreferenceStore(getPreferenceStore());
 			_sensor2TypeEditor.load();
 			_sensorType2 = sensorTypes[0][1];
+			
+			@SuppressWarnings("unused")
+			Label lbl2 = new Label(container,SWT.None);
 			
 			// we also want to specify the prot marking editor
 			_protMarkingEditor = new StringFieldEditor(protMarkKey, "Protective Marking:",  container)

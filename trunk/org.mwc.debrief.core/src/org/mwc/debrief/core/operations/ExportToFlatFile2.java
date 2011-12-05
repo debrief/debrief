@@ -8,9 +8,12 @@ package org.mwc.debrief.core.operations;
 public class ExportToFlatFile2 extends ExportToFlatFile
 {
 
+	private static final String UPGRADED_VERSION = "1.01";
+	private static boolean REQUIRE_TWO_SENSORS = true;
+	
 	public ExportToFlatFile2()
 	{
-		super("Export to flat file (SAM twin sensor format)", "1.01", true);
+		super("Export to flat file (SAM twin sensor format)", UPGRADED_VERSION, REQUIRE_TWO_SENSORS);
 	}
 }
 

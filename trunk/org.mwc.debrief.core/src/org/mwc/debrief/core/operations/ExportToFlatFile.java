@@ -33,6 +33,20 @@ public class ExportToFlatFile extends TimeControllerOperation
 	 */
 	private final String _fileVersion;
 
+	/** default constructor - sticks to old format
+	 * 
+	 */
+	public ExportToFlatFile()
+	{
+		this("Export to flat file (SAM Format)", "1.0", false);
+	}
+
+	/** constructor requiring version & double-sensor status to be specified.
+	 * 
+	 * @param title
+	 * @param fileVersion
+	 * @param doubleSensor
+	 */
 	protected ExportToFlatFile(String title, String fileVersion,
 			boolean doubleSensor)
 	{
@@ -40,10 +54,6 @@ public class ExportToFlatFile extends TimeControllerOperation
 		_fileVersion = fileVersion;
 	}
 
-	public ExportToFlatFile()
-	{
-		this("Export to flat file (SAM Format)", "1.0", false);
-	}
 
 	@Override
 	public ImageDescriptor getDescriptor()

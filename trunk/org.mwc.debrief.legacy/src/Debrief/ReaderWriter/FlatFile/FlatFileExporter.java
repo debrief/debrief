@@ -239,7 +239,7 @@ public class FlatFileExporter
 		}
 
 		SensorWrapper mySensor = null;
-		if (mySensors.size() == 1)
+		if (mySensors.size() >= 1)
 			mySensor = mySensors.firstElement();
 
 		return mySensor;
@@ -411,7 +411,7 @@ public class FlatFileExporter
 
 		for (long dtg = period.getStartDTG().getDate().getTime(); dtg < period
 				.getEndDTG().getDate().getTime(); dtg += 1000)
-		{
+		{			
 			FixWrapper priFix = null, secFix = null;
 			WorldLocation sensorLoc = null;
 
@@ -564,7 +564,7 @@ public class FlatFileExporter
 			final int Y_ORIGIN_YDS, final String fileVersion)
 	{
 
-		final String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
+		final String header = "STRAND Scenario Report " + fileVersion + createTabs(33) + BRK
 				+ "MISSION_NAME" + createTabs(33) + BRK + OWNSHIP + createTabs(33)
 				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
 				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
