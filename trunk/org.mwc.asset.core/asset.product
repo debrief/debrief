@@ -87,8 +87,8 @@
       <plugin id="org.mwc.cmap.legacy"/>
       <plugin id="org.mwc.cmap.narrative" fragment=""/>
       <plugin id="org.mwc.cmap.plotViewer"/>
-      <plugin id="org.mwc.cmap.static_resources"/>
-      <plugin id="org.mwc.cmap.tests"/>
+      <plugin id="org.mwc.cmap.static_resources" fragment=""/>
+      <plugin id="org.mwc.cmap.tests" fragment=""/>
       <plugin id="org.mwc.cmap.tote"/>
       <plugin id="org.mwc.cmap.xyplot"/>
       <plugin id="org.mwc.debrief.core"/>
@@ -98,8 +98,8 @@
 
    <features>
       <feature id="org.mwc.asset.core.feature" version="1.0.29"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.140"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.167"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.147"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.178"/>
    </features>
 
 

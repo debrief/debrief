@@ -99,8 +99,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	 */
 	public final void paint(final CanvasType dest)
 	{
-		// long tThen = System.currentTimeMillis();
-
 		// start the paint
 		openFile();
 
