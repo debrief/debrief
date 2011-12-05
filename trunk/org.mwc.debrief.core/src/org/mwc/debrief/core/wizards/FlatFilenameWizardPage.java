@@ -44,6 +44,11 @@ public class FlatFilenameWizardPage extends WizardPage
 	 * 
 	 */
 	private String _protMarking;
+	
+	/** the name of when data was recorded
+	 * 
+	 */
+	private String _serialName;
 
 	
 	private DirectoryFieldEditor _fileFieldEditor;
@@ -51,6 +56,7 @@ public class FlatFilenameWizardPage extends WizardPage
 	private RadioGroupFieldEditor _sensor1TypeEditor;
 	private RadioGroupFieldEditor _sensor2TypeEditor;
 	private StringFieldEditor _protMarkingEditor;
+	private StringFieldEditor _serialNameEditor;
 
 	/**
 	 * how many sensors to support
@@ -111,6 +117,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		String sensor1Key = "Debrief.FlatFileSensorType1";
 		String sensor2Key = "Debrief.FlatFileSensorType2";
 		String protMarkKey = "Debrief.FlatFileProtMarking";
+		String serialKey = "Debrief.FlatFileSerialName";
 
 		String title = "Output directory:";
 		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
@@ -134,8 +141,6 @@ public class FlatFilenameWizardPage extends WizardPage
 			{
 				return _filePath != null;
 			}
-			
-			
 		};
 		_fileFieldEditor.fillIntoGrid(container, 3);
 		_fileFieldEditor.setPreferenceStore(getPreferenceStore());
@@ -165,6 +170,7 @@ public class FlatFilenameWizardPage extends WizardPage
 			}
 		};
 		_sensor1TypeEditor.setPreferenceStore(getPreferenceStore());
+		_sensor1TypeEditor.setPage(this);
 		_sensor1TypeEditor.load();
 		_sensorType1 = sensorTypes[0][1];
 		
@@ -187,6 +193,7 @@ public class FlatFilenameWizardPage extends WizardPage
 				}
 			};
 			_sensor2TypeEditor.setPreferenceStore(getPreferenceStore());
+			_sensor2TypeEditor.setPage(this);
 			_sensor2TypeEditor.load();
 			_sensorType2 = sensorTypes[0][1];
 			
@@ -203,13 +210,55 @@ public class FlatFilenameWizardPage extends WizardPage
 					_protMarking = (String) newValue;
 					dialogChanged();
 				}
+				
+
+				@Override
+				protected boolean doCheckState()
+				{
+					return _protMarking != null;
+				}
 			};
+			_protMarkingEditor.setEmptyStringAllowed(false);
 			_protMarkingEditor.setPreferenceStore(getPreferenceStore());
+			_protMarkingEditor.setPage(this);
+			_protMarkingEditor.setErrorMessage("A value for protective marking must be supplied");
 			_protMarkingEditor.load();
+
 			_protMarking = "PENDING";
+
+			@SuppressWarnings("unused")
+			Label lbl3 = new Label(container,SWT.None);
 			
+
 		}
 
+		// we also want to specify the serial nane (for single or double sensors)
+		_serialNameEditor = new StringFieldEditor(serialKey, "Serial name:",  container)
+		{
+			protected void fireValueChanged(String property, Object oldValue,
+					Object newValue)
+			{
+				super.fireValueChanged(property, oldValue, newValue);
+				_serialName = (String) newValue;
+				dialogChanged();
+			}
+			
+			@Override
+			protected boolean doCheckState()
+			{
+				return _serialName != null;
+			}
+			
+		};
+		_serialNameEditor.setPreferenceStore(getPreferenceStore());
+		_serialNameEditor.setPage(this);
+		_serialNameEditor.setEmptyStringAllowed(false);
+		_serialNameEditor.setErrorMessage("A value for serial name must be supplied");
+		_serialNameEditor.load();
+		_serialName = "PENDING";
+		
+
+		
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
 
@@ -311,6 +360,11 @@ public class FlatFilenameWizardPage extends WizardPage
 		}
 		else
 			setPageComplete(false);
+	}
+
+	public String getSerialName()
+	{
+		return _serialName;
 	}
 
 }

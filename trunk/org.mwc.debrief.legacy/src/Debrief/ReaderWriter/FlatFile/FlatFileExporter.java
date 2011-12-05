@@ -327,16 +327,18 @@ public class FlatFileExporter
 	 * @param sensor1Type
 	 *          what type was specified for sensor 2
 	 * @param sensor2Type
-	 *          what type was specified for sensor 2 
-	 * @param fileVersion 
-	 * 					which SAM version to use
+	 *          what type was specified for sensor 2
+	 * @param fileVersion
+	 *          which SAM version to use
 	 * @param protMarking
-	 * 					the protective marking on the data
+	 *          the protective marking on the data
+	 * @param serialName description of data being exported
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period,
-			final String sensor1Type, String sensor2Type, String fileVersion, String protMarking)
+			final String sensor1Type, String sensor2Type, String fileVersion,
+			String protMarking, final String serialName)
 	{
 		String res = null;
 
@@ -361,7 +363,8 @@ public class FlatFileExporter
 		final TrackWrapper secTrack = (TrackWrapper) secondaryTracks[0];
 
 		// now the body bits
-		final String body = this.getBody(pTrack, secTrack, period, sensor1Type, fileVersion);
+		final String body = this.getBody(pTrack, secTrack, period, sensor1Type,
+				fileVersion);
 
 		// count how many items we found
 		final int numRows = count(body, BRK);
@@ -369,7 +372,8 @@ public class FlatFileExporter
 		// start off with the header bits
 		final String header = this.getHeader(primaryTrack.getName(), primaryTrack
 				.getName(), sensorName, secTrack.getName(), period.getStartDTG()
-				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0, fileVersion);
+				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0, fileVersion,
+				protMarking, serialName);
 
 		// and collate it
 		res = header + body;
@@ -384,7 +388,8 @@ public class FlatFileExporter
 	 * @param secTrack
 	 * @param period
 	 * @param sensorType
-	 * @param fileVersion : which SAM file to support
+	 * @param fileVersion
+	 *          : which SAM file to support
 	 * @return
 	 */
 	private String getBody(final TrackWrapper primaryTrack,
@@ -411,7 +416,7 @@ public class FlatFileExporter
 
 		for (long dtg = period.getStartDTG().getDate().getTime(); dtg < period
 				.getEndDTG().getDate().getTime(); dtg += 1000)
-		{			
+		{
 			FixWrapper priFix = null, secFix = null;
 			WorldLocation sensorLoc = null;
 
@@ -555,17 +560,27 @@ public class FlatFileExporter
 	 * @param NUM_RECORDS
 	 * @param X_ORIGIN_YDS
 	 * @param Y_ORIGIN_YDS
-	 * @param fileVersion which SAM format to use
+	 * @param fileVersion
+	 *          which SAM format to use
+	 * @param protMarking
+	 * @param missionName 
 	 * @return
 	 */
 	private String getHeader(final String OWNSHIP, final String OS_TRACK_NAME,
 			final String SENSOR_NAME, final String TGT_NAME, final Date startDate,
 			final Date endDate, final int NUM_RECORDS, final int X_ORIGIN_YDS,
-			final int Y_ORIGIN_YDS, final String fileVersion)
+			final int Y_ORIGIN_YDS, final String fileVersion, final String protMarking, String missionName)
 	{
 
-		final String header = "STRAND Scenario Report " + fileVersion + createTabs(33) + BRK
-				+ "MISSION_NAME" + createTabs(33) + BRK + OWNSHIP + createTabs(33)
+		String header = "STRAND Scenario Report " + fileVersion + createTabs(33)
+				+ BRK;
+
+		if (protMarking != null)
+		{
+			header += protMarking + createTabs(33) + BRK;
+		}
+
+		header += missionName + createTabs(33) + BRK + OWNSHIP + createTabs(33)
 				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
 				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
 				+ createTabs(33) + BRK + formatThis(startDate) + createTabs(32) + BRK
@@ -656,7 +671,8 @@ public class FlatFileExporter
 		final String endTime = "04:45:05	20/04/2009";
 		final Date endDate = dateFrom(endTime);
 		String res = getHeader("Vessel", "OS track 0100-0330",
-				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321,fileVersion );
+				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321,
+				fileVersion, null, "SomeMission");
 		res += getTestBody();
 		return res;
 	}

@@ -73,6 +73,9 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 		// the protective marking on the data
 		String protMarking = null;
+		
+		// the name of the mission
+		String serialName = null;
 
 		// just check that at least one of the sensors has an offset
 		TrackWrapper primary = (TrackWrapper) primaryTrack;
@@ -131,11 +134,12 @@ public class ExportToFlatFile extends TimeControllerOperation
 					sensor1Type = exportPage.getSensor1Type();
 					sensor2Type = exportPage.getSensor2Type();
 					protMarking = exportPage.getProtMarking();
+					serialName = exportPage.getSerialName();
 				}
 			}
 			FlatFileExporter ff = new FlatFileExporter();
 			String theData = ff.export(primaryTrack, secondaryTracks, period,
-					sensor1Type, sensor2Type, _fileVersion, protMarking);
+					sensor1Type, sensor2Type, _fileVersion, protMarking, serialName);
 
 			// now write the data to file
 			final String HOST_NAME = primaryTrack.getName();
