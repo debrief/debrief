@@ -5,6 +5,7 @@ import java.io.File;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -40,17 +41,18 @@ public class FlatFilenameWizardPage extends WizardPage
 	 */
 	protected String _sensorType2;
 
-	/** the protective marking on the data
+	/**
+	 * the protective marking on the data
 	 * 
 	 */
 	private String _protMarking;
-	
-	/** the name of when data was recorded
+
+	/**
+	 * the name of when data was recorded
 	 * 
 	 */
 	private String _serialName;
 
-	
 	private DirectoryFieldEditor _fileFieldEditor;
 
 	private RadioGroupFieldEditor _sensor1TypeEditor;
@@ -64,7 +66,6 @@ public class FlatFilenameWizardPage extends WizardPage
 	 */
 	private int _numSensors;
 
-
 	public static final String FILE_SUFFIX = "txt";
 
 	private static final String SINGLE_SENSOR = "This wizard allows you to indicate the type of sensor used, and the "
@@ -73,8 +74,8 @@ public class FlatFilenameWizardPage extends WizardPage
 			+ FILE_SUFFIX
 			+ " suffix added. See online help for more details on the export format.";
 
-	private static final String DOUBLE_SENSOR = "This wizard allows you to indicate the type of sensors used, " +
-			"and the "
+	private static final String DOUBLE_SENSOR = "This wizard allows you to indicate the type of sensors used, "
+			+ "and the "
 			+ "directory\nin which to place the output file. "
 			+ "The output file will take the name of the primary \nfile with a "
 			+ FILE_SUFFIX
@@ -91,12 +92,12 @@ public class FlatFilenameWizardPage extends WizardPage
 		_numSensors = numSensors;
 		setTitle("Export data to flat file");
 		final String msgStr;
-		if(numSensors == 1)
+		if (numSensors == 1)
 			msgStr = SINGLE_SENSOR;
 		else
 			msgStr = DOUBLE_SENSOR;
 		setDescription(msgStr);
-		
+
 		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
 				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
@@ -173,10 +174,9 @@ public class FlatFilenameWizardPage extends WizardPage
 		_sensor1TypeEditor.setPage(this);
 		_sensor1TypeEditor.load();
 		_sensorType1 = sensorTypes[0][1];
-		
-		@SuppressWarnings("unused")
-		Label lbl = new Label(container,SWT.None);
 
+		@SuppressWarnings("unused")
+		Label lbl = new Label(container, SWT.None);
 
 		// and now the second sensor
 		if (_numSensors > 1)
@@ -196,21 +196,24 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor2TypeEditor.setPage(this);
 			_sensor2TypeEditor.load();
 			_sensorType2 = sensorTypes[0][1];
-			
+
 			@SuppressWarnings("unused")
-			Label lbl2 = new Label(container,SWT.None);
-			
+			Label lbl2 = new Label(container, SWT.None);
+
 			// we also want to specify the prot marking editor
-			_protMarkingEditor = new StringFieldEditor(protMarkKey, "Protective Marking:",  container)
+			_protMarkingEditor = new StringFieldEditor(protMarkKey,
+					"Protective Marking:", container)
 			{
 				protected void fireValueChanged(String property, Object oldValue,
 						Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
-					_protMarking = (String) newValue;
+
+					// is this the value property?
+					if (FieldEditor.VALUE.equals(property))
+						_protMarking = (String) newValue;
 					dialogChanged();
 				}
-				
 
 				@Override
 				protected boolean doCheckState()
@@ -221,44 +224,49 @@ public class FlatFilenameWizardPage extends WizardPage
 			_protMarkingEditor.setEmptyStringAllowed(false);
 			_protMarkingEditor.setPreferenceStore(getPreferenceStore());
 			_protMarkingEditor.setPage(this);
-			_protMarkingEditor.setErrorMessage("A value for protective marking must be supplied");
+			_protMarkingEditor
+					.setErrorMessage("A value for protective marking must be supplied");
+			_protMarkingEditor.setStringValue("");
 			_protMarkingEditor.load();
 
 			_protMarking = "PENDING";
 
 			@SuppressWarnings("unused")
-			Label lbl3 = new Label(container,SWT.None);
-			
+			Label lbl3 = new Label(container, SWT.None);
 
 		}
 
 		// we also want to specify the serial nane (for single or double sensors)
-		_serialNameEditor = new StringFieldEditor(serialKey, "Serial name:",  container)
+		_serialNameEditor = new StringFieldEditor(serialKey, "Serial name:",
+				container)
 		{
 			protected void fireValueChanged(String property, Object oldValue,
 					Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
-				_serialName = (String) newValue;
+
+				// is this the value property?
+				if (FieldEditor.VALUE.equals(property))
+					_serialName = (String) newValue;
 				dialogChanged();
 			}
-			
+
 			@Override
 			protected boolean doCheckState()
 			{
 				return _serialName != null;
 			}
-			
+
 		};
 		_serialNameEditor.setPreferenceStore(getPreferenceStore());
 		_serialNameEditor.setPage(this);
+		_serialNameEditor.setStringValue("");
 		_serialNameEditor.setEmptyStringAllowed(false);
-		_serialNameEditor.setErrorMessage("A value for serial name must be supplied");
+		_serialNameEditor
+				.setErrorMessage("A value for serial name must be supplied");
 		_serialNameEditor.load();
 		_serialName = "PENDING";
-		
 
-		
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
 
@@ -340,7 +348,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		return _sensorType2;
 	}
 
-	/** get the protective marking on the data
+	/**
+	 * get the protective marking on the data
 	 * 
 	 * @return
 	 */
@@ -348,7 +357,7 @@ public class FlatFilenameWizardPage extends WizardPage
 	{
 		return _protMarking;
 	}
-	
+
 	private void updateStatus(String message)
 	{
 		setErrorMessage(message);

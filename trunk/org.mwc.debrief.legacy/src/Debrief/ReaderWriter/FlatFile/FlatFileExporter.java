@@ -332,7 +332,8 @@ public class FlatFileExporter
 	 *          which SAM version to use
 	 * @param protMarking
 	 *          the protective marking on the data
-	 * @param serialName description of data being exported
+	 * @param serialName
+	 *          description of data being exported
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
@@ -346,6 +347,7 @@ public class FlatFileExporter
 
 		// find the names of visible sensors
 		String sensorName = null;
+		String sensor2Name = null;
 		final Enumeration<Editable> sensors = pTrack.getSensors().elements();
 		while (sensors.hasMoreElements())
 		{
@@ -355,7 +357,7 @@ public class FlatFileExporter
 				if (sensorName == null)
 					sensorName = sw.getName();
 				else
-					sensorName += "_" + sw.getName();
+					sensor2Name = sw.getName();
 			}
 		}
 
@@ -371,7 +373,7 @@ public class FlatFileExporter
 
 		// start off with the header bits
 		final String header = this.getHeader(primaryTrack.getName(), primaryTrack
-				.getName(), sensorName, secTrack.getName(), period.getStartDTG()
+				.getName(), sensorName, sensor2Name, secTrack.getName(), period.getStartDTG()
 				.getDate(), period.getEndDTG().getDate(), numRows, 0, 0, fileVersion,
 				protMarking, serialName);
 
@@ -563,13 +565,14 @@ public class FlatFileExporter
 	 * @param fileVersion
 	 *          which SAM format to use
 	 * @param protMarking
-	 * @param missionName 
+	 * @param missionName
 	 * @return
 	 */
 	private String getHeader(final String OWNSHIP, final String OS_TRACK_NAME,
-			final String SENSOR_NAME, final String TGT_NAME, final Date startDate,
-			final Date endDate, final int NUM_RECORDS, final int X_ORIGIN_YDS,
-			final int Y_ORIGIN_YDS, final String fileVersion, final String protMarking, String missionName)
+			final String SENSOR_NAME, final String SENSOR_2_NAME,
+			final String TGT_NAME, final Date startDate, final Date endDate,
+			final int NUM_RECORDS, final int X_ORIGIN_YDS, final int Y_ORIGIN_YDS,
+			final String fileVersion, final String protMarking, String missionName)
 	{
 
 		String header = "STRAND Scenario Report " + fileVersion + createTabs(33)
@@ -582,12 +585,19 @@ public class FlatFileExporter
 
 		header += missionName + createTabs(33) + BRK + OWNSHIP + createTabs(33)
 				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
-				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
-				+ createTabs(33) + BRK + formatThis(startDate) + createTabs(32) + BRK
-				+ formatThis(endDate) + createTabs(32) + BRK + "0" + createTabs(33)
-				+ BRK + "0" + createTabs(33) + BRK + "0" + createTabs(33) + BRK
-				+ NUM_RECORDS + createTabs(33) + BRK + X_ORIGIN_YDS + "	"
-				+ Y_ORIGIN_YDS + createTabs(32) + BRK + HEADER_LINE + BRK;
+				+ createTabs(33) + BRK;
+
+		if (SENSOR_2_NAME != null)
+		{
+			header += SENSOR_2_NAME + createTabs(33) + BRK;
+		}
+
+		header += TGT_NAME + createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK
+				+ formatThis(startDate) + createTabs(32) + BRK + formatThis(endDate)
+				+ createTabs(32) + BRK + "0" + createTabs(33) + BRK + "0"
+				+ createTabs(33) + BRK + "0" + createTabs(33) + BRK + NUM_RECORDS
+				+ createTabs(33) + BRK + X_ORIGIN_YDS + "	" + Y_ORIGIN_YDS
+				+ createTabs(32) + BRK + HEADER_LINE + BRK;
 		return header;
 	}
 
@@ -670,8 +680,9 @@ public class FlatFileExporter
 		final Date startDate = dateFrom(StartTime);
 		final String endTime = "04:45:05	20/04/2009";
 		final Date endDate = dateFrom(endTime);
+		String SENSOR_2_NAME = null;
 		String res = getHeader("Vessel", "OS track 0100-0330",
-				"GapsFatBowBTH_5-4-04", "tla", startDate, endDate, 5, -123456, -654321,
+				"GapsFatBowBTH_5-4-04", SENSOR_2_NAME , "tla", startDate, endDate, 5, -123456, -654321,
 				fileVersion, null, "SomeMission");
 		res += getTestBody();
 		return res;
