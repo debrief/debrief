@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the schema for datafiles used by the Debrief Maritime Analysis Package (www.debrief.info)  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<!-- data types -->
+	<xs:simpleType name="labelLocationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Top" />
+			<xs:enumeration value="Left" />
+			<xs:enumeration value="Bottom" />
+			<xs:enumeration value="Centre" />
+			<xs:enumeration value="Right" />
+			<xs:enumeration value="Middle" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="colourElement">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="255" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="colourType">
+		<xs:attribute name="CustomBlue" type="colourElement" />
+		<xs:attribute name="CustomGreen" type="colourElement" />
+		<xs:attribute name="CustomRed" type="colourElement" />
+		<xs:attribute name="Value" use="required" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="worldDistanceType">
+		<xs:attribute name="Units" use="required" type="xs:string" />
+		<xs:attribute name="Value" use="required" type="xs:double" />
+	</xs:complexType>
+
+	<xs:complexType name="locationType">
+		<xs:choice maxOccurs="1" minOccurs="0">
+			<xs:element name="shortLocation">
+				<xs:complexType>
+					<xs:attribute name="Depth" use="required" type="xs:double" />
+					<xs:attribute name="Lat" use="required" type="xs:double" />
+					<xs:attribute name="Long" use="required" type="xs:double" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="longLocation">
+				<xs:complexType>
+					<xs:attribute name="LatDeg" use="required" type="xs:integer" />
+					<xs:attribute name="LatMin" use="required" type="xs:double" />
+					<xs:attribute name="LatSec" use="required" type="xs:double" />
+					<xs:attribute name="LatHem" use="required" type="xs:double" />
+					<xs:attribute name="LongDeg" use="required" type="xs:integer" />
+					<xs:attribute name="LongMin" use="required" type="xs:double" />
+					<xs:attribute name="LongSec" use="required" type="xs:double" />
+					<xs:attribute name="LongHem" use="required" type="xs:double" />
+					<xs:attribute name="Depth" use="required" type="xs:double" />
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<!-- end of data types -->
+
+	<!-- reusable elements -->
+	<xs:complexType name="timeRange">
+			<xs:attribute name="End" use="required" type="xs:string" />
+			<xs:attribute name="Start" use="required" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="font">
+			<xs:attribute name="Bold" type="xs:boolean" />
+			<xs:attribute name="Family" use="required" type="xs:string" />
+			<xs:attribute name="Italic" type="xs:boolean" />
+			<xs:attribute name="Size" use="required" type="xs:integer" />
+	</xs:complexType>
+
+	<xs:complexType name="textlabel">
+			<xs:all>
+				<xs:element minOccurs="0" name="font" type="font"/>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="centre" type="locationType" />
+				<xs:element minOccurs="0" name="timeRange" type="timeRange" />
+			</xs:all>
+			<xs:attribute name="Label" type="xs:string" />
+			<xs:attribute name="LabelLocation" type="labelLocationType" />
+			<xs:attribute name="LabelVisible" default="false" type="xs:boolean" />
+			<xs:attribute name="Scale" type="xs:string" />
+			<xs:attribute name="Symbol" type="xs:string" />
+			<xs:attribute name="SymbolVisible" default="false" type="xs:boolean" />
+			<xs:attribute name="Visible" default="false" type="xs:boolean" />
+	</xs:complexType>
+	<!-- end of reusable elements -->
+
+	<!-- top elements plot -> (details, session) -->
+	<xs:element name="plot">
+		<xs:annotation>
+			<xs:documentation>The plot is the top-level element in a Debrief data file</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element minOccurs="1" name="session" type="session"/>
+				<xs:element minOccurs="0" name="details" type="details" />
+			</xs:all>
+			<xs:attribute name="Created" use="required" type="xs:string" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="PlotId" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="details">
+		<xs:attribute name="Text" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="session">
+			<xs:all>
+				<xs:element name="layers" type="layers" />
+				<xs:element minOccurs="0" name="projection" type="projection" />
+				<xs:element minOccurs="0" name="gui" type="gui" />
+			</xs:all>
+	</xs:complexType>
+	<!-- end of top elements plot -> (details, session) -->
+
+	<!-- plot -> session -> projection -->
+	<xs:complexType name="projection">
+			<xs:sequence>
+				<xs:element name="tl" type="locationType" />
+				<xs:element name="br" type="locationType" />
+			</xs:sequence>
+			<xs:attribute name="Border" type="xs:double" default="1.0" />
+			<xs:attribute name="PrimaryOrigin" default="false" type="xs:boolean" />
+			<xs:attribute name="PrimaryOriented" default="false"
+				type="xs:boolean" />
+			<xs:attribute name="Relative" default="false" type="xs:boolean" />
+			<xs:attribute name="Type" use="required" type="xs:string" />
+	</xs:complexType>
+	<!-- end of plot -> session -> projection -->
+
+	<!-- plot -> session -> gui -->
+	<xs:complexType name="gui">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element minOccurs="0" name="tote" type="tote" />
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="component" type="component" />
+				<xs:element minOccurs="0" name="Background">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="colour" type="colourType" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="component">
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="property">
+					<xs:complexType>
+						<xs:attribute name="Name" use="required" type="xs:string" />
+						<xs:attribute name="Value" use="required" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="Type" use="required" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="tote">
+			<xs:sequence>
+				<xs:element minOccurs="0" name="primary">
+					<xs:complexType>
+						<xs:attribute name="Name" use="required" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="secondary">
+					<xs:complexType>
+						<xs:attribute name="Name" use="required" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+	</xs:complexType>
+	<!-- end of plot -> session -> gui -->
+
+	<xs:complexType name="layers">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="externalDatafile" type="externalDatafile"/>
+				<xs:element name="topo" type="topo"/>
+				<xs:element name="etopo" type="etopo"/>
+				<xs:element name="narrative" type="narrative"/>
+				<xs:element name="pattern" type="pattern"/>
+				<xs:element name="track" type="track"/>
+				<xs:element name="layer" type="layer"/>
+				<xs:element name="ChartFolio" type="ChartFolio"/>
+			</xs:choice>
+	</xs:complexType>
+
+	<!-- plot -> session -> layers -> (externalDatafile, topo, etopo, narrative, pattern) -->
+	<xs:complexType name="externalDatafile">
+			<xs:attribute name="DataType" type="xs:string" />
+			<xs:attribute name="LayerName" use="required" type="xs:string" />
+			<xs:attribute name="LayerPath" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="topo">
+			<xs:sequence>
+				<xs:element name="colour" type="colourType" />
+			</xs:sequence>
+			<xs:attribute name="ContourDepths" type="xs:string" />
+			<xs:attribute name="ScaleLocation" type="xs:integer" />
+			<xs:attribute name="ShowBathy" type="xs:boolean" />
+			<xs:attribute name="ShowContours" type="xs:boolean" />
+			<xs:attribute name="ShowLand" type="xs:boolean" />
+			<xs:attribute name="Visible" default="false" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="etopo">
+			<xs:sequence>
+				<xs:element name="colour" type="colourType" />
+			</xs:sequence>
+			<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+			<xs:attribute name="ScaleLocation" type="xs:integer" />
+			<xs:attribute name="ShowLand" default="true" type="xs:boolean" />
+			<xs:attribute name="Visible" default="false" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="narrative">
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="narrative_entry" type="narrative_entry"/>
+			</xs:sequence>
+			<xs:attribute name="Name" use="required" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="narrative_entry">
+			<xs:attribute name="Dtg" use="required" type="xs:string" />
+			<xs:attribute name="Entry" use="required" type="xs:string" />
+			<xs:attribute name="Track" use="required" type="xs:string" />
+			<xs:attribute name="Type" use="required" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="pattern">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="colour" type="colourType" />
+				<xs:element name="timeRange" type="timeRange"/>
+				<xs:element name="font" type="font"/>
+				<xs:element name="textlabel" type="textlabel"/>
+			</xs:choice>
+			<xs:attribute name="BuoySymbolSize" default="1.0" type="xs:double" />
+			<xs:attribute name="BuoySymbolType" type="xs:string" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="NameLocation" default="Right" type="xs:string" />
+			<xs:attribute name="NameVisible" default="true" type="xs:boolean" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<!-- plot -> session -> layers -> (externalDatafile, topo, etopo, narrative, pattern) -->
+
+	<!-- plot -> session -> layers -> track -->
+	<xs:complexType name="track">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="sensor" type="sensor"/>
+				<xs:element name="fix" type="fix"/>
+				<xs:element name="tma" type="tma"/>
+				<xs:element name="TrackSegment" type="TrackSegment"/>
+				<xs:element name="RelativeTMASegment" type="RelativeTMASegment"/>
+				<xs:element name="AbsoluteTMASegment" type="AbsoluteTMASegment"/>
+				<xs:element name="SegmentList" type="SegmentList"/>
+				<xs:element name="colour" type="colourType" />
+				<xs:element name="SymbolColor" type="colourType" />
+				<xs:element name="font" type="font" />
+				<xs:element name="SYMBOL_WIDTH" type="worldDistanceType" />
+				<xs:element name="SYMBOL_LENGTH" type="worldDistanceType" />
+			</xs:choice>
+			<xs:attribute name="InterpolatePoints" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+			<xs:attribute name="LinkPositions" default="true" type="xs:boolean" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="NameAtStart" default="true" type="xs:boolean" />
+			<xs:attribute name="NameLocation" default="Right" type="xs:string" />
+			<xs:attribute name="NameVisible" default="true" type="xs:boolean" />
+			<xs:attribute name="PlotArrayCentre" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="PositionsLinked" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="PositionsVisible" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="SensorsVisible" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="SolutionsVisible" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="sensor">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="colour" type="colourType" />
+				<xs:element name="Offset" type="worldDistanceType" />
+				<xs:element name="sensor_contact" type="sensor_contact"/>
+			</xs:choice>
+			<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="TrackName" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+			<xs:attribute name="WormInHole" default="false" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="sensor_contact">
+			<xs:all>
+				<xs:element minOccurs="0" name="centre" type="locationType" />
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="Range" type="worldDistanceType" />
+			</xs:all>
+			<xs:attribute name="AmbiguousBearing" type="xs:double" />
+			<xs:attribute name="Bearing" use="required" type="xs:double" />
+			<xs:attribute name="Dtg" use="required" type="xs:string" />
+			<xs:attribute name="Frequency" type="xs:double" />
+			<xs:attribute name="HasAmbiguousBearing" default="false"
+				type="xs:boolean" />
+			<xs:attribute name="HasFrequency" default="false" type="xs:boolean" />
+			<xs:attribute name="Label" use="required" type="xs:string" />
+			<xs:attribute name="LabelLocation" default="Left"
+				type="labelLocationType" />
+			<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="LineStyle" default="SOLID" type="xs:string" />
+			<xs:attribute name="PutLabelAt" default="Left"
+				type="labelLocationType" />
+			<xs:attribute name="Range" type="xs:double" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="fix">
+			<xs:all>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="font" type="font"/>
+				<xs:element minOccurs="0" name="centre" type="locationType" />
+			</xs:all>
+			<xs:attribute name="Course" use="required" type="xs:string" />
+			<xs:attribute name="Dtg" use="required" type="xs:string" />
+			<xs:attribute name="Label" use="required" type="xs:string" />
+			<xs:attribute name="LabelLocation" default="Left"
+				type="labelLocationType" />
+			<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="Speed" use="required" type="xs:string" />
+			<xs:attribute name="SymbolShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="LineShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="tma">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="colour" type="colourType" />
+				<xs:element name="tma_solution" type="tma_solution"/>
+			</xs:choice>
+			<xs:attribute name="BearingLineVisible" default="false"
+				type="xs:boolean" />
+			<xs:attribute name="LabelsVisible" default="true" type="xs:boolean" />
+			<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="TrackName" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="tma_solution">
+			<xs:all>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="centre" type="locationType" />
+				<xs:element minOccurs="0" name="Range" type="worldDistanceType" />
+				<xs:element minOccurs="0" name="Maxima" type="worldDistanceType" />
+				<xs:element minOccurs="0" name="Minima" type="worldDistanceType" />
+			</xs:all>
+			<xs:attribute name="Bearing" type="xs:double" />
+			<xs:attribute name="Course" type="xs:double" />
+			<xs:attribute name="Depth" type="xs:double" />
+			<xs:attribute name="Dtg" use="required" type="xs:string" />
+			<xs:attribute name="EllipseShowing" default="true"
+				type="xs:boolean" />
+			<xs:attribute name="Label" use="required" type="xs:string" />
+			<xs:attribute name="LabelLocation" default="Left"
+				type="labelLocationType" />
+			<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="LineShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="Maxima" type="xs:double" />
+			<xs:attribute name="Minima" type="xs:double" />
+			<xs:attribute name="Orientation" type="xs:double" />
+			<xs:attribute name="Range" type="xs:double" />
+			<xs:attribute name="Speed" type="xs:double" />
+			<xs:attribute name="Symbol" type="xs:string" />
+			<xs:attribute name="SymbolShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="SegmentList">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="TrackSegment" type="TrackSegment"/>
+				<xs:element name="RelativeTMASegment" type="RelativeTMASegment"/>
+				<xs:element name="AbsoluteTMASegment" type="AbsoluteTMASegment"/>
+			</xs:choice>
+	</xs:complexType>
+	<xs:complexType name="TrackSegment">
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="fix" type="fix"/>
+			</xs:sequence>
+			<xs:attribute name="LineStyle" type="xs:string" />
+			<xs:attribute name="Name" type="xs:string" />
+			<xs:attribute name="PlotRelative" default="false" type="xs:boolean" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType abstract="true" name="BaseTMASegment">
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="fix" type="fix"/>
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="Speed" type="worldDistanceType" />			
+		</xs:sequence>
+		<xs:attribute name="BaseFrequency" type="xs:double" />
+		<xs:attribute name="CourseDegs" type="xs:double" />
+		<xs:attribute name="LineStyle" type="xs:string" />
+		<xs:attribute name="Name" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType> 
+	<xs:complexType name="RelativeTMASegment">
+			<xs:complexContent>
+				<xs:extension base="BaseTMASegment">
+					<xs:sequence>
+						<xs:element minOccurs="0" maxOccurs="unbounded" name="Offset">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element minOccurs="0" name="Range" type="worldDistanceType" />
+								</xs:sequence>
+								<xs:attribute name="BearingDegs" type="xs:double" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="HostTrack" use="required" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AbsoluteTMASegment">
+			<xs:complexContent>
+				<xs:extension base="BaseTMASegment">
+					<xs:sequence>						
+						<xs:element minOccurs="0" maxOccurs="unbounded" name="Origin" type="locationType" />
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+	</xs:complexType>
+	<!-- end of plot -> session -> layers -> track -->
+
+	<!-- reusable elements for (plot -> session -> layers -> layer) and (plot -> session -> layers -> ChartFolio) -->
+	<xs:complexType name="coastline">
+			<xs:sequence>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+			</xs:sequence>
+			<xs:attribute name="Name" type="xs:string" />
+			<xs:attribute name="Visible" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="vpf_coastline">
+			<xs:sequence>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+			</xs:sequence>
+			<xs:attribute name="Name" type="xs:string" />
+			<xs:attribute name="Visible" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="ChartReference">
+			<xs:all>
+				<xs:element minOccurs="0" name="font" type="font"/>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="TopLeft" type="locationType" />
+				<xs:element minOccurs="0" name="BottomRight" type="locationType" />
+			</xs:all>
+			<xs:attribute name="FileName" type="xs:string" />
+			<xs:attribute name="Label" type="xs:string" />
+			<xs:attribute name="LabelLocation" type="labelLocationType" />
+			<xs:attribute name="LabelVisible" default="true" type="xs:boolean" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="scale">
+			<xs:all>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+			</xs:all>
+			<xs:attribute name="AutoMode" type="xs:boolean" />
+			<xs:attribute name="DisplayUnits" type="xs:string" />
+			<xs:attribute name="Location" type="xs:string" />
+			<xs:attribute name="Name" type="xs:string" />
+			<xs:attribute name="ScaleMax" type="xs:long" />
+			<xs:attribute name="ScaleStep" type="xs:long" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="grid">
+			<xs:sequence>
+				<xs:element minOccurs="0" name="font" type="font"/>				
+				<xs:element minOccurs="0" name="Delta" type="worldDistanceType" />
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+			</xs:sequence>
+			<xs:attribute name="Delta" type="xs:double" />
+			<xs:attribute name="Name" type="xs:string" />
+			<xs:attribute name="PlotLabels" type="xs:boolean" />
+			<xs:attribute name="Units" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="LocalGrid">
+		<xs:complexContent>
+			<xs:extension base="grid">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Origin" type="locationType" />
+				</xs:sequence>
+				<xs:attribute name="PlotOrigin" type="xs:boolean" />
+			</xs:extension>
+		</xs:complexContent>			
+	</xs:complexType>
+	<xs:complexType name="Grid4W">
+			<xs:all>
+				<xs:element minOccurs="0" name="Origin" type="locationType" />
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="FillColor" type="colourType" />
+				<xs:element minOccurs="0" name="font" type="font"/>
+			</xs:all>
+			<xs:attribute name="FillGrid" type="xs:boolean" />
+			<xs:attribute name="Name" type="xs:string" />
+			<xs:attribute name="Orientation" type="xs:double" />
+			<xs:attribute name="PlotLabels" type="xs:boolean" />
+			<xs:attribute name="PlotLines" type="xs:boolean" />
+			<xs:attribute name="US_Standard" type="xs:boolean" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+			<xs:attribute name="xDelta" type="xs:double" />
+			<xs:attribute name="xMax" type="xs:string" />
+			<xs:attribute name="xMin" type="xs:string" />
+			<xs:attribute name="yDelta" type="xs:double" />
+			<xs:attribute name="yMax" type="xs:integer" />
+			<xs:attribute name="yMin" type="xs:integer" />
+	</xs:complexType>
+	<xs:complexType name="vpf_database">
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="vpf_library" type="vpf_library"/>
+			</xs:sequence>
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="vpf_library">
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="vpf_coverage" type="vpf_coverage"/>
+			</xs:sequence>
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="vpf_coverage">
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" name="vpf_feature" type="vpf_feature"/>
+			</xs:sequence>
+			<xs:attribute name="Description" type="xs:string" />
+			<xs:attribute name="Type" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="vpf_feature">
+			<xs:sequence>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+			</xs:sequence>
+			<xs:attribute name="Description" type="xs:string" />
+			<xs:attribute name="Type" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<!-- end of reusable elements for (plot -> session -> layers -> layer) and 
+		(plot -> session -> layers -> ChartFolio) -->
+
+	<!-- plot -> session -> layers -> layer -->
+	<xs:complexType name="layer">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="textlabel" type="textlabel" />
+				<xs:element name="coastline" type="coastline" />
+				<xs:element name="vpf_coastline" type="vpf_coastline" />
+				<xs:element name="ChartReference" type="ChartReference" />
+				<xs:element name="scale" type="scale" />
+				<xs:element name="grid" type="grid" />
+				<xs:element name="LocalGrid" type="LocalGrid" />
+				<xs:element name="Grid4W" type="Grid4W" />
+				<xs:element name="vpf_database" type="vpf_database" />
+				<xs:element name="line" type="line" />
+				<xs:element name="polygon" type="polygon" />
+				<xs:element name="ellipse" type="ellipse" />
+				<xs:element name="rectangle" type="rectangle" />
+				<xs:element name="circle" type="circle" />
+				<xs:element name="Arc" type="Arc" />
+				<xs:element name="wheel" type="wheel" />
+			</xs:choice>
+			<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="shape" abstract="true">
+			<xs:sequence>
+				<xs:element minOccurs="0" name="colour" type="colourType" />
+				<xs:element minOccurs="0" name="fontcolour" type="colourType" />				
+				<xs:element minOccurs="0" name="timeRange" type="timeRange" />
+				<xs:element minOccurs="0" name="font" type="font" />
+			</xs:sequence>
+			<xs:attribute name="Label" type="xs:string" />
+			<xs:attribute name="LabelLocation" type="labelLocationType" />
+			<xs:attribute name="LabelVisible" type="xs:boolean" />
+			<xs:attribute name="LineStyle" type="xs:integer" />
+			<xs:attribute name="LineThickness" type="xs:integer" />
+			<xs:attribute name="Visible" type="xs:boolean" />
+	</xs:complexType>
+	<xs:complexType name="line">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="tl" type="locationType" />
+					<xs:element name="br" type="locationType" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="polygon">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="WorldPath">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="locationType" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="Closed" type="xs:boolean" />
+				<xs:attribute name="Filled" type="xs:boolean" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ellipse">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="centre" type="locationType" />
+					<xs:element minOccurs="0" name="Maxima" type="worldDistanceType" />
+					<xs:element minOccurs="0" name="Minima" type="worldDistanceType" />
+				</xs:sequence>
+				<xs:attribute name="Filled" type="xs:boolean" />
+				<xs:attribute name="Maxima" type="xs:string" />
+				<xs:attribute name="Minima" type="xs:string" />
+				<xs:attribute name="Orient" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="rectangle">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="tl" type="locationType" />
+					<xs:element name="br" type="locationType" />
+				</xs:sequence>
+				<xs:attribute name="Filled" type="xs:boolean" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>	
+	<xs:complexType name="circle">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="centre" type="locationType" />
+					<xs:element minOccurs="0" name="Radius" type="worldDistanceType" />
+				</xs:sequence>
+				<xs:attribute name="Filled" type="xs:boolean" />
+				<xs:attribute name="Radius" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Arc">
+		<xs:complexContent>
+			<xs:extension base="circle">
+				<xs:attribute name="ArcWidth" type="xs:double" />
+				<xs:attribute name="CentreBearing" type="xs:double" />
+				<xs:attribute name="PlotOrigin" type="xs:boolean" />
+				<xs:attribute name="PlotSpokes" type="xs:boolean" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>	
+	<xs:complexType name="wheel">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="centre" type="locationType" />
+					<xs:element minOccurs="0" name="Inner" type="worldDistanceType" />
+					<xs:element minOccurs="0" name="Outer" type="worldDistanceType" />
+				</xs:sequence>
+				<xs:attribute name="EmptyInner" type="xs:boolean" />
+				<xs:attribute name="Inner" type="xs:string" />
+				<xs:attribute name="Outer" type="xs:string" />
+				<xs:attribute name="SpokeSize" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- end of plot -> session -> layers -> layer -->
+
+	<!-- plot -> session -> layers -> ChartFolio -->
+	<xs:complexType name="ChartFolio">
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="colour" type="colourType" />
+				<xs:element name="coastline" type="coastline"/>
+				<xs:element name="vpf_coastline" type="vpf_coastline"/>
+				<xs:element name="ChartReference" type="ChartReference"/>
+				<xs:element name="scale" type="scale" />
+				<xs:element name="grid" type="grid"/>
+				<xs:element name="LocalGrid" type="LocalGrid"/>
+				<xs:element name="Grid4W" type="Grid4W"/>
+				<xs:element name="vpf_database" type="vpf_database"/>
+			</xs:choice>
+			<xs:attribute name="LineThickness" use="required" type="xs:integer" />
+			<xs:attribute name="Name" use="required" type="xs:string" />
+			<xs:attribute name="Visible" use="required" type="xs:boolean" />
+	</xs:complexType>
+	<!-- end of plot -> session -> layers -> ChartFolio -->
+</xs:schema>
