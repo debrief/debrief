@@ -237,16 +237,6 @@ public class XMLHandler extends HandlerBase
     // don't bother
   }
 
-  public boolean booleanValueOf(String val)
-  {
-    boolean res = false;
-    if (val.equals("TRUE"))
-      res = true;
-
-    return res;
-
-  }
-
   //////////////////////////////////////////////////////////
   //
   /////////////////////////////////////////////////////////
