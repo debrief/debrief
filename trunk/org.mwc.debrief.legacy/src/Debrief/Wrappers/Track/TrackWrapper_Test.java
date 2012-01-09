@@ -191,19 +191,19 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		SensorWrapper sw = new SensorWrapper("dummy sensor");
 		SensorContactWrapper scw1 = new SensorContactWrapper("the track",
-				new HiResDate(1 * 60000), new WorldDistance(2, WorldDistance.NM), 12,
+				new HiResDate(1 * 60000), new WorldDistance(2, WorldDistance.NM), 12d,
 				new Double(12), new Double(44), null, Color.red, "aa", 1,
 				"dummy sensor");
 		SensorContactWrapper scw2 = new SensorContactWrapper("the track",
-				new HiResDate(3 * 60000), new WorldDistance(4, WorldDistance.NM), 15,
+				new HiResDate(3 * 60000), new WorldDistance(4, WorldDistance.NM), 15d,
 				new Double(15), new Double(46), null, Color.red, "aa", 1,
 				"dummy sensor");
 		SensorContactWrapper scw3 = new SensorContactWrapper("the track",
-				new HiResDate(7 * 60000), new WorldDistance(12, WorldDistance.NM), 18,
+				new HiResDate(7 * 60000), new WorldDistance(12, WorldDistance.NM), 18d,
 				new Double(12), new Double(12), null, Color.red, "aa", 1,
 				"dummy sensor");
 		SensorContactWrapper scw4 = new SensorContactWrapper("the track",
-				new HiResDate(8 * 60000), new WorldDistance(7, WorldDistance.NM), 35,
+				new HiResDate(8 * 60000), new WorldDistance(7, WorldDistance.NM), 35d,
 				new Double(12), new Double(312), null, Color.red, "aa", 1,
 				"dummy sensor");
 		sw.add(scw1);
@@ -425,11 +425,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// give it a little more data
 		SensorWrapper sw = new SensorWrapper("sensor a");
-		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, 0, null,
+		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, null, null,
 				null, null, 0, null));
-		sw.add(new SensorContactWrapper("trk", new HiResDate(13), null, 0, null,
+		sw.add(new SensorContactWrapper("trk", new HiResDate(13), null, null, null,
 				null, null, 0, null));
-		sw.add(new SensorContactWrapper("trk", new HiResDate(14), null, 0, null,
+		sw.add(new SensorContactWrapper("trk", new HiResDate(14), null, null, null,
 				null, null, 0, null));
 		sw.setVisible(true);
 
@@ -462,11 +462,11 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// give it a little more data
 		SensorWrapper sw = new SensorWrapper("sensor a");
-		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, 0, null,
+		sw.add(new SensorContactWrapper("trk", new HiResDate(12), null, null, null,
 				null, null, 0, null));
-		sw.add(new SensorContactWrapper("trk", new HiResDate(13), null, 0, null,
+		sw.add(new SensorContactWrapper("trk", new HiResDate(13), null, null, null,
 				null, null, 0, null));
-		sw.add(new SensorContactWrapper("trk", new HiResDate(14), null, 0, null,
+		sw.add(new SensorContactWrapper("trk", new HiResDate(14), null, null, null,
 				null, null, 0, null));
 		_tw.add(sw);
 
@@ -755,7 +755,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			SensorWrapper sw, int sensorDTG)
 	{
 		return new SensorContactWrapper(tw.getName(), new HiResDate(sensorDTG),
-				new WorldDistance(12, WorldDistance.NM), 12, null, Color.red,
+				new WorldDistance(12, WorldDistance.NM), 12d, null, Color.red,
 				"some lable", 12, sw.getName());
 	}
 

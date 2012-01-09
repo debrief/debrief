@@ -480,7 +480,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 				// see if we have to create our local temporary fix
 				if (nearestContact == null)
 				{
-					nearestContact = new SensorContactWrapper(null, DTG, null, -1, null,
+					nearestContact = new SensorContactWrapper(null, DTG, null, null, null,
 							null, null, 0, getName());
 				}
 				else
@@ -725,36 +725,36 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			cal.set(2001, 10, 4, 4, 4, 0);
 			final long start_time = cal.getTime().getTime();
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 23);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 25);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 27);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 02);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 01);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 05);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 55);
 			final long end_time = cal.getTime().getTime();
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			// so, we've now build up the list
 			// check it has the correct quantity
@@ -950,35 +950,35 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			// and create the list of sensor contact data items
 			cal.set(2001, 10, 4, 4, 4, 0);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 23);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 24);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 25);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 25);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 01);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 05);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 55);
 			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
-					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+					.getTime()), null, null, null, null, null, 1, sensor.getName()));
 
 			// so, we've now build up the list
 			// check it has the correct quantity
@@ -996,13 +996,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		{
 			SensorWrapper sw = new SensorWrapper("bbb");
 			SensorContactWrapper sc1 = new SensorContactWrapper("bbb", new HiResDate(
-					0, 9), null, 0, null, null, "first", 0, sw.getName());
+					0, 9), null, null, null, null, "first", 0, sw.getName());
 			SensorContactWrapper sc2 = new SensorContactWrapper("bbb", new HiResDate(
-					0, 12), null, 0, null, null, "first", 0, sw.getName());
+					0, 12), null, null, null, null, "first", 0, sw.getName());
 			SensorContactWrapper sc3 = new SensorContactWrapper("bbb", new HiResDate(
-					0, 7), null, 0, null, null, "first", 0, sw.getName());
+					0, 7), null, null, null, null, "first", 0, sw.getName());
 			SensorContactWrapper sc4 = new SensorContactWrapper("bbb", new HiResDate(
-					0, 13), null, 0, null, null, "first", 0, sw.getName());
+					0, 13), null, null, null, null, "first", 0, sw.getName());
 
 			sw.add(sc1);
 			sw.add(sc2);

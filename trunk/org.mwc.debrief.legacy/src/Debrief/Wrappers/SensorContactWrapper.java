@@ -188,6 +188,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * Bearing to target (in Radians)
 	 */
+	private boolean _hasBearing = false;
 	private double _bearing;
 
 	/**
@@ -277,7 +278,7 @@ public final class SensorContactWrapper extends
 	 * @param sensorName
 	 */
 	public SensorContactWrapper(final String trackName, final HiResDate dtg,
-			final WorldDistance range, final double bearingDegs,
+			final WorldDistance range, final Double bearingDegs,
 			final WorldLocation origin, final java.awt.Color color,
 			final String label, final int style, String sensorName)
 	{
@@ -286,7 +287,7 @@ public final class SensorContactWrapper extends
 	}
 
 	public SensorContactWrapper(String theTrack, HiResDate theDtg,
-			WorldDistance range, double brg, Double brg2, Double freq,
+			WorldDistance range, Double brg, Double brg2, Double freq,
 			WorldLocation origin, Color theColor, String labelStr, int theStyle,
 			String sensorName)
 	{
@@ -295,7 +296,17 @@ public final class SensorContactWrapper extends
 		_trackName = theTrack;
 		_DTG = theDtg;
 		_range = range;
-		_bearing = MWC.Algorithms.Conversions.Degs2Rads(brg);
+
+		if (brg != null)
+		{
+			_hasBearing = true;
+			_bearing = MWC.Algorithms.Conversions.Degs2Rads(brg);
+		}
+		else
+		{
+			_hasBearing = false;
+			_bearing = 0;
+		}
 
 		// do we have ambiguous bearing data?
 		if (brg2 != null)
@@ -568,24 +579,66 @@ public final class SensorContactWrapper extends
 		// ok, we have the start - convert it to a point
 		final Point pt = new Point(dest.toScreen(origin));
 
-		// and convert to screen coords
-		final WorldLocation theFarEnd = getFarEnd(dest.getProjection()
-				.getDataArea());
-		final Point farEnd = dest.toScreen(theFarEnd);
-
-		// set the colour
-		dest.setColor(getColor());
-
-		// only use line styles if we are allowed to (it is a particular problem
-		// when in snail mode)
-		if (!keep_simple)
+		// check we have at least a bearing
+		if (this.getHasBearing())
 		{
-			// set the line style
-			dest.setLineStyle(_myLineStyle);
-		}
 
-		// draw the line
-		dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+			// and convert to screen coords
+			final WorldLocation theFarEnd = getFarEnd(dest.getProjection()
+					.getDataArea());
+			final Point farEnd = dest.toScreen(theFarEnd);
+
+			// set the colour
+			dest.setColor(getColor());
+
+			// only use line styles if we are allowed to (it is a particular problem
+			// when in snail mode)
+			if (!keep_simple)
+			{
+				// set the line style
+				dest.setLineStyle(_myLineStyle);
+			}
+
+			// draw the line
+			dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+
+			// only plot the label if we don't want it simple
+			if (!keep_simple)
+			{
+
+				// restore the solid line style, for the next poor bugger
+				dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
+
+				// now draw the label
+				if (getLabelVisible())
+				{
+					WorldLocation labelPos = null;
+
+					// sort out where to plot it
+					if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
+					{
+						// use the start
+						labelPos = origin;
+					}
+					else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
+					{
+						// put it at the end
+						labelPos = theFarEnd;
+					}
+					else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+					{
+						// calculate the centre point
+						final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
+						labelPos = tmpArea.getCentre();
+					}
+
+					// update it's location
+					_theLabel.setLocation(labelPos);
+					_theLabel.setColor(getColor());
+					_theLabel.paint(dest);
+				}
+			}
+		}
 
 		// do we have an ambiguous bearing
 		if (this.getHasAmbiguousBearing())
@@ -599,43 +652,11 @@ public final class SensorContactWrapper extends
 
 		if (!keep_simple)
 		{
+
 			// restore the solid line style, for the next poor bugger
 			dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
 		}
 
-		// only plot the label if we don't want it simple
-		if (!keep_simple)
-		{
-
-			// now draw the label
-			if (getLabelVisible())
-			{
-				WorldLocation labelPos = null;
-
-				// sort out where to plot it
-				if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
-				{
-					// use the start
-					labelPos = origin;
-				}
-				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
-				{
-					// put it at the end
-					labelPos = theFarEnd;
-				}
-				else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
-				{
-					// calculate the centre point
-					final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
-					labelPos = tmpArea.getCentre();
-				}
-
-				// update it's location
-				_theLabel.setLocation(labelPos);
-				_theLabel.setColor(getColor());
-				_theLabel.paint(dest);
-			}
-		}
 	}
 
 	/**
@@ -702,6 +723,16 @@ public final class SensorContactWrapper extends
 	public final boolean getHasAmbiguousBearing()
 	{
 		return _hasAmbiguous;
+	}
+
+	/**
+	 * do we have ambiguous data?
+	 * 
+	 * @return yes/no
+	 */
+	public final boolean getHasBearing()
+	{
+		return _hasBearing;
 	}
 
 	public final void setHasAmbiguousBearing(boolean val)
@@ -806,6 +837,7 @@ public final class SensorContactWrapper extends
 	public final void setBearing(final double degs)
 	{
 		_bearing = MWC.Algorithms.Conversions.Degs2Rads(degs);
+		_hasBearing = true;
 	}
 
 	/**
@@ -936,7 +968,7 @@ public final class SensorContactWrapper extends
 
 			// find our origin
 			WorldLocation theOrigin = getCalculatedOrigin(null);
-			
+
 			// did we manage it?
 			if (theOrigin == null)
 			{
@@ -1326,7 +1358,7 @@ public final class SensorContactWrapper extends
 			final WorldLocation origin = new WorldLocation(0, 0, 0);
 			final SensorContactWrapper ed = new SensorContactWrapper("blank track",
 					new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
-							WorldDistance.DEGS), 55, origin, java.awt.Color.red, "my label",
+							WorldDistance.DEGS), 55d, origin, java.awt.Color.red, "my label",
 					1, "theSensorName");
 
 			// check the editable parameters

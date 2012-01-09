@@ -196,22 +196,22 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// also give it some sensor data
 			final SensorWrapper swa = new SensorWrapper("title one");
 			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-					new HiResDate(150, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(150, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
-					new HiResDate(180, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(180, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
-					new HiResDate(250, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(250, 0), null, null, null, null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);
 			tw.add(swa);
 			final SensorWrapper sw = new SensorWrapper("title two");
 			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
-					new HiResDate(260, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(260, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
-					new HiResDate(280, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(280, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
-					new HiResDate(350, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(350, 0), null, null, null, null, null, 0, null);
 			sw.add(scw1);
 			sw.add(scw2);
 			sw.add(scw3);

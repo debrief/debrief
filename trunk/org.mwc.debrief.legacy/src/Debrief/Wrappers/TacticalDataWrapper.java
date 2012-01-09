@@ -154,7 +154,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			{
 				final SensorContactWrapper scw = new SensorContactWrapper("parent",
 						new HiResDate(nowMillis), new WorldDistance(i, WorldDistance.NM),
-						i, new WorldLocation(1, i, 0), Color.RED, "the label", 0,
+						(double) i, new WorldLocation(1, i, 0), Color.RED, "the label", 0,
 						"other label");
 				sw.add(scw);
 				nowMillis += 16 * 1000;
@@ -167,7 +167,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			{
 				final SensorContactWrapper scw = new SensorContactWrapper("parent",
 						new HiResDate(nowMillis), new WorldDistance(j, WorldDistance.NM),
-						j, new WorldLocation(1, j, 0), Color.RED, "the label", 0,
+						(double) j, new WorldLocation(1, j, 0), Color.RED, "the label", 0,
 						"other label");
 				sw.add(scw);
 				nowMillis += 16 * 1000;

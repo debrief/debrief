@@ -123,7 +123,7 @@ final class ImportSensor2 implements PlainLineImporter {
     double latSec, longSec;
     WorldLocation origin = null;
     HiResDate theDtg = null;
-    double brg;
+    Double brg = null;
     WorldDistance rng=null;
     Double brg2=null, freq=null;
     java.awt.Color theColor;
@@ -191,9 +191,15 @@ final class ImportSensor2 implements PlainLineImporter {
           0);
     } // whether the duff origin data was entered
 
-    brg = Double.valueOf(st.nextToken()).doubleValue();
+    // get the bearing
+    String brgStr = st.nextToken();
+    if(!brgStr.startsWith("N"))
+    {
+    	// cool, we have data
+    	brg = new Double(Double.valueOf(brgStr));    	
+    }
     
-    // get the ambiguous bearing
+    // and now get the ambiguous bearing
     String tmp = st.nextToken();
     if(!tmp.startsWith("N"))
     {

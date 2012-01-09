@@ -225,13 +225,13 @@ public class WormInHoleOffset
 			final SensorWrapper swa = new SensorWrapper("title one");
 			swa.setSensorOffset(new ArrayLength(-400));
 			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-					new HiResDate(100, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(100, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
-					new HiResDate(140, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(140, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
-					new HiResDate(280, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(280, 0), null, null, null, null, null, 0, null);
 			final SensorContactWrapper scwa4 = new SensorContactWrapper("ddd",
-					new HiResDate(350, 0), null, 0, null, null, null, 0, null);
+					new HiResDate(350, 0), null, null, null, null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);

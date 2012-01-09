@@ -288,7 +288,10 @@ abstract public class SensorContactHandler extends
 		eFix.setAttribute(DTG, writeThis(contact.getDTG()));
 
 		eFix.setAttribute(VISIBLE, writeThis(contact.getVisible()));
-		eFix.setAttribute(BEARING, writeThis(contact.getBearing()));
+		
+		if(contact.getHasBearing())	
+	  	eFix.setAttribute(BEARING, writeThis(contact.getBearing()));
+		
 		eFix.setAttribute(LABEL_SHOWING, writeThis(contact.getLabelVisible()));
 		eFix.setAttribute(LABEL, toXML(contact.getLabel()));
 		// we no longer export range as an attribute, but as an element-so we can
