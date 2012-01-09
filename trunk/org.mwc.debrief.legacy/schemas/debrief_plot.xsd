@@ -301,7 +301,7 @@
 				<xs:element minOccurs="0" name="Range" type="worldDistanceType" />
 			</xs:all>
 			<xs:attribute name="AmbiguousBearing" type="xs:double" />
-			<xs:attribute name="Bearing" use="required" type="xs:double" />
+			<xs:attribute name="Bearing" type="xs:double" />
 			<xs:attribute name="Dtg" use="required" type="xs:string" />
 			<xs:attribute name="Frequency" type="xs:double" />
 			<xs:attribute name="HasAmbiguousBearing" default="false"
