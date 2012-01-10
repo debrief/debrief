@@ -4,6 +4,11 @@ import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
+	public FrequencyResidualsView()
+	{
+		super(false, true);
+	}
+
 	protected String getUnits()
 	{
 		return "Hz";

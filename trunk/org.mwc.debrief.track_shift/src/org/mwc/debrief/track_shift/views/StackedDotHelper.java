@@ -71,7 +71,7 @@ public final class StackedDotHelper
 	 * 
 	 */
 	private TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-			final TrackWrapper targetTrack, boolean onlyVis)
+			final TrackWrapper targetTrack, boolean onlyVis, boolean needBearing, boolean needFrequency)
 	{
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
@@ -95,6 +95,20 @@ public final class StackedDotHelper
 								.nextElement();
 						if (!onlyVis || (onlyVis && scw.getVisible()))
 						{
+							// is this cut suitable for what we're looking for?
+							if(needBearing)
+							{
+								if(!scw.getHasBearing())
+									continue;
+							}
+							
+							// aaah, but does it meet the frequency requirement?
+							if(needFrequency)
+							{
+								if(!scw.getHasFrequency())
+									continue;
+							}
+							
 							FixWrapper targetFix = null;
 							TrackSegment targetParent = null;
 
@@ -216,7 +230,7 @@ public final class StackedDotHelper
 
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
-			initialise(tracks, false, onlyVis, holder, logger, "Bearing");
+			initialise(tracks, false, onlyVis, holder, logger, "Bearing",true,false);
 
 		// did it work?
 		// if (_secondaryTrack == null)
@@ -224,7 +238,7 @@ public final class StackedDotHelper
 
 		// ok - the tracks have moved. better update the doublets
 		if (updateDoublets)
-			updateDoublets(onlyVis);
+			updateDoublets(onlyVis, true, false);
 
 		// aah - but what if we've ditched our doublets?
 		if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
@@ -256,7 +270,6 @@ public final class StackedDotHelper
 
 			try
 			{
-
 				// obvious stuff first (stuff that doesn't need the tgt data)
 				final Color thisColor = thisD.getColor();
 				double measuredBearing = thisD.getMeasuredBearing();
@@ -404,7 +417,7 @@ public final class StackedDotHelper
 	 * @param holder
 	 */
 	void initialise(TrackManager tracks, boolean showError, boolean onlyVis,
-			Composite holder, ErrorLogger logger, String dataType)
+			Composite holder, ErrorLogger logger, String dataType, boolean needBrg, boolean needFreq)
 	{
 
 		// have we been created?
@@ -482,7 +495,7 @@ public final class StackedDotHelper
 		logger.logError(IStatus.OK, dataType + " error", null);
 
 		// ok, get the positions
-		updateDoublets(onlyVis);
+		updateDoublets(onlyVis, needBrg, needFreq);
 
 	}
 
@@ -502,14 +515,14 @@ public final class StackedDotHelper
 	 * go through the tracks, finding the relevant position on the other track.
 	 * 
 	 */
-	private void updateDoublets(boolean onlyVis)
+	private void updateDoublets(boolean onlyVis, boolean needBearing, boolean needFreq)
 	{
 		// ok - we're now there
 		// so, do we have primary and secondary tracks?
 		if (_primaryTrack != null)
 		{
 			// cool sort out the list of sensor locations for these tracks
-			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis);
+			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing, needFreq);
 		}
 	}
 
@@ -536,11 +549,11 @@ public final class StackedDotHelper
 
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
-			initialise(tracks, false, onlyVis, holder, logger, "Frequency");
+			initialise(tracks, false, onlyVis, holder, logger, "Frequency", false, true);
 
 		// ok - the tracks have moved. better update the doublets
 		if (updateDoublets)
-			updateDoublets(onlyVis);
+			updateDoublets(onlyVis, false, true);
 
 		// aah - but what if we've ditched our doublets?
 		// aah - but what if we've ditched our doublets?

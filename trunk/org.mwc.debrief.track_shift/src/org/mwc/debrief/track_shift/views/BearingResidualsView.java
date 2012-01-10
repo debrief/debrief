@@ -13,6 +13,11 @@ import org.mwc.cmap.core.CorePlugin;
 public class BearingResidualsView extends BaseStackedDotsView
 {
 
+	public BearingResidualsView()
+	{
+		super(true,false);
+	}
+
 	private static final String SHOW_COURSE = "SHOW_COURSE";
 	private Action showCourse;
 	private Action flipCourse;

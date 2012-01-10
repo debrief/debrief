@@ -93,7 +93,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	/**
 	 * legacy helper class
 	 */
-	StackedDotHelper _myHelper;
+	final StackedDotHelper _myHelper;
 
 	/**
 	 * our track-data provider
@@ -147,12 +147,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected TrackDataListener _myTrackDataListener;
 
-	/**
-	 * The constructor.
+	/** does our output need bearing in the data?
+	 * 
 	 */
-	public BaseStackedDotsView()
+	private final boolean _needBrg;
+
+	/** does our output need frequency in the data?
+	 * 
+	 */
+	private final boolean _needFreq;
+
+	/**
+	 * 
+	 * @param needBrg if the algorithm needs bearing data
+	 * @param needFreq if the agorithm needs frequency data
+	 */
+	protected BaseStackedDotsView(boolean needBrg, boolean needFreq )
 	{
 		_myHelper = new StackedDotHelper();
+		
+		_needBrg = needBrg;
+		_needFreq = needFreq;
 
 		// create the actions - the 'centre-y axis' action may get called before
 		// the
@@ -536,7 +551,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				// have
 				// changed
 				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible
-						.isChecked(), _holder, logger, getType());
+						.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 
 				// and a new plot please
 				updateStackedDots(true);
@@ -664,7 +679,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 							// ok - fire off the event for the new tracks
 							_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
-									.isChecked(), _holder, logger, getType());
+									.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 
 							// just in case we're ready to start plotting, go
 							// for it!
@@ -714,7 +729,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 										WatchableList[] secondaries)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
-											_onlyVisible.isChecked(), _holder, logger, getType());
+											_onlyVisible.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 
 									// ahh, the tracks have changed, better update the doublets
 
@@ -798,7 +813,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 								public void dataReformatted(Layers theData, Layer changedLayer)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
-											_onlyVisible.isChecked(), _holder, logger, getType());
+											_onlyVisible.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 									updateStackedDots(false);
 								}
 							};
