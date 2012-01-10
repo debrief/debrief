@@ -61,7 +61,7 @@ public class NewSolutionWizard extends Wizard
 							+ "The ellipse created to represent your solution must be placed\n"
 							+ "inside a named block, please provide a name",
 					"a one-word phrase for this block of ellipses", imagePath,
-					helpContext);
+					helpContext, true);
 			addPage(namePage);
 		}
 

@@ -479,14 +479,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// because
 		// if it doesn't we'll let the user set a default
 		Enumeration<Editable> cuts = thisS.elements();
-		boolean hasRange = false;
+		boolean needsRange = false;
 		if (cuts.hasMoreElements())
 		{
 			Editable firstCut = cuts.nextElement();
 			SensorContactWrapper scw = (SensorContactWrapper) firstCut;
-			if (scw.getRange() != null)
+			// do we have bearing?
+			if (scw.getHasBearing())
 			{
-				hasRange = true;
+				// yes. now are we waiting for a range?
+				if (scw.getRange() == null)
+				{
+					needsRange = true;
+				}
 			}
 		}
 		final String imagePath = "images/NameSensor.jpg";
@@ -494,14 +499,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		EnterStringPage getName = new EnterStringPage(null, thisS.getName(),
 				"Import Sensor data", "Please provide the name for this sensor",
 				"a one-word title for this block of sensor contacts (e.g. S2046)",
-				imagePath, null);
+				imagePath, null, false);
 		SelectColorPage getColor = new SelectColorPage(null, thisS.getColor(),
 				"Import Sensor data", "Now format the new sensor",
 				"The default color for the cuts for this new sensor", imagePath, null);
 		EnterBooleanPage getVis = new EnterBooleanPage(null, false,
 				"Import Sensor data",
-				"Please specify if this sensor should be displayed once loaded", "yes/no",
-				imagePath, null);
+				"Please specify if this sensor should be displayed once loaded",
+				"yes/no", imagePath, null);
 		WorldDistance defRange = new WorldDistance(5000, WorldDistance.YARDS);
 		EnterRangePage getRange = new EnterRangePage(
 				null,
@@ -510,7 +515,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				"Default range", defRange, imagePath, null);
 		wizard.addWizard(getName);
 		wizard.addWizard(getColor);
-		if (!hasRange)
+		if (needsRange)
 			wizard.addWizard(getRange);
 		wizard.addWizard(getVis);
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
@@ -526,7 +531,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			thisS.setVisible(getVis.getBoolean());
 
 			// are we doing range?
-			if (!hasRange)
+			if (needsRange)
 			{
 				WorldDistance theRange = getRange.getRange();
 

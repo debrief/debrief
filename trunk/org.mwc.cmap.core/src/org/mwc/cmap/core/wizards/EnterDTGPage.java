@@ -22,7 +22,7 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 	{
 		super(selection,
 				FullFormatDateTime.toString(startDate.getDate().getTime()), pageTitle,
-				pageExplanation, fieldExplanation, imagePath, helpContext);
+				pageExplanation, fieldExplanation, imagePath, helpContext, true);
 
 		// tell the editor we're listening for modifications
 		super.addModifiedListener(this);

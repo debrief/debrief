@@ -44,15 +44,27 @@ public class EnterStringPage extends CoreEditableWizardPage
 	protected String _startName;
 	private String _fieldExplanation;
 
+	/**
+	 * 
+	 * @param selection the current selection
+	 * @param startName the string to put in the box
+	 * @param pageTitle what to call the page
+	 * @param pageExplanation help for the page
+	 * @param fieldExplanation help for the field
+	 * @param imagePath an image to show
+	 * @param helpContext context-senstivie help
+	 * @param useDefaults whether to re-use the last string value for this page 
+	 */
 	public EnterStringPage(ISelection selection, String startName,
 			String pageTitle, String pageExplanation, String fieldExplanation,
-			String imagePath, String helpContext)
+			String imagePath, String helpContext, boolean useDefaults)
 	{
 		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
 				false);
 		_startName = startName;
 		_fieldExplanation = fieldExplanation;
-		setDefaults();
+		if (useDefaults)
+			setDefaults();
 	}
 
 	@Override
