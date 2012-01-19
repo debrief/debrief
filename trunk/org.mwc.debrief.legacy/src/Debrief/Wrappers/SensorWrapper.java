@@ -480,8 +480,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 				// see if we have to create our local temporary fix
 				if (nearestContact == null)
 				{
-					nearestContact = new SensorContactWrapper(null, DTG, null, null, null,
-							null, null, 0, getName());
+					nearestContact = new SensorContactWrapper(null, DTG, null, null,
+							null, null, null, 0, getName());
 				}
 				else
 					nearestContact.setDTG(DTG);
@@ -1076,25 +1076,35 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	{
 		SensorContactWrapper _next = (SensorContactWrapper) next;
 		SensorContactWrapper _last = (SensorContactWrapper) last;
-		
 
 		double brg = interp.interp(_last.getBearing(), _next.getBearing());
 		double ambig = 0;
-		if (_last.getHasAmbiguousBearing())
-		{
-			ambig = interp.interp(_last.getAmbiguousBearing(),
-					_next.getAmbiguousBearing());
-		}
-		
+		// note - don't bother checking for has ambig, just do the interpolation
+		ambig = interp.interp(_last.getAmbiguousBearing(),
+				_next.getAmbiguousBearing());
+
 		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
 		// do we have range?
 		WorldDistance theRng = null;
 		if ((_last.getRange() != null) && (_next.getRange() != null))
 		{
-			double rngDegs = interp.interp(
-					_last.getRange().getValueIn(WorldDistance.DEGS), _next.getRange()
-							.getValueIn(WorldDistance.DEGS));
-			theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
+			// are they both in the same units?
+			if (_last.getRange().getUnits() == _last.getRange().getUnits())
+			{
+				// they're in the same units, stick with it.
+				int theUnits = _last.getRange().getUnits();
+				double theVal = interp.interp(
+						_last.getRange().getValue(), _next.getRange().getValue());
+				theRng = new WorldDistance(theVal, theUnits);
+			}
+			else
+			{
+				// they're in different units, do it all in degrees
+				double rngDegs = interp.interp(
+						_last.getRange().getValueIn(WorldDistance.DEGS), _next.getRange()
+								.getValueIn(WorldDistance.DEGS));
+				theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
+			}
 		}
 		// do we have an origin?
 		WorldLocation origin = null;
