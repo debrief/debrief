@@ -245,6 +245,37 @@ public class FlatFileExporter
 		return mySensor;
 	}
 
+	/**
+	 * get the second visible sensor
+	 * 
+	 * @param pTrack
+	 *          the track to search for sensors
+	 * @return
+	 */
+	public static SensorWrapper getSecondSensor(final TrackWrapper pTrack)
+	{
+		final Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the
+																																					// final
+		// solution
+
+		// loop through collecting cuts from visible sensors
+		final Enumeration<Editable> sensors = pTrack.getSensors().elements();
+		while (sensors.hasMoreElements())
+		{
+			final SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
+			if (thisS.getVisible())
+			{
+				mySensors.add(thisS);
+			}
+		}
+
+		SensorWrapper mySensor = null;
+		if (mySensors.size() >= 2)
+			mySensor = mySensors.elementAt(1);
+
+		return mySensor;
+	}
+
 	/*
 	 * line break
 	 */
@@ -391,10 +422,16 @@ public class FlatFileExporter
 		else
 		{
 
+			final String sen2Name;
+			if (sensor2 != null)
+				sen2Name = sensor2.getName();
+			else
+				sen2Name = "N/A";
+
 			header = this.getHeader2(primaryTrack.getName(), primaryTrack.getName(),
-					sensor1.getName(), sensor2.getName(), secTrack.getName(), period
-							.getStartDTG().getDate(), period.getEndDTG().getDate(), numRows,
-					0, 0, fileVersion, protMarking, serialName);
+					sensor1.getName(), sen2Name, secTrack.getName(), period.getStartDTG()
+							.getDate(), period.getEndDTG().getDate(), numRows, 0, 0,
+					fileVersion, protMarking, serialName);
 		}
 
 		// and collate it
@@ -751,6 +788,7 @@ public class FlatFileExporter
 	 *          : which SAM file to support
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
 			final String sensorType, String fileVersion)
@@ -771,13 +809,15 @@ public class FlatFileExporter
 		WorldLocation origin = null;
 
 		// sort out the sensor
-		final SensorWrapper sensor = getSubjectSensor(primaryTrack);
+		final SensorWrapper sensor1 = getSubjectSensor(primaryTrack);
+		final SensorWrapper sensor2 = getSecondSensor(primaryTrack);
 
 		for (long dtg = period.getStartDTG().getDate().getTime(); dtg < period
 				.getEndDTG().getDate().getTime(); dtg += 1000)
 		{
 			FixWrapper priFix = null, secFix = null;
-			WorldLocation sensorLoc = null;
+			WorldLocation sensor1Loc = null;
+			WorldLocation sensor2Loc = null;
 
 			// create a time
 			final HiResDate thisDTG = new HiResDate(dtg);
@@ -797,11 +837,13 @@ public class FlatFileExporter
 			if (secFix == null)
 				continue;
 
-			sensorLoc = primaryTrack.getBacktraceTo(thisDTG,
-					sensor.getSensorOffset(), sensor.getWormInHole());
+			sensor1Loc = primaryTrack.getBacktraceTo(thisDTG,
+					sensor1.getSensorOffset(), sensor1.getWormInHole());
+			sensor2Loc = primaryTrack.getBacktraceTo(thisDTG,
+					sensor2.getSensorOffset(), sensor2.getWormInHole());
 
 			// see if we have a sensor cut at the right time
-			final SensorContactWrapper theCut = nearestCutTo(sensor, thisDTG);
+			final SensorContactWrapper theCut = nearestCutTo(sensor1, thisDTG);
 
 			if (origin == null)
 				origin = priFix.getLocation();
@@ -811,21 +853,28 @@ public class FlatFileExporter
 					.subtract(origin));
 			final WorldVector secVector = new WorldVector(secFix.getLocation()
 					.subtract(origin));
-			final WorldVector senVector = new WorldVector(sensorLoc.subtract(origin));
+			final WorldVector sen1Vector = new WorldVector(
+					sensor1Loc.subtract(origin));
+			final WorldVector sen2Vector = new WorldVector(
+					sensor2Loc.subtract(origin));
 
 			final double priRange = MWC.Algorithms.Conversions.Degs2Yds(priVector
 					.getRange());
 			final double secRange = MWC.Algorithms.Conversions.Degs2Yds(secVector
 					.getRange());
-			final double senRange = MWC.Algorithms.Conversions.Degs2Yds(senVector
+			final double sen1Range = MWC.Algorithms.Conversions.Degs2Yds(sen1Vector
+					.getRange());
+			final double sen2Range = MWC.Algorithms.Conversions.Degs2Yds(sen2Vector
 					.getRange());
 
 			final double priX = (Math.sin(priVector.getBearing()) * priRange);
 			final double priY = Math.cos(priVector.getBearing()) * priRange;
 			final double secX = (Math.sin(secVector.getBearing()) * secRange);
 			final double secY = (Math.cos(secVector.getBearing()) * secRange);
-			final double senX = (Math.sin(senVector.getBearing()) * senRange);
-			final double senY = (Math.cos(senVector.getBearing()) * senRange);
+			final double sen1X = (Math.sin(sen1Vector.getBearing()) * sen1Range);
+			final double sen1Y = (Math.cos(sen1Vector.getBearing()) * sen1Range);
+			final double sen2X = (Math.sin(sen2Vector.getBearing()) * sen2Range);
+			final double sen2Y = (Math.cos(sen2Vector.getBearing()) * sen2Range);
 
 			// do the calc as long, in case it's massive...
 			final long longSecs = (thisDTG.getMicros() - period.getStartDTG()
@@ -861,6 +910,7 @@ public class FlatFileExporter
 
 			final double PRD_FREQ_ACC = -999.9;
 
+			// OLD FORMAT:
 			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading Sensor_Status Sensor_X
 			// Sensor_Y Sensor_Brg Sensor_Bacc Sensor_Freq Sensor_Facc Sensor_Speed
 			// Sensor_Heading Sensor_Type Msd_Status Msd_X Msd_Y Msd_Speed
@@ -868,6 +918,23 @@ public class FlatFileExporter
 			// Prd_Status Prd_X Prd_Y Prd_Brg Prd_Brg_Acc Prd_Range Prd_Range_Acc
 			// Prd_Course Prd_Cacc Prd_Speed Prd_Sacc Prd_Freq Prd_Freq_Acc";
 
+			// NEW FORMAT
+			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading OS_Depth Sensor_Status
+			// Sensor_X Sensor_Y Sensor_Brg Sensor_Bacc
+			// Sensor_Freq Sensor_Facc Sensor_Speed Sensor_Heading Sensor_Type
+			// Sensor_Doppler Sensor_Depth_Fwd
+			// Sensor_Depth_AftSensor2_Status Sensor2_X Sensor2_Y Sensor2_Brg
+			// Sensor2_Bacc Sensor2_Freq Sensor2_Facc
+			// Sensor2_Speed Sensor2_Heading Sensor2_Type Sensor2_Doppler
+			// Sensor2_Depth_Fwd Sensor2_Depth_Aft
+			// Msd_Status Msd_X Msd_Y Msd_Speed Msd_Heading Msd_Depth
+
+			// define objects for the new message format. populate them
+			final long Time = secs;
+			final long OS_Status = osStat;
+			final double OS_X = priX;
+
+			// here's the old build string
 			final double msdXyds = secX;
 			final double msdYyds = secY;
 			final double msdSpdKts = secFix.getSpeed();
@@ -888,7 +955,7 @@ public class FlatFileExporter
 			final double sensorBacc = -999.9;
 
 			final String nextLine = collateLine(secs, osStat, priX, priY,
-					priFix.getSpeed(), priFix.getCourseDegs(), senStat, senX, senY,
+					priFix.getSpeed(), priFix.getCourseDegs(), senStat, sen1X, sen1Y,
 					theBearing, sensorBacc, senFreq, sensorFacc, senSpd, senHeading,
 					sensorType, msdStat, msdXyds, msdYyds, msdSpdKts, msdCourseDegs,
 					prdStat, prdXYds, prdYYds, prdBrg, prdBrgAcc, prdRangeYds,

@@ -33,7 +33,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 	 */
 	private final String _fileVersion;
 
-	/** default constructor - sticks to old format
+	/**
+	 * default constructor - sticks to old format
 	 * 
 	 */
 	public ExportToFlatFile()
@@ -41,7 +42,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 		this("Export to flat file (SAM Format)", "1.0", false);
 	}
 
-	/** constructor requiring version & double-sensor status to be specified.
+	/**
+	 * constructor requiring version & double-sensor status to be specified.
 	 * 
 	 * @param title
 	 * @param fileVersion
@@ -53,7 +55,6 @@ public class ExportToFlatFile extends TimeControllerOperation
 		super(title, true, !doubleSensor, doubleSensor, true);
 		_fileVersion = fileVersion;
 	}
-
 
 	@Override
 	public ImageDescriptor getDescriptor()
@@ -73,7 +74,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 		// the protective marking on the data
 		String protMarking = null;
-		
+
 		// the name of the mission
 		String serialName = null;
 
@@ -82,13 +83,77 @@ public class ExportToFlatFile extends TimeControllerOperation
 		BaseLayer sensors = primary.getSensors();
 		Enumeration<Editable> sList = sensors.elements();
 		boolean foundOne = false;
+		int sensorCount = 0;
 		while (sList.hasMoreElements())
 		{
 			SensorWrapper thisS = (SensorWrapper) sList.nextElement();
+
+			// is it visible?
+			if (thisS.getVisible())
+				sensorCount++;
+
+			// does it have an array offset
 			if (thisS.getSensorOffset() != null)
 				if (thisS.getSensorOffset().getValue() > 0)
 					foundOne = true;
 		}
+
+		// right, special handling depending on run mode
+		if (sensorCount == 0)
+		{
+			Shell shell = Display.getCurrent().getActiveShell();
+			String title = "Export flat file";
+			Image image = null;
+			String message = "At least one primary sensor must be visible";
+			int imageType = MessageDialog.ERROR; // check the user knows what
+																							// he's
+			// doing
+			MessageDialog dl = new MessageDialog(shell, title, image, message,
+					imageType, null, 0);
+			dl.open();
+			return;
+
+		}
+		if (_fileVersion.equals("1.0"))
+		{
+			// ok, we can only have one sensor visible
+			if (sensorCount > 1)
+			{
+
+				Shell shell = Display.getCurrent().getActiveShell();
+				String title = "Export flat file";
+				Image image = null;
+				String message = "Only one of the sensors on the primary track must be visible";
+				int imageType = MessageDialog.ERROR; // check the user knows what
+																								// he's
+				// doing
+				MessageDialog dl = new MessageDialog(shell, title, image, message,
+						imageType, null, 0);
+				dl.open();
+				return;
+			}
+		}
+		else
+		{
+			// ok, we can only have two sensors visible
+			if (sensorCount > 2)
+			{
+				Shell shell = Display.getCurrent().getActiveShell();
+				String title = "Export flat file";
+				Image image = null;
+				String message = "Only one or two of the sensors on the primary track must be visible";
+				int imageType = MessageDialog.ERROR; // check the user knows what
+																								// he's
+				// doing
+				MessageDialog dl = new MessageDialog(shell, title, image, message,
+						imageType, null, 0);
+				dl.open();
+				return;
+			}
+		}
+		
+		// and do the warning for no array offsets found
+
 		if (!foundOne)
 		{
 			Shell shell = Display.getCurrent().getActiveShell();
