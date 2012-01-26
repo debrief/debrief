@@ -245,36 +245,6 @@ public class FlatFileExporter
 		return mySensor;
 	}
 
-	/**
-	 * get the second visible sensor
-	 * 
-	 * @param pTrack
-	 *          the track to search for sensors
-	 * @return
-	 */
-	public static SensorWrapper getSecondSensor(final TrackWrapper pTrack)
-	{
-		final Vector<SensorWrapper> mySensors = new Vector<SensorWrapper>(); // the
-																																					// final
-		// solution
-
-		// loop through collecting cuts from visible sensors
-		final Enumeration<Editable> sensors = pTrack.getSensors().elements();
-		while (sensors.hasMoreElements())
-		{
-			final SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
-			if (thisS.getVisible())
-			{
-				mySensors.add(thisS);
-			}
-		}
-
-		SensorWrapper mySensor = null;
-		if (mySensors.size() >= 2)
-			mySensor = mySensors.elementAt(1);
-
-		return mySensor;
-	}
 
 	/*
 	 * line break
@@ -404,7 +374,7 @@ public class FlatFileExporter
 		}
 		else
 		{
-			body = this.getBody2(pTrack, secTrack, period, sensor1Type, fileVersion);
+			body = this.getBody2(pTrack, secTrack, period, sensor1Type, fileVersion, sensor1, sensor2);
 		}
 
 		// count how many items we found
@@ -786,12 +756,13 @@ public class FlatFileExporter
 	 * @param sensorType
 	 * @param fileVersion
 	 *          : which SAM file to support
+	 * @param sensor2 the first sensor to export
+	 * @param sensor1 the second sensro to export
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
-			final String sensorType, String fileVersion)
+			final String sensorType, String fileVersion, SensorWrapper sensor1, SensorWrapper sensor2)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
@@ -808,10 +779,7 @@ public class FlatFileExporter
 
 		WorldLocation origin = null;
 
-		// sort out the sensor
-		final SensorWrapper sensor1 = getSubjectSensor(primaryTrack);
-		final SensorWrapper sensor2 = getSecondSensor(primaryTrack);
-
+		// start looping through data
 		for (long dtg = period.getStartDTG().getDate().getTime(); dtg < period
 				.getEndDTG().getDate().getTime(); dtg += 1000)
 		{
@@ -843,7 +811,8 @@ public class FlatFileExporter
 					sensor2.getSensorOffset(), sensor2.getWormInHole());
 
 			// see if we have a sensor cut at the right time
-			final SensorContactWrapper theCut = nearestCutTo(sensor1, thisDTG);
+			final SensorContactWrapper cutS1 = nearestCutTo(sensor1, thisDTG);
+			final SensorContactWrapper cutS2 = nearestCutTo(sensor2, thisDTG);
 
 			if (origin == null)
 				origin = priFix.getLocation();
@@ -881,29 +850,55 @@ public class FlatFileExporter
 					.getMicros()) / 1000000;
 			final int secs = (int) longSecs;
 
-			// and the freq
-			double senFreq = -999.9;
-			if ((theCut != null) && (theCut.getHasFrequency()))
-				senFreq = theCut.getFrequency();
-
+			// ownship data status
 			final int osStat = 7;
-			int senStat;
-			if (theCut == null)
-				senStat = 0;
-			else if (theCut.getHasFrequency())
-				senStat = 63;
-			else
-				senStat = 59;
-			double theBearing = -999;
-			double senSpd = -999.9;
-			double senHeading = -999.9;
-			if (theCut != null)
-			{
-				theBearing = theCut.getBearing();
-				senSpd = priFix.getSpeed();
-				senHeading = priFix.getCourseDegs();
+			
+			// right, sensor 1 bits
+			double senFreq1 = -999.9;
+			if ((cutS1 != null) && (cutS1.getHasFrequency()))
+				senFreq1 = cutS1.getFrequency();
 
+			// sensor status
+			int senStat1;
+			if (cutS1 == null)
+				senStat1 = 0;
+			else if (cutS1.getHasFrequency())
+				senStat1 = 63;
+			else
+				senStat1 = 59;
+			double theBearing1 = -999;
+			double senSpd1 = -999.9;
+			double senHeading1 = -999.9;
+			if (cutS1 != null)
+			{
+				theBearing1 = cutS1.getBearing();
+				senSpd1 = priFix.getSpeed();
+				senHeading1 = priFix.getCourseDegs();
 			}
+			
+			// now for the second sensor
+			double senFreq2 = -999.9;
+			if ((cutS2 != null) && (cutS2.getHasFrequency()))
+				senFreq2 = cutS2.getFrequency();
+
+			// sensor status
+			int senStat2;
+			if (cutS1 == null)
+				senStat2 = 0;
+			else if (cutS1.getHasFrequency())
+				senStat2 = 63;
+			else
+				senStat2 = 59;
+			double theBearing2 = -999;
+			double senSpd2 = -999.9;
+			double senHeading2 = -999.9;
+			if (cutS2 != null)
+			{
+				theBearing2 = cutS2.getBearing();
+				senSpd2 = priFix.getSpeed();
+				senHeading2 = priFix.getCourseDegs();
+			}
+			
 
 			final int msdStat = 1 + 2 + 4;
 			final int prdStat = 0;
@@ -952,11 +947,11 @@ public class FlatFileExporter
 			final double prdYYds = -999.9;
 			final double prdXYds = -999.9;
 			final double sensorFacc = -999.9;
-			final double sensorBacc = -999.9;
+			final double sensorBacc1 = -999.9;
 
 			final String nextLine = collateLine(secs, osStat, priX, priY,
-					priFix.getSpeed(), priFix.getCourseDegs(), senStat, sen1X, sen1Y,
-					theBearing, sensorBacc, senFreq, sensorFacc, senSpd, senHeading,
+					priFix.getSpeed(), priFix.getCourseDegs(), senStat1, sen1X, sen1Y,
+					theBearing1, sensorBacc1, senFreq1, sensorFacc, senSpd1, senHeading1,
 					sensorType, msdStat, msdXyds, msdYyds, msdSpdKts, msdCourseDegs,
 					prdStat, prdXYds, prdYYds, prdBrg, prdBrgAcc, prdRangeYds,
 					prdRangeAcc, prdCourse, prdCourseAcc, prdSpdKts, prdSpdAcc, prdFreq,
