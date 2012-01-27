@@ -106,7 +106,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 			Image image = null;
 			String message = "At least one primary sensor must be visible";
 			int imageType = MessageDialog.ERROR; // check the user knows what
-																							// he's
+																						// he's
 			// doing
 			MessageDialog dl = new MessageDialog(shell, title, image, message,
 					imageType, null, 0);
@@ -122,14 +122,9 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 				Shell shell = Display.getCurrent().getActiveShell();
 				String title = "Export flat file";
-				Image image = null;
 				String message = "Only one of the sensors on the primary track must be visible";
-				int imageType = MessageDialog.ERROR; // check the user knows what
-																								// he's
-				// doing
-				MessageDialog dl = new MessageDialog(shell, title, image, message,
-						imageType, null, 0);
-				dl.open();
+				// pop it up
+				MessageDialog.openError(shell, title, message);
 				return;
 			}
 		}
@@ -140,18 +135,13 @@ public class ExportToFlatFile extends TimeControllerOperation
 			{
 				Shell shell = Display.getCurrent().getActiveShell();
 				String title = "Export flat file";
-				Image image = null;
 				String message = "Only one or two of the sensors on the primary track must be visible";
-				int imageType = MessageDialog.ERROR; // check the user knows what
-																								// he's
-				// doing
-				MessageDialog dl = new MessageDialog(shell, title, image, message,
-						imageType, null, 0);
-				dl.open();
+				// pop it up
+				MessageDialog.openError(shell, title, message);
 				return;
 			}
 		}
-		
+
 		// and do the warning for no array offsets found
 
 		if (!foundOne)
