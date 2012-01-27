@@ -76,8 +76,8 @@ public class FlatFilenameWizardPage extends WizardPage
 
 	private static final String DOUBLE_SENSOR = "This wizard allows you to indicate the type of sensors used, "
 			+ "and the "
-			+ "directory\nin which to place the output file. "
-			+ "The output file will take the name of the primary \nfile with a "
+			+ "directory in which to place the output file. "
+			+ "The output file will take the name of the primary file with a "
 			+ FILE_SUFFIX
 			+ " suffix added. See online help for more details on the export format.";
 
@@ -155,8 +155,12 @@ public class FlatFilenameWizardPage extends WizardPage
 		// and the sensor type
 		final String[][] sensorTypes = new String[][]
 		{
-		{ "Towed Array", "T" },
-		{ "Hull mounted array", "H" } };
+		{ "Towed-LF", "TL" },
+		{ "Towed-HF", "TH" },
+		{ "HM-Bow", "HB" },
+		{ "HM-Flank", "HF" },
+		{ "HM-Intercept", "HI" }
+		};
 
 		// sort out the first sensor
 		_sensor1TypeEditor = new RadioGroupFieldEditor(sensor1Key,
