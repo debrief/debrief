@@ -10,8 +10,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -949,26 +951,25 @@ public class FlatFileExporter
 
 		WorldLocation origin = null;
 
-		// start looping through data
-		for (long dtg = period.getStartDTG().getDate().getTime(); dtg < period
-				.getEndDTG().getDate().getTime(); dtg += 1000)
+		Collection<Editable> matches = primaryTrack.getItemsBetween(period.getStartDTG(), period.getEndDTG());
+		Iterator<Editable> iter = matches.iterator();
+		while(iter.hasNext())
 		{
-			FixWrapper priFix = null, secFix = null;
+			final FixWrapper priFix = (FixWrapper) iter.next();
+			final long dtg = priFix.getTime().getDate().getTime();
+
 			WorldLocation sensor1Loc = null;
 			WorldLocation sensor2Loc = null;
 
 			// create a time
 			final HiResDate thisDTG = new HiResDate(dtg);
 
-			// first the primary track
-			priFix = getFixAt(primaryTrack, thisDTG);
-
 			// right, we only do this if we have primary data - skip forward a second
 			// if we're missing this pos
 			if (priFix == null)
 				continue;
 
-			secFix = getFixAt(secTrack, thisDTG);
+			final FixWrapper secFix = getFixAt(secTrack, thisDTG);
 
 			// right, we only do this if we have secondary data - skip forward a
 			// second if we're missing this pos
@@ -1058,6 +1059,7 @@ public class FlatFileExporter
 			if (cutS1 != null)
 			{
 				theBearing1 = cutS1.getBearing();
+				theBearing1 = trimDegs(theBearing1);
 				senSpd1 = priFix.getSpeed();
 			}
 
@@ -1081,6 +1083,7 @@ public class FlatFileExporter
 				if (cutS2 != null)
 				{
 					theBearing2 = cutS2.getBearing();
+					theBearing2 = trimDegs(theBearing2);
 					senSpd2 = priFix.getSpeed();
 				}
 			}
@@ -1118,7 +1121,6 @@ public class FlatFileExporter
 			final String Sensor_Status = "" + senStat1;
 			final String Sensor_X = "" + sen1X;
 			final String Sensor_Y = "" + sen1Y;
-			theBearing1 = trimDegs(theBearing1);
 			final String Sensor_Brg = dp2.format(theBearing1);
 			final String Sensor_Bacc = "" + 0;
 			final String Sensor_Freq = "" + senFreq1;
@@ -1137,7 +1139,6 @@ public class FlatFileExporter
 			final String Sensor2_Status = "" + senStat2;
 			final String Sensor2_X = "" + sen2X;
 			final String Sensor2_Y = "" + sen2Y;
-			theBearing2 = trimDegs(theBearing2);
 			final String Sensor2_Brg = dp2.format(theBearing2);
 			final String Sensor2_Bacc = "" + 0;
 			final String Sensor2_Freq = "" + senFreq2;
@@ -1184,7 +1185,7 @@ public class FlatFileExporter
 	{
 		if (brgVal > 360)
 			brgVal -= 360;
-		if (brgVal < 360)
+		if (brgVal < 0)
 			brgVal += 360;
 		return brgVal;
 	}
