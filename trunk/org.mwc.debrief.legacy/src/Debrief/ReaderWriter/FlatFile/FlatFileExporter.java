@@ -130,18 +130,18 @@ public class FlatFileExporter
 
 			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
 		}
-		
+
 		public void testAgainstSample2() throws IOException
 		{
 			// collate the data
 			TrackWrapper primary = new TrackWrapper();
 			TrackWrapper secondary = new TrackWrapper();
-			
-			for(int i=0;i<20;i++)
+
+			for (int i = 0; i < 20; i++)
 			{
 				double lat = 2 + i / 3600;
 				double lon = 3 + i / 3700;
-				double depth = 19 + i/10;
+				double depth = 19 + i / 10;
 				WorldLocation wa = new WorldLocation(lat, -lon, depth);
 				WorldLocation wb = new WorldLocation(-lat, lon, depth + 25);
 				Fix fa = new Fix(new HiResDate(10000 + i * 1000), wa, 45, 12);
@@ -151,7 +151,7 @@ public class FlatFileExporter
 				primary.addFix(fwa);
 				secondary.addFix(fwb);
 			}
-			
+
 			SensorWrapper sa = new SensorWrapper("sensor-A");
 			sa.setHost(primary);
 			sa.setVisible(true);
@@ -160,51 +160,52 @@ public class FlatFileExporter
 			sb.setHost(primary);
 			sb.setVisible(true);
 			primary.add(sb);
-			for(int i=0;i<15;i++)
+			for (int i = 0; i < 15; i++)
 			{
-				//primary.getName(),,
+				// primary.getName(),,
 				SensorContactWrapper sca = new SensorContactWrapper();
 				sca.setBearing(i * 3);
 				sca.setSensor(sa);
 				sca.setDTG(new HiResDate(11000 + i * 950));
 				sa.add(sca);
 			}
-			
-			for(int i=0;i<15;i++)
+
+			for (int i = 0; i < 15; i++)
 			{
-				//primary.getName(),,
+				// primary.getName(),,
 				SensorContactWrapper sca = new SensorContactWrapper();
 				sca.setBearing(i * 1.6);
 				sca.setSensor(sa);
 				sca.setDTG(new HiResDate(10900 + i * 930));
 				sb.add(sca);
 			}
-			
-			WatchableList[] secList = new WatchableList[]{secondary};
+
+			WatchableList[] secList = new WatchableList[]
+			{ secondary };
 			HiResDate start = new HiResDate(10000);
 			HiResDate end = new HiResDate(50000);
-			TimePeriod period = new TimePeriod.BaseTimePeriod(start, end );
+			TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
 			String s1Type = "s1_type";
 			String s2Type = "s2_TYPE";
-			String fVersion= "1.01";
-			String protMarking= "PROT_MARKING";
+			String fVersion = "1.01";
+			String protMarking = "PROT_MARKING";
 			String serName = "SER_NAME";
 
 			// do the export
 			final FlatFileExporter fa = new FlatFileExporter();
-			String res = fa.export(primary, secList, period, s1Type, s2Type, fVersion, protMarking, serName );
-			
+			String res = fa.export(primary, secList, period, s1Type, s2Type,
+					fVersion, protMarking, serName);
+
 			// get the test data
 			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata2.txt");
 			assertNotNull("test data found", TARGET_STR);
-			
+
 			// and now the checking
 			assertNotNull("produced string", res);
 			assertEquals("correct string", TARGET_STR, res);
 
 			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
 		}
-
 
 		public void testDateFormat() throws ParseException
 		{
@@ -328,7 +329,32 @@ public class FlatFileExporter
 	 * convenience object to store tab
 	 * 
 	 */
-	final String tab = "\t";
+	final static String tab = "\t";
+
+	/** produce a tab-separated line of data
+	 * 
+	 * @param args
+	 * @return
+	 */
+	final static String collateLine2(String... args)
+	{
+		StringBuffer res = new StringBuffer();
+		for (String d : args)
+		{
+			if(res == null)
+			{
+				// first line, create buffer
+				res = new StringBuffer();
+			}
+			else
+			{
+				// second line, prepend tab
+				res.append(tab);
+			}
+			res.append(d);
+		}
+		return res.toString();
+	}
 
 	/**
 	 * produce a tab-separated line of data
@@ -447,8 +473,8 @@ public class FlatFileExporter
 		}
 		else
 		{
-			body = this.getBody2(pTrack, secTrack, period, sensor1Type, fileVersion,
-					sensor1, sensor2);
+			body = this.getBody2(pTrack, secTrack, period, sensor1Type, sensor2Type,
+					fileVersion, sensor1, sensor2);
 		}
 
 		// count how many items we found
@@ -838,8 +864,8 @@ public class FlatFileExporter
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
-			final String sensorType, String fileVersion, SensorWrapper sensor1,
-			SensorWrapper sensor2)
+			final String sensorType1, final String sensorType2, String fileVersion,
+			SensorWrapper sensor1, SensorWrapper sensor2)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
@@ -891,6 +917,7 @@ public class FlatFileExporter
 			final SensorContactWrapper cutS1 = nearestCutTo(sensor1, thisDTG);
 			final SensorContactWrapper cutS2 = nearestCutTo(sensor2, thisDTG);
 
+			// do we need to initialise the origin?
 			if (origin == null)
 				origin = priFix.getLocation();
 
@@ -928,7 +955,7 @@ public class FlatFileExporter
 			final int secs = (int) longSecs;
 
 			// ownship data status
-			final int osStat = 7;
+			final int osStat = 15;
 
 			// right, sensor 1 bits
 			double senFreq1 = -999.9;
@@ -940,9 +967,9 @@ public class FlatFileExporter
 			if (cutS1 == null)
 				senStat1 = 0;
 			else if (cutS1.getHasFrequency())
-				senStat1 = 63;
+				senStat1 = 511;
 			else
-				senStat1 = 59;
+				senStat1 = 507;
 			double theBearing1 = -999;
 			double senSpd1 = -999.9;
 			double senHeading1 = -999.9;
@@ -963,9 +990,9 @@ public class FlatFileExporter
 			if (cutS1 == null)
 				senStat2 = 0;
 			else if (cutS1.getHasFrequency())
-				senStat2 = 63;
+				senStat2 = 511;
 			else
-				senStat2 = 59;
+				senStat2 = 507;
 			double theBearing2 = -999;
 			double senSpd2 = -999.9;
 			double senHeading2 = -999.9;
@@ -976,11 +1003,6 @@ public class FlatFileExporter
 				senHeading2 = priFix.getCourseDegs();
 			}
 
-			final int msdStat = 1 + 2 + 4;
-			final int prdStat = 0;
-
-			final double PRD_FREQ_ACC = -999.9;
-
 			// OLD FORMAT:
 			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading Sensor_Status Sensor_X
 			// Sensor_Y Sensor_Brg Sensor_Bacc Sensor_Freq Sensor_Facc Sensor_Speed
@@ -988,6 +1010,8 @@ public class FlatFileExporter
 			// Msd_Heading
 			// Prd_Status Prd_X Prd_Y Prd_Brg Prd_Brg_Acc Prd_Range Prd_Range_Acc
 			// Prd_Course Prd_Cacc Prd_Speed Prd_Sacc Prd_Freq Prd_Freq_Acc";
+
+			final NumberFormat dp2 = new DecimalFormat("0.00");
 
 			// NEW FORMAT
 			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading OS_Depth Sensor_Status
@@ -1001,37 +1025,66 @@ public class FlatFileExporter
 			// Msd_Status Msd_X Msd_Y Msd_Speed Msd_Heading Msd_Depth
 
 			// define objects for the new message format. populate them
-			final long Time = secs;
-			final long OS_Status = osStat;
-			final double OS_X = priX;
 
-			// here's the old build string
-			final double msdXyds = secX;
-			final double msdYyds = secY;
-			final double msdSpdKts = secFix.getSpeed();
-			final double msdCourseDegs = secFix.getCourseDegs();
+			final String Time = "" + secs;
+			final String OS_Status = "" + osStat;
+			final String OS_X = "" + priX;
+			final String OS_Y = "" + priY;
+			final String OS_Speed = "" + priFix.getSpeed();
+			final String OS_Heading = dp2.format(priFix.getCourseDegs());
+			final String OS_Depth = dp2.format(priFix.getDepth());
+			final String Sensor_Status = "" + senStat1;
+			final String Sensor_X = "" + sen1X;
+			final String Sensor_Y = "" + sen1Y;
+			theBearing1 = trimDegs(theBearing1);
+			final String Sensor_Brg = dp2.format(theBearing1);
+			final String Sensor_Bacc = "" + 0;
+			final String Sensor_Freq = "" + senFreq1;
+			final String Sensor_Facc = "" + 0;
+			final String Sensor_Speed = "" + senSpd1;
+			final String Sensor_Heading = "" + 0;
+			final String Sensor_Type = sensorType1;
+			final String Sensor_Doppler = "" + -1; // TODO: calc the doppler
+			final String Sensor_Depth_Fwd = "" + priFix.getDepth(); // TODO: decide
+																															// what depth to
+																															// use
+			final String Sensor_Depth_Aft = "" + priFix.getDepth(); // TODO: decide
+																															// what depth to
+																															// use
 
-			final double prdFreq = -999.9;
-			final double prdSpdAcc = -999.9;
-			final double prdSpdKts = -999.9;
-			final double prdCourseAcc = -999.9;
-			final double prdCourse = -999.9;
-			final int prdRangeAcc = -999;
-			final int prdRangeYds = -999;
-			final double prdBrgAcc = -999.9;
-			final double prdBrg = -999.9;
-			final double prdYYds = -999.9;
-			final double prdXYds = -999.9;
-			final double sensorFacc = -999.9;
-			final double sensorBacc1 = -999.9;
+			final String Sensor2_Status = "" + senStat2;
+			final String Sensor2_X = "" + sen2X;
+			final String Sensor2_Y = "" + sen2Y;
+			theBearing2 = trimDegs(theBearing2);
+			final String Sensor2_Brg = dp2.format(theBearing2);
+			final String Sensor2_Bacc = "" + 0;
+			final String Sensor2_Freq = "" + senFreq2;
+			final String Sensor2_Facc = "" + 0;
+			final String Sensor2_Speed = "" + senSpd2;
+			final String Sensor2_Heading = "" + 0;
+			final String Sensor2_Type = sensorType2;
+			final String Sensor2_Doppler = "" + -1; // TODO: calc the doppler
+			final String Sensor2_Depth_Fwd = "" + priFix.getDepth();
+			final String Sensor2_Depth_Aft = "" + priFix.getDepth();
 
-			final String nextLine = collateLine(secs, osStat, priX, priY,
-					priFix.getSpeed(), priFix.getCourseDegs(), senStat1, sen1X, sen1Y,
-					theBearing1, sensorBacc1, senFreq1, sensorFacc, senSpd1, senHeading1,
-					sensorType, msdStat, msdXyds, msdYyds, msdSpdKts, msdCourseDegs,
-					prdStat, prdXYds, prdYYds, prdBrg, prdBrgAcc, prdRangeYds,
-					prdRangeAcc, prdCourse, prdCourseAcc, prdSpdKts, prdSpdAcc, prdFreq,
-					PRD_FREQ_ACC);
+			final String Msd_Status = "" + 15;
+			final String Msd_X = "" + priX;
+			final String Msd_Y = "" + priY;
+			final String Msd_Speed = "" + secFix.getSpeed();
+			double secCourse = secFix.getCourseDegs();
+			secCourse = trimDegs(secCourse);
+			final String Msd_Heading = dp2.format(secCourse);
+			final String Msd_Depth = "" + secFix.getDepth();
+
+			final String nextLine = collateLine2(Time, OS_Status, OS_X, OS_Y,
+					OS_Speed, OS_Heading, OS_Depth, Sensor_Status, Sensor_X, Sensor_Y,
+					Sensor_Brg, Sensor_Bacc, Sensor_Freq, Sensor_Facc, Sensor_Speed,
+					Sensor_Heading, Sensor_Type, Sensor_Doppler, Sensor_Depth_Fwd,
+					Sensor_Depth_Aft, Sensor2_Status, Sensor2_X, Sensor2_Y, Sensor2_Brg,
+					Sensor2_Bacc, Sensor2_Freq, Sensor2_Facc, Sensor2_Speed,
+					Sensor2_Heading, Sensor2_Type, Sensor2_Doppler, Sensor2_Depth_Fwd,
+					Sensor2_Depth_Aft, Msd_Status, Msd_X, Msd_Y, Msd_Speed, Msd_Heading,
+					Msd_Depth);
 
 			buffer.append(nextLine);
 			buffer.append(BRK);
@@ -1043,6 +1096,15 @@ public class FlatFileExporter
 		secTrack.setInterpolatePoints(secInterp);
 
 		return buffer.toString();
+	}
+
+	private double trimDegs(double brgVal)
+	{
+		if (brgVal > 360)
+			brgVal -= 360;
+		if (brgVal < 360)
+			brgVal += 360;
+		return brgVal;
 	}
 
 }
