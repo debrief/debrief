@@ -15,6 +15,8 @@ import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.jfree.util.StringUtils;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -121,6 +123,7 @@ public class FlatFileExporter
 				e.printStackTrace();
 			}
 			assertNotNull("produced string", res);
+
 			assertEquals("correct string", TARGET_STR, res);
 
 			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
@@ -244,7 +247,6 @@ public class FlatFileExporter
 
 		return mySensor;
 	}
-
 
 	/*
 	 * line break
@@ -374,7 +376,8 @@ public class FlatFileExporter
 		}
 		else
 		{
-			body = this.getBody2(pTrack, secTrack, period, sensor1Type, fileVersion, sensor1, sensor2);
+			body = this.getBody2(pTrack, secTrack, period, sensor1Type, fileVersion,
+					sensor1, sensor2);
 		}
 
 		// count how many items we found
@@ -756,13 +759,16 @@ public class FlatFileExporter
 	 * @param sensorType
 	 * @param fileVersion
 	 *          : which SAM file to support
-	 * @param sensor2 the first sensor to export
-	 * @param sensor1 the second sensro to export
+	 * @param sensor2
+	 *          the first sensor to export
+	 * @param sensor1
+	 *          the second sensro to export
 	 * @return
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
-			final String sensorType, String fileVersion, SensorWrapper sensor1, SensorWrapper sensor2)
+			final String sensorType, String fileVersion, SensorWrapper sensor1,
+			SensorWrapper sensor2)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
@@ -852,7 +858,7 @@ public class FlatFileExporter
 
 			// ownship data status
 			final int osStat = 7;
-			
+
 			// right, sensor 1 bits
 			double senFreq1 = -999.9;
 			if ((cutS1 != null) && (cutS1.getHasFrequency()))
@@ -875,7 +881,7 @@ public class FlatFileExporter
 				senSpd1 = priFix.getSpeed();
 				senHeading1 = priFix.getCourseDegs();
 			}
-			
+
 			// now for the second sensor
 			double senFreq2 = -999.9;
 			if ((cutS2 != null) && (cutS2.getHasFrequency()))
@@ -898,7 +904,6 @@ public class FlatFileExporter
 				senSpd2 = priFix.getSpeed();
 				senHeading2 = priFix.getCourseDegs();
 			}
-			
 
 			final int msdStat = 1 + 2 + 4;
 			final int prdStat = 0;
