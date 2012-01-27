@@ -115,7 +115,7 @@ public class WormInHoleOffset
 		}
 
 		// do we have any array left to consume?
-		if (offsetM > 0)
+		if (offsetM >= 0)
 		{
 			// are we on the first data point?
 			if (nextPoint != null)
