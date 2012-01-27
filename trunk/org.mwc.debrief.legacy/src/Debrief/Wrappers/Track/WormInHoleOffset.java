@@ -93,7 +93,7 @@ public class WormInHoleOffset
 				double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
 
 				// is this less than our stub?
-				if (thisLenM > offsetM)
+				if (thisLenM >= offsetM)
 				{
 					// so just interpolate along the path
 					double posDelta = offsetM / thisLenM;
@@ -162,6 +162,17 @@ public class WormInHoleOffset
 			Thread.sleep(100);
 			sw.setWormInHole(true);
 			outputSensorTrack(sw);
+
+			// get a location
+			WorldLocation res = WormInHoleOffset.getWormOffsetFor(track,
+					track.getEndDTG(), sw.getSensorOffset());
+			assertNotNull("failed to find location");
+			// give it another go, with a zero sensor offset
+			sw.setSensorOffset(new ArrayLength(0d));
+
+			res = WormInHoleOffset.getWormOffsetFor(track, track.getEndDTG(),
+					sw.getSensorOffset());
+			assertNotNull("failed to find location");
 
 		}
 
