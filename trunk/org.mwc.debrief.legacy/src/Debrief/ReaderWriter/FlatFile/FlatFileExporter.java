@@ -15,8 +15,6 @@ import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.jfree.util.StringUtils;
-
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -29,7 +27,6 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import MWC.TacticalData.Track;
 
 /**
  * exporter class to replicate old Strand export format
@@ -131,6 +128,33 @@ public class FlatFileExporter
 			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
 		}
 
+		public void testGetNearestCut()
+		{
+			SensorWrapper sa = new SensorWrapper("sensor-A");
+			for (int i = 1; i <5; i++)
+			{
+				// primary.getName(),,
+				SensorContactWrapper sca = new SensorContactWrapper();
+				sca.setDTG(new HiResDate(i * 10));
+				sca.setLabel("" + i * 10);
+				sa.add(sca);
+			}
+			
+			SensorContactWrapper fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(5));
+			assertNull("should not return one - before data starts", fw);
+			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(11));
+			assertEquals("got first one","10", fw.getLabel());
+			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(19));
+			assertEquals("got correct one","20", fw.getLabel());
+			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(85));
+			assertNull("should not return one - after data finishes", fw);
+			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(40));
+			assertEquals("got last one","40", fw.getLabel());
+			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(35));
+			assertEquals("got correct one","40", fw.getLabel());
+		}
+		
+		
 		public void testAgainstSample2() throws IOException
 		{
 			// collate the data
@@ -219,7 +243,8 @@ public class FlatFileExporter
 	 * header line
 	 * 
 	 */
-	private static final String HEADER_LINE = "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc";
+	private static final String HEADER_LINE1 = "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Prd_Status	Prd_X	Prd_Y	Prd_Brg	Prd_Brg_Acc	Prd_Range	Prd_Range_Acc	Prd_Course	Prd_Cacc	Prd_Speed	Prd_Sacc	Prd_Freq	Prd_Freq_Acc";
+	private static final String HEADER_LINE2 = "Time	OS_Status	OS_X	OS_Y	OS_Speed	OS_Heading	OS_Depth	Sensor_Status	Sensor_X	Sensor_Y	Sensor_Brg	Sensor_Bacc	Sensor_Freq	Sensor_Facc	Sensor_Speed	Sensor_Heading	Sensor_Type	Sensor_Doppler	Sensor_Depth_Fwd	Sensor_Depth_Aft	Sensor2_Status	Sensor2_X	Sensor2_Y	Sensor2_Brg	Sensor2_Bacc	Sensor2_Freq	Sensor2_Facc	Sensor2_Speed	Sensor2_Heading	Sensor2_Type	Sensor2_Doppler	Sensor2_Depth_Fwd	Sensor2_Depth_Aft	Msd_Status	Msd_X	Msd_Y	Msd_Speed	Msd_Heading	Msd_Depth";
 
 	/**
 	 * Count the number of instances of substring within a string.
@@ -331,17 +356,18 @@ public class FlatFileExporter
 	 */
 	final static String tab = "\t";
 
-	/** produce a tab-separated line of data
+	/**
+	 * produce a tab-separated line of data
 	 * 
 	 * @param args
 	 * @return
 	 */
 	final static String collateLine2(String... args)
 	{
-		StringBuffer res = new StringBuffer();
+		StringBuffer res = null;
 		for (String d : args)
 		{
-			if(res == null)
+			if (res == null)
 			{
 				// first line, create buffer
 				res = new StringBuffer();
@@ -709,7 +735,7 @@ public class FlatFileExporter
 				+ formatThis(endDate) + createTabs(32) + BRK + "0" + createTabs(33)
 				+ BRK + "0" + createTabs(33) + BRK + "0" + createTabs(33) + BRK
 				+ NUM_RECORDS + createTabs(33) + BRK + X_ORIGIN_YDS + " "
-				+ Y_ORIGIN_YDS + createTabs(32) + BRK + HEADER_LINE + BRK;
+				+ Y_ORIGIN_YDS + createTabs(32) + BRK + HEADER_LINE1 + BRK;
 		return header;
 	}
 
@@ -738,6 +764,20 @@ public class FlatFileExporter
 			final String fileVersion, final String protMarking, String missionName)
 	{
 
+		// STRAND Scenario Report 1.01
+		// <Classification>
+		// <Operation_Name>
+		// <Platform_Name>
+		// <Ownship_Track_Name>
+		// <Sensor_Track_Name>
+		// <Sensor2_Track_Name>
+		// <Measured_Tgt_Name>
+		// <Start_Time>
+		// <End_Time>
+		// <Num_Records>
+		// <Units>
+		// <Geo_Origin_X> <Geo_Origin_Y>
+
 		String header = "STRAND Scenario Report " + fileVersion + createTabs(33)
 				+ BRK;
 
@@ -753,12 +793,11 @@ public class FlatFileExporter
 
 		header += TGT_NAME + createTabs(33) + BRK + formatThis(startDate)
 				+ createTabs(32) + BRK + formatThis(endDate) + createTabs(32) + BRK
-				+ "0" + createTabs(33) + BRK + "0" + createTabs(33) + BRK + "0"
-				+ createTabs(33) + BRK + NUM_RECORDS + createTabs(33) + BRK;
+				+ NUM_RECORDS + createTabs(33) + BRK;
 
 		header += "Metric" + createTabs(33) + BRK;
-		header += +X_ORIGIN_YDS + "	" + Y_ORIGIN_YDS + createTabs(32) + BRK
-				+ HEADER_LINE + BRK;
+		header += X_ORIGIN_YDS + "	" + Y_ORIGIN_YDS + createTabs(32) + BRK
+				+ HEADER_LINE2 + BRK;
 		return header;
 	}
 
@@ -809,7 +848,7 @@ public class FlatFileExporter
 	 * @param target
 	 * @return
 	 */
-	protected SensorContactWrapper nearestCutTo(final SensorWrapper sw,
+	protected static SensorContactWrapper nearestCutTo(final SensorWrapper sw,
 			final HiResDate target)
 	{
 		SensorContactWrapper res = null;
@@ -819,17 +858,45 @@ public class FlatFileExporter
 		}
 		else
 		{
+			final long targetDate = target.getDate().getTime();
 			final Enumeration<Editable> contents = sw.elements();
 			while (contents.hasMoreElements())
 			{
 				final SensorContactWrapper thisCut = (SensorContactWrapper) contents
 						.nextElement();
 				final long thisDate = thisCut.getDTG().getDate().getTime();
-				final long thisOffset = Math.abs(thisDate - target.getDate().getTime());
-				if (thisOffset == 0)
+				final long thisOffset = thisDate - targetDate;
+
+				if (thisOffset > 0)
 				{
-					res = thisCut;
+					// right, we've found a point after the target time
+					// do we have a previous one?
+					if (res == null)
+					{
+						// nope, just use this one
+						res = thisCut;
+					}
+					else
+					{
+						// yes, see which is nearer
+						long prevDelta = targetDate - res.getDTG().getDate().getTime();
+						if (prevDelta < thisOffset)
+						{
+							// we're already looking at the nearest one
+						}
+						else
+						{
+							// switch to the immediate post-target cut
+							res = thisCut;
+						}
+					}
+					// we're done. drop out
+					break;
 				}
+
+				// and remember the cut
+				res = thisCut;
+
 			}
 		}
 		return res;
@@ -908,18 +975,16 @@ public class FlatFileExporter
 			if (secFix == null)
 				continue;
 
-			sensor1Loc = primaryTrack.getBacktraceTo(thisDTG,
-					sensor1.getSensorOffset(), sensor1.getWormInHole());
-			sensor2Loc = primaryTrack.getBacktraceTo(thisDTG,
-					sensor2.getSensorOffset(), sensor2.getWormInHole());
-
-			// see if we have a sensor cut at the right time
-			final SensorContactWrapper cutS1 = nearestCutTo(sensor1, thisDTG);
-			final SensorContactWrapper cutS2 = nearestCutTo(sensor2, thisDTG);
-
 			// do we need to initialise the origin?
 			if (origin == null)
 				origin = priFix.getLocation();
+
+			// start off with the first sensor
+			sensor1Loc = primaryTrack.getBacktraceTo(thisDTG,
+					sensor1.getSensorOffset(), sensor1.getWormInHole());
+
+			// see if we have a sensor cut at the right time
+			final SensorContactWrapper cutS1 = nearestCutTo(sensor1, thisDTG);
 
 			// now sort out the spatial components
 			final WorldVector priVector = new WorldVector(priFix.getLocation()
@@ -928,16 +993,12 @@ public class FlatFileExporter
 					.subtract(origin));
 			final WorldVector sen1Vector = new WorldVector(
 					sensor1Loc.subtract(origin));
-			final WorldVector sen2Vector = new WorldVector(
-					sensor2Loc.subtract(origin));
 
 			final double priRange = MWC.Algorithms.Conversions.Degs2Yds(priVector
 					.getRange());
 			final double secRange = MWC.Algorithms.Conversions.Degs2Yds(secVector
 					.getRange());
 			final double sen1Range = MWC.Algorithms.Conversions.Degs2Yds(sen1Vector
-					.getRange());
-			final double sen2Range = MWC.Algorithms.Conversions.Degs2Yds(sen2Vector
 					.getRange());
 
 			final double priX = (Math.sin(priVector.getBearing()) * priRange);
@@ -946,8 +1007,30 @@ public class FlatFileExporter
 			final double secY = (Math.cos(secVector.getBearing()) * secRange);
 			final double sen1X = (Math.sin(sen1Vector.getBearing()) * sen1Range);
 			final double sen1Y = (Math.cos(sen1Vector.getBearing()) * sen1Range);
-			final double sen2X = (Math.sin(sen2Vector.getBearing()) * sen2Range);
-			final double sen2Y = (Math.cos(sen2Vector.getBearing()) * sen2Range);
+
+			// and now the second one
+			SensorContactWrapper cutS2 = null;
+			double sen2X = 0, sen2Y = 0;
+			if (sensor2 != null)
+			{
+
+				sensor2Loc = primaryTrack.getBacktraceTo(thisDTG,
+						sensor2.getSensorOffset(), sensor2.getWormInHole());
+
+				// see if we have a sensor cut at the right time
+				cutS2 = nearestCutTo(sensor2, thisDTG);
+
+				// now sort out the spatial components
+				final WorldVector sen2Vector = new WorldVector(
+						sensor2Loc.subtract(origin));
+
+				final double sen2Range = MWC.Algorithms.Conversions.Degs2Yds(sen2Vector
+						.getRange());
+
+				sen2X = (Math.sin(sen2Vector.getBearing()) * sen2Range);
+				sen2Y = (Math.cos(sen2Vector.getBearing()) * sen2Range);
+
+			}
 
 			// do the calc as long, in case it's massive...
 			final long longSecs = (thisDTG.getMicros() - period.getStartDTG()
@@ -972,35 +1055,34 @@ public class FlatFileExporter
 				senStat1 = 507;
 			double theBearing1 = -999;
 			double senSpd1 = -999.9;
-			double senHeading1 = -999.9;
 			if (cutS1 != null)
 			{
 				theBearing1 = cutS1.getBearing();
 				senSpd1 = priFix.getSpeed();
-				senHeading1 = priFix.getCourseDegs();
 			}
 
 			// now for the second sensor
-			double senFreq2 = -999.9;
-			if ((cutS2 != null) && (cutS2.getHasFrequency()))
-				senFreq2 = cutS2.getFrequency();
-
-			// sensor status
-			int senStat2;
-			if (cutS1 == null)
-				senStat2 = 0;
-			else if (cutS1.getHasFrequency())
-				senStat2 = 511;
-			else
-				senStat2 = 507;
 			double theBearing2 = -999;
 			double senSpd2 = -999.9;
-			double senHeading2 = -999.9;
-			if (cutS2 != null)
+			int senStat2 = 0;
+			double senFreq2 = -999.9;
+			if (sensor2 != null)
 			{
-				theBearing2 = cutS2.getBearing();
-				senSpd2 = priFix.getSpeed();
-				senHeading2 = priFix.getCourseDegs();
+				if ((cutS2 != null) && (cutS2.getHasFrequency()))
+					senFreq2 = cutS2.getFrequency();
+
+				// sensor status
+				if (cutS1 == null)
+					senStat2 = 0;
+				else if (cutS1.getHasFrequency())
+					senStat2 = 511;
+				else
+					senStat2 = 507;
+				if (cutS2 != null)
+				{
+					theBearing2 = cutS2.getBearing();
+					senSpd2 = priFix.getSpeed();
+				}
 			}
 
 			// OLD FORMAT:
@@ -1068,8 +1150,8 @@ public class FlatFileExporter
 			final String Sensor2_Depth_Aft = "" + priFix.getDepth();
 
 			final String Msd_Status = "" + 15;
-			final String Msd_X = "" + priX;
-			final String Msd_Y = "" + priY;
+			final String Msd_X = "" + secX;
+			final String Msd_Y = "" + secY;
 			final String Msd_Speed = "" + secFix.getSpeed();
 			double secCourse = secFix.getCourseDegs();
 			secCourse = trimDegs(secCourse);
