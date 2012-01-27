@@ -28,6 +28,8 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
+import MWC.TacticalData.Track;
 
 /**
  * exporter class to replicate old Strand export format
@@ -77,12 +79,12 @@ public class FlatFileExporter
 			}
 		}
 
-		private String getTestData()
+		private String getTestData(String fName)
 		{
 			String res = null;
 			try
 			{
-				res = readFileAsString("src/Debrief/ReaderWriter/FlatFile/fakedata.txt");
+				res = readFileAsString(fName);
 			}
 			catch (final IOException e)
 			{
@@ -108,9 +110,9 @@ public class FlatFileExporter
 			return fileData.toString();
 		}
 
-		public void testAgainstSample() throws IOException
+		public void testAgainstSample1() throws IOException
 		{
-			final String TARGET_STR = getTestData();
+			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata.txt");
 			assertNotNull("test data found", TARGET_STR);
 			final FlatFileExporter fa = new FlatFileExporter();
 			String res = null;
@@ -127,19 +129,88 @@ public class FlatFileExporter
 			assertEquals("correct string", TARGET_STR, res);
 
 			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
-
 		}
+		
+		public void testAgainstSample2() throws IOException
+		{
+			// collate the data
+			TrackWrapper primary = new TrackWrapper();
+			TrackWrapper secondary = new TrackWrapper();
+			
+			for(int i=0;i<20;i++)
+			{
+				double lat = 2 + i / 3600;
+				double lon = 3 + i / 3700;
+				double depth = 19 + i/10;
+				WorldLocation wa = new WorldLocation(lat, -lon, depth);
+				WorldLocation wb = new WorldLocation(-lat, lon, depth + 25);
+				Fix fa = new Fix(new HiResDate(10000 + i * 1000), wa, 45, 12);
+				Fix fb = new Fix(new HiResDate(10004 + i * 1000), wb, 45, 12);
+				FixWrapper fwa = new FixWrapper(fa);
+				FixWrapper fwb = new FixWrapper(fb);
+				primary.addFix(fwa);
+				secondary.addFix(fwb);
+			}
+			
+			SensorWrapper sa = new SensorWrapper("sensor-A");
+			sa.setHost(primary);
+			sa.setVisible(true);
+			primary.add(sa);
+			SensorWrapper sb = new SensorWrapper("sensor-B");
+			sb.setHost(primary);
+			sb.setVisible(true);
+			primary.add(sb);
+			for(int i=0;i<15;i++)
+			{
+				//primary.getName(),,
+				SensorContactWrapper sca = new SensorContactWrapper();
+				sca.setBearing(i * 3);
+				sca.setSensor(sa);
+				sca.setDTG(new HiResDate(11000 + i * 950));
+				sa.add(sca);
+			}
+			
+			for(int i=0;i<15;i++)
+			{
+				//primary.getName(),,
+				SensorContactWrapper sca = new SensorContactWrapper();
+				sca.setBearing(i * 1.6);
+				sca.setSensor(sa);
+				sca.setDTG(new HiResDate(10900 + i * 930));
+				sb.add(sca);
+			}
+			
+			WatchableList[] secList = new WatchableList[]{secondary};
+			HiResDate start = new HiResDate(10000);
+			HiResDate end = new HiResDate(50000);
+			TimePeriod period = new TimePeriod.BaseTimePeriod(start, end );
+			String s1Type = "s1_type";
+			String s2Type = "s2_TYPE";
+			String fVersion= "1.01";
+			String protMarking= "PROT_MARKING";
+			String serName = "SER_NAME";
+
+			// do the export
+			final FlatFileExporter fa = new FlatFileExporter();
+			String res = fa.export(primary, secList, period, s1Type, s2Type, fVersion, protMarking, serName );
+			
+			// get the test data
+			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata2.txt");
+			assertNotNull("test data found", TARGET_STR);
+			
+			// and now the checking
+			assertNotNull("produced string", res);
+			assertEquals("correct string", TARGET_STR, res);
+
+			dumpToFile(res, "src/Debrief/ReaderWriter/FlatFile/data_out.txt");
+		}
+
 
 		public void testDateFormat() throws ParseException
 		{
 			final Date theDate = dateFrom("01:45:00	22/12/2002");
 			final String val = formatThis(theDate);
 			assertEquals("correct start date", "01:45:00	22/12/2002", val);
-		}
-
-		public void testExport()
-		{
-
 		}
 	}
 
