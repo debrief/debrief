@@ -153,15 +153,31 @@ public class FlatFilenameWizardPage extends WizardPage
 		_filePath = _fileFieldEditor.getStringValue();
 
 		// and the sensor type
-		final String[][] sensorTypes = new String[][]
+		final String[][] sensor2Types = new String[][]
 		{
 		{ "Towed-LF", "TL" },
 		{ "Towed-HF", "TH" },
 		{ "HM-Bow", "HB" },
 		{ "HM-Flank", "HF" },
-		{ "HM-Intercept", "HI" }
-		};
+		{ "HM-Intercept", "HI" } };
+		
+		// and the sensor type
+		final String[][] sensor1Types = new String[][]
+		{
+		{ "Towed Array", "T" },
+		{ "Hull mounted array", "H" } };
 
+		// sort out the correct selection lists
+		String[][] sensorTypes;
+		if (_numSensors > 1)
+		{
+			sensorTypes = sensor2Types;
+		}
+		else
+		{
+			sensorTypes = sensor1Types;
+		}
+		
 		// sort out the first sensor
 		_sensor1TypeEditor = new RadioGroupFieldEditor(sensor1Key,
 				"Sensor 1 type:", 2, sensorTypes, container)
@@ -313,11 +329,15 @@ public class FlatFilenameWizardPage extends WizardPage
 			return;
 		}
 
-		final String sensorType2 = getSensor2Type();
-		if (sensorType2 == null)
+		if (_numSensors > 1)
 		{
-			updateStatus("Sensor 2 type must be selected");
-			return;
+			final String sensorType2 = getSensor2Type();
+			if (sensorType2 == null)
+			{
+				updateStatus("Sensor 2 type must be selected");
+				return;
+			}
+			_sensor2TypeEditor.store();
 		}
 
 		// so, we've got valid data. better store them
