@@ -49,7 +49,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		// bottom: placeholder for the xyplot
 		IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
-		bottomPanel.addPlaceholder(CorePlugin.PLOT_3d + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
     bottomPanel.addPlaceholder(CorePlugin.NARRATIVES2);
@@ -70,7 +69,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
 		
-		// layout.addShowViewShortcut(CorePlugin.PLOT_3d); -- don't show shortcut for 3d, we only open
 		// it via action (so we can populate it)  
 
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
@@ -87,7 +85,6 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		
 		// ok - make sure the debrief action sets are visible
 		layout.addActionSet("org.mwc.debrief.core");
-		layout.addActionSet("org.mwc.cmap.plot3d");
 		layout.addActionSet("org.mwc.debrief.track_shift");
 	}
 

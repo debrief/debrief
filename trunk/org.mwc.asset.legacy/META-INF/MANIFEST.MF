@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
-Bundle-Version: 1.0.33
+Bundle-Version: 1.0.34
 Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.debrief.legacy
 Export-Package: ASSET;
@@ -120,14 +120,6 @@ Export-Package: ASSET;
    MWC.GUI,
    MWC.GUI.Properties.Swing,
    MWC.GUI.Tools",
- ASSET.GUI.Tools.Plot3D;
-  uses:="ASSET,
-   MWC.GUI.Java3d.Tactical,
-   ASSET.Participants,
-   MWC.GenericData,
-   MWC.GUI.Java3d,
-   javax.media.j3d,
-   ASSET.Scenario",
  ASSET.GUI.Util;
   uses:="ASSET,
    javax.swing,

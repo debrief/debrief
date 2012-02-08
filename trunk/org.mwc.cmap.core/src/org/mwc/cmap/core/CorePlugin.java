@@ -71,8 +71,6 @@ public class CorePlugin extends AbstractUIPlugin
 	public static final String NARRATIVES = "org.mwc.cmap.narrative.views.NarrativeView";
 	public static final String NARRATIVES2 = "com.borlander.ianmayo.nviewer.app.view";
 
-	public static final String PLOT_3d = "org.mwc.cmap.plot3d.views.Plot3dView";
-
 	public static final String TOTE = "org.mwc.cmap.tote.views.ToteView";
 
 	public static final String TIME_CONTROLLER = "org.mwc.cmap.TimeController.views.TimeController";

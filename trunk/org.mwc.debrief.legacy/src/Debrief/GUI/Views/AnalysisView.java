@@ -301,7 +301,6 @@ import Debrief.Tools.Operations.ImportData2;
 import Debrief.Tools.Operations.ImportRangeData;
 import Debrief.Tools.Operations.SavePlotAsXML;
 import Debrief.Tools.Operations.SavePlotXML;
-import Debrief.Tools.Operations.View3dPlot;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
@@ -514,18 +513,6 @@ abstract public class AnalysisView extends PlainView implements
 				new ImportRangeData(_theParent, _theProperties, _theSession.getData()),
 				null, 'G'));
 
-		// NOTE: wrap this next creator, in case we haven't got the right files
-		// avaialble
-		try
-		{
-			_theTools.addElement(new MenuItemInfo("File", null, "View in 3d",
-					new View3dPlot(_theParent, _theProperties, _theSession.getData(),
-							getTote().getStepper()), null, ' '));
-		}
-		catch (java.lang.NoClassDefFoundError e)
-		{
-			System.err.println("3D Viewer not provided, classes not found");
-		}
 
 		// NOTE: wrap this next creator, in case we haven't got the right files
 		// avaialble

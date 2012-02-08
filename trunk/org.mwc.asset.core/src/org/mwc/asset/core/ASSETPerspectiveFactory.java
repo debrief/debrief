@@ -51,7 +51,6 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder(
 				"bottom", IPageLayout.BOTTOM, 0.6f, editorArea);
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
-		bottomPanel.addPlaceholder(CorePlugin.PLOT_3d + ":*");
 		bottomPanel.addPlaceholder(CorePlugin.LIVE_DATA_MONITOR);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
 		// bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
@@ -79,7 +78,6 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 
 		// ok - make sure the debrief action sets are visible
 		layout.addActionSet("org.mwc.debrief.core");
-		layout.addActionSet("org.mwc.cmap.plot3d");
 		// layout.addActionSet("org.mwc.debrief.track_shift");
 	}
 

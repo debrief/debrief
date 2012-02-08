@@ -6,38 +6,42 @@
  */
 package ASSET.GUI.Workbench;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Point;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.GUI.Core.CoreGUISwing;
 import ASSET.GUI.MonteCarlo.Loader;
 import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
 import ASSET.GUI.Painters.ScenarioNoiseLevelPainter.ParticipantStatus;
-import ASSET.GUI.Tools.View3dPlot;
 import ASSET.GUI.Util.FileList;
 import ASSET.Models.Environment.EnvironmentType;
-import ASSET.ParticipantType;
-import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.DragDrop.FileDropLocationSupport;
 import MWC.GUI.DragDrop.FileDropSupport;
-import MWC.GUI.Layer;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Iterator;
-import java.util.Vector;
 
 public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPainter.StatusProvider
 {
@@ -494,17 +498,6 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                           , null, 'A'));
 
 
-    // NOTE: wrap this next creator, in case we haven't got the right files avaialble
-    try
-    {
-      _theTools.addElement(new MenuItemInfo("View", null, "View in 3d",
-                                            new View3dPlot(_theParent, _theProperties, _theData, _theScenario, "ASSET"), null, ' '));
-    }
-    catch (java.lang.NoClassDefFoundError e)
-    {
-      System.err.println("3D Viewer not provided, classes not found");
-      //e.printStackTrace();
-    }
 
   }
 

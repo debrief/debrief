@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
-Bundle-Version: 1.0.191
+Bundle-Version: 1.0.192
 Bundle-ClassPath: debrief_legacy.jar
 Bundle-Vendor: MWC
 Export-Package: 
@@ -180,16 +180,6 @@ Export-Package:
    MWC.GUI.Tools.Operations,
    MWC.GUI,
    MWC.GUI.Tools",
- Debrief.Tools.Operations.Plot3D;
-  uses:="MWC.GenericData,
-   Debrief.Wrappers,
-   javax.swing,
-   MWC.GUI.Java3d.Tactical,
-   MWC.GUI.Java3d,
-   javax.vecmath,
-   javax.media.j3d,
-   com.sun.j3d.utils.behaviors.mouse,
-   MWC.GUI",
  Debrief.Tools.Palette;
   uses:="MWC.GenericData,
    Debrief.Wrappers,
