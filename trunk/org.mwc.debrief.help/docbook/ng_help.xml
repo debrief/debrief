@@ -603,6 +603,12 @@
         track plus sensor data. These extensions also included Track Grooming
         changes that support the removal of jumps and general data
         smoothing.</para>
+        
+        <para>2011 saw the introduction of support for plotting chart backdrops
+         in GeoTiff format.  Unfortunately it exposed performance shortcomings
+         in the render cycle.  So, it has been temporarily removed pending streamlining
+         / cacheing of the render pipeline.
+         </para>
       </sect2>
     </sect1>
 
