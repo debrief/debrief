@@ -1,8 +1,0 @@
-<suite>
-	<document filename="index" title="CVS Statistics">
-		<report class="GeneralReport"/>
-    <report class="CommitLogTable"  title="Recent file changes" paging="false"  limit="20"/>
-    <report class="FileCountChart"/>
-		<report class="LocChart"/>
-	</document>
-</suite>
