@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.ReaderWriter.FlatFile.FlatFileExporter;
+
 /**
  * The "New" wizard page allows setting the container for the new file as well
  * as the file name. The page will only accept file name without the extension
@@ -106,7 +108,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		_fileVersion = fileVersion;
 		setTitle("Export data to flat file");
 		final String msgStr;
-		if (fileVersion.equals("1.0"))
+		if (fileVersion.equals(FlatFileExporter.INITIAL_VERSION))
 			msgStr = SINGLE_SENSOR;
 		else
 			msgStr = DOUBLE_SENSOR;
@@ -164,6 +166,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					// tell the ui to update itself
 					_filePath = (String) newValue;
 				}
+
 				dialogChanged();
 
 			}
@@ -200,7 +203,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 		// sort out the correct selection lists
 		String[][] sensorTypes;
-		if (_fileVersion.equals("1.0"))
+		if (_fileVersion.equals(FlatFileExporter.INITIAL_VERSION))
 		{
 			sensorTypes = sensor1Types;
 		}
@@ -218,28 +221,24 @@ public class FlatFilenameWizardPage extends WizardPage
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 				_sensorType1 = (String) newValue;
-				char firstChar = _sensorType1.charAt(0);
-				if (firstChar == 'H')
-					_sensor1AftEditor.setEnabled(false, container);
-				else
-					_sensor1AftEditor.setEnabled(true, container);
+				_sensor1AftEditor.setEnabled(!_sensorType1.startsWith("H"), container);
 				dialogChanged();
 			}
 		};
 		_sensor1TypeEditor.setPreferenceStore(getPreferenceStore());
 		_sensor1TypeEditor.setPage(this);
 		_sensor1TypeEditor.load();
-		_sensorType1 = sensorTypes[0][1];
+		_sensorType1 = getPreferenceStore().getString(sensor1Key);
 
 		@SuppressWarnings("unused")
 		Label lbl = new Label(container, SWT.None);
 
 		// ok, we also need the sensor depth attribute
-		if (!_fileVersion.equals("1.0"))
+		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
 			// ok, get the sensor1 depth
 			StringFieldEditor sensor1FwdEditor = new StringFieldEditor(sensor1fwdKey,
-					"Sensor 1 fwd depth:", container)
+					"Sensor 1 fwd depth (m):", container)
 			{
 				protected void fireValueChanged(String property, Object oldValue,
 						Object newValue)
@@ -249,6 +248,15 @@ public class FlatFilenameWizardPage extends WizardPage
 					// is this the value property?
 					if (isNumber(newValue))
 						_sensor1Fwd = Double.valueOf(newValue.toString());
+
+					_sensor1AftEditor
+							.setEnabled(!_sensorType1.startsWith("H"), container);
+					
+					// we may not have a second editor = get checking
+					if (_sensor2AftEditor != null)
+						_sensor2AftEditor.setEnabled(!_sensorType2.startsWith("H"),
+								container);
+
 					dialogChanged();
 				}
 
@@ -271,7 +279,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 			// ok, get the sensor1 depth
 			_sensor1AftEditor = new StringFieldEditor(sensor1aftKey,
-					"Sensor 1 aft depth:", container)
+					"Sensor 1 aft depth (m):", container)
 			{
 				protected void fireValueChanged(String property, Object oldValue,
 						Object newValue)
@@ -326,17 +334,17 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor2TypeEditor.setPreferenceStore(getPreferenceStore());
 			_sensor2TypeEditor.setPage(this);
 			_sensor2TypeEditor.load();
-			_sensorType2 = sensorTypes[0][1];
+			_sensorType2 = getPreferenceStore().getString(sensor2Key);
 
 			@SuppressWarnings("unused")
 			Label lbl2 = new Label(container, SWT.None);
 
 			// ok, we also need the sensor depth attribute
-			if (!_fileVersion.equals("1.0"))
+			if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 			{
 				// ok, get the sensor1 depth
 				StringFieldEditor sensor2FwdEditor = new StringFieldEditor(
-						sensor2fwdKey, "Sensor 2 fwd depth:", container)
+						sensor2fwdKey, "Sensor 2 fwd depth (m):", container)
 				{
 					protected void fireValueChanged(String property, Object oldValue,
 							Object newValue)
@@ -368,7 +376,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 				// ok, get the sensor1 depth
 				_sensor2AftEditor = new StringFieldEditor(sensor2aftKey,
-						"Sensor 2 aft depth:", container)
+						"Sensor 2 aft depth (m):", container)
 				{
 					protected void fireValueChanged(String property, Object oldValue,
 							Object newValue)
@@ -402,7 +410,8 @@ public class FlatFilenameWizardPage extends WizardPage
 
 		}
 
-		if (!_fileVersion.equals("1.0"))
+		
+		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
 
 			// we also want to specify the prot marking editor
@@ -547,26 +556,26 @@ public class FlatFilenameWizardPage extends WizardPage
 		return _sensorType1;
 	}
 
-	
-	public double getSensor1Fwd()
+	public Double getSensor1Fwd()
 	{
 		return _sensor1Fwd;
 	}
-	public double getSensor1Aft()
+
+	public Double getSensor1Aft()
 	{
 		return _sensor1Aft;
 	}
-	public double getSensor2Fwd()
+
+	public Double getSensor2Fwd()
 	{
 		return _sensor2Fwd;
 	}
-	public double getSensor2Aft()
+
+	public Double getSensor2Aft()
 	{
 		return _sensor2Aft;
 	}
-	
 
-	
 	/**
 	 * retrieve the selected sensor type
 	 * 

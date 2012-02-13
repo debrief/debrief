@@ -39,6 +39,9 @@ import MWC.TacticalData.Fix;
 public class FlatFileExporter
 {
 
+	public static final String INITIAL_VERSION = "1.0";
+	public static final String UPDATED_VERSION = "1.01";
+
 	// ////////////////////////////////////////////////////////////////
 	// TEST THIS CLASS
 	// ////////////////////////////////////////////////////////////////
@@ -133,7 +136,7 @@ public class FlatFileExporter
 		public void testGetNearestCut()
 		{
 			SensorWrapper sa = new SensorWrapper("sensor-A");
-			for (int i = 1; i <5; i++)
+			for (int i = 1; i < 5; i++)
 			{
 				// primary.getName(),,
 				SensorContactWrapper sca = new SensorContactWrapper();
@@ -141,22 +144,22 @@ public class FlatFileExporter
 				sca.setLabel("" + i * 10);
 				sa.add(sca);
 			}
-			
-			SensorContactWrapper fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(5));
+
+			SensorContactWrapper fw = FlatFileExporter.nearestCutTo(sa,
+					new HiResDate(5));
 			assertNull("should not return one - before data starts", fw);
 			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(11));
-			assertEquals("got first one","10", fw.getLabel());
+			assertEquals("got first one", "10", fw.getLabel());
 			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(19));
-			assertEquals("got correct one","20", fw.getLabel());
+			assertEquals("got correct one", "20", fw.getLabel());
 			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(85));
 			assertNull("should not return one - after data finishes", fw);
 			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(40));
-			assertEquals("got last one","40", fw.getLabel());
+			assertEquals("got last one", "40", fw.getLabel());
 			fw = FlatFileExporter.nearestCutTo(sa, new HiResDate(35));
-			assertEquals("got correct one","40", fw.getLabel());
+			assertEquals("got correct one", "40", fw.getLabel());
 		}
-		
-		
+
 		public void testAgainstSample2() throws IOException
 		{
 			// collate the data
@@ -213,14 +216,13 @@ public class FlatFileExporter
 			TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
 			String s1Type = "s1_type";
 			String s2Type = "s2_TYPE";
-			String fVersion = "1.01";
 			String protMarking = "PROT_MARKING";
 			String serName = "SER_NAME";
 
 			// do the export
 			final FlatFileExporter fa = new FlatFileExporter();
-			String res = fa.export(primary, secList, period, s1Type, s2Type,
-					fVersion, protMarking, serName);
+			String res = fa.export(primary, secList, period, s1Type, s2Type, null,
+					null, null, null, INITIAL_VERSION, protMarking, serName);
 
 			// get the test data
 			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata2.txt");
@@ -456,6 +458,14 @@ public class FlatFileExporter
 	 *          what type was specified for sensor 2
 	 * @param sensor2Type
 	 *          what type was specified for sensor 2
+	 * @param s1fwd
+	 *          sensor1 fwd depth
+	 * @param s1aft
+	 *          sensor1 aft depth
+	 * @param s2fwd
+	 *          sensor2 fwd depth
+	 * @param s2aft
+	 *          sensor2 aft depth
 	 * @param fileVersion
 	 *          which SAM version to use
 	 * @param protMarking
@@ -466,8 +476,9 @@ public class FlatFileExporter
 	 */
 	public String export(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period,
-			final String sensor1Type, String sensor2Type, String fileVersion,
-			String protMarking, final String serialName)
+			final String sensor1Type, String sensor2Type, Double s1fwd, Double s1aft,
+			Double s2fwd, Double s2aft, String fileVersion, String protMarking,
+			final String serialName)
 	{
 		String res = null;
 
@@ -495,14 +506,14 @@ public class FlatFileExporter
 		// now the body bits
 		final String body;
 
-		if (fileVersion.equals("1.00"))
+		if (fileVersion.equals(INITIAL_VERSION))
 		{
 			body = this.getBody(pTrack, secTrack, period, sensor1Type, fileVersion);
 		}
 		else
 		{
 			body = this.getBody2(pTrack, secTrack, period, sensor1Type, sensor2Type,
-					fileVersion, sensor1, sensor2);
+					fileVersion, sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft);
 		}
 
 		// count how many items we found
@@ -510,7 +521,7 @@ public class FlatFileExporter
 
 		// start off with the header bits
 		final String header;
-		if (fileVersion.equals("1.00"))
+		if (fileVersion.equals(INITIAL_VERSION))
 		{
 			header = this.getHeader(primaryTrack.getName(), primaryTrack.getName(),
 					sensor1.getName(), secTrack.getName(),
@@ -929,17 +940,24 @@ public class FlatFileExporter
 	 *          the first sensor to export
 	 * @param sensor1
 	 *          the second sensro to export
+	 * @param s1fwd
+	 * @param s1aft
+	 * @param s2fwd
+	 * @param s2aft
 	 * @return
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
 			final String sensorType1, final String sensorType2, String fileVersion,
-			SensorWrapper sensor1, SensorWrapper sensor2)
+			SensorWrapper sensor1, SensorWrapper sensor2, Double s1fwd, Double s1aft,
+			Double s2fwd, Double s2aft)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
 		// right, we're going to loop through the two tracks producing positions
 		// at all the specified times
+
+		final NumberFormat dp2 = new DecimalFormat("0.00");
 
 		// remember the primary interpolation
 		final boolean primaryInterp = primaryTrack.getInterpolatePoints();
@@ -951,9 +969,30 @@ public class FlatFileExporter
 
 		WorldLocation origin = null;
 
-		Collection<Editable> matches = primaryTrack.getItemsBetween(period.getStartDTG(), period.getEndDTG());
+		// have a look at the depth
+		String strS1fwd = dp2.format(s1fwd);
+		String strS1aft = "0";
+		if (sensorType1.startsWith("T"))
+		{
+			strS1aft = dp2.format(s1aft);
+		}
+
+		// and sensor 2?
+		String strS2fwd = "0";
+		String strS2aft = "0";
+		if (sensor2 != null)
+		{
+			strS2fwd = dp2.format(s2fwd);
+			if (sensorType2.startsWith("T"))
+			{
+				strS2aft = dp2.format(s2aft);
+			}
+		}
+
+		Collection<Editable> matches = primaryTrack.getItemsBetween(
+				period.getStartDTG(), period.getEndDTG());
 		Iterator<Editable> iter = matches.iterator();
-		while(iter.hasNext())
+		while (iter.hasNext())
 		{
 			final FixWrapper priFix = (FixWrapper) iter.next();
 			final long dtg = priFix.getTime().getDate().getTime();
@@ -963,11 +1002,6 @@ public class FlatFileExporter
 
 			// create a time
 			final HiResDate thisDTG = new HiResDate(dtg);
-
-			// right, we only do this if we have primary data - skip forward a second
-			// if we're missing this pos
-			if (priFix == null)
-				continue;
 
 			final FixWrapper secFix = getFixAt(secTrack, thisDTG);
 
@@ -1096,8 +1130,6 @@ public class FlatFileExporter
 			// Prd_Status Prd_X Prd_Y Prd_Brg Prd_Brg_Acc Prd_Range Prd_Range_Acc
 			// Prd_Course Prd_Cacc Prd_Speed Prd_Sacc Prd_Freq Prd_Freq_Acc";
 
-			final NumberFormat dp2 = new DecimalFormat("0.00");
-
 			// NEW FORMAT
 			// Time OS_Status OS_X OS_Y OS_Speed OS_Heading OS_Depth Sensor_Status
 			// Sensor_X Sensor_Y Sensor_Brg Sensor_Bacc
@@ -1129,12 +1161,8 @@ public class FlatFileExporter
 			final String Sensor_Heading = "" + 0;
 			final String Sensor_Type = sensorType1;
 			final String Sensor_Doppler = "" + -1; // TODO: calc the doppler
-			final String Sensor_Depth_Fwd = "" + priFix.getDepth(); // TODO: decide
-																															// what depth to
-																															// use
-			final String Sensor_Depth_Aft = "" + priFix.getDepth(); // TODO: decide
-																															// what depth to
-																															// use
+			final String Sensor_Depth_Fwd = strS1fwd;
+			final String Sensor_Depth_Aft = strS1aft;
 
 			final String Sensor2_Status = "" + senStat2;
 			final String Sensor2_X = "" + sen2X;
@@ -1147,8 +1175,8 @@ public class FlatFileExporter
 			final String Sensor2_Heading = "" + 0;
 			final String Sensor2_Type = sensorType2;
 			final String Sensor2_Doppler = "" + -1; // TODO: calc the doppler
-			final String Sensor2_Depth_Fwd = "" + priFix.getDepth();
-			final String Sensor2_Depth_Aft = "" + priFix.getDepth();
+			final String Sensor2_Depth_Fwd = strS2fwd;
+			final String Sensor2_Depth_Aft = strS2aft;
 
 			final String Msd_Status = "" + 15;
 			final String Msd_X = "" + secX;

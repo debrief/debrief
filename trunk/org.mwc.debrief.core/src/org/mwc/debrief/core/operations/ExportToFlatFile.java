@@ -32,6 +32,8 @@ public class ExportToFlatFile extends TimeControllerOperation
 	 * the flat-file format we're going to use
 	 */
 	private final String _fileVersion;
+	
+
 
 	/**
 	 * default constructor - sticks to old format
@@ -39,7 +41,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 	 */
 	public ExportToFlatFile()
 	{
-		this("Export to flat file (SAM Format)", "1.0", false);
+		this("Export to flat file (SAM Format)", FlatFileExporter.INITIAL_VERSION, false);
 	}
 
 	/**
@@ -71,6 +73,12 @@ public class ExportToFlatFile extends TimeControllerOperation
 		// sort out what type of file it is
 		String sensor1Type = null;
 		String sensor2Type = null;
+		
+		// don't forget the sensor depths
+		Double s1fwd = null;
+		Double s1aft = null;
+		Double s2fwd = null;
+		Double s2aft = null;
 
 		// the protective marking on the data
 		String protMarking = null;
@@ -114,7 +122,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 			return;
 
 		}
-		if (_fileVersion.equals("1.0"))
+		if (_fileVersion.equals(FlatFileExporter.INITIAL_VERSION))
 		{
 			// ok, we can only have one sensor visible
 			if (sensorCount > 1)
@@ -162,13 +170,6 @@ public class ExportToFlatFile extends TimeControllerOperation
 				return;
 		}
 
-		// how many sensors for this data-type?
-		int numSensors;
-		if (_fileVersion.equals("1.0"))
-			numSensors = 1;
-		else
-			numSensors = 2;
-
 		// prepare the export wizard
 		SimplePageListWizard wizard = new SimplePageListWizard();
 		wizard.addWizard(new FlatFilenameWizardPage(_fileVersion, sensorCount));
@@ -190,11 +191,16 @@ public class ExportToFlatFile extends TimeControllerOperation
 					sensor2Type = exportPage.getSensor2Type();
 					protMarking = exportPage.getProtMarking();
 					serialName = exportPage.getSerialName();
+					
+					s1fwd = exportPage.getSensor1Fwd();
+					s1aft = exportPage.getSensor1Aft();
+					s2fwd = exportPage.getSensor2Fwd();
+					s2aft = exportPage.getSensor2Aft();
 				}
 			}
 			FlatFileExporter ff = new FlatFileExporter();
 			String theData = ff.export(primaryTrack, secondaryTracks, period,
-					sensor1Type, sensor2Type, _fileVersion, protMarking, serialName);
+					sensor1Type, sensor2Type,s1fwd,s1aft,s2fwd,s2aft, _fileVersion, protMarking, serialName);
 
 			// now write the data to file
 			final String HOST_NAME = primaryTrack.getName();
