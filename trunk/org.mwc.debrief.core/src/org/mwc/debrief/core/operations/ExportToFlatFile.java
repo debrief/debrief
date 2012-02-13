@@ -171,7 +171,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 		// prepare the export wizard
 		SimplePageListWizard wizard = new SimplePageListWizard();
-		wizard.addWizard(new FlatFilenameWizardPage(numSensors));
+		wizard.addWizard(new FlatFilenameWizardPage(_fileVersion, sensorCount));
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
