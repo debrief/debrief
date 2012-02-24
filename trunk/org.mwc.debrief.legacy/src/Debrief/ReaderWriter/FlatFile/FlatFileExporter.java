@@ -222,7 +222,7 @@ public class FlatFileExporter
 			// do the export
 			final FlatFileExporter fa = new FlatFileExporter();
 			String res = fa.export(primary, secList, period, s1Type, s2Type, null,
-					null, null, null, INITIAL_VERSION, protMarking, serName, 1600);
+					null, null, null, INITIAL_VERSION, protMarking, serName, 1600d);
 
 			// get the test data
 			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata2.txt");
@@ -480,7 +480,7 @@ public class FlatFileExporter
 			final WatchableList[] secondaryTracks, final TimePeriod period,
 			final String sensor1Type, String sensor2Type, Double s1fwd, Double s1aft,
 			Double s2fwd, Double s2aft, String fileVersion, String protMarking,
-			final String serialName, double speedOfSoundMS)
+			final String serialName, Double speedOfSoundMS)
 	{
 		String res = null;
 
