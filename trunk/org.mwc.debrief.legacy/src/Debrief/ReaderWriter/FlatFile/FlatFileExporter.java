@@ -222,7 +222,7 @@ public class FlatFileExporter
 			// do the export
 			final FlatFileExporter fa = new FlatFileExporter();
 			String res = fa.export(primary, secList, period, s1Type, s2Type, null,
-					null, null, null, INITIAL_VERSION, protMarking, serName);
+					null, null, null, INITIAL_VERSION, protMarking, serName, 1600);
 
 			// get the test data
 			final String TARGET_STR = getTestData("src/Debrief/ReaderWriter/FlatFile/fakedata2.txt");
@@ -472,13 +472,15 @@ public class FlatFileExporter
 	 *          the protective marking on the data
 	 * @param serialName
 	 *          description of data being exported
+	 * @param speedOfSoundMS
+	 * 	        speed of sound, metres/sec
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
 			final WatchableList[] secondaryTracks, final TimePeriod period,
 			final String sensor1Type, String sensor2Type, Double s1fwd, Double s1aft,
 			Double s2fwd, Double s2aft, String fileVersion, String protMarking,
-			final String serialName)
+			final String serialName, double speedOfSoundMS)
 	{
 		String res = null;
 
@@ -513,7 +515,7 @@ public class FlatFileExporter
 		else
 		{
 			body = this.getBody2(pTrack, secTrack, period, sensor1Type, sensor2Type,
-					fileVersion, sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft);
+					fileVersion, sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft, speedOfSoundMS);
 		}
 
 		// count how many items we found
@@ -944,13 +946,14 @@ public class FlatFileExporter
 	 * @param s1aft
 	 * @param s2fwd
 	 * @param s2aft
+	 * @param speedOfSoundMS 
 	 * @return
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
 			final TrackWrapper secTrack, final TimePeriod period,
 			final String sensorType1, final String sensorType2, String fileVersion,
 			SensorWrapper sensor1, SensorWrapper sensor2, Double s1fwd, Double s1aft,
-			Double s2fwd, Double s2aft)
+			Double s2fwd, Double s2aft, double speedOfSoundMS)
 	{
 		final StringBuffer buffer = new StringBuffer();
 

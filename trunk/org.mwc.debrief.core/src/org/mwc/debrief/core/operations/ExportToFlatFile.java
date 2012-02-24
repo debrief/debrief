@@ -79,6 +79,9 @@ public class ExportToFlatFile extends TimeControllerOperation
 		Double s1aft = null;
 		Double s2fwd = null;
 		Double s2aft = null;
+		
+		// and speed of sound
+		Double speedOfSoundMS = null;
 
 		// the protective marking on the data
 		String protMarking = null;
@@ -196,11 +199,13 @@ public class ExportToFlatFile extends TimeControllerOperation
 					s1aft = exportPage.getSensor1Aft();
 					s2fwd = exportPage.getSensor2Fwd();
 					s2aft = exportPage.getSensor2Aft();
+					speedOfSoundMS = exportPage.getSpeedOfSound();
 				}
 			}
 			FlatFileExporter ff = new FlatFileExporter();
 			String theData = ff.export(primaryTrack, secondaryTracks, period,
-					sensor1Type, sensor2Type,s1fwd,s1aft,s2fwd,s2aft, _fileVersion, protMarking, serialName);
+					sensor1Type, sensor2Type,s1fwd,s1aft,s2fwd,s2aft,
+					_fileVersion, protMarking, serialName, speedOfSoundMS);
 
 			// now write the data to file
 			final String HOST_NAME = primaryTrack.getName();

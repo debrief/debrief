@@ -74,6 +74,7 @@ public class FlatFilenameWizardPage extends WizardPage
 	protected Double _sensor1Aft = null;
 	protected Double _sensor2Fwd = null;
 	protected Double _sensor2Aft = null;
+	protected Double _speedOfSound = null;
 
 	private StringFieldEditor _sensor2AftEditor;
 
@@ -152,6 +153,7 @@ public class FlatFilenameWizardPage extends WizardPage
 		String sensor1aftKey = "Debrief.FlatFileSensor1aft";
 		String sensor2fwdKey = "Debrief.FlatFileSensor2fwd";
 		String sensor2aftKey = "Debrief.FlatFileSensor2aft";
+		String speedOfSoundKey = "Debrief.speedOfSoundKey";
 
 		String title = "Output directory:";
 		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
@@ -407,6 +409,40 @@ public class FlatFilenameWizardPage extends WizardPage
 				Label lbl4 = new Label(container, SWT.None);
 
 			}
+			
+			// ok, get the sensor1 depth
+			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(speedOfSoundKey,
+					"Speed of Sound (m/sec):", container)
+			{
+				protected void fireValueChanged(String property, Object oldValue,
+						Object newValue)
+				{
+					super.fireValueChanged(property, oldValue, newValue);
+
+					// is this the value property?
+					if (isNumber(newValue))
+						_speedOfSound = Double.valueOf(newValue.toString());
+
+					dialogChanged();
+				}
+
+				@Override
+				protected boolean doCheckState()
+				{
+					return _speedOfSound != null;
+				}
+			};
+			speedOfSoundEditor.setEmptyStringAllowed(false);
+			speedOfSoundEditor.setPreferenceStore(getPreferenceStore());
+			speedOfSoundEditor.setPage(this);
+			speedOfSoundEditor
+					.setErrorMessage("A value for speed of sound must be supplied");
+			speedOfSoundEditor.setStringValue("");
+			speedOfSoundEditor.load();
+
+			@SuppressWarnings("unused")
+			Label lbl3 = new Label(container, SWT.None);
+
 
 		}
 
@@ -612,6 +648,11 @@ public class FlatFilenameWizardPage extends WizardPage
 	public String getSerialName()
 	{
 		return _serialName;
+	}
+
+	public Double getSpeedOfSound()
+	{
+		return _speedOfSound;
 	}
 
 }
