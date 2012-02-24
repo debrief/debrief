@@ -11,6 +11,7 @@ import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 public final class Doublet implements Comparable<Doublet>
 {
@@ -209,6 +210,38 @@ public final class Doublet implements Comparable<Doublet>
 		return dopplerOffset;
 	}
 
+
+	/** Calculate the current doppler shift between the two positons
+	 * 
+	 * @param SpeedOfSound the speed of sound to use, m/sec
+	 * @return
+	 */
+	public static double getDopplerShift(double SpeedOfSound, Fix host, Fix tgt)
+	{
+		double osSpeed = MWC.Algorithms.Conversions.Kts2Mps(host.getSpeed());
+		double tgtSpeed = MWC.Algorithms.Conversions.Kts2Mps(tgt.getSpeed());
+		double osHeadingRads = host.getCourse();
+		double tgtHeadingRads = tgt.getCourse();
+		double osBearingRads = tgt.getLocation().subtract(host.getLocation()).getBearing();
+		double tgtBearingRads = host.getLocation().subtract(tgt.getLocation()).getBearing();
+		return calcDopplerShift(SpeedOfSound , osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, osBearingRads, tgtBearingRads);
+	}
+	
+	private static double calcDopplerShift(double SpeedOfSound, double osHeadingRads, double tgtHeadingRads,
+			double osSpeed, double tgtSpeed, double osBearingRads, double tgtBearingRads)
+	{
+		double res=0;
+		
+		double osRelBearingRads = osBearingRads - osHeadingRads;
+		double tgtRelBearingRads = tgtBearingRads - tgtHeadingRads;
+		
+		double relSpeed = (osSpeed * osRelBearingRads) - (tgtSpeed * tgtRelBearingRads);
+		res = (relSpeed + SpeedOfSound) / SpeedOfSound;
+		
+		return res;
+	}
+
+	
 	/**
 	 * calculate what the frequency of the target should be (base freq plus both
 	 * dopplers)
@@ -284,6 +317,54 @@ public final class Doublet implements Comparable<Doublet>
 					observedFreq);
 		}
 
+		public void testDopplerShift()
+		{
+			HiResDate time = new HiResDate(1000);
+			WorldLocation hostLocation = new WorldLocation(5,1,0);
+			WorldLocation tgtLocation = new WorldLocation(8,4,0);
+			double hostCourse = MWC.Algorithms.Conversions.Degs2Rads(10);
+			double hostSpeed = MWC.Algorithms.Conversions.Kts2Yps(5);
+			double tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(80);
+			double tgtSpeed = MWC.Algorithms.Conversions.Kts2Yps(5);
+			Fix host = new Fix(time, hostLocation, hostCourse, hostSpeed);
+			Fix tgt = new Fix(time, tgtLocation, tgtCourse, tgtSpeed);
+			
+			double osBearingRads = tgt.getLocation().subtract(host.getLocation()).getBearing();
+			double tgtBearingRads = host.getLocation().subtract(tgt.getLocation()).getBearing();
+			double osRelBearingRads = osBearingRads - host.getCourse();
+			double tgtRelBearingRads = tgtBearingRads - tgt.getCourse();
+
+			assertEquals("correct os rel bearing", 35d, MWC.Algorithms.Conversions.Rads2Degs(osRelBearingRads), 1);
+			assertEquals("correct tgt rel bearing", -215, MWC.Algorithms.Conversions.Rads2Degs(tgtRelBearingRads), 1);
+			
+			double dShift = getDopplerShift(1001, host, tgt);
+			
+			assertEquals("correct doppler shift", 1.006, dShift, 0.001d);
+			
+			// speed up target, so they're diverging
+			tgt.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(15));
+
+			dShift = getDopplerShift(1001, host, tgt);
+			
+			assertEquals("correct doppler shift", 1.017, dShift, 0.001d);
+			
+			// slow down target, so they're divering more slowly
+			tgt.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(0.1));
+			
+			dShift = getDopplerShift(1001, host, tgt);
+			
+			assertEquals("correct doppler shift", 1.000, dShift, 0.001d);
+
+			// restore target speed, then put them on converging course
+			tgt.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(5));
+			tgt.setCourse(MWC.Algorithms.Conversions.Degs2Rads(190));
+			
+			dShift = getDopplerShift(1001, host, tgt);
+			
+			assertEquals("correct doppler shift", 1.000, dShift, 0.001d);
+
+		}
+		
 		public void testCorrected()
 		{
 			double res = convertAndTest(320, 28, 8, 300);
