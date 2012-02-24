@@ -239,6 +239,40 @@ public class FlatFilenameWizardPage extends WizardPage
 		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
 			// ok, get the sensor1 depth
+			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(speedOfSoundKey,
+					"Speed of Sound (m/sec):", container)
+			{
+				protected void fireValueChanged(String property, Object oldValue,
+						Object newValue)
+				{
+					super.fireValueChanged(property, oldValue, newValue);
+
+					// is this the value property?
+					if (isNumber(newValue))
+						_speedOfSound = Double.valueOf(newValue.toString());
+
+					dialogChanged();
+				}
+
+				@Override
+				protected boolean doCheckState()
+				{
+					return _speedOfSound != null;
+				}
+			};
+			speedOfSoundEditor.setEmptyStringAllowed(false);
+			speedOfSoundEditor.setPreferenceStore(getPreferenceStore());
+			speedOfSoundEditor.setPage(this);
+			speedOfSoundEditor
+					.setErrorMessage("A value for speed of sound must be supplied");
+			speedOfSoundEditor.setStringValue("");
+			speedOfSoundEditor.load();
+
+			@SuppressWarnings("unused")
+			Label lbl3 = new Label(container, SWT.None);
+			
+			
+			// ok, get the sensor1 depth
 			StringFieldEditor sensor1FwdEditor = new StringFieldEditor(sensor1fwdKey,
 					"Sensor 1 fwd depth (m):", container)
 			{
@@ -309,7 +343,7 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor1AftEditor.load();
 
 			@SuppressWarnings("unused")
-			Label lbl3 = new Label(container, SWT.None);
+			Label lbl3b = new Label(container, SWT.None);
 
 		}
 
@@ -409,42 +443,7 @@ public class FlatFilenameWizardPage extends WizardPage
 				Label lbl4 = new Label(container, SWT.None);
 
 			}
-			
-			// ok, get the sensor1 depth
-			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(speedOfSoundKey,
-					"Speed of Sound (m/sec):", container)
-			{
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
-				{
-					super.fireValueChanged(property, oldValue, newValue);
-
-					// is this the value property?
-					if (isNumber(newValue))
-						_speedOfSound = Double.valueOf(newValue.toString());
-
-					dialogChanged();
 				}
-
-				@Override
-				protected boolean doCheckState()
-				{
-					return _speedOfSound != null;
-				}
-			};
-			speedOfSoundEditor.setEmptyStringAllowed(false);
-			speedOfSoundEditor.setPreferenceStore(getPreferenceStore());
-			speedOfSoundEditor.setPage(this);
-			speedOfSoundEditor
-					.setErrorMessage("A value for speed of sound must be supplied");
-			speedOfSoundEditor.setStringValue("");
-			speedOfSoundEditor.load();
-
-			@SuppressWarnings("unused")
-			Label lbl3 = new Label(container, SWT.None);
-
-
-		}
 
 		
 		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))

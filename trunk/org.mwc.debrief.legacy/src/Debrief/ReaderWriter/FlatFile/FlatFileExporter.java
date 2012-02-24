@@ -953,7 +953,7 @@ public class FlatFileExporter
 			final TrackWrapper secTrack, final TimePeriod period,
 			final String sensorType1, final String sensorType2, String fileVersion,
 			SensorWrapper sensor1, SensorWrapper sensor2, Double s1fwd, Double s1aft,
-			Double s2fwd, Double s2aft, double speedOfSoundMS)
+			Double s2fwd, Double s2aft, Double speedOfSoundMS)
 	{
 		final StringBuffer buffer = new StringBuffer();
 
