@@ -490,7 +490,7 @@ public class GridPainter implements Plottable, Serializable
 			if ((p3x >= 0) || (p4.x >= 0))
 			{
 				g.drawLine(p3x, p3y, p4.x, p4.y);
-
+				
 				// ///////////////////////////////////////////////////////////
 				// and the labels
 				// ///////////////////////////////////////////////////////////
@@ -515,7 +515,7 @@ public class GridPainter implements Plottable, Serializable
 					}
 
 					// and output it
-					g.drawText(thisLabel, p3x + 2, 15);
+					g.drawText(thisLabel, p4.x + 2, 15);
 				}
 			}
 		}
