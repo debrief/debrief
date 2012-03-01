@@ -26,6 +26,41 @@ public class WormInHoleOffset
 {
 
 	/**
+	 * diagnostic support method
+	 * 
+	 * @param theLoc
+	 */
+	private static void writeLoc(WorldLocation theLoc)
+	{
+		writeLoc(null, theLoc);
+	}
+
+	/**
+	 * another diagnostic support method
+	 * 
+	 * @param msg
+	 * @param theLoc
+	 */
+	private static void writeLoc(String msg, WorldLocation theLoc)
+	{
+		if (msg != null)
+			System.out.print(msg + "|");
+		System.out.println(loc2String(theLoc));
+	}
+
+	/**
+	 * format the location as a String
+	 * 
+	 * @param theLoc
+	 * @return
+	 */
+	private static String loc2String(WorldLocation theLoc)
+	{
+		return MWC.Algorithms.Conversions.Degs2m(theLoc.getLong()) + ", "
+				+ MWC.Algorithms.Conversions.Degs2m(theLoc.getLat());
+	}
+
+	/**
 	 * 
 	 * @param track
 	 * @param dtg
@@ -92,22 +127,26 @@ public class WormInHoleOffset
 						.subtract(thisI.getFixLocation()).getRange();
 				double thisLenM = MWC.Algorithms.Conversions.Degs2m(thisLen);
 
-				// is this less than our stub?
+				// is this longer than our stub?
 				if (thisLenM >= offsetM)
 				{
 					// so just interpolate along the path
 					double posDelta = offsetM / thisLenM;
-					double timeDelta = (nextPoint.getDTG().getMicros() - thisI.getDTG()
-							.getMicros()) * posDelta;
+					long nextMicros = nextPoint.getDTG().getMicros();
+					long lastMicros = thisI.getDTG().getMicros();
+					double timeDelta = (nextMicros - lastMicros);
+					timeDelta *= posDelta;
+					double timeOffset = nextMicros - timeDelta;
+
 					FixWrapper newMidFix = FixWrapper.interpolateFix(thisI, nextPoint,
-							new HiResDate(0,
-									(long) (nextPoint.getDTG().getMicros() - timeDelta)));
+							new HiResDate(0, (long) timeOffset));
 					res = newMidFix.getLocation();
 					offsetM = 0;
 					break;
 				}
 				else
 				{
+					// we still have array pending, reduce what we've just consumed
 					offsetM -= thisLenM;
 					nextPoint = thisI;
 				}
@@ -115,7 +154,7 @@ public class WormInHoleOffset
 		}
 
 		// do we have any array left to consume?
-		if (offsetM >= 0)
+		if (offsetM > 0)
 		{
 			// are we on the first data point?
 			if (nextPoint != null)
@@ -137,6 +176,95 @@ public class WormInHoleOffset
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	static public final class testMe extends junit.framework.TestCase
 	{
+		public void testInterpolate()
+		{
+			final TrackWrapper tw = new TrackWrapper();
+
+			final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 0),
+					loc_1.add(getVector(25, 0)), MWC.Algorithms.Conversions.Degs2Rads(0),
+					110));
+			fw1.setLabel("fw1");
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 0), fw1
+					.getLocation().add(getVector(45, 600)),
+					MWC.Algorithms.Conversions.Degs2Rads(90), 120));
+			fw2.setLabel("fw2");
+			tw.addFix(fw1);
+			tw.addFix(fw2);
+			assertEquals("correct points", 2, tw.numFixes());
+
+			// ok, show us the track
+			outputTrack(tw);
+
+			FixWrapper f3 = FixWrapper
+					.interpolateFix(fw1, fw2, new HiResDate(101, 0));
+			WorldVector offest = f3.getLocation().subtract(fw1.getFixLocation());
+			double offM = MWC.Algorithms.Conversions.Degs2m(offest.getRange());
+			assertEquals("near to f1", 10, offM, 10);
+
+			f3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(199, 0));
+			offest = f3.getLocation().subtract(fw2.getFixLocation());
+			offM = MWC.Algorithms.Conversions.Degs2m(offest.getRange());
+			assertEquals("near to f2", 10, offM, 10);
+
+			writeLoc(f3.getLocation());
+
+		}
+
+		public void testData2()
+		{
+			TrackWrapper track = getDummyTrack();
+			assertEquals("correct points", 5, track.numFixes());
+
+			// ok, show us the track
+			outputTrack(track);
+			// get a location
+			ArrayLength theLen = new ArrayLength(-500);
+			WorldLocation res = WormInHoleOffset.getWormOffsetFor(track,
+					new HiResDate(400), theLen);
+
+			// and now the sensor location
+			writeLoc(res);
+
+			String theLoc = loc2String(res);
+			assertEquals("correct location", "700.3297761249414, 1200.334768427379",
+					theLoc);
+
+			theLen = new ArrayLength(-100);
+			res = WormInHoleOffset
+					.getWormOffsetFor(track, new HiResDate(400), theLen);
+
+			// and now the sensor location
+			writeLoc(res);
+
+			theLoc = loc2String(res);
+			assertEquals("correct location", "1100.33178323392, 1200.334768427379",
+					theLoc);
+
+			theLen = new ArrayLength(-100);
+			res = WormInHoleOffset
+					.getWormOffsetFor(track, new HiResDate(440), theLen);
+
+			// and now the sensor location
+			writeLoc(res);
+
+			theLoc = loc2String(res);
+			assertEquals("correct location", "1580.325791764545, 1200.334768427379",
+					theLoc);
+
+			theLen = new ArrayLength(-100);
+			res = WormInHoleOffset
+					.getWormOffsetFor(track, new HiResDate(310), theLen);
+
+			// and now the sensor location
+			writeLoc(res);
+
+			theLoc = loc2String(res);
+			assertEquals("correct location", "1580.325791764545, 1200.334768427379",
+					theLoc);
+			
+		}
+
 		public void testData() throws InterruptedException
 		{
 			TrackWrapper track = getDummyTrack();
@@ -182,10 +310,8 @@ public class WormInHoleOffset
 			while (numer.hasMoreElements())
 			{
 				FixWrapper thisF = (FixWrapper) numer.nextElement();
-				System.err.println(MWC.Algorithms.Conversions.Degs2m(thisF
-						.getLocation().getLong())
-						+ ", "
-						+ MWC.Algorithms.Conversions.Degs2m(thisF.getLocation().getLat()));
+				WorldLocation theLoc = thisF.getLocation();
+				writeLoc(theLoc);
 			}
 		}
 
@@ -205,25 +331,25 @@ public class WormInHoleOffset
 		{
 			final TrackWrapper tw = new TrackWrapper();
 
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
+			final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 0),
-					loc_1.add(getVector(0, 0)), MWC.Algorithms.Conversions.Degs2Rads(0),
+					loc_1.add(getVector(25, 0)), MWC.Algorithms.Conversions.Degs2Rads(0),
 					110));
 			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 0),
-					loc_1.add(getVector(0, 600)),
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 0), fw1
+					.getLocation().add(getVector(0, 600)),
 					MWC.Algorithms.Conversions.Degs2Rads(90), 120));
 			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 0),
-					loc_1.add(getVector(45, 849)),
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 0), fw2
+					.getLocation().add(getVector(45, 849)),
 					MWC.Algorithms.Conversions.Degs2Rads(180), 130));
 			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 0),
-					loc_1.add(getVector(90, 600)),
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 0), fw3
+					.getLocation().add(getVector(90, 600)),
 					MWC.Algorithms.Conversions.Degs2Rads(90), 140));
 			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 0),
-					loc_1.add(getVector(90, 1200)),
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 0), fw4
+					.getLocation().add(getVector(90, 1200)),
 					MWC.Algorithms.Conversions.Degs2Rads(90), 700));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
