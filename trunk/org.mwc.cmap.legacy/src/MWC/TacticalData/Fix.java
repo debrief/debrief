@@ -78,144 +78,144 @@ package MWC.TacticalData;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
-
 /**
- * a composite structure containing a time stamp,
- * a location, and a set of vessel parameter
+ * a composite structure containing a time stamp, a location, and a set of
+ * vessel parameter
  */
 public class Fix implements java.io.Serializable
 {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  static final long serialVersionUID = 5742516721502711888L;
-  private double _theCourse; // in radians
-  private double _theSpeed;  // in yards per second
-  private HiResDate _theTime; // (micros)
-  private WorldLocation _theLocation; 
+	// ////////////////////////////////////////////////
+	// member variables
+	// ////////////////////////////////////////////////
+	static final long serialVersionUID = 5742516721502711888L;
+	private double _theCourse; // in radians
+	private double _theSpeed; // in yards per second
+	private HiResDate _theTime; // (micros)
+	private WorldLocation _theLocation;
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
 
-  /**
-   * default constructor, used serialization
-   */
-  public Fix()
-  {
-  }
+	/**
+	 * default constructor, used serialization
+	 */
+	public Fix()
+	{
+	}
 
-  /**
-   * Constructor, normal parameters
-   *
-   * @param theTime     dtg of fix
-   * @param theLocation is the location for this fix
-   * @param theCourse   the current course (in Radians)
-   * @param theSpeed    the current speed (in yards per second)
-   */
-  public Fix(HiResDate theTime,
-             WorldLocation theLocation,
-             double theCourse,
-             double theSpeed)
-  {
-    _theTime = theTime;
-    _theLocation = theLocation;
-    _theCourse = theCourse;
-    _theSpeed = theSpeed;
-  }
-  
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	/**
+	 * Constructor, normal parameters
+	 * 
+	 * @param theTime
+	 *          dtg of fix
+	 * @param theLocation
+	 *          is the location for this fix
+	 * @param theCourse
+	 *          the current course (in Radians)
+	 * @param theSpeed
+	 *          the current speed (in yards per second)
+	 */
+	public Fix(HiResDate theTime, WorldLocation theLocation, double theCourse,
+			double theSpeed)
+	{
+		_theTime = theTime;
+		_theLocation = theLocation;
+		_theCourse = theCourse;
+		_theSpeed = theSpeed;
+	}
 
-  /** create deep clone of ourselves
-   * 
-   */
-  public Fix makeCopy()
-  {
-  	Fix newFix = new Fix();
-  	newFix._theCourse = _theCourse;
-  	newFix._theSpeed = _theSpeed;
-  	newFix._theLocation = new WorldLocation(_theLocation);
-  	newFix._theTime = new HiResDate(_theTime.getDate().getTime()+1);
-  	return newFix;
-  }
-  
-  /**
-   * get the current vessel speed (yps)
-   *
-   * @return vessel speed in yards per second
-   */
-  public double getSpeed()
-  {
-    return _theSpeed;
-  }
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
 
-  /**
-   * get the current vessel course (rads)
-   *
-   * @return vessel course in radians
-   */
-  public double getCourse()
-  {
-    return _theCourse;
-  }
+	/**
+	 * create deep clone of ourselves
+	 * 
+	 */
+	public Fix makeCopy()
+	{
+		Fix newFix = new Fix();
+		newFix._theCourse = _theCourse;
+		newFix._theSpeed = _theSpeed;
+		if (_theLocation != null)
+			newFix._theLocation = new WorldLocation(_theLocation);
+		if (_theTime != null)
+			newFix._theTime = new HiResDate(_theTime.getDate().getTime() + 1);
+		return newFix;
+	}
 
-  /**
-   * get the current vessel location
-   *
-   * @return vessel location
-   */
-  public WorldLocation getLocation()
-  {
-    return _theLocation;
-  }
+	/**
+	 * get the current vessel speed (yps)
+	 * 
+	 * @return vessel speed in yards per second
+	 */
+	public double getSpeed()
+	{
+		return _theSpeed;
+	}
 
-  /**
-   * set the location of the fix
-   */
-  public void setLocation(WorldLocation val)
-  {
-    _theLocation = val;
-  }
+	/**
+	 * get the current vessel course (rads)
+	 * 
+	 * @return vessel course in radians
+	 */
+	public double getCourse()
+	{
+		return _theCourse;
+	}
 
-  /**
-   * set the time of the fix
-   */
-  public void setTime(HiResDate dtg)
-  {
-    _theTime = dtg;
-  }
+	/**
+	 * get the current vessel location
+	 * 
+	 * @return vessel location
+	 */
+	public WorldLocation getLocation()
+	{
+		return _theLocation;
+	}
 
-  /**
-   * set the course of the fix (rads)
-   */
-  public void setCourse(double rads)
-  {
-    _theCourse = rads;
-  }
+	/**
+	 * set the location of the fix
+	 */
+	public void setLocation(WorldLocation val)
+	{
+		_theLocation = val;
+	}
 
-  /**
-   * set the speed of the fix (yards per sec)
-   */
-  public void setSpeed(double yps)
-  {
-    _theSpeed = yps;
-  }
+	/**
+	 * set the time of the fix
+	 */
+	public void setTime(HiResDate dtg)
+	{
+		_theTime = dtg;
+	}
 
-  /**
-   * get the timestamp of this fix
-   *
-   * @return dtg of fix
-   */
-  public HiResDate getTime()
-  {
-    return _theTime;
-  }
+	/**
+	 * set the course of the fix (rads)
+	 */
+	public void setCourse(double rads)
+	{
+		_theCourse = rads;
+	}
+
+	/**
+	 * set the speed of the fix (yards per sec)
+	 */
+	public void setSpeed(double yps)
+	{
+		_theSpeed = yps;
+	}
+
+	/**
+	 * get the timestamp of this fix
+	 * 
+	 * @return dtg of fix
+	 */
+	public HiResDate getTime()
+	{
+		return _theTime;
+	}
 
 }
-
-
-
-

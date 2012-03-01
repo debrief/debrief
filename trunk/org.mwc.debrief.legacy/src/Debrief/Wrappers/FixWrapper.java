@@ -362,7 +362,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	public FixWrapper(final Fix theFix)
 	{
 		// store the fix
-		_theFix = theFix.makeCopy();
+		_theFix = theFix;
 		// create the symbol
 		_theLocationWrapper = new LocationWrapper(_theFix.getLocation());
 		// create the label
@@ -462,9 +462,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
 		// cool, sort out the new location
 		final WorldLocation newLoc = new WorldLocation(previous.getLocation()
-				.getLat()
-				+ dLat, previous.getLocation().getLong() + dLong, previous.getDepth()
-				+ dDepth);
+				.getLat() + dLat, previous.getLocation().getLong() + dLong,
+				previous.getDepth() + dDepth);
 
 		// COURSE + SPEED
 		// calculate the course and speed as being the MLA of the unit
@@ -501,7 +500,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _trackWrapper;
 	}
 
-	@FireReformatted	
+	@FireReformatted
 	public final void resetColor()
 	{
 		setColor(null);
@@ -580,22 +579,23 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param dest
 	 * @param centre
 	 */
-	public final void paintMe(final CanvasType dest, final WorldLocation centre, Color theColor)
+	public final void paintMe(final CanvasType dest, final WorldLocation centre,
+			Color theColor)
 	{
 
 		// take a copy of the color
 		Color safeColor = _theLocationWrapper.getColor();
-		
+
 		// use the provided color
 		_theLocationWrapper.setColor(theColor);
 		_theLabel.setColor(theColor);
-		
-//		// check the color of the location wrapper
-//		final Color locCol = _theLocationWrapper.getColor();
-//		if (locCol != getColor())
-//		{
-//			_theLocationWrapper.setColor(getColor());
-//		}
+
+		// // check the color of the location wrapper
+		// final Color locCol = _theLocationWrapper.getColor();
+		// if (locCol != getColor())
+		// {
+		// _theLocationWrapper.setColor(getColor());
+		// }
 
 		if (getSymbolShowing())
 		{
@@ -614,7 +614,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
 		// and paint the label - if we're asked nicely
 		paintLabel(dest, theColor);
-		
+
 		_theLocationWrapper.setColor(safeColor);
 	}
 
@@ -652,7 +652,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	public final void setFont(final Font theFont)
 	{
 		_theFont = theFont;
-		
+
 		_theLabel.setFont(getFont());
 	}
 
@@ -719,9 +719,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 				+ ":"
 				+ getName()
 				+ "</u>\n"
-				+ GeneralFormat.formatStatus(MWC.Algorithms.Conversions
-						.Rads2Degs(_theFix.getCourse()), getSpeed(), _theFix.getLocation()
-						.getDepth());
+				+ GeneralFormat.formatStatus(
+						MWC.Algorithms.Conversions.Rads2Degs(_theFix.getCourse()),
+						getSpeed(), _theFix.getLocation().getDepth());
 	}
 
 	public final boolean getLabelShowing()

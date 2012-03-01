@@ -3821,7 +3821,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			if (wa != null)
 			{
 				// yes, store it
-				res = new FixWrapper(wa.getFix());
+				res = new FixWrapper(wa.getFix().makeCopy());
 
 				// ok, are we dealing with an offset?
 				if (sensorOffset != null)
