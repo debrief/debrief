@@ -3793,10 +3793,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          ownship
 	 * @return the location
 	 */
-	public WorldLocation getBacktraceTo(HiResDate searchTime,
+	public FixWrapper getBacktraceTo(HiResDate searchTime,
 			ArrayLength sensorOffset, boolean wormInHole)
 	{
-		WorldLocation res = null;
+		FixWrapper res = null;
 
 		if (wormInHole && sensorOffset != null)
 		{
@@ -3813,15 +3813,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// and restore the interpolated value
 			setInterpolatePoints(parentInterpolated);
 
-			MWC.GenericData.Watchable wa = null;
+			FixWrapper wa = null;
 			if (list.length > 0)
-				wa = list[0];
+				wa = (FixWrapper) list[0];
 
 			// did we find it?
 			if (wa != null)
 			{
 				// yes, store it
-				res = wa.getLocation();
+				res = new FixWrapper(wa.getFix());
 
 				// ok, are we dealing with an offset?
 				if (sensorOffset != null)
@@ -3830,9 +3830,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					double hdg = wa.getCourse();
 					// and calculate where it leaves us
 					WorldVector vector = new WorldVector(hdg, sensorOffset, null);
-
+					
 					// now apply this vector to the origin
-					res = res.add(vector);
+					res.setLocation(new WorldLocation(res.getLocation().add(vector)));
 				}
 			}
 

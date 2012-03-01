@@ -70,6 +70,7 @@ public class WormInHoleOffset
 	public static FixWrapper getWormOffsetFor(TrackWrapper track, HiResDate dtg,
 			WorldDistance arrayOffset)
 	{
+		
 		FixWrapper res = null;
 		double offsetM = -arrayOffset.getValueIn(WorldDistance.METRES);
 		// double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));

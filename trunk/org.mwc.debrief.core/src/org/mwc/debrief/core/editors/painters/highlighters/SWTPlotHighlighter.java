@@ -20,8 +20,8 @@ import MWC.GUI.Editable;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldDistance.ArrayLength;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Interface for classes which are able to draw a highlight at a particular
@@ -135,7 +135,7 @@ public interface SWTPlotHighlighter extends Editable {
 									if (len.getValue() != 0) {
 										WorldLocation centre = tw
 												.getBacktraceTo(fw.getTime(),
-														len, sw.getWormInHole());
+														len, sw.getWormInHole()).getLocation();
 										Point pt = dest.toScreen(centre);
 										dest.drawLine(pt.x - _mySize, pt.y
 												- _mySize, pt.x + _mySize, pt.y

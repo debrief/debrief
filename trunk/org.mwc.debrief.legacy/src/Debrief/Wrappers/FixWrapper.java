@@ -362,7 +362,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	public FixWrapper(final Fix theFix)
 	{
 		// store the fix
-		_theFix = theFix;
+		_theFix = theFix.makeCopy();
 		// create the symbol
 		_theLocationWrapper = new LocationWrapper(_theFix.getLocation());
 		// create the label

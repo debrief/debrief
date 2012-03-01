@@ -509,7 +509,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 							// ok, now get the sensor
 							WorldLocation sensorLoc = thisSensor.getHost().getBacktraceTo(
 									currentTime, thisSensor.getSensorOffset(),
-									thisSensor.getWormInHole());
+									thisSensor.getWormInHole()).getLocation();
 
 							// ok, is the sensor's parent track 'live' at this time?
 							if (sensorLoc == null)

@@ -609,7 +609,7 @@ public class FlatFileExporter
 				continue;
 
 			sensorLoc = primaryTrack.getBacktraceTo(thisDTG,
-					sensor.getSensorOffset(), sensor.getWormInHole());
+					sensor.getSensorOffset(), sensor.getWormInHole()).getLocation();
 
 			// see if we have a sensor cut at the right time
 			final SensorContactWrapper theCut = nearestCutTo(sensor, thisDTG);
@@ -1018,8 +1018,9 @@ public class FlatFileExporter
 				origin = priFix.getLocation();
 
 			// start off with the first sensor
-			sensor1Loc = primaryTrack.getBacktraceTo(thisDTG,
+			FixWrapper sensorFix = primaryTrack.getBacktraceTo(thisDTG,
 					sensor1.getSensorOffset(), sensor1.getWormInHole());
+			sensor1Loc = sensorFix.getLocation();
 
 			// see if we have a sensor cut at the right time
 			final SensorContactWrapper cutS1 = nearestCutTo(sensor1, thisDTG);
@@ -1052,8 +1053,9 @@ public class FlatFileExporter
 			if (sensor2 != null)
 			{
 
-				sensor2Loc = primaryTrack.getBacktraceTo(thisDTG,
+				FixWrapper sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
 						sensor2.getSensorOffset(), sensor2.getWormInHole());
+				sensor2Loc = sensor2Fix.getLocation();
 
 				// see if we have a sensor cut at the right time
 				cutS2 = nearestCutTo(sensor2, thisDTG);

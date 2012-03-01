@@ -200,7 +200,7 @@ final class SnailDrawSWTTrack
 								if (len.getValue() != 0) {
 									WorldLocation centre = trk
 											.getBacktraceTo(dtg,
-													len, sw.getWormInHole());
+													len, sw.getWormInHole()).getLocation();
 									Point pt = dest.toScreen(centre);
 									dest.drawLine(pt.x - _mySize, pt.y
 											- _mySize, pt.x + _mySize, pt.y
