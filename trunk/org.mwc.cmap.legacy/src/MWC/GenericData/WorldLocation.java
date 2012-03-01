@@ -342,7 +342,14 @@ public class WorldLocation implements Serializable, Cloneable
 			_model = new MWC.Algorithms.EarthModels.FlatEarth();
 
 		// do the calculation with our current model
-		WorldLocation res = new WorldLocation(_model.add(this, delta));
+		
+		// do we have a range?
+		final WorldLocation res;
+		
+		if((delta.getRange() == 0) && (delta.getDepth() == 0))
+			res = new WorldLocation(this);
+		else
+			res = new WorldLocation(_model.add(this, delta));
 
 		// and return the resutls
 		return res;
