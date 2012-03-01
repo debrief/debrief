@@ -224,26 +224,37 @@ public final class Doublet implements Comparable<Doublet>
 		double tgtSpeed = MWC.Algorithms.Conversions.Kts2Mps(tgt.getSpeed());
 		double osHeadingRads = host.getCourse();
 		double tgtHeadingRads = tgt.getCourse();
-		double osBearingRads = tgt.getLocation().subtract(host.getLocation())
-				.getBearing();
-		double tgtBearingRads = host.getLocation().subtract(tgt.getLocation())
-				.getBearing();
+		
+		// produce dLat, dLong at the correct point on the earth
+		WorldVector offset = tgt.getLocation().subtract(host.getLocation());
+		double dLat = offset.getRange() * Math.cos(offset.getBearing());
+		double dLong = offset.getRange() * Math.sin(offset.getBearing());
+		
+		// done, go for it.
 		return calcDopplerShift(SpeedOfSound, osHeadingRads, tgtHeadingRads,
-				osSpeed, tgtSpeed, osBearingRads, tgtBearingRads, host.getLocation(),
-				tgt.getLocation());
+				osSpeed, tgtSpeed, dLat, dLong);
 	}
 
+	/** perform doppler shift calculation
+	 * Note: we receive dLat, dLong to support different range calculations. The
+	 * Excel spreadsheet (DopplerEffect.xls) that is used to verify the 
+	 * algorithm uses flat-earth calcs.  In normal use we wish to use round-earth
+	 * calcs
+	 * 
+	 * @param SpeedOfSound m/s
+	 * @param osHeadingRads rads 
+	 * @param tgtHeadingRads rads
+	 * @param osSpeed m/s
+	 * @param tgtSpeed  m/s
+	 * @param dLat  degs
+	 * @param dLong  degs
+	 * @return
+	 */
 	private static double calcDopplerShift(double SpeedOfSound,
 			double osHeadingRads, double tgtHeadingRads, double osSpeed,
-			double tgtSpeed, double osBearingRads, double tgtBearingRads,
-			WorldLocation hostLoc, WorldLocation tgtLoc)
+			double tgtSpeed, double dLat, double dLong)
 	{
-		// double a = Math.atan((hostLoc.getLat()-tgtLoc.getLat()) /
-		// (hostLoc.getLong() -tgtLoc.getLong()));
-		double dLat = hostLoc.getLat() - tgtLoc.getLat();
-		double dLong = hostLoc.getLong() - tgtLoc.getLong();
-		double a = Math.atan2(dLong, dLat);
-		a = -a;
+		double a = -Math.atan2(dLong, dLat);
 
 		if (a - Math.PI / 2 < 0)
 			a += 3 * Math.PI / 2;
@@ -338,11 +349,22 @@ public final class Doublet implements Comparable<Doublet>
 					observedFreq);
 		}
 
-		public void testDopplerShift()
+		public void testDopplerShiftHighLevel()
+		{
+			WorldLocation loc1 = new WorldLocation(50,0,0);
+			WorldLocation loc2 = new WorldLocation(51,1,0);
+			WorldVector sep = loc2.subtract(loc1);
+			double dLat = Math.cos(sep.getBearing()) * sep.getRange();
+			double dLong = Math.sin(sep.getBearing()) * sep.getRange();
+			
+			assertEquals(dLat, 1d, 0.0001d);
+			assertEquals(dLong, 0.63607d, 0.0001d);
+		}
+		
+		public void testDopplerShiftLowLevel()
 		{
 			final double SPEED_OF_SOUND = 1500;
 
-			HiResDate time = new HiResDate(1000);
 			WorldLocation hostLoc = new WorldLocation(4, 4, 0);
 			WorldLocation tgtLoc = new WorldLocation(4, 7, 0);
 			double hostCourse = MWC.Algorithms.Conversions.Degs2Rads(60);
@@ -350,16 +372,11 @@ public final class Doublet implements Comparable<Doublet>
 			double tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(300);
 			double tgtSpeed = 4; // MWC.Algorithms.Conversions.Kts2Yps(4);
 
-			Fix host = new Fix(time, hostLoc, hostCourse, hostSpeed);
-			Fix tgt = new Fix(time, tgtLoc, tgtCourse, tgtSpeed);
-
-			double osBearingRads = tgt.getLocation().subtract(host.getLocation())
-					.getBearing();
-			double tgtBearingRads = host.getLocation().subtract(tgt.getLocation())
-					.getBearing();
+			double dLat = hostLoc.getLat() - tgtLoc.getLat();
+			double dLong = hostLoc.getLong() - tgtLoc.getLong();
 
 			double dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 1.00133, dShift, 0.00001d);
 
@@ -370,7 +387,7 @@ public final class Doublet implements Comparable<Doublet>
 			tgtSpeed = 4;
 
 			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 0.9995840, dShift, 0.00001d);
 
@@ -380,8 +397,11 @@ public final class Doublet implements Comparable<Doublet>
 			hostCourse = 0;
 			tgtCourse = MWC.Algorithms.Conversions.Degs2Rads(180);
 
+			dLat = hostLoc.getLat() - tgtLoc.getLat();
+			dLong = hostLoc.getLong() - tgtLoc.getLong();
+
 			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 1.004427, dShift, 0.00001d);
 
@@ -390,15 +410,18 @@ public final class Doublet implements Comparable<Doublet>
 			hostSpeed = 3;
 
 			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 0.99908, dShift, 0.00001d);
 
 			hostLoc.setLong(-2);
 			tgtLoc.setLong(-3);
+			dLat = hostLoc.getLat() - tgtLoc.getLat();
+			dLong = hostLoc.getLong() - tgtLoc.getLong();
+
 
 			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 0.99914, dShift, 0.00001d);
 
@@ -406,7 +429,7 @@ public final class Doublet implements Comparable<Doublet>
 			hostSpeed = 0.1;
 
 			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 1.000768, dShift, 0.000001d);
 
@@ -415,7 +438,7 @@ public final class Doublet implements Comparable<Doublet>
 			tgtSpeed = 0d;
 
 			dShift = calcDopplerShift(SPEED_OF_SOUND, hostCourse, tgtCourse,
-					hostSpeed, tgtSpeed, osBearingRads, tgtBearingRads, hostLoc, tgtLoc);
+					hostSpeed, tgtSpeed, dLat, dLong);
 
 			assertEquals("correct doppler shift", 1.000, dShift, 0.000001d);
 		}
