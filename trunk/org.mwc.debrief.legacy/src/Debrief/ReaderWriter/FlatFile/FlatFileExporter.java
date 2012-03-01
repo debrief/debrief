@@ -21,6 +21,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -933,7 +934,7 @@ public class FlatFileExporter
 	 * produce a body listing from the supplied data
 	 * 
 	 * @param primaryTrack
-	 * @param secTrack
+	 * @param msdTrack
 	 * @param period
 	 * @param sensorType
 	 * @param fileVersion
@@ -950,7 +951,7 @@ public class FlatFileExporter
 	 * @return
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
-			final TrackWrapper secTrack, final TimePeriod period,
+			final TrackWrapper msdTrack, final TimePeriod period,
 			final String sensorType1, final String sensorType2, String fileVersion,
 			SensorWrapper sensor1, SensorWrapper sensor2, Double s1fwd, Double s1aft,
 			Double s2fwd, Double s2aft, Double speedOfSoundMS)
@@ -964,11 +965,11 @@ public class FlatFileExporter
 
 		// remember the primary interpolation
 		final boolean primaryInterp = primaryTrack.getInterpolatePoints();
-		final boolean secInterp = secTrack.getInterpolatePoints();
+		final boolean msdInterp = msdTrack.getInterpolatePoints();
 
 		// switch in the interpolation
 		primaryTrack.setInterpolatePoints(true);
-		secTrack.setInterpolatePoints(true);
+		msdTrack.setInterpolatePoints(true);
 
 		WorldLocation origin = null;
 
@@ -1006,11 +1007,11 @@ public class FlatFileExporter
 			// create a time
 			final HiResDate thisDTG = new HiResDate(dtg);
 
-			final FixWrapper secFix = getFixAt(secTrack, thisDTG);
+			final FixWrapper msdFix = getFixAt(msdTrack, thisDTG);
 
 			// right, we only do this if we have secondary data - skip forward a
 			// second if we're missing this pos
-			if (secFix == null)
+			if (msdFix == null)
 				continue;
 
 			// do we need to initialise the origin?
@@ -1021,6 +1022,9 @@ public class FlatFileExporter
 			FixWrapper sensorFix = primaryTrack.getBacktraceTo(thisDTG,
 					sensor1.getSensorOffset(), sensor1.getWormInHole());
 			sensor1Loc = sensorFix.getLocation();
+			
+			double s1doppler = Doublet.getDopplerShift(speedOfSoundMS, sensorFix.getFix(), msdFix.getFix());
+			double s2doppler = 0;
 
 			// see if we have a sensor cut at the right time
 			final SensorContactWrapper cutS1 = nearestCutTo(sensor1, thisDTG);
@@ -1028,22 +1032,22 @@ public class FlatFileExporter
 			// now sort out the spatial components
 			final WorldVector priVector = new WorldVector(priFix.getLocation()
 					.subtract(origin));
-			final WorldVector secVector = new WorldVector(secFix.getLocation()
+			final WorldVector msdVector = new WorldVector(msdFix.getLocation()
 					.subtract(origin));
 			final WorldVector sen1Vector = new WorldVector(
 					sensor1Loc.subtract(origin));
 
 			final double priRange = MWC.Algorithms.Conversions.Degs2Yds(priVector
 					.getRange());
-			final double secRange = MWC.Algorithms.Conversions.Degs2Yds(secVector
+			final double msdRange = MWC.Algorithms.Conversions.Degs2Yds(msdVector
 					.getRange());
 			final double sen1Range = MWC.Algorithms.Conversions.Degs2Yds(sen1Vector
 					.getRange());
 
 			final double priX = (Math.sin(priVector.getBearing()) * priRange);
 			final double priY = Math.cos(priVector.getBearing()) * priRange;
-			final double secX = (Math.sin(secVector.getBearing()) * secRange);
-			final double secY = (Math.cos(secVector.getBearing()) * secRange);
+			final double msdX = (Math.sin(msdVector.getBearing()) * msdRange);
+			final double msdY = (Math.cos(msdVector.getBearing()) * msdRange);
 			final double sen1X = (Math.sin(sen1Vector.getBearing()) * sen1Range);
 			final double sen1Y = (Math.cos(sen1Vector.getBearing()) * sen1Range);
 
@@ -1056,6 +1060,8 @@ public class FlatFileExporter
 				FixWrapper sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
 						sensor2.getSensorOffset(), sensor2.getWormInHole());
 				sensor2Loc = sensor2Fix.getLocation();
+				
+				s2doppler = Doublet.getDopplerShift(speedOfSoundMS, sensor2Fix.getFix(), msdFix.getFix());
 
 				// see if we have a sensor cut at the right time
 				cutS2 = nearestCutTo(sensor2, thisDTG);
@@ -1165,7 +1171,7 @@ public class FlatFileExporter
 			final String Sensor_Speed = "" + senSpd1;
 			final String Sensor_Heading = "" + 0;
 			final String Sensor_Type = sensorType1;
-			final String Sensor_Doppler = "" + -1; // TODO: calc the doppler
+			final String Sensor_Doppler = dp2.format(s1doppler);
 			final String Sensor_Depth_Fwd = strS1fwd;
 			final String Sensor_Depth_Aft = strS1aft;
 
@@ -1179,18 +1185,18 @@ public class FlatFileExporter
 			final String Sensor2_Speed = "" + senSpd2;
 			final String Sensor2_Heading = "" + 0;
 			final String Sensor2_Type = sensorType2;
-			final String Sensor2_Doppler = "" + -1; // TODO: calc the doppler
+			final String Sensor2_Doppler = dp2.format(s2doppler);
 			final String Sensor2_Depth_Fwd = strS2fwd;
 			final String Sensor2_Depth_Aft = strS2aft;
 
 			final String Msd_Status = "" + 15;
-			final String Msd_X = "" + secX;
-			final String Msd_Y = "" + secY;
-			final String Msd_Speed = "" + secFix.getSpeed();
-			double secCourse = secFix.getCourseDegs();
-			secCourse = trimDegs(secCourse);
-			final String Msd_Heading = dp2.format(secCourse);
-			final String Msd_Depth = "" + secFix.getDepth();
+			final String Msd_X = "" + msdX;
+			final String Msd_Y = "" + msdY;
+			final String Msd_Speed = "" + msdFix.getSpeed();
+			double msdCourse = msdFix.getCourseDegs();
+			msdCourse = trimDegs(msdCourse);
+			final String Msd_Heading = dp2.format(msdCourse);
+			final String Msd_Depth = "" + msdFix.getDepth();
 
 			final String nextLine = collateLine2(Time, OS_Status, OS_X, OS_Y,
 					OS_Speed, OS_Heading, OS_Depth, Sensor_Status, Sensor_X, Sensor_Y,
@@ -1209,7 +1215,7 @@ public class FlatFileExporter
 
 		// restore the primary track interpolation
 		primaryTrack.setInterpolatePoints(primaryInterp);
-		secTrack.setInterpolatePoints(secInterp);
+		msdTrack.setInterpolatePoints(msdInterp);
 
 		return buffer.toString();
 	}
