@@ -67,10 +67,10 @@ public class WormInHoleOffset
 	 * @param arrayOffset
 	 * @return
 	 */
-	public static WorldLocation getWormOffsetFor(TrackWrapper track,
-			HiResDate dtg, WorldDistance arrayOffset)
+	public static FixWrapper getWormOffsetFor(TrackWrapper track, HiResDate dtg,
+			WorldDistance arrayOffset)
 	{
-		WorldLocation res = null;
+		FixWrapper res = null;
 		double offsetM = -arrayOffset.getValueIn(WorldDistance.METRES);
 		// double offsetM = Math.abs(arrayOffset.getValueIn(WorldDistance.METRES));
 
@@ -95,9 +95,10 @@ public class WormInHoleOffset
 				// right, this is the first point, and we've matched it already. Just
 				// produce
 				// a vector back down ownship path
-				res = new WorldLocation(thisP.getLocation().add(
+				res = new FixWrapper(thisP.getFix());
+				res.setLocation(new WorldLocation(thisP.getLocation().add(
 						new WorldVector(thisP.getCourse(), MWC.Algorithms.Conversions
-								.m2Degs(-offsetM), 0d)));
+								.m2Degs(-offsetM), 0d))));
 				return res;
 			}
 			else if (thisP.getDateTimeGroup().lessThan(dtg))
@@ -138,9 +139,8 @@ public class WormInHoleOffset
 					timeDelta *= posDelta;
 					double timeOffset = nextMicros - timeDelta;
 
-					FixWrapper newMidFix = FixWrapper.interpolateFix(thisI, nextPoint,
-							new HiResDate(0, (long) timeOffset));
-					res = newMidFix.getLocation();
+					res = FixWrapper.interpolateFix(thisI, nextPoint, new HiResDate(0,
+							(long) timeOffset));
 					offsetM = 0;
 					break;
 				}
@@ -160,11 +160,12 @@ public class WormInHoleOffset
 			if (nextPoint != null)
 			{
 				// yup, just use that one
-				res = nextPoint.getLocation();
+				res = new FixWrapper(nextPoint.getFix());
 
 				// offset by the array length along the heading
-				res = new WorldLocation(res.add(new WorldVector(nextPoint.getCourse(),
-						MWC.Algorithms.Conversions.m2Degs(-offsetM), 0d)));
+				res.setLocation(res.getLocation().add(
+						new WorldVector(nextPoint.getCourse(), MWC.Algorithms.Conversions
+								.m2Degs(-offsetM), 0d)));
 			}
 		}
 
@@ -220,49 +221,69 @@ public class WormInHoleOffset
 			outputTrack(track);
 			// get a location
 			ArrayLength theLen = new ArrayLength(-500);
-			WorldLocation res = WormInHoleOffset.getWormOffsetFor(track,
-					new HiResDate(400), theLen);
+			FixWrapper res = WormInHoleOffset.getWormOffsetFor(track, new HiResDate(
+					400), theLen);
 
 			// and now the sensor location
-			writeLoc(res);
+			writeLoc(res.getLocation());
 
-			String theLoc = loc2String(res);
+			String theLoc = loc2String(res.getLocation());
 			assertEquals("correct location", "700.3297761249414, 1200.334768427379",
 					theLoc);
+			assertEquals("correct course", MWC.Algorithms.Conversions.Degs2Rads(90),
+					res.getFix().getCourse(), 0.01);
 
 			theLen = new ArrayLength(-100);
 			res = WormInHoleOffset
 					.getWormOffsetFor(track, new HiResDate(400), theLen);
 
 			// and now the sensor location
-			writeLoc(res);
+			writeLoc(res.getLocation());
 
-			theLoc = loc2String(res);
+			theLoc = loc2String(res.getLocation());
 			assertEquals("correct location", "1100.33178323392, 1200.334768427379",
 					theLoc);
+			assertEquals("correct course", MWC.Algorithms.Conversions.Degs2Rads(90),
+					res.getFix().getCourse(), 0.01);
 
 			theLen = new ArrayLength(-100);
 			res = WormInHoleOffset
 					.getWormOffsetFor(track, new HiResDate(440), theLen);
 
 			// and now the sensor location
-			writeLoc(res);
+			writeLoc(res.getLocation());
 
-			theLoc = loc2String(res);
+			theLoc = loc2String(res.getLocation());
 			assertEquals("correct location", "1580.325791764545, 1200.334768427379",
 					theLoc);
+			assertEquals("correct course", MWC.Algorithms.Conversions.Degs2Rads(90),
+					res.getFix().getCourse(), 0.01);
+
 
 			theLen = new ArrayLength(-100);
 			res = WormInHoleOffset
 					.getWormOffsetFor(track, new HiResDate(310), theLen);
 
 			// and now the sensor location
-			writeLoc(res);
-
-			theLoc = loc2String(res);
-			assertEquals("correct location", "1580.325791764545, 1200.334768427379",
+			writeLoc(res.getLocation());
+			theLoc = loc2String(res.getLocation());
+			assertEquals("correct location", "572.0460521364838, 1172.0470464988248",
 					theLoc);
-			
+			assertEquals("correct course", MWC.Algorithms.Conversions.Degs2Rads(45),
+					res.getFix().getCourse(), 0.01);
+
+			theLen = new ArrayLength(-300);
+			res = WormInHoleOffset
+					.getWormOffsetFor(track, new HiResDate(210), theLen);
+
+			// and now the sensor location
+			writeLoc(res.getLocation());
+			theLoc = loc2String(res.getLocation());
+			assertEquals("correct location", "1.1112E-4, 384.90111119999995",
+					theLoc);
+			assertEquals("correct course", MWC.Algorithms.Conversions.Degs2Rads(0),
+					res.getFix().getCourse(), 0.01);
+
 		}
 
 		public void testData() throws InterruptedException
@@ -292,9 +313,9 @@ public class WormInHoleOffset
 			outputSensorTrack(sw);
 
 			// get a location
-			WorldLocation res = WormInHoleOffset.getWormOffsetFor(track,
+			FixWrapper res = WormInHoleOffset.getWormOffsetFor(track,
 					track.getEndDTG(), sw.getSensorOffset());
-			assertNotNull("failed to find location");
+			assertNotNull("failed to find location", res);
 			// give it another go, with a zero sensor offset
 			sw.setSensorOffset(new ArrayLength(0d));
 
