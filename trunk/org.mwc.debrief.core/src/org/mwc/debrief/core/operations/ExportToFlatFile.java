@@ -105,7 +105,7 @@ public class ExportToFlatFile extends TimeControllerOperation
 
 			// does it have an array offset
 			if (thisS.getSensorOffset() != null)
-				if (thisS.getSensorOffset().getValue() > 0)
+				if (thisS.getSensorOffset().getValue() != 0)
 					foundOne = true;
 		}
 
