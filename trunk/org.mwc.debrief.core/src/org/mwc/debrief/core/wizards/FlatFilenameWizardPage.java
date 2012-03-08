@@ -199,6 +199,20 @@ public class FlatFilenameWizardPage extends WizardPage
 	}
 
 	/**
+	 * sort out whether to show the aft editor
+	 * 
+	 * @param container
+	 * @param editor
+	 * @param sensorType
+	 */
+	private static void enableAftEditor(final Composite container,
+			final StringFieldEditor editor, final String sensorType)
+	{
+		if (editor != null)
+			editor.setEnabled(!sensorType.startsWith("H"), container);
+	}
+
+	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
 	public void createControl(Composite parent)
@@ -210,32 +224,41 @@ public class FlatFilenameWizardPage extends WizardPage
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 
-		String filenameKey = "Debrief.FlatFileOutput";
-		String sensor1Key = "Debrief.FlatFileSensorType1";
-		String sensor2Key = "Debrief.FlatFileSensorType2";
-		String protMarkKey = "Debrief.FlatFileProtMarking";
-		String serialKey = "Debrief.FlatFileSerialName";
-		String sensor1fwdKey = "Debrief.FlatFileSensor1fwd";
-		String sensor1aftKey = "Debrief.FlatFileSensor1aft";
-		String sensor2fwdKey = "Debrief.FlatFileSensor2fwd";
-		String sensor2aftKey = "Debrief.FlatFileSensor2aft";
-		String speedOfSoundKey = "Debrief.speedOfSoundKey";
+		String filenameKey = "3Debrief.FlatFileOutput";
+		String sensor1Key = "3Debrief.FlatFileSensorType1";
+		String sensor2Key = "3Debrief.FlatFileSensorType2";
+		String protMarkKey = "3Debrief.FlatFileProtMarking";
+		String serialKey = "3Debrief.FlatFileSerialName";
+		String sensor1fwdKey = "3Debrief.FlatFileSensor1fwd";
+		String sensor1aftKey = "3Debrief.FlatFileSensor1aft";
+		String sensor2fwdKey = "3Debrief.FlatFileSensor2fwd";
+		String sensor2aftKey = "3Debrief.FlatFileSensor2aft";
+		String speedOfSoundKey = "3Debrief.speedOfSoundKey";
 
 		String title = "Output directory:";
 		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
 		{
+			@Override
+			protected void doLoad()
+			{
+				super.doLoad();
+				fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
+			}
+
 			protected void fireValueChanged(String property, Object oldValue,
 					Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 
-				if (property.equals("field_editor_value"))
-				{
-					// tell the ui to update itself
-					_filePath = (String) newValue;
-				}
+				// is this the value property?
+				if (!property.equals(FieldEditor.VALUE))
+					return;
+
+				// tell the ui to update itself
+				_filePath = (String) newValue;
 
 				dialogChanged();
+				this.store();
 
 			}
 
@@ -253,6 +276,60 @@ public class FlatFilenameWizardPage extends WizardPage
 
 		// store the current editor value
 		_filePath = _fileFieldEditor.getStringValue();
+
+		// ok, we also need the sensor depth attribute
+		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
+		{
+			// ok, get the sensor1 depth
+			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(
+					speedOfSoundKey, "Speed of Sound (m/sec):", container)
+			{
+				@Override
+				protected void doLoad()
+				{
+					super.doLoad();
+					fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
+				}
+
+				protected void fireValueChanged(String property, Object oldValue,
+						Object newValue)
+				{
+					super.fireValueChanged(property, oldValue, newValue);
+
+					// is this the value property?
+					if (!property.equals(FieldEditor.VALUE))
+						return;
+
+					// is this the value property?
+					if (isNumber(newValue))
+						_speedOfSound = Double.valueOf(newValue.toString());
+
+					dialogChanged();
+					// and remember the new value
+					store();
+				}
+
+				@Override
+				protected boolean doCheckState()
+				{
+					return _speedOfSound != null;
+				}
+			};
+			speedOfSoundEditor.setEmptyStringAllowed(false);
+			speedOfSoundEditor.setPreferenceStore(getPreferenceStore());
+			speedOfSoundEditor.setPage(this);
+			speedOfSoundEditor
+					.setErrorMessage("A value for speed of sound must be supplied");
+			speedOfSoundEditor.setStringValue("");
+			speedOfSoundEditor.load();
+			if (speedOfSoundEditor.getStringValue() != null)
+				if (isNumber(speedOfSoundEditor.getStringValue()))
+					_speedOfSound = Double.valueOf(speedOfSoundEditor.getStringValue());
+
+			@SuppressWarnings("unused")
+			Label lbl3 = new Label(container, SWT.None);
+
+		}
 
 		// sort out the correct selection lists
 		String[][] sensorTypes;
@@ -273,12 +350,20 @@ public class FlatFilenameWizardPage extends WizardPage
 					Object newValue)
 			{
 				super.fireValueChanged(property, oldValue, newValue);
+
+				// is this the value property?
+				if (!property.equals(FieldEditor.VALUE))
+					return;
+
 				_sensorType1 = (String) newValue;
-				if (_sensor1AftEditor != null)
-					_sensor1AftEditor
-							.setEnabled(!_sensorType1.startsWith("H"), container);
+				enableAftEditor(container, _sensor1AftEditor, _sensorType1);
 				dialogChanged();
+
+				// remember the value
+				this.store();
+
 			}
+
 		};
 		_sensor1TypeEditor.setPreferenceStore(getPreferenceStore());
 		_sensor1TypeEditor.setPage(this);
@@ -291,61 +376,45 @@ public class FlatFilenameWizardPage extends WizardPage
 		// ok, we also need the sensor depth attribute
 		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
-			// ok, get the sensor1 depth
-			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(
-					speedOfSoundKey, "Speed of Sound (m/sec):", container)
-			{
-				protected void fireValueChanged(String property, Object oldValue,
-						Object newValue)
-				{
-					super.fireValueChanged(property, oldValue, newValue);
-
-					// is this the value property?
-					if (isNumber(newValue))
-						_speedOfSound = Double.valueOf(newValue.toString());
-
-					dialogChanged();
-				}
-
-				@Override
-				protected boolean doCheckState()
-				{
-					return _speedOfSound != null;
-				}
-			};
-			speedOfSoundEditor.setEmptyStringAllowed(false);
-			speedOfSoundEditor.setPreferenceStore(getPreferenceStore());
-			speedOfSoundEditor.setPage(this);
-			speedOfSoundEditor
-					.setErrorMessage("A value for speed of sound must be supplied");
-			speedOfSoundEditor.setStringValue("");
-			speedOfSoundEditor.load();
-
-			@SuppressWarnings("unused")
-			Label lbl3 = new Label(container, SWT.None);
 
 			// ok, get the sensor1 depth
 			StringFieldEditor sensor1FwdEditor = new StringFieldEditor(sensor1fwdKey,
 					"Sensor 1 fwd depth (m):", container)
 			{
+				@Override
+				protected void doLoad()
+				{
+					super.doLoad();
+					fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
+				}
+
 				protected void fireValueChanged(String property, Object oldValue,
 						Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
 					// is this the value property?
+					if (!property.equals(FieldEditor.VALUE))
+						return;
+
 					if (isNumber(newValue))
 						_sensor1Fwd = Double.valueOf(newValue.toString());
+					else
+						_sensor1Fwd = null;
 
-					_sensor1AftEditor
-							.setEnabled(!_sensorType1.startsWith("H"), container);
-
-					// we may not have a second editor = get checking
-					if (_sensor2AftEditor != null)
-						_sensor2AftEditor.setEnabled(!_sensorType2.startsWith("H"),
+					if (_sensor1AftEditor != null)
+						_sensor1AftEditor.setEnabled(!_sensorType1.startsWith("H"),
 								container);
 
+					// we may not have a second editor = get checking
+					// if (_sensor2AftEditor != null)
+					// _sensor2AftEditor.setEnabled(!_sensorType2.startsWith("H"),
+					// container);
+
 					dialogChanged();
+
+					// remember the value
+					this.store();
 				}
 
 				@Override
@@ -361,6 +430,9 @@ public class FlatFilenameWizardPage extends WizardPage
 					.setErrorMessage("A value for Sensor 1 fwd depth must be supplied");
 			sensor1FwdEditor.setStringValue("");
 			sensor1FwdEditor.load();
+			if (sensor1FwdEditor.getStringValue() != null)
+				if (isNumber(sensor1FwdEditor.getStringValue()))
+					_sensor1Fwd = Double.valueOf(sensor1FwdEditor.getStringValue());
 
 			@SuppressWarnings("unused")
 			Label lbl2 = new Label(container, SWT.None);
@@ -369,15 +441,31 @@ public class FlatFilenameWizardPage extends WizardPage
 			_sensor1AftEditor = new StringFieldEditor(sensor1aftKey,
 					"Sensor 1 aft depth (m):", container)
 			{
+				@Override
+				protected void doLoad()
+				{
+					super.doLoad();
+					fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
+				}
+
 				protected void fireValueChanged(String property, Object oldValue,
 						Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
 
 					// is this the value property?
+					if (!property.equals(FieldEditor.VALUE))
+						return;
+
+					// is this the value property?
 					if (isNumber(newValue))
 						_sensor1Aft = Double.valueOf(newValue.toString());
+					else
+						_sensor1Aft = null;
 					dialogChanged();
+
+					// remember this value
+					this.store();
 				}
 
 				@Override
@@ -393,6 +481,10 @@ public class FlatFilenameWizardPage extends WizardPage
 					.setErrorMessage("A value for Sensor 1 aft depth must be supplied");
 			_sensor1AftEditor.setStringValue("");
 			_sensor1AftEditor.load();
+			enableAftEditor(container, _sensor1AftEditor, _sensorType1);
+			if (_sensor1AftEditor.getStringValue() != null)
+				if (isNumber(_sensor1AftEditor.getStringValue()))
+					_sensor1Aft = Double.valueOf(_sensor1AftEditor.getStringValue());
 
 			@SuppressWarnings("unused")
 			Label lbl3b = new Label(container, SWT.None);
@@ -409,14 +501,18 @@ public class FlatFilenameWizardPage extends WizardPage
 						Object newValue)
 				{
 					super.fireValueChanged(property, oldValue, newValue);
-					_sensorType2 = (String) newValue;
-					char firstChar = _sensorType2.charAt(0);
-					if (firstChar == 'H')
-						_sensor2AftEditor.setEnabled(false, container);
-					else
-						_sensor2AftEditor.setEnabled(true, container);
 
+					// is this the value property?
+					if (!property.equals(FieldEditor.VALUE))
+						return;
+
+					_sensorType2 = (String) newValue;
+
+					enableAftEditor(container, _sensor2AftEditor, _sensorType2);
 					dialogChanged();
+					// remember this value
+					this.store();
+
 				}
 			};
 			_sensor2TypeEditor.setPreferenceStore(getPreferenceStore());
@@ -434,15 +530,34 @@ public class FlatFilenameWizardPage extends WizardPage
 				StringFieldEditor sensor2FwdEditor = new StringFieldEditor(
 						sensor2fwdKey, "Sensor 2 fwd depth (m):", container)
 				{
+					@Override
+					protected void doLoad()
+					{
+						super.doLoad();
+						fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
+					}
+
 					protected void fireValueChanged(String property, Object oldValue,
 							Object newValue)
 					{
 						super.fireValueChanged(property, oldValue, newValue);
 
 						// is this the value property?
+						if (!property.equals(FieldEditor.VALUE))
+							return;
+
+						// is this the value property?
 						if (isNumber(newValue))
+						{
 							_sensor2Fwd = Double.valueOf(newValue.toString());
-						dialogChanged();
+							dialogChanged();
+							// remember this value
+							this.store();
+						}
+						else
+						{
+							_sensor2Fwd = null;
+						}
 					}
 
 					@Override
@@ -456,8 +571,10 @@ public class FlatFilenameWizardPage extends WizardPage
 				sensor2FwdEditor.setPage(this);
 				sensor2FwdEditor
 						.setErrorMessage("A value for Sensor 2 fwd depth must be supplied");
-				sensor2FwdEditor.setStringValue("");
 				sensor2FwdEditor.load();
+				if (sensor2FwdEditor.getStringValue() != null)
+					if (isNumber(sensor2FwdEditor.getStringValue()))
+						_sensor2Fwd = Double.valueOf(sensor2FwdEditor.getStringValue());
 
 				@SuppressWarnings("unused")
 				Label lbl3 = new Label(container, SWT.None);
@@ -466,14 +583,34 @@ public class FlatFilenameWizardPage extends WizardPage
 				_sensor2AftEditor = new StringFieldEditor(sensor2aftKey,
 						"Sensor 2 aft depth (m):", container)
 				{
+					@Override
+					protected void doLoad()
+					{
+						super.doLoad();
+						fireValueChanged(FieldEditor.VALUE, null, this.getStringValue());
+					}
+
 					protected void fireValueChanged(String property, Object oldValue,
 							Object newValue)
 					{
 						super.fireValueChanged(property, oldValue, newValue);
 
 						// is this the value property?
+						if (!property.equals(FieldEditor.VALUE))
+							return;
+
+						// is this the value property?
 						if (isNumber(newValue))
+						{
 							_sensor2Aft = Double.valueOf(newValue.toString());
+						}
+						else
+						{
+							_sensor2Aft = null;
+						}
+						// remember this value
+						this.store();
+
 						dialogChanged();
 					}
 
@@ -486,10 +623,15 @@ public class FlatFilenameWizardPage extends WizardPage
 				_sensor2AftEditor.setEmptyStringAllowed(false);
 				_sensor2AftEditor.setPreferenceStore(getPreferenceStore());
 				_sensor2AftEditor.setPage(this);
+
 				_sensor2AftEditor
 						.setErrorMessage("A value for Sensor 2 aft depth must be supplied");
-				_sensor2AftEditor.setStringValue("");
 				_sensor2AftEditor.load();
+				enableAftEditor(container, _sensor2AftEditor, _sensorType2);
+
+				if (_sensor2AftEditor.getStringValue() != null)
+					if (isNumber(_sensor2AftEditor.getStringValue()))
+						_sensor2Aft = Double.valueOf(_sensor2AftEditor.getStringValue());
 
 				@SuppressWarnings("unused")
 				Label lbl4 = new Label(container, SWT.None);
@@ -510,9 +652,14 @@ public class FlatFilenameWizardPage extends WizardPage
 					super.fireValueChanged(property, oldValue, newValue);
 
 					// is this the value property?
-					if (FieldEditor.VALUE.equals(property))
-						_protMarking = (String) newValue;
+					if (!property.equals(FieldEditor.VALUE))
+						return;
+
+					_protMarking = (String) newValue;
 					dialogChanged();
+
+					// remember this value
+					this.store();
 				}
 
 				@Override
@@ -528,6 +675,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					.setErrorMessage("A value for protective marking must be supplied");
 			_protMarkingEditor.setStringValue("");
 			_protMarkingEditor.load();
+			_protMarking = _protMarkingEditor.getStringValue();
 
 			@SuppressWarnings("unused")
 			Label lbl3 = new Label(container, SWT.None);
@@ -544,24 +692,29 @@ public class FlatFilenameWizardPage extends WizardPage
 				super.fireValueChanged(property, oldValue, newValue);
 
 				// is this the value property?
-				if (FieldEditor.VALUE.equals(property))
-					_serialName = (String) newValue;
+				if (!property.equals(FieldEditor.VALUE))
+					return;
+
+				_serialName = (String) newValue;
 				dialogChanged();
+
+				// remember this value
+				this.store();
 			}
 
 			@Override
 			protected boolean doCheckState()
 			{
-				return (_serialName != null) && (_serialName.length() > 0);
+				return _serialName != null;
 			}
 
 		};
 		_serialNameEditor.setPreferenceStore(getPreferenceStore());
 		_serialNameEditor.setPage(this);
-		_serialNameEditor.setStringValue("");
 		_serialNameEditor.setEmptyStringAllowed(false);
 		_serialNameEditor.setErrorMessage("The serial name must be supplied");
 		_serialNameEditor.load();
+		_serialName = _serialNameEditor.getStringValue();
 
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
@@ -605,22 +758,63 @@ public class FlatFilenameWizardPage extends WizardPage
 			return;
 		}
 
-		if (_numSensors > 1)
+		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
-			final String sensorType2 = getSensor2Type();
-			if (sensorType2 == null)
+			if (_speedOfSound != null)
 			{
-				updateStatus("Sensor 2 type must be selected");
+				updateStatus("Speed of sound must be specified");
 				return;
 			}
-			_sensor2TypeEditor.store();
+			
+			if (_sensor1Fwd == null)
+			{
+				updateStatus("Sensor 1 fwd depth must be specified");
+				return;
+			}
+			if(_sensorType1.startsWith("T"))
+				if (_sensor1Aft == null)
+				{
+					updateStatus("Sensor 1 aft depth must be specified");
+					return;
+				}
+
+			if (_numSensors > 1)
+			{
+				final String sensorType2 = getSensor2Type();
+				if (sensorType2 == null)
+				{
+					updateStatus("Sensor 2 type must be selected");
+					return;
+				}
+				if (_sensor2Fwd == null)
+				{
+					updateStatus("Sensor 2 fwd depth must be specified");
+					return;
+				}
+				if(_sensorType2.startsWith("T"))
+					if (_sensor2Aft == null)
+					{
+						updateStatus("Sensor 2 aft depth must be specified");
+						return;
+					}
+			}
+
 		}
 
-		// so, we've got valid data. better store them
-		_sensor1TypeEditor.store();
-		_fileFieldEditor.store();
-
 		updateStatus(null);
+	}
+
+	private void updateStatus(String message)
+	{
+		setErrorMessage(message);
+		if (message == null)
+		{
+			this.setMessage("Press Finish to complete export",
+					IMessageProvider.INFORMATION);
+			setPageComplete(true);
+		}
+		else
+			setPageComplete(false);
 	}
 
 	public String getFileName()
@@ -676,19 +870,6 @@ public class FlatFilenameWizardPage extends WizardPage
 	public String getProtMarking()
 	{
 		return _protMarking;
-	}
-
-	private void updateStatus(String message)
-	{
-		setErrorMessage(message);
-		if (message == null)
-		{
-			this.setMessage("Press Finish to complete export",
-					IMessageProvider.INFORMATION);
-			setPageComplete(true);
-		}
-		else
-			setPageComplete(false);
 	}
 
 	public String getSerialName()

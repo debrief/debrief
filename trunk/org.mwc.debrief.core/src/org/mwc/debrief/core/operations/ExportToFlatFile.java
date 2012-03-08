@@ -200,51 +200,60 @@ public class ExportToFlatFile extends TimeControllerOperation
 					s2fwd = exportPage.getSensor2Fwd();
 					s2aft = exportPage.getSensor2Aft();
 					speedOfSoundMS = exportPage.getSpeedOfSound();
-				}
-			}
-			FlatFileExporter ff = new FlatFileExporter();
-			String theData = ff.export(primaryTrack, secondaryTracks, period,
-					sensor1Type, sensor2Type,s1fwd,s1aft,s2fwd,s2aft,
-					_fileVersion, protMarking, serialName, speedOfSoundMS);
+					
+					FlatFileExporter ff = new FlatFileExporter();
+					String theData = ff.export(primaryTrack, secondaryTracks, period,
+							sensor1Type, sensor2Type,s1fwd,s1aft,s2fwd,s2aft,
+							_fileVersion, protMarking, serialName, speedOfSoundMS);
 
-			// now write the data to file
-			final String HOST_NAME = primaryTrack.getName();
-			final String HOST_DATE = MWC.Utilities.TextFormatting.FormatRNDateTime
-					.toMediumString(period.getStartDTG().getDate().getTime());
-			final String fileName = filePath + File.separator + HOST_NAME + "_"
-					+ HOST_DATE + "." + FlatFilenameWizardPage.FILE_SUFFIX;
-			BufferedWriter out = null;
-			try
-			{
-				out = new BufferedWriter(new FileWriter(fileName));
-				out.write(theData);
-				CorePlugin.showMessage("Export to SAM",
-						"Tracks successfullly exported to SAM format");
-			}
-			catch (FileNotFoundException e)
-			{
-				DebriefPlugin.logError(Status.ERROR, "Unable to find output file:"
-						+ fileName, e);
-			}
-			catch (IOException e)
-			{
-				DebriefPlugin.logError(Status.ERROR, "Whilst writing to output file:"
-						+ fileName, e);
-			}
-			finally
-			{
-				try
-				{
-					if (out != null)
-						out.close();
-				}
-				catch (IOException e)
-				{
-					DebriefPlugin.logError(Status.ERROR, "Whilst closing output file:"
-							+ fileName, e);
-				}
+					// now write the data to file
+					final String HOST_NAME = primaryTrack.getName();
+					final String HOST_DATE = MWC.Utilities.TextFormatting.FormatRNDateTime
+							.toMediumString(period.getStartDTG().getDate().getTime());
+					final String fileName = filePath + File.separator + HOST_NAME + "_"
+							+ HOST_DATE + "." + FlatFilenameWizardPage.FILE_SUFFIX;
+					BufferedWriter out = null;
+					try
+					{
+						out = new BufferedWriter(new FileWriter(fileName));
+						out.write(theData);
+						CorePlugin.showMessage("Export to SAM",
+								"Tracks successfullly exported to SAM format");
+					}
+					catch (FileNotFoundException e)
+					{
+						DebriefPlugin.logError(Status.ERROR, "Unable to find output file:"
+								+ fileName, e);
+					}
+					catch (IOException e)
+					{
+						DebriefPlugin.logError(Status.ERROR, "Whilst writing to output file:"
+								+ fileName, e);
+					}
+					finally
+					{
+						try
+						{
+							if (out != null)
+								out.close();
+						}
+						catch (IOException e)
+						{
+							DebriefPlugin.logError(Status.ERROR, "Whilst closing output file:"
+									+ fileName, e);
+						}
 
+					}
+					
+				}
+				else
+				{
+					CorePlugin.showMessage("Export to SAM",
+							"Please try again, not all fields were entered");
+
+				}
 			}
+		
 		}
 	}
 }
