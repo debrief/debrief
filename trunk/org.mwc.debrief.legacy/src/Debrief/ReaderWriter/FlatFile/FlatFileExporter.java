@@ -429,22 +429,6 @@ public class FlatFileExporter
 		return res;
 	}
 
-	/**
-	 * append indicated number of tabs
-	 * 
-	 * @param num
-	 *          how many tabs to create
-	 * @return the series of tabs
-	 */
-	private String createTabs(final int num)
-	{
-		final StringBuffer res = new StringBuffer();
-		for (int i = 0; i < num; i++)
-		{
-			res.append("\t");
-		}
-		return res.toString();
-	}
 
 	/**
 	 * export the dataset to a string
@@ -792,7 +776,7 @@ public class FlatFileExporter
 		// <Units>
 		// <Geo_Origin_X> <Geo_Origin_Y>
 
-		String header = "STRAND Scenario Report " + fileVersion + createTabs(33)
+		String header = "STRAND Scenario Report " + fileVersion
 				+ BRK;
 
 		// and the prot marking
@@ -1005,7 +989,7 @@ public class FlatFileExporter
 			final FixWrapper msdFix = getFixAt(msdTrack, thisDTG);
 
 			// right, we only do this if we have secondary data - skip forward a
-			// second if we're missing this pos
+			// cycle if we're missing this pos
 			if (msdFix == null)
 				continue;
 
@@ -1049,11 +1033,12 @@ public class FlatFileExporter
 
 			// and now the second one
 			SensorContactWrapper cutS2 = null;
+			FixWrapper sensor2Fix = null;
 			double sen2X = 0, sen2Y = 0;
 			if (sensor2 != null)
 			{
 
-				FixWrapper sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
+				 sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
 						sensor2.getSensorOffset(), sensor2.getWormInHole());
 				sensor2Loc = sensor2Fix.getLocation();
 
@@ -1084,7 +1069,7 @@ public class FlatFileExporter
 			final int osStat = 15;
 
 			// right, sensor 1 bits
-			double senFreq1 = -999.9;
+			double senFreq1 = 0;
 			if ((cutS1 != null) && (cutS1.getHasFrequency()))
 				senFreq1 = cutS1.getFrequency();
 
@@ -1096,29 +1081,31 @@ public class FlatFileExporter
 				senStat1 = 511;
 			else
 				senStat1 = 507;
-			double theBearing1 = -999;
-			double senSpd1 = -999.9;
+			double theBearing1 = 0;
+			double senSpd1 = sensorFix.getSpeed();
+			double sen1Heading = sensorFix.getCourseDegs();
 			if (cutS1 != null)
 			{
 				theBearing1 = cutS1.getBearing();
 				theBearing1 = trimDegs(theBearing1);
-				senSpd1 = priFix.getSpeed();
 			}
 
 			// now for the second sensor
-			double theBearing2 = -999;
-			double senSpd2 = -999.9;
+			double theBearing2 = 0;
+			double senSpd2 = 0;
+			double senHeading2 = 0;
 			int senStat2 = 0;
-			double senFreq2 = -999.9;
+			double senFreq2 = 0;
+	
 			if (sensor2 != null)
 			{
 				if ((cutS2 != null) && (cutS2.getHasFrequency()))
 					senFreq2 = cutS2.getFrequency();
 
 				// sensor status
-				if (cutS1 == null)
+				if (cutS2 == null)
 					senStat2 = 0;
-				else if (cutS1.getHasFrequency())
+				else if (cutS2.getHasFrequency())
 					senStat2 = 511;
 				else
 					senStat2 = 507;
@@ -1126,8 +1113,10 @@ public class FlatFileExporter
 				{
 					theBearing2 = cutS2.getBearing();
 					theBearing2 = trimDegs(theBearing2);
-					senSpd2 = priFix.getSpeed();
 				}
+				
+				senSpd2 = sensor2Fix.getSpeed();
+				senHeading2 = sensor2Fix.getCourseDegs();
 			}
 
 			// OLD FORMAT:
@@ -1155,7 +1144,7 @@ public class FlatFileExporter
 			final String OS_Status = "" + osStat;
 			final String OS_X = "" + priX;
 			final String OS_Y = "" + priY;
-			final String OS_Speed = "" + priFix.getSpeed();
+			final String OS_Speed = "" + dp2.format(priFix.getSpeed());
 			final String OS_Heading = dp2.format(priFix.getCourseDegs());
 			final String OS_Depth = dp2.format(priFix.getDepth());
 			final String Sensor_Status = "" + senStat1;
@@ -1165,10 +1154,10 @@ public class FlatFileExporter
 			final String Sensor_Bacc = "" + 0;
 			final String Sensor_Freq = "" + senFreq1;
 			final String Sensor_Facc = "" + 0;
-			final String Sensor_Speed = "" + senSpd1;
-			final String Sensor_Heading = "" + 0;
+			final String Sensor_Speed = "" + dp2.format(senSpd1);
+			final String Sensor_Heading = "" + dp2.format(sen1Heading);
 			final String Sensor_Type = sensorType1;
-			final String Sensor_Doppler = dp2.format(s1doppler);
+			final String Sensor_Doppler = "" + s1doppler;
 			final String Sensor_Depth_Fwd = strS1fwd;
 			final String Sensor_Depth_Aft = strS1aft;
 
@@ -1179,10 +1168,10 @@ public class FlatFileExporter
 			final String Sensor2_Bacc = "" + 0;
 			final String Sensor2_Freq = "" + senFreq2;
 			final String Sensor2_Facc = "" + 0;
-			final String Sensor2_Speed = "" + senSpd2;
-			final String Sensor2_Heading = "" + 0;
+			final String Sensor2_Speed = "" + dp2.format(senSpd2);
+			final String Sensor2_Heading = "" + dp2.format(senHeading2);
 			final String Sensor2_Type = sensorType2;
-			final String Sensor2_Doppler = dp2.format(s2doppler);
+			final String Sensor2_Doppler = "" + s2doppler;
 			final String Sensor2_Depth_Fwd = strS2fwd;
 			final String Sensor2_Depth_Aft = strS2aft;
 
