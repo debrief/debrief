@@ -474,7 +474,7 @@ public class FlatFileExporter
 	 * @param serialName
 	 *          description of data being exported
 	 * @param speedOfSoundMS
-	 * 	        speed of sound, metres/sec
+	 *          speed of sound, metres/sec
 	 * @return
 	 */
 	public String export(final WatchableList primaryTrack,
@@ -516,7 +516,8 @@ public class FlatFileExporter
 		else
 		{
 			body = this.getBody2(pTrack, secTrack, period, sensor1Type, sensor2Type,
-					fileVersion, sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft, speedOfSoundMS);
+					fileVersion, sensor1, sensor2, s1fwd, s1aft, s2fwd, s2aft,
+					speedOfSoundMS);
 		}
 
 		// count how many items we found
@@ -743,15 +744,12 @@ public class FlatFileExporter
 			final int Y_ORIGIN_YDS)
 	{
 
-		final String header = "STRAND Scenario Report 1.00" + createTabs(33) + BRK
-				+ "MISSION_NAME" + createTabs(33) + BRK + OWNSHIP + createTabs(33)
-				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
-				+ createTabs(33) + BRK + TGT_NAME + createTabs(33) + BRK + TGT_NAME
-				+ createTabs(33) + BRK + formatThis(startDate) + createTabs(32) + BRK
-				+ formatThis(endDate) + createTabs(32) + BRK + "0" + createTabs(33)
-				+ BRK + "0" + createTabs(33) + BRK + "0" + createTabs(33) + BRK
-				+ NUM_RECORDS + createTabs(33) + BRK + X_ORIGIN_YDS + " "
-				+ Y_ORIGIN_YDS + createTabs(32) + BRK + HEADER_LINE1 + BRK;
+		final String header = "STRAND Scenario Report 1.00" + BRK + "MISSION_NAME"
+				+ BRK + OWNSHIP + BRK + OS_TRACK_NAME + BRK + SENSOR_NAME + BRK
+				+ TGT_NAME + BRK + TGT_NAME + BRK + formatThis(startDate) + BRK
+				+ formatThis(endDate) + BRK + "0" + BRK + "0" + BRK + "0" + BRK
+				+ NUM_RECORDS + BRK + X_ORIGIN_YDS + " " + Y_ORIGIN_YDS + BRK
+				+ HEADER_LINE1 + BRK;
 		return header;
 	}
 
@@ -798,22 +796,19 @@ public class FlatFileExporter
 				+ BRK;
 
 		// and the prot marking
-		header += protMarking + createTabs(33) + BRK;
+		header += protMarking + BRK;
 
-		header += missionName + createTabs(33) + BRK + OWNSHIP + createTabs(33)
-				+ BRK + OS_TRACK_NAME + createTabs(33) + BRK + SENSOR_NAME
-				+ createTabs(33) + BRK;
+		header += missionName + BRK + OWNSHIP + BRK + OS_TRACK_NAME + BRK
+				+ SENSOR_NAME + BRK;
 
 		// and sensor 2 name
-		header += SENSOR_2_NAME + createTabs(33) + BRK;
+		header += SENSOR_2_NAME + BRK;
 
-		header += TGT_NAME + createTabs(33) + BRK + formatThis(startDate)
-				+ createTabs(32) + BRK + formatThis(endDate) + createTabs(32) + BRK
-				+ NUM_RECORDS + createTabs(33) + BRK;
+		header += TGT_NAME + BRK + formatThis(startDate) + BRK
+				+ formatThis(endDate) + BRK + NUM_RECORDS + BRK;
 
-		header += "Metric" + createTabs(33) + BRK;
-		header += X_ORIGIN_YDS + "	" + Y_ORIGIN_YDS + createTabs(32) + BRK
-				+ HEADER_LINE2 + BRK;
+		header += "Metric" + BRK;
+		header += X_ORIGIN_YDS + "	" + Y_ORIGIN_YDS + BRK + HEADER_LINE2 + BRK;
 		return header;
 	}
 
@@ -947,7 +942,7 @@ public class FlatFileExporter
 	 * @param s1aft
 	 * @param s2fwd
 	 * @param s2aft
-	 * @param speedOfSoundMS 
+	 * @param speedOfSoundMS
 	 * @return
 	 */
 	private String getBody2(final TrackWrapper primaryTrack,
@@ -1022,8 +1017,9 @@ public class FlatFileExporter
 			FixWrapper sensorFix = primaryTrack.getBacktraceTo(thisDTG,
 					sensor1.getSensorOffset(), sensor1.getWormInHole());
 			sensor1Loc = sensorFix.getLocation();
-			
-			double s1doppler = Doublet.getDopplerShift(speedOfSoundMS, sensorFix.getFix(), msdFix.getFix());
+
+			double s1doppler = Doublet.getDopplerShift(speedOfSoundMS,
+					sensorFix.getFix(), msdFix.getFix());
 			double s2doppler = 0;
 
 			// see if we have a sensor cut at the right time
@@ -1060,8 +1056,9 @@ public class FlatFileExporter
 				FixWrapper sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
 						sensor2.getSensorOffset(), sensor2.getWormInHole());
 				sensor2Loc = sensor2Fix.getLocation();
-				
-				s2doppler = Doublet.getDopplerShift(speedOfSoundMS, sensor2Fix.getFix(), msdFix.getFix());
+
+				s2doppler = Doublet.getDopplerShift(speedOfSoundMS,
+						sensor2Fix.getFix(), msdFix.getFix());
 
 				// see if we have a sensor cut at the right time
 				cutS2 = nearestCutTo(sensor2, thisDTG);
