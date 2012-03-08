@@ -95,6 +95,21 @@ public class FlatFilenameWizardPage extends WizardPage
 			+ FILE_SUFFIX
 			+ " suffix added. See online help for more details on the export format.";
 
+	// and the sensor type
+	private final String[][] sensor2Types = new String[][]
+	{
+	{ "Towed-LF", "TL" },
+	{ "Towed-HF", "TH" },
+	{ "HM-Bow", "HB" },
+	{ "HM-Flank", "HF" },
+	{ "HM-Intercept", "HI" } };
+
+	// and the sensor type
+	private final String[][] sensor1Types = new String[][]
+	{
+	{ "Towed Array", "T" },
+	{ "Hull mounted array", "H" } };
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -130,6 +145,57 @@ public class FlatFilenameWizardPage extends WizardPage
 		{
 			return false;
 		}
+	}
+
+	@Override
+	public boolean isPageComplete()
+	{
+		boolean done = true;
+
+		if ((_filePath == null) || (_filePath.length() == 0)
+				|| (_serialName == null) || (_serialName.length() == 0))
+			done = false;
+
+		if (_sensorType1 == null)
+			done = false;
+
+		// new or old?
+		// do we want an aft depth?
+		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
+		{
+			if (_speedOfSound == null)
+				done = false;
+
+			if (_protMarking == null)
+				done = false;
+
+			if (_sensorType1 != null)
+			{
+				if (_sensor1Fwd == null)
+					done = false;
+				// is aft depth relevant?
+				if (_sensorType1.startsWith("T"))
+					if (_sensor1Aft == null)
+						done = false;
+			}
+			// do we have a second sensor?
+			if (_numSensors == 2)
+			{
+				// has it been declared?
+				if (_sensorType2 != null)
+				{
+					if (_sensor2Fwd == null)
+						done = false;
+					// is aft depth relevant?
+					if (_sensorType2.startsWith("T"))
+						if (_sensor2Aft == null)
+							done = false;
+				}
+
+			}
+		}
+
+		return done;
 	}
 
 	/**
@@ -188,21 +254,6 @@ public class FlatFilenameWizardPage extends WizardPage
 		// store the current editor value
 		_filePath = _fileFieldEditor.getStringValue();
 
-		// and the sensor type
-		final String[][] sensor2Types = new String[][]
-		{
-		{ "Towed-LF", "TL" },
-		{ "Towed-HF", "TH" },
-		{ "HM-Bow", "HB" },
-		{ "HM-Flank", "HF" },
-		{ "HM-Intercept", "HI" } };
-
-		// and the sensor type
-		final String[][] sensor1Types = new String[][]
-		{
-		{ "Towed Array", "T" },
-		{ "Hull mounted array", "H" } };
-
 		// sort out the correct selection lists
 		String[][] sensorTypes;
 		if (_fileVersion.equals(FlatFileExporter.INITIAL_VERSION))
@@ -223,7 +274,9 @@ public class FlatFilenameWizardPage extends WizardPage
 			{
 				super.fireValueChanged(property, oldValue, newValue);
 				_sensorType1 = (String) newValue;
-				_sensor1AftEditor.setEnabled(!_sensorType1.startsWith("H"), container);
+				if (_sensor1AftEditor != null)
+					_sensor1AftEditor
+							.setEnabled(!_sensorType1.startsWith("H"), container);
 				dialogChanged();
 			}
 		};
@@ -239,8 +292,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
 			// ok, get the sensor1 depth
-			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(speedOfSoundKey,
-					"Speed of Sound (m/sec):", container)
+			StringFieldEditor speedOfSoundEditor = new StringFieldEditor(
+					speedOfSoundKey, "Speed of Sound (m/sec):", container)
 			{
 				protected void fireValueChanged(String property, Object oldValue,
 						Object newValue)
@@ -270,8 +323,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 			@SuppressWarnings("unused")
 			Label lbl3 = new Label(container, SWT.None);
-			
-			
+
 			// ok, get the sensor1 depth
 			StringFieldEditor sensor1FwdEditor = new StringFieldEditor(sensor1fwdKey,
 					"Sensor 1 fwd depth (m):", container)
@@ -287,7 +339,7 @@ public class FlatFilenameWizardPage extends WizardPage
 
 					_sensor1AftEditor
 							.setEnabled(!_sensorType1.startsWith("H"), container);
-					
+
 					// we may not have a second editor = get checking
 					if (_sensor2AftEditor != null)
 						_sensor2AftEditor.setEnabled(!_sensorType2.startsWith("H"),
@@ -443,9 +495,8 @@ public class FlatFilenameWizardPage extends WizardPage
 				Label lbl4 = new Label(container, SWT.None);
 
 			}
-				}
+		}
 
-		
 		if (_fileVersion.equals(FlatFileExporter.UPDATED_VERSION))
 		{
 
@@ -478,8 +529,6 @@ public class FlatFilenameWizardPage extends WizardPage
 			_protMarkingEditor.setStringValue("");
 			_protMarkingEditor.load();
 
-			_protMarking = "PENDING";
-
 			@SuppressWarnings("unused")
 			Label lbl3 = new Label(container, SWT.None);
 
@@ -503,7 +552,7 @@ public class FlatFilenameWizardPage extends WizardPage
 			@Override
 			protected boolean doCheckState()
 			{
-				return _serialName != null;
+				return (_serialName != null) && (_serialName.length() > 0);
 			}
 
 		};
@@ -511,10 +560,8 @@ public class FlatFilenameWizardPage extends WizardPage
 		_serialNameEditor.setPage(this);
 		_serialNameEditor.setStringValue("");
 		_serialNameEditor.setEmptyStringAllowed(false);
-		_serialNameEditor
-				.setErrorMessage("A value for serial name must be supplied");
+		_serialNameEditor.setErrorMessage("The serial name must be supplied");
 		_serialNameEditor.load();
-		_serialName = "PENDING";
 
 		GridLayout urlLayout = (GridLayout) container.getLayout();
 		urlLayout.numColumns = 3;
