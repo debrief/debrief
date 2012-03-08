@@ -78,6 +78,9 @@ public class WormInHoleOffset
 		// check we're in period
 		if (dtg.lessThan(track.getStartDTG()) || dtg.greaterThan(track.getEndDTG()))
 			return res;
+		
+		// get the position at the time, we need it to sort out the speed
+		FixWrapper currFix = (FixWrapper) track.getNearestTo(dtg)[0];
 
 		// start off by bracketing the time. work back along the track legs until we
 		// find the two positions either side
@@ -170,6 +173,10 @@ public class WormInHoleOffset
 			}
 		}
 
+		// put the current speed into the fix we return
+		if(res != null)
+			res.setSpeed(currFix.getSpeed());
+		
 		return res;
 	}
 
