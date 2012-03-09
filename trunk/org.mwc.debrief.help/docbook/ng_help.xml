@@ -3658,6 +3658,38 @@ and so on....</programlisting></para>
                   </orderedlist></para>
               </sect5>
             </sect4>
+            <sect4>
+              <title>Updated Export to Flat File (SAM) format</title>
+              <para>In Spring 2012 the <indexterm>
+                  <primary>SAM export</primary>
+                  <secondary>export</secondary>
+                </indexterm> capability was extended to include the following enhancements:<itemizedlist>
+                  <listitem>
+                    <para>Include doppler calculations</para>
+                  </listitem>
+                  <listitem>
+                    <para>Optionally support second sensor</para>
+                  </listitem>
+                  <listitem>
+                    <para>Support a wider range of sensor types</para>
+                  </listitem>
+                  <listitem>
+                    <para>Allow the protective marking to be specified</para>
+                  </listitem>
+                  <listitem>
+                    <para>Allow sensor depth to be specifed (incl Aft depth for towed sensor)</para>
+                  </listitem>
+                </itemizedlist><figure>
+                  <title>Sample improved SAM Export dialog</title>
+                  <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/SAM2Export.png" width="300"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot>
+                </figure></para>
+            </sect4>
 
             <sect4 xml:id="CopyToClip">
               <title>Copy to clipboard</title>
