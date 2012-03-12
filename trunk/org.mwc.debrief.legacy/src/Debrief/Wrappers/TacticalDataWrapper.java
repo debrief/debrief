@@ -613,6 +613,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	public final java.util.Collection<Editable> getItemsBetween(
 			final HiResDate start, final HiResDate end)
 	{
+		// see if we have any points
+		if ((_myContacts == null) || (_myContacts.size() == 0))
+			return null;
+
 		// see if we have _any_ points in range
 		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
 			return null;

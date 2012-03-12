@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -16,8 +15,6 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
@@ -173,30 +170,8 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 				IEditorPart editor = page.getActiveEditor();
 
-				// get ready for the start/end times
-				HiResDate startTime, endTime;
-
 				try
 				{
-
-					// right, we need the time controller if we're going to get the
-					// times
-					String timeId = "org.mwc.cmap.TimeController.views.TimeController";
-					IViewReference timeRef = page.findViewReference(timeId);
-
-					if (timeRef == null)
-					{
-						String title = "XY Plot";
-						String message = "Time Controller is not open. Please open time-controller and select a time period";
-						MessageDialog.openError(Display.getCurrent().getActiveShell(),
-								title, message);
-						return;
-					}
-
-					// ////////////////////////////////////////////////
-					// sort out the title
-					// ////////////////////////////////////////////////
-
 					// ///////////////////////////////////
 					// NOW for the time range
 					// ///////////////////////////////////
@@ -210,47 +185,37 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						thePlotId = tp.getId();
 					}
 
-					IAdaptable timeC = (IAdaptable) timeRef.getView(true);
-
-					// that's it, now get the data
-					TimePeriod period = (TimePeriod) timeC.getAdapter(TimePeriod.class);
-					if (period == null)
+					// calculate the outer range of the time periods
+					Iterator<TrackWrapper> tIter = trackCandidates.iterator();
+					TimePeriod outerPeriod = null;
+					while (tIter.hasNext())
 					{
-						CorePlugin.logError(Status.ERROR,
-								"TimeController view no longer provides TimePeriod adapter",
-								null);
-						return;
+						TrackWrapper trackWrapper = (TrackWrapper) tIter.next();
+						if (trackWrapper != null)
+						{
+							if (outerPeriod == null)
+							{
+								outerPeriod = new TimePeriod.BaseTimePeriod(
+										trackWrapper.getStartDTG(), trackWrapper.getEndDTG());
+							}
+							else
+							{
+								outerPeriod.extend(trackWrapper.getStartDTG());
+								outerPeriod.extend(trackWrapper.getEndDTG());
+							}
+						}
 					}
 
-					startTime = period.getStartDTG();
-					endTime = period.getEndDTG();
-
-					if ((startTime.greaterThan(endTime)) || (startTime.equals(endTime)))
-					{
-						String title = "XY Plot";
-						String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
-						MessageDialog.openError(Display.getCurrent().getActiveShell(),
-								title, message);
-						return;
-					}
-
-					TrackWrapper primaryTrack = trackCandidates.firstElement();
-
-					// aah. does the primary track have it's own time period?
-					if (primaryTrack != null)
-					{
-						if (primaryTrack.getStartDTG() != null)
-							startTime = primaryTrack.getStartDTG();
-
-						if (primaryTrack.getEndDTG() != null)
-							endTime = primaryTrack.getEndDTG();
-					}
+					final HiResDate startTime = outerPeriod.getStartDTG();
+					final HiResDate endTime = outerPeriod.getEndDTG();
 
 					TimeSeriesCollection theSeriesCollection = new TimeSeriesCollection();
 
 					boolean multiTrackRun = trackCandidates.size() > 1;
 
 					// is this a multi-track run?
+					final String theTitle;
+
 					if (multiTrackRun)
 					{
 						// multi-track run, go through them
@@ -264,26 +229,24 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 									theSeriesCollection, !multiTrackRun);
 
 						}
+						theTitle = "(Sensor) Range to "
+								+ sensorCandidates.firstElement().getName() + " vs Time plot";
+
 					}
 					else
 					{
+						final TrackWrapper primaryTrack = trackCandidates.firstElement();
+
 						// single track run, do as normal
 						addDataSeries(primaryTrack, sensorCandidates, startTime, endTime,
 								theSeriesCollection, !multiTrackRun);
+						theTitle = "(Sensor) Range to " + primaryTrack.getName()
+								+ " vs Time plot";
 					}
 
 					// aah, did it work?
 					if (theSeriesCollection.getSeriesCount() >= 1)
 					{
-						// get the title to use
-						String theTitle;
-						if (multiTrackRun)
-							theTitle = "(Sensor) Range to " + sensorCandidates.firstElement().getName()
-							+ " vs Time plot";
-						else
-							theTitle = "(Sensor) Range to " + primaryTrack.getName()
-									+ " vs Time plot";
-
 						// and the plot itself
 						String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
 						page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
@@ -331,6 +294,7 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 	 * @see WatchableList#getItemsBetween(HiResDate start,HiResDate end)
 	 * @see TimeSeriesCollection#addSeries(BasicTimeSeries series)
 	 */
+	@SuppressWarnings("unused")
 	private static void addDataSeries(final TrackWrapper primaryTrack,
 			final Vector<SensorWrapper> theSensors, HiResDate start_time,
 			HiResDate end_time, TimeSeriesCollection theSeriesCollection,
@@ -353,117 +317,118 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 
 			// SPECIAL CASE - is this an empty sensor, created just to produce this
 			// plt?
-			if (thisSensor.elements().hasMoreElements())
+//			if (thisSensor.elements().hasMoreElements())
+				if (false)
 			{
 
-				// nope, we have sensor data, calculate a data point for each sensor cut
-
-				// ////////////////////////////////////////////////////
-				// step through the track
-				//
-				Collection<Editable> sensorFixes = thisSensor.getItemsBetween(
-						start_time, end_time);
-
-				// have we found any?. Hey, listen here. The "getItemsBetween" method
-				// may
-				// return
-				// data items, but we may still not be able to do the calc (such as if
-				// we
-				// have "NaN" for depth). So
-				// we still do a sanity check at the end of this method to stop us
-				// adding
-				// empty data series to the collection.
-				if (sensorFixes != null)
-				{
-					// ////////////////////////////////////////////////
-					// CASE 3 - both tracks have time data, relative calc
-					// ////////////////////////////////////////////////
-					// yes, we do have DTG data for this track - hooray!
-
-					// ok, step through the list
-					Iterator<Editable> theseCuts = sensorFixes.iterator();
-
-					throughThisTrack: while (theseCuts.hasNext())
-					{
-						SensorContactWrapper thisSecondary = (SensorContactWrapper) theseCuts
-								.next();
-
-						Color thisColor;
-						if (useSensorName)
-							thisColor = thisSecondary.getColor();
-						else
-							thisColor = primaryTrack.getColor();
-
-						// what's the current time?
-						HiResDate currentTime = thisSecondary.getTime();
-
-						// is this fix visible?
-						if (thisSecondary.getVisible())
-						{
-							// the point on the primary track we work with
-							Watchable thisPrimary = null;
-
-							// find the fix on the primary track which is nearest in
-							// time to this one (if we need to)
-							Watchable[] nearList;
-
-							// temp switch on interpolation
-							Boolean oldInterp = null;
-							if (primaryTrack instanceof TrackWrapper)
-							{
-								TrackWrapper tw = (TrackWrapper) primaryTrack;
-								oldInterp = tw.getInterpolatePoints();
-								tw.setInterpolatePoints(true);
-							}
-
-							// find it's nearest point on the primary track
-							nearList = primaryTrack.getNearestTo(currentTime);
-
-							// and restore the interpolate points setting
-							if (oldInterp != null)
-							{
-								TrackWrapper tw = (TrackWrapper) primaryTrack;
-								tw.setInterpolatePoints(oldInterp.booleanValue());
-							}
-
-							// yes. right, we only perform a calc if we have primary data
-							// for this point
-							if (nearList.length == 0)
-							{
-								// drop out, and wait for the next cycle
-								continue throughThisTrack;
-							}
-							else
-							{
-								thisPrimary = nearList[0];
-							}
-
-							// ////////////////////////////////////////////////
-							// produce the new calculated value
-							// ////////////////////////////////////////////////
-
-							WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
-							WorldLocation trackLoc = thisPrimary.getLocation();
-							WorldLocation sensorLoc = thisSecondary.getCalculatedOrigin(null);
-							range = trackLoc.rangeFrom(sensorLoc, range);
-							double thisVal = range.getValueIn(WorldDistance.METRES);
-
-							// ////////////////////////////////////////////////
-							// and create the point
-							// ////////////////////////////////////////////////
-
-							// HI-RES NOT DONE - FixedMillisecond should be converted some-how
-							// to
-							// FixedMicroSecond
-							ColouredDataItem newItem = new ColouredDataItem(
-									new FixedMillisecond(thisSecondary.getDTG().getDate()
-											.getTime()), thisVal, thisColor, true, null);
-
-							thisSeries.add(newItem);
-						} // whether this point is visible
-					} // stepping through this track
-
-				} // if this collection actually had data
+//				// nope, we have sensor data, calculate a data point for each sensor cut
+//
+//				// ////////////////////////////////////////////////////
+//				// step through the track
+//				//
+//				Collection<Editable> sensorFixes = thisSensor.getItemsBetween(
+//						start_time, end_time);
+//
+//				// have we found any?. Hey, listen here. The "getItemsBetween" method
+//				// may
+//				// return
+//				// data items, but we may still not be able to do the calc (such as if
+//				// we
+//				// have "NaN" for depth). So
+//				// we still do a sanity check at the end of this method to stop us
+//				// adding
+//				// empty data series to the collection.
+//				if (sensorFixes != null)
+//				{
+//					// ////////////////////////////////////////////////
+//					// CASE 3 - both tracks have time data, relative calc
+//					// ////////////////////////////////////////////////
+//					// yes, we do have DTG data for this track - hooray!
+//
+//					// ok, step through the list
+//					Iterator<Editable> theseCuts = sensorFixes.iterator();
+//
+//					throughThisTrack: while (theseCuts.hasNext())
+//					{
+//						SensorContactWrapper thisSecondary = (SensorContactWrapper) theseCuts
+//								.next();
+//
+//						Color thisColor;
+//						if (useSensorName)
+//							thisColor = thisSecondary.getColor();
+//						else
+//							thisColor = primaryTrack.getColor();
+//
+//						// what's the current time?
+//						HiResDate currentTime = thisSecondary.getTime();
+//
+//						// is this fix visible?
+//						if (thisSecondary.getVisible())
+//						{
+//							// the point on the primary track we work with
+//							Watchable thisPrimary = null;
+//
+//							// find the fix on the primary track which is nearest in
+//							// time to this one (if we need to)
+//							Watchable[] nearList;
+//
+//							// temp switch on interpolation
+//							Boolean oldInterp = null;
+//							if (primaryTrack instanceof TrackWrapper)
+//							{
+//								TrackWrapper tw = (TrackWrapper) primaryTrack;
+//								oldInterp = tw.getInterpolatePoints();
+//								tw.setInterpolatePoints(true);
+//							}
+//
+//							// find it's nearest point on the primary track
+//							nearList = primaryTrack.getNearestTo(currentTime);
+//
+//							// and restore the interpolate points setting
+//							if (oldInterp != null)
+//							{
+//								TrackWrapper tw = (TrackWrapper) primaryTrack;
+//								tw.setInterpolatePoints(oldInterp.booleanValue());
+//							}
+//
+//							// yes. right, we only perform a calc if we have primary data
+//							// for this point
+//							if (nearList.length == 0)
+//							{
+//								// drop out, and wait for the next cycle
+//								continue throughThisTrack;
+//							}
+//							else
+//							{
+//								thisPrimary = nearList[0];
+//							}
+//
+//							// ////////////////////////////////////////////////
+//							// produce the new calculated value
+//							// ////////////////////////////////////////////////
+//
+//							WorldDistance range = new WorldDistance(1, WorldDistance.DEGS);
+//							WorldLocation trackLoc = thisPrimary.getLocation();
+//							WorldLocation sensorLoc = thisSecondary.getCalculatedOrigin(null);
+//							range = trackLoc.rangeFrom(sensorLoc, range);
+//							double thisVal = range.getValueIn(WorldDistance.METRES);
+//
+//							// ////////////////////////////////////////////////
+//							// and create the point
+//							// ////////////////////////////////////////////////
+//
+//							// HI-RES NOT DONE - FixedMillisecond should be converted some-how
+//							// to
+//							// FixedMicroSecond
+//							ColouredDataItem newItem = new ColouredDataItem(
+//									new FixedMillisecond(thisSecondary.getDTG().getDate()
+//											.getTime()), thisVal, thisColor, true, null);
+//
+//							thisSeries.add(newItem);
+//						} // whether this point is visible
+//					} // stepping through this track
+//
+//				} // if this collection actually had data
 
 			}
 			else
@@ -497,8 +462,22 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 					while (theseFixes.hasNext())
 					{
 						FixWrapper thisPosition = (FixWrapper) theseFixes.next();
+						
+						
 
-						Color thisColor = thisPosition.getColor();
+						final Color thisColor;
+						
+						if(useSensorName)
+						{
+							// try to find the nearest sensor to toNow
+							Watchable[] thisCut = thisSensor.getNearestTo(thisPosition.getDateTimeGroup());
+							if((thisCut != null) && (thisCut.length > 0))
+								thisColor = thisCut[0].getColor();
+							else
+								thisColor = thisSensor.getColor();
+						}
+						else
+							thisColor	= thisPosition.getColor();
 
 						// what's the current time?
 						HiResDate currentTime = thisPosition.getTime();
@@ -507,9 +486,10 @@ public class GenerateSensorRangePlot implements RightClickContextItemGenerator
 						if (thisPosition.getVisible())
 						{
 							// ok, now get the sensor
-							WorldLocation sensorLoc = thisSensor.getHost().getBacktraceTo(
-									currentTime, thisSensor.getSensorOffset(),
-									thisSensor.getWormInHole()).getLocation();
+							WorldLocation sensorLoc = thisSensor
+									.getHost()
+									.getBacktraceTo(currentTime, thisSensor.getSensorOffset(),
+											thisSensor.getWormInHole()).getLocation();
 
 							// ok, is the sensor's parent track 'live' at this time?
 							if (sensorLoc == null)
