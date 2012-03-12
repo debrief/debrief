@@ -765,13 +765,13 @@ public class FlatFilenameWizardPage extends WizardPage
 				updateStatus("Speed of sound must be specified");
 				return;
 			}
-			
+
 			if (_sensor1Fwd == null)
 			{
 				updateStatus("Sensor 1 fwd depth must be specified");
 				return;
 			}
-			if(_sensorType1.startsWith("T"))
+			if (_sensorType1.startsWith("T"))
 				if (_sensor1Aft == null)
 				{
 					updateStatus("Sensor 1 aft depth must be specified");
@@ -791,7 +791,7 @@ public class FlatFilenameWizardPage extends WizardPage
 					updateStatus("Sensor 2 fwd depth must be specified");
 					return;
 				}
-				if(_sensorType2.startsWith("T"))
+				if (_sensorType2.startsWith("T"))
 					if (_sensor2Aft == null)
 					{
 						updateStatus("Sensor 2 aft depth must be specified");
@@ -829,7 +829,10 @@ public class FlatFilenameWizardPage extends WizardPage
 	 */
 	public String getSensor1Type()
 	{
-		return _sensorType1;
+		String res = "0";
+		if (_sensorType1 != null)
+			res = _sensorType1;
+		return res;
 	}
 
 	public Double getSensor1Fwd()
@@ -859,7 +862,10 @@ public class FlatFilenameWizardPage extends WizardPage
 	 */
 	public String getSensor2Type()
 	{
-		return _sensorType2;
+		String res = "0";
+		if (_sensorType2 != null)
+			res = _sensorType2;
+		return res;
 	}
 
 	/**

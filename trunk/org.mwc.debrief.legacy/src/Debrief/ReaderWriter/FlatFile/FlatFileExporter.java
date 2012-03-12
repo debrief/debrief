@@ -1074,13 +1074,8 @@ public class FlatFileExporter
 				senFreq1 = cutS1.getFrequency();
 
 			// sensor status
-			int senStat1;
-			if (cutS1 == null)
-				senStat1 = 0;
-			else if (cutS1.getHasFrequency())
-				senStat1 = 511;
-			else
-				senStat1 = 507;
+			final int senStat1 = typeFor(sensor1,sensorType1, cutS1);
+			
 			double theBearing1 = 0;
 			double senSpd1 = sensorFix.getSpeed();
 			double sen1Heading = sensorFix.getCourseDegs();
@@ -1094,7 +1089,7 @@ public class FlatFileExporter
 			double theBearing2 = 0;
 			double senSpd2 = 0;
 			double senHeading2 = 0;
-			int senStat2 = 0;
+			final int senStat2 = typeFor(sensor2, sensorType2, cutS2);
 			double senFreq2 = 0;
 	
 			if (sensor2 != null)
@@ -1103,12 +1098,6 @@ public class FlatFileExporter
 					senFreq2 = cutS2.getFrequency();
 
 				// sensor status
-				if (cutS2 == null)
-					senStat2 = 0;
-				else if (cutS2.getHasFrequency())
-					senStat2 = 511;
-				else
-					senStat2 = 507;
 				if (cutS2 != null)
 				{
 					theBearing2 = cutS2.getBearing();
@@ -1206,6 +1195,31 @@ public class FlatFileExporter
 		return buffer.toString();
 	}
 
+	private static int typeFor(SensorWrapper sensor, String sensorType, SensorContactWrapper cut)
+	{
+		int res = 0;
+		
+		if(sensor != null)
+		{
+			res = res | 1 | 8 | 16 | 32 | 64 | 128;
+			if(sensorType.startsWith("T"))
+			{
+				res = res | 256;
+			}
+			
+			if(cut != null)
+			{
+				if(cut.getHasBearing())
+					res = res | 2;
+				
+				if(cut.getHasFrequency())
+					res = res | 4;
+			}
+		}
+		
+		return res;
+	}
+	
 	private double trimDegs(double brgVal)
 	{
 		if (brgVal > 360)
