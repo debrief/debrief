@@ -239,6 +239,7 @@ package Debrief.Wrappers;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
@@ -318,6 +319,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * whether the location symbol is drawn
 	 */
 	private boolean _showSymbol = false;
+
+	/**
+	 * whether the arrow symbol is drawn
+	 */
+	private boolean _showArrow = false;
 
 	/**
 	 * the area covered by this fix
@@ -609,6 +615,19 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 			_theLocationWrapper.paint(dest);
 		}
 
+		if (getArrowShowing())
+		{
+			// ok, have a go at drawing an arrow...
+			Point pC = dest.toScreen(centre);
+
+			double direction = this.getFix().getCourse();
+			double cosD = Math.cos(direction);
+			double sinD = Math.sin(direction);
+			int crseDegs = (int) (90d - MWC.Algorithms.Conversions
+					.Rads2Degs(direction));
+			dest.fillArc(pC.x - 10, pC.y - 10, 20, 20, crseDegs - 30, 60);
+		}
+
 		// override the label location
 		_theLabel.setLocation(centre);
 
@@ -741,6 +760,17 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	public final boolean getSymbolShowing()
 	{
 		return _showSymbol;
+	}
+
+	public final boolean getArrowShowing()
+	{
+		return _showArrow;
+	}
+
+	@FireReformatted
+	public void setArrowShowing(boolean val)
+	{
+		_showArrow = val;
 	}
 
 	@FireReformatted
@@ -1321,4 +1351,5 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	{
 		_theFix.setTime(date);
 	}
+
 }
