@@ -331,6 +331,7 @@
 			<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
 			<xs:attribute name="Speed" use="required" type="xs:string" />
 			<xs:attribute name="SymbolShowing" default="true" type="xs:boolean" />
+			<xs:attribute name="ArrowShowing" default="false" type="xs:boolean" />
 			<xs:attribute name="LineShowing" default="true" type="xs:boolean" />
 			<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>

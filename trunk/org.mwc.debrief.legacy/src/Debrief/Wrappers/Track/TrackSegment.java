@@ -1098,6 +1098,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		result.setLabelShowing(template.getLabelShowing());
 		result.setLineShowing(template.getLineShowing());
 		result.setSymbolShowing(template.getSymbolShowing());
+		result.setArrowShowing(template.getArrowShowing());
 		result.setLabelLocation(template.getLabelLocation());
 
 		Color col = template.getActualColor();

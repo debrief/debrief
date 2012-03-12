@@ -787,7 +787,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						expertLongProp("SymbolFrequency", "the symbol frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						expertLongProp("ResampleDataAt", "the data sample rate",
-								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+								expertLongProp("ArrowFrequency", "the direction marker frequency",
+										MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 
 				};
 				res[0]
@@ -1086,6 +1088,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	private HiResDate _lastSymbolFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+
+	private HiResDate _lastArrowFrequency = new HiResDate(0,
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	private HiResDate _lastDataFrequency = new HiResDate(0,
@@ -3371,6 +3376,43 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_showPositions = val;
 	}
 
+	/**
+	 * return the arrow frequencies for the track
+	 * 
+	 * @return frequency in seconds
+	 */
+	public final HiResDate getArrowFrequency()
+	{
+		return _lastArrowFrequency;
+	}
+	/**
+	 * how frequently symbols are placed on the track
+	 * 
+	 * @param theVal
+	 *          frequency in seconds
+	 */
+	public final void setArrowFrequency(final HiResDate theVal)
+	{
+		this._lastArrowFrequency = theVal;
+
+		// set the "showPositions" parameter, as long as we are
+		// not setting the symbols off
+		if (theVal.getMicros() != 0.0)
+		{
+			this.setPositionsVisible(true);
+		}
+
+		final FixSetter setSymbols = new FixSetter()
+		{
+			public void execute(final FixWrapper fix, final boolean val)
+			{
+				fix.setArrowShowing(val);
+			}
+		};
+
+		setFixes(setSymbols, theVal);
+	}
+	
 	/**
 	 * how frequently symbols are placed on the track
 	 * 

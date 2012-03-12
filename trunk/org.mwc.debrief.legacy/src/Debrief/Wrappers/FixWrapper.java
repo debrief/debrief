@@ -603,7 +603,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		// _theLocationWrapper.setColor(getColor());
 		// }
 
-		if (getSymbolShowing())
+		if (getSymbolShowing() && !getArrowShowing())
 		{
 			// see if the symbol should be shaded (if the lable is showing)
 			_theLocationWrapper.setFillSymbol(getLabelShowing());
@@ -618,14 +618,29 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		if (getArrowShowing())
 		{
 			// ok, have a go at drawing an arrow...
-			Point pC = dest.toScreen(centre);
+			double direction = (this.getFix().getCourse() + Math.PI / 2);
+			
+			double theScale = _theLocationWrapper.getSymbolScale();
+			
+			double len = 30d * theScale;
+			double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
+			
+			// move the start point forward, so the centre of the triangle is over the point
+			Point p1 = dest.toScreen(centre);
+			p1.translate(-(int) (len/2d * Math.cos(direction)),
+					-(int) (len/2d * Math.sin(direction)));
 
-			double direction = this.getFix().getCourse();
-			double cosD = Math.cos(direction);
-			double sinD = Math.sin(direction);
-			int crseDegs = (int) (90d - MWC.Algorithms.Conversions
-					.Rads2Degs(direction));
-			dest.fillArc(pC.x - 10, pC.y - 10, 20, 20, crseDegs - 30, 60);
+			// now the back corners
+			Point p2 = new Point(p1);
+			p2.translate((int) (len * Math.cos(direction - angle)),
+					(int) (len * Math.sin(direction - angle)));
+			Point p3 = new Point(p1);
+			p3.translate((int) (len * Math.cos(direction + angle)),
+					(int) (len * Math.sin(direction + angle)));
+
+			dest.fillPolygon(new int[]
+			{ p1.x, p2.x, p3.x }, new int[]
+			{ p1.y, p2.y, p3.y }, 3);
 		}
 
 		// override the label location
@@ -1089,6 +1104,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 							prop("Font", "the label font", FORMAT),
 							prop("LabelShowing", "whether the label is showing", VISIBILITY),
 							prop("SymbolShowing", "whether the symbol is showing", VISIBILITY),
+							prop("ArrowShowing", "whether the arrow is showing", VISIBILITY),
 							prop("LineShowing",
 									"whether the to join this position it's predecessor",
 									VISIBILITY),

@@ -398,6 +398,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			newItem.setTrackWrapper(this._myTrack);
 			newItem.setColor(theLoc.getActualColor());
 			newItem.setSymbolShowing(theLoc.getSymbolShowing());
+			newItem.setArrowShowing(theLoc.getArrowShowing());
 			newItem.setLabelShowing(theLoc.getLabelShowing());
 			newItem.setLabelLocation(theLoc.getLabelLocation());
 			newItem.setLabelFormat(theLoc.getLabelFormat());
@@ -473,6 +474,7 @@ public class RelativeTMASegment extends CoreTMASegment
 			newItem.setTrackWrapper(this._myTrack);
 			newItem.setColor(theLoc.getActualColor());
 			newItem.setSymbolShowing(theLoc.getSymbolShowing());
+			newItem.setArrowShowing(theLoc.getArrowShowing());
 			newItem.setLabelShowing(theLoc.getLabelShowing());
 			newItem.setLabelLocation(theLoc.getLabelLocation());
 			newItem.setLabelFormat(theLoc.getLabelFormat());

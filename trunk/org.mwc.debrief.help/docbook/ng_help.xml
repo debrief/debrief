@@ -1798,24 +1798,30 @@ and so on....</programlisting></para>
 
           <para><indexterm>
               <primary>Property editor</primary>
-            </indexterm>Track editing is performed on the Properties Window
-          (see <xref linkend="g_property_window" />), and is initiated by
-          selecting the track either from the plot or the Layer Manager, as
-          described in the <emphasis>Editing your data</emphasis>
-          cheat-sheet.</para>
+            </indexterm>Track editing is performed on the Properties Window (see <xref
+              linkend="g_property_window"/>), and is initiated by selecting the track either from
+            the plot or the Layer Manager, as described in the <emphasis>Editing your
+              data</emphasis> cheat-sheet.<note>
+              <para>Many of these editing operations can be performed without using the Properties
+                Window, simply by right-clicking on a track either in the Layer Manger or on the
+                plot</para>
+            </note></para>
         </sect2>
 
         <sect2 xml:id="sym_intervals">
-          <title>Set label and symbol display intervals</title>
+          <title>Set label, symbol and arrow display intervals</title>
 
-          <para>In addition to switching the symbols and labels on and off for
-          individual positions, you can instruct Debrief to show symbols or
-          labels at one of a series of frequencies - allowing you to quickly
-          add 15 minute symbols and hourly time labels to a track. The timings
-          of the particular positions that get highlighted do not have their
-          origin at the start of the track - but from 0000 hrs - thus the 15
-          minute positions will be marked for 00, 15, 30, 45 minutes past the
-          hour.</para>
+          <para>In addition to switching the symbols, labels and arrows on and off for individual
+            positions, you can instruct Debrief to show symbols or labels at one of a series of
+            frequencies - allowing you to quickly add 15 minute symbols and hourly time labels to a
+            track. The timings of the particular positions that get highlighted do not have their
+            origin at the start of the track - but from 0000 hrs - thus the 15 minute positions will
+            be marked for 00, 15, 30, 45 minutes past the hour.<note>
+              <para>Where a position on a track is marked as having its arrow and symbol visible,
+                the arrow takes precedence - so only one will be displayed.  In this way can request
+                5 mins symbols, and 30 min arrows: this will give you 5 min symbols, except on the
+                1/2 hour, when an arrow will be shown.</para>
+            </note></para>
         </sect2>
 
         <sect2 xml:id="track_shifting">
