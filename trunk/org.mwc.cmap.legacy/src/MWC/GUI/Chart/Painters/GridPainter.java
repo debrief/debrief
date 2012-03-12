@@ -341,12 +341,17 @@ public class GridPainter implements Plottable, Serializable
 		double deltaDegs = _myDelta.getValueIn(WorldDistance.DEGS);
 
 		// ok, find the outer limits of the lines to plot
-		WorldArea bounds = getOuterBounds(g, screenArea, deltaDegs);
+		WorldArea outerBounds = getOuterBounds(g, screenArea, deltaDegs);
 
-		double maxLat = bounds.getTopLeft().getLat();
-		double minLong = bounds.getTopLeft().getLong();
-		double minLat = bounds.getBottomRight().getLat();
-		double maxLong = bounds.getBottomRight().getLong();
+		double maxLat = outerBounds.getTopLeft().getLat();
+		double minLong = outerBounds.getTopLeft().getLong();
+		double minLat = outerBounds.getBottomRight().getLat();
+		double maxLong = outerBounds.getBottomRight().getLong();
+
+		WorldArea screenBounds = new WorldArea(g.toWorld(new Point(0, 0)),g.toWorld(new Point(0, 0)));
+		screenBounds.extend(g.toWorld(new Point(screenArea.width, screenArea.height)));
+		double maxScreenLat = screenBounds.getTopLeft().getLat();
+		double minScreenLat = screenBounds.getBottomLeft().getLat();
 
 		// keep track of the point separation: if they are closer than 3 pixels,
 		// drop out
@@ -369,7 +374,7 @@ public class GridPainter implements Plottable, Serializable
 
 		int counter = 0;
 
-		final WorldLocation gridOrigin = getGridLabelOrigin(bounds);
+		final WorldLocation gridOrigin = getGridLabelOrigin(outerBounds);
 		int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myDelta
 				.getValueIn(WorldDistance.DEGS));
 		int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myDelta
@@ -480,17 +485,19 @@ public class GridPainter implements Plottable, Serializable
 
 			}
 
-			Point p3 = g.toScreen(new WorldLocation(minLat, thisLong, 0));
+			// note: we only use the screen-lat limits, not the outer bounds ones
+			// this improves how we locate the axis labels
+			Point p3 = g.toScreen(new WorldLocation(minScreenLat, thisLong, 0));
 
 			int p3x = p3.x;
 			int p3y = p3.y;
-			Point p4 = g.toScreen(new WorldLocation(maxLat, thisLong, 0));
+			Point p4 = g.toScreen(new WorldLocation(maxScreenLat, thisLong, 0));
 
 			// just check that both ends of the line are visible
 			if ((p3x >= 0) || (p4.x >= 0))
 			{
 				g.drawLine(p3x, p3y, p4.x, p4.y);
-				
+
 				// ///////////////////////////////////////////////////////////
 				// and the labels
 				// ///////////////////////////////////////////////////////////
@@ -515,7 +522,7 @@ public class GridPainter implements Plottable, Serializable
 					}
 
 					// and output it
-					g.drawText(thisLabel, p4.x + 2, 15);
+					g.drawText(thisLabel + "==", p4.x + 2, 12);
 				}
 			}
 		}
