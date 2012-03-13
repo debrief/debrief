@@ -522,7 +522,7 @@ public class GridPainter implements Plottable, Serializable
 					}
 
 					// and output it
-					g.drawText(thisLabel + "==", p4.x + 2, 12);
+					g.drawText(thisLabel, p4.x + 2, 12);
 				}
 			}
 		}
