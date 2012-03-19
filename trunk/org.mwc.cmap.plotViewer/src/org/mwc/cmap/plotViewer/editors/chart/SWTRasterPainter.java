@@ -93,6 +93,10 @@ public class SWTRasterPainter extends PainterComponent
 
 			// and draw it to the canvas
 			canvas.drawImage(image, 0, 0, width, height);
+			
+			// we've created SWT image - we'd better delete it!
+			image.dispose();
+			image = null;
 		}
 		else if(dest instanceof MetafileCanvas)
 		{

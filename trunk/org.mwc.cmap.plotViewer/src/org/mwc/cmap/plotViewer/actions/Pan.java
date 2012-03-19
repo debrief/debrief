@@ -32,39 +32,44 @@ public class Pan extends CoreDragAction
 
 		PlainChart _myChart;
 
-		/** the hand cursor we show when dragging
+		/**
+		 * the hand cursor we show when dragging
 		 * 
 		 */
 		Cursor _newCursor;
 
-		/** the original area
+		/**
+		 * the original area
 		 * 
 		 */
 		WorldArea _originalArea;
 
-		/** the last area viewed
+		/**
+		 * the last area viewed
 		 * 
 		 */
 		WorldArea _lastArea;
 
-		/** remember the last location
+		/**
+		 * remember the last location
 		 * 
 		 */
 		WorldLocation _lastLocation;
 
-		/** where we started dragging from
+		/**
+		 * where we started dragging from
 		 * 
 		 */
 		protected WorldLocation _theStart;
 
 		protected WorldLocation _theEnd;
 
-		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theLayers, SWTCanvas theCanvas)
+		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
 		{
-			WorldLocation theLocation = _myChart.getCanvas().getProjection().toWorld(
-					new java.awt.Point(pt.x, pt.y));
-			
+			WorldLocation theLocation = _myChart.getCanvas().getProjection()
+					.toWorld(new java.awt.Point(pt.x, pt.y));
+
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
 			if (_lastLocation != null)
@@ -74,8 +79,8 @@ public class Pan extends CoreDragAction
 				WorldVector wv = _lastLocation.subtract(theLocation);
 
 				// apply this vector to the corners
-				WorldArea newArea = new WorldArea(_lastArea.getTopLeft().add(wv), _lastArea
-						.getBottomRight().add(wv));
+				WorldArea newArea = new WorldArea(_lastArea.getTopLeft().add(wv),
+						_lastArea.getBottomRight().add(wv));
 
 				// ok, store the new area
 				setNewArea(_myChart.getCanvas().getProjection(), newArea);
@@ -103,7 +108,8 @@ public class Pan extends CoreDragAction
 			setNewArea(_myChart.getCanvas().getProjection(), _originalArea);
 
 			// now we can do our data/world transform correctly
-			_theEnd = _myChart.getCanvas().toWorld(new java.awt.Point(point.x, point.y));
+			_theEnd = _myChart.getCanvas().toWorld(
+					new java.awt.Point(point.x, point.y));
 
 			// sort out the vector to apply to the corners
 			WorldVector wv = _theStart.subtract(_theEnd);
@@ -118,36 +124,36 @@ public class Pan extends CoreDragAction
 
 			// cool, sorted. remember the action
 			Action theAction = new PanAction(_myChart, _originalArea, _newArea);
-			
+
 			System.out.println("start point cleared.");
 			_startPoint = null;
 
 			// and wrap it
-			DebriefActionWrapper daw = new DebriefActionWrapper(theAction, _myChart.getLayers());
+			DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
+					_myChart.getLayers());
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);
 		}
 
-		public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas,
-				PlainChart theChart)
+		public void mouseDown(org.eclipse.swt.graphics.Point point,
+				SWTCanvas canvas, PlainChart theChart)
 		{
 			_startPoint = new java.awt.Point(point.x, point.y);
 			_myCanvas = canvas;
 			_myChart = theChart;
-			
-			_originalArea = new WorldArea(_myChart.getCanvas().getProjection().getVisibleDataArea());
 
+			_originalArea = new WorldArea(_myChart.getCanvas().getProjection()
+					.getVisibleDataArea());
 
-	    _lastArea = new WorldArea(_originalArea);
-	    _lastLocation = null;
-			
-			_theStart = new WorldLocation( _myChart.getCanvas().getProjection().toWorld(
-					new java.awt.Point(point.x, point.y)));
-	    
+			_lastArea = new WorldArea(_originalArea);
+			_lastLocation = null;
+
+			_theStart = new WorldLocation(_myChart.getCanvas().getProjection()
+					.toWorld(new java.awt.Point(point.x, point.y)));
 
 			// create the new cursor
-			_newCursor = getDownCursor();	
+			_newCursor = getDownCursor();
 
 			// and assign it to the control
 			canvas.getCanvas().setCursor(_newCursor);
@@ -162,39 +168,40 @@ public class Pan extends CoreDragAction
 			proj.setDataBorderNoZoom(oldBorder);
 		}
 
-		/** ok, assign the cursor for when we're just hovering
+		/**
+		 * ok, assign the cursor for when we're just hovering
 		 * 
 		 * @return the new cursor to use, silly.
 		 */
 		public Cursor getDownCursor()
 		{
 			// ok, return the pan cursor
-			Cursor res = new Cursor(Display.getDefault(), 
-					CorePlugin.getImageDescriptor("icons/hand_fist.ico").getImageData(), 
-					4, 2);		
-			
-			return res;
-		}				
-		
-		/** ok, assign the cursor for when we're just hovering
+			if (_downCursor == null)
+				_downCursor = new Cursor(Display.getDefault(), CorePlugin
+						.getImageDescriptor("icons/hand_fist.ico").getImageData(), 4, 2);
+
+			return _downCursor;
+		}
+
+		/**
+		 * ok, assign the cursor for when we're just hovering
 		 * 
 		 * @return the new cursor to use, silly.
 		 */
 		public Cursor getNormalCursor()
 		{
 			// ok, return the pan cursor
-			Cursor res = new Cursor(Display.getDefault(), 
-					CorePlugin.getImageDescriptor("icons/hand.ico").getImageData(), 
-					4, 2);		
-			
-			return res;
-		}			
+			if (_normalCursor == null)
+				_normalCursor = new Cursor(Display.getDefault(), CorePlugin
+						.getImageDescriptor("icons/hand.ico").getImageData(), 4, 2);
+
+			return _normalCursor;
+		}
 	}
 
 	public PlotMouseDragger getDragMode()
 	{
 		return new PanMode();
 	}
-	
 
 }

@@ -22,12 +22,14 @@ public class TranslateOperation implements DraggableItem, IconProvider
 {
 
 	final private TrackSegment _mySegment;
+	private Cursor _hotspotCursor;
 
 	public TranslateOperation(TrackSegment segment)
 	{
 		_mySegment = segment;
-		
+
 	}
+
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
@@ -47,15 +49,18 @@ public class TranslateOperation implements DraggableItem, IconProvider
 	{
 		//
 		_mySegment.shift(vector);
-		
+
 		// tell the segment it's shifted
 		_mySegment.clearBounds();
 	}
 
 	public Cursor getHotspotCursor()
 	{
-	  return new Cursor(Display.getDefault(), DebriefPlugin
-				.getImageDescriptor("icons/SelectFeatureHitDrag.ico").getImageData(), 4,
-				2);	
+		if (_hotspotCursor == null)
+			_hotspotCursor = new Cursor(Display.getDefault(), DebriefPlugin
+					.getImageDescriptor("icons/SelectFeatureHitDrag.ico").getImageData(),
+					4, 2);
+		return _hotspotCursor;
+
 	}
 }

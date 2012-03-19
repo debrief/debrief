@@ -551,8 +551,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
 		// lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
-		lFwd
-				.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
+		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
 		lFwd.setToolTipText("Move forward large step");
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true,
 				new Boolean(true)));
@@ -628,8 +627,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// and trim down the range of our slider manager
 
 						// hey, what's the current dtg?
-						HiResDate currentDTG = _slideManager.fromSliderUnits(_tNowSlider
-								.getSelection(), _dtgRangeSlider.getStepSize());
+						HiResDate currentDTG = _slideManager.fromSliderUnits(
+								_tNowSlider.getSelection(), _dtgRangeSlider.getStepSize());
 
 						// update the range of the slider
 						_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
@@ -896,6 +895,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private Action _primaryCentredNorthOrientedPlottingMode;
 
+	protected LayerPainterManager _layerPainterManager;
+
 	void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
@@ -981,8 +982,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 										timeRange.getEndDTG());
 
 								// and the time slider range
-								_slideManager.resetRange(timeRange.getStartDTG(), timeRange
-										.getEndDTG());
+								_slideManager.resetRange(timeRange.getStartDTG(),
+										timeRange.getEndDTG());
 
 							}
 
@@ -1153,10 +1154,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						ControllableTime ct = (ControllableTime) part;
-						_controllableTime = ct;
-						checkTimeEnabled();
+
+						if (_controllableTime != part)
+						{
+							// implementation here.
+							ControllableTime ct = (ControllableTime) part;
+							_controllableTime = ct;
+							checkTimeEnabled();
+						}
 					}
 
 				});
@@ -1180,19 +1185,22 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							IWorkbenchPart parentPart)
 					{
 
-						// right, we're clearly not running a simulation here, clear the
-						// simulation object
-						// that gets uses as a flag
-						_steppableTime = null;
+						if (_controllablePeriod != part)
+						{
+							// right, we're clearly not running a simulation here, clear the
+							// simulation object
+							// that gets uses as a flag
+							_steppableTime = null;
 
-						// implementation here.
-						ControllablePeriod ct = (ControllablePeriod) part;
-						_controllablePeriod = ct;
-						checkTimeEnabled();
+							// implementation here.
+							ControllablePeriod ct = (ControllablePeriod) part;
+							_controllablePeriod = ct;
+							checkTimeEnabled();
 
-						// ok, we've got all the normal controls, make the ui do it's stuff
-						reformatUI(true);
-
+							// ok, we've got all the normal controls, make the ui do it's
+							// stuff
+							reformatUI(true);
+						}
 					}
 
 				});
@@ -1270,10 +1278,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						// ok, insert the painter mode actions, together with
-						// our standard
-						// ones
-						populateDropDownList((LayerPainterManager) part);
+						if (_layerPainterManager != part)
+						{
+							// ok, insert the painter mode actions, together with
+							// our standard
+							// ones
+
+							_layerPainterManager = (LayerPainterManager) part;
+							populateDropDownList(_layerPainterManager);
+						}
 					}
 
 				});
@@ -1283,8 +1296,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						// _painterSelector.getCombo().setEnabled(false);
-						// _myLayerPainterManager = null;
+						if (_layerPainterManager == part)
+						{
+							_layerPainterManager = null;
+						}
 					}
 				});
 
@@ -1412,8 +1427,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					@Override
 					public void run()
 					{
-						newOp.run(_myTrackProvider.getPrimaryTrack(), _myTrackProvider
-								.getSecondaryTracks(), getPeriod());
+						newOp.run(_myTrackProvider.getPrimaryTrack(),
+								_myTrackProvider.getSecondaryTracks(), getPeriod());
 					}
 				};
 
@@ -1754,7 +1769,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		res.append(_myFormat.format(theTime));
 
 		DecimalFormat microsFormat = new DecimalFormat("000000");
-	//	DecimalFormat millisFormat = new DecimalFormat("000");
+		// DecimalFormat millisFormat = new DecimalFormat("000");
 
 		// do we have micros?
 		if (micros % 1000 > 0)
@@ -1766,19 +1781,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		else
 		{
 			// do we have millis?
-//			if (micros % 1000000 > 0)
-//			{
-//				// yes, convert the value to millis
-//
-//				long millis = micros = (micros % 1000000) / 1000;
-//
-//				res.append(".");
-//				res.append(millisFormat.format(millis));
-//			}
-//			else
-//			{
-//				// just use the normal output
-//			}
+			// if (micros % 1000000 > 0)
+			// {
+			// // yes, convert the value to millis
+			//
+			// long millis = micros = (micros % 1000000) / 1000;
+			//
+			// res.append(".");
+			// res.append(millisFormat.format(millis));
+			// }
+			// else
+			// {
+			// // just use the normal output
+			// }
 		}
 
 		return res.toString();
@@ -2584,8 +2599,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// find the new time
 		HiResDate tNew = _myTemporalDataset.getTime();
 
-		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(), ""
-				+ tNow.getMicros());
+		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(),
+				"" + tNow.getMicros());
 
 		// ok, go back to the demanded time (in case we loaded the plot with a
 		// different saved time)

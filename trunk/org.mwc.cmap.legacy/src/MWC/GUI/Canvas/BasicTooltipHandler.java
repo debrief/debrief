@@ -113,8 +113,12 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
 
 	public final String getString(final WorldLocation loc, final Point point)
 	{
-		String res;
+		String res = null;
 
+		// drop out if we don't know our layers objects
+		if(_theLayers == null)
+			return res;
+		
 		final dataStruct nearest = new dataStruct(loc);
 
 		// find the nearest editable item

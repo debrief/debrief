@@ -26,14 +26,17 @@ public class StretchFanOperation implements DraggableItem, IconProvider
 	final private TrackSegment _mySegment;
 	final private Layers _layers;
 	private TrackWrapper _parent;
+	private Cursor _hotspotCursor;
 
-	public StretchFanOperation(TrackSegment segment, TrackWrapper parent, Layers theLayers)
+	public StretchFanOperation(TrackSegment segment, TrackWrapper parent,
+			Layers theLayers)
 	{
 		_mySegment = segment;
 		_layers = theLayers;
 		_parent = parent;
-		
+
 	}
+
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 			LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
 	{
@@ -52,13 +55,13 @@ public class StretchFanOperation implements DraggableItem, IconProvider
 	public void shift(WorldVector vector)
 	{
 		// right, check that this is a segment that we can do business with.
-		if(_mySegment instanceof RelativeTMASegment)
+		if (_mySegment instanceof RelativeTMASegment)
 		{
-			RelativeTMASegment seg = (RelativeTMASegment) _mySegment;			
-			
+			RelativeTMASegment seg = (RelativeTMASegment) _mySegment;
+
 			// tell it to do a fan stretch
 			seg.fanStretch(vector);
-			
+
 			// tell the segment it's shifted
 			seg.clearBounds();
 
@@ -70,13 +73,15 @@ public class StretchFanOperation implements DraggableItem, IconProvider
 		{
 			System.err.println("can't do it!");
 		}
-		
+
 	}
 
 	public Cursor getHotspotCursor()
 	{
-	  return new Cursor(Display.getDefault(), DebriefPlugin
-				.getImageDescriptor("icons/SelectFeatureHitFanStretch.ico").getImageData(), 4,
-				2);	
+		if (_hotspotCursor == null)
+			_hotspotCursor = new Cursor(Display.getDefault(), DebriefPlugin
+					.getImageDescriptor("icons/SelectFeatureHitFanStretch.ico")
+					.getImageData(), 4, 2);
+		return _hotspotCursor;
 	}
 }

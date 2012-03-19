@@ -231,6 +231,7 @@ public class RotateDragMode extends DragMode
 		TrackSegment _segment;
 		protected TrackWrapper _parent;
 		protected Layers _layers;
+		protected Cursor _hotspotCursor;
 
 		public RotateOperation(WorldLocation cursorLoc, WorldLocation origin,
 				TrackSegment segment, TrackWrapper parentTrack, Layers theLayers)
@@ -289,8 +290,11 @@ public class RotateDragMode extends DragMode
 
 		public Cursor getHotspotCursor()
 		{
-			return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-					"icons/SelectFeatureHitRotate.ico").getImageData(), 4, 2);
+			if (_hotspotCursor == null)
+				_hotspotCursor = new Cursor(Display.getDefault(), DebriefPlugin
+						.getImageDescriptor("icons/SelectFeatureHitRotate.ico")
+						.getImageData(), 4, 2);
+			return _hotspotCursor;
 		}
 	}
 

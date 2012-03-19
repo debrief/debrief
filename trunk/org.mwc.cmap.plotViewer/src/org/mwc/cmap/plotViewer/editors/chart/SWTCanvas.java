@@ -464,6 +464,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public final void close()
 	{
+		if (!_dblBuff.isDisposed())
+			_dblBuff.dispose();
 		_dblBuff = null;
 	}
 

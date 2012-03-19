@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.combined.feature"
       label="Combined Maritime Analysis Platform plugins"
-      version="1.0.154"
+      version="1.0.155"
       provider-name="MWC">
 
    <description>

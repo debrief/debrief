@@ -537,6 +537,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 		// return _theDest.drawImage(img, x, y, width, height, observer);
 
+		image.dispose();
+		
 		return false;
 
 	}

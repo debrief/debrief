@@ -20,6 +20,7 @@ public class ShearDragMode extends RotateDragMode
 	{
 
 		private WorldLocation _lastLoc;
+		private Cursor _hotspotCursor;
 
 		public ShearOperation(WorldLocation cursorLoc, WorldLocation origin,
 				CoreTMASegment segment, TrackWrapper parentTrack, Layers theLayers)
@@ -54,8 +55,11 @@ public class ShearDragMode extends RotateDragMode
 
 		public Cursor getHotspotCursor()
 		{
-			return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+			if(_hotspotCursor == null)
+				_hotspotCursor =  new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
 					"icons/SelectFeatureHitShear.ico").getImageData(), 4, 2);
+			
+			return _hotspotCursor;
 		}
 	}
 

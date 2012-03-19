@@ -722,7 +722,6 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       final int depth_step = (int) ((max_height - min_height) / num_labels);
 
       // get ready to step through the colours
-      Color thisColor = new Color(0, 0, 0);
       Point thisPoint = null;
 
       // first pass, to plot the background shading
@@ -740,7 +739,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
           // produce this new colour
           int thisCol = parent.getColor(thisDepth, min_height, max_height, SWING_COLOR_CONVERTER);
           
-          thisColor = new Color(thisCol);
+          Color thisColor = new Color(thisCol);
             
           // draw this rectangle
           dest.setColor(thisColor);
