@@ -1,5 +1,6 @@
 package org.mwc.cmap.layer_manager.views;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
@@ -19,6 +20,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IElementComparer;
@@ -318,8 +320,8 @@ public class LayerManagerView extends ViewPart
 					if ((ha != null) && (hb != null))
 						res = wa.getTime().compareTo(wb.getTime());
 					else
-						res = p1.getEditable().getName().compareTo(
-								p2.getEditable().getName());
+						res = p1.getEditable().getName()
+								.compareTo(p2.getEditable().getName());
 				}
 				else if ((p1.getEditable() instanceof Comparable)
 						&& (p2.getEditable() instanceof Comparable))
@@ -436,10 +438,10 @@ public class LayerManagerView extends ViewPart
 		});
 
 		_dragDropSupport = new DragDropSupport(_treeViewer);
-		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport
-				.getTypes(), _dragDropSupport);
-		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport
-				.getTypes(), _dragDropSupport);
+		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
+				_dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY,
+				_dragDropSupport.getTypes(), _dragDropSupport);
 
 		// and format the tree
 		Tree tree = _treeViewer.getTree();
@@ -1267,7 +1269,8 @@ public class LayerManagerView extends ViewPart
 	private static Set<Layer> _pendingLayers = new TreeSet<Layer>(
 			new Comparator<Layer>()
 			{
-				@SuppressWarnings({ "unchecked", "rawtypes" })
+				@SuppressWarnings(
+				{ "unchecked", "rawtypes" })
 				public int compare(Layer arg0, Layer arg1)
 				{
 					int res = 1;
@@ -1514,14 +1517,71 @@ public class LayerManagerView extends ViewPart
 				processNewLayers(pw.getEditable());
 			else
 			{
-				_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
-				
-				// aah. it appears there's  a bug :
-				// (https://bugs.eclipse.org/bugs/show_bug.cgi?id=174818) 
-				// with the SWT implementation of setSelection - the reveal 
-				// parameter gets ignored. let's force the issue
-				if(_followSelectionToggle.isChecked())
-					_treeViewer.reveal(sel);
+				// just check that this is something we can work with
+				if (sel instanceof StructuredSelection)
+				{
+					StructuredSelection str = (StructuredSelection) sel;
+
+					// hey, is there a payload?
+					if (str.getFirstElement() != null)
+					{
+						// sure is. we only support single selections, so get the first
+						// element
+						Object first = str.getFirstElement();
+						if (first instanceof EditableWrapper)
+						{
+							EditableWrapper ew = (EditableWrapper) first;
+
+							// is it already loaded by the lazy tree manager?
+							Widget res = _treeViewer.findEditable(ew.getEditable());
+
+							if (res == null)
+							{
+								// nope, laod that whole data object
+								EditableWrapper thisP = ew.getParent();
+								ArrayList<EditableWrapper> al = new ArrayList<EditableWrapper>();
+
+								// we may have a chain of parents (though it's unlikely). Never
+								// the less, store them in reverse order, top-level first
+								while (thisP != null)
+								{
+									al.add(0, thisP);
+									thisP = thisP.getParent();
+								}
+
+								// ok, now we have to open all these items, starting at the
+								// highest level parent
+								Iterator<EditableWrapper> iter = al.iterator();
+								while (iter.hasNext())
+								{
+									EditableWrapper editableWrapper = (EditableWrapper) iter
+											.next();
+
+									// ok, get the content
+									ViewContentProvider contentP = (ViewContentProvider) _treeViewer
+											.getContentProvider();
+
+									// find the wrapped children of this object
+									Object[] contents = contentP.getChildren(editableWrapper);
+
+									// loop through, expanding them
+									for (Object content : contents)
+									{
+										// expand the particular child. Note we go down through all the layers, since the target
+										// object may be several layers deep
+										_treeViewer.expandToLevel(content,
+												AbstractTreeViewer.ALL_LEVELS);
+									}
+								}
+							}
+
+							// now just display it. This part of the tree may not have been loaded before,
+							// but we're sure it is now.
+							_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
+						}
+					}
+				}
+
 			}
 		}
 
