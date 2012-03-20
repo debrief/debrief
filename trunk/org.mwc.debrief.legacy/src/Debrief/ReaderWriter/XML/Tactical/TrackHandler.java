@@ -41,6 +41,7 @@ public final class TrackHandler extends
 	private static final String PLOT_ARRAY_CENTRE = "PlotArrayCentre";
 	private static final String LINK_POSITIONS = "LinkPositions";
 	private static final String LINE_THICKNESS = "LineThickness";
+	private static final String LINE_STYLE = "LineStyle";
 	private static final String INTERPOLATE_POINTS = "InterpolatePoints";
 
 	final MWC.GUI.Layers _theLayers;
@@ -77,6 +78,7 @@ public final class TrackHandler extends
 		trk.setAttribute("NameVisible", writeThis(track.getNameVisible()));
 		trk.setAttribute("NameAtStart", writeThis(track.getNameAtStart()));
 		trk.setAttribute(LINE_THICKNESS, writeThis(track.getLineThickness()));
+		trk.setAttribute(LINE_STYLE, writeThis(track.getLineStyle()));
 		trk.setAttribute(PLOT_ARRAY_CENTRE, writeThis(track.getPlotArrayCentre()));
 		trk.setAttribute(INTERPOLATE_POINTS,
 				writeThis(track.getInterpolatePoints()));
@@ -383,6 +385,15 @@ public final class TrackHandler extends
 				_myTrack.setSymbolType(value);
 			}
 		});
+		addAttributeHandler(new HandleIntegerAttribute(LINE_STYLE)
+		{
+			@Override
+			public void setValue(String name, int value)
+			{
+				_myTrack.setLineStyle(value);
+			}
+		});
+
 		addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
 		{
 			@Override

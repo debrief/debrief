@@ -218,7 +218,10 @@ final class SnailDrawSWTTrack
 				Point lastLoc = null;
 				
 				boolean titlePlotted = false;
-
+				
+				// set the line style
+				dest.setLineStyle(trk.getLineStyle());
+				
 				Iterator<Editable> iter = dotPoints.iterator();
 				while (iter.hasNext())
 				{
@@ -336,6 +339,9 @@ final class SnailDrawSWTTrack
 
 					}
 				}
+				
+				// and restore the line style
+				dest.setLineStyle(CanvasType.SOLID);
 			}
 		}
 

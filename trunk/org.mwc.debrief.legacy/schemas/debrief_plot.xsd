@@ -264,6 +264,7 @@
 			<xs:attribute name="InterpolatePoints" default="true"
 				type="xs:boolean" />
 			<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+			<xs:attribute name="LineStyle" default="1" type="xs:integer" />
 			<xs:attribute name="LinkPositions" default="true" type="xs:boolean" />
 			<xs:attribute name="Name" use="required" type="xs:string" />
 			<xs:attribute name="NameAtStart" default="true" type="xs:boolean" />
