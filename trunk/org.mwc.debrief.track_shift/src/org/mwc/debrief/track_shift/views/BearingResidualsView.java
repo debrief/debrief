@@ -15,7 +15,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 
 	public BearingResidualsView()
 	{
-		super(true,false);
+		super(true, false);
 	}
 
 	private static final String SHOW_COURSE = "SHOW_COURSE";
@@ -28,7 +28,8 @@ public class BearingResidualsView extends BaseStackedDotsView
 		super.makeActions();
 
 		// now the course action
-		flipCourse = new Action("Use +/- 180 scale for absolute data", IAction.AS_CHECK_BOX)
+		flipCourse = new Action("Use +/- 180 scale for absolute data",
+				IAction.AS_CHECK_BOX)
 		{
 			@Override
 			public void run()
@@ -42,7 +43,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 		flipCourse.setToolTipText("Plot absolute data on +/- 180 axes");
 		flipCourse.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/swapAxis.jpeg"));
-		
+
 		// now the course action
 		showCourse = new Action("Show ownship course", IAction.AS_CHECK_BOX)
 		{
@@ -69,13 +70,12 @@ public class BearingResidualsView extends BaseStackedDotsView
 		super.fillLocalToolBar(toolBarManager);
 
 	}
-	
+
 	protected void fillLocalPullDown(IMenuManager manager)
 	{
 		manager.add(flipCourse);
 		super.fillLocalPullDown(manager);
 	}
-
 
 	protected String getUnits()
 	{
@@ -91,22 +91,25 @@ public class BearingResidualsView extends BaseStackedDotsView
 	{
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
-				_onlyVisible.isChecked(), showCourse.isChecked(), flipCourse.isChecked(), _holder, this,
-				updateDoublets);
+				_onlyVisible.isChecked(), showCourse.isChecked(),
+				flipCourse.isChecked(), _holder, this, updateDoublets);
 
 		// hide the line for the course dataset (if we're showing the course)
-		DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
-				.getRenderer();
-		if (showCourse.isChecked())
+		if (_showLinePlot.isChecked())
 		{
-			// right, we've got a course, and it's always in slot one - so hide the
-			// shapes
-			lineRend.setSeriesShapesVisible(0, false);
-		}
-		else
-		{
-			// just make sure the first series is visible, it's clearly not a course
-			lineRend.setSeriesShapesVisible(0, true);
+			DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
+					.getRenderer();
+			if (showCourse.isChecked())
+			{
+				// right, we've got a course, and it's always in slot one - so hide the
+				// shapes
+				lineRend.setSeriesShapesVisible(0, false);
+			}
+			else
+			{
+				// just make sure the first series is visible, it's clearly not a course
+				lineRend.setSeriesShapesVisible(0, true);
+			}
 		}
 	}
 

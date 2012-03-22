@@ -115,7 +115,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * buttons for which plots to show
 	 * 
 	 */
-	private Action _showLinePlot;
+	protected
+	Action _showLinePlot;
 	private Action _showDotPlot;
 
 	/**
@@ -147,25 +148,29 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected TrackDataListener _myTrackDataListener;
 
-	/** does our output need bearing in the data?
+	/**
+	 * does our output need bearing in the data?
 	 * 
 	 */
 	private final boolean _needBrg;
 
-	/** does our output need frequency in the data?
+	/**
+	 * does our output need frequency in the data?
 	 * 
 	 */
 	private final boolean _needFreq;
 
 	/**
 	 * 
-	 * @param needBrg if the algorithm needs bearing data
-	 * @param needFreq if the agorithm needs frequency data
+	 * @param needBrg
+	 *          if the algorithm needs bearing data
+	 * @param needFreq
+	 *          if the agorithm needs frequency data
 	 */
-	protected BaseStackedDotsView(boolean needBrg, boolean needFreq )
+	protected BaseStackedDotsView(boolean needBrg, boolean needFreq)
 	{
 		_myHelper = new StackedDotHelper();
-		
+
 		_needBrg = needBrg;
 		_needFreq = needFreq;
 
@@ -283,14 +288,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
 		_linePlot.setDomainCrosshairStroke(new BasicStroke(1));
 		_linePlot.setRangeCrosshairStroke(new BasicStroke(1));
-		
+
 		// and the plot object to display the cross hair value
 		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
 		annot.setTextAnchor(TextAnchor.TOP_LEFT);
 		annot.setPaint(Color.white);
 		annot.setBackgroundPaint(Color.black);
 		_linePlot.addAnnotation(annot);
-		
+
 		// give them a high contrast backdrop
 		_dotPlot.setBackgroundPaint(Color.black);
 		_linePlot.setBackgroundPaint(Color.black);
@@ -324,22 +329,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
 					return;
 
+				// is hte line plot visible?
+				if (!_showLinePlot.isChecked())
+					return;
+
 				// double-check our label is still in the right place
-				double xVal = _linePlot.getRangeAxis().getLowerBound()  ;
-				double yVal =  _linePlot.getDomainAxis().getUpperBound() ;
+				double xVal = _linePlot.getRangeAxis().getLowerBound();
+				double yVal = _linePlot.getDomainAxis().getUpperBound();
 				annot.setX(yVal);
 				annot.setY(xVal);
 
 				// and write the text
 				String numA = MWC.Utilities.TextFormatting.GeneralFormat
-				.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
-				Date newDate = new Date((long)_linePlot.getDomainCrosshairValue());
+						.formatOneDecimalPlace(_linePlot.getRangeCrosshairValue());
+				Date newDate = new Date((long) _linePlot.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				String dateVal = _df.format(newDate);
-				String theMessage =  " [" + dateVal + "," + numA + "]";
+				String theMessage = " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
-				
+
 				_linePlot.removeAnnotation(annot);
 				_linePlot.addAnnotation(annot);
 			}
@@ -359,23 +368,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			public void mouseMoved(MouseEvent e)
 			{
 				// Point pt = e.getPoint();
-				// // suspend this development. we need to sort out which plot the mouse
+				// // suspend this development. we need to sort out which plot
+				// the mouse
 				// is over
 				// int mouseX = pt.y;
 				// int mouseY = pt.x;
 				// Point2D p = plotHolder
 				// .translateScreenToJava2D(new Point(mouseX, mouseY));
-				// System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX +
+				// System.out.println(pt.x + ", " + pt.y + " to: x = " + mouseX
+				// +
 				// ", y = "
 				// + mouseY);
 				// // Rectangle2D plotArea = chartPanel.getScreenDataArea();
 				//
 				// CombinedDomainXYPlot comb = (CombinedDomainXYPlot)
 				// _dotPlot.getParent();
-				// // XYPlot thisPlot = comb.findSubplot(comb.getParent().getp, p);
+				// // XYPlot thisPlot = comb.findSubplot(comb.getParent().getp,
+				// p);
 				//
 				// Component comp = plotHolder.getComponentAt(pt);
-				// ChartEntity entity = plotHolder.getEntityForPoint(mouseX, mouseY);
+				// ChartEntity entity = plotHolder.getEntityForPoint(mouseX,
+				// mouseY);
 				// System.err.println("comp:" + comp + "// entity:" + entity);
 				//
 				// Rectangle2D plotArea =
@@ -392,7 +405,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				// domainAxisEdge);
 				// double chartY = rangeAxis.java2DToValue(p.getY(), plotArea,
 				// rangeAxisEdge);
-				// System.out.println("Chart: x = " + chartX + ", y = " + chartY);
+				// System.out.println("Chart: x = " + chartX + ", y = " +
+				// chartY);
 				// }
 			}
 		});
@@ -450,11 +464,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			{
 				super.run();
 				boolean val = _autoResize.isChecked();
-				// ok - redraw the plot we may have changed the axis centreing
-				_linePlot.getRangeAxis().setAutoRange(val);
-				_linePlot.getDomainAxis().setAutoRange(val);
-				_dotPlot.getRangeAxis().setAutoRange(val);
-				_dotPlot.getDomainAxis().setAutoRange(val);
+				if (_showLinePlot.isChecked())
+				{
+					// ok - redraw the plot we may have changed the axis
+					// centreing
+					_linePlot.getRangeAxis().setAutoRange(val);
+					_linePlot.getDomainAxis().setAutoRange(val);
+				}
+				if (_showDotPlot.isChecked())
+				{
+					_dotPlot.getRangeAxis().setAutoRange(val);
+					_dotPlot.getDomainAxis().setAutoRange(val);
+				}
 			}
 		};
 		_autoResize.setChecked(true);
@@ -550,8 +571,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				// we need to get a fresh set of data pairs - the number may
 				// have
 				// changed
-				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible
-						.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+				_myHelper.initialise(_theTrackDataListener, true,
+						_onlyVisible.isChecked(), _holder, logger, getType(), _needBrg,
+						_needFreq);
 
 				// and a new plot please
 				updateStackedDots(true);
@@ -594,7 +616,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * the track has been moved, update the dots
 	 */
 	void updateStackedDots(boolean updateDoublets)
-	{	
+	{
 
 		// update the current datasets
 		updateData(updateDoublets);
@@ -607,8 +629,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			{
 				// do a quick fudge to make sure zero is in the centre
 				final Range rng = _dotPlot.getRangeAxis().getRange();
-				final double maxVal = Math.max(Math.abs(rng.getLowerBound()), Math
-						.abs(rng.getUpperBound()));
+				final double maxVal = Math.max(Math.abs(rng.getLowerBound()),
+						Math.abs(rng.getUpperBound()));
 				_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
 			}
 		}
@@ -678,8 +700,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							_myChart.setTitle(getType() + " Error");
 
 							// ok - fire off the event for the new tracks
-							_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
-									.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+							_myHelper.initialise(_theTrackDataListener, false,
+									_onlyVisible.isChecked(), _holder, logger, getType(),
+									_needBrg, _needFreq);
 
 							// just in case we're ready to start plotting, go
 							// for it!
@@ -716,7 +739,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							{
 								public void trackShifted(TrackWrapper subject)
 								{
-									// the tracks have moved, we haven't changed the tracks or
+									// the tracks have moved, we haven't changed
+									// the tracks or
 									// anything like that...
 									updateStackedDots(false);
 								}
@@ -729,9 +753,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 										WatchableList[] secondaries)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
-											_onlyVisible.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+											_onlyVisible.isChecked(), _holder, logger, getType(),
+											_needBrg, _needFreq);
 
-									// ahh, the tracks have changed, better update the doublets
+									// ahh, the tracks have changed, better
+									// update the doublets
 
 									// ok, do the recalc
 									updateStackedDots(true);
@@ -813,7 +839,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 								public void dataReformatted(Layers theData, Layer changedLayer)
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
-											_onlyVisible.isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+											_onlyVisible.isChecked(), _holder, logger, getType(),
+											_needBrg, _needFreq);
 									updateStackedDots(false);
 								}
 							};
@@ -871,10 +898,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// have a look at the auto resize
 		if (_autoResize.isChecked())
 		{
-			_linePlot.getRangeAxis().setAutoRange(false);
-			_linePlot.getDomainAxis().setAutoRange(false);
-			_linePlot.getRangeAxis().setAutoRange(true);
-			_linePlot.getDomainAxis().setAutoRange(true);
+			if (_showLinePlot.isChecked())
+			{
+				_linePlot.getRangeAxis().setAutoRange(false);
+				_linePlot.getDomainAxis().setAutoRange(false);
+				_linePlot.getRangeAxis().setAutoRange(true);
+				_linePlot.getDomainAxis().setAutoRange(true);
+			}
 		}
 	}
 
