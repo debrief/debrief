@@ -3,7 +3,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="swing2swt.jar"/>
+	<classpathentry kind="lib" path="libs/swing2swt.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/jackson-core-asl-1.9.4.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/jackson-mapper-asl-1.9.4.jar"/>
