@@ -56,7 +56,7 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 				if (thisE instanceof GTrack)
 				{
 					goForIt = true;
-					if(title == null)
+					if (title == null)
 						title = "Import as Debrief track";
 					else
 						title = "Import as Debrief tracks";
@@ -83,7 +83,7 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 
 			final Editable editable = subjects[0];
 			final String theTitle = title;
-			
+
 			// create this operation
 			Action doMerge = new Action(theTitle)
 			{
@@ -126,7 +126,7 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 			for (int i = 0; i < _subjects.length; i++)
 			{
 				Editable ed = _subjects[i];
-				if(ed instanceof GPackage)
+				if (ed instanceof GPackage)
 				{
 					GPackage gp = (GPackage) ed;
 					Enumeration<Editable> enumer = gp.elements();
@@ -144,9 +144,7 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 					_layers.addThisLayer(tw);
 				}
 			}
-			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
-			if (res == IStatus.OK)
-				fireModified();
+			fireModified();
 			return Status.OK_STATUS;
 		}
 
@@ -180,21 +178,20 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 	public static TrackWrapper getTrackFor(GTrack gt)
 	{
 		gt.setVisible(false);
-		
+
 		TrackWrapper tw = new TrackWrapper();
 		tw.setName(gt.getName());
 		tw.setColor(gt.getColor());
-		
+
 		// loop through the points
 		int len = gt.size();
-		for(int i=0;i<len;i++)
+		for (int i = 0; i < len; i++)
 		{
 			Fix f = gt.getFixAt(i);
 			FixWrapper fw = new FixWrapper(f);
 			tw.addFix(fw);
 		}
-		
-			
+
 		return tw;
 	}
 }
