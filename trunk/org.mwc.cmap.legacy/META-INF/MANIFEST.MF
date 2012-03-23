@@ -2,14 +2,17 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CMap Legacy Algorithms Plug-in
 Bundle-SymbolicName: org.mwc.cmap.legacy;singleton:=true
-Bundle-Version: 1.0.134
+Bundle-Version: 1.0.135
 Bundle-ClassPath: cmap_legacy.jar,
  libs/openmap.jar,
  libs/jmf.jar,
  libs/vrml97.jar,
  libs/jcommon-1.0.16.jar,
  libs/jfreechart-1.0.13.jar,
- libs/flanagan.jar
+ libs/flanagan.jar,
+ libs/jackson-core-asl-1.9.4.jar,
+ libs/jackson-mapper-asl-1.9.4.jar,
+ libs/joda-time-2.1.jar
 Bundle-Vendor: MWC
 Export-Package: 
  .,
@@ -195,6 +198,7 @@ Export-Package:
    MWC.GUI",
  MWC.GenericData;uses:="junit.framework,MWC.Algorithms",
  MWC.TacticalData;uses:="junit.framework,MWC.GenericData,MWC.GUI",
+ MWC.TacticalData.GND,
  MWC.Utilities.Errors,
  MWC.Utilities.Errors.Testing;uses:="junit.framework",
  MWC.Utilities.ReaderWriter;uses:="MWC.GUI",
@@ -796,6 +800,32 @@ Export-Package:
    javax.media.control,
    javax.media.protocol,
    javax.media",
+ org.codehaus.jackson,
+ org.codehaus.jackson.annotate,
+ org.codehaus.jackson.format,
+ org.codehaus.jackson.impl,
+ org.codehaus.jackson.io,
+ org.codehaus.jackson.map,
+ org.codehaus.jackson.map.annotate,
+ org.codehaus.jackson.map.deser,
+ org.codehaus.jackson.map.deser.impl,
+ org.codehaus.jackson.map.deser.std,
+ org.codehaus.jackson.map.exc,
+ org.codehaus.jackson.map.ext,
+ org.codehaus.jackson.map.introspect,
+ org.codehaus.jackson.map.jsontype,
+ org.codehaus.jackson.map.jsontype.impl,
+ org.codehaus.jackson.map.module,
+ org.codehaus.jackson.map.ser,
+ org.codehaus.jackson.map.ser.impl,
+ org.codehaus.jackson.map.ser.std,
+ org.codehaus.jackson.map.type,
+ org.codehaus.jackson.map.util,
+ org.codehaus.jackson.node,
+ org.codehaus.jackson.schema,
+ org.codehaus.jackson.sym,
+ org.codehaus.jackson.type,
+ org.codehaus.jackson.util,
  org.jfree,
  org.jfree.base,
  org.jfree.base.config,
