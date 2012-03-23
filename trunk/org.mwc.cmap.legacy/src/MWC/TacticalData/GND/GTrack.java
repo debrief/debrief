@@ -1,6 +1,5 @@
 package MWC.TacticalData.GND;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.Date;
@@ -12,6 +11,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -42,6 +42,8 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 	private HiResDate _startDate;
 
 	private HiResDate _endDate;
+
+	private PlainSymbol _mySnail;
 
 	public GTrack(GDataset data)
 	{
@@ -137,20 +139,6 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 	}
 
 	@Override
-	public Color getColor()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PlainSymbol getSnailShape()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public double rangeFrom(WorldLocation other)
 	{
 		return Plottable.INVALID_RANGE;
@@ -222,7 +210,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 				{
 					Date thisD = dates[i];
 					if (thisD.getTime() < _startDate.getDate().getTime()
-							&& thisD.getTime() > _endDate.getDate().getTime())
+							|| thisD.getTime() > _endDate.getDate().getTime())
 						plotIt = false;
 				}
 			}
@@ -288,6 +276,16 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public PlainSymbol getSnailShape()
+	{
+		if(_mySnail == null)
+			_mySnail = MWC.GUI.Shapes.Symbols.SymbolFactory
+					.createSymbol(SymbolFactory.MERCHANT);
+		
+		return _mySnail;
 	}
 
 }

@@ -124,7 +124,9 @@ public class SymbolFactory
   // member variables
   //////////////////////////////////////////////////
 
-  public static final String SUBMARINE = "Submarine";
+  public static final String MERCHANT = "Merchant";
+
+	public static final String SUBMARINE = "Submarine";
 
 	public static final String DEFAULT_SYMBOL_TYPE = "S";
 
@@ -353,10 +355,10 @@ public class SymbolFactory
       vessels.put("Frigate", MWC.GUI.Shapes.Symbols.Vessels.FrigateSym.class);
       vessels.put("TA Frigate", MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym.class);
       vessels.put("Fishing_Vessel", MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
-      vessels.put("Merchant", MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
+      vessels.put(MERCHANT, MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
       vessels.put("Unknown", MWC.GUI.Shapes.Symbols.Vessels.UnknownSym.class);
       vessels.put("Minesweeper", MWC.GUI.Shapes.Symbols.Vessels.MinesweeperSym.class);
-      vessels.put("Merchant", MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
+      vessels.put(MERCHANT, MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
       vessels.put("Troop_Carrier", MWC.GUI.Shapes.Symbols.Vessels.TroopCarrierSym.class);
 
       vessels.put("Oiler", MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
@@ -377,7 +379,7 @@ public class SymbolFactory
       _theVesselIds.put("Frigate", "F");
       _theVesselIds.put("TA Frigate", "T");
       _theVesselIds.put("Fishing Vessel", "V");
-      _theVesselIds.put("Merchant", "M");
+      _theVesselIds.put(MERCHANT, "M");
       _theVesselIds.put("Minesweeper", "N");
       _theVesselIds.put("Troop_Carrier", "R");
       _theVesselIds.put("Unknown", "@");
