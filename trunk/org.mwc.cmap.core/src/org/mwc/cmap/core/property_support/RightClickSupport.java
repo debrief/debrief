@@ -215,29 +215,33 @@ public class RightClickSupport
 		if (editables.length > 0)
 		{
 			Editable first = editables[0];
-			res = first.getInfo().getMethodDescriptors();
-
-			// only continue if there are any methods to compare against
-			if (res != null)
+			EditorType firstInfo = first.getInfo();
+			if (firstInfo != null)
 			{
-				// right, are there any more?
-				if (editables.length > 1)
+				res = firstInfo.getMethodDescriptors();
+
+				// only continue if there are any methods to compare against
+				if (res != null)
 				{
-					// pass through the others, finding the common ground
-					for (int cnt = 1; cnt < editables.length; cnt++)
+					// right, are there any more?
+					if (editables.length > 1)
 					{
-						Editable thisE = editables[cnt];
-
-						// get its props
-						EditorType thisEditor = thisE.getInfo();
-
-						// do we have an editor?
-						if (thisEditor != null)
+						// pass through the others, finding the common ground
+						for (int cnt = 1; cnt < editables.length; cnt++)
 						{
-							MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+							Editable thisE = editables[cnt];
 
-							// find the common ones
-							res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+							// get its props
+							EditorType thisEditor = thisE.getInfo();
+
+							// do we have an editor?
+							if (thisEditor != null)
+							{
+								MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+
+								// find the common ones
+								res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+							}
 						}
 					}
 				}
@@ -259,31 +263,35 @@ public class RightClickSupport
 		if (editables.length > 0)
 		{
 			Editable first = editables[0];
-			res = first.getInfo().getUndoableActions();
-
-			// only continue if there are any methods to compare against
-			if (res != null)
+			EditorType firstInfo = first.getInfo();
+			if (firstInfo != null)
 			{
-				// right, are there any more?
-				if (editables.length > 1)
+				res = firstInfo.getUndoableActions();
+
+				// only continue if there are any methods to compare against
+				if (res != null)
 				{
-					// pass through the others, finding the common ground
-					for (int cnt = 1; cnt < editables.length; cnt++)
+					// right, are there any more?
+					if (editables.length > 1)
 					{
-						Editable thisE = editables[cnt];
-
-						// get its props
-						EditorType thisEditor = thisE.getInfo();
-
-						// do we have an editor?
-						if (thisEditor != null)
+						// pass through the others, finding the common ground
+						for (int cnt = 1; cnt < editables.length; cnt++)
 						{
-							MWC.GUI.Tools.SubjectAction[] newSet = thisEditor
-									.getUndoableActions();
+							Editable thisE = editables[cnt];
 
-							// find the common ones
-							res = (MWC.GUI.Tools.SubjectAction[]) getIntersectionFor(res,
-									newSet, demo);
+							// get its props
+							EditorType thisEditor = thisE.getInfo();
+
+							// do we have an editor?
+							if (thisEditor != null)
+							{
+								MWC.GUI.Tools.SubjectAction[] newSet = thisEditor
+										.getUndoableActions();
+
+								// find the common ones
+								res = (MWC.GUI.Tools.SubjectAction[]) getIntersectionFor(res,
+										newSet, demo);
+							}
 						}
 					}
 				}
@@ -324,29 +332,35 @@ public class RightClickSupport
 		if (editables.length > 0)
 		{
 			Editable first = editables[0];
-			res = first.getInfo().getPropertyDescriptors();
-
-			// only continue if there are any property descriptors
-			if (res != null)
+			EditorType firstInfo = first.getInfo();
+			if (firstInfo != null)
 			{
-				// right, are there any more?
-				if (editables.length > 1)
+				res = firstInfo.getPropertyDescriptors();
+
+				// only continue if there are any property descriptors
+				if (res != null)
 				{
-					// pass through the others, finding the common ground
-					for (int cnt = 1; cnt < editables.length; cnt++)
+					// right, are there any more?
+					if (editables.length > 1)
 					{
-						Editable thisE = editables[cnt];
-
-						// get its props
-						EditorType thisEditor = thisE.getInfo();
-
-						// do we have an editor?
-						if (thisEditor != null)
+						// pass through the others, finding the common ground
+						for (int cnt = 1; cnt < editables.length; cnt++)
 						{
-							PropertyDescriptor[] newSet = thisEditor.getPropertyDescriptors();
+							Editable thisE = editables[cnt];
 
-							// find the common ones
-							res = (PropertyDescriptor[]) getIntersectionFor(res, newSet, demo);
+							// get its props
+							EditorType thisEditor = thisE.getInfo();
+
+							// do we have an editor?
+							if (thisEditor != null)
+							{
+								PropertyDescriptor[] newSet = thisEditor
+										.getPropertyDescriptors();
+
+								// find the common ones
+								res = (PropertyDescriptor[]) getIntersectionFor(res, newSet,
+										demo);
+							}
 						}
 					}
 				}
@@ -664,7 +678,8 @@ public class RightClickSupport
 				}
 				catch (Exception e)
 				{
-					CorePlugin.logError(IStatus.INFO,
+					CorePlugin.logError(
+							IStatus.INFO,
 							"While executing undoable operations for for:"
 									+ theAction.toString(), e);
 				}
@@ -757,9 +772,9 @@ public class RightClickSupport
 								Method setter = thisP.getWriteMethod();
 
 								// ok, place the change in the action
-								ListPropertyAction la = new ListPropertyAction(thisP
-										.getDisplayName(), editables, getter, setter, thisValue,
-										theLayers, topLevelLayer);
+								ListPropertyAction la = new ListPropertyAction(
+										thisP.getDisplayName(), editables, getter, setter,
+										thisValue, theLayers, topLevelLayer);
 
 								// and add it to the history
 								CorePlugin.run(la);
@@ -875,9 +890,11 @@ public class RightClickSupport
 				}
 				catch (InvocationTargetException e)
 				{
-					CorePlugin.logError(Status.ERROR, "Setter call failed:"
-							+ thisSubject.getName() + " Error was:"
-							+ e.getTargetException().getMessage(), e.getTargetException());
+					CorePlugin
+							.logError(Status.ERROR,
+									"Setter call failed:" + thisSubject.getName() + " Error was:"
+											+ e.getTargetException().getMessage(),
+									e.getTargetException());
 					res = null;
 				}
 				catch (IllegalArgumentException e)
