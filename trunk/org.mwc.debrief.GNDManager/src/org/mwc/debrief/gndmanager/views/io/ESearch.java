@@ -104,7 +104,7 @@ public class ESearch implements SearchModel
 		addFacetFor(facets, "sensor_type");
 
 		ObjectNode qq = _mapper.createObjectNode();
-		qq.put("size", 50);
+		qq.put("size", 500);
 		qq.put("query", queryObj);
 		qq.put("facets", facets);
 
@@ -151,7 +151,7 @@ public class ESearch implements SearchModel
 		@Override
 		public int getNumMatches()
 		{
-			int hits = _node.get("hits").size();
+			int hits = _node.get("hits").get("hits").size();
 			return hits;
 		}
 

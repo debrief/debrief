@@ -1,7 +1,10 @@
 package org.mwc.debrief.gndmanager.views;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -49,19 +52,19 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayoutData(BorderLayout.NORTH);
 		composite.setLayout(new GridLayout(2, false));
-		
-				Button connectBtn = new Button(composite, SWT.NONE);
-				connectBtn.setText("Connect");
-				connectBtn.addSelectionListener(new SelectionAdapter()
-				{
 
-					@Override
-					public void widgetSelected(SelectionEvent e)
-					{
-						if (_myListener != null)
-							_myListener.doConnect();
-					}
-				});
+		Button connectBtn = new Button(composite, SWT.NONE);
+		connectBtn.setText("Connect");
+		connectBtn.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (_myListener != null)
+					_myListener.doConnect();
+			}
+		});
 		new Label(composite, SWT.NONE);
 
 		Label lblNewLabel = new Label(composite, SWT.NONE);
@@ -83,7 +86,7 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		{ "trial_a", "trial_b", "trial_c" });
 		trials.setBounds(0, 0, 3, 66);
 		_trials = new EasyBox(trials);
-		
+
 		Button btnReset = new Button(composite, SWT.NONE);
 		btnReset.setText("Reset");
 
@@ -117,17 +120,33 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		MatchContentProvider provider = new MatchContentProvider();
 		checkboxTableViewer.setContentProvider(provider);
 		checkboxTableViewer.setLabelProvider(new MatchLabelProvider());
-		
+
 		Composite composite_1 = new Composite(this, SWT.NONE);
 		composite_1.setLayoutData(BorderLayout.SOUTH);
-				composite_1.setLayout(new RowLayout(SWT.HORIZONTAL));
+		composite_1.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+		Button selectAllBtn = new Button(composite_1, SWT.NONE);
+		selectAllBtn.setText("Select all/none");
+		selectAllBtn.addSelectionListener(new SelectionAdapter(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				// is the first one selected
+				int num =	checkboxTableViewer.getCheckedElements().length;
 				
-				Button btnNewButton = new Button(composite_1, SWT.NONE);
-				btnNewButton.setText("Select all/none");
-		
-				Button importBtn = new Button(composite_1, SWT.NONE);
-				importBtn.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.BOLD));
-				importBtn.setText("Import");
+				boolean doAll=false;
+				if(num == 0)
+					doAll = true;
+				
+				checkboxTableViewer.setAllChecked(doAll);
+				
+			}});
+
+		Button importBtn = new Button(composite_1, SWT.NONE);
+		importBtn
+				.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.BOLD));
+		importBtn.setText("Import");
 		importBtn.addSelectionListener(new SelectionAdapter()
 		{
 
@@ -257,16 +276,22 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		@Override
 		public Object[] getElements(Object inputElement)
 		{
+			Comparator<Match> comparator = new Comparator<Match>(){
+
+				@Override
+				public int compare(Match arg0, Match arg1)
+				{
+					return arg0.getName().compareTo(arg1.getName());
+				}};
+			SortedSet<Match> items = new TreeSet<Match>(comparator );
 			MatchList item = (MatchList) inputElement;
 			int len = item.getNumMatches();
-			Object[] res = new Object[len];
 			for (int i = 0; i < len; i++)
 			{
 				Match match = item.getMatch(i);
-				res[i] = match;
+				items.add(match);
 			}
-			System.err.println("found:" + len);
-			return res;
+			return items.toArray();
 		}
 
 	}
