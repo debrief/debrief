@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GNDManager
+Bundle-SymbolicName: org.mwc.debrief.GNDManager; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.mwc.debrief.gndmanager.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.legacy;bundle-version="1.0.134"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .,
+ swing2swt.jar
