@@ -1312,7 +1312,7 @@ public class LayerManagerView extends ViewPart
 			_alreadyDeferring = true;
 
 			// right. we're not already doing some processing
-			Display dis = Display.getCurrent();
+			Display dis = Display.getDefault();
 			dis.asyncExec(new Runnable()
 			{
 				public void run()
