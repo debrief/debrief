@@ -60,6 +60,8 @@ public class GNDManager extends ViewPart implements Listener
 	{
 		view = new ManagerViewImpl(parent, SWT.NONE);
 		view.setListener(this);
+		
+		view.enableControls(false);
 
 		// Create the help context id for the viewer's control
 		makeActions();
@@ -183,6 +185,9 @@ public class GNDManager extends ViewPart implements Listener
 			view.getPlatforms().setItems(platforms.toList(), false);
 		if (trials != null)
 			view.getTrials().setItems(trials.toList(), false);
+		
+		// did it work?
+		view.enableControls(true);
 	}
 
 }

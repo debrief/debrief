@@ -50,5 +50,6 @@ public interface ManagerView
 	public String getFreeText();
 	void setResults(MatchList res);
 	public void setFoxus();
+	void enableControls(boolean enabled);
 
 }

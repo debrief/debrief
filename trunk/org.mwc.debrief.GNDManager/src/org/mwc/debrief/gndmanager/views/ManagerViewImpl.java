@@ -29,6 +29,7 @@ import org.mwc.debrief.gndmanager.views.io.SearchModel.Match;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.MatchList;
 
 import swing2swt.layout.BorderLayout;
+import swing2swt.layout.FlowLayout;
 
 public class ManagerViewImpl extends Composite implements ManagerView
 {
@@ -37,6 +38,8 @@ public class ManagerViewImpl extends Composite implements ManagerView
 	private FacetList _platforms;
 	private FacetList _trials;
 	private CheckboxTableViewer checkboxTableViewer;
+	private Composite filterControls;
+	private Composite searchControls;
 
 	/**
 	 * Create the composite.
@@ -51,9 +54,12 @@ public class ManagerViewImpl extends Composite implements ManagerView
 
 		Composite composite = new Composite(this, SWT.NONE);
 		composite.setLayoutData(BorderLayout.NORTH);
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(new RowLayout(SWT.VERTICAL));
 
-		Button connectBtn = new Button(composite, SWT.NONE);
+		Composite composite_2 = new Composite(composite, SWT.NONE);
+
+		Button connectBtn = new Button(composite_2, SWT.NONE);
+		connectBtn.setSize(76, 28);
 		connectBtn.setText("Connect");
 		connectBtn.addSelectionListener(new SelectionAdapter()
 		{
@@ -65,33 +71,47 @@ public class ManagerViewImpl extends Composite implements ManagerView
 					_myListener.doConnect();
 			}
 		});
-		new Label(composite, SWT.NONE);
 
-		Label lblNewLabel = new Label(composite, SWT.NONE);
-		lblNewLabel.setBounds(0, 0, 59, 14);
+		 filterControls = new Composite(composite, SWT.NONE);
+		filterControls.setEnabled(false);
+		filterControls.setLayout(new GridLayout(3, false));
+
+		Label lblNewLabel = new Label(filterControls, SWT.NONE);
+		lblNewLabel.setBounds(0, 0, 50, 14);
 		lblNewLabel.setText("Platform");
 
-		List platforms = new List(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		platforms.setItems(new String[]
-		{ "plat_a", "plat_b", "plat_c" });
-		platforms.setBounds(0, 0, 3, 66);
-		_platforms = new EasyBox(platforms);
+		Label lblPlatformType = new Label(filterControls, SWT.NONE);
+		lblPlatformType.setText("Platform Type");
 
-		Label lblNewLabel2 = new Label(composite, SWT.NONE);
+		Label lblNewLabel2 = new Label(filterControls, SWT.NONE);
 		lblNewLabel2.setBounds(0, 0, 59, 14);
 		lblNewLabel2.setText("Trial");
 
-		List trials = new List(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		List platforms = new List(filterControls, SWT.BORDER | SWT.MULTI
+				| SWT.V_SCROLL);
+		platforms.setItems(new String[]
+		{ "plat_a", "plat_b", "plat_c" });
+		platforms.setBounds(0, 0, 55, 47);
+		_platforms = new EasyBox(platforms);
+		new Label(filterControls, SWT.NONE);
+
+		List trials = new List(filterControls, SWT.BORDER | SWT.MULTI
+				| SWT.V_SCROLL);
 		trials.setItems(new String[]
 		{ "trial_a", "trial_b", "trial_c" });
 		trials.setBounds(0, 0, 3, 66);
 		_trials = new EasyBox(trials);
 
-		Button btnReset = new Button(composite, SWT.NONE);
+		 searchControls = new Composite(composite, SWT.NONE);
+		searchControls.setLayout(new GridLayout(3, false));
+
+		Button btnReset = new Button(searchControls, SWT.NONE);
 		btnReset.setText("Reset");
 
-		Button searchBtn = new Button(composite, SWT.NONE);
-		searchBtn.setBounds(0, 0, 94, 28);
+		Label label = new Label(searchControls, SWT.NONE);
+		label.setText("  ");
+
+		Button searchBtn = new Button(searchControls, SWT.NONE);
 		searchBtn.setText("Search");
 		searchBtn.addSelectionListener(new SelectionListener()
 		{
@@ -127,21 +147,23 @@ public class ManagerViewImpl extends Composite implements ManagerView
 
 		Button selectAllBtn = new Button(composite_1, SWT.NONE);
 		selectAllBtn.setText("Select all/none");
-		selectAllBtn.addSelectionListener(new SelectionAdapter(){
+		selectAllBtn.addSelectionListener(new SelectionAdapter()
+		{
 
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
 				// is the first one selected
-				int num =	checkboxTableViewer.getCheckedElements().length;
-				
-				boolean doAll=false;
-				if(num == 0)
+				int num = checkboxTableViewer.getCheckedElements().length;
+
+				boolean doAll = false;
+				if (num == 0)
 					doAll = true;
-				
+
 				checkboxTableViewer.setAllChecked(doAll);
-				
-			}});
+
+			}
+		});
 
 		Button importBtn = new Button(composite_1, SWT.NONE);
 		importBtn
@@ -255,6 +277,13 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		checkboxTableViewer.setInput(res);
 	}
 
+	@Override
+	public void enableControls(boolean enabled)
+	{
+		filterControls.setEnabled(enabled);
+		searchControls.setEnabled(enabled);
+	}
+
 	protected static class MatchContentProvider implements
 			IStructuredContentProvider
 	{
@@ -276,14 +305,16 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		@Override
 		public Object[] getElements(Object inputElement)
 		{
-			Comparator<Match> comparator = new Comparator<Match>(){
+			Comparator<Match> comparator = new Comparator<Match>()
+			{
 
 				@Override
 				public int compare(Match arg0, Match arg1)
 				{
 					return arg0.getName().compareTo(arg1.getName());
-				}};
-			SortedSet<Match> items = new TreeSet<Match>(comparator );
+				}
+			};
+			SortedSet<Match> items = new TreeSet<Match>(comparator);
 			MatchList item = (MatchList) inputElement;
 			int len = item.getNumMatches();
 			for (int i = 0; i < len; i++)
