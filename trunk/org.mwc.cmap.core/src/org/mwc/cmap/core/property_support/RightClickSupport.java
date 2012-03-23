@@ -95,28 +95,31 @@ public class RightClickSupport
 			// first the parameters
 			MenuManager subMenu = null;
 			PropertyDescriptor[] commonProps = getCommonPropertiesFor(editables);
-			for (int i = 0; i < commonProps.length; i++)
+			if (commonProps != null)
 			{
-				PropertyDescriptor thisP = commonProps[i];
+				for (int i = 0; i < commonProps.length; i++)
+				{
+					PropertyDescriptor thisP = commonProps[i];
 
-				// start off with the booleans
-				if (supportsBooleanEditor(thisP))
-				{
-					// generate boolean editors in the sub-menu
-					subMenu = generateBooleanEditorFor(manager, subMenu, thisP,
-							editables, theLayers, theTopLayer);
-				}
-				else
-				{
-					// now the drop-down lists
-					if (supportsListEditor(thisP))
+					// start off with the booleans
+					if (supportsBooleanEditor(thisP))
 					{
 						// generate boolean editors in the sub-menu
-						subMenu = generateListEditorFor(manager, subMenu, thisP, editables,
-								theLayers, theTopLayer);
+						subMenu = generateBooleanEditorFor(manager, subMenu, thisP,
+								editables, theLayers, theTopLayer);
 					}
-				}
+					else
+					{
+						// now the drop-down lists
+						if (supportsListEditor(thisP))
+						{
+							// generate boolean editors in the sub-menu
+							subMenu = generateListEditorFor(manager, subMenu, thisP,
+									editables, theLayers, theTopLayer);
+						}
+					}
 
+				}
 			}
 
 			// hmm, have a go at methods for this item
