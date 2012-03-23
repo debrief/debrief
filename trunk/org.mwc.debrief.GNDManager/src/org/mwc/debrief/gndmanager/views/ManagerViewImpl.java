@@ -15,18 +15,17 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.Match;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.MatchList;
 
-import swing2swt.layout.FlowLayout;
 import swing2swt.layout.BorderLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.wb.swt.SWTResourceManager;
 
 public class ManagerViewImpl extends Composite implements ManagerView
 {
