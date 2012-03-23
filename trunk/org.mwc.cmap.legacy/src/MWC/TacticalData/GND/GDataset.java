@@ -1,6 +1,7 @@
 package MWC.TacticalData.GND;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,14 +13,34 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.format.ISODateTimeFormat;
 
-public class GDataset implements IDataset
+public class GDataset implements IDataset, Serializable
 {
+
+	///////
+	// private names for data fields
+	///////
+	private static final String NAME = "name";
+	private static final String PLATFORM = "platform";
+	private static final String DATA_TYPE = "data_type";
+	private static final String METADATA = "metadata";
+	///////
+	// public names for data fields
+	///////
+	public static final String LAT = "lat";
+	public static final String LON = "lon";
+	public static final String TIME = "time";
+	public static final String ELEVATION = "elevation";
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * the object we populate ourselves from
 	 * 
 	 */
-	private JsonNode _myNode;
+	private transient JsonNode _myNode;
 
 	/**
 	 * the name of this dataset
@@ -31,7 +52,7 @@ public class GDataset implements IDataset
 	 * local copy of data items
 	 * 
 	 */
-	private HashMap<String, double[]> _datasets;
+	final private HashMap<String, double[]> _datasets;
 
 	/**
 	 * special handling for if we have time data
@@ -41,6 +62,8 @@ public class GDataset implements IDataset
 
 	private URL _source;
 
+	private String _platform;
+
 	/**
 	 * constructor - populate ourselves from the supplied data item
 	 * 
@@ -48,10 +71,21 @@ public class GDataset implements IDataset
 	 */
 	public GDataset(URL source)
 	{
+		this();
 		_source = source;
-		_datasets = new HashMap<String, double[]>();
 	}
 
+	public GDataset(JsonNode theDoc)
+	{
+		this();
+		_myNode = theDoc;
+	}
+
+	protected GDataset()
+	{
+		_datasets = new HashMap<String, double[]>();		
+	}
+	
 	private JsonNode getNode()
 	{
 
@@ -87,8 +121,10 @@ public class GDataset implements IDataset
 		JsonNode node = getNode();
 		if (_name == null)
 		{
-			JsonNode metadata = node.get("metadata");
-			_name = metadata.get("name").getTextValue();
+			JsonNode metadata = node.get(METADATA);
+			_name = metadata.get(NAME).getTextValue();
+			if((_name == null) || (_name.length() == 0))
+				_name = metadata.get(PLATFORM).getTextValue();
 		}
 		return _name;
 	}
@@ -101,12 +137,12 @@ public class GDataset implements IDataset
 		{
 			// have a look at the types
 			ArrayList<String> types = getDataTypes();
-			if (types.contains("time"))
+			if (types.contains(TIME))
 			{
 				JsonNode node = getNode();
 				if (node != null)
 				{
-					JsonNode data = node.get("time");
+					JsonNode data = node.get(TIME);
 					if (data != null)
 					{
 						int len = data.size();
@@ -164,8 +200,8 @@ public class GDataset implements IDataset
 		JsonNode node = getNode();
 		if (node != null)
 		{
-			JsonNode metadata = node.get("metadata");
-			JsonNode types = metadata.get("data_type");
+			JsonNode metadata = node.get(METADATA);
+			JsonNode types = metadata.get(DATA_TYPE);
 
 			nodes = new ArrayList<String>();
 			for (int i = 0; i < types.size(); i++)
@@ -174,5 +210,17 @@ public class GDataset implements IDataset
 			}
 		}
 		return nodes;
+	}
+
+	public String getPlatform()
+	{
+		JsonNode node = getNode();
+		if (_platform == null)
+		{
+			JsonNode metadata = node.get(METADATA);
+			JsonNode platNode = metadata.get(PLATFORM);
+			_platform = platNode.getTextValue();
+		}
+		return _platform;
 	}
 }

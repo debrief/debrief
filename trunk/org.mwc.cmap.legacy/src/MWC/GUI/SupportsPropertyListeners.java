@@ -3,6 +3,8 @@ package MWC.GUI;
 public interface SupportsPropertyListeners
 {
 
+	public static final String FORMAT = "Format";
+	
 	public void addPropertyChangeListener(String property,
 			java.beans.PropertyChangeListener listener);
 

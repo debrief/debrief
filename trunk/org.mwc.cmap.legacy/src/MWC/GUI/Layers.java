@@ -178,6 +178,8 @@ package MWC.GUI;
 
 import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Serializable;
@@ -248,6 +250,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	private boolean _suspendFiringExtended;
 
+	/** handler for if the formatting of a layer hcanges
+	 * 
+	 */
+	private final PropertyChangeListener _formatListener;
+
 	// ////////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////////
@@ -259,6 +266,17 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		_theLayers = new Vector<Editable>(0, 1);
 
+		_formatListener = new PropertyChangeListener()
+		{
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				Layer layer = (Layer) evt.getSource();
+				fireReformatted(layer);
+			}
+		};
+		
 		produceLists();
 	}
 
@@ -503,6 +521,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			// we know about it already, copy the new one into our existing one
 			res.append(theLayer);
 		}
+		
+		if(theLayer instanceof SupportsPropertyListeners)
+		{
+			SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
+			pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT, _formatListener);
+		}
+		
 	}
 
 	/**
@@ -573,6 +598,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		// first remove the layer
 		_theLayers.removeElement(theLayer);
+		
+		
+		if(theLayer instanceof SupportsPropertyListeners)
+		{
+			SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
+			pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT, _formatListener);
+		}
 
 		// and fire the modified event
 		fireExtended();

@@ -128,6 +128,7 @@ package MWC.GUI;
 
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
@@ -138,7 +139,7 @@ import java.util.Enumeration;
  * @see Plottables
  * @see Plottable
  */
-public class BaseLayer extends Plottables implements Layer
+public class BaseLayer extends Plottables implements Layer, SupportsPropertyListeners
 {
 
 	// ///////////////////////////////////////////////////////////
@@ -308,32 +309,6 @@ public class BaseLayer extends Plottables implements Layer
 	}
 
 	// ////////////////////////////////////////////////
-	// property change support
-	// ////////////////////////////////////////////////
-
-	/**
-	 * add a new listener
-	 * 
-	 * @param listener
-	 */
-	public void addPropertyChangeListener(
-			java.beans.PropertyChangeListener listener, String event)
-	{
-		_pSupport.addPropertyChangeListener(event, listener);
-	}
-
-	/**
-	 * remove this listener
-	 * 
-	 * @param listener
-	 */
-	public void removePropertyChangeListener(
-			java.beans.PropertyChangeListener listener, String event)
-	{
-		_pSupport.removePropertyChangeListener(event, listener);
-	}
-
-	// ////////////////////////////////////////////////
 	// override the set vis method, so we can fire our event
 	// ////////////////////////////////////////////////
 
@@ -387,6 +362,13 @@ public class BaseLayer extends Plottables implements Layer
 			}
 		}
 	}
+	
+  public void firePropertyChange(String propertyChanged, Object oldValue,
+			Object newValue)
+	{
+  	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
+	}
+
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
@@ -466,5 +448,37 @@ public class BaseLayer extends Plottables implements Layer
 	public boolean hasOrderedChildren()
 	{
 		return _orderedChildren;
+	}
+	
+
+	// ////////////////////////////////////////////////
+	// property change support
+	// ////////////////////////////////////////////////
+
+
+	@Override
+	public void addPropertyChangeListener(String property,
+			PropertyChangeListener listener)
+	{
+		_pSupport.addPropertyChangeListener(property, listener);
+	}
+
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener listener)
+	{
+		_pSupport.addPropertyChangeListener(listener);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener listener)
+	{
+		_pSupport.removePropertyChangeListener(listener);
+	}
+
+	@Override
+	public void removePropertyChangeListener(String property,
+			PropertyChangeListener listener)
+	{
+		_pSupport.removePropertyChangeListener(property, listener);
 	}
 }
