@@ -1,11 +1,7 @@
 package org.mwc.debrief.gndmanager.views;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -31,6 +27,8 @@ public class GNDManager extends ViewPart implements Listener
 
 	public static final String SEARCH_URL = "http://localhost:9200/ais";
 	public static final String DB_URL = "http://gnd.iriscouch.com/tracks";
+//	public static final String SEARCH_URL = "http://localhost:9200/gnd";
+//	public static final String DB_URL = "http://localhost:5984/tracks";
 
 	/**
 	 * The ID of the view as specified by the extension.
@@ -139,24 +137,8 @@ public class GNDManager extends ViewPart implements Listener
 	@Override
 	public void doImport(ArrayList<String> items)
 	{
-		URL[] urls = new URL[items.size()];
-		Iterator<String> iter = items.iterator();
-		int ctr = 0;
-		while (iter.hasNext())
-		{
-			String string = iter.next();
-			try
-			{
-				URL thisI = new URL(DB_URL + "/" + string);
-				urls[ctr++] = thisI;
-			}
-			catch (MalformedURLException e)
-			{
-				e.printStackTrace();
-			}
-		}
 		// ok, convert them to URLs
-		GPackage data = new GPackage("AIS Trial", urls);
+		GPackage data = new GPackage("AIS Trial", DB_URL, items);
 
 		// find the active editor
 
