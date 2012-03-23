@@ -44,6 +44,7 @@ import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MockCanvasType;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
@@ -2477,14 +2478,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// java.awt.Point lastP = null;
 			Color lastCol = null;
-			final int defaultlineStyle = _lineStyle;
+			final int defaultlineStyle = getLineStyle();
 
 			boolean locatedTrack = false;
 			WorldLocation lastLocation = null;
 			FixWrapper lastFix = null;
 
 			// just check if we are drawing anything at all
-			if ((!_linkPositions) && (!_showPositions))
+			if ((!getLinkPositions()  || getLineStyle() == LineStylePropertyEditor.UNCONNECTED) && (!_showPositions))
 				return;
 
 			// keep track of if we have plotted any points (since
@@ -2620,7 +2621,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						}
 
 						// are we
-						if (_linkPositions) {
+						if (getLinkPositions() && (getLineStyle() != LineStylePropertyEditor.UNCONNECTED)) {
 							// right, just check if we're a different colour to
 							// the
 							// previous one
