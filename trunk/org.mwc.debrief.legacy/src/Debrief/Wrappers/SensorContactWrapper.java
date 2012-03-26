@@ -384,8 +384,10 @@ public final class SensorContactWrapper extends
 				TrackWrapper parentTrack = (TrackWrapper) parent;
 
 				// get the origin
-				_calculatedOrigin = parentTrack.getBacktraceTo(_DTG,
-						_mySensor.getSensorOffset(), _mySensor.getWormInHole()).getLocation();
+				FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,
+						_mySensor.getSensorOffset(), _mySensor.getWormInHole());
+				if (backtrack != null)
+					_calculatedOrigin = backtrack.getLocation();
 
 			}
 
