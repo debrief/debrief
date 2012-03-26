@@ -4,13 +4,9 @@
 
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="Sample Category"
-            id="org.mwc.debrief.GNDManager">
-      </category>
       <view
             name="Network datastore"
-            icon="icons/sample.gif"
+            icon="icons/database.png"
             category="org.mwc.debrief.GNDManager"
             class="org.mwc.debrief.gndmanager.views.GNDManager"
             id="org.mwc.debrief.gndmanager.views.GNDManager">
@@ -22,5 +18,18 @@
             file="contexts.xml">
       </contexts>
    </extension>
+   
+     <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage"
+           id="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+           name="GND Data storage"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.debrief.gndmanager.preferences.GNDPreferenceInitialiser"/>
+  </extension>
 
 </plugin>

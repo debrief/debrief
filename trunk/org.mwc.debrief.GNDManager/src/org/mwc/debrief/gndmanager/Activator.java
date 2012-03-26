@@ -1,6 +1,8 @@
 package org.mwc.debrief.gndmanager;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -21,6 +23,19 @@ public class Activator extends AbstractUIPlugin {
 	public Activator() {
 	}
 
+
+	/**
+	 * show a message to the user
+	 * 
+	 * @param title
+	 * @param message
+	 */
+	public static void showMessage(final String title, final String message)
+	{
+		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), title,
+				message);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)

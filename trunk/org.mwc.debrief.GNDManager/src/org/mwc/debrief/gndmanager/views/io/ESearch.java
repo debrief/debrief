@@ -18,29 +18,27 @@ import org.mwc.debrief.gndmanager.views.ManagerView;
 public class ESearch implements SearchModel
 {
 
-	private final String _root;
 	private final ObjectMapper _mapper;
 
-	public ESearch(String root)
+	public ESearch()
 	{
-		_root = root;
 		_mapper = new ObjectMapper();
 	}
 
 	@Override
-	public MatchList getMatches(ManagerView view)
+	public MatchList getMatches(String root, ManagerView view) throws IOException
 	{
 		JsonNode query = createQuery(view);
-		return fireSearch(query);
+		return fireSearch(root, query);
 	}
 
 	@Override
-	public MatchList getAll()
+	public MatchList getAll(String root) throws IOException
 	{
 		ObjectNode queryObj = _mapper.createObjectNode();
 		queryObj.put("match_all", _mapper.createObjectNode());
 
-		return fireSearch(queryObj);
+		return fireSearch(root, queryObj);
 	}
 
 	public JsonNode createQuery(ManagerView view)
@@ -48,6 +46,7 @@ public class ESearch implements SearchModel
 		ArrayNode facets = _mapper.createArrayNode();
 		// ok, get collating the items.
 		addThis(facets, view.getPlatforms().getSelectedItems(), "platform");
+		addThis(facets, view.getPlatformTypes().getSelectedItems(), "platform_type");
 		addThis(facets, view.getTrials().getSelectedItems(), "trial");
 
 		// we also have to do the free search
@@ -91,7 +90,7 @@ public class ESearch implements SearchModel
 		}
 	}
 
-	private MatchList fireSearch(JsonNode queryObj)
+	private MatchList fireSearch(String root, JsonNode queryObj) throws IOException
 	{
 		MatchList res = null;
 
@@ -111,7 +110,7 @@ public class ESearch implements SearchModel
 		try
 		{
 			URL url;
-			url = new URL(_root + "/_search?pretty=true&source=" + qq.toString());
+			url = new URL(root + "/_search?pretty=true&source=" + qq.toString());
 			JsonNode obj = _mapper.readValue(url, JsonNode.class);
 			res = new MatchListWrap(obj);
 		}
@@ -126,11 +125,6 @@ public class ESearch implements SearchModel
 			e.printStackTrace();
 		}
 		catch (JsonMappingException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -234,6 +228,12 @@ public class ESearch implements SearchModel
 		public String getPlatform()
 		{
 			return _node.get("_source").get("platform").getTextValue();
+		}
+
+		@Override
+		public String getPlatformType()
+		{
+			return _node.get("_source").get("platform_type").getTextValue();
 		}
 
 		@Override

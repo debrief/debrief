@@ -29,13 +29,13 @@ import org.mwc.debrief.gndmanager.views.io.SearchModel.Match;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.MatchList;
 
 import swing2swt.layout.BorderLayout;
-import swing2swt.layout.FlowLayout;
 
 public class ManagerViewImpl extends Composite implements ManagerView
 {
 	private Table table;
 	private Listener _myListener;
 	private FacetList _platforms;
+	private FacetList _platformTypes;
 	private FacetList _trials;
 	private CheckboxTableViewer checkboxTableViewer;
 	private Composite filterControls;
@@ -59,7 +59,7 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		Composite composite_2 = new Composite(composite, SWT.NONE);
 
 		Button connectBtn = new Button(composite_2, SWT.NONE);
-		connectBtn.setSize(76, 28);
+		connectBtn.setSize(82, 28);
 		connectBtn.setText("Connect");
 		connectBtn.addSelectionListener(new SelectionAdapter()
 		{
@@ -72,7 +72,7 @@ public class ManagerViewImpl extends Composite implements ManagerView
 			}
 		});
 
-		 filterControls = new Composite(composite, SWT.NONE);
+		filterControls = new Composite(composite, SWT.NONE);
 		filterControls.setEnabled(false);
 		filterControls.setLayout(new GridLayout(3, false));
 
@@ -87,22 +87,33 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		lblNewLabel2.setBounds(0, 0, 59, 14);
 		lblNewLabel2.setText("Trial");
 
+		
+		
 		List platforms = new List(filterControls, SWT.BORDER | SWT.MULTI
 				| SWT.V_SCROLL);
-		platforms.setItems(new String[]
-		{ "plat_a", "plat_b", "plat_c" });
-		platforms.setBounds(0, 0, 55, 47);
+		GridData gd_platforms = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_platforms.minimumWidth = 80;
+		platforms.setLayoutData(gd_platforms);
+		platforms.setBounds(0, 0, 155, 47);
 		_platforms = new EasyBox(platforms);
-		new Label(filterControls, SWT.NONE);
+
+		List platformTypes = new List(filterControls, SWT.BORDER | SWT.MULTI
+				| SWT.V_SCROLL);
+		GridData gd_platformTypes = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_platformTypes.minimumWidth = 80;
+		platformTypes.setLayoutData(gd_platformTypes);
+		platformTypes.setBounds(0, 0, 155, 47);
+		_platformTypes = new EasyBox(platformTypes);
 
 		List trials = new List(filterControls, SWT.BORDER | SWT.MULTI
 				| SWT.V_SCROLL);
-		trials.setItems(new String[]
-		{ "trial_a", "trial_b", "trial_c" });
-		trials.setBounds(0, 0, 3, 66);
+		GridData gd_trials = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+		gd_trials.minimumWidth = 80;
+		trials.setLayoutData(gd_trials);
+		trials.setBounds(0, 0, 155, 66);
 		_trials = new EasyBox(trials);
 
-		 searchControls = new Composite(composite, SWT.NONE);
+		searchControls = new Composite(composite, SWT.NONE);
 		searchControls.setLayout(new GridLayout(3, false));
 
 		Button btnReset = new Button(searchControls, SWT.NONE);
@@ -178,6 +189,8 @@ public class ManagerViewImpl extends Composite implements ManagerView
 				doImport();
 			}
 		});
+		
+		filterControls.layout(true);
 	}
 
 	protected void doImport()
@@ -205,6 +218,8 @@ public class ManagerViewImpl extends Composite implements ManagerView
 		public EasyBox(List list)
 		{
 			_myList = list;
+			// put in some dummy (spacer) data
+			_myList.setData(new String[]{"asassd ", "sd23ds"});
 		}
 
 		@Override
@@ -250,6 +265,12 @@ public class ManagerViewImpl extends Composite implements ManagerView
 	public FacetList getPlatforms()
 	{
 		return _platforms;
+	}
+
+	@Override
+	public FacetList getPlatformTypes()
+	{
+		return _platformTypes;
 	}
 
 	@Override

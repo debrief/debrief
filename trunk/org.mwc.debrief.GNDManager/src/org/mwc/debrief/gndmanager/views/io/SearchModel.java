@@ -1,5 +1,6 @@
 package org.mwc.debrief.gndmanager.views.io;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.mwc.debrief.gndmanager.views.ManagerView;
@@ -24,13 +25,14 @@ public interface SearchModel
 	
 	public static interface Match
 	{
+		public String getId();
 		public String getName();
 		public String getPlatform();
 		public String getTrial();
-		public String getId();
+		public String getPlatformType();
 	}
 
-	MatchList getAll();
+	MatchList getAll(String root) throws IOException;
 
-	MatchList getMatches(ManagerView view);
+	MatchList getMatches(String root, ManagerView view) throws IOException;
 }

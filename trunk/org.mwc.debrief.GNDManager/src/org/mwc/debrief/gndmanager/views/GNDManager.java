@@ -1,11 +1,15 @@
 package org.mwc.debrief.gndmanager.views;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -14,6 +18,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.debrief.gndmanager.Activator;
+import org.mwc.debrief.gndmanager.preferences.GNDPrefsPage;
 import org.mwc.debrief.gndmanager.views.ManagerView.Listener;
 import org.mwc.debrief.gndmanager.views.io.ESearch;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.Facet;
@@ -47,9 +53,22 @@ public class GNDManager extends ViewPart implements Listener
 	 */
 	public GNDManager()
 	{
-		_search = new ESearch(SEARCH_URL);
+		_search = new ESearch();
 	}
 
+	private static String getDBUrl()
+	{
+		return Activator.getDefault().getPreferenceStore().getString(GNDPrefsPage.PreferenceConstants.DB_URL);
+	}
+	
+	
+
+	private static String getIndexUrl()
+	{
+		return Activator.getDefault().getPreferenceStore().getString(GNDPrefsPage.PreferenceConstants.INDEX_URL);
+	}
+
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -123,53 +142,92 @@ public class GNDManager extends ViewPart implements Listener
 	public void doSearch()
 	{
 		// ok, get the selections
-		MatchList res = _search.getMatches(view);
-		view.setResults(res);
+		MatchList res;
+		try
+		{
+			res = _search.getMatches(getIndexUrl(), view);
+			view.setResults(res);
+		}
+		catch (ConnectException e)
+		{
+			Activator.showMessage("Could not connect to server", e.getMessage());
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			Activator.showMessage("Trouble retrieving search", e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void doReset()
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void doImport(ArrayList<String> items)
 	{
-		// ok, convert them to URLs
-		GPackage data = new GPackage("AIS Trial", DB_URL, items);
-
-		// find the active editor
-
-		IWorkbenchPage page = this.getViewSite().getPage();
-		if (page != null)
+		// find out the name to use
+		
+		InputDialog dlg = new InputDialog(this.getViewSite().getShell(), "Import data","Please provide a name for the dataset", "Imported tracks", null);
+		if(dlg.open() == IStatus.OK)
 		{
-			IEditorPart editor = page.getActiveEditor();
-			if (editor != null)
+			final String name = dlg.getValue();
+			// find the active editor
+			IWorkbenchPage page = this.getViewSite().getPage();
+			if (page != null)
 			{
-				Layers layers = (Layers) editor.getAdapter(Layers.class);
-				if (layers != null)
+				IEditorPart editor = page.getActiveEditor();
+				if (editor != null)
 				{
-					layers.addThisLayer(data);
+
+					// ok, convert them to URLs
+					GPackage data = new GPackage(name, getDBUrl(), items);
+
+					// and insert the data
+					Layers layers = (Layers) editor.getAdapter(Layers.class);
+					if (layers != null)
+					{
+						layers.addThisLayer(data);
+					}
 				}
 			}
 		}
+		
+
 	}
 
 	@Override
 	public void doConnect()
 	{
-		MatchList list = _search.getAll();
-		Facet platforms = list.getFacet("platform");
-		Facet trials = list.getFacet("trial");
-		if (platforms != null)
-			view.getPlatforms().setItems(platforms.toList(), false);
-		if (trials != null)
-			view.getTrials().setItems(trials.toList(), false);
-		
-		// did it work?
-		view.enableControls(true);
+		MatchList list;
+		try
+		{
+			list = _search.getAll(getIndexUrl());
+			Facet platforms = list.getFacet("platform");
+			Facet platformTypes = list.getFacet("platform_type");
+			Facet trials = list.getFacet("trial");
+			if (platforms != null)
+				view.getPlatforms().setItems(platforms.toList(), false);
+			if (platformTypes != null)
+				view.getPlatformTypes().setItems(platformTypes.toList(), false);
+			if (trials != null)
+				view.getTrials().setItems(trials.toList(), false);
+			
+			// did it work?
+			view.enableControls(true);
+		}
+		catch (ConnectException e)
+		{
+			Activator.showMessage("Could not connect to server", e.getMessage());
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			Activator.showMessage("Trouble retrieving search", e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -46,6 +46,7 @@ public interface ManagerView
 	
 	public void setListener(Listener listener);
 	public FacetList getPlatforms();
+	public FacetList getPlatformTypes();
 	public FacetList getTrials();
 	public String getFreeText();
 	void setResults(MatchList res);
