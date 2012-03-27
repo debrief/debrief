@@ -103,7 +103,8 @@ public class GriddableWrapper implements GriddableSeries
 		pw.firePropertyChange(propertyName, null, subject);
 
 		// now tell the world.
-		_item.getLayers().fireExtended(null, _item.getTopLevelLayer());
+		if (_item.getLayers() != null)
+			_item.getLayers().fireExtended(null, _item.getTopLevelLayer());
 	}
 
 	public void fireModified(TimeStampedDataItem subject)
@@ -131,7 +132,8 @@ public class GriddableWrapper implements GriddableSeries
 		{
 			public void run()
 			{
-				layers.fireModified(topLayer);
+				if (layers != null)
+					layers.fireModified(topLayer);
 			}
 		};
 
@@ -263,7 +265,7 @@ public class GriddableWrapper implements GriddableSeries
 		// tell everybody something's changed
 		fireExtended(GriddableSeries.PROPERTY_ADDED, subject);
 	}
-	
+
 	public void insertItemAt(TimeStampedDataItem subject, int index)
 	{
 		// we don't need to worry about the order of the item,
