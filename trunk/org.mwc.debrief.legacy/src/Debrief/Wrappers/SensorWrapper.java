@@ -1166,4 +1166,16 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return true;
 	}
 
+	@Override
+	public boolean requiresManualSave()
+	{
+		return false;
+	}
+
+	@Override
+	public void doSave(String message)
+	{
+		throw new RuntimeException("should not have called manual save for Sensor Wrapper");
+	}
+
 }

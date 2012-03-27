@@ -29,6 +29,18 @@ public interface GriddableSeriesMarker
 	 */
 	public boolean supportsAddRemove();
 	
+	/** whether this dataset requires an explicit save operation
+	 * 
+	 * @return yes if the gridded editor should provide a save method
+ 	 */
+	public boolean requiresManualSave();
+	
+	/** force an explicit save operation
+	 * 
+	 * @param message
+	 */
+	public void doSave(String message);
+	
 
   public void removeElement(final MWC.GUI.Editable plottable);
 

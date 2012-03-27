@@ -289,13 +289,13 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	@Override
 	public Enumeration<Editable> elements()
 	{
-	
+
 		// has the list been initialised yet?
 		if (_myList == null)
 		{
 			// nope, make it so
 			_myList = new ArrayList<Editable>();
-			
+
 			// and populate it...
 			for (int j = 0; j < _data.size(); j++)
 			{
@@ -305,7 +305,27 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 				{
 					public void setValue(String name, Object value)
 					{
-						_data.getDataset(name)[thisIndex] = (Double) value;
+						// SPECIAL CASE: is this the location?
+						if (name.equals(GDataItem.LOCATION))
+						{
+							WorldLocation loc = (WorldLocation) value;
+							double lat = loc.getLat();
+							double lon = loc.getLong();
+							double depth = loc.getDepth();
+
+							// store the lat/lon
+							_data.getDataset(GDataset.LAT)[thisIndex] = lat;
+							_data.getDataset(GDataset.LON)[thisIndex] = lon;
+
+							// are we working with depth?
+							if (_data.getDataTypes().contains(GDataset.ELEVATION))
+								_data.getDataset(GDataset.ELEVATION)[thisIndex] = -depth;
+						}
+						else
+						{
+							// normal data - just store it
+							_data.getDataset(name)[thisIndex] = (Double) value;
+						}
 					}
 				};
 				ArrayList<String> fieldList = _data.getDataTypes();
@@ -330,7 +350,7 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 				_myList.add(fw);
 			}
 		}
-		
+
 		return new Plottables.IteratorWrapper(_myList.iterator());
 	}
 
@@ -373,6 +393,18 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 	public boolean supportsAddRemove()
 	{
 		return false;
+	}
+
+	@Override
+	public boolean requiresManualSave()
+	{
+		return true;
+	}
+
+	@Override
+	public void doSave(String message)
+	{
+		_data.doSave(message);
 	}
 
 }
