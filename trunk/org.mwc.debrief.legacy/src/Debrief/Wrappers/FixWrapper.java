@@ -1148,6 +1148,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 			return res;
 		}
 
+		@Override
+		public NonBeanPropertyDescriptor[] getNonBeanGriddableDescriptors()
+		{
+			// don't worry - we provide the bean-based model
+			return null;
+		}
+
 	}
 
 	// //////////////////////////////////////////////////////////////

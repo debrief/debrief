@@ -18,6 +18,7 @@ import org.mwc.cmap.core.CorePlugin;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
 import MWC.GUI.Griddable;
+import MWC.GUI.Griddable.NonBeanPropertyDescriptor;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -162,8 +163,6 @@ public class EditableWrapper implements IPropertySource
 
 		return res;
 	}
-	
-	
 
 	@Override
 	public int hashCode()
@@ -185,12 +184,12 @@ public class EditableWrapper implements IPropertySource
 	final public IPropertyDescriptor[] getPropertyDescriptors()
 	{
 		// right, does this object have dynamic descriptors?
-		if(_editable.getInfo() instanceof Editable.DynamicDescriptors)
+		if (_editable.getInfo() instanceof Editable.DynamicDescriptors)
 		{
-		// yes - reset our list, we'll regenerate them
-		_myDescriptors = null;
+			// yes - reset our list, we'll regenerate them
+			_myDescriptors = null;
 		}
-		
+
 		if (_myDescriptors == null)
 		{
 			Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
@@ -270,11 +269,12 @@ public class EditableWrapper implements IPropertySource
 			}
 
 		}
-		
+
 		// just make sure we aren't returning a null...
-		if(_myDescriptors == null)
-			_myDescriptors = new IPropertyDescriptor[]{};
-		
+		if (_myDescriptors == null)
+			_myDescriptors = new IPropertyDescriptor[]
+			{};
+
 		return _myDescriptors;
 	}
 
@@ -288,7 +288,7 @@ public class EditableWrapper implements IPropertySource
 	{
 
 		_myGridDescriptors = null;
-		if (_myGridDescriptors	 == null)
+		if (_myGridDescriptors == null)
 		{
 			Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
 			IPropertyDescriptor[] res = new IPropertyDescriptor[]
@@ -298,16 +298,17 @@ public class EditableWrapper implements IPropertySource
 				// is it griddable
 				if (_editable instanceof GriddableSeriesMarker)
 				{
-					GriddableSeriesMarker series =  (GriddableSeriesMarker) _editable;
+					GriddableSeriesMarker series = (GriddableSeriesMarker) _editable;
 					Editable.EditorType editor = _editable.getInfo();
 					Editable sample = series.getSampleGriddable();
 					// just check we managed to get some sample data
-					if(sample == null)
+					if (sample == null)
 						return _myGridDescriptors;
-					
+
 					Griddable grid = (Griddable) sample.getInfo();
 
-					PropertyDescriptor[] properties = grid.getGriddablePropertyDescriptors();
+					PropertyDescriptor[] properties = grid
+							.getGriddablePropertyDescriptors();
 
 					if (properties != null)
 					{
@@ -329,39 +330,56 @@ public class EditableWrapper implements IPropertySource
 							}
 						}
 					}
+					else
+					{
+						NonBeanPropertyDescriptor[] nonBean = grid
+								.getNonBeanGriddableDescriptors();
+						if (nonBean != null)
+						{
+							for (int i = 0; i < nonBean.length; i++)
+							{
+								NonBeanPropertyDescriptor nb = nonBean[i];
+								IPropertyDescriptor newP = new DebriefNonBeanProperty(nb, null);
+								list.add(newP);
+							}
+						}
+					}
 
 					// hmm, are there any "supplemental" editors?
-					BeanInfo[] others = editor.getAdditionalBeanInfo();
-					if (others != null)
+					if (editor != null)
 					{
-						// adding more editors
-						for (int i = 0; i < others.length; i++)
+						BeanInfo[] others = editor.getAdditionalBeanInfo();
+						if (others != null)
 						{
-							BeanInfo bn = others[i];
-							if (bn instanceof MWC.GUI.Editable.EditorType)
+							// adding more editors
+							for (int i = 0; i < others.length; i++)
 							{
-								Editable.EditorType et = (Editable.EditorType) bn;
-								Editable obj = (Editable) et.getData();
-								PropertyDescriptor[] pds = et.getPropertyDescriptors();
-								if (pds != null)
+								BeanInfo bn = others[i];
+								if (bn instanceof MWC.GUI.Editable.EditorType)
 								{
-									for (int j = 0; j < pds.length; j++)
+									Editable.EditorType et = (Editable.EditorType) bn;
+									Editable obj = (Editable) et.getData();
+									PropertyDescriptor[] pds = et.getPropertyDescriptors();
+									if (pds != null)
 									{
-										PropertyDescriptor pd = pds[j];
-
-										// is this an 'expert' property which
-										// should not appear in here as an additional?
-										if (pd.isExpert())
+										for (int j = 0; j < pds.length; j++)
 										{
-											// do nothing, we don't want to show this
-										}
-										else
-										{
-											// ok, add this editor
-											IPropertyDescriptor newProp = new DebriefProperty(pd,
-													obj, null);
+											PropertyDescriptor pd = pds[j];
 
-											list.add(newProp);
+											// is this an 'expert' property which
+											// should not appear in here as an additional?
+											if (pd.isExpert())
+											{
+												// do nothing, we don't want to show this
+											}
+											else
+											{
+												// ok, add this editor
+												IPropertyDescriptor newProp = new DebriefProperty(pd,
+														obj, null);
+
+												list.add(newProp);
+											}
 										}
 									}
 								}

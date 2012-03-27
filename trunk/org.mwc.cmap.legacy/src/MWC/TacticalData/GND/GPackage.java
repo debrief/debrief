@@ -1,9 +1,7 @@
 package MWC.TacticalData.GND;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
@@ -18,10 +16,6 @@ import org.javalite.http.Post;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.SupportsPropertyListeners;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
-import MWC.GenericData.WatchableList;
 
 public class GPackage extends BaseLayer
 {

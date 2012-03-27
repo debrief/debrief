@@ -1175,4 +1175,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
+	@Override
+	public boolean supportsAddRemove()
+	{
+		return true;
+	}
+
 }

@@ -17,7 +17,7 @@ import MWC.GUI.TimeStampedDataItem;
 public class DeleteRowAction extends AbstractSingleItemAction {
 
 	public DeleteRowAction() {
-		super(false);
+		super(false, true);
 		setImageDescriptor(loadImageDescriptor(GridEditorPlugin.IMG_REMOVE));
 		setText("Delete row");
 	}

@@ -48,7 +48,7 @@ public abstract class EditorHelper
 	 * @return the new control
 	 */
 	public Control getEditorControlFor(final Composite parent,
-			final DebriefProperty property)
+			final IDebriefProperty property)
 	{
 		// just provide a text editor
 		final Text res = new Text(parent, SWT.SINGLE | SWT.BORDER);
@@ -57,7 +57,8 @@ public abstract class EditorHelper
 			public void modifyText(ModifyEvent e)
 			{
 				// inform our parent property that we've changed
-				property.setValue(res.getText());
+				if (property != null)
+					property.setValue(res.getText());
 
 				// also tell any listeners
 				Listener[] listeners = res.getListeners(SWT.Selection);

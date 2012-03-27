@@ -19,13 +19,14 @@ import MWC.GUI.TimeStampedDataItem;
 public class InsertRowAction extends AbstractSingleItemAction {
 
 	public InsertRowAction() {
-		super(true);
+		super(true, true);
 		setImageDescriptor(loadImageDescriptor(GridEditorPlugin.IMG_ADD));
 		setText("Insert row");
 	}
 
 	@Override
 	protected IUndoableOperation createUndoableOperation(IUndoContext undoContext, GriddableSeries series, TimeStampedDataItem selected) {
+		
 		if (selected == null) {
 			List<TimeStampedDataItem> allItems = series.getItems();
 			selected = allItems.get(allItems.size() - 1);

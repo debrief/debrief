@@ -22,6 +22,13 @@ public interface GriddableSeriesMarker
 	 *           if item is not applicable to this series
 	 */
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item);
+	
+	/** whether the gridded editor can add/remote items from this dataset
+	 * 
+	 * @return yes/no
+	 */
+	public boolean supportsAddRemove();
+	
 
   public void removeElement(final MWC.GUI.Editable plottable);
 

@@ -1,5 +1,7 @@
 package MWC.TacticalData.GND;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
@@ -13,24 +15,26 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.format.ISODateTimeFormat;
 
-public class GDataset implements IDataset, Serializable
+import MWC.GUI.SupportsPropertyListeners;
+
+public class GDataset implements IDataset, Serializable, SupportsPropertyListeners
 {
 
-	///////
+	// /////
 	// private names for data fields
-	///////
+	// /////
 	private static final String NAME = "name";
 	private static final String PLATFORM = "platform";
 	private static final String DATA_TYPE = "data_type";
 	private static final String METADATA = "metadata";
-	///////
+	// /////
 	// public names for data fields
-	///////
+	// /////
 	public static final String LAT = "lat";
 	public static final String LON = "lon";
 	public static final String TIME = "time";
 	public static final String ELEVATION = "elevation";
-	
+
 	/**
 	 * 
 	 */
@@ -63,6 +67,11 @@ public class GDataset implements IDataset, Serializable
 	private URL _source;
 
 	private String _platform;
+	
+	/** property change support
+	 * 
+	 */
+	private final PropertyChangeSupport _pSupport;
 
 	/**
 	 * constructor - populate ourselves from the supplied data item
@@ -83,9 +92,10 @@ public class GDataset implements IDataset, Serializable
 
 	protected GDataset()
 	{
-		_datasets = new HashMap<String, double[]>();		
+		_datasets = new HashMap<String, double[]>();
+		_pSupport = new PropertyChangeSupport(this);
 	}
-	
+
 	private JsonNode getNode()
 	{
 
@@ -123,7 +133,7 @@ public class GDataset implements IDataset, Serializable
 		{
 			JsonNode metadata = node.get(METADATA);
 			_name = metadata.get(NAME).getTextValue();
-			if((_name == null) || (_name.length() == 0))
+			if ((_name == null) || (_name.length() == 0))
 				_name = metadata.get(PLATFORM).getTextValue();
 		}
 		return _name;
@@ -158,6 +168,19 @@ public class GDataset implements IDataset, Serializable
 			}
 		}
 		return _times;
+	}
+
+	public int size()
+	{
+		int len = 0;
+		if (getDataTypes().size() > 0)
+		{
+			String type1 = getDataTypes().get(0);
+			double[] list = getDataset(type1);
+			len = list.length;
+		}
+
+		return len;
 	}
 
 	@Override
@@ -222,5 +245,38 @@ public class GDataset implements IDataset, Serializable
 			_platform = platNode.getTextValue();
 		}
 		return _platform;
+	}
+
+	@Override
+	public void addPropertyChangeListener(String property,
+			PropertyChangeListener listener)
+	{
+		_pSupport.addPropertyChangeListener(property, listener);
+	}
+
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener listener)
+	{
+		_pSupport.addPropertyChangeListener(listener);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener listener)
+	{
+		_pSupport.removePropertyChangeListener(listener);
+	}
+
+	@Override
+	public void removePropertyChangeListener(String property,
+			PropertyChangeListener listener)
+	{
+	 _pSupport.removePropertyChangeListener(property, listener);
+	}
+
+	@Override
+	public void firePropertyChange(String propertyChanged, Object oldValue,
+			Object newValue)
+	{
+		_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 	}
 }

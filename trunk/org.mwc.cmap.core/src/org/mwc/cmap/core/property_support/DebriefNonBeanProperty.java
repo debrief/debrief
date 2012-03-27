@@ -3,89 +3,50 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.mwc.cmap.core.CorePlugin;
 
-import MWC.GUI.Editable;
-import MWC.GUI.Editable.CategorisedPropertyDescriptor;
+import MWC.GUI.Griddable.NonBeanPropertyDescriptor;
 
-public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
+public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProperty
 {
-	final PropertyDescriptor _thisProp;
-
-	final Editable _subject;
-
 	EditorHelper _myHelper = null;
+
+
+	private final  NonBeanPropertyDescriptor _theProp;
+
 
 	static Vector<EditorHelper> _myHelperList;
 
 	static Control _theControl;
 
-	public DebriefProperty(PropertyDescriptor prop, Editable subject,
-			Control theControl)
+	public DebriefNonBeanProperty( NonBeanPropertyDescriptor prop, Control theControl)
 	{
-		_thisProp = prop;
-		_subject = subject;
+		_theProp = prop;
 		_theControl = theControl;
 
 		initialiseHelpers();
 
-		_myHelper = findHelperFor(prop, subject);
+		_myHelper = findHelperFor(_theProp.getDataType());
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
+	private EditorHelper findHelperFor(Class theClass)
 	{
 		EditorHelper res = null;
-
-		// is there an explicit editor specified?
-		Class specificEditor = prop.getPropertyEditorClass();
-
-		// did we find one?
-		if (specificEditor != null)
-		{
-			Object theEditor = null;
-			try
-			{
-				theEditor = specificEditor.newInstance();
-			}
-			catch (Exception e)
-			{
-				CorePlugin.logError(Status.ERROR, "whilst finding helper", e);
-			}
-
-			if (theEditor instanceof java.beans.PropertyEditor)
-			{
-				final java.beans.PropertyEditor propEditor = (java.beans.PropertyEditor) theEditor;
-				// ok. wrap it.
-				if (propEditor.getTags() != null)
-				{
-					// ok - do one of the combo-box editor types
-					final String[] theTags = propEditor.getTags();
-					res = new TagListHelper(theTags, propEditor);
-
-				}
-			}
-		}
-
-		if (res == null)
-		{
-
-			// ok, find the type of object we're working with
-			Class rawClass = EditableWrapper.getPropertyClass(_thisProp);
 
 			for (Iterator iter = _myHelperList.iterator(); iter.hasNext();)
 			{
 				EditorHelper thisHelper = (EditorHelper) iter.next();
-				if (thisHelper.editsThis(rawClass))
+				if (thisHelper.editsThis(theClass))
 				{
 					res = thisHelper;
 					break;
@@ -96,12 +57,11 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			{
 				// ok, log the error
 				String msg = "editor not found for:"
-						+ EditableWrapper.getPropertyClass(prop) + "("
-						+ prop.getDisplayName() + ")";
+						+ _theProp.getDataType().toString() + "("
+						+ _theProp.getFieldName() + ")";
 				System.out.println(msg);
 			}
 
-		}
 		return res;
 	}
 
@@ -231,23 +191,17 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 
 	public String getCategory()
 	{
-		String res = null;
-		if (_thisProp instanceof Editable.CategorisedPropertyDescriptor)
-		{
-			Editable.CategorisedPropertyDescriptor desc = (CategorisedPropertyDescriptor) _thisProp;
-			res = desc.getCategory();
-		}
-		return res;
+		return "Data";
 	}
 
 	public String getDescription()
 	{
-		return _thisProp.getShortDescription();
+		return _theProp.getFieldName();
 	}
 
 	public String getDisplayName()
 	{
-		return _thisProp.getDisplayName();
+		return _theProp.getFieldName();
 	}
 
 	public String[] getFilterFlags()
@@ -262,7 +216,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 
 	public Object getId()
 	{
-		return _thisProp.getDisplayName();
+		return _theProp.getFieldName();
 	}
 
 	public ILabelProvider getLabelProvider()
@@ -270,7 +224,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		ILabelProvider res = null;
 		if (_myHelper != null)
 		{
-			res = _myHelper.getLabelFor(_thisProp);
+			res = _myHelper.getLabelFor(null);
 		}
 		return res;
 	}
@@ -299,17 +253,9 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		Object res = null;
 		try
 		{
-			// find out the type of the editor
-			Method m = _thisProp.getReadMethod();
-
-			if (m == null)
-			{
-				System.out.println("tripped, prop was:" + _thisProp.getDisplayName());
-			}
-			else
-			{
-				res = m.invoke(_subject, (Object[]) null);
-			}
+			
+			res = _theProp.getDataObject().getValue(_theProp.getFieldName());
+			
 		}
 		catch (Exception e)
 		{
@@ -319,6 +265,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return res;
 	}
 
+	@Override
 	public Object getValue()
 	{
 		Object res = null;
@@ -341,29 +288,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			value = _myHelper.translateFromSWT(value);
 		}
 
-		// find out the type of the editor
-		Method write = _thisProp.getWriteMethod();
-		try
-		{
-			write.invoke(_subject, new Object[]
-			{ value });
-		}
-		catch (IllegalArgumentException e)
-		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
-		}
-		catch (IllegalAccessException e)
-		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
-		}
-		catch (InvocationTargetException e)
-		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
-		}
-
+		_theProp.getDataObject().setValue(_theProp.getFieldName(), value);
+		
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.mwc.debrief.gndmanager;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
@@ -73,4 +74,32 @@ public class Activator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+
+	/**
+	 * error logging utility
+	 * 
+	 * @param severity
+	 *          the severity; one of <code>OK</code>, <code>ERROR</code>,
+	 *          <code>INFO</code>, <code>WARNING</code>, or <code>CANCEL</code>
+	 * @param message
+	 *          a human-readable message, localized to the current locale
+	 * @param exception
+	 *          a low-level exception, or <code>null</code> if not applicable
+	 */
+	public static void logError(int severity, String message, Throwable exception)
+	{
+		Activator singleton = getDefault();
+		if (singleton != null)
+		{
+			Status stat = new Status(severity, "org.mwc.debrief.GNDManager", Status.OK,
+					message, exception);
+			singleton.getLog().log(stat);
+		}
+		
+		// also throw it to the console
+		if (exception != null)
+			exception.printStackTrace();
+	}
+	
 }

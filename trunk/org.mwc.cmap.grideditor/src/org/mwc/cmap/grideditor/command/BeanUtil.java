@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 
 import MWC.GUI.TimeStampedDataItem;
+import MWC.TacticalData.GND.GDataItem;
 
 /**
  * Very simplified version of the Apache Commons BeanUtil's helpers.
@@ -42,6 +43,15 @@ public class BeanUtil
 		{
 			throw new NullPointerException();
 		}
+		// special case - GDataItem
+		if(item instanceof GDataItem)
+		{
+			// we don't use bean introspection for these types.  They're schema free,
+			// so we don't have getters and setters
+			GDataItem g = (GDataItem) item;
+			return resultType.cast(g.getValue(descriptor.getName()));
+		}
+		
 		String getterName = getGetterName(descriptor);
 		Method getter;
 		try
@@ -132,6 +142,16 @@ public class BeanUtil
 
 		// convert the value from text editor to target datat ype
 		value = descriptor.getEditor().translateFromSWT(value);
+
+		// special case for GDataItems who do not have getter/setters
+		if(item instanceof GDataItem)
+		{
+			// we don't use bean introspection for these types.  They're schema free,
+			// so we don't have getters and setters
+			GDataItem g = (GDataItem) item;
+			g.setValue(descriptor.getName(), value);
+			return;
+		}
 
 		if (value != null
 				&& !descriptor.getType().isAssignableFrom(value.getClass()))

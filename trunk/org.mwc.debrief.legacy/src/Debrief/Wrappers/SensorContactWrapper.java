@@ -1287,6 +1287,13 @@ public final class SensorContactWrapper extends
 			return res;
 		}
 
+		@Override
+		public NonBeanPropertyDescriptor[] getNonBeanGriddableDescriptors()
+		{
+			// don't worry - we do the bean-based method
+			return null;
+		}
+
 	}
 
 	public static class DitchAmbiguousBearing implements SubjectAction

@@ -3,6 +3,7 @@ package org.mwc.debrief.gndmanager.views;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.MatchList;
 
 public interface ManagerView
@@ -52,5 +53,6 @@ public interface ManagerView
 	void setResults(MatchList res);
 	public void setFoxus();
 	void enableControls(boolean enabled);
+	public ISelectionProvider getSelectionProvider();
 
 }

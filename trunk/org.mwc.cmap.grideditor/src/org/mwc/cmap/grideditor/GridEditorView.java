@@ -1,6 +1,6 @@
 package org.mwc.cmap.grideditor;
 
-
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
@@ -86,6 +86,21 @@ public class GridEditorView extends ViewPart
 			if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
 			{
 				res = new GriddableWrapper(wrapped);
+			}
+		}
+		else
+		{
+			// see if it can be adapted
+			if (firstElement instanceof IAdaptable)
+			{
+				IAdaptable is = (IAdaptable) firstElement;
+				EditableWrapper wrapped = (EditableWrapper) is
+						.getAdapter(EditableWrapper.class);
+				if (wrapped != null)
+					if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
+					{
+						res = new GriddableWrapper(wrapped);
+					}
 			}
 		}
 
@@ -174,10 +189,10 @@ public class GridEditorView extends ViewPart
 		myUndoSupport = new GridEditorUndoSupport(PlatformUI.getWorkbench()
 				.getOperationSupport().getOperationHistory());
 		// set up action handlers that operate on the current context
-		myUndoAction = new UndoActionHandler(this.getSite(), myUndoSupport
-				.getUndoContext());
-		myRedoAction = new RedoActionHandler(this.getSite(), myUndoSupport
-				.getUndoContext());
+		myUndoAction = new UndoActionHandler(this.getSite(),
+				myUndoSupport.getUndoContext());
+		myRedoAction = new RedoActionHandler(this.getSite(),
+				myUndoSupport.getUndoContext());
 	}
 
 	public void refreshUndoContext()
@@ -193,10 +208,10 @@ public class GridEditorView extends ViewPart
 			myRedoAction = null;
 		}
 
-		myUndoAction = new UndoActionHandler(this.getSite(), myUndoSupport
-				.getUndoContext());
-		myRedoAction = new RedoActionHandler(this.getSite(), myUndoSupport
-				.getUndoContext());
+		myUndoAction = new UndoActionHandler(this.getSite(),
+				myUndoSupport.getUndoContext());
+		myRedoAction = new RedoActionHandler(this.getSite(),
+				myUndoSupport.getUndoContext());
 		IActionBars actionBars = getViewSite().getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
 		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);

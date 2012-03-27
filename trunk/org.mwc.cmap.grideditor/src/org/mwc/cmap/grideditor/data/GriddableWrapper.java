@@ -8,8 +8,8 @@ import java.util.Vector;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.property_support.IDebriefProperty;
 import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptorExtension;
@@ -17,6 +17,7 @@ import org.mwc.cmap.gridharness.data.GriddableSeries;
 import org.mwc.cmap.gridharness.views.WorldLocationHelper;
 
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Griddable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
@@ -24,7 +25,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.TimeStampedDataItem;
-import MWC.GUI.Editable.EditorType;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -150,43 +150,45 @@ public class GriddableWrapper implements GriddableSeries
 
 			Editable sampleItem = series.getSampleGriddable();
 			// just check we've got some sample data
-			if(sampleItem == null)
+			if (sampleItem == null)
 				return _myAttributes;
-			
-			
+
 			EditorType info = sampleItem.getInfo();
 			if (info instanceof Griddable)
 			{
 				IPropertyDescriptor[] props = _item.getGriddablePropertyDescriptors();
 
-				// wrap them
-				for (int i = 0; i < props.length; i++)
+				if (props != null)
 				{
-					DebriefProperty desc = (DebriefProperty) props[i];
-
-					Object dataObject = desc.getRawValue();
-					Class<?> dataClass = dataObject.getClass();
-					GriddableItemDescriptor gd;
-
-					// aah, is this a 'special' class?
-					if (dataClass == WorldLocation.class)
+					// wrap them
+					for (int i = 0; i < props.length; i++)
 					{
-						WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
-						WorldLocation sample = new WorldLocation(1, 1, 1);
-						String sampleLocationText = worldLocationHelper.getLabelFor(
-								sample).getText(sample);
+						IDebriefProperty desc = (IDebriefProperty) props[i];
 
-						gd = new GriddableItemDescriptorExtension("Location", "Location",
-								WorldLocation.class, new WorldLocationHelper(),
-								sampleLocationText);
-					}
-					else
-					{
-						gd = new GriddableItemDescriptor(desc.getDisplayName(), desc
-								.getDisplayName(), dataClass, desc.getHelper());
-					}
+						Object dataObject = desc.getRawValue();
+						Class<?> dataClass = dataObject.getClass();
+						GriddableItemDescriptor gd;
 
-					items.add(gd);
+						// aah, is this a 'special' class?
+						if (dataClass == WorldLocation.class)
+						{
+							WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
+							WorldLocation sample = new WorldLocation(1, 1, 1);
+							String sampleLocationText = worldLocationHelper.getLabelFor(
+									sample).getText(sample);
+
+							gd = new GriddableItemDescriptorExtension("Location", "Location",
+									WorldLocation.class, new WorldLocationHelper(),
+									sampleLocationText);
+						}
+						else
+						{
+							gd = new GriddableItemDescriptor(desc.getDisplayName(),
+									desc.getDisplayName(), dataClass, desc.getHelper());
+						}
+
+						items.add(gd);
+					}
 				}
 			}
 
@@ -208,26 +210,30 @@ public class GriddableWrapper implements GriddableSeries
 			list = new Vector<TimeStampedDataItem>();
 			Layer layer = (Layer) obj;
 			Enumeration<Editable> enumer = layer.elements();
-			while (enumer.hasMoreElements())
+			// does it have any children?
+			if (enumer != null)
 			{
-				Editable ed = enumer.nextElement();
-
-				if (_onlyVisItems)
+				while (enumer.hasMoreElements())
 				{
-					// right, this should be a plottable - just check
-					if (ed instanceof Plottable)
+					Editable ed = enumer.nextElement();
+
+					if (_onlyVisItems)
 					{
-						Plottable pl = (Plottable) ed;
-						if (pl.getVisible())
+						// right, this should be a plottable - just check
+						if (ed instanceof Plottable)
 						{
-							list.add(0, (TimeStampedDataItem) ed);
+							Plottable pl = (Plottable) ed;
+							if (pl.getVisible())
+							{
+								list.add(0, (TimeStampedDataItem) ed);
+							}
 						}
 					}
-				}
-				else
-				{
-					// just show all of them
-					list.add(0, (TimeStampedDataItem) ed);
+					else
+					{
+						// just show all of them
+						list.add(0, (TimeStampedDataItem) ed);
+					}
 				}
 			}
 		}
@@ -257,7 +263,7 @@ public class GriddableWrapper implements GriddableSeries
 		// tell everybody something's changed
 		fireExtended(GriddableSeries.PROPERTY_ADDED, subject);
 	}
-
+	
 	public void insertItemAt(TimeStampedDataItem subject, int index)
 	{
 		// we don't need to worry about the order of the item,

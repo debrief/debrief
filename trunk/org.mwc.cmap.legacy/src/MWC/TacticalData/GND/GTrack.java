@@ -1,15 +1,21 @@
 package MWC.TacticalData.GND;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
@@ -19,7 +25,8 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public class GTrack extends PlainWrapper implements WatchableList, Layer
+public class GTrack extends PlainWrapper implements WatchableList, Layer,
+		GriddableSeriesMarker
 {
 
 	/**
@@ -44,6 +51,8 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 	private HiResDate _endDate;
 
 	private PlainSymbol _mySnail;
+
+	private ArrayList<Editable> _myList;
 
 	public GTrack(GDataset data)
 	{
@@ -73,6 +82,13 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 		return _data.getDataset(_data.getDataTypes().get(0)).length;
 	}
 
+	/**
+	 * produce a fix at the indicated point in the data array
+	 * 
+	 * @param i
+	 *          array index
+	 * @return
+	 */
 	public Fix getFixAt(int i)
 	{
 		Fix newF = new Fix();
@@ -81,12 +97,12 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 		double lat = _data.getDataset(GDataset.LAT)[i];
 		double lon = _data.getDataset(GDataset.LON)[i];
 		double depth = 0;
-		if(_data.getDataset(GDataset.ELEVATION) != null)
+		if (_data.getDataset(GDataset.ELEVATION) != null)
 			depth = _data.getDataset(GDataset.ELEVATION)[i];
-		
-		WorldLocation loc = new WorldLocation(lat, lon,- depth);
+
+		WorldLocation loc = new WorldLocation(lat, lon, -depth);
 		newF.setLocation(loc);
-		
+
 		return newF;
 	}
 
@@ -160,7 +176,6 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 	@Override
 	public EditorType getInfo()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -274,18 +289,90 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer
 	@Override
 	public Enumeration<Editable> elements()
 	{
-		// TODO Auto-generated method stub
-		return null;
+	
+		// has the list been initialised yet?
+		if (_myList == null)
+		{
+			// nope, make it so
+			_myList = new ArrayList<Editable>();
+			
+			// and populate it...
+			for (int j = 0; j < _data.size(); j++)
+			{
+				final int thisIndex = j;
+				final Editable fw;
+				GDataItem.Setter setter = new GDataItem.Setter()
+				{
+					public void setValue(String name, Object value)
+					{
+						_data.getDataset(name)[thisIndex] = (Double) value;
+					}
+				};
+				ArrayList<String> fieldList = _data.getDataTypes();
+				HashMap<String, Object> fields = new HashMap<String, Object>();
+				Iterator<String> iter = fieldList.iterator();
+				while (iter.hasNext())
+				{
+					String thisF = iter.next();
+					// special case, is this the time field?
+					if (thisF.equals("time"))
+					{
+						Date thisD = _data.getTimes()[thisIndex];
+						fields.put(thisF, thisD);
+					}
+					else
+					{
+						fields.put(thisF, _data.getDataset(thisF)[thisIndex]);
+					}
+				}
+
+				fw = new GDataItem("Item_" + (thisIndex + 1), fields, setter);
+				_myList.add(fw);
+			}
+		}
+		
+		return new Plottables.IteratorWrapper(_myList.iterator());
 	}
 
 	@Override
 	public PlainSymbol getSnailShape()
 	{
-		if(_mySnail == null)
+		if (_mySnail == null)
 			_mySnail = MWC.GUI.Shapes.Symbols.SymbolFactory
 					.createSymbol(SymbolFactory.MERCHANT);
-		
+
 		return _mySnail;
+	}
+
+	// //////////////////
+	// griddable support
+	// //////////////////
+
+	@Override
+	public Editable getSampleGriddable()
+	{
+		return elements().nextElement();
+	}
+
+	@Override
+	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	{
+		if (false == item instanceof GDataItem)
+		{
+			throw new IllegalArgumentException(
+					"I am expecting a position, don't know how to copy " + item);
+		}
+
+		GDataItem master = (GDataItem) item;
+		TimeStampedDataItem res = master.makeCopy();
+
+		return res;
+	}
+
+	@Override
+	public boolean supportsAddRemove()
+	{
+		return false;
 	}
 
 }

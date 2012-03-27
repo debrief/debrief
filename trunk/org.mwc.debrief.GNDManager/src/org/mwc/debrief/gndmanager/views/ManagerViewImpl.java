@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -387,6 +388,12 @@ public class ManagerViewImpl extends Composite implements ManagerView
 			return match.getPlatform();
 		}
 
+	}
+
+	@Override
+	public ISelectionProvider getSelectionProvider()
+	{
+		return checkboxTableViewer;
 	}
 
 }

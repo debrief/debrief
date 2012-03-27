@@ -13,7 +13,11 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.eclipse.core.runtime.IAdaptable;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.gndmanager.views.ManagerView;
+
+import MWC.TacticalData.GND.GTrack;
 
 public class ESearch implements SearchModel
 {
@@ -26,19 +30,19 @@ public class ESearch implements SearchModel
 	}
 
 	@Override
-	public MatchList getMatches(String root, ManagerView view) throws IOException
+	public MatchList getMatches(String indexURL, String dbURL, ManagerView view) throws IOException
 	{
 		JsonNode query = createQuery(view);
-		return fireSearch(root, query);
+		return fireSearch(indexURL, query);
 	}
 
 	@Override
-	public MatchList getAll(String root) throws IOException
+	public MatchList getAll(String indexURL, String dbURL) throws IOException
 	{
 		ObjectNode queryObj = _mapper.createObjectNode();
 		queryObj.put("match_all", _mapper.createObjectNode());
 
-		return fireSearch(root, queryObj);
+		return fireSearch(indexURL, queryObj);
 	}
 
 	public JsonNode createQuery(ManagerView view)
@@ -90,7 +94,8 @@ public class ESearch implements SearchModel
 		}
 	}
 
-	private MatchList fireSearch(String root, JsonNode queryObj) throws IOException
+	private MatchList fireSearch(String root, JsonNode queryObj)
+			throws IOException
 	{
 		MatchList res = null;
 
@@ -132,7 +137,7 @@ public class ESearch implements SearchModel
 		return res;
 	}
 
-	protected static class MatchListWrap implements MatchList
+	protected  class MatchListWrap implements MatchList
 	{
 
 		private final JsonNode _node;
@@ -209,7 +214,7 @@ public class ESearch implements SearchModel
 
 	}
 
-	protected static class MatchWrap implements Match
+	protected  class MatchWrap implements Match, IAdaptable
 	{
 		private JsonNode _node;
 
@@ -245,11 +250,27 @@ public class ESearch implements SearchModel
 		@Override
 		public String getId()
 		{
-			String res =  _node.get("_id").getTextValue();
+			String res = _node.get("_id").getTextValue();
 			res = res.split("_")[0];
 			return res;
 		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public Object getAdapter(Class adapter)
+		{
+			final Object res;
+			if (adapter == EditableWrapper.class)
+			{
+				GTrack item = loadTrack(_node);
+				res = new EditableWrapper(item, null, null);
+			}
+			else
+				res = null;
+			return res;
+		}
 	}
+
 
 	/**
 	 * create a term facet for the specified term
@@ -265,6 +286,15 @@ public class ESearch implements SearchModel
 		platTerm.put("size", 1000);
 		platform.put("terms", platTerm);
 		parent.put(term, platform);
+	}
+
+	public GTrack loadTrack(JsonNode _node)
+	{
+		
+		
+		
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

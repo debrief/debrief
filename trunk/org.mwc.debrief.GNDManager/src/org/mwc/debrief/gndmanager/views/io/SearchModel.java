@@ -32,7 +32,7 @@ public interface SearchModel
 		public String getPlatformType();
 	}
 
-	MatchList getAll(String root) throws IOException;
+	MatchList getAll(String indexURL, String dbURL) throws IOException;
 
-	MatchList getMatches(String root, ManagerView view) throws IOException;
+	MatchList getMatches(String indexURL, String dbURL, ManagerView view) throws IOException;
 }

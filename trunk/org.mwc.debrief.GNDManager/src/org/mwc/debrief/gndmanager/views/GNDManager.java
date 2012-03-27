@@ -83,6 +83,9 @@ public class GNDManager extends ViewPart implements Listener
 		// Create the help context id for the viewer's control
 		makeActions();
 		contributeToActionBars();
+		
+		// let the table be a selection provider
+		getSite().setSelectionProvider(view.getSelectionProvider());
 	}
 
 	private void contributeToActionBars()
@@ -145,7 +148,7 @@ public class GNDManager extends ViewPart implements Listener
 		MatchList res;
 		try
 		{
-			res = _search.getMatches(getIndexUrl(), view);
+			res = _search.getMatches(getIndexUrl(),getDBUrl(), view);
 			view.setResults(res);
 		}
 		catch (ConnectException e)
@@ -204,7 +207,7 @@ public class GNDManager extends ViewPart implements Listener
 		MatchList list;
 		try
 		{
-			list = _search.getAll(getIndexUrl());
+			list = _search.getAll(getIndexUrl(), getDBUrl());
 			Facet platforms = list.getFacet("platform");
 			Facet platformTypes = list.getFacet("platform_type");
 			Facet trials = list.getFacet("trial");

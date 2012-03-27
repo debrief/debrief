@@ -310,13 +310,18 @@ public class TableModel
 				@Override
 				public String getText(Object element)
 				{
+					final String res;
 					if (false == element instanceof TimeStampedDataItem)
 					{
-						return UNKNOWN;
+						res = UNKNOWN;
 					}
-					TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
-					Object value = BeanUtil.getItemValue(dataItem, getDescriptor());
-					return String.valueOf(value);
+					else
+					{
+						TimeStampedDataItem dataItem = (TimeStampedDataItem) element;
+						Object value = BeanUtil.getItemValue(dataItem, getDescriptor());
+						res = String.valueOf(value);
+					}
+					return res;
 				}
 			};
 		}

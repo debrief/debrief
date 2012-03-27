@@ -1160,4 +1160,10 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return MessageProvider.OK;
 	}
 
+	@Override
+	public boolean supportsAddRemove()
+	{
+		return true;
+	}
+
 }
