@@ -7,7 +7,7 @@
       <view
             name="Network datastore"
             icon="icons/database.png"
-            category="org.mwc.debrief.GNDManager"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.gndmanager.views.GNDManager"
             id="org.mwc.debrief.gndmanager.views.GNDManager">
       </view>
