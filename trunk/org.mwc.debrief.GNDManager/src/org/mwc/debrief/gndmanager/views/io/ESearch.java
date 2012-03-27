@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.gndmanager.views.ManagerView;
 
+import MWC.TacticalData.GND.GDataset;
 import MWC.TacticalData.GND.GTrack;
 
 public class ESearch implements SearchModel
@@ -30,10 +31,11 @@ public class ESearch implements SearchModel
 	}
 
 	@Override
-	public MatchList getMatches(String indexURL, String dbURL, ManagerView view) throws IOException
+	public MatchList getMatches(String indexURL, String dbURL, ManagerView view)
+			throws IOException
 	{
 		JsonNode query = createQuery(view);
-		return fireSearch(indexURL, query);
+		return fireSearch(indexURL, dbURL, query);
 	}
 
 	@Override
@@ -42,7 +44,7 @@ public class ESearch implements SearchModel
 		ObjectNode queryObj = _mapper.createObjectNode();
 		queryObj.put("match_all", _mapper.createObjectNode());
 
-		return fireSearch(indexURL, queryObj);
+		return fireSearch(indexURL, dbURL, queryObj);
 	}
 
 	public JsonNode createQuery(ManagerView view)
@@ -94,7 +96,7 @@ public class ESearch implements SearchModel
 		}
 	}
 
-	private MatchList fireSearch(String root, JsonNode queryObj)
+	private MatchList fireSearch(String root, String dbURL, JsonNode queryObj)
 			throws IOException
 	{
 		MatchList res = null;
@@ -117,7 +119,7 @@ public class ESearch implements SearchModel
 			URL url;
 			url = new URL(root + "/_search?pretty=true&source=" + qq.toString());
 			JsonNode obj = _mapper.readValue(url, JsonNode.class);
-			res = new MatchListWrap(obj);
+			res = new MatchListWrap(obj, dbURL);
 		}
 		catch (MalformedURLException e)
 		{
@@ -137,14 +139,16 @@ public class ESearch implements SearchModel
 		return res;
 	}
 
-	protected  class MatchListWrap implements MatchList
+	protected class MatchListWrap implements MatchList
 	{
 
 		private final JsonNode _node;
+		private final String _dbURL;
 
-		public MatchListWrap(JsonNode list)
+		public MatchListWrap(JsonNode list, String dbURL)
 		{
 			_node = list;
+			_dbURL = dbURL;
 		}
 
 		@Override
@@ -158,7 +162,7 @@ public class ESearch implements SearchModel
 		public Match getMatch(int index)
 		{
 			JsonNode node = _node.get("hits").get("hits").get(index);
-			return new MatchWrap(node);
+			return new MatchWrap(node, _dbURL);
 		}
 
 		@Override
@@ -214,13 +218,16 @@ public class ESearch implements SearchModel
 
 	}
 
-	protected  class MatchWrap implements Match, IAdaptable
+	protected class MatchWrap implements Match, IAdaptable
 	{
-		private JsonNode _node;
+		private final JsonNode _node;
+		private final String _dbURL;
+		private EditableWrapper _wrappedMe;
 
-		public MatchWrap(JsonNode item)
+		public MatchWrap(JsonNode item, String dbURL)
 		{
 			_node = item;
+			_dbURL = dbURL;
 		}
 
 		@Override
@@ -262,15 +269,50 @@ public class ESearch implements SearchModel
 			final Object res;
 			if (adapter == EditableWrapper.class)
 			{
-				GTrack item = loadTrack(_node);
-				res = new EditableWrapper(item, null, null);
+				if (_wrappedMe == null)
+				{
+					GTrack track = loadTrack(getId());
+					_wrappedMe = new EditableWrapper(track, null, null);
+				}
+				res = _wrappedMe;
 			}
 			else
 				res = null;
 			return res;
 		}
-	}
 
+		public GTrack loadTrack(String id)
+		{
+			GTrack res = null;
+			JsonNode obj;
+			try
+			{
+				URL url = new URL(_dbURL + "/" + id);
+				URL databaseURL = new URL(_dbURL);
+				obj = _mapper.readValue(url, JsonNode.class);
+				GDataset data = new GDataset(obj, databaseURL);
+				res = new GTrack(data);
+			}
+			catch (JsonParseException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (JsonMappingException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return res;
+		}
+
+	}
 
 	/**
 	 * create a term facet for the specified term
@@ -286,15 +328,6 @@ public class ESearch implements SearchModel
 		platTerm.put("size", 1000);
 		platform.put("terms", platTerm);
 		parent.put(term, platform);
-	}
-
-	public GTrack loadTrack(JsonNode _node)
-	{
-		
-		
-		
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

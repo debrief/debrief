@@ -19,7 +19,6 @@ import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.GND.GDataItem.Setter;
 
 public class GDataItem implements Plottable, TimeStampedDataItem,
 		HasNonBeanPropertyDescriptors

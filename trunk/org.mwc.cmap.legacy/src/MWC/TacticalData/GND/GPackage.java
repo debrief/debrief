@@ -1,6 +1,7 @@
 package MWC.TacticalData.GND;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -63,6 +64,7 @@ public class GPackage extends BaseLayer
 		try
 		{
 			String uri = dbUrl + "/_all_docs?include_docs=true";
+			URL databaseURL = new URL(dbUrl);
 			System.err.println("to:" + uri);
 			String cStr = root.toString();
 			byte[] content = cStr.getBytes();
@@ -83,7 +85,7 @@ public class GPackage extends BaseLayer
 					{
 						JsonNode theNode = rows.get(i);
 						JsonNode theDoc = theNode.get("doc");
-						GDataset newData = new GDataset(theDoc);
+						GDataset newData = new GDataset(theDoc, databaseURL);
 						GTrack track = new GTrack(newData);
 						add(track);
 					}

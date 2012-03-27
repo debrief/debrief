@@ -80,20 +80,15 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 	 */
 	public GDataset(URL source)
 	{
-		this();
 		_source = source;
-	}
-
-	public GDataset(JsonNode theDoc)
-	{
-		this();
-		_myNode = theDoc;
-	}
-
-	protected GDataset()
-	{
 		_datasets = new HashMap<String, double[]>();
 		_pSupport = new PropertyChangeSupport(this);
+	}
+
+	public GDataset(JsonNode theDoc, URL source)
+	{
+		this(source);
+		_myNode = theDoc;
 	}
 
 	private JsonNode getNode()
@@ -108,17 +103,14 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 			}
 			catch (JsonParseException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (JsonMappingException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -278,5 +270,16 @@ public class GDataset implements IDataset, Serializable, SupportsPropertyListene
 			Object newValue)
 	{
 		_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
+	}
+
+	public void doSave(String message)
+	{
+		// ok, build up the URL
+		
+		// convert ourselves to JSON
+		
+		// store ourselves as attachment
+		
+		// now update ourselves
 	}
 }

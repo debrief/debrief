@@ -85,7 +85,7 @@ public class GNDManager extends ViewPart implements Listener
 		contributeToActionBars();
 		
 		// let the table be a selection provider
-		getSite().setSelectionProvider(view.getSelectionProvider());
+	//	getSite().setSelectionProvider(view.getSelectionProvider());
 	}
 
 	private void contributeToActionBars()
