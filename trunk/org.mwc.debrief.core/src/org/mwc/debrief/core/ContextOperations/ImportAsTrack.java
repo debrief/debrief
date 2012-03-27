@@ -106,17 +106,13 @@ public class ImportAsTrack implements RightClickContextItemGenerator
 		 * the parent to update on completion
 		 */
 		private final Layers _layers;
-		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private Editable _target;
 
 		public ImportAsTrackOperation(String title, Editable editable,
 				Layers theLayers, Layer[] parentLayers, Editable[] subjects)
 		{
 			super(title);
-			_target = editable;
 			_layers = theLayers;
-			_parents = parentLayers;
 			_subjects = subjects;
 		}
 
