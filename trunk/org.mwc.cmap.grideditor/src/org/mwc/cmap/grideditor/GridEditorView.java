@@ -140,6 +140,11 @@ public class GridEditorView extends ViewPart
 		{
 			return;
 		}
+		
+		// am I even tracking the selection?
+		if(!myUI.getTable().isTrackingSelection())
+			return;
+		
 		GriddableWrapper input = extractGriddableSeries(actualSelection);
 
 		if (input == null)
