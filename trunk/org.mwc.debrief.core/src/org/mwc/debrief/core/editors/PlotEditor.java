@@ -521,6 +521,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		WizardDialog dialog = new WizardDialog(Display.getCurrent()
 				.getActiveShell(), wizard);
 		dialog.create();
+		dialog.setBlockOnOpen(true);
 		dialog.open();
 		// did it work?
 		if (dialog.getReturnCode() == WizardDialog.OK)
