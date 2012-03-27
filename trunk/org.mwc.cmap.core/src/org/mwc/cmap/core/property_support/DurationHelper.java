@@ -182,7 +182,8 @@ public class DurationHelper extends EditorHelper
 	}
 	
 
-	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
+	@Override
+	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Duration", "Units", new DurationModel(), property);
 	

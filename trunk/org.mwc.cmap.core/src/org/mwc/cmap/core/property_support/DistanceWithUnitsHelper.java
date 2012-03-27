@@ -142,7 +142,8 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	}
 	
 
-	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
+	@Override
+	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel(), property);
 	}	

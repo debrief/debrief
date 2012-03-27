@@ -89,8 +89,9 @@ public class TagListHelper extends EditorHelper
 		return theProvider;
 	}
 
+	@Override
 	public Control getEditorControlFor(Composite parent,
-			final DebriefProperty property)
+			final IDebriefProperty property)
 	{
 		final Combo myCombo = new Combo(parent, SWT.NONE);
 		

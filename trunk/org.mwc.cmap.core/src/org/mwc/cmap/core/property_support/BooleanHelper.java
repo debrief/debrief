@@ -85,7 +85,8 @@ public class BooleanHelper extends EditorHelper
 	}
 	
 
-	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
+	@Override
+	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
 	{
 		final Button myCheckbox = new Button(parent, SWT.CHECK);
 		myCheckbox.addSelectionListener(new SelectionAdapter(){

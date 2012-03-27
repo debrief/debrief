@@ -143,7 +143,8 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		return label1;
 	}
 
-	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
+	@Override
+	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
 	{
 		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel(), property);
 	}

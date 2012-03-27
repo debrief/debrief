@@ -32,11 +32,13 @@ public class ColorHelper extends EditorHelper
 		// _parentControl = parentControl;
 	}
 
+	@Override
 	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return new org.eclipse.jface.viewers.ColorCellEditor(parent);
 	}
 
+	@Override
 	public Object translateToSWT(Object value)
 	{
 		// ok, convert the AWT color to SWT
@@ -44,6 +46,7 @@ public class ColorHelper extends EditorHelper
 		return convertColor(col);
 	}
 
+	@Override
 	public Object translateFromSWT(Object value)
 	{
 		// ok, convert the AWT color to SWT
@@ -168,6 +171,7 @@ public class ColorHelper extends EditorHelper
 		return data;
 	}
 
+	@Override
 	public ILabelProvider getLabelFor(Object currentValue)
 	{
 		ILabelProvider label1 = new LabelProvider()
@@ -257,7 +261,8 @@ public class ColorHelper extends EditorHelper
 	 * @param property
 	 * @return
 	 */
-	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
+	@Override
+	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
 	{
 
 		final ColorSelector sel = new ColorSelector(parent);

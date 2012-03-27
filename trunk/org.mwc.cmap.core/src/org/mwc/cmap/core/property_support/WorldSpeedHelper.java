@@ -112,8 +112,9 @@ public class WorldSpeedHelper extends EditorHelper
 		return label1;
 	}
 
+	@Override
 	public Control getEditorControlFor(Composite parent,
-			final DebriefProperty property)
+			final IDebriefProperty property)
 	{
 		final ValueWithUnitsControl control = new ValueWithUnitsControl(parent, "Speed", "Units",
 				new WorldSpeedModel(), property);

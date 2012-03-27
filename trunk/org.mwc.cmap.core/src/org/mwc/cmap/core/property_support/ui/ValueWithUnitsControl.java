@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.cmap.core.property_support.DebriefProperty;
+import org.mwc.cmap.core.property_support.IDebriefProperty;
 
 final public class ValueWithUnitsControl extends Composite implements
 		ModifyListener
@@ -40,7 +40,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * the (optional) object we're editing
 	 * 
 	 */
-	private DebriefProperty _property;
+	private IDebriefProperty _property;
 
 	/**
 	 * default constructor. it doesn't have all data, but we're not in control of
@@ -85,7 +85,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	 */
 	public ValueWithUnitsControl(Composite parent, String textTip,
 			String comboText, ValueWithUnitsDataModel dataModel,
-			DebriefProperty property)
+			IDebriefProperty property)
 	{
 		this(parent);
 		init(textTip, comboText, dataModel);
