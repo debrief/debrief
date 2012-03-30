@@ -20,7 +20,7 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -221,7 +221,7 @@ public final class StackedDotHelper
 	 *          how far the current track has been dragged
 	 */
 	public void updateBearingData(XYPlot dotPlot, XYPlot linePlot,
-			TrackManager tracks, boolean onlyVis, boolean showCourse,
+			TrackDataProvider tracks, boolean onlyVis, boolean showCourse,
 			boolean flipAxes, Composite holder, ErrorLogger logger, boolean updateDoublets)
 	{
 		// do we even have a primary track
@@ -416,7 +416,7 @@ public final class StackedDotHelper
 	 * @param onlyVis
 	 * @param holder
 	 */
-	void initialise(TrackManager tracks, boolean showError, boolean onlyVis,
+	void initialise(TrackDataProvider tracks, boolean showError, boolean onlyVis,
 			Composite holder, ErrorLogger logger, String dataType, boolean needBrg, boolean needFreq)
 	{
 
@@ -539,7 +539,7 @@ public final class StackedDotHelper
 	 *          how far the current track has been dragged
 	 */
 	public void updateFrequencyData(XYPlot dotPlot, XYPlot linePlot,
-			TrackManager tracks, boolean onlyVis, Composite holder,
+			TrackDataProvider tracks, boolean onlyVis, Composite holder,
 			ErrorLogger logger, boolean updateDoublets)
 	{
 
