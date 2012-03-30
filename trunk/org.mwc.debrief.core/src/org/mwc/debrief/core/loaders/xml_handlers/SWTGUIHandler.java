@@ -19,25 +19,34 @@ import org.w3c.dom.Element;
 import Debrief.ReaderWriter.XML.GUI.*;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 
-abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class SWTGUIHandler extends
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-	/** interface for gui components that store their preferences to file
+	/**
+	 * interface for gui components that store their preferences to file
 	 * 
 	 * @author ian.mayo
-	 *
+	 * 
 	 */
 	public interface ComponentCreator
 	{
-		/** ok - store this component
+		/**
+		 * ok - store this component
 		 * 
-		 * @param details the parsed xml for this component
-		 * @param controller object responsible for how we show/manage time
-		 * @param painterMgr object responsible for how plot is shown
-		 * @param timeController object responsible for current DTG
+		 * @param details
+		 *          the parsed xml for this component
+		 * @param controller
+		 *          object responsible for how we show/manage time
+		 * @param painterMgr
+		 *          object responsible for how plot is shown
+		 * @param timeController
+		 *          object responsible for current DTG
 		 */
-		public void makeThis(Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
-				final TimeControlPreferences controller, final LayerPainterManager painterMgr,
+		public void makeThis(
+				Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
+				final TimeControlPreferences controller,
+				final LayerPainterManager painterMgr,
 				final ControllableTime timeController);
 
 	}
@@ -80,7 +89,7 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 				addThisComponent(details, thePlot);
 			}
 		});
-		
+
 		addHandler(new BackgroundHandler()
 		{
 			public void setBackgroundColor(Color theColor)
@@ -117,7 +126,8 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 	 * @param secondaryTracks
 	 *          list of tracks name for secondary tracks
 	 */
-	abstract public void assignTracks(String primaryTrack, Vector<String> secondaryTracks);
+	abstract public void assignTracks(String primaryTrack,
+			Vector<String> secondaryTracks);
 
 	void addThisComponent(ComponentDetails details, PlotEditor thePlot)
 	{
@@ -128,11 +138,19 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 		if (cc != null)
 		{
 			// ok, get the bits ready
-			final TimeControlPreferences controller = (TimeControlPreferences) thePlot.getAdapter(TimeControlPreferences.class);
-			final LayerPainterManager painterMgr = (LayerPainterManager) thePlot.getAdapter(LayerPainterManager.class);
-			final ControllableTime timeController = (ControllableTime) thePlot.getAdapter(ControllableTime.class);
-			
-			cc.makeThis(details, controller, painterMgr, timeController);
+			final TimeControlPreferences controller = (TimeControlPreferences) thePlot
+					.getAdapter(TimeControlPreferences.class);
+			final LayerPainterManager painterMgr = (LayerPainterManager) thePlot
+					.getAdapter(LayerPainterManager.class);
+			final ControllableTime timeController = (ControllableTime) thePlot
+					.getAdapter(ControllableTime.class);
+
+			if (painterMgr == null)
+			{
+				System.err.println("WARNING - PLOT NOT PRODUCING PainterManager. This should not happen in production");
+			}
+			else
+				cc.makeThis(details, controller, painterMgr, timeController);
 		}
 		else
 			MWC.Utilities.Errors.Trace.trace("XML Handler not found for " + cType);
@@ -166,11 +184,12 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 				.getAdapter(TimeControlPreferences.class);
 		LayerPainterManager painter = (LayerPainterManager) thePlot
 				.getAdapter(LayerPainterManager.class);
-		TimeProvider timeProvider = (TimeProvider) thePlot.getAdapter(TimeProvider.class);
+		TimeProvider timeProvider = (TimeProvider) thePlot
+				.getAdapter(TimeProvider.class);
 		if (controller != null)
 		{
-			ComponentDetails stepperD = _myStepperHandler.exportThis(controller, painter,
-					timeProvider, doc);
+			ComponentDetails stepperD = _myStepperHandler.exportThis(controller,
+					painter, timeProvider, doc);
 			stepperD.exportTo("Stepper", gui, doc);
 		}
 

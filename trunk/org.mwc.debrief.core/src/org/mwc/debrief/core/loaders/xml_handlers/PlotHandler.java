@@ -20,16 +20,11 @@ final public class PlotHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 	
-	PlotEditor _myPlot;
-	
 	public PlotHandler(String fileName, Layers destination,
 			IControllableViewport view, final PlotEditor plot)
 	{
 		// inform our parent what type of class we are
 		super("plot");
-
-		// store the plot
-		_myPlot = plot;
 		
 		// sort out the handlers
 		addHandler(new SessionHandler(destination, view, plot));
@@ -53,7 +48,7 @@ final public class PlotHandler extends
 		{
 			public void setValue(String name, String val)
 			{
-				TimeProvider prov = (TimeProvider) _myPlot.getAdapter(TimeProvider.class);
+				TimeProvider prov = (TimeProvider) plot.getAdapter(TimeProvider.class);
 				if(prov instanceof TimeManager)
 				{
 					TimeManager tMgr = (TimeManager) prov;
