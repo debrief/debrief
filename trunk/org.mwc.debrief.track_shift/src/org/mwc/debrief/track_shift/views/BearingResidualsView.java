@@ -101,13 +101,15 @@ public class BearingResidualsView extends BaseStackedDotsView
 					.getRenderer();
 			if (showCourse.isChecked())
 			{
-				// right, we've got a course, and it's always in slot one - so hide the
+				// right, we've got a course, and it's always in slot one - so
+				// hide the
 				// shapes
 				lineRend.setSeriesShapesVisible(0, false);
 			}
 			else
 			{
-				// just make sure the first series is visible, it's clearly not a course
+				// just make sure the first series is visible, it's clearly not
+				// a course
 				lineRend.setSeriesShapesVisible(0, true);
 			}
 		}
@@ -142,6 +144,13 @@ public class BearingResidualsView extends BaseStackedDotsView
 		super.saveState(memento);
 
 		memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
+	}
+
+	@Override
+	protected void optimise()
+	{
+		// TODO Auto-generated method stub
+
 	}
 
 }

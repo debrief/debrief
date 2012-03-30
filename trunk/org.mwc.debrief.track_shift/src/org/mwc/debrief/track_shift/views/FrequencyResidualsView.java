@@ -30,4 +30,10 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 		lineRend.setSeriesShapesVisible(3, false);
 
 	}
+
+	@Override
+	protected void optimise() {
+		// TODO Auto-generated method stub
+		
+	}
 }

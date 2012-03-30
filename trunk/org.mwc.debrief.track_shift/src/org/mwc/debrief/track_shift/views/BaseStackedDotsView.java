@@ -185,6 +185,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	abstract protected String getType();
 
 	abstract protected void updateData(boolean updateDoublets);
+	
+	/** do some wonder magic on the plot
+	 * 
+	 */
+	abstract protected void optimise();
 
 	private void contributeToActionBars()
 	{
