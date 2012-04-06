@@ -67,7 +67,7 @@ public class OptimiseTest
 			assertTrue("created score", 100 == score);
 		}
 
-		public void testShift() throws FileNotFoundException
+		public void testShiftSingle() throws FileNotFoundException
 		{
 			SensorContactWrapper sensor = null;
 			TrackSegment parent = null;
@@ -113,6 +113,58 @@ public class OptimiseTest
 			assertEquals("right tl lon", 1, coverage.getTopLeft().getLong(), 0.001);
 		}
 
+		public void testShiftMultiple() throws FileNotFoundException
+		{
+			SensorContactWrapper sensor = null;
+			TrackSegment parent = null;
+			FixWrapper hostFix1 = new FixWrapper(new Fix(new HiResDate(1000), null, 0 ,0));
+			
+			WorldLocation theLoc = new WorldLocation(0, 0, 0);
+			Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
+			FixWrapper targetFix = new FixWrapper(newFix);
+			WorldLocation theLoc2 = new WorldLocation(0, 0, 0);
+			Fix newFix2 = new Fix(new HiResDate(2000), theLoc2, 0, 0);
+			FixWrapper targetFix2 = new FixWrapper(newFix2);
+			Doublet dt = new Doublet(sensor, targetFix, parent, hostFix1);
+			Doublet dt2 = new Doublet(sensor, targetFix2, parent, hostFix1);
+
+			final TreeSet<Doublet> doublets = new TreeSet<Doublet>();
+			doublets.add(dt);
+			doublets.add(dt2);
+
+			assertEquals("right num", 1, doublets.size());
+			WorldArea coverage = areaFor(doublets);
+			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
+			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
+
+			WorldVector thisOffset = new WorldVector(0, 0, 0);
+			TreeSet<Doublet> res = shiftDoublets(doublets, thisOffset);
+			coverage = areaFor(res);
+			Doublet item = res.iterator().next();
+			System.err.println("loc is:" + item.getTarget().getLocation().toString());
+
+			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
+			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
+
+			// apply some kind of offset - move it 1 deg north
+			thisOffset = new WorldVector(0, 1, 0);
+			res = shiftDoublets(doublets, thisOffset);
+			coverage = areaFor(res);
+			item = res.iterator().next();
+			System.err.println("loc is:" + item.getTarget().getLocation().toString());
+			assertEquals("right tl lat", 1.0, coverage.getTopLeft().getLat(), 0.001);
+			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
+
+			// apply some kind of offset - move it 1 deg north
+			thisOffset = new WorldVector(Math.PI / 2, 1, 0);
+			res = shiftDoublets(doublets, thisOffset);
+			coverage = areaFor(res);
+			item = res.iterator().next();
+			System.err.println("loc is:" + item.getTarget().getLocation().toString());
+			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
+			assertEquals("right tl lon", 1, coverage.getTopLeft().getLong(), 0.001);
+		}
+		
 		private WorldArea areaFor(TreeSet<Doublet> doublets)
 		{
 			WorldArea res = null;
