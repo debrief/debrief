@@ -19,7 +19,7 @@ public final class Doublet implements Comparable<Doublet>
 
 	private final SensorContactWrapper _sensor;
 
-	private FixWrapper _targetFix;
+	private final FixWrapper _targetFix;
 	private final FixWrapper _hostFix;
 
 	private final TrackSegment _targetTrack;
@@ -54,7 +54,16 @@ public final class Doublet implements Comparable<Doublet>
 	{
 		return _targetFix;
 	}
+	
+	public TrackSegment getTargetTrack()
+	{
+		return _targetTrack;
+	}
 
+	public SensorContactWrapper getSensorCut()
+	{
+		return _sensor;
+	}
 	/**
 	 * ok find bearing error (wrapped to -..360)
 	 * 
@@ -460,15 +469,6 @@ public final class Doublet implements Comparable<Doublet>
 			res = convertAndTest(150, 158, 9, 300);
 			assertEquals("right freq", -0.906, res, 0.01);
 		}
-	}
-
-	/** allow the target location to be over-ridden (for when we're doing optimisation
-	 * 
-	 * @param newF
-	 */
-	public void setTarget(FixWrapper newF)
-	{
-		_targetFix = newF;
 	}
 
 }
