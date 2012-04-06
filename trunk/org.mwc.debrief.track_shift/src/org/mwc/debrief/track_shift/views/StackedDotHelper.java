@@ -70,7 +70,7 @@ public final class StackedDotHelper
 	 * sort out data of interest
 	 * 
 	 */
-	private TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
+	public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
 			final TrackWrapper targetTrack, boolean onlyVis, boolean needBearing, boolean needFrequency)
 	{
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
