@@ -86,10 +86,10 @@ public class OptimiseTest
 
 			final TreeSet<Doublet> doublets = new TreeSet<Doublet>();
 			doublets.add(dt);
-			MinimisationFunction funct = new TryOffsetFunction(doublets);
 			
 			// Create instance of Minimisation
 			Minimisation min = new Minimisation();
+			MinimisationFunction funct = new TryOffsetFunction(doublets);
 
 			// initial estimates
 			double[] start =
@@ -108,7 +108,7 @@ public class OptimiseTest
 			
 			// set the min/max ranges
 			min.addConstraint(1, -1, 0d);
-			min.addConstraint(1, 1, 2000d);
+			min.addConstraint(1, 1, 6000d);
 
 			// Nelder and Mead minimisation procedure
 			min.nelderMead(funct, start, step, ftol, 500);
@@ -119,7 +119,47 @@ public class OptimiseTest
 			double bearing = param[0];
 			double range = param[1];
 			
-			System.err.println("answer is:" + bearing);
+			System.err.println("answer is:" + bearing + " degs" + range + "m");
+			
+		//	assertEquals("wrong bearing", Math.PI/2, bearing, 0.001 );
+		//	assertEquals("wrong range", 0.001, range, 0.001 );
+		}
+		
+		public void testDummyPermutations()
+		{
+			// Create instance of Minimisation
+			Minimisation min = new Minimisation();
+			MinimisationFunction funct = new DummyOffsetFunction();
+
+			// initial estimates
+			double[] start =
+			{ 0, 0 };
+
+			// initial step sizes
+			double[] step =
+			{20, 400 };
+
+			// convergence tolerance
+			double ftol = 1e-8;
+
+			// set the min/max bearing
+			min.addConstraint(0, -1, 0d);
+			min.addConstraint(0, 1, 360d);
+			
+			// set the min/max ranges
+			min.addConstraint(1, -1, 0d);
+			min.addConstraint(1, 1, 6000d);
+
+			// Nelder and Mead minimisation procedure
+			min.nelderMead(funct, start, step, ftol, 500);
+
+			// get the results out
+			double[] param = min.getParamValues();
+
+			double bearing = param[0];
+			double range = param[1];
+			
+			System.err.println("answer is:" + bearing + " degs" + range + "m");
 			
 		//	assertEquals("wrong bearing", Math.PI/2, bearing, 0.001 );
 		//	assertEquals("wrong range", 0.001, range, 0.001 );
@@ -303,15 +343,36 @@ public class OptimiseTest
 			
 			// try to find the range of some arbritrary point from the first location
       WorldLocation loc = newD.iterator().next().getTarget().getLocation();
-      WorldLocation other = new WorldLocation(0.02, 0.03, 0);
+      System.out.println("trying:" + loc);
+      WorldLocation other = new WorldLocation(0.2, 0.3, 0);
       double res = loc.rangeFrom(other);
 
-			System.err.println("trying brg:" + brgDegs + "  range:" + rngM + " res is:" + MWC.Algorithms.Conversions.Degs2m(res));
+//			System.err.println("trying brg:" + brgDegs + "  range:" + rngM + " res is:" + MWC.Algorithms.Conversions.Degs2m(res));
+      System.out.println("trying:" + loc + " res:" + res + " answer is:" + other);
 
 			// do the calc
-			return Math.abs(brgDegs - 155);
+			return res;
 		}
 
 	}
 
+	public static class DummyOffsetFunction implements MinimisationFunction
+	{
+		public DummyOffsetFunction()
+		{
+		}
+
+		@Override
+		public double function(double[] param)
+		{
+			// ok, generate bearing
+			double brgDegs = param[0];
+			double rngM = param[1];
+			
+			double res = (Math.abs(100-brgDegs)) * Math.abs(2000-rngM);
+			// do the calc
+			return res;
+		}
+
+	}
 }
