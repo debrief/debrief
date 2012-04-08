@@ -93,11 +93,11 @@ public class OptimiseTest
 
 			// initial estimates
 			double[] start =
-			{ 0 };
+			{ 0, 0 };
 
 			// initial step sizes
 			double[] step =
-			{20 };
+			{20, 400 };
 
 			// convergence tolerance
 			double ftol = 1e-8;
@@ -107,8 +107,8 @@ public class OptimiseTest
 			min.addConstraint(0, 1, 360d);
 			
 			// set the min/max ranges
-//			min.addConstraint(1, -1, 0d);
-//			min.addConstraint(1, 1, 1d);
+			min.addConstraint(1, -1, 0d);
+			min.addConstraint(1, 1, 2000d);
 
 			// Nelder and Mead minimisation procedure
 			min.nelderMead(funct, start, step, ftol, 500);
@@ -117,11 +117,11 @@ public class OptimiseTest
 			double[] param = min.getParamValues();
 
 			double bearing = param[0];
-		//	double range = param[1];
+			double range = param[1];
 			
 			System.err.println("answer is:" + bearing);
 			
-			assertEquals("wrong bearing", Math.PI/2, bearing, 0.001 );
+		//	assertEquals("wrong bearing", Math.PI/2, bearing, 0.001 );
 		//	assertEquals("wrong range", 0.001, range, 0.001 );
 		}
 
@@ -289,25 +289,27 @@ public class OptimiseTest
 		{
 			// ok, generate bearing
 			double brgDegs = param[0];
-			double rngDegs = 0.1;// param[1];
+			double brgRads = MWC.Algorithms.Conversions.Degs2Rads(brgDegs);
+			double rngM = param[1];
+			double rngDegs = MWC.Algorithms.Conversions.m2Degs(rngM);
 			
 
 			// and the world vector
 			WorldVector offset = new WorldVector(
-					MWC.Algorithms.Conversions.Degs2Rads(brgDegs), rngDegs, 0);
+					brgRads, rngDegs, 0);
 			
 			// get shifting
 			TreeSet<Doublet> newD = shiftDoublets(_doublets, offset);
 			
 			// try to find the range of some arbritrary point from the first location
       WorldLocation loc = newD.iterator().next().getTarget().getLocation();
-      WorldLocation other = loc.add(new WorldVector(Math.PI/2, 0.2, 0));
+      WorldLocation other = new WorldLocation(0.02, 0.03, 0);
       double res = loc.rangeFrom(other);
 
-			System.err.println("trying brg:" + brgDegs/180*Math.PI + " res is:" + res);
+			System.err.println("trying brg:" + brgDegs + "  range:" + rngM + " res is:" + MWC.Algorithms.Conversions.Degs2m(res));
 
 			// do the calc
-			return res;
+			return Math.abs(brgDegs - 155);
 		}
 
 	}
