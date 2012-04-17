@@ -370,7 +370,7 @@ public final class SensorContactWrapper extends
 		if (parent == null)
 			parent = _mySensor.getHost();
 
-		if ((_calculatedOrigin == null) && (parent != null))
+		if ((_calculatedOrigin == null))
 		{
 			if (_absoluteOrigin != null)
 			{
@@ -379,16 +379,18 @@ public final class SensorContactWrapper extends
 			}
 			else
 			{
+				if (parent != null)
+				{
 
-				// better calculate it ourselves then
-				TrackWrapper parentTrack = (TrackWrapper) parent;
+					// better calculate it ourselves then
+					TrackWrapper parentTrack = (TrackWrapper) parent;
 
-				// get the origin
-				FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,
-						_mySensor.getSensorOffset(), _mySensor.getWormInHole());
-				if (backtrack != null)
-					_calculatedOrigin = backtrack.getLocation();
-
+					// get the origin
+					FixWrapper backtrack = parentTrack.getBacktraceTo(_DTG,
+							_mySensor.getSensorOffset(), _mySensor.getWormInHole());
+					if (backtrack != null)
+						_calculatedOrigin = backtrack.getLocation();
+				}
 			}
 
 		}
