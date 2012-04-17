@@ -15,6 +15,7 @@ import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -59,17 +60,55 @@ public class OptimiseTest
 
 			assertNotNull("found some", doublets);
 			assertEquals("right num", 18, doublets.size());
+			
+			
+			// Create instance of Minimisation
+			Minimisation min = new Minimisation();
+			MinimisationFunction funct = new TryOffsetFunction(doublets);
+
+			// initial estimates
+			double[] start =
+			{ 0, 0 };
+
+			// initial step sizes
+			double[] step =
+			{20, 400 };
+
+			// convergence tolerance
+			double ftol = 1e-8;
+
+			// set the min/max bearing
+			min.addConstraint(0, -1, 0d);
+			min.addConstraint(0, 1, 360d);
+			
+			// set the min/max ranges
+			min.addConstraint(1, -1, 0d);
+			min.addConstraint(1, 1, 6000d);
+
+			// Nelder and Mead minimisation procedure
+			min.nelderMead(funct, start, step, ftol, 500);
+
+			// get the results out
+			double[] param = min.getParamValues();
+
+			double bearing = param[0];
+			double range = param[1];
+			
+			System.err.println("answer is:" + bearing + " degs" + range + "m");
 		}
 		
 		public void testPermutations()
 		{
-			SensorContactWrapper sensor = null;
+			
+			SensorWrapper sensor = new SensorWrapper("nane");
+			SensorContactWrapper sensorCut = new SensorContactWrapper("name", null,null, 100d,  new WorldLocation(1d,1d,1d), null, null,1, null);
+			sensor.add(sensorCut);
 			TrackSegment parent = null;
 			FixWrapper hostFix = null;
 			WorldLocation theLoc = new WorldLocation(0, 0, 0);
 			Fix newFix = new Fix(new HiResDate(1000), theLoc, 0, 0);
 			FixWrapper targetFix = new FixWrapper(newFix);
-			Doublet dt = new Doublet(sensor, targetFix, parent, hostFix);
+			Doublet dt = new Doublet(sensorCut, targetFix, parent, hostFix);
 
 			final TreeSet<Doublet> doublets = new TreeSet<Doublet>();
 			doublets.add(dt);
@@ -299,15 +338,18 @@ public class OptimiseTest
 			// get shifting
 			TreeSet<Doublet> newD = shiftDoublets( offset);
 			
-			// try to find the range of some arbritrary point from the first location
-      WorldLocation loc = newD.iterator().next().getTarget().getLocation();
-      System.out.println("trying:" + loc);
-      WorldLocation other = new WorldLocation(0.2, 0.3, 0);
-      double res = loc.rangeFrom(other);
-
-//			System.err.println("trying brg:" + brgDegs + "  range:" + rngM + " res is:" + MWC.Algorithms.Conversions.Degs2m(res));
-      System.out.println("trying:" + loc + " res:" + res + " answer is:" + other);
-
+			// do the math
+			double res = 0;
+			for (Iterator<Doublet> iterator = newD.iterator(); iterator.hasNext();)
+			{
+				Doublet thisD = iterator.next();
+				double measuredBearing = thisD.getMeasuredBearing();
+				double calculatedBearing = thisD.getCalculatedBearing(null,
+						null);
+				final double thisError = thisD.calculateBearingError(measuredBearing,
+						calculatedBearing);
+				res += thisError * thisError;
+			}
 			// do the calc
 			return res;
 		}
