@@ -52,9 +52,9 @@ public final class StackedDotHelper
 	private TrackWrapper _secondaryTrack;
 
 	/**
-	 * the set of points to watch on the primary track.  This is stored as a sorted set 
-	 * because if we have multiple sensors they may be suppled in chronological order,
-	 * or they may represent overlapping time periods
+	 * the set of points to watch on the primary track. This is stored as a sorted
+	 * set because if we have multiple sensors they may be suppled in
+	 * chronological order, or they may represent overlapping time periods
 	 */
 	private TreeSet<Doublet> _primaryDoublets;
 
@@ -66,12 +66,20 @@ public final class StackedDotHelper
 	// MEMBER METHODS
 	// ////////////////////////////////////////////////
 
+	public TreeSet<Doublet> getDoublets(boolean onlyVis, boolean needBearing,
+			boolean needFrequency)
+	{
+		return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
+				needFrequency);
+	}
+
 	/**
 	 * sort out data of interest
 	 * 
 	 */
 	public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
-			final TrackWrapper targetTrack, boolean onlyVis, boolean needBearing, boolean needFrequency)
+			final TrackWrapper targetTrack, boolean onlyVis, boolean needBearing,
+			boolean needFrequency)
 	{
 		final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
@@ -96,19 +104,19 @@ public final class StackedDotHelper
 						if (!onlyVis || (onlyVis && scw.getVisible()))
 						{
 							// is this cut suitable for what we're looking for?
-							if(needBearing)
+							if (needBearing)
 							{
-								if(!scw.getHasBearing())
+								if (!scw.getHasBearing())
 									continue;
 							}
-							
+
 							// aaah, but does it meet the frequency requirement?
-							if(needFrequency)
+							if (needFrequency)
 							{
-								if(!scw.getHasFrequency())
+								if (!scw.getHasFrequency())
 									continue;
 							}
-							
+
 							FixWrapper targetFix = null;
 							TrackSegment targetParent = null;
 
@@ -150,8 +158,8 @@ public final class StackedDotHelper
 									{
 										TrackSegment ts = iter.next();
 
-										TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts
-												.startDTG(), ts.endDTG());
+										TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
+												ts.startDTG(), ts.endDTG());
 										if (validPeriod.contains(scw.getDTG()))
 										{
 											// sorted. here we go
@@ -213,7 +221,7 @@ public final class StackedDotHelper
 	 * @param dotPlot
 	 * @param onlyVis
 	 * @param showCourse
-	 * @param b 
+	 * @param b
 	 * @param holder
 	 * @param logger
 	 * 
@@ -222,7 +230,8 @@ public final class StackedDotHelper
 	 */
 	public void updateBearingData(XYPlot dotPlot, XYPlot linePlot,
 			TrackDataProvider tracks, boolean onlyVis, boolean showCourse,
-			boolean flipAxes, Composite holder, ErrorLogger logger, boolean updateDoublets)
+			boolean flipAxes, Composite holder, ErrorLogger logger,
+			boolean updateDoublets)
 	{
 		// do we even have a primary track
 		if (_primaryTrack == null)
@@ -230,7 +239,7 @@ public final class StackedDotHelper
 
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
-			initialise(tracks, false, onlyVis, holder, logger, "Bearing",true,false);
+			initialise(tracks, false, onlyVis, holder, logger, "Bearing", true, false);
 
 		// did it work?
 		// if (_secondaryTrack == null)
@@ -273,17 +282,16 @@ public final class StackedDotHelper
 				// obvious stuff first (stuff that doesn't need the tgt data)
 				final Color thisColor = thisD.getColor();
 				double measuredBearing = thisD.getMeasuredBearing();
-			  double ambigBearing = thisD.getAmbiguousMeasuredBearing();
+				double ambigBearing = thisD.getAmbiguousMeasuredBearing();
 				final HiResDate currentTime = thisD.getDTG();
 				final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
 						.getDate().getTime());
 
 				// stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-				if(flipAxes)
-					if(measuredBearing > 180)
+				if (flipAxes)
+					if (measuredBearing > 180)
 						measuredBearing -= 360;
 
-				
 				final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
 						measuredBearing, thisColor, false, null);
 
@@ -292,10 +300,10 @@ public final class StackedDotHelper
 
 				if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
 				{
-					if(flipAxes)
-						if(ambigBearing > 180)
+					if (flipAxes)
+						if (ambigBearing > 180)
 							ambigBearing -= 360;
-					
+
 					final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
 							ambigBearing, thisColor, false, null);
 					ambigValues.add(amBearing);
@@ -304,16 +312,15 @@ public final class StackedDotHelper
 				// do we have target data?
 				if (thisD.getTarget() != null)
 				{
-					double calculatedBearing = thisD.getCalculatedBearing(null,
-							null);
+					double calculatedBearing = thisD.getCalculatedBearing(null, null);
 					final Color calcColor = thisD.getTarget().getColor();
 					final double thisError = thisD.calculateBearingError(measuredBearing,
 							calculatedBearing);
 					final ColouredDataItem newError = new ColouredDataItem(thisMilli,
 							thisError, thisColor, false, null);
 
-					if(flipAxes)
-						if(calculatedBearing > 180)
+					if (flipAxes)
+						if (calculatedBearing > 180)
 							calculatedBearing -= 360;
 
 					final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
@@ -375,12 +382,12 @@ public final class StackedDotHelper
 					.getDateTimeGroup().getDate().getTime());
 			double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
 					.getCourse());
-			
+
 			// stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-			if(flipAxes)
-				if(ownshipCourse > 180)
+			if (flipAxes)
+				if (ownshipCourse > 180)
 					ownshipCourse -= 360;
-			
+
 			final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
 					ownshipCourse, fw.getColor(), true, null);
 			osCourseValues.add(crseBearing);
@@ -417,7 +424,8 @@ public final class StackedDotHelper
 	 * @param holder
 	 */
 	void initialise(TrackDataProvider tracks, boolean showError, boolean onlyVis,
-			Composite holder, ErrorLogger logger, String dataType, boolean needBrg, boolean needFreq)
+			Composite holder, ErrorLogger logger, String dataType, boolean needBrg,
+			boolean needFreq)
 	{
 
 		// have we been created?
@@ -515,14 +523,16 @@ public final class StackedDotHelper
 	 * go through the tracks, finding the relevant position on the other track.
 	 * 
 	 */
-	private void updateDoublets(boolean onlyVis, boolean needBearing, boolean needFreq)
+	private void updateDoublets(boolean onlyVis, boolean needBearing,
+			boolean needFreq)
 	{
 		// ok - we're now there
 		// so, do we have primary and secondary tracks?
 		if (_primaryTrack != null)
 		{
 			// cool sort out the list of sensor locations for these tracks
-			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing, needFreq);
+			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis,
+					needBearing, needFreq);
 		}
 	}
 
@@ -549,7 +559,8 @@ public final class StackedDotHelper
 
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
-			initialise(tracks, false, onlyVis, holder, logger, "Frequency", false, true);
+			initialise(tracks, false, onlyVis, holder, logger, "Frequency", false,
+					true);
 
 		// ok - the tracks have moved. better update the doublets
 		if (updateDoublets)
