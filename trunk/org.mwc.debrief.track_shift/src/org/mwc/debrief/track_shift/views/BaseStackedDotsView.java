@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
@@ -47,21 +48,25 @@ import org.jfree.data.Range;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.views.OptimiseTest.TryOffsetFunction;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
-import MWC.GUI.Layers.DataListener;
 import MWC.GenericData.WatchableList;
+import flanagan.math.Minimisation;
+import flanagan.math.MinimisationFunction;
 
 /**
  */
@@ -160,6 +165,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 */
 	private final boolean _needFreq;
 
+	private Action _magicBtn;
+
 	/**
 	 * 
 	 * @param needBrg
@@ -205,6 +212,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
+		toolBarManager.add(_magicBtn);
 
 		// and a separator
 		toolBarManager.add(new Separator());
@@ -590,6 +598,63 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/reveal.gif"));
 
+		
+
+
+		// now the course action
+		_magicBtn = new Action("Magic", IAction.AS_PUSH_BUTTON)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+				doMagic();
+			}
+		};
+
+		
+	}
+
+	protected void doMagic()
+	{
+		// cool sort out the list of sensor locations for these tracks
+		TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(), true, false);
+		
+		
+		// Create instance of Minimisation
+		Minimisation min = new Minimisation();
+		MinimisationFunction funct = new TryOffsetFunction(doublets);
+
+		// initial estimates
+		double[] start =
+		{ 0, 0 };
+
+		// initial step sizes
+		double[] step =
+		{20, 400 };
+
+		// convergence tolerance
+		double ftol = 1e-8;
+
+		// set the min/max bearing
+		min.addConstraint(0, -1, 0d);
+		min.addConstraint(0, 1, 360d);
+		
+		// set the min/max ranges
+		min.addConstraint(1, -1, 0d);
+		min.addConstraint(1, 1, 6000d);
+
+		// Nelder and Mead minimisation procedure
+		min.nelderMead(funct, start, step, ftol, 4000);
+
+		// get the results out
+		double[] param = min.getParamValues();
+
+		double bearing = param[0];
+		double range = param[1];
+		
+		System.err.println("calc result is brg:" + (int)bearing + " rng" + range);
+		
 	}
 
 	/**
