@@ -129,7 +129,7 @@ public class OptimiseTest
 		{
 			// Create instance of Minimisation
 			Minimisation min = new Minimisation();
-			MinimisationFunction funct = new DummyOffsetFunction();
+			MinimisationFunction funct = new DummyOffsetFunction(100, 2000);
 
 			// initial estimates
 			double[] start =
@@ -161,8 +161,8 @@ public class OptimiseTest
 			
 			System.err.println("answer is:" + bearing + " degs" + range + "m");
 			
-		//	assertEquals("wrong bearing", Math.PI/2, bearing, 0.001 );
-		//	assertEquals("wrong range", 0.001, range, 0.001 );
+			assertEquals("wrong bearing", 100, bearing, 0.0001 );
+			assertEquals("wrong range", 2000, range, 0.0001 );
 		}
 
 		public void testShiftSingle() throws FileNotFoundException
@@ -358,8 +358,14 @@ public class OptimiseTest
 
 	public static class DummyOffsetFunction implements MinimisationFunction
 	{
-		public DummyOffsetFunction()
+		
+		private double _val1;
+		private double _val2;
+
+		public DummyOffsetFunction(double val1, double val2)
 		{
+			_val1 = val1;
+			_val2 = val2;
 		}
 
 		@Override
@@ -369,7 +375,8 @@ public class OptimiseTest
 			double brgDegs = param[0];
 			double rngM = param[1];
 			
-			double res = (Math.abs(100-brgDegs)) * Math.abs(2000-rngM);
+			double res = (Math.abs(_val1-brgDegs)) + Math.abs(_val2-rngM);
+			
 			// do the calc
 			return res;
 		}
