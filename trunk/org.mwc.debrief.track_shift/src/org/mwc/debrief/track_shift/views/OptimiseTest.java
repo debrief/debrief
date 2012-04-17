@@ -348,8 +348,11 @@ public class OptimiseTest
 						null);
 				final double thisError = thisD.calculateBearingError(measuredBearing,
 						calculatedBearing);
-				res += thisError * thisError;
+				res += Math.abs(thisError);
 			}
+			
+			System.out.println("trying brg:" + brgDegs + " rng:" + rngM + " res:" + res);
+			
 			// do the calc
 			return res;
 		}
