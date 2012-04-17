@@ -59,19 +59,6 @@ public class OptimiseTest
 
 			assertNotNull("found some", doublets);
 			assertEquals("right num", 18, doublets.size());
-
-			TryOffsetFunction func = new TryOffsetFunction(doublets){
-
-				@Override
-				public double function(double[] param)
-				{
-					return 100;
-				}};
-
-			double score = func.function(new double[]
-			{ 1d, 1d });
-
-			assertTrue("created score", 100 == score);
 		}
 		
 		public void testPermutations()
@@ -121,8 +108,8 @@ public class OptimiseTest
 			
 			System.err.println("answer is:" + bearing + " degs" + range + "m");
 			
-		//	assertEquals("wrong bearing", Math.PI/2, bearing, 0.001 );
-		//	assertEquals("wrong range", 0.001, range, 0.001 );
+	//		assertEquals("wrong bearing", Math.PI/2, bearing / 180 *  Math.PI, 0.001 );
+	//		assertEquals("wrong range", 0.001, MWC.Algorithms.Conversions.Degs2m( range), 0.001 );
 		}
 		
 		public void testDummyPermutations()
@@ -182,9 +169,11 @@ public class OptimiseTest
 			WorldArea coverage = areaFor(doublets);
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
+			
+			TryOffsetFunction func = new TryOffsetFunction(doublets);
 
 			WorldVector thisOffset = new WorldVector(0, 0, 0);
-			TreeSet<Doublet> res = shiftDoublets(doublets, thisOffset);
+			TreeSet<Doublet> res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
@@ -192,14 +181,14 @@ public class OptimiseTest
 
 			// apply some kind of offset - move it 1 deg north
 			thisOffset = new WorldVector(0, 1, 0);
-			res = shiftDoublets(doublets, thisOffset);
+			res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 			assertEquals("right tl lat", 1.0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
 
 			// apply some kind of offset - move it 1 deg north
 			thisOffset = new WorldVector(Math.PI / 2, 1, 0);
-			res = shiftDoublets(doublets, thisOffset);
+			res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 1, coverage.getTopLeft().getLong(), 0.001);
@@ -231,7 +220,8 @@ public class OptimiseTest
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
 
 			WorldVector thisOffset = new WorldVector(0, 0, 0);
-			TreeSet<Doublet> res = shiftDoublets(doublets, thisOffset);
+			TryOffsetFunction func = new TryOffsetFunction(doublets);
+			TreeSet<Doublet> res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
@@ -239,14 +229,14 @@ public class OptimiseTest
 
 			// apply some kind of offset - move it 1 deg north
 			thisOffset = new WorldVector(0, 1, 0);
-			res = shiftDoublets(doublets, thisOffset);
+			res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 			assertEquals("right tl lat", 1.0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 0, coverage.getTopLeft().getLong(), 0.001);
 
 			// apply some kind of offset - move it 1 deg north
 			thisOffset = new WorldVector(Math.PI / 2, 1, 0);
-			res = shiftDoublets(doublets, thisOffset);
+			res = func.shiftDoublets(thisOffset);
 			coverage = areaFor(res);
 			assertEquals("right tl lat", 0, coverage.getTopLeft().getLat(), 0.001);
 			assertEquals("right tl lon", 1, coverage.getTopLeft().getLong(), 0.001);
@@ -283,38 +273,6 @@ public class OptimiseTest
 		return res;
 	}
 
-	private static TreeSet<Doublet> shiftDoublets(
-			final TreeSet<Doublet> doublets, WorldVector thisOffset)
-	{
-		TreeSet<Doublet> res = new TreeSet<Doublet>();
-
-		// loop through the doublets
-		Iterator<Doublet> iter = doublets.iterator();
-		while (iter.hasNext())
-		{
-			Doublet doublet = (Doublet) iter.next();
-
-			// get this fix
-			FixWrapper fix = doublet.getTarget();
-
-			// clone it
-			FixWrapper newF = new FixWrapper(fix.getFix().makeCopy());
-
-			// move it
-			WorldLocation newLoc = new WorldLocation(newF.getLocation());
-			newLoc.addToMe(thisOffset);
-			newF.setLocation(newLoc);
-
-			// create a new doublet
-			Doublet newD = new Doublet(doublet.getSensorCut(), newF,
-					doublet.getTargetTrack(), doublet.getHost());
-
-			res.add(newD);
-		}
-
-		return res;
-	}
-
 	public static class TryOffsetFunction implements MinimisationFunction
 	{
 		private final TreeSet<Doublet> _doublets;
@@ -339,7 +297,7 @@ public class OptimiseTest
 					brgRads, rngDegs, 0);
 			
 			// get shifting
-			TreeSet<Doublet> newD = shiftDoublets(_doublets, offset);
+			TreeSet<Doublet> newD = shiftDoublets( offset);
 			
 			// try to find the range of some arbritrary point from the first location
       WorldLocation loc = newD.iterator().next().getTarget().getLocation();
@@ -351,6 +309,42 @@ public class OptimiseTest
       System.out.println("trying:" + loc + " res:" + res + " answer is:" + other);
 
 			// do the calc
+			return res;
+		}
+
+		/** produce a new set of positions by applying an offset to ourst
+		 * 
+		 * @param thisOffset
+		 * @return
+		 */
+		private TreeSet<Doublet> shiftDoublets( WorldVector thisOffset)
+		{
+			TreeSet<Doublet> res = new TreeSet<Doublet>();
+		
+			// loop through the doublets
+			Iterator<Doublet> iter = _doublets.iterator();
+			while (iter.hasNext())
+			{
+				Doublet doublet = (Doublet) iter.next();
+		
+				// get this fix
+				FixWrapper fix = doublet.getTarget();
+		
+				// clone it
+				FixWrapper newF = new FixWrapper(fix.getFix().makeCopy());
+		
+				// move it
+				WorldLocation newLoc = new WorldLocation(newF.getLocation());
+				newLoc.addToMe(thisOffset);
+				newF.setLocation(newLoc);
+		
+				// create a new doublet
+				Doublet newD = new Doublet(doublet.getSensorCut(), newF,
+						doublet.getTargetTrack(), doublet.getHost());
+		
+				res.add(newD);
+			}
+		
 			return res;
 		}
 
