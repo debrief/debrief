@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.mwc.cmap.plotViewer.editors.chart;
+package org.mwc.cmap.core.ui_support.swt;
 
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;

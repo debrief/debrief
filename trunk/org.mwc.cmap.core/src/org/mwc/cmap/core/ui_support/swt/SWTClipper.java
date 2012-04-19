@@ -1,4 +1,4 @@
-package org.mwc.cmap.plotViewer.editors.chart;
+package org.mwc.cmap.core.ui_support.swt;
 
 // ============================================================================
 // File:               Clipping.java
