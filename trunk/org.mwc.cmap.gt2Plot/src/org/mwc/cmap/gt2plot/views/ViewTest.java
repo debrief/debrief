@@ -44,7 +44,7 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swt.utils.Utils;
-import org.mwc.cmap.gt2plot.Activator;
+import org.mwc.cmap.gt2plot.GtActivator;
 import org.opengis.geometry.Envelope;
 
 /**
@@ -93,7 +93,7 @@ public class ViewTest extends ViewPart
 		
 		try
 		{
-			URL url = Activator.getDefault().getBundle()
+			URL url = GtActivator.getDefault().getBundle()
 					.getEntry("data/50m_admin_0_countries.shp");
 			String filePath = FileLocator.resolve(url).getFile();
 			File file = new File(filePath);
@@ -106,7 +106,7 @@ public class ViewTest extends ViewPart
 
 				// Create a map content and add our shapefile to it
 				map = new MapContent();
-				map.setTitle("Quickstart");
+				map.setTitle("simple map content");
 
 				Style style = SLD.createSimpleStyle(featureSource.getSchema());
 				Layer layer = new FeatureLayer(featureSource, style);
@@ -149,7 +149,7 @@ public class ViewTest extends ViewPart
 
 		if (map != null)
 		{
-			// sort out the transofmrs			
+			// sort out the transforms			
 			org.eclipse.swt.graphics.Rectangle paintArea = new org.eclipse.swt.graphics.Rectangle(0,0,width, height);
 			ReferencedEnvelope mapArea = map.getViewport().getBounds();
 			setTransforms(mapArea, paintArea);
@@ -183,12 +183,8 @@ public class ViewTest extends ViewPart
           swtImage.dispose();
           swtImage = null;
       }
-      System.out.println("READRAWBASEIMAGE");
       swtImage = new Image(canvas.getDisplay(), awtToSwt(baseImage, curPaintArea.width + 1, curPaintArea.height + 1));
 
-
-
-			
 //			org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
 //					e.display, convertToSWT(tmpImage));
 			e.gc.drawImage(swtImage, 0, 0);

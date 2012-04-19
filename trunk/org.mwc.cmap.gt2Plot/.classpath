@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/gt-data-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/library/data/src/main"/>
-	<classpathentry kind="lib" path="libs/gt-api-8.0-M4.jar"/>
+	<classpathentry kind="lib" path="libs/gt-api-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/library/api/src/main/java"/>
 	<classpathentry kind="lib" path="libs/gt-coverage-8.0-M4.jar"/>
 	<classpathentry kind="lib" path="libs/gt-main-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/library/main/src/main"/>
 	<classpathentry kind="lib" path="libs/gt-render-8.0-M4.jar"/>
@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="libs/jai_imageio-1.1.jar"/>
 	<classpathentry kind="lib" path="libs/jt-zonalstats-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libs/gt-swt-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/unsupported/swt/src/main/java"/>
+	<classpathentry kind="lib" path="libs/jts-1.12.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

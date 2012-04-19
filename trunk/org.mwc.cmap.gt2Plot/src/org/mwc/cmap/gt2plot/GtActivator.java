@@ -1,5 +1,6 @@
 package org.mwc.cmap.gt2plot;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -7,18 +8,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class GtActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.mwc.cmap.gt2Plot"; //$NON-NLS-1$
 
 	// The shared instance
-	private static Activator plugin;
+	private static GtActivator plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public GtActivator() {
 	}
 
 	/*
@@ -30,6 +31,31 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 	}
 
+	/**
+	 * error logging utility
+	 * 
+	 * @param severity
+	 *          the severity; one of <code>OK</code>, <code>ERROR</code>,
+	 *          <code>INFO</code>, <code>WARNING</code>, or <code>CANCEL</code>
+	 * @param message
+	 *          a human-readable message, localized to the current locale
+	 * @param exception
+	 *          a low-level exception, or <code>null</code> if not applicable
+	 */
+	public static void logError(int severity, String message, Throwable exception)
+	{
+		GtActivator singleton = getDefault();
+		if (singleton != null)
+		{
+			Status stat = new Status(severity, "org.mwc.cmap.gt2plot", Status.OK,
+					message, exception);
+			singleton.getLog().log(stat);
+		}
+		
+		// also throw it to the console
+		if (exception != null)
+			exception.printStackTrace();
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
@@ -44,7 +70,7 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static GtActivator getDefault() {
 		return plugin;
 	}
 
