@@ -1,7 +1,8 @@
 package org.mwc.cmap.gt2plot;
 
 import org.eclipse.swt.graphics.Image;
-import org.mwc.cmap.plotViewer.editors.chart.SWTCanvasAdapter;
+import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
@@ -31,15 +32,21 @@ public class GTLayer extends BaseLayer
 			PlainProjection proj = dest.getProjection();
 
 			// right, is this a GeoTools compliant one?
-
-			// draw ourselves to an image
-
-			// and draw the image to the canvas
-			Image theImage = null;
-			if (theImage != null)
+			if(proj instanceof GtProjection)
 			{
-				swt.drawSWTImage(theImage, 0, 0, width, height);
+				GtProjection gt = (GtProjection) dest;
+				
+				// draw ourselves to an image
+
+				// and draw the image to the canvas
+				Image theImage = null;
+				if (theImage != null)
+				{
+					swt.drawSWTImage(theImage, 0, 0, width, height);
+				}
+				
 			}
+
 
 		}
 	}
