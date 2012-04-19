@@ -138,7 +138,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -195,6 +195,255 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	// //////////////////////////////////////////////////////////
 
 	/**
+	 * customised SWTCanvas class that supports our right-click editing
+	 * 
+	 * @author ian.mayo
+	 */
+	public abstract class CustomisedSWTCanvas extends SWTCanvas
+	{
+		private static final long serialVersionUID = 1L;
+
+		public CustomisedSWTCanvas(Composite parent)
+		{
+			super(parent);
+		}
+
+		/**
+		 * @param menuManager
+		 * @param selected
+		 * @param theParentLayer
+		 */
+		abstract public void doSupplementalRightClickProcessing(
+				MenuManager menuManager, Plottable selected, Layer theParentLayer);
+
+		@Override
+		protected void fillContextMenu(MenuManager mmgr, Point scrPoint,
+				WorldLocation loc)
+		{
+			// let the parent do it's stuff
+			super.fillContextMenu(mmgr, scrPoint, loc);
+
+			// ok, get a handle to our layers
+			Layers theData = getLayers();
+			double layerDist = -1;
+
+			// find the nearest editable item
+			ObjectConstruct vals = new ObjectConstruct();
+			int num = theData.size();
+			for (int i = 0; i < num; i++)
+			{
+				Layer thisL = theData.elementAt(i);
+				if (thisL.getVisible())
+				{
+					// find the nearest items, this method call will recursively pass down
+					// through
+					// the layers
+					RightClickEdit.findNearest(thisL, loc, vals);
+
+					if ((layerDist == -1) || (vals.distance < layerDist))
+					{
+						layerDist = vals.distance;
+					}
+				}
+			}
+
+			// ok, now retrieve the values produced by the range-finding algorithm
+			Plottable res = vals.object;
+			Layer theParent = vals.parent;
+			double dist = vals.distance;
+			Vector<Plottable> noPoints = vals.rangeIndependent;
+
+			// see if this is in our dbl-click range
+			if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y), loc,
+					dist, getProjection()))
+			{
+				// do nothing, we're all happy
+			}
+			else
+			{
+				res = null;
+			}
+
+			// have we found something editable?
+			if (res != null)
+			{
+				// so get the editor
+				Editable.EditorType e = res.getInfo();
+				if (e != null)
+				{
+					RightClickSupport.getDropdownListFor(mmgr, new Editable[]
+					{ res }, new Layer[]
+					{ theParent }, new Layer[]
+					{ theParent }, getLayers(), false);
+
+					doSupplementalRightClickProcessing(mmgr, res, theParent);
+				}
+			}
+			else
+			{
+				// not found anything useful,
+				// so edit just the projection
+
+				RightClickSupport.getDropdownListFor(mmgr, new Editable[]
+				{ getProjection() }, null, null, getLayers(), true);
+
+				// also see if there are any other non-position-related items
+				if (noPoints != null)
+				{
+					// stick in a separator
+					mmgr.add(new Separator());
+
+					for (Iterator<Plottable> iter = noPoints.iterator(); iter.hasNext();)
+					{
+						final Plottable pl = iter.next();
+						RightClickSupport.getDropdownListFor(mmgr, new Editable[]
+						{ pl }, null, null, getLayers(), true);
+
+						// ok, is it editable
+						if (pl.getInfo() != null)
+						{
+							// ok, also insert an "Edit..." item
+							Action editThis = new Action("Edit " + pl.getName() + " ...")
+							{
+								@Override
+								public void run()
+								{
+									// ok, wrap the editab
+									EditableWrapper pw = new EditableWrapper(pl, getLayers());
+									ISelection selected = new StructuredSelection(pw);
+									parentFireSelectionChanged(selected);
+								}
+							};
+
+							mmgr.add(editThis);
+							// hey, stick in another separator
+							mmgr.add(new Separator());
+						}
+					}
+				}
+			}
+
+			final CustomisedSWTCanvas chart = this;
+
+			Action changeBackColor = new Action("Edit base chart")
+			{
+				@Override
+				public void run()
+				{
+					EditableWrapper wrapped = new EditableWrapper(chart, getLayers());
+					ISelection selected = new StructuredSelection(wrapped);
+					parentFireSelectionChanged(selected);
+				}
+
+			};
+			mmgr.add(changeBackColor);
+
+			Action editProjection = new Action("Edit Projection")
+			{
+				@Override
+				public void run()
+				{
+					EditableWrapper wrapped = new EditableWrapper(getProjection(),
+							getLayers());
+					ISelection selected = new StructuredSelection(wrapped);
+					parentFireSelectionChanged(selected);
+				}
+
+			};
+			mmgr.add(editProjection);
+
+		}
+
+		public abstract void parentFireSelectionChanged(ISelection selected);
+	}
+
+	/**
+	 * embedded interface for classes that are able to handle drag events
+	 * 
+	 * @author ian.mayo
+	 */
+	abstract public static class PlotMouseDragger
+	{
+
+		protected Cursor _downCursor;
+		protected Cursor _normalCursor;
+
+		/**
+		 * handle the mouse being dragged
+		 * 
+		 * @param pt
+		 *          the new cursor location
+		 * @param theCanvas
+		 */
+		abstract public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theLayers, SWTCanvas theCanvas);
+
+		/**
+		 * handle the mouse moving across the screen
+		 * 
+		 * @param pt
+		 *          the new cursor location
+		 * @param theCanvas
+		 */
+		public void doMouseMove(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
+		{
+			// provide a dummy implementation - most of our modes don't use this...
+		}
+
+		/**
+		 * handle the mouse drag finishing
+		 * 
+		 * @param keyState
+		 * @param pt
+		 *          the final cursor location
+		 */
+		abstract public void doMouseUp(org.eclipse.swt.graphics.Point point,
+				int keyState);
+
+		/**
+		 * ok, assign the cursor for when we're just hovering
+		 * 
+		 * @return the new cursor to use, silly.
+		 */
+		public Cursor getDownCursor()
+		{
+			// ok, return the 'normal' cursor
+			if (_downCursor == null)
+				_downCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
+
+			return _downCursor;
+		}
+
+		/**
+		 * ok, assign the cursor for when we're just hovering
+		 * 
+		 * @return the new cursor to use, silly.
+		 */
+		public Cursor getNormalCursor()
+		{
+			// ok, return the 'normal' cursor
+			if (_normalCursor == null)
+				_normalCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
+
+			return _normalCursor;
+		}
+
+		/**
+		 * handle the mouse drag starting
+		 * 
+		 * @param canvas
+		 *          the control it's dragging over
+		 * @param theChart
+		 * @param pt
+		 *          the first cursor location
+		 */
+		abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
+				SWTCanvas canvas, PlainChart theChart);
+
+	}
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -222,13 +471,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * track drag operations
 	 */
 	private transient Point _startPoint = null;
-
 	/**
 	 * the last point dragged over
 	 */
 	private transient Point _draggedPoint = null;
 
 	private transient PlotMouseDragger _myDragMode;
+
 	private transient PlotMouseDragger _myAltDragMode = new Pan.PanMode();
 
 	/**
@@ -269,6 +518,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// catch any resize events
 		_theCanvas.addControlListener(new ControlAdapter()
 		{
+			@Override
 			public void controlResized(final ControlEvent e)
 			{
 				canvasResized();
@@ -283,6 +533,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		_theCanvas.addMouseMoveListener(new MouseMoveListener()
 		{
 
+			@Override
 			public void mouseMove(MouseEvent e)
 			{
 				doMouseMove(e);
@@ -291,16 +542,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		_theCanvas.addMouseListener(new MouseListener()
 		{
 
+			@Override
 			public void mouseDoubleClick(MouseEvent e)
 			{
 				doMouseDoubleClick(e);
 			}
 
+			@Override
 			public void mouseDown(MouseEvent e)
 			{
 				doMouseDown(e);
 			}
 
+			@Override
 			public void mouseUp(MouseEvent e)
 			{
 				doMouseUp(e);
@@ -308,6 +562,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		});
 		_theCanvas.addMouseWheelListener(new MouseWheelListener()
 		{
+			@Override
 			public void mouseScrolled(MouseEvent e)
 			{
 				// is ctrl held down?
@@ -341,9 +596,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	}
 
+	@Override
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+	}
+
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
+	@Override
 	public void canvasResized()
 	{
 
@@ -357,6 +618,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// of the layers)
 		super.canvasResized();
 	}
+
+	public abstract void chartFireSelectionChanged(ISelection sel);
 
 	/**
 	 * ditch the images we're remembering
@@ -375,13 +638,30 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			}
 			else
 			{
-				CorePlugin.logError(Status.ERROR,
+				CorePlugin.logError(IStatus.ERROR,
 						"unexpected type of image found in buffer:" + nextI, null);
 			}
 		}
 
 		// and clear out our buffered layers (they all need to be repainted anyway)
 		_myLayers.clear();
+	}
+
+	/**
+	 * provide method to clear stored data.
+	 */
+	@Override
+	public void close()
+	{
+		// clear the layers
+		clearImages();
+		_myLayers = null;
+
+		// instruct the canvas to close
+		_theCanvas.close();
+		_theCanvas = null;
+
+		super.close();
 	}
 
 	/**
@@ -400,32 +680,189 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public void parentFireSelectionChanged(ISelection selected)
-			{
-				chartFireSelectionChanged(selected);
-			}
-
+			@Override
 			public void doSupplementalRightClickProcessing(MenuManager menuManager,
 					Plottable selected, Layer theParentLayer)
 			{
 			}
+
+			@Override
+			public void parentFireSelectionChanged(ISelection selected)
+			{
+				chartFireSelectionChanged(selected);
+			}
 		};
 	}
 
-	public abstract void chartFireSelectionChanged(ISelection sel);
-
 	/**
-	 * get the size of the canvas.
+	 * create the transparent image we need to for collating multiple layers into
+	 * an image
 	 * 
-	 * @return the dimensions of the canvas
+	 * @param canvasHeight
+	 * @param canvasWidth
+	 * @return
 	 */
-	public final java.awt.Dimension getScreenSize()
+	protected org.eclipse.swt.graphics.Image createSWTImage(
+			ImageData myImageTemplate)
 	{
-		Dimension dim = _theCanvas.getSize();
-		// get the current size of the canvas
-		return dim;
+		_myImageTemplate.transparentPixel = _myImageTemplate.palette
+				.getPixel(new RGB(255, 255, 255));
+		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
+				Display.getCurrent(), _myImageTemplate);
+		return image;
 	}
 
+	protected void doMouseDoubleClick(MouseEvent e)
+	{
+
+		// was this the right-hand button
+		if (e.button == 3)
+		{
+			_theCanvas.rescale();
+			_theCanvas.updateMe();
+		}
+		else
+		{
+			// right, find out which one it was.
+			java.awt.Point pt = new java.awt.Point(e.x, e.y);
+
+			// and now the WorldLocation
+			WorldLocation loc = getCanvas().getProjection().toWorld(pt);
+
+			// and now see if we are near anything..
+			if (_theDblClickListeners.size() > 0)
+			{
+				// get the top one off the stack
+				ChartDoubleClickListener lc = _theDblClickListeners.lastElement();
+				lc.cursorDblClicked(this, loc, pt);
+			}
+		}
+	}
+
+	protected void doMouseDown(MouseEvent e)
+	{
+		// was this the right-hand button?
+		if (e.button != 3)
+		{
+			_startPoint = new Point(e.x, e.y);
+			_draggedPoint = null;
+
+			final PlotMouseDragger theMode;
+			if (e.button == 2)
+				theMode = _myAltDragMode;
+			else
+				theMode = _myDragMode;
+
+			if (theMode != null)
+				theMode.mouseDown(_startPoint, _theCanvas, this);
+		}
+	}
+
+	public void doMouseMove(MouseEvent e)
+	{
+		java.awt.Point thisPoint = new java.awt.Point(e.x, e.y);
+
+		super.mouseMoved(thisPoint);
+
+		Point swtPoint = new Point(e.x, e.y);
+
+		final PlotMouseDragger theMode;
+		if (e.button == 2)
+			theMode = _myAltDragMode;
+		else
+			theMode = _myDragMode;
+
+		// ok - pass the move event to our drag control (if it's interested...)
+		if (theMode != null)
+			theMode.doMouseMove(swtPoint, JITTER, super.getLayers(), _theCanvas);
+
+		if (_startPoint == null)
+			return;
+
+		// was this the right-hand button
+		if (e.button != 3)
+		{
+			_draggedPoint = new Point(e.x, e.y);
+
+			// ok - pass the drag to our drag control
+			if (theMode != null)
+				theMode.doMouseDrag(_draggedPoint, JITTER, super.getLayers(),
+						_theCanvas);
+		}
+	}
+
+	protected void doMouseUp(MouseEvent e)
+	{
+		// was this the right-hand button
+		if (e.button != 3)
+		{
+
+			final PlotMouseDragger theMode;
+			if (e.button == 2)
+				theMode = _myAltDragMode;
+			else
+				theMode = _myDragMode;
+
+			// ok. did we move at all?
+			if (_draggedPoint != null)
+			{
+				// yes, process the drag
+				if (theMode != null)
+				{
+					theMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
+
+					// and restore the mouse mode cursor
+					_theCanvas.getCanvas().setCursor(theMode.getNormalCursor());
+				}
+			}
+			else
+			{
+				// nope
+
+				// hey, it was just a click - process it
+				if (_theLeftClickListener != null)
+				{
+					// get the world location
+					java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
+					WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
+					_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
+							_theLayers);
+				}
+			}
+		}
+		_startPoint = null;
+	}
+
+	/**
+	 * property to indicate if we are happy to perform double-buffering. -
+	 * override it to change the response
+	 */
+	protected boolean doubleBufferPlot()
+	{
+		return true;
+	}
+
+	@Override
+	public final CanvasType getCanvas()
+	{
+		return _theCanvas;
+	}
+
+	public final Control getCanvasControl()
+	{
+		return _theCanvas.getCanvas();
+	}
+
+	// ////////////////////////////////////////////////////////
+	// methods for handling requests from our canvas
+	// ////////////////////////////////////////////////////////
+
+	final public PlotMouseDragger getDragMode()
+	{
+		return _myDragMode;
+	}
+
+	@Override
 	public final Component getPanel()
 	{
 		System.err.println("NOT RETURNING PANEL");
@@ -433,9 +870,23 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// return _theCanvas;
 	}
 
-	public final Control getCanvasControl()
+	/**
+	 * get the size of the canvas.
+	 * 
+	 * @return the dimensions of the canvas
+	 */
+	@Override
+	public final java.awt.Dimension getScreenSize()
 	{
-		return _theCanvas.getCanvas();
+		Dimension dim = _theCanvas.getSize();
+		// get the current size of the canvas
+		return dim;
+	}
+
+	@Override
+	public ISelection getSelection()
+	{
+		return null;
 	}
 
 	public final SWTCanvas getSWTCanvas()
@@ -444,61 +895,31 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	}
 
 	/**
-	 * specify whether paint events should get deferred, with only the most recent
-	 * one getting painted
+	 * paint the solid background.
 	 * 
-	 * @param val
-	 *          yes/no
+	 * @param dest
+	 *          where we're painting to
 	 */
-	public void setDeferPaints(boolean val)
+	protected void paintBackground(final CanvasType dest)
 	{
-		_theCanvas.setDeferPaints(val);
-	}
+		// fill the background, to start with
+		final Dimension sz = _theCanvas.getSize();
 
-	public final void update()
-	{
-		// clear out the layers object
-		clearImages();
-
-		// and start the update
-		_theCanvas.updateMe();
-	}
-
-	public final void update(final Layer changedLayer)
-	{
-		if (changedLayer == null)
+		// right, don't fill in the background if we're not painting to the screen
+		if (dest instanceof SWTCanvas)
 		{
-			update();
+			final Color theCol = dest.getBackgroundColor();
+			dest.setBackgroundColor(theCol);
+			dest.fillRect(0, 0, sz.width, sz.height);
 		}
-		else
-		{
-			// get the image
-			Image theImage = (Image) _myLayers.get(changedLayer);
 
-			// and ditch the image
-			if (theImage != null)
-			{
-				theImage.dispose();
-			}
-
-			// just delete that layer
-			_myLayers.remove(changedLayer);
-
-			// NO, don't GC. If we change lots of items, we do lots of garbage
-			// collections, and each
-			// one takes a finite time. Leave the app to do it on it's own
-			// --- chuck in a GC, to clear the old image allocation
-			// --- System.gc();
-
-			// and trigger update
-			_theCanvas.updateMe();
-		}
 	}
 
 	/**
 	 * over-ride the parent's version of paint, so that we can try to do it by
 	 * layers.
 	 */
+	@Override
 	public void paintMe(final CanvasType dest)
 	{
 		// just double-check we have some layers (if we're part of an overview
@@ -550,7 +971,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					Enumeration<Layer> numer = _theLayers.sortedElements();
 					while (numer.hasMoreElements())
 					{
-						final Layer thisLayer = (Layer) numer.nextElement();
+						final Layer thisLayer = numer.nextElement();
 
 						boolean isAlreadyPlotted = false;
 
@@ -577,7 +998,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 											// do our double-buffering bit
 											// do we have a layer for this object
-											org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
+											org.eclipse.swt.graphics.Image image = _myLayers
 													.get(thisLayer);
 											if (image == null)
 											{
@@ -670,58 +1091,26 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		thisLayer.paint(dest);
 	}
 
-	/**
-	 * create the transparent image we need to for collating multiple layers into
-	 * an image
-	 * 
-	 * @param canvasHeight
-	 * @param canvasWidth
-	 * @return
-	 */
-	protected org.eclipse.swt.graphics.Image createSWTImage(
-			ImageData myImageTemplate)
+	@Override
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
-		_myImageTemplate.transparentPixel = _myImageTemplate.palette
-				.getPixel(new RGB(255, 255, 255));
-		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
-				Display.getCurrent(), _myImageTemplate);
-		return image;
 	}
 
-	/**
-	 * property to indicate if we are happy to perform double-buffering. -
-	 * override it to change the response
-	 */
-	protected boolean doubleBufferPlot()
+	@Override
+	public final void repaint()
 	{
-		return true;
+		// we were doing a repaint = now an updaet
+		_theCanvas.updateMe();
 	}
 
-	/**
-	 * paint the solid background.
-	 * 
-	 * @param dest
-	 *          where we're painting to
-	 */
-	protected void paintBackground(final CanvasType dest)
+	@Override
+	public final void repaintNow(final java.awt.Rectangle rect)
 	{
-		// fill the background, to start with
-		final Dimension sz = _theCanvas.getSize();
-
-		// right, don't fill in the background if we're not painting to the screen
-		if (dest instanceof SWTCanvas)
-		{
-			final Color theCol = dest.getBackgroundColor();
-			dest.setBackgroundColor(theCol);
-			dest.fillRect(0, 0, sz.width, sz.height);
-		}
-
+		_theCanvas.redraw(rect.x, rect.y, rect.width, rect.height, true);
+		// _theCanvas.paintImmediately(rect);
 	}
 
-	// ////////////////////////////////////////////////////////
-	// methods for handling requests from our canvas
-	// ////////////////////////////////////////////////////////
-
+	@Override
 	public final void rescale()
 	{
 		// do a rescale
@@ -729,159 +1118,16 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	}
 
-	public final void repaint()
-	{
-		// we were doing a repaint = now an updaet
-		_theCanvas.updateMe();
-	}
-
-	public final void repaintNow(final java.awt.Rectangle rect)
-	{
-		_theCanvas.redraw(rect.x, rect.y, rect.width, rect.height, true);
-		// _theCanvas.paintImmediately(rect);
-	}
-
-	public final CanvasType getCanvas()
-	{
-		return _theCanvas;
-	}
-
 	/**
-	 * provide method to clear stored data.
+	 * specify whether paint events should get deferred, with only the most recent
+	 * one getting painted
+	 * 
+	 * @param val
+	 *          yes/no
 	 */
-	public void close()
+	public void setDeferPaints(boolean val)
 	{
-		// clear the layers
-		clearImages();
-		_myLayers = null;
-
-		// instruct the canvas to close
-		_theCanvas.close();
-		_theCanvas = null;
-
-		super.close();
-	}
-
-	public void doMouseMove(MouseEvent e)
-	{
-		java.awt.Point thisPoint = new java.awt.Point(e.x, e.y);
-
-		super.mouseMoved(thisPoint);
-
-		Point swtPoint = new Point(e.x, e.y);
-
-		final PlotMouseDragger theMode;
-		if (e.button == 2)
-			theMode = _myAltDragMode;
-		else
-			theMode = _myDragMode;
-
-		// ok - pass the move event to our drag control (if it's interested...)
-		if (theMode != null)
-			theMode.doMouseMove(swtPoint, JITTER, super.getLayers(), _theCanvas);
-
-		if (_startPoint == null)
-			return;
-
-		// was this the right-hand button
-		if (e.button != 3)
-		{
-			_draggedPoint = new Point(e.x, e.y);
-
-			// ok - pass the drag to our drag control
-			if (theMode != null)
-				theMode.doMouseDrag(_draggedPoint, JITTER, super.getLayers(),
-						_theCanvas);
-		}
-	}
-
-	protected void doMouseUp(MouseEvent e)
-	{
-		// was this the right-hand button
-		if (e.button != 3)
-		{
-
-			final PlotMouseDragger theMode;
-			if (e.button == 2)
-				theMode = _myAltDragMode;
-			else
-				theMode = _myDragMode;
-
-			// ok. did we move at all?
-			if (_draggedPoint != null)
-			{
-				// yes, process the drag
-				if (theMode != null)
-				{
-					theMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
-
-					// and restore the mouse mode cursor
-					_theCanvas.getCanvas().setCursor(theMode.getNormalCursor());
-				}
-			}
-			else
-			{
-				// nope
-
-				// hey, it was just a click - process it
-				if (_theLeftClickListener != null)
-				{
-					// get the world location
-					java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
-					WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
-					_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
-							_theLayers);
-				}
-			}
-		}
-		_startPoint = null;
-	}
-
-	protected void doMouseDown(MouseEvent e)
-	{
-		// was this the right-hand button?
-		if (e.button != 3)
-		{
-			_startPoint = new Point(e.x, e.y);
-			_draggedPoint = null;
-
-			final PlotMouseDragger theMode;
-			if (e.button == 2)
-				theMode = _myAltDragMode;
-			else
-				theMode = _myDragMode;
-
-			if (theMode != null)
-				theMode.mouseDown(_startPoint, _theCanvas, this);
-		}
-	}
-
-	protected void doMouseDoubleClick(MouseEvent e)
-	{
-
-		// was this the right-hand button
-		if (e.button == 3)
-		{
-			_theCanvas.rescale();
-			_theCanvas.updateMe();
-		}
-		else
-		{
-			// right, find out which one it was.
-			java.awt.Point pt = new java.awt.Point(e.x, e.y);
-
-			// and now the WorldLocation
-			WorldLocation loc = getCanvas().getProjection().toWorld(pt);
-
-			// and now see if we are near anything..
-			if (_theDblClickListeners.size() > 0)
-			{
-				// get the top one off the stack
-				ChartDoubleClickListener lc = (ChartDoubleClickListener) _theDblClickListeners
-						.lastElement();
-				lc.cursorDblClicked(this, loc, pt);
-			}
-		}
+		_theCanvas.setDeferPaints(val);
 	}
 
 	final public void setDragMode(final PlotMouseDragger newMode)
@@ -892,271 +1138,51 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		_startPoint = null;
 	}
 
-	final public PlotMouseDragger getDragMode()
-	{
-		return _myDragMode;
-	}
-
-	/**
-	 * embedded interface for classes that are able to handle drag events
-	 * 
-	 * @author ian.mayo
-	 */
-	abstract public static class PlotMouseDragger
-	{
-
-		protected Cursor _downCursor;
-		protected Cursor _normalCursor;
-
-		/**
-		 * handle the mouse being dragged
-		 * 
-		 * @param pt
-		 *          the new cursor location
-		 * @param theCanvas
-		 */
-		abstract public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
-				final int JITTER, final Layers theLayers, SWTCanvas theCanvas);
-
-		/**
-		 * handle the mouse moving across the screen
-		 * 
-		 * @param pt
-		 *          the new cursor location
-		 * @param theCanvas
-		 */
-		public void doMouseMove(final org.eclipse.swt.graphics.Point pt,
-				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
-		{
-			// provide a dummy implementation - most of our modes don't use this...
-		}
-
-		/**
-		 * handle the mouse drag finishing
-		 * 
-		 * @param keyState
-		 * @param pt
-		 *          the final cursor location
-		 */
-		abstract public void doMouseUp(org.eclipse.swt.graphics.Point point,
-				int keyState);
-
-		/**
-		 * handle the mouse drag starting
-		 * 
-		 * @param canvas
-		 *          the control it's dragging over
-		 * @param theChart
-		 * @param pt
-		 *          the first cursor location
-		 */
-		abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
-				SWTCanvas canvas, PlainChart theChart);
-
-		/**
-		 * ok, assign the cursor for when we're just hovering
-		 * 
-		 * @return the new cursor to use, silly.
-		 */
-		public Cursor getNormalCursor()
-		{
-			// ok, return the 'normal' cursor
-			if (_normalCursor == null)
-				_normalCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-
-			return _normalCursor;
-		}
-
-		/**
-		 * ok, assign the cursor for when we're just hovering
-		 * 
-		 * @return the new cursor to use, silly.
-		 */
-		public Cursor getDownCursor()
-		{
-			// ok, return the 'normal' cursor
-			if (_downCursor == null)
-				_downCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-
-			return _downCursor;
-		}
-
-	}
-
-	/**
-	 * customised SWTCanvas class that supports our right-click editing
-	 * 
-	 * @author ian.mayo
-	 */
-	public abstract class CustomisedSWTCanvas extends SWTCanvas
-	{
-		private static final long serialVersionUID = 1L;
-
-		public CustomisedSWTCanvas(Composite parent)
-		{
-			super(parent);
-		}
-
-		protected void fillContextMenu(MenuManager mmgr, Point scrPoint,
-				WorldLocation loc)
-		{
-			// let the parent do it's stuff
-			super.fillContextMenu(mmgr, scrPoint, loc);
-
-			// ok, get a handle to our layers
-			Layers theData = getLayers();
-			double layerDist = -1;
-
-			// find the nearest editable item
-			ObjectConstruct vals = new ObjectConstruct();
-			int num = theData.size();
-			for (int i = 0; i < num; i++)
-			{
-				Layer thisL = theData.elementAt(i);
-				if (thisL.getVisible())
-				{
-					// find the nearest items, this method call will recursively pass down
-					// through
-					// the layers
-					RightClickEdit.findNearest(thisL, loc, vals);
-
-					if ((layerDist == -1) || (vals.distance < layerDist))
-					{
-						layerDist = vals.distance;
-					}
-				}
-			}
-
-			// ok, now retrieve the values produced by the range-finding algorithm
-			Plottable res = vals.object;
-			Layer theParent = vals.parent;
-			double dist = vals.distance;
-			Vector<Plottable> noPoints = vals.rangeIndependent;
-
-			// see if this is in our dbl-click range
-			if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y), loc,
-					dist, getProjection()))
-			{
-				// do nothing, we're all happy
-			}
-			else
-			{
-				res = null;
-			}
-
-			// have we found something editable?
-			if (res != null)
-			{
-				// so get the editor
-				Editable.EditorType e = res.getInfo();
-				if (e != null)
-				{
-					RightClickSupport.getDropdownListFor(mmgr, new Editable[]
-					{ res }, new Layer[]
-					{ theParent }, new Layer[]
-					{ theParent }, getLayers(), false);
-
-					doSupplementalRightClickProcessing(mmgr, res, theParent);
-				}
-			}
-			else
-			{
-				// not found anything useful,
-				// so edit just the projection
-
-				RightClickSupport.getDropdownListFor(mmgr, new Editable[]
-				{ getProjection() }, null, null, getLayers(), true);
-
-				// also see if there are any other non-position-related items
-				if (noPoints != null)
-				{
-					// stick in a separator
-					mmgr.add(new Separator());
-
-					for (Iterator<Plottable> iter = noPoints.iterator(); iter.hasNext();)
-					{
-						final Plottable pl = (Plottable) iter.next();
-						RightClickSupport.getDropdownListFor(mmgr, new Editable[]
-						{ pl }, null, null, getLayers(), true);
-
-						// ok, is it editable
-						if (pl.getInfo() != null)
-						{
-							// ok, also insert an "Edit..." item
-							Action editThis = new Action("Edit " + pl.getName() + " ...")
-							{
-								public void run()
-								{
-									// ok, wrap the editab
-									EditableWrapper pw = new EditableWrapper(pl, getLayers());
-									ISelection selected = new StructuredSelection(pw);
-									parentFireSelectionChanged(selected);
-								}
-							};
-
-							mmgr.add(editThis);
-							// hey, stick in another separator
-							mmgr.add(new Separator());
-						}
-					}
-				}
-			}
-
-			final CustomisedSWTCanvas chart = this;
-
-			Action changeBackColor = new Action("Edit base chart")
-			{
-				public void run()
-				{
-					EditableWrapper wrapped = new EditableWrapper(chart, getLayers());
-					ISelection selected = new StructuredSelection(wrapped);
-					parentFireSelectionChanged(selected);
-				}
-
-			};
-			mmgr.add(changeBackColor);
-
-			Action editProjection = new Action("Edit Projection")
-			{
-				public void run()
-				{
-					EditableWrapper wrapped = new EditableWrapper(getProjection(),
-							getLayers());
-					ISelection selected = new StructuredSelection(wrapped);
-					parentFireSelectionChanged(selected);
-				}
-
-			};
-			mmgr.add(editProjection);
-
-		}
-
-		/**
-		 * @param menuManager
-		 * @param selected
-		 * @param theParentLayer
-		 */
-		abstract public void doSupplementalRightClickProcessing(
-				MenuManager menuManager, Plottable selected, Layer theParentLayer);
-
-		public abstract void parentFireSelectionChanged(ISelection selected);
-	}
-
-	public void addSelectionChangedListener(ISelectionChangedListener listener)
-	{
-	}
-
-	public ISelection getSelection()
-	{
-		return null;
-	}
-
-	public void removeSelectionChangedListener(ISelectionChangedListener listener)
-	{
-	}
-
+	@Override
 	public void setSelection(ISelection selection)
 	{
+	}
+
+	@Override
+	public final void update()
+	{
+		// clear out the layers object
+		clearImages();
+
+		// and start the update
+		_theCanvas.updateMe();
+	}
+
+	@Override
+	public final void update(final Layer changedLayer)
+	{
+		if (changedLayer == null)
+		{
+			update();
+		}
+		else
+		{
+			// get the image
+			Image theImage = _myLayers.get(changedLayer);
+
+			// and ditch the image
+			if (theImage != null)
+			{
+				theImage.dispose();
+			}
+
+			// just delete that layer
+			_myLayers.remove(changedLayer);
+
+			// NO, don't GC. If we change lots of items, we do lots of garbage
+			// collections, and each
+			// one takes a finite time. Leave the app to do it on it's own
+			// --- chuck in a GC, to clear the old image allocation
+			// --- System.gc();
+
+			// and trigger update
+			_theCanvas.updateMe();
+		}
 	}
 
 }

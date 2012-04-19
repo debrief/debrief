@@ -351,6 +351,9 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		_theDblClickListeners = new Stack<ChartDoubleClickListener>();
 	}
 
+	/** select a zoom that shows all visible data
+	 * 
+	 */
 	abstract public void rescale();
 
 	/**

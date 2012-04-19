@@ -250,7 +250,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	private boolean _suspendFiringExtended;
 
-	/** handler for if the formatting of a layer hcanges
+	/**
+	 * handler for if the formatting of a layer hcanges
 	 * 
 	 */
 	private final PropertyChangeListener _formatListener;
@@ -268,7 +269,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
 		_formatListener = new PropertyChangeListener()
 		{
-			
+
 			@Override
 			public void propertyChange(PropertyChangeEvent evt)
 			{
@@ -276,7 +277,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 				fireReformatted(layer);
 			}
 		};
-		
+
 		produceLists();
 	}
 
@@ -383,20 +384,21 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		}
 
 	}
-	
-	/**  clear out all layers
+
+	/**
+	 * clear out all layers
 	 * 
 	 */
 	public void clear()
 	{
 		_theLayers.clear();
-		
+
 		// and fire the extended event
 		fireExtended(null, null);
 
 	}
-	
-//
+
+	//
 	/**
 	 * get the current number of layers
 	 * 
@@ -487,11 +489,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		while (enumer.hasMoreElements())
 		{
 			Layer thisL = (Layer) enumer.nextElement();
-			if (thisL.getName().equalsIgnoreCase(theLayerName))
-			{
-				res = thisL;
-				break;
-			}
+			String layerName = thisL.getName();
+			if (layerName != null)
+				if (layerName.equalsIgnoreCase(theLayerName))
+				{
+					res = thisL;
+					break;
+				}
 		}
 		//
 		return res;
@@ -521,13 +525,14 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			// we know about it already, copy the new one into our existing one
 			res.append(theLayer);
 		}
-		
-		if(theLayer instanceof SupportsPropertyListeners)
+
+		if (theLayer instanceof SupportsPropertyListeners)
 		{
 			SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
-			pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT, _formatListener);
+			pr.addPropertyChangeListener(SupportsPropertyListeners.FORMAT,
+					_formatListener);
 		}
-		
+
 	}
 
 	/**
@@ -574,13 +579,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		while (iter.hasNext())
 		{
 			Layer thisLayer = (Layer) iter.next();
-			if(thisLayer.getName().equals(theLayer.getName()))
+			if (thisLayer.getName().equals(theLayer.getName()))
 			{
 				// right, we've got to subtlely change the new layer name
 				theLayer.setName(theLayer.getName() + "_1");
 			}
 		}
-		
+
 		// ok, now we can add it - we've changed the name if that's necessary.
 		_theLayers.add(theLayer);
 
@@ -598,12 +603,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		// first remove the layer
 		_theLayers.removeElement(theLayer);
-		
-		
-		if(theLayer instanceof SupportsPropertyListeners)
+
+		if (theLayer instanceof SupportsPropertyListeners)
 		{
 			SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
-			pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT, _formatListener);
+			pr.removePropertyChangeListener(SupportsPropertyListeners.FORMAT,
+					_formatListener);
 		}
 
 		// and fire the modified event
