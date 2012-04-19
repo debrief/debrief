@@ -5,6 +5,8 @@ Bundle-SymbolicName: org.mwc.cmap.gt2Plot; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.cmap.gt2plot.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.mwc.cmap.legacy;bundle-version="1.0.136",
+ org.mwc.cmap.plotViewer;bundle-version="1.0.53"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
