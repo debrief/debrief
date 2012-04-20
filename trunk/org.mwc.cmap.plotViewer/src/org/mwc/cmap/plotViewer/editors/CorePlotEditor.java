@@ -179,8 +179,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 		super.dispose();
 
 		// empty the part monitor
-		_myPartMonitor.ditch();
-		_myPartMonitor = null;
+		if (_myPartMonitor != null)
+		{
+			_myPartMonitor.ditch();
+			_myPartMonitor = null;
+		}
 	}
 
 	public void createPartControl(Composite parent)
@@ -462,7 +465,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings(
+	{ "rawtypes" })
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
