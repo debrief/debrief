@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.Status;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
@@ -251,6 +253,40 @@ public class GtProjection extends FlatProjection
 							e);
 				}
 			}
+
+		}
+	}
+
+	public static class TestProj extends TestCase
+	{
+		public void testOne() throws NoSuchAuthorityCodeException, FactoryException
+		{
+			MapContent mc = new MapContent();
+
+			// set a coordinate reference system
+			CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+			mc.getViewport().setCoordinateReferenceSystem(crs);
+
+			// set a data area
+			DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
+			DirectPosition2D brDegs = new DirectPosition2D(1, 5);
+			Envelope2D env = new Envelope2D(tlDegs, brDegs);
+			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
+			mc.getViewport().setBounds(rEnv);
+
+			// set a screen area
+			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
+
+			// create a point to test
+			DirectPosition2D degs = new DirectPosition2D(3, 3);
+
+			// and results object
+			DirectPosition2D pixels = new DirectPosition2D();
+
+			// transform the test point
+			mc.getViewport().getWorldToScreen().transform(degs, pixels);
+
+			System.out.println("pixels:" + pixels);
 
 		}
 	}
