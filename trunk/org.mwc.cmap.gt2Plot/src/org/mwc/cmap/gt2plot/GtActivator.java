@@ -1,9 +1,17 @@
 package org.mwc.cmap.gt2plot;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.cmap.gt2plot.data.GTLayer;
 import org.osgi.framework.BundleContext;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -15,6 +23,8 @@ public class GtActivator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static GtActivator plugin;
+	
+	Layer theLayer;
 	
 	/**
 	 * The constructor
@@ -29,6 +39,25 @@ public class GtActivator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		RightClickContextItemGenerator clicker = new RightClickContextItemGenerator()
+		{
+			
+			public void generate(IMenuManager parent, Layers theLayers,
+					Layer[] parentLayers, Editable[] subjects)
+			{
+				if(theLayer == null)
+					theLayer = new GTLayer();
+				
+				// see if it's already loaded
+				Layer it = theLayers.findLayer(theLayer.getName());
+				if(it == null)
+					theLayers.addThisLayer(theLayer);
+				
+			}
+		};
+		RightClickSupport.addRightClickGenerator(clicker );
+		
 	}
 
 	/**

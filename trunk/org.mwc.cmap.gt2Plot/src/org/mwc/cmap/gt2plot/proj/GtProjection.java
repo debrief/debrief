@@ -291,4 +291,9 @@ public class GtProjection extends FlatProjection
 		}
 	}
 
+	public MapContent getMapContent()
+	{
+		return _map;
+	}
+
 }
