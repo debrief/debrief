@@ -2,6 +2,7 @@ package org.mwc.cmap.gt2plot.proj;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 
@@ -95,7 +96,8 @@ public class GtProjection extends FlatProjection
 			}
 			catch (MismatchedDimensionException e)
 			{
-				e.printStackTrace();
+				GtActivator.logError(Status.ERROR,
+						"Whilst trying to convert to screen coords", e);
 			}
 		}
 		return res;
@@ -111,6 +113,7 @@ public class GtProjection extends FlatProjection
 		{
 			DirectPosition2D screen = new DirectPosition2D(val.x, val.y);
 			DirectPosition2D degs = new DirectPosition2D();
+
 			try
 			{
 				// now got to screen
@@ -123,24 +126,44 @@ public class GtProjection extends FlatProjection
 			}
 			catch (MismatchedDimensionException e)
 			{
-				e.printStackTrace();
+				GtActivator.logError(Status.ERROR,
+						"Whilst trying to set convert to world coords", e);
 			}
-			// catch
-			// (org.opengis.referencing.operation.NoninvertibleTransformException e)
-			// {
-			// e.printStackTrace();
-			// }
-			// catch (TransformException e)
-			// {
-			// e.printStackTrace();
-			// }
-			// catch (NoninvertibleTransformException e)
-			// {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 		}
 		return res;
+	}
+
+	@Override
+	public void zoom(double scaleVal)
+	{
+		Dimension paneArea = super.getScreenArea();
+		WorldArea dataArea = super.getDataArea();
+		if (dataArea != null)
+		{
+			WorldLocation centre = super.getDataArea().getCentre();
+			DirectPosition2D mapPos = new DirectPosition2D(centre.getLat(),
+					centre.getLong());
+
+			if (worldToScreen != null)
+			{
+				double scale = worldToScreen.getScaleX();
+				double newScale = scale / scaleVal;
+
+				DirectPosition2D corner = new DirectPosition2D(mapPos.getX() - 0.5d
+						* paneArea.width / newScale, mapPos.getY() + 0.5d * paneArea.height
+						/ newScale);
+
+				Envelope2D newMapArea = new Envelope2D();
+				newMapArea.setFrameFromCenter(mapPos, corner);
+
+				WorldLocation tl = new WorldLocation(newMapArea.getMinX(),
+						newMapArea.getMaxY(), 0d);
+				WorldLocation br = new WorldLocation(newMapArea.getMaxX(),
+						newMapArea.getMinY(), 0d);
+				WorldArea newArea = new WorldArea(tl, br);
+				setDataArea(newArea);
+			}
+		}
 	}
 
 	@Override
@@ -204,10 +227,6 @@ public class GtProjection extends FlatProjection
 					ReferencedEnvelope rEnv = _map.getViewport().getBounds();
 					java.awt.Rectangle screenArea = _map.getViewport().getScreenArea();
 
-		//			ReferencedEnvelope refEnv = null;
-		//			refEnv = new ReferencedEnvelope(rEnv);
-
-			//		 java.awt.Rectangle awtPaintArea = Utils.toAwtRectangle(screenArea);
 					double xscale = screenArea.getWidth() / rEnv.getWidth();
 					double yscale = screenArea.getHeight() / rEnv.getHeight();
 
@@ -217,6 +236,7 @@ public class GtProjection extends FlatProjection
 					double yoff = rEnv.getMedian(1) * scale + screenArea.getCenterY();
 
 					worldToScreen = new AffineTransform(scale, 0, 0, -scale, -xoff, yoff);
+
 					screenToWorld = worldToScreen.createInverse();
 
 				}
