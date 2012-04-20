@@ -132,7 +132,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
@@ -180,7 +179,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public SWTCanvas(Composite parent)
 	{
-		super(new GtProjection());
+		super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()
