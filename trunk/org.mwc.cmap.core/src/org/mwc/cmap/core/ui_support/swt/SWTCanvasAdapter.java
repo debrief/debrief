@@ -249,7 +249,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 */
 	public final void setProjection(final PlainProjection theProjection)
 	{
-		_theProjection = theProjection;
+		// ok - let's not use the new projection. We'll keep our own projection,
+		// but we'll copy the data viewport
+		WorldArea dataArea = theProjection.getDataArea();
+		if (dataArea != null)
+		{
+			_theProjection.setDataArea(dataArea);
+		}
 	}
 
 	/**
@@ -538,7 +544,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// return _theDest.drawImage(img, x, y, width, height, observer);
 
 		image.dispose();
-		
+
 		return false;
 
 	}

@@ -504,7 +504,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		super(theLayers);
 		_theCanvas = createCanvas(parent);
-		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
+//		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
 
 		// sort out the area of coverage of the plot
 		if (theLayers != null)
