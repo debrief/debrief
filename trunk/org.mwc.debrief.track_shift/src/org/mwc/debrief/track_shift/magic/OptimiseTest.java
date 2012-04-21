@@ -349,14 +349,9 @@ public class OptimiseTest
 				final double thisError = thisD.calculateBearingError(measuredBearing,
 						calculatedBearing);
 				double score = Math.abs(thisError * thisError);
-				System.out.println(" meas:" + (int) measuredBearing + " calc:"
-						+ calculatedBearing + " error:" + thisError + " score:" + score);
 				
 				res += score;
 			}
-
-			System.out.println("== trying brg:" + brgDegs + " rng:" + rngM + " res:"
-					+ res);
 
 			// do the calc
 			return res;
