@@ -22,7 +22,10 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
@@ -54,6 +57,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragFeature.DragFeatureAction;
 import org.mwc.debrief.core.actions.DragFeature.DragOperation;
@@ -63,6 +67,7 @@ import org.mwc.debrief.track_shift.magic.OptimiseTest.TryOffsetFunction;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
+import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -173,6 +178,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	private Action _magicBtn;
 
+	protected Vector<ISelectionProvider> _selProviders;
+
+	protected ISelectionChangedListener _mySelListener;
+
+	protected Vector<DraggableItem> _draggableSelection;
+
 	/**
 	 * 
 	 * @param needBrg
@@ -253,6 +264,43 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// /////////////////////////////////////////
 		// ok - listen out for changes in the view
 		// /////////////////////////////////////////
+		_selProviders = new Vector<ISelectionProvider>();
+		_mySelListener = new ISelectionChangedListener()
+		{
+			@Override
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				ISelection sel = event.getSelection();
+				Vector<DraggableItem> dragees = new Vector<DraggableItem>();
+				if (sel instanceof StructuredSelection)
+				{
+					StructuredSelection str = (StructuredSelection) sel;
+					Iterator<?> iter = str.iterator();
+					while (iter.hasNext())
+					{
+						Object object = (Object) iter.next();
+						if (object instanceof EditableWrapper)
+						{
+							EditableWrapper ew = (EditableWrapper) object;
+							Editable item = ew.getEditable();
+							if (item instanceof DraggableItem)
+							{
+								
+								dragees.add((DraggableItem) item);
+							}
+						}
+						else
+						{
+							return;
+						}
+					}
+
+					// ok, we've just got draggable items - override the current item
+					_draggableSelection = dragees;
+				}
+			}
+		};
+
 		watchMyParts();
 
 		// put the actions in the UI
@@ -620,12 +668,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected void doMagic()
 	{
-		// retrieve the selected track item
-		ISelection prov = this.getViewSite().getSelectionProvider().getSelection();
-		IStructuredSelection sel = (IStructuredSelection) prov;
-		Object obj = sel.getFirstElement();
-		
-		
+		if (_draggableSelection != null)
+		{
+			Iterator<DraggableItem> iter = _draggableSelection.iterator();
+			while (iter.hasNext())
+			{
+				DraggableItem draggableItem = (DraggableItem) iter.next();
+				System.out.println(draggableItem);
+			}
+			return;
+		}
+
 		// cool sort out the list of sensor locations for these tracks
 		TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(),
 				true, false);
@@ -787,6 +840,50 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.getPartService());
 
 		final ErrorLogger logger = this;
+
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						ISelectionProvider prov = (ISelectionProvider) part;
+
+						// am I already listning to this
+						if (_selProviders.contains(prov))
+						{
+							// ignore, we're already listening to it
+						}
+						else
+						{
+							prov.addSelectionChangedListener(_mySelListener);
+							_selProviders.add(prov);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.CLOSED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						ISelectionProvider prov = (ISelectionProvider) part;
+
+						// am I already listning to this
+						if (_selProviders.contains(prov))
+						{
+							// ok, ditch this listener
+							_selProviders.remove(prov);
+
+							// and stop listening
+							prov.removeSelectionChangedListener(_mySelListener);
+						}
+						else
+						{
+							// hey, we're not even listening to it.
+						}
+					}
+				});
 
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
