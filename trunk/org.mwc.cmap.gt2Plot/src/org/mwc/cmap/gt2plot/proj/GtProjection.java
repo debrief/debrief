@@ -276,9 +276,12 @@ public class GtProjection extends FlatProjection
 
 			// set a screen area
 			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
+			
+			// sort out the aspect ration
+			mc.getViewport().setMatchingAspectRatio(true);
 
 			// create a point to test
-			DirectPosition2D degs = new DirectPosition2D(3, 3);
+			DirectPosition2D degs = new DirectPosition2D(5, 3);
 
 			// and results object
 			DirectPosition2D pixels = new DirectPosition2D();
