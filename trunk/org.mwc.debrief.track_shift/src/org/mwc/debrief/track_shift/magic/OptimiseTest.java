@@ -1,4 +1,4 @@
-package org.mwc.debrief.track_shift.views;
+package org.mwc.debrief.track_shift.magic;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
+import org.mwc.debrief.track_shift.views.StackedDotHelper;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -303,7 +304,7 @@ public class OptimiseTest
 	{
 		DebriefEclipseXMLReaderWriter reader = new DebriefEclipseXMLReaderWriter();
 		Layers res = new Layers();
-		String path = "src/org/mwc/debrief/track_shift/views/";
+		String path = "src/org/mwc/debrief/track_shift/magic/";
 		String fName = "midflow2.xml";
 		InputStream is = new FileInputStream(path + fName);
 		IControllableViewport view = Mockito.mock(IControllableViewport.class);

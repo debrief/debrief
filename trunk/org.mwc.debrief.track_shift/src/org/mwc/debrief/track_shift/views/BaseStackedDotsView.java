@@ -54,7 +54,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
-import org.mwc.debrief.track_shift.views.OptimiseTest.TryOffsetFunction;
+import org.mwc.debrief.track_shift.magic.OptimiseTest.TryOffsetFunction;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
