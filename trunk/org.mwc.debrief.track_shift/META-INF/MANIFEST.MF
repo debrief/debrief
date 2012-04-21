@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Stacked Dots
 Bundle-SymbolicName: org.mwc.debrief.track_shift; singleton:=true
-Bundle-Version: 1.0.46
+Bundle-Version: 1.0.47
 Bundle-Activator: org.mwc.debrief.track_shift.TrackShiftActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.core,
  org.mwc.cmap.core,
  org.mwc.cmap.plotViewer;bundle-version="1.0.53",
- org.eclipse.core.resources;bundle-version="3.7.101"
+ org.eclipse.core.resources
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
