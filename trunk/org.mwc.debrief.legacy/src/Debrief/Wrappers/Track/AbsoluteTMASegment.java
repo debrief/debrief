@@ -152,8 +152,8 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	{
 		// ditch any existing data
 		this.removeAllElements();
-		
-		// and stick some fresh ones in		
+
+		// and stick some fresh ones in
 		long tStart = startTime.getDate().getTime();
 		long tEnd = endTime.getDate().getTime();
 		long interval = 60 * 1000;
@@ -240,7 +240,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	public void setTime_Start(HiResDate timeStart)
 	{
 		_startTime = timeStart;
-		
+
 		// and update our data
 		createDataFrom(_startTime, _endTime);
 	}
@@ -308,8 +308,8 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		// tell the segment it's being stretched
 		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts "
 				+ (int) newCourse + "\u00B0]";
-		
-	    super.firePropertyChange("Course", newCourse, newCourse);
+
+		super.firePropertyChange("Course", newCourse, newCourse);
 
 	}
 

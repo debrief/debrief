@@ -49,6 +49,62 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		GriddableSeriesMarker, NeedsWrappingInLayerManager
 {
 
+	public static class testListMgt extends TestCase
+	{
+		public void testLast()
+		{
+			TrackSegment ts0 = new TrackSegment();
+			FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(1000),
+					new WorldLocation(1, 2, 3), 1, 2));
+			FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(2000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(3000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(4000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			ts0.addFix(newFix1);
+			ts0.addFix(newFix2);
+			ts0.addFix(newFix3);
+			ts0.addFix(newFix4);
+
+			TrackSegment ts1 = new TrackSegment();
+			FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(15000),
+					new WorldLocation(1, 2, 3), 1, 2));
+			FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(16000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(17000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(18000),
+					new WorldLocation(2, 1, 3), 1, 2));
+			ts1.addFix(newFix5);
+			ts1.addFix(newFix6);
+			ts1.addFix(newFix7);
+			ts1.addFix(newFix8);
+
+			TrackSegment newS = new TrackSegment(ts0, ts1);
+			assertEquals("got lots of points", 10, newS.size());
+
+			// cause the monster problem
+			newFix6.setDateTimeGroup(new HiResDate(15000));
+
+			// try the mini algorithm first
+			FixWrapper[] items = getLastElementsFrom(ts1, 2);
+			assertTrue("times should not be the same ",
+					items[0].getDateTimeGroup() != items[1].getDateTimeGroup());
+
+			try
+			{
+				newS = new TrackSegment(ts0, ts1);
+				assertEquals("got lots of points", 5, newS.size());
+			}
+			catch (RuntimeException re)
+			{
+				fail("runtime exception thrown!!!");
+			}
+
+		}
+	}
+
 	/**
 	 * class containing editable details of a track
 	 */
@@ -120,6 +176,104 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * get the first 'n' elements from this segment
+	 * 
+	 * @param trackOne
+	 *          the segment to get the data from
+	 * @param oneUse
+	 *          how many elements to use
+	 * @return the subset
+	 */
+	private static FixWrapper[] getFirstElementsFrom(TrackSegment trackTwo,
+			int num)
+	{
+		FixWrapper[] res = new FixWrapper[num];
+
+		HiResDate lastDate = null;
+		int ctr = 0;
+
+		Enumeration<Editable> items = trackTwo.elements();
+		for (int i = 0; i < trackTwo.size(); i++)
+		{
+			FixWrapper next = (FixWrapper) items.nextElement();
+			HiResDate thisDate = next.getDateTimeGroup();
+			if (lastDate != null)
+			{
+				// ok, is this a new date
+				if (thisDate.equals(lastDate))
+				{
+					// skip this cycle
+					continue;
+				}
+			}
+			lastDate = thisDate;
+
+			res[ctr++] = next;
+
+			if (ctr == num)
+				break;
+		}
+
+		return res;
+	}
+
+	/**
+	 * get the last 'n' elements from this segment
+	 * 
+	 * @param trackOne
+	 *          the segment to get the data from
+	 * @param num
+	 *          how many elements to use
+	 * @return the subset
+	 */
+	private static FixWrapper[] getLastElementsFrom(TrackSegment trackOne, int num)
+	{
+		FixWrapper[] res = new FixWrapper[num];
+
+		// right, careful here, we can't use points at the same time
+		Object[] data = trackOne.getData().toArray();
+		int theLen = data.length;
+		HiResDate lastDate = null;
+		int ctr = 0;
+		for (int i = theLen - 1; i >= 0; i--)
+		{
+			FixWrapper fix = (FixWrapper) data[i];
+			if (lastDate != null)
+			{
+				// is this the same date?
+				HiResDate thisDate = fix.getDateTimeGroup();
+				if (thisDate.equals(lastDate))
+				{
+					// ok, can't use it - skip to next cycle
+					continue;
+				}
+			}
+
+			lastDate = fix.getDateTimeGroup();
+
+			// ok, we must be ok
+			res[res.length - ++ctr] = fix;
+
+			// are we done?
+			if (ctr == num)
+				break;
+
+		}
+
+		return res;
+	}
+
+	/**
+	 * learn about the shared trouble reporter...
+	 * 
+	 * @param toolParent
+	 */
+	public static void initialise(ToolParent toolParent)
+	{
+		_myParent = toolParent;
+	}
+
+	/**
 	 * define the length of the stalk we plot when dragging
 	 * 
 	 */
@@ -143,29 +297,30 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	public static final String TMA_LEADER = "TMA_";
 
-	/**
-	 * how this line is plotted
-	 * 
-	 * @return
-	 */
-	public int getLineStyle()
-	{
-		return _lineStyle;
-	}
-
-	/**
-	 * specify how this line is to be plotted
-	 * 
-	 * @param lineStyle
-	 */
-	public void setLineStyle(int lineStyle)
-	{
-		_lineStyle = lineStyle;
-	}
-
 	public TrackSegment()
 	{
 		// no-op constructor
+	}
+
+	/**
+	 * constructor that builds a plain track segment from a tma segment - an
+	 * operation we must do when we try to merge track segments
+	 * 
+	 * @param tma
+	 */
+	public TrackSegment(CoreTMASegment tma)
+	{
+		setName(tma.getName());
+		setVisible(tma.getVisible());
+		setWrapper(tma.getWrapper());
+
+		// add the elements from the target
+		Enumeration<Editable> points = tma.elements();
+		while (points.hasMoreElements())
+		{
+			Editable next = points.nextElement();
+			add(next);
+		}
 	}
 
 	/**
@@ -349,115 +504,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.setLineStyle(CanvasType.DOTTED);
 	}
 
-	/**
-	 * constructor that builds a plain track segment from a tma segment - an
-	 * operation we must do when we try to merge track segments
-	 * 
-	 * @param tma
-	 */
-	public TrackSegment(CoreTMASegment tma)
-	{
-		setName(tma.getName());
-		setVisible(tma.getVisible());
-		setWrapper(tma.getWrapper());
-
-		// add the elements from the target
-		Enumeration<Editable> points = tma.elements();
-		while (points.hasMoreElements())
-		{
-			Editable next = points.nextElement();
-			add(next);
-		}
-	}
-
-	/**
-	 * get the first 'n' elements from this segment
-	 * 
-	 * @param trackOne
-	 *          the segment to get the data from
-	 * @param oneUse
-	 *          how many elements to use
-	 * @return the subset
-	 */
-	private static FixWrapper[] getFirstElementsFrom(TrackSegment trackTwo,
-			int num)
-	{
-		FixWrapper[] res = new FixWrapper[num];
-
-		HiResDate lastDate = null;
-		int ctr = 0;
-
-		Enumeration<Editable> items = trackTwo.elements();
-		for (int i = 0; i < trackTwo.size(); i++)
-		{
-			FixWrapper next = (FixWrapper) items.nextElement();
-			HiResDate thisDate = next.getDateTimeGroup();
-			if (lastDate != null)
-			{
-				// ok, is this a new date
-				if (thisDate.equals(lastDate))
-				{
-					// skip this cycle
-					continue;
-				}
-			}
-			lastDate = thisDate;
-
-			res[ctr++] = next;
-
-			if (ctr == num)
-				break;
-		}
-
-		return res;
-	}
-
-	/**
-	 * get the last 'n' elements from this segment
-	 * 
-	 * @param trackOne
-	 *          the segment to get the data from
-	 * @param num
-	 *          how many elements to use
-	 * @return the subset
-	 */
-	private static FixWrapper[] getLastElementsFrom(TrackSegment trackOne, int num)
-	{
-		FixWrapper[] res = new FixWrapper[num];
-
-		// right, careful here, we can't use points at the same time
-		Object[] data = trackOne.getData().toArray();
-		int theLen = data.length;
-		HiResDate lastDate = null;
-		int ctr = 0;
-		for (int i = theLen - 1; i >= 0; i--)
-		{
-			FixWrapper fix = (FixWrapper) data[i];
-			if (lastDate != null)
-			{
-				// is this the same date?
-				HiResDate thisDate = fix.getDateTimeGroup();
-				if (thisDate.equals(lastDate))
-				{
-					// ok, can't use it - skip to next cycle
-					continue;
-				}
-			}
-
-			lastDate = fix.getDateTimeGroup();
-
-			// ok, we must be ok
-			res[res.length - ++ctr] = fix;
-
-			// are we done?
-			if (ctr == num)
-				break;
-
-		}
-
-		return res;
-	}
-
 	@Override
 	public void add(final Editable item)
 	{
@@ -491,25 +537,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	}
 
 	/**
-	 * utility method to reveal all positions in a track
-	 * 
-	 */
-	@FireReformatted
-	public void revealAllPositions()
-	{
-		Enumeration<Editable> theEnum = elements();
-		while (theEnum.hasMoreElements())
-		{
-			Editable editable = (Editable) theEnum.nextElement();
-			FixWrapper fix = (FixWrapper) editable;
-			fix.setVisible(true);
-		}
-	}
-
-	/**
 	 * add the elements in the indicated layer to us.
 	 * 
 	 */
+	@Override
 	public void append(final Layer other)
 	{
 		// get the other track's elements
@@ -575,315 +606,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return res;
 	}
 
-	protected void drawMyStalk(final CanvasType dest, final Point lastPoint,
-			final Point thisPoint, final boolean forwards)
-	{
-		// yup, we've now got just two points. plot a 'back-trace'
-		final double xDelta = thisPoint.x - lastPoint.x;
-		final double yDelta = thisPoint.y - lastPoint.y;
-
-		final double gradient = xDelta / yDelta;
-
-		int myLen = STALK_LEN;
-		if (!forwards)
-			myLen = -STALK_LEN;
-
-		final Point backPoint = new Point(lastPoint.x + (int) (myLen * gradient),
-				lastPoint.y + myLen);
-		dest.setLineStyle(2);
-		dest.drawLine(lastPoint.x, lastPoint.y, backPoint.x, backPoint.y);
-
-		// hey, chuck in a circle
-		final int radius = 10;
-		dest.drawOval(lastPoint.x - radius - (int) xDelta, lastPoint.y - radius
-				- (int) yDelta, radius * 2, radius * 2);
-
-		dest.setLineStyle(CanvasType.SOLID);
-	}
-
-	public HiResDate endDTG()
-	{
-		final Collection<Editable> items = getData();
-		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
-		final Editable last = sortedItems.last();
-		final FixWrapper fw = (FixWrapper) last;
-		return fw.getDateTimeGroup();
-	}
-
-	public void findNearestHotSpotIn(final Point cursorPos,
-			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
-			final Layer parentLayer, Layers theData)
-	{
-	}
-
-	@Override
-	public Editable.EditorType getInfo()
-	{
-		return new TrackSegmentInfo(this);
-	}
-
-	/**
-	 * learn about the shared trouble reporter...
-	 * 
-	 * @param toolParent
-	 */
-	public static void initialise(ToolParent toolParent)
-	{
-		_myParent = toolParent;
-	}
-
-	/**
-	 * get the start of this segment (it's the location of the first point).
-	 * 
-	 * @return
-	 */
-	public WorldLocation getTrackStart()
-	{
-		final FixWrapper firstW = (FixWrapper) getData().iterator().next();
-		return firstW.getFixLocation();
-	}
-
-	public boolean getPlotRelative()
-	{
-		return _plotRelative;
-	}
-
-	@Override
-	public void paint(final CanvasType dest)
-	{
-		final Collection<Editable> items = getData();
-
-		// ok - draw that line!
-		Point lastPoint = null;
-		Point lastButOne = null;
-		for (final Iterator<Editable> iterator = items.iterator(); iterator
-				.hasNext();)
-		{
-			final FixWrapper thisF = (FixWrapper) iterator.next();
-
-			final Point thisPoint = dest.toScreen(thisF.getFixLocation());
-
-			// do we have enough for a line?
-			if (lastPoint != null)
-			{
-				// draw that line
-				dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
-
-				// are we at the start of the line?
-				if (lastButOne == null)
-				{
-					drawMyStalk(dest, lastPoint, thisPoint, false);
-				}
-			}
-
-			lastButOne = lastPoint;
-			lastPoint = new Point(thisPoint);
-
-			// also draw in a marker for this point
-			dest.drawRect(lastPoint.x - 1, lastPoint.y - 1, 3, 3);
-		}
-
-		// lastly 'plot on' from the last points
-		drawMyStalk(dest, lastPoint, lastButOne, true);
-
-	}
-
-	@Override
-	public double rangeFrom(final WorldLocation other)
-	{
-		double res = Plottable.INVALID_RANGE;
-
-		// have we got data?
-		WorldLocation firstLoc = this.getTrackStart();
-
-		// do we have a start point?
-		if (firstLoc != null)
-		{
-			// yes, sort range
-			res = firstLoc.rangeFrom(other);
-
-			// and try for the track end
-			Plottable lastP = this.last();
-			// do we have an end point?
-			if (lastP != null)
-			{
-				FixWrapper lastF = (FixWrapper) lastP;
-				WorldLocation lastLoc = lastF.getLocation();
-				double otherRng = lastLoc.rangeFrom(other);
-				res = Math.min(otherRng, res);
-			}
-		}
-		return res;
-	}
-
-	/**
-	 * rotate this whole track around the supplied origin
-	 * 
-	 * @param brg
-	 *          angle to rotate through (Radians)
-	 * @param origin
-	 *          origin of rotation, probably one end of the track
-	 */
-	public void rotate(final double brg, final WorldLocation origin)
-	{
-		// add this vector to all my points.
-		final Collection<Editable> items = getData();
-		for (final Iterator<Editable> iterator = items.iterator(); iterator
-				.hasNext();)
-		{
-			final FixWrapper thisFix = (FixWrapper) iterator.next();
-
-			// is this us?
-			if (thisFix.getLocation() == origin)
-			{
-				// ignore, it's the origin
-			}
-			else
-			{
-				final WorldLocation newLoc = thisFix.getLocation().rotatePoint(origin,
-						brg);
-				thisFix.setFixLocation(newLoc);
-			}
-		}
-	}
-
-	public void setPlotRelative(final boolean plotRelative)
-	{
-		_plotRelative = plotRelative;
-	}
-
-	@Override
-	public void setWrapper(final TrackWrapper wrapper)
-	{
-
-		// is it different?
-		if (wrapper == _myTrack)
-			return;
-
-		// store the value
-		super.setWrapper(wrapper);
-
-		if (wrapper != null)
-		{
-			// update our segments
-			final Collection<Editable> items = getData();
-			for (final Iterator<Editable> iterator = items.iterator(); iterator
-					.hasNext();)
-			{
-				final FixWrapper fix = (FixWrapper) iterator.next();
-				fix.setTrackWrapper(_myTrack);
-				// and let the track wrapper listen to location changed events
-				fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-						wrapper.getLocationListener());
-			}
-		}
-	}
-
-	public void shift(final WorldVector vector)
-	{
-		// add this vector to all my points.
-		final Collection<Editable> items = getData();
-		for (final Iterator<Editable> iterator = items.iterator(); iterator
-				.hasNext();)
-		{
-			final FixWrapper thisFix = (FixWrapper) iterator.next();
-
-			final WorldLocation copiedLoc = new WorldLocation(thisFix.getFix()
-					.getLocation());
-			copiedLoc.addToMe(vector);
-
-			// and replace the location (this method updates all 3 location
-			// contained
-			// in the fix wrapper
-			thisFix.setFixLocation(copiedLoc);
-		}
-	}
-
-	/**
-	 * move the whole of the track be the provided offset
-	 */
-	public final void shiftTrack(Enumeration<Editable> theEnum,
-			final WorldVector offset)
-	{
-		if (theEnum == null)
-			theEnum = elements();
-
-		while (theEnum.hasMoreElements())
-		{
-			final Object thisO = theEnum.nextElement();
-			if (thisO instanceof FixWrapper)
-			{
-				final FixWrapper fw = (FixWrapper) thisO;
-
-				final WorldLocation copiedLoc = new WorldLocation(fw.getFix()
-						.getLocation());
-				copiedLoc.addToMe(offset);
-
-				// and replace the location (this method updates all 3 location
-				// contained
-				// in the fix wrapper
-				fw.setFixLocation(copiedLoc);
-
-				// ok - job well done
-			}
-		}
-	}
-
-	public void sortOutDate(HiResDate startDTG)
-	{
-		if (getData().size() > 0)
-		{
-			if (startDTG == null)
-				startDTG = startDTG();
-
-			setName(FormatRNDateTime.toString(startDTG.getDate().getTime()));
-		}
-	}
-
-	/**
-	 * find the start time of each segment
-	 * 
-	 * @return
-	 */
-	public HiResDate startDTG()
-	{
-		HiResDate res = null;
-		final Collection<Editable> items = getData();
-		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
-		if ((sortedItems != null) && (sortedItems.size() > 0))
-		{
-			final Editable first = sortedItems.first();
-			final FixWrapper fw = (FixWrapper) first;
-			res = fw.getDateTimeGroup();
-		}
-		return res;
-	}
-
-	/**
-	 * represent the named leg as a DR vector
-	 * 
-	 * @param fw
-	 *          the leg we're looking at
-	 * @param period
-	 *          how long it's travelling for (millis)
-	 * @return a vector representing the subject
-	 */
-	public WorldVector vectorFor(final long period, final double speedKts,
-			final double courseRads)
-	{
-		// have we already looked for this
-		if (period != _vecTempLastDTG)
-		{
-			// nope better calc it
-			final double timeHrs = period / (1000d * 60d * 60d);
-			final double distanceNm = speedKts * timeHrs;
-			final WorldDistance dist = new WorldDistance(distanceNm, WorldDistance.NM);
-			_vecTempLastVector = new WorldVector(courseRads, dist, null);
-		}
-
-		return _vecTempLastVector;
-	}
-
 	/**
 	 * switch the sample rate of this track to the supplied frequency
 	 * 
@@ -917,6 +639,34 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		// re-instate the interpolate status
 		parentTrack.setInterpolatePoints(oldInterpolateState);
+	}
+
+	private void decimateAbsolute(HiResDate theVal, TrackWrapper parentTrack,
+			long startTime, Vector<FixWrapper> newItems)
+	{
+		// right - sort out what time period we're working through
+		for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+				.getMicros())
+		{
+			// store the new position
+			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+			if (matches.length > 0)
+			{
+				FixWrapper newF = (FixWrapper) matches[0];
+
+				// do we correct the name?
+				if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
+				{
+					// reset the name
+					newF.resetName();
+				}
+
+				newF.setSymbolShowing(true);
+
+				// add to our working list
+				newItems.add(newF);
+			}
+		}
 	}
 
 	private void decimateRelative(HiResDate theVal, TrackWrapper parentTrack,
@@ -1047,34 +797,77 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	}
 
-	private void decimateAbsolute(HiResDate theVal, TrackWrapper parentTrack,
-			long startTime, Vector<FixWrapper> newItems)
+	@Override
+	public void doSave(String message)
 	{
-		// right - sort out what time period we're working through
-		for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
-				.getMicros())
-		{
-			// store the new position
-			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
-			if (matches.length > 0)
-			{
-				FixWrapper newF = (FixWrapper) matches[0];
-
-				// do we correct the name?
-				if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
-				{
-					// reset the name
-					newF.resetName();
-				}
-
-				newF.setSymbolShowing(true);
-
-				// add to our working list
-				newItems.add(newF);
-			}
-		}
+		throw new RuntimeException(
+				"should not have called manual save for Track Segment");
 	}
 
+	protected void drawMyStalk(final CanvasType dest, final Point lastPoint,
+			final Point thisPoint, final boolean forwards)
+	{
+		// yup, we've now got just two points. plot a 'back-trace'
+		final double xDelta = thisPoint.x - lastPoint.x;
+		final double yDelta = thisPoint.y - lastPoint.y;
+
+		final double gradient = xDelta / yDelta;
+
+		int myLen = STALK_LEN;
+		if (!forwards)
+			myLen = -STALK_LEN;
+
+		final Point backPoint = new Point(lastPoint.x + (int) (myLen * gradient),
+				lastPoint.y + myLen);
+		dest.setLineStyle(2);
+		dest.drawLine(lastPoint.x, lastPoint.y, backPoint.x, backPoint.y);
+
+		// hey, chuck in a circle
+		final int radius = 10;
+		dest.drawOval(lastPoint.x - radius - (int) xDelta, lastPoint.y - radius
+				- (int) yDelta, radius * 2, radius * 2);
+
+		dest.setLineStyle(CanvasType.SOLID);
+	}
+
+	public HiResDate endDTG()
+	{
+		final Collection<Editable> items = getData();
+		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
+		final Editable last = sortedItems.last();
+		final FixWrapper fw = (FixWrapper) last;
+		return fw.getDateTimeGroup();
+	}
+
+	@Override
+	public void findNearestHotSpotIn(final Point cursorPos,
+			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
+			final Layer parentLayer, Layers theData)
+	{
+	}
+
+	@Override
+	public Editable.EditorType getInfo()
+	{
+		return new TrackSegmentInfo(this);
+	}
+
+	/**
+	 * how this line is plotted
+	 * 
+	 * @return
+	 */
+	public int getLineStyle()
+	{
+		return _lineStyle;
+	}
+
+	public boolean getPlotRelative()
+	{
+		return _plotRelative;
+	}
+
+	@Override
 	public Editable getSampleGriddable()
 	{
 		HiResDate theTime = new HiResDate(10000000);
@@ -1086,6 +879,18 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return res;
 	}
 
+	/**
+	 * get the start of this segment (it's the location of the first point).
+	 * 
+	 * @return
+	 */
+	public WorldLocation getTrackStart()
+	{
+		final FixWrapper firstW = (FixWrapper) getData().iterator().next();
+		return firstW.getFixLocation();
+	}
+
+	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
 	{
 		if (false == item instanceof FixWrapper)
@@ -1108,6 +913,282 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return result;
 	}
 
+	@Override
+	public void paint(final CanvasType dest)
+	{
+		final Collection<Editable> items = getData();
+
+		// ok - draw that line!
+		Point lastPoint = null;
+		Point lastButOne = null;
+		for (final Iterator<Editable> iterator = items.iterator(); iterator
+				.hasNext();)
+		{
+			final FixWrapper thisF = (FixWrapper) iterator.next();
+
+			final Point thisPoint = dest.toScreen(thisF.getFixLocation());
+
+			// do we have enough for a line?
+			if (lastPoint != null)
+			{
+				// draw that line
+				dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
+
+				// are we at the start of the line?
+				if (lastButOne == null)
+				{
+					drawMyStalk(dest, lastPoint, thisPoint, false);
+				}
+			}
+
+			lastButOne = lastPoint;
+			lastPoint = new Point(thisPoint);
+
+			// also draw in a marker for this point
+			dest.drawRect(lastPoint.x - 1, lastPoint.y - 1, 3, 3);
+		}
+
+		// lastly 'plot on' from the last points
+		drawMyStalk(dest, lastPoint, lastButOne, true);
+
+	}
+
+	@Override
+	public double rangeFrom(final WorldLocation other)
+	{
+		double res = Plottable.INVALID_RANGE;
+
+		// have we got data?
+		WorldLocation firstLoc = this.getTrackStart();
+
+		// do we have a start point?
+		if (firstLoc != null)
+		{
+			// yes, sort range
+			res = firstLoc.rangeFrom(other);
+
+			// and try for the track end
+			Plottable lastP = this.last();
+			// do we have an end point?
+			if (lastP != null)
+			{
+				FixWrapper lastF = (FixWrapper) lastP;
+				WorldLocation lastLoc = lastF.getLocation();
+				double otherRng = lastLoc.rangeFrom(other);
+				res = Math.min(otherRng, res);
+			}
+		}
+		return res;
+	}
+
+	@Override
+	public boolean requiresManualSave()
+	{
+		return false;
+	}
+
+	/**
+	 * utility method to reveal all positions in a track
+	 * 
+	 */
+	@FireReformatted
+	public void revealAllPositions()
+	{
+		Enumeration<Editable> theEnum = elements();
+		while (theEnum.hasMoreElements())
+		{
+			Editable editable = theEnum.nextElement();
+			FixWrapper fix = (FixWrapper) editable;
+			fix.setVisible(true);
+		}
+	}
+
+	/**
+	 * rotate this whole track around the supplied origin
+	 * 
+	 * @param brg
+	 *          angle to rotate through (Radians)
+	 * @param origin
+	 *          origin of rotation, probably one end of the track
+	 */
+	public void rotate(final double brg, final WorldLocation origin)
+	{
+		// add this vector to all my points.
+		final Collection<Editable> items = getData();
+		for (final Iterator<Editable> iterator = items.iterator(); iterator
+				.hasNext();)
+		{
+			final FixWrapper thisFix = (FixWrapper) iterator.next();
+
+			// is this us?
+			if (thisFix.getLocation() == origin)
+			{
+				// ignore, it's the origin
+			}
+			else
+			{
+				final WorldLocation newLoc = thisFix.getLocation().rotatePoint(origin,
+						brg);
+				thisFix.setFixLocation(newLoc);
+			}
+		}
+	}
+
+	/**
+	 * specify how this line is to be plotted
+	 * 
+	 * @param lineStyle
+	 */
+	public void setLineStyle(int lineStyle)
+	{
+		_lineStyle = lineStyle;
+	}
+
+	public void setPlotRelative(final boolean plotRelative)
+	{
+		_plotRelative = plotRelative;
+	}
+
+	@Override
+	public void setWrapper(final TrackWrapper wrapper)
+	{
+
+		// is it different?
+		if (wrapper == _myTrack)
+			return;
+
+		// store the value
+		super.setWrapper(wrapper);
+
+		if (wrapper != null)
+		{
+			// update our segments
+			final Collection<Editable> items = getData();
+			for (final Iterator<Editable> iterator = items.iterator(); iterator
+					.hasNext();)
+			{
+				final FixWrapper fix = (FixWrapper) iterator.next();
+				fix.setTrackWrapper(_myTrack);
+				// and let the track wrapper listen to location changed events
+				fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+						wrapper.getLocationListener());
+			}
+		}
+	}
+
+	@Override
+	public void shift(final WorldVector vector)
+	{
+		// add this vector to all my points.
+		final Collection<Editable> items = getData();
+		for (final Iterator<Editable> iterator = items.iterator(); iterator
+				.hasNext();)
+		{
+			final FixWrapper thisFix = (FixWrapper) iterator.next();
+
+			final WorldLocation copiedLoc = new WorldLocation(thisFix.getFix()
+					.getLocation());
+			copiedLoc.addToMe(vector);
+
+			// and replace the location (this method updates all 3 location
+			// contained
+			// in the fix wrapper
+			thisFix.setFixLocation(copiedLoc);
+		}
+	}
+
+	/**
+	 * move the whole of the track be the provided offset
+	 */
+	public final void shiftTrack(Enumeration<Editable> theEnum,
+			final WorldVector offset)
+	{
+		if (theEnum == null)
+			theEnum = elements();
+
+		while (theEnum.hasMoreElements())
+		{
+			final Object thisO = theEnum.nextElement();
+			if (thisO instanceof FixWrapper)
+			{
+				final FixWrapper fw = (FixWrapper) thisO;
+
+				final WorldLocation copiedLoc = new WorldLocation(fw.getFix()
+						.getLocation());
+				copiedLoc.addToMe(offset);
+
+				// and replace the location (this method updates all 3 location
+				// contained
+				// in the fix wrapper
+				fw.setFixLocation(copiedLoc);
+
+				// ok - job well done
+			}
+		}
+	}
+
+	public void sortOutDate(HiResDate startDTG)
+	{
+		if (getData().size() > 0)
+		{
+			if (startDTG == null)
+				startDTG = startDTG();
+
+			setName(FormatRNDateTime.toString(startDTG.getDate().getTime()));
+		}
+	}
+
+	/**
+	 * find the start time of each segment
+	 * 
+	 * @return
+	 */
+	public HiResDate startDTG()
+	{
+		HiResDate res = null;
+		final Collection<Editable> items = getData();
+		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
+		if ((sortedItems != null) && (sortedItems.size() > 0))
+		{
+			final Editable first = sortedItems.first();
+			final FixWrapper fw = (FixWrapper) first;
+			res = fw.getDateTimeGroup();
+		}
+		return res;
+	}
+
+	@Override
+	public boolean supportsAddRemove()
+	{
+		return true;
+	}
+
+	/**
+	 * represent the named leg as a DR vector
+	 * 
+	 * @param fw
+	 *          the leg we're looking at
+	 * @param period
+	 *          how long it's travelling for (millis)
+	 * @return a vector representing the subject
+	 */
+	public WorldVector vectorFor(final long period, final double speedKts,
+			final double courseRads)
+	{
+		// have we already looked for this
+		if (period != _vecTempLastDTG)
+		{
+			// nope better calc it
+			final double timeHrs = period / (1000d * 60d * 60d);
+			final double distanceNm = speedKts * timeHrs;
+			final WorldDistance dist = new WorldDistance(distanceNm, WorldDistance.NM);
+			_vecTempLastVector = new WorldVector(courseRads, dist, null);
+		}
+
+		return _vecTempLastVector;
+	}
+
+	@Override
 	public Layer wrapMe()
 	{
 		// right, put the segment into a TrackWrapper
@@ -1117,80 +1198,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		newTrack.add(this);
 
 		return newTrack;
-	}
-
-	public static class testListMgt extends TestCase
-	{
-		public void testLast()
-		{
-			TrackSegment ts0 = new TrackSegment();
-			FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(1000),
-					new WorldLocation(1, 2, 3), 1, 2));
-			FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(2000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(3000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(4000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			ts0.addFix(newFix1);
-			ts0.addFix(newFix2);
-			ts0.addFix(newFix3);
-			ts0.addFix(newFix4);
-
-			TrackSegment ts1 = new TrackSegment();
-			FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(15000),
-					new WorldLocation(1, 2, 3), 1, 2));
-			FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(16000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(17000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(18000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			ts1.addFix(newFix5);
-			ts1.addFix(newFix6);
-			ts1.addFix(newFix7);
-			ts1.addFix(newFix8);
-
-			TrackSegment newS = new TrackSegment(ts0, ts1);
-			assertEquals("got lots of points", 10, newS.size());
-
-			// cause the monster problem
-			newFix6.setDateTimeGroup(new HiResDate(15000));
-
-			// try the mini algorithm first
-			FixWrapper[] items = getLastElementsFrom(ts1, 2);
-			assertTrue("times should not be the same ",
-					items[0].getDateTimeGroup() != items[1].getDateTimeGroup());
-
-			try
-			{
-				newS = new TrackSegment(ts0, ts1);
-				assertEquals("got lots of points", 5, newS.size());
-			}
-			catch (RuntimeException re)
-			{
-				fail("runtime exception thrown!!!");
-			}
-
-		}
-	}
-
-	@Override
-	public boolean supportsAddRemove()
-	{
-		return true;
-	}
-
-	@Override
-	public boolean requiresManualSave()
-	{
-		return false;
-	}
-
-	@Override
-	public void doSave(String message)
-	{
-		throw new RuntimeException("should not have called manual save for Track Segment");
 	}
 
 }

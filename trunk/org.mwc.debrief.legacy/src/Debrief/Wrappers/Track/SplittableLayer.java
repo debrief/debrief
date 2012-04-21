@@ -11,10 +11,12 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 
-/** class that includes functionality to split it's children if/when they're more 
+/**
+ * class that includes functionality to split it's children if/when they're more
  * than 15 mins from the previous child
+ * 
  * @author ianmayo
- *
+ * 
  */
 public class SplittableLayer extends BaseLayer
 {
@@ -26,6 +28,7 @@ public class SplittableLayer extends BaseLayer
 			super(data);
 		}
 
+		@Override
 		@SuppressWarnings("rawtypes")
 		public MethodDescriptor[] getMethodDescriptors()
 		{
@@ -47,6 +50,16 @@ public class SplittableLayer extends BaseLayer
 	}
 
 	private static final long DELTA_LIMIT = 1000 * 60 * 15; // 15 mins
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public SplittableLayer(boolean b)
+	{
+		super(b);
+	}
 
 	@FireExtended
 	public void AutoSplitTracks()
@@ -88,7 +101,7 @@ public class SplittableLayer extends BaseLayer
 						newTrack = true;
 					}
 				}
-				
+
 				lastCut = thisCut;
 
 				if (newTrack)
@@ -127,28 +140,19 @@ public class SplittableLayer extends BaseLayer
 		Iterator<SensorWrapper> ditches = toDitch.iterator();
 		while (ditches.hasNext())
 		{
-			SensorWrapper sensorWrapper = (SensorWrapper) ditches.next();
+			SensorWrapper sensorWrapper = ditches.next();
 			this.removeElement(sensorWrapper);
 		}
 		Iterator<SensorWrapper> adds = toAdd.iterator();
 		while (adds.hasNext())
 		{
-			SensorWrapper sensorWrapper = (SensorWrapper) adds.next();
+			SensorWrapper sensorWrapper = adds.next();
 			this.add(sensorWrapper);
 		}
 
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public SplittableLayer(boolean b)
-	{
-		super(b);
-	}
-
+	@Override
 	public Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)

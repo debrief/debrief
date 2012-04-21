@@ -31,40 +31,6 @@ public class TrackWrapper_Support
 	{
 
 		/**
-		 * property support
-		 * 
-		 */
-		private PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
-
-		public void addPropertyChangeListener(PropertyChangeListener listener)
-		{
-			_pSupport.addPropertyChangeListener(listener);
-		}
-
-		public void addPropertyChangeListener(String property,
-				PropertyChangeListener listener)
-		{
-			_pSupport.addPropertyChangeListener(property, listener);
-		}
-
-		public void firePropertyChange(String propertyChanged, Object oldValue,
-				Object newValue)
-		{
-			_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
-		}
-
-		public void removePropertyChangeListener(PropertyChangeListener listener)
-		{
-			_pSupport.removePropertyChangeListener(listener);
-		}
-
-		public void removePropertyChangeListener(String property,
-				PropertyChangeListener listener)
-		{
-			_pSupport.removePropertyChangeListener(property, listener);
-		}
-
-		/**
 		 * class containing editable details of a track
 		 */
 		public final class BaseLayerInfo extends Editable.EditorType
@@ -105,15 +71,42 @@ public class TrackWrapper_Support
 		}
 
 		/**
+		 * property support
+		 * 
+		 */
+		private PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
+
+		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
 		protected TrackWrapper _myTrack;
 
+		@Override
+		public void addPropertyChangeListener(PropertyChangeListener listener)
+		{
+			_pSupport.addPropertyChangeListener(listener);
+		}
+
+		@Override
+		public void addPropertyChangeListener(String property,
+				PropertyChangeListener listener)
+		{
+			_pSupport.addPropertyChangeListener(property, listener);
+		}
+
+		@Override
 		public void exportShape()
 		{
 			// ignore..
+		}
+
+		@Override
+		public void firePropertyChange(String propertyChanged, Object oldValue,
+				Object newValue)
+		{
+			_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
 		}
 
 		/**
@@ -125,25 +118,40 @@ public class TrackWrapper_Support
 			return new BaseLayerInfo(this);
 		}
 
+		@Override
 		public int getLineThickness()
 		{
 			// ignore..
 			return 1;
 		}
 
+		public TrackWrapper getWrapper()
+		{
+			return _myTrack;
+		}
+
+		@Override
 		public boolean hasOrderedChildren()
 		{
 			return true;
 		}
 
+		@Override
+		public void removePropertyChangeListener(PropertyChangeListener listener)
+		{
+			_pSupport.removePropertyChangeListener(listener);
+		}
+
+		@Override
+		public void removePropertyChangeListener(String property,
+				PropertyChangeListener listener)
+		{
+			_pSupport.removePropertyChangeListener(property, listener);
+		}
+
 		public void setWrapper(TrackWrapper wrapper)
 		{
 			_myTrack = wrapper;
-		}
-
-		public TrackWrapper getWrapper()
-		{
-			return _myTrack;
 		}
 
 	}
@@ -179,12 +187,14 @@ public class TrackWrapper_Support
 			_val = iterator;
 		}
 
+		@Override
 		public final boolean hasMoreElements()
 		{
 			return _val.hasNext();
 
 		}
 
+		@Override
 		public final Editable nextElement()
 		{
 			return _val.next();
@@ -299,27 +309,7 @@ public class TrackWrapper_Support
 			}
 		}
 
-		/**
-		 * utility method to reveal all positions in a track
-		 * 
-		 */
-		@FireReformatted
-		public void revealAllPositions()
-		{
-			Enumeration<Editable> theEnum = elements();
-			while (theEnum.hasMoreElements())
-			{
-				TrackSegment seg = (TrackSegment) theEnum.nextElement();
-				Enumeration<Editable> ele = seg.elements();
-				while (ele.hasMoreElements())
-				{
-					Editable editable = (Editable) ele.nextElement();
-					FixWrapper fix = (FixWrapper) editable;
-					fix.setVisible(true);
-				}
-			}
-		}
-
+		@Override
 		public void append(Layer other)
 		{
 			System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
@@ -370,6 +360,27 @@ public class TrackWrapper_Support
 			this.addSegment(first);
 
 			// and fire some kind of update...
+		}
+
+		/**
+		 * utility method to reveal all positions in a track
+		 * 
+		 */
+		@FireReformatted
+		public void revealAllPositions()
+		{
+			Enumeration<Editable> theEnum = elements();
+			while (theEnum.hasMoreElements())
+			{
+				TrackSegment seg = (TrackSegment) theEnum.nextElement();
+				Enumeration<Editable> ele = seg.elements();
+				while (ele.hasMoreElements())
+				{
+					Editable editable = ele.nextElement();
+					FixWrapper fix = (FixWrapper) editable;
+					fix.setVisible(true);
+				}
+			}
 		}
 
 		@Override
