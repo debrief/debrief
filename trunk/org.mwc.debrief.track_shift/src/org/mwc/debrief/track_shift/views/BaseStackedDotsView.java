@@ -21,6 +21,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
@@ -51,7 +53,10 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.debrief.core.actions.DragFeature.DragFeatureAction;
+import org.mwc.debrief.core.actions.DragFeature.DragOperation;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
 import org.mwc.debrief.track_shift.magic.OptimiseTest.TryOffsetFunction;
@@ -64,7 +69,9 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
+import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldVector;
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
 
@@ -120,8 +127,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * buttons for which plots to show
 	 * 
 	 */
-	protected
-	Action _showLinePlot;
+	protected Action _showLinePlot;
 	private Action _showDotPlot;
 
 	/**
@@ -192,8 +198,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	abstract protected String getType();
 
 	abstract protected void updateData(boolean updateDoublets);
-	
-	/** do some wonder magic on the plot
+
+	/**
+	 * do some wonder magic on the plot
 	 * 
 	 */
 	abstract protected void optimise();
@@ -598,9 +605,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/reveal.gif"));
 
-		
-
-
 		// now the course action
 		_magicBtn = new Action("Magic", IAction.AS_PUSH_BUTTON)
 		{
@@ -612,15 +616,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			}
 		};
 
-		
 	}
 
 	protected void doMagic()
 	{
+		// retrieve the selected track item
+		ISelection prov = this.getViewSite().getSelectionProvider().getSelection();
+		IStructuredSelection sel = (IStructuredSelection) prov;
+		Object obj = sel.getFirstElement();
+		
+		
 		// cool sort out the list of sensor locations for these tracks
-		TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(), true, false);
-		
-		
+		TreeSet<Doublet> doublets = _myHelper.getDoublets(_onlyVisible.isChecked(),
+				true, false);
+
 		// Create instance of Minimisation
 		Minimisation min = new Minimisation();
 		MinimisationFunction funct = new TryOffsetFunction(doublets);
@@ -631,7 +640,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// initial step sizes
 		double[] step =
-		{20, 400 };
+		{ 20, 400 };
 
 		// convergence tolerance
 		double ftol = 1e-8;
@@ -639,7 +648,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// set the min/max bearing
 		min.addConstraint(0, -1, 0d);
 		min.addConstraint(0, 1, 360d);
-		
+
 		// set the min/max ranges
 		min.addConstraint(1, -1, 0d);
 		min.addConstraint(1, 1, 6000d);
@@ -652,9 +661,35 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		double bearing = param[0];
 		double range = param[1];
-		
-		System.err.println("calc result is brg:" + (int)bearing + " rng" + range);
-		
+
+		System.out.println("calc result is brg:" + bearing + " rng:" + range);
+
+		// produce a world-vector
+		WorldVector vec = new WorldVector(
+				MWC.Algorithms.Conversions.Degs2Rads(bearing),
+				MWC.Algorithms.Conversions.m2Degs(range), 0);
+
+		// get the secondary track
+		TrackWrapper secTrack = _myHelper.getSecondaryTrack();
+
+		DragOperation shiftIt = new DragOperation()
+		{
+			public void apply(DraggableItem item, WorldVector offset)
+			{
+				item.shift(offset);
+			}
+		};
+
+		// put it into our action
+		DragFeatureAction dta = new DragFeatureAction(vec, secTrack,
+				_ourLayersSubject, secTrack, shiftIt);
+
+		// and wrap it
+		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject);
+
+		// and add it to the clipboard
+		CorePlugin.run(daw);
+
 	}
 
 	/**

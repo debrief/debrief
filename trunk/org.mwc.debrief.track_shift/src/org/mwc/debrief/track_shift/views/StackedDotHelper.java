@@ -666,4 +666,9 @@ public final class StackedDotHelper
 		linePlot.setDataset(actualSeries);
 	}
 
+	public TrackWrapper getSecondaryTrack()
+	{
+		return _secondaryTrack;
+	}
+
 }
