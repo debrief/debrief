@@ -24,6 +24,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -31,6 +32,7 @@ import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -63,6 +65,7 @@ import org.mwc.debrief.core.actions.DragFeature.DragFeatureAction;
 import org.mwc.debrief.core.actions.DragFeature.DragOperation;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
+import org.mwc.debrief.track_shift.magic.OptimiseTest;
 import org.mwc.debrief.track_shift.magic.OptimiseTest.TryOffsetFunction;
 
 import Debrief.Wrappers.TrackWrapper;
@@ -668,6 +671,22 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	protected void doMagic()
 	{
+		// right, find the layer manager
+		IViewPart mgr = this.getViewSite().getPage().findView(CorePlugin.LAYER_MANAGER);
+		ISelectionProvider selProvider = (ISelectionProvider) mgr.getAdapter(ISelectionProvider.class);
+		IStructuredSelection sel = (IStructuredSelection) selProvider.getSelection();
+		
+		// ok, see if we've got something of value
+		Vector<DraggableItem> dragees = new Vector<DraggableItem>();
+		String troubles = OptimiseTest.getDraggables(dragees, sel, _myHelper.getSecondaryTrack());
+		
+		if(troubles != null)
+		{
+			CorePlugin.showMessage("Optimise solution", troubles);
+			return;
+		}
+		
+		
 		if (_draggableSelection != null)
 		{
 			Iterator<DraggableItem> iter = _draggableSelection.iterator();

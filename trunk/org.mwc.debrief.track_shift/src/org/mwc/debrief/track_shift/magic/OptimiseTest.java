@@ -5,11 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.mockito.Mockito;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 import org.mwc.debrief.track_shift.views.StackedDotHelper;
@@ -20,8 +24,10 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -32,9 +38,84 @@ import flanagan.math.MinimisationFunction;
 
 public class OptimiseTest
 {
+	private static final String ONLY_ONE_TRACK = "Only one whole Track may be selected for the optimisation";
+	private static final String ONLY_SECONDARY = "Optimisation is only supported for denoted Secondary Track";
+	private static final String INVALID_SELECTION = "Only Track or Track Segment items may be selected";
+	private static final String NO_VALID_SEL = "Please select a single Track, or multiple Track Segments from the Layer Manager to optimise";
+	final static private String NO_MIXED_ITEMS = "Sorry, you can't mix Track and Track-Segment items in the optimisation";
 
 	public static class testMe extends TestCase
 	{
+		public void testDraggables()
+		{
+			Vector<EditableWrapper> items = new Vector<EditableWrapper>();
+			Vector<DraggableItem> resList = new Vector<DraggableItem>();
+			TrackWrapper theTrack = new TrackWrapper();
+			items.add(new EditableWrapper(theTrack));
+			items.add(new EditableWrapper(new TrackSegment()));
+			IStructuredSelection sel = new StructuredSelection(items);
+
+			assertEquals("data in there", 2, sel.size());
+			String res = getDraggables(resList, sel, theTrack);
+
+			assertEquals("failed, mixed", 0, resList.size());
+			assertEquals("failed, mixed", NO_MIXED_ITEMS, res);
+
+			// try an empty list
+			items = new Vector<EditableWrapper>();
+			resList = new Vector<DraggableItem>();
+			sel = new StructuredSelection(items);
+
+			assertEquals("no data in there", 0, sel.size());
+			res = getDraggables(resList, sel, theTrack);
+
+			assertEquals("failed, mixed", 0, resList.size());
+			assertEquals("failed, mixed", NO_VALID_SEL, res);
+
+			// swap the items around
+			items = new Vector<EditableWrapper>();
+			resList = new Vector<DraggableItem>();
+			theTrack = new TrackWrapper();
+			items.add(new EditableWrapper(new TrackSegment()));
+			items.add(new EditableWrapper(theTrack));
+			sel = new StructuredSelection(items);
+
+			assertEquals("data in there", 2, sel.size());
+			res = getDraggables(resList, sel, theTrack);
+
+			assertEquals("failed, mixed", 0, resList.size());
+			assertEquals("failed, mixed", NO_MIXED_ITEMS, res);
+
+			// try a working list
+			items = new Vector<EditableWrapper>();
+			resList = new Vector<DraggableItem>();
+			theTrack = new TrackWrapper();
+			items.add(new EditableWrapper(new TrackSegment()));
+			items.add(new EditableWrapper(new TrackSegment()));
+			sel = new StructuredSelection(items);
+
+			assertEquals("data in there", 2, sel.size());
+			res = getDraggables(resList, sel, theTrack);
+
+			assertEquals("worked, found 2", 2, resList.size());
+			assertEquals("worked, no errors", null, res);
+
+			// try two tracks
+			items = new Vector<EditableWrapper>();
+			resList = new Vector<DraggableItem>();
+			theTrack = new TrackWrapper();
+			items.add(new EditableWrapper(theTrack));
+			items.add(new EditableWrapper(new TrackWrapper()));
+			sel = new StructuredSelection(items);
+
+			assertEquals("data in there", 2, sel.size());
+			res = getDraggables(resList, sel, theTrack);
+
+			assertEquals("failed, two tracks", 0, resList.size());
+			assertEquals("failed, two tracks", ONLY_ONE_TRACK, res);
+
+		}
+
 		public void testLoad() throws FileNotFoundException
 		{
 			// get some data
@@ -349,7 +430,7 @@ public class OptimiseTest
 				final double thisError = thisD.calculateBearingError(measuredBearing,
 						calculatedBearing);
 				double score = Math.abs(thisError * thisError);
-				
+
 				res += score;
 			}
 
@@ -421,5 +502,76 @@ public class OptimiseTest
 			return res;
 		}
 
+	}
+
+	public static String getDraggables(Vector<DraggableItem> targetList,
+			IStructuredSelection sel, TrackWrapper trackWrapper)
+	{
+		String res = null;
+
+		TrackWrapper track = null;
+
+		Vector<DraggableItem> tmpList = new Vector<DraggableItem>();
+
+		// ok, get looping
+		Iterator<?> iter = sel.iterator();
+		while (iter.hasNext())
+		{
+			Object object = (Object) iter.next();
+			if (object instanceof EditableWrapper)
+			{
+				EditableWrapper ew = (EditableWrapper) object;
+				Editable obj = ew.getEditable();
+				if (obj instanceof TrackWrapper)
+				{
+					// is this something other than the secondary track?
+					TrackWrapper thisTrack = (TrackWrapper) obj;
+
+					// is this our first item?
+					if (tmpList.size() == 0)
+					{
+						if (!thisTrack.equals(trackWrapper))
+						{
+							return ONLY_SECONDARY;
+						}
+
+						track = thisTrack;
+						tmpList.add(track);
+					}
+					else
+					{
+						// do we alreay have a track
+						if (track != null)
+							return ONLY_ONE_TRACK;
+						else
+							return NO_MIXED_ITEMS;
+					}
+				}
+				else if (obj instanceof TrackSegment)
+				{
+					// do we already have a track?
+					if (track != null)
+					{
+						return NO_MIXED_ITEMS;
+					}
+					tmpList.add((DraggableItem) obj);
+				}
+				else
+				{
+					return INVALID_SELECTION;
+				}
+			}
+		}
+
+		if (tmpList.size() == 0)
+		{
+			res = NO_VALID_SEL;
+		}
+		else
+		{
+			targetList.addAll(tmpList);
+		}
+
+		return res;
 	}
 }
