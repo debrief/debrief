@@ -114,10 +114,7 @@ public class GtProjection extends FlatProjection
 		{
 			// now got to screen
 			_view.getScreenToWorld().transform(screen, degs);
-			// screenToWorld.inverseTransform(screen, metres);
-
-			// _degs2metres.inverse().transform(metres, degs);
-			res = new WorldLocation(degs.getCoordinate()[0], degs.getCoordinate()[1],
+			res = new WorldLocation(degs.getCoordinate()[1], degs.getCoordinate()[0],
 					0);
 		}
 		catch (MismatchedDimensionException e)
