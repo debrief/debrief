@@ -90,14 +90,14 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 		if (openFile != null && openFile.exists())
 		{
 			_myLayer = loadLayer(openFile);
-			
-			// sort out the visibility
-			_myLayer.setVisible(this.getVisible());
 		}
 
 		// ok, add ourselves to the map
 		if (_myLayer != null)
 		{
+			// sort out the visibility
+			_myLayer.setVisible(this.getVisible());
+
 			_myLayer.setTitle(super.getName());
 			_myMap.addLayer(_myLayer);
 			
