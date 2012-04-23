@@ -49,8 +49,10 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 	/** RGB value to use as transparent color */
 	private static final int TRANSPARENT_COLOR = 0x123456;
 
-	private FeatureLayer _layer;
-	private Image swtImage;
+	private transient FeatureLayer _countries;
+	private transient Image swtImage;
+
+	private transient WorldImageLayer _ukImage;
 
 	public GTLayer()
 	{
@@ -69,9 +71,18 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 			{
 				SimpleFeatureSource featureSource = store.getFeatureSource();
 				Style style = SLD.createSimpleStyle(featureSource.getSchema());
-				_layer = new FeatureLayer(featureSource, style);
+				_countries = new FeatureLayer(featureSource, style);
 			}
 
+			String path = "/Users/ian/Desktop/ukrasterchart/2_BRITISH_ISLES.tif";
+			File chartFile = new File(path);
+			if(!chartFile.exists())
+				System.err.println("CANNOT FILE THE CHART FILE!!!");
+			
+			// also have a go at loading the UK
+			_ukImage = new WorldImageLayer("uk", path );
+			_ukImage.setVisible(true);
+			
 		}
 		catch (IOException e)
 		{
@@ -99,12 +110,16 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 			while (iter.hasNext())
 			{
 				Layer layer = (Layer) iter.next();
-				if (layer == _layer)
+				if (layer == _countries)
 					found = true;
 			}
 
 			if (!found)
-				map.addLayer(_layer);
+			{
+				map.addLayer(_countries);
+				map.addLayer(_ukImage.getLayer());
+				_ukImage.setMap(map);
+			}
 
 			StreamingRenderer renderer = new StreamingRenderer();
 			renderer.setMapContent(map);
@@ -113,8 +128,7 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			renderer.setJava2DHints(hints);
 
-			@SuppressWarnings("rawtypes")
-			Map rendererParams = new HashMap();
+			Map<String, Object> rendererParams = new HashMap<String, Object>();
 			rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
 
 			renderer.setRendererHints(rendererParams);

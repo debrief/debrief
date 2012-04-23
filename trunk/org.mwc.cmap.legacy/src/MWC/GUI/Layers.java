@@ -920,7 +920,16 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
 		public Layer wrapMe();
 	}
+	
+	/** marker for objects that want to know about the parent layer
+	 * (prob because they can create other layers)
+	 */
+	public static interface NeedsToKnowAboutLayers
+	{
+		public void setLayers(Layers parent);
+	}
 
+	
 	/**
 	 * interface to be implemented by classes intending to watch the full set of
 	 * data for this scenarion
