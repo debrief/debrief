@@ -50,9 +50,10 @@ import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Plottable;
 
-public class FeaturePainter implements Plottable, Serializable
+public class FeaturePainter implements Plottable, Serializable, ExcludeFromRightClickEdit
 {
 
   /**
