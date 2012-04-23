@@ -136,7 +136,7 @@ public class GtProjection extends FlatProjection
 	@Override
 	public void zoom(double scaleVal)
 	{
-		if(scaleVal == 0)
+		if (scaleVal == 0)
 			scaleVal = 1;
 		Dimension paneArea = super.getScreenArea();
 		WorldArea dataArea = super.getDataArea();
@@ -167,7 +167,7 @@ public class GtProjection extends FlatProjection
 
 			mySetDataArea(newArea);
 		}
-		 
+
 	}
 
 	@Override
@@ -262,6 +262,49 @@ public class GtProjection extends FlatProjection
 	public static class TestProj extends TestCase
 	{
 		public void testOne() throws NoSuchAuthorityCodeException,
+		FactoryException, NoninvertibleTransformException
+{
+	MapContent mc = new MapContent();
+
+	// set a coordinate reference system
+	CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+	mc.getViewport().setCoordinateReferenceSystem(crs);
+
+	// set a data area
+	DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
+	DirectPosition2D brDegs = new DirectPosition2D(1, 5);
+	Envelope2D env = new Envelope2D(tlDegs, brDegs);
+	ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
+	mc.getViewport().setBounds(rEnv);
+
+	// set a screen area
+	mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
+
+	// sort out the aspect ration
+	mc.getViewport().setMatchingAspectRatio(true);
+
+	// create a point to test
+	DirectPosition2D degs = new DirectPosition2D(5, 4);
+
+	// and results object
+	DirectPosition2D pixels = new DirectPosition2D();
+	DirectPosition2D rDegs = new DirectPosition2D();
+
+	// transform the test point
+	mc.getViewport().getWorldToScreen().transform(degs, pixels);
+
+	System.out.println("pixels:" + pixels);
+	assertEquals("correct x", 600, (int) pixels.x);
+	assertEquals("correct y", 600, (int) pixels.x);
+
+	// and the reverse transform
+	mc.getViewport().getWorldToScreen().inverseTransform(pixels, rDegs);
+
+	System.out.println("degs:" + rDegs);
+	assertEquals("correct x", 5, (int) rDegs.x);
+	assertEquals("correct y", 4, (int) rDegs.y);
+}
+		public void testTwo() throws NoSuchAuthorityCodeException,
 				FactoryException, NoninvertibleTransformException
 		{
 			MapContent mc = new MapContent();
@@ -271,8 +314,8 @@ public class GtProjection extends FlatProjection
 			mc.getViewport().setCoordinateReferenceSystem(crs);
 
 			// set a data area
-			DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
-			DirectPosition2D brDegs = new DirectPosition2D(1, 5);
+			DirectPosition2D tlDegs = new DirectPosition2D(45, -5);
+			DirectPosition2D brDegs = new DirectPosition2D(41, -1);
 			Envelope2D env = new Envelope2D(tlDegs, brDegs);
 			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
 			mc.getViewport().setBounds(rEnv);
@@ -283,26 +326,23 @@ public class GtProjection extends FlatProjection
 			// sort out the aspect ration
 			mc.getViewport().setMatchingAspectRatio(true);
 
-			// create a point to test
-			DirectPosition2D degs = new DirectPosition2D(5, 4);
+			// try with series of points
+			System.out.println("test 2:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45,-4), null));
+			System.out.println("test 2:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(44,-4), null));
+			System.out.println("test 2:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(43,-4), null));
+			System.out.println("test 2:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(42,-4), null));
+			System.out.println("test 2:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(41,-4), null));
 
-			// and results object
-			DirectPosition2D pixels = new DirectPosition2D();
-			DirectPosition2D rDegs = new DirectPosition2D();
-
-			// transform the test point
-			mc.getViewport().getWorldToScreen().transform(degs, pixels);
-
-			System.out.println("pixels:" + pixels);
-			assertEquals("correct x", 600, (int) pixels.x);
-			assertEquals("correct y", 600, (int) pixels.x);
-
-			// and the reverse transform
-			mc.getViewport().getWorldToScreen().inverseTransform(pixels, rDegs);
-
-			System.out.println("degs:" + rDegs);
-			assertEquals("correct x", 5, (int) rDegs.x);
-			assertEquals("correct y", 4, (int) rDegs.y);
 		}
 	}
 
