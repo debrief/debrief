@@ -64,14 +64,13 @@ public class GtProjection extends FlatProjection
 
 		_view.setMatchingAspectRatio(true);
 
-		_map.addMapBoundsListener(new MapBoundsListener()
-		{
-
-			public void mapBoundsChanged(MapBoundsEvent event)
-			{
-				clearTransforms();
-			}
-		});
+//		_map.addMapBoundsListener(new MapBoundsListener()
+//		{
+//			public void mapBoundsChanged(MapBoundsEvent event)
+//			{
+//				clearTransforms();
+//			}
+//		});
 
 	}
 
@@ -83,11 +82,9 @@ public class GtProjection extends FlatProjection
 	@Override
 	public Point toScreen(WorldLocation val)
 	{
-		checkTransforms();
-
 		Point res = null;
 
-		DirectPosition2D degs = new DirectPosition2D(val.getLat(), val.getLong());
+		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
 		DirectPosition2D screen = new DirectPosition2D();
 		try
 		{
@@ -95,8 +92,8 @@ public class GtProjection extends FlatProjection
 			_view.getWorldToScreen().transform(degs, screen);
 
 			// output the results
-			res = new Point((int) screen.getCoordinate()[1],
-					(int) screen.getCoordinate()[0]);
+			res = new Point((int) screen.getCoordinate()[0],
+					(int) screen.getCoordinate()[1]);
 		}
 		catch (MismatchedDimensionException e)
 		{
@@ -109,10 +106,8 @@ public class GtProjection extends FlatProjection
 	@Override
 	public WorldLocation toWorld(Point val)
 	{
-		checkTransforms();
-
 		WorldLocation res = null;
-		DirectPosition2D screen = new DirectPosition2D(val.y, val.x);
+		DirectPosition2D screen = new DirectPosition2D(val.x, val.y);
 		DirectPosition2D degs = new DirectPosition2D();
 
 		try
@@ -143,8 +138,8 @@ public class GtProjection extends FlatProjection
 		if (dataArea != null)
 		{
 			WorldLocation centre = super.getDataArea().getCentre();
-			DirectPosition2D mapPos = new DirectPosition2D(centre.getLat(),
-					centre.getLong());
+			DirectPosition2D mapPos = new DirectPosition2D(centre.getLong(),
+					centre.getLat());
 
 			if (_view.getWorldToScreen() == null)
 				return;
@@ -159,11 +154,12 @@ public class GtProjection extends FlatProjection
 			Envelope2D newMapArea = new Envelope2D();
 			newMapArea.setFrameFromCenter(mapPos, corner);
 
-			WorldLocation tl = new WorldLocation(newMapArea.getMinX(),
-					newMapArea.getMaxY(), 0d);
-			WorldLocation br = new WorldLocation(newMapArea.getMaxX(),
-					newMapArea.getMinY(), 0d);
+			WorldLocation tl = new WorldLocation(newMapArea.getMinY(),
+					newMapArea.getMaxX(), 0d);
+			WorldLocation br = new WorldLocation(newMapArea.getMaxY(),
+					newMapArea.getMinX(), 0d);
 			WorldArea newArea = new WorldArea(tl, br);
+			newArea.normalise();
 
 			mySetDataArea(newArea);
 		}
@@ -173,8 +169,6 @@ public class GtProjection extends FlatProjection
 	@Override
 	public void setScreenArea(Dimension theArea)
 	{
-		clearTransforms();
-
 		java.awt.Rectangle screenArea = new java.awt.Rectangle(0, 0, theArea.width,
 				theArea.height);
 		_view.setScreenArea(screenArea);
@@ -186,124 +180,72 @@ public class GtProjection extends FlatProjection
 	public void setDataArea(WorldArea theArea)
 	{
 		super.setDataArea(theArea);
-
+		
 		mySetDataArea(theArea);
 	}
 
 	private void mySetDataArea(WorldArea theArea)
 	{
-		clearTransforms();
+		System.out.println("new area:" + theArea);
 
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
 
-		DirectPosition2D tlDegs = new DirectPosition2D(br.getLat(), tl.getLong());
-		DirectPosition2D brDegs = new DirectPosition2D(tl.getLat(), br.getLong());
+		DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(), tl.getLat());
+		DirectPosition2D brDegs = new DirectPosition2D(br.getLong(), br.getLat());
 
 		// put the coords into an envelope
-		Envelope2D env = new Envelope2D(tlDegs, brDegs);
+		Envelope2D env = new Envelope2D(brDegs, tlDegs);
 		ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldCoords);
 		_view.setBounds(rEnv);
-	}
-
-	private void clearTransforms()
-	{
-		// clear the transforms
-		// worldToScreen = null;
-		// screenToWorld = null;
-	}
-
-	private void checkTransforms()
-	{
-		// do we need our transforms?
-		// if ((worldToScreen == null) || (screenToWorld == null))
-		// {
-		//
-		// WorldArea dArea = super.getDataArea();
-		// Dimension sArea = super.getScreenArea();
-		//
-		// if ((dArea != null) && (sArea != null))
-		// {
-		//
-		// try
-		// {
-		//
-		// ReferencedEnvelope rEnv = _view.getBounds();
-		// java.awt.Rectangle screenArea = _view.getScreenArea();
-		//
-		// double xscale = screenArea.getWidth() / rEnv.getWidth();
-		// double yscale = screenArea.getHeight() / rEnv.getHeight();
-		//
-		// double scale = Math.min(xscale, yscale);
-		//
-		// double xoff = rEnv.getMedian(0) * scale - screenArea.getCenterX();
-		// double yoff = rEnv.getMedian(1) * scale + screenArea.getCenterY();
-		//
-		// worldToScreen = new AffineTransform(scale, 0, 0, -scale, -xoff, yoff);
-		//
-		// screenToWorld = worldToScreen.createInverse();
-		//
-		// }
-		// catch (MismatchedDimensionException e)
-		// {
-		// GtActivator.logError(Status.ERROR, "Whilst trying to set transforms",
-		// e);
-		// }
-		// catch (NoninvertibleTransformException e)
-		// {
-		// GtActivator.logError(Status.ERROR, "Whilst trying to set transforms",
-		// e);
-		// }
-		// }
-		//
-		// }
 	}
 
 	public static class TestProj extends TestCase
 	{
 		public void testOne() throws NoSuchAuthorityCodeException,
-		FactoryException, NoninvertibleTransformException
-{
-	MapContent mc = new MapContent();
+				FactoryException, NoninvertibleTransformException
+		{
+			MapContent mc = new MapContent();
 
-	// set a coordinate reference system
-	CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
-	mc.getViewport().setCoordinateReferenceSystem(crs);
+			// set a coordinate reference system
+			CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+			mc.getViewport().setCoordinateReferenceSystem(crs);
 
-	// set a data area
-	DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
-	DirectPosition2D brDegs = new DirectPosition2D(1, 5);
-	Envelope2D env = new Envelope2D(tlDegs, brDegs);
-	ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
-	mc.getViewport().setBounds(rEnv);
+			// set a data area
+			DirectPosition2D tlDegs = new DirectPosition2D(5, 1);
+			DirectPosition2D brDegs = new DirectPosition2D(1, 5);
+			Envelope2D env = new Envelope2D(tlDegs, brDegs);
+			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, crs);
+			mc.getViewport().setBounds(rEnv);
 
-	// set a screen area
-	mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
+			// set a screen area
+			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
 
-	// sort out the aspect ration
-	mc.getViewport().setMatchingAspectRatio(true);
+			// sort out the aspect ration
+			mc.getViewport().setMatchingAspectRatio(true);
 
-	// create a point to test
-	DirectPosition2D degs = new DirectPosition2D(5, 4);
+			// create a point to test
+			DirectPosition2D degs = new DirectPosition2D(5, 4);
 
-	// and results object
-	DirectPosition2D pixels = new DirectPosition2D();
-	DirectPosition2D rDegs = new DirectPosition2D();
+			// and results object
+			DirectPosition2D pixels = new DirectPosition2D();
+			DirectPosition2D rDegs = new DirectPosition2D();
 
-	// transform the test point
-	mc.getViewport().getWorldToScreen().transform(degs, pixels);
+			// transform the test point
+			mc.getViewport().getWorldToScreen().transform(degs, pixels);
 
-	System.out.println("pixels:" + pixels);
-	assertEquals("correct x", 600, (int) pixels.x);
-	assertEquals("correct y", 600, (int) pixels.x);
+			System.out.println("pixels:" + pixels);
+			assertEquals("correct x", 600, (int) pixels.x);
+			assertEquals("correct y", 600, (int) pixels.x);
 
-	// and the reverse transform
-	mc.getViewport().getWorldToScreen().inverseTransform(pixels, rDegs);
+			// and the reverse transform
+			mc.getViewport().getWorldToScreen().inverseTransform(pixels, rDegs);
 
-	System.out.println("degs:" + rDegs);
-	assertEquals("correct x", 5, (int) rDegs.x);
-	assertEquals("correct y", 4, (int) rDegs.y);
-}
+			System.out.println("degs:" + rDegs);
+			assertEquals("correct x", 5, (int) rDegs.x);
+			assertEquals("correct y", 4, (int) rDegs.y);
+		}
+
 		public void testTwo() throws NoSuchAuthorityCodeException,
 				FactoryException, NoninvertibleTransformException
 		{
@@ -321,7 +263,7 @@ public class GtProjection extends FlatProjection
 			mc.getViewport().setBounds(rEnv);
 
 			// set a screen area
-			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 400));
+			mc.getViewport().setScreenArea(new Rectangle(0, 0, 800, 200));
 
 			// sort out the aspect ration
 			mc.getViewport().setMatchingAspectRatio(true);
@@ -329,19 +271,39 @@ public class GtProjection extends FlatProjection
 			// try with series of points
 			System.out.println("test 2:"
 					+ mc.getViewport().getWorldToScreen()
-							.transform(new DirectPosition2D(45,-4), null));
+							.transform(new DirectPosition2D(45, -4), null));
 			System.out.println("test 2:"
 					+ mc.getViewport().getWorldToScreen()
-							.transform(new DirectPosition2D(44,-4), null));
+							.transform(new DirectPosition2D(44, -4), null));
 			System.out.println("test 2:"
 					+ mc.getViewport().getWorldToScreen()
-							.transform(new DirectPosition2D(43,-4), null));
+							.transform(new DirectPosition2D(43, -4), null));
 			System.out.println("test 2:"
 					+ mc.getViewport().getWorldToScreen()
-							.transform(new DirectPosition2D(42,-4), null));
+							.transform(new DirectPosition2D(42, -4), null));
 			System.out.println("test 2:"
 					+ mc.getViewport().getWorldToScreen()
-							.transform(new DirectPosition2D(41,-4), null));
+							.transform(new DirectPosition2D(41, -4), null));
+
+			// try with series of points
+			System.out.println("test 3:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45, -5), null));
+			System.out.println("test 3:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45, -4), null));
+			System.out.println("test 3:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45, -3), null));
+			System.out.println("test 3:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45, -2), null));
+			System.out.println("test 3:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45, -1), null));
+			System.out.println("test 3:"
+					+ mc.getViewport().getWorldToScreen()
+							.transform(new DirectPosition2D(45, 0), null));
 
 		}
 	}
