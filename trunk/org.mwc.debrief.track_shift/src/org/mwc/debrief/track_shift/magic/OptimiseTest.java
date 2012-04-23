@@ -504,8 +504,15 @@ public class OptimiseTest
 
 	}
 
-	public static String getDraggables(Vector<DraggableItem> targetList,
-			IStructuredSelection sel, TrackWrapper trackWrapper)
+	/** go through the selection, pull out things we may optimise
+	 * 
+	 * @param resultsList placeholder for the results
+	 * @param selection the current selection
+	 * @param secTrack the current secondary track
+	 * @return
+	 */
+	public static String getDraggables(Vector<DraggableItem> resultsList,
+			IStructuredSelection selection, TrackWrapper secTrack)
 	{
 		String res = null;
 
@@ -514,7 +521,7 @@ public class OptimiseTest
 		Vector<DraggableItem> tmpList = new Vector<DraggableItem>();
 
 		// ok, get looping
-		Iterator<?> iter = sel.iterator();
+		Iterator<?> iter = selection.iterator();
 		while (iter.hasNext())
 		{
 			Object object = (Object) iter.next();
@@ -530,7 +537,7 @@ public class OptimiseTest
 					// is this our first item?
 					if (tmpList.size() == 0)
 					{
-						if (!thisTrack.equals(trackWrapper))
+						if (!thisTrack.equals(secTrack))
 						{
 							return ONLY_SECONDARY;
 						}
@@ -569,7 +576,7 @@ public class OptimiseTest
 		}
 		else
 		{
-			targetList.addAll(tmpList);
+			resultsList.addAll(tmpList);
 		}
 
 		return res;
