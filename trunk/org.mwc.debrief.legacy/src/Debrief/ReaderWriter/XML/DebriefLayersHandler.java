@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.Tactical.*;
 import MWC.GUI.Layers;
+import MWC.GUI.Shapes.ChartFolio;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Features.*;
 
@@ -23,6 +24,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 		// inform our parent what type of class we are
 		super("layers");
 
+		addHandler(new ChartFolioHandler(theLayers));
 		addHandler(new DebriefLayerHandler(theLayers));
 		addHandler(new TrackHandler(theLayers));
 		addHandler(new PatternHandler(theLayers));
@@ -65,6 +67,10 @@ public final class DebriefLayersHandler extends MWCXMLReader
 			{
 				Debrief.ReaderWriter.XML.Tactical.TrackHandler.exportTrack(
 						(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+			}
+			else if(ly instanceof ChartFolio)
+			{
+				ChartFolioHandler.exportThisFolio((ChartFolio)ly, layers, doc);
 			}
 			else if (ly instanceof Debrief.Wrappers.BuoyPatternWrapper)
 			{
