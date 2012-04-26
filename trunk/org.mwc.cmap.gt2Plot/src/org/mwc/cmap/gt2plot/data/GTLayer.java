@@ -73,7 +73,8 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 				Style style = SLD.createSimpleStyle(featureSource.getSchema());
 				_countries = new FeatureLayer(featureSource, style);
 			}
-
+			
+//			String path = "/Volumes/Sys_Slow/NoBackup/Downloads/data-v1_2/earthlights.jpg";
 			String path = "/Users/ian/Desktop/ukrasterchart/2_BRITISH_ISLES.tif";
 			File chartFile = new File(path);
 			if(!chartFile.exists())
@@ -117,7 +118,6 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 			if (!found)
 			{
 				map.addLayer(_countries);
-				map.addLayer(_ukImage.getLayer());
 				_ukImage.setMap(map);
 			}
 
