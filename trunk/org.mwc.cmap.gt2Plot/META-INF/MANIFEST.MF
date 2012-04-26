@@ -42,6 +42,7 @@ Bundle-ClassPath: libs/commons-pool-1.5.4.jar,
  libs/gt-cql-8.0-M4.jar,
  libs/gt-geojson-8.0-M4.jar
 Export-Package: org.mwc.cmap.gt2plot,
+ org.mwc.cmap.gt2plot.data,
  org.mwc.cmap.gt2plot.proj,
  org.mwc.cmap.gt2plot.views
 Bundle-ActivationPolicy: lazy

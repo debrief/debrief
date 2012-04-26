@@ -14,13 +14,14 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-
-	/** the map where we display ourselves
+	/**
+	 * the map where we display ourselves
 	 * 
 	 */
 	protected transient MapContent _myMap;
-	
-	/** the GeoTools representation of this object
+
+	/**
+	 * the GeoTools representation of this object
 	 * 
 	 */
 	protected transient Layer _myLayer;
@@ -29,34 +30,29 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	{
 		super(dataType, layerName, fileName);
 	}
-	
-	
-	
+
 	@Override
 	protected void finalize() throws Throwable
 	{
 		// ok, ditch the layer
-		if(_myLayer != null)
+		if (_myLayer != null)
 			_myLayer.dispose();
-		
+
 		// and let the parent do it's stuff
 		super.finalize();
 	}
-
-
 
 	@Override
 	public void setVisible(boolean visible)
 	{
 		super.setVisible(visible);
-		
-		if(_myLayer != null)
+
+		if (_myLayer != null)
 			_myLayer.setVisible(visible);
 	}
 
-
-
-	/** forget about any existing map/layer
+	/**
+	 * forget about any existing map/layer
 	 * 
 	 */
 	public void clearMap()
@@ -74,7 +70,8 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 		_myMap = null;
 	}
 
-	/** tell this layer where to plot itself
+	/**
+	 * tell this layer where to plot itself
 	 * 
 	 * @param map
 	 */
@@ -100,7 +97,7 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 
 			_myLayer.setTitle(super.getName());
 			_myMap.addLayer(_myLayer);
-			
+
 		}
 	}
 
@@ -108,10 +105,12 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 	{
 		return _myLayer;
 	}
-	
-	/** load data from the specific file, return it as a GeoTools layer
+
+	/**
+	 * load data from the specific file, return it as a GeoTools layer
 	 * 
-	 * @param openFile the file to open
+	 * @param openFile
+	 *          the file to open
 	 * @return the layer to load into a GeoTools object
 	 */
 	abstract protected Layer loadLayer(File openFile);

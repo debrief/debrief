@@ -13,10 +13,9 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
-import org.geotools.map.event.MapBoundsEvent;
-import org.geotools.map.event.MapBoundsListener;
 import org.geotools.referencing.CRS;
 import org.mwc.cmap.gt2plot.GtActivator;
+import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -64,13 +63,13 @@ public class GtProjection extends FlatProjection
 
 		_view.setMatchingAspectRatio(true);
 
-//		_map.addMapBoundsListener(new MapBoundsListener()
-//		{
-//			public void mapBoundsChanged(MapBoundsEvent event)
-//			{
-//				clearTransforms();
-//			}
-//		});
+		// _map.addMapBoundsListener(new MapBoundsListener()
+		// {
+		// public void mapBoundsChanged(MapBoundsEvent event)
+		// {
+		// clearTransforms();
+		// }
+		// });
 
 	}
 
@@ -177,7 +176,7 @@ public class GtProjection extends FlatProjection
 	public void setDataArea(WorldArea theArea)
 	{
 		super.setDataArea(theArea);
-		
+
 		mySetDataArea(theArea);
 	}
 
@@ -308,6 +307,21 @@ public class GtProjection extends FlatProjection
 	public MapContent getMapContent()
 	{
 		return _map;
+	}
+
+	public void addGeoToolsLayer(GeoToolsLayer gt)
+	{
+		gt.setMap(_map);
+	}
+
+	/**
+	 * how many layers do we have loaded?
+	 * 
+	 * @return
+	 */
+	public int numLayers()
+	{
+		return _map.layers().size();
 	}
 
 }
