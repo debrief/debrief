@@ -57,7 +57,14 @@
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.cmap.core.preferences.CMAPPreferenceInitializer"/>
   </extension>
-  
+    <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.cmap.core.preferences.ChartPrefsPage"
+           id="org.mwc.cmap.core.preferences.ChartPrefsPage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+           name="Chart backdrops"/>
+  </extension>
   <extension
         point="org.eclipse.ui.preferencePages">
      <page
