@@ -8,9 +8,12 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core;bundle-version="1.0.143",
  org.mwc.cmap.legacy;bundle-version="1.0.137"
-Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: libs/commons-pool-1.5.4.jar,
+ libs/imageio-ext-tiff-1.1.2.jar,
+ libs/imageio-ext-utilities-1.1.2.jar,
+ libs/json-simple-1.1.jar,
+ libs/jt-utils-1.2.0.jar,
  libs/gt-api-8.0-M4.jar,
  libs/gt-coverage-8.0-M4.jar,
  libs/gt-data-8.0-M4.jar,
@@ -34,7 +37,11 @@ Bundle-ClassPath: libs/commons-pool-1.5.4.jar,
  libs/hsqldb-1.8.0.7.jar,
  libs/gt-epsg-hsql-8.0-M4.jar,
  libs/gt-image-8.0-M4.jar,
- libs/gt-geotiff-8.0-M4.jar
+ libs/gt-geotiff-8.0-M4.jar,
+ libs/gt-wms-8.0-M4.jar,
+ libs/gt-cql-8.0-M4.jar,
+ libs/gt-geojson-8.0-M4.jar
 Export-Package: org.mwc.cmap.gt2plot,
  org.mwc.cmap.gt2plot.proj,
  org.mwc.cmap.gt2plot.views
+Bundle-ActivationPolicy: lazy
