@@ -164,7 +164,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 				  }
 					
 				  GtProjection gp = (GtProjection) proj;
-				  org.geotools.map.MapContent myContent = gp.getMapContent();
 				  
 				  ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(
@@ -173,7 +172,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
 								dl.getFilename());
 						gt.setVisible(dl.getVisible());
-						gt.setMap(myContent);
+						gp.addGeoToolsLayer(gt);
 						wrappedLayer = gt;
 					}
 					else if (dl.getDataType().equals(
@@ -192,7 +191,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 							GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
 									dl.getFilename());
 							gt.setVisible(dl.getVisible());
-							gt.setMap(myContent);
+							gp.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}
 					}
@@ -210,12 +209,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 				{
 					// get the content
 					GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
-					org.geotools.map.MapContent myContent = gp.getMapContent();
-					
 					GeoToolsLayer gt = (GeoToolsLayer) theLayer;
 					gt.clearMap();
 
-					if (myContent.layers().size() == 0)
+					if(gp.numLayers() == 0)
 					{
 						// ok - we've got to force the data rea
 						WorldArea area = _myChart.getCanvas().getProjection().getDataArea();
