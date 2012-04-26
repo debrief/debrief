@@ -17,6 +17,8 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.ChartWrapper;
+import MWC.Utilities.ReaderWriter.XML.Features.ChartHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.CoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
@@ -53,6 +55,14 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 		_theLayers = theLayers;
 
 		addHandler(new CoastlineHandler()
+		{
+			public void addPlottable(MWC.GUI.Plottable plottable)
+			{
+				addThis(plottable);
+			}
+		});
+
+		addHandler(new ChartHandler()
 		{
 			public void addPlottable(MWC.GUI.Plottable plottable)
 			{
@@ -213,6 +223,15 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 				{
 				}
 			});
+			_myExporters.put(ChartWrapper.class, new ChartHandler()
+			{
+				public void addPlottable(MWC.GUI.Plottable plottable)
+				{
+				}
+			});
+
+		
+			
 		}
 	}
 
