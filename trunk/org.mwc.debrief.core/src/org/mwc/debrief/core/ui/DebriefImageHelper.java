@@ -3,6 +3,7 @@ package org.mwc.debrief.core.ui;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
@@ -14,6 +15,8 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.Shapes.ChartFolio;
+import MWC.GUI.Shapes.ChartWrapper;
 import MWC.TacticalData.NarrativeEntry;
 
 public class DebriefImageHelper implements ViewLabelImageHelper
@@ -27,6 +30,10 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			res = CorePlugin.getImageDescriptor("icons/track.gif");
 		else if (editable instanceof SensorWrapper)
 			res = CorePlugin.getImageDescriptor("icons/SensorFit.png");
+		else if (editable instanceof ChartFolio)
+			res = DebriefPlugin.getImageDescriptor("icons/library.gif");
+		else if (editable instanceof ChartWrapper)
+			res = CorePlugin.getImageDescriptor("icons/map.png");
 		else if (editable instanceof SensorContactWrapper)
 			res = CorePlugin.getImageDescriptor("icons/active16.png");
 		else if (editable instanceof NarrativeWrapper)

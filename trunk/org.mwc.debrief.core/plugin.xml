@@ -44,6 +44,9 @@
 		<content-type id="org.mwc.debrief.contenttype.ReplaySensorFile"
 			file-extensions="dsf" name="Debrief Sensor File" priority="normal">
 		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.WorldImageFile"
+			file-extensions="tif" name="World Image (Electronic Chart) File" priority="normal">
+		</content-type>
 		<content-type id="org.mwc.debrief.contenttype.KMZTrackArchive"
 			file-extensions="kmz" name="KMZ Track Archive" priority="normal">
 		</content-type>
@@ -66,6 +69,7 @@
 		<import plugin="org.eclipse.ui.ide" />
 		<import plugin="org.eclipse.core.filesystem" />
   <import plugin="org.eclipse.ui.cheatsheets" version="3.4.0"/>
+  <import plugin="org.mwc.cmap.gt2Plot" version="1.0.0"/>
 
 	</requires>
 	<extension-point id="DebriefPlotLoader" name="Plot Loader"
@@ -158,6 +162,12 @@
 				icon="icons/vpf.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers"
 				label="&amp;VPF Layers" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
 				style="push" />
+
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
+				icon="icons/library.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary"
+				label="&amp;Chart Library" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
+
 
 			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
 				icon="icons/etopo.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
