@@ -32,20 +32,26 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.gce.image.WorldImageFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
+import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactoryImpl;
 import org.geotools.swt.utils.Utils;
 import org.mwc.cmap.gt2plot.GtActivator;
 import org.opengis.geometry.Envelope;
+import org.opengis.parameter.GeneralParameterValue;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -64,10 +70,11 @@ import org.opengis.geometry.Envelope;
 
 public class ViewTest extends ViewPart
 {
-  private static final PaletteData PALETTE_DATA = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	private static final PaletteData PALETTE_DATA = new PaletteData(0xFF0000,
+			0xFF00, 0xFF);
 
-  /** RGB value to use as transparent color */
-  private static final int TRANSPARENT_COLOR = 0x123456;
+	/** RGB value to use as transparent color */
+	private static final int TRANSPARENT_COLOR = 0x123456;
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -90,7 +97,31 @@ public class ViewTest extends ViewPart
 	 */
 	public ViewTest()
 	{
-		
+		// Create a map content and add our shapefile to it
+		map = new MapContent();
+		map.setTitle("simple map content");
+
+		// hey, try for an image aswell
+		String path = "/Users/ian/Desktop/ukrasterchart/2_BRITISH_ISLES.tif";
+		File chartFile = new File(path);
+		if (!chartFile.exists())
+			System.err.println("CANNOT FILE THE CHART FILE!!!");
+
+		WorldImageFormat format = new WorldImageFormat();
+		AbstractGridCoverage2DReader tiffReader = format.getReader(chartFile);
+		if (tiffReader != null)
+		{
+			StyleFactoryImpl sf = new StyleFactoryImpl();
+			RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
+			Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
+
+			GeneralParameterValue[] params = null;
+
+			GridReaderLayer res = new GridReaderLayer(tiffReader, defaultStyle,
+					params);
+			map.addLayer(res);
+		}
+
 		try
 		{
 			URL url = GtActivator.getDefault().getBundle()
@@ -103,10 +134,6 @@ public class ViewTest extends ViewPart
 			if (store != null)
 			{
 				SimpleFeatureSource featureSource = store.getFeatureSource();
-
-				// Create a map content and add our shapefile to it
-				map = new MapContent();
-				map.setTitle("simple map content");
 
 				Style style = SLD.createSimpleStyle(featureSource.getSchema());
 				Layer layer = new FeatureLayer(featureSource, style);
@@ -149,8 +176,9 @@ public class ViewTest extends ViewPart
 
 		if (map != null)
 		{
-			// sort out the transforms			
-			org.eclipse.swt.graphics.Rectangle paintArea = new org.eclipse.swt.graphics.Rectangle(0,0,width, height);
+			// sort out the transforms
+			org.eclipse.swt.graphics.Rectangle paintArea = new org.eclipse.swt.graphics.Rectangle(
+					0, 0, width, height);
 			ReferencedEnvelope mapArea = map.getViewport().getBounds();
 			setTransforms(mapArea, paintArea);
 
@@ -167,124 +195,157 @@ public class ViewTest extends ViewPart
 
 			renderer.setRendererHints(rendererParams);
 
-		  org.eclipse.swt.graphics.Rectangle curPaintArea = e.gc.getClipping();
-			BufferedImage baseImage = new BufferedImage(curPaintArea .width + 1, curPaintArea.height + 1, BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g2d = baseImage.createGraphics();
-      g2d.fillRect(0, 0, curPaintArea.width + 1, curPaintArea.height + 1);
-      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			org.eclipse.swt.graphics.Rectangle curPaintArea = e.gc.getClipping();
+			BufferedImage baseImage = new BufferedImage(curPaintArea.width + 1,
+					curPaintArea.height + 1, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = baseImage.createGraphics();
+			g2d.fillRect(0, 0, curPaintArea.width + 1, curPaintArea.height + 1);
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
 
-      // renderer.setContext(context);
-      java.awt.Rectangle awtRectangle = Utils.toAwtRectangle(curPaintArea);
-      final ReferencedEnvelope mapAOI = map.getViewport().getBounds();
-      renderer.paint(g2d, awtRectangle, mapAOI, getWorldToScreenTransform());
-      // swtImage.dispose();
+			// renderer.setContext(context);
+			java.awt.Rectangle awtRectangle = Utils.toAwtRectangle(curPaintArea);
+			final ReferencedEnvelope mapAOI = map.getViewport().getBounds();
+			renderer.paint(g2d, awtRectangle, mapAOI, getWorldToScreenTransform());
+			// swtImage.dispose();
 
-      if (swtImage != null && !swtImage.isDisposed()) {
-          swtImage.dispose();
-          swtImage = null;
-      }
-      swtImage = new Image(canvas.getDisplay(), awtToSwt(baseImage, curPaintArea.width + 1, curPaintArea.height + 1));
+			if (swtImage != null && !swtImage.isDisposed())
+			{
+				swtImage.dispose();
+				swtImage = null;
+			}
+			swtImage = new Image(canvas.getDisplay(), awtToSwt(baseImage,
+					curPaintArea.width + 1, curPaintArea.height + 1));
 
-//			org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
-//					e.display, convertToSWT(tmpImage));
+			// org.eclipse.swt.graphics.Image image = new
+			// org.eclipse.swt.graphics.Image(
+			// e.display, convertToSWT(tmpImage));
 			e.gc.drawImage(swtImage, 0, 0);
 		}
-		
+
 		double y2 = Math.random() * 120d;
 		e.gc.drawLine(20, 40, 80, (int) y2);
 	};
-	
 
-  /**
-   * Transform a java2d bufferedimage to a swt image.
-   * 
-   * @param bufferedImage the image to trasform.
-   * @param width the image width.
-   * @param height the image height.
-   * @return swt image.
-   */
-  private ImageData awtToSwt( BufferedImage bufferedImage, int width, int height ) {
-      final int[] awtPixels = new int[width * height];
-      ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
-      swtImageData.transparentPixel = TRANSPARENT_COLOR;
-      int step = swtImageData.depth / 8;
-      final byte[] data = swtImageData.data;
-      bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
-      for( int i = 0; i < height; i++ ) {
-          int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
-          for( int j = 0; j < width; j++ ) {
-              int rgb = awtPixels[j + i * width];
-              for( int k = swtImageData.depth - 8; k >= 0; k -= 8 ) {
-                  data[idx++] = (byte) ((rgb >> k) & 0xFF);
-              }
-          }
-      }
+	/**
+	 * Transform a java2d bufferedimage to a swt image.
+	 * 
+	 * @param bufferedImage
+	 *          the image to trasform.
+	 * @param width
+	 *          the image width.
+	 * @param height
+	 *          the image height.
+	 * @return swt image.
+	 */
+	private ImageData awtToSwt(BufferedImage bufferedImage, int width, int height)
+	{
+		final int[] awtPixels = new int[width * height];
+		ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
+		swtImageData.transparentPixel = TRANSPARENT_COLOR;
+		int step = swtImageData.depth / 8;
+		final byte[] data = swtImageData.data;
+		bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
+		for (int i = 0; i < height; i++)
+		{
+			int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
+			for (int j = 0; j < width; j++)
+			{
+				int rgb = awtPixels[j + i * width];
+				for (int k = swtImageData.depth - 8; k >= 0; k -= 8)
+				{
+					data[idx++] = (byte) ((rgb >> k) & 0xFF);
+				}
+			}
+		}
 
-      return swtImageData;
-  }
-  private ReferencedEnvelope worldEnvelope() {
-      return new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
-  }
+		return swtImageData;
+	}
 
-  /**
-   * Calculate the affine transforms used to convert between
-   * world and pixel coordinates. The calculations here are very
-   * basic and assume a cartesian reference system.
-   * <p>
-   * Tne transform is calculated such that {@code envelope} will
-   * be centred in the display
-   *
-   * @param envelope the current map extent (world coordinates)
-   * @param paintArea the current map pane extent (screen units)
-   */
-  private void setTransforms( final Envelope envelope, final org.eclipse.swt.graphics.Rectangle paintArea ) {
-      ReferencedEnvelope refEnv = null;
-      if (envelope != null) {
-          refEnv = new ReferencedEnvelope(envelope);
-      } else {
-          refEnv = worldEnvelope();
-          // FIXME content.setCoordinateReferenceSystem(DefaultGeographicCRS.WGS84);
-      }
+	private ReferencedEnvelope worldEnvelope()
+	{
+		return new ReferencedEnvelope(-180, 180, -90, 90,
+				DefaultGeographicCRS.WGS84);
+	}
 
-      java.awt.Rectangle awtPaintArea = Utils.toAwtRectangle(paintArea);
-      double xscale = awtPaintArea.getWidth() / refEnv.getWidth();
-      double yscale = awtPaintArea.getHeight() / refEnv.getHeight();
+	/**
+	 * Calculate the affine transforms used to convert between world and pixel
+	 * coordinates. The calculations here are very basic and assume a cartesian
+	 * reference system.
+	 * <p>
+	 * Tne transform is calculated such that {@code envelope} will be centred in
+	 * the display
+	 * 
+	 * @param envelope
+	 *          the current map extent (world coordinates)
+	 * @param paintArea
+	 *          the current map pane extent (screen units)
+	 */
+	private void setTransforms(final Envelope envelope,
+			final org.eclipse.swt.graphics.Rectangle paintArea)
+	{
+		ReferencedEnvelope refEnv = null;
+		if (envelope != null)
+		{
+			refEnv = new ReferencedEnvelope(envelope);
+		}
+		else
+		{
+			refEnv = worldEnvelope();
+			// FIXME content.setCoordinateReferenceSystem(DefaultGeographicCRS.WGS84);
+		}
 
-      double scale = Math.min(xscale, yscale);
+		java.awt.Rectangle awtPaintArea = Utils.toAwtRectangle(paintArea);
+		double xscale = awtPaintArea.getWidth() / refEnv.getWidth();
+		double yscale = awtPaintArea.getHeight() / refEnv.getHeight();
 
-      double xoff = refEnv.getMedian(0) * scale - awtPaintArea.getCenterX();
-      double yoff = refEnv.getMedian(1) * scale + awtPaintArea.getCenterY();
+		double scale = Math.min(xscale, yscale);
 
-      worldToScreen = new AffineTransform(scale, 0, 0, -scale, -xoff, yoff);
-      try {
-          screenToWorld = worldToScreen.createInverse();
+		double xoff = refEnv.getMedian(0) * scale - awtPaintArea.getCenterX();
+		double yoff = refEnv.getMedian(1) * scale + awtPaintArea.getCenterY();
 
-      } catch (NoninvertibleTransformException ex) {
-          ex.printStackTrace();
-      }
-  }
-  /**
-   * Get a (copy of) the world to screen coordinate transform
-   * being used by this map pane. This method can be
-   * used to determine the current drawing scale...
-   * <pre>{@code
-   * double scale = mapPane.getWorldToScreenTransform().getScaleX();
-   * }</pre>
-   * @return a copy of the world to screen coordinate transform
-   */
-  private AffineTransform getWorldToScreenTransform() {
-      if (worldToScreen != null) {
-          return new AffineTransform(worldToScreen);
-      } else {
-          return null;
-      }
-  }
-	
+		worldToScreen = new AffineTransform(scale, 0, 0, -scale, -xoff, yoff);
+		try
+		{
+			screenToWorld = worldToScreen.createInverse();
+
+		}
+		catch (NoninvertibleTransformException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+
+	/**
+	 * Get a (copy of) the world to screen coordinate transform being used by this
+	 * map pane. This method can be used to determine the current drawing scale...
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#064;code
+	 * 	double scale = mapPane.getWorldToScreenTransform().getScaleX();
+	 * }
+	 * </pre>
+	 * 
+	 * @return a copy of the world to screen coordinate transform
+	 */
+	private AffineTransform getWorldToScreenTransform()
+	{
+		if (worldToScreen != null)
+		{
+			return new AffineTransform(worldToScreen);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	/**
 	 * keep a cached copy of the image - to reduce replotting time
 	 */
 	protected transient ImageData _myImageTemplate = null;
-	
+
 	protected org.eclipse.swt.graphics.Image createSWTImage(
 			ImageData myImageTemplate)
 	{
@@ -294,8 +355,7 @@ public class ViewTest extends ViewPart
 				Display.getCurrent(), _myImageTemplate);
 		return image;
 	}
-	
-	
+
 	static ImageData convertToSWT(BufferedImage bufferedImage)
 	{
 		if (bufferedImage.getColorModel() instanceof DirectColorModel)
