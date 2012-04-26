@@ -6337,6 +6337,118 @@ and so on....</programlisting></para>
       </sect1>
     </chapter>
 
+    <chapter xml:id="ChartBackdrops">
+      <title>Using chart backdrops</title>
+      <sect1>
+        <title>Introduction</title>
+        <para linkend="external_datasets">VPF and ETOPO (see <xref linkend="external_datasets"/> can
+          only add so much context to the analysis of a dataset<indexterm>
+            <primary>Charts</primary>
+            <secondary>Introduction</secondary>
+          </indexterm>. Nautical Chart data contains a large volume of additional infromation that
+          can assist analysis. Debrief supports chart data distributed by UKHO, though the standards
+          used also allow chart from other sources to be incorporated. The chart support in Debrief
+          is provided through integration of GeoTools library (see <xref linkend="GeoToolsRef"/>). <figure>
+            <title>Chart data in Debrief</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/LandsEnd.png" width="450"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        <sect2>
+          <title>File types</title>
+          <para>Debrief supports the following types of chart data:<variablelist>
+              <varlistentry>
+                <term>World Image file <filename>(.tif)</filename></term>
+                <listitem>
+                  <para>A raster chart image, with reference coordinates stored in a supporting .prj
+                    file</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Esri Shapefiles <filename>(.shp)</filename></term>
+                <listitem>
+                  <para>A binary file adhering to the Esri open specification</para>
+                </listitem>
+              </varlistentry>
+            </variablelist></para>
+          <para>Beyond specific file types, Debrief recognises chart folios distributed by UKHO.
+            Where these folios are configured within Debrief users are able to view the spatial
+            extents of available charts - loading them as necessary.</para>
+        </sect2>
+      </sect1>
+      <sect1 xml:id="loadCharts">
+        <title>Loading data</title>
+        <para>Data is loaded by one of two methods: drag/drop of a specific chart file, or via a
+          chart library.</para>
+        <para>Any shp or tif file can be dragged into Debrief - provided the prj sidecar files are
+          present.  When saving the plot Debrief will record the path to the datafile in the xml
+          file in order that it can be reloaded at the next session.</para>
+        <para>Separately, Debrief can provide a folio of charts<indexterm>
+            <primary>Charts</primary>
+            <secondary>Folios</secondary>
+          </indexterm>, though the data must be stored in a specific layout (see <xref
+            linkend="ChartStorage"/>), and Debrief it must be configured appropriately.  Configure
+          Debrief this by selecting the <guilabel>Chart Backdrops</guilabel> page under the
+            <guilabel>Maritime Analysis</guilabel> section of the
+            <guilabel>Window/Preferences</guilabel> dialog. In this page specify the parent folder
+          sitting above any chart folio folders.  Debrief will search the subfolders of this
+          location to locate any chart folio files.<figure>
+            <title>Chart options</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/ChartOptions.png" width="450"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure><note>
+            <para>As you saw, there is also a transparency<indexterm>
+                <primary>Charts</primary>
+                <secondary>Transparency</secondary>
+              </indexterm> attribute for charts. Use this to vary the transparency of the charts
+              layers.  For most analysis the presence of a chart backdrop can make vessel tracks
+              difficult to distinguish.  Making them semi-transparent fades them away a little -
+              letting you focus on the tracks whilst still being aware of the backdrop chart
+              data.</para>
+          </note></para>
+        <para>Once a parent folder is specified, when you click on Insert Chart Library from the
+          Chart Features menu Debrief will scan the child folders for correctly named shapefiles and
+          offer you a list of folios to choose from. Select one to load the folio.<figure>
+            <title>Chart folio</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/ChartFolio.png"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure><note>
+            <para>If you right-click on the chart library in the Layer Manager you'll see the
+              editable properties.  These include the colour used for the rectangles plus whether
+              the chart name is displayed against the chart rectangle.</para>
+          </note></para>
+        <para>The folio displays a rectangle for each available chart.  The folio is a top-level
+          layer in the Layer Manager that you can expand to view (and load) the child charts.
+          Alternatively, right-click on a corner of one of the rectangles and select 'Load this
+          chart' to load a specific chart.<figure>
+            <title>Loading a chart</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/LoadChart.png"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure>
+        </para>
+      </sect1>
+    </chapter>
+
+
     <chapter xml:id="video_recording">
       <title><application>Debrief</application> video recording</title>
 
@@ -8266,6 +8378,46 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             </itemizedlist></para>
         </sect2>
       </sect1>
+      <sect1 xml:id="ChartStorage">
+        <title>Storing Chart Folios</title>
+        <para>As well as supporting the drag/drop (see <xref linkend="loadCharts"/>) of chart data
+          directly into a Debrief plot, Debrief supports the concept of a Chart Folio<indexterm>
+            <primary>Charts</primary>
+            <secondary>Configuring</secondary>
+          </indexterm>. Such a chart folio must adhere to specific layout conditions in order for
+          Debrief to understand it.</para>
+        <para>
+          <variablelist>
+            <varlistentry>
+              <term>Folder</term>
+              <listitem>
+                <para>The chart folio is contained in a single folder, with the folder named
+                  according to the geographic area covered (since this is the name offered to the
+                  user)</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Shapefile</term>
+              <listitem>
+                <para>The folder must contain a shapefile named
+                    <filename>rasterExtents_ARCS_Export.shp</filename></para>
+                <para>. This shapefile must contain a series of rectangle geometries.  Each
+                  rectangle must have a property named <filename>the_geom</filename> that contains
+                  the coordinates, and one called <filename>Name</filename> that contains the
+                  filename of the respective chart.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Chart images</term>
+              <listitem>
+                <para>The folder must also contain a series of Tif images with supporting .prj
+                  sidecar files.  (Note: where possible Debrief will generate missing sidecar files
+                  as necessary</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </sect1>
 
       <sect1 xml:id="debrief_props">
         <title xml:id="debrief_props_title">Debrief properties</title>
@@ -9399,6 +9551,19 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
           off to other applications for further processing. You can also apply
           a style sheet to display this information in a browser.</para>
         </sect2>
+      </sect1>
+    </chapter>
+    <chapter xml:id="GeoToolsRef">
+      <title>GeoTools in Debrief</title>
+      <sect1>
+        <title>Introduction</title>
+        <para>The display of chart data in Debrief is all down to the <link
+            xlink:href="http://geotools.org/"><citetitle>GeoTools</citetitle></link> library.
+          Recently the SWT module was added to this library. The SWT module incorporates the
+          SwtMapPane class upon which the Debrief plot now sits. With the incorporation of GeoTools
+          brings a wide range of new file formats, both image and vector, plus more advanced
+          topographic and earth model related capabilities. Rest assured, Debrief will exploit these
+          library features as much as possible in coming months/years.</para>
       </sect1>
     </chapter>
 
