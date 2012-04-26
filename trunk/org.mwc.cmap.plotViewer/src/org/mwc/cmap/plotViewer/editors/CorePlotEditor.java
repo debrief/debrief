@@ -39,6 +39,10 @@ import org.mwc.cmap.core.interfaces.IPlotGUI;
 import org.mwc.cmap.core.interfaces.IResourceProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
+import org.mwc.cmap.gt2plot.data.ShapeFileLayer;
+import org.mwc.cmap.gt2plot.data.WorldImageLayer;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
@@ -50,11 +54,12 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable.EditorType;
+import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
-import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Plottable;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -131,7 +136,100 @@ public abstract class CorePlotEditor extends EditorPart implements
 	{
 		super();
 
-		_myLayers = new Layers();
+		_myLayers = new Layers(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void addThisLayer(Layer theLayer)
+			{
+				Layer wrappedLayer = null;
+
+
+				// ok, if this is an externally managed layer (and we're doing
+				// GT-plotting, we will wrap it, and actually add the wrapped layer
+				if (theLayer instanceof ExternallyManagedDataLayer)
+				{
+					// just check we have a GeoTools-style projection
+				  PlainProjection proj = _myChart.getCanvas().getProjection();
+				  boolean haveGtPlot = proj instanceof GtProjection;
+				  
+				  if(!haveGtPlot)
+				  {
+				  	CorePlugin.logError(Status.ERROR, "Can't load externally managed layer into non-GTProjection", null);
+				  	return;
+				  }
+					
+				  GtProjection gp = (GtProjection) proj;
+				  org.geotools.map.MapContent myContent = gp.getMapContent();
+				  
+				  ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
+					if (dl.getDataType().equals(
+							MWC.GUI.Shapes.ChartWrapper.WORLDIMAGE_TYPE))
+					{
+						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
+								dl.getFilename());
+						gt.setVisible(dl.getVisible());
+						gt.setMap(myContent);
+						wrappedLayer = gt;
+					}
+					else if (dl.getDataType().equals(
+							MWC.GUI.Shapes.ChartWrapper.SHAPEFILE_TYPE))
+					{
+						// just see if it's a raster extent layer (special processing)
+						if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
+						{
+							// special processing - wrap it.
+							wrappedLayer = WorldImageLayer.RasterExtentHelper.loadRasters(
+									dl.getFilename(), this);
+						}
+						else
+						{
+							// ok, it's a normal shapefile: load it.
+							GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
+									dl.getFilename());
+							gt.setVisible(dl.getVisible());
+							gt.setMap(myContent);
+							wrappedLayer = gt;
+						}
+					}
+					if (wrappedLayer != null)
+						super.addThisLayer(wrappedLayer);
+				}
+				else
+					super.addThisLayer(theLayer);
+			}
+
+			@Override
+			public void removeThisLayer(Layer theLayer)
+			{
+				if (theLayer instanceof GeoToolsLayer)
+				{
+					// get the content
+					GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
+					org.geotools.map.MapContent myContent = gp.getMapContent();
+					
+					GeoToolsLayer gt = (GeoToolsLayer) theLayer;
+					gt.clearMap();
+
+					if (myContent.layers().size() == 0)
+					{
+						// ok - we've got to force the data rea
+						WorldArea area = _myChart.getCanvas().getProjection().getDataArea();
+						_myChart.getCanvas().getProjection().setDataArea(area);
+					}
+
+				}
+
+				// and remove from the actual list
+				super.removeThisLayer(theLayer);
+
+			}
+
+		};
 
 		_listenForMods = new DataListener()
 		{
