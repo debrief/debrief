@@ -16,11 +16,13 @@ import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.mwc.cmap.gt2plot.GtActivator;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
+import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GenericData.WorldArea;
@@ -46,7 +48,9 @@ public class GtProjection extends FlatProjection
 		// sort out the degs to m transform
 		try
 		{
-			_worldCoords = CRS.decode("EPSG:4326");
+			_worldCoords = CRS.decode("EPSG:3395");
+			CoordinateReferenceSystem worldDegs = CRS.decode("EPSG:4326");
+			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
 		}
 		catch (NoSuchAuthorityCodeException e)
 		{
@@ -84,11 +88,15 @@ public class GtProjection extends FlatProjection
 		Point res = null;
 
 		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
+		DirectPosition2D metres = new DirectPosition2D();
 		DirectPosition2D screen = new DirectPosition2D();
 		try
 		{
+
+			_degs2metres.transform(degs, metres);
+
 			// now got to screen
-			_view.getWorldToScreen().transform(degs, screen);
+			_view.getWorldToScreen().transform(metres, screen);
 
 			// output the results
 			res = new Point((int) screen.getCoordinate()[0],
@@ -99,6 +107,11 @@ public class GtProjection extends FlatProjection
 			GtActivator.logError(Status.ERROR,
 					"Whilst trying to convert to screen coords", e);
 		}
+		catch (TransformException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return res;
 	}
 
@@ -107,12 +120,14 @@ public class GtProjection extends FlatProjection
 	{
 		WorldLocation res = null;
 		DirectPosition2D screen = new DirectPosition2D(val.x, val.y);
+		DirectPosition2D metres = new DirectPosition2D();
 		DirectPosition2D degs = new DirectPosition2D();
 
 		try
 		{
 			// now got to screen
-			_view.getScreenToWorld().transform(screen, degs);
+			_view.getScreenToWorld().transform(screen, metres);
+			_degs2metres.inverse().transform(metres, degs);
 			res = new WorldLocation(degs.getCoordinate()[1], degs.getCoordinate()[0],
 					0);
 		}
@@ -120,6 +135,16 @@ public class GtProjection extends FlatProjection
 		{
 			GtActivator.logError(Status.ERROR,
 					"Whilst trying to set convert to world coords", e);
+		}
+		catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TransformException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return res;
 	}
@@ -137,27 +162,57 @@ public class GtProjection extends FlatProjection
 			DirectPosition2D mapPos = new DirectPosition2D(centre.getLong(),
 					centre.getLat());
 
-			if (_view.getWorldToScreen() == null)
-				return;
+			DirectPosition2D mapM = new DirectPosition2D();
+			try
+			{
+				_degs2metres.transform(mapPos, mapM);
 
-			double scale = _view.getWorldToScreen().getScaleX();
-			double newScale = scale / scaleVal;
+				if (_view.getWorldToScreen() == null)
+					return;
 
-			DirectPosition2D corner = new DirectPosition2D(mapPos.getX() - 0.5d
-					* paneArea.width / newScale, mapPos.getY() + 0.5d * paneArea.height
-					/ newScale);
+				double scale = _view.getWorldToScreen().getScaleX();
+				double newScale = scale / scaleVal;
 
-			Envelope2D newMapArea = new Envelope2D();
-			newMapArea.setFrameFromCenter(mapPos, corner);
+				DirectPosition2D corner = new DirectPosition2D(mapM.getX() - 0.5d
+						* paneArea.width / newScale, mapM.getY() + 0.5d * paneArea.height
+						/ newScale);
 
-			WorldLocation tl = new WorldLocation(newMapArea.getMinY(),
-					newMapArea.getMaxX(), 0d);
-			WorldLocation br = new WorldLocation(newMapArea.getMaxY(),
-					newMapArea.getMinX(), 0d);
-			WorldArea newArea = new WorldArea(tl, br);
-			newArea.normalise();
+				Envelope2D newMapArea = new Envelope2D();
+				newMapArea.setFrameFromCenter(mapM, corner);
+				
+				// convert back to friendly units
+				DirectPosition2D tlDegs = new DirectPosition2D();
+				DirectPosition2D brDegs = new DirectPosition2D();
+				
+				_degs2metres.inverse().transform(newMapArea.getLowerCorner(), brDegs);
+				_degs2metres.inverse().transform(newMapArea.getUpperCorner(), tlDegs);
 
-			mySetDataArea(newArea);
+				WorldLocation tl = new WorldLocation(brDegs.y,
+						brDegs.x, 0d);
+				WorldLocation br = new WorldLocation(tlDegs.y,
+						tlDegs.x, 0d);
+				WorldArea newArea = new WorldArea(tl, br);
+				newArea.normalise();
+
+				mySetDataArea(newArea);
+
+			}
+			catch (MismatchedDimensionException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (TransformException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 	}
@@ -165,11 +220,11 @@ public class GtProjection extends FlatProjection
 	@Override
 	public void setScreenArea(Dimension theArea)
 	{
+		super.setScreenArea(theArea);
+
 		java.awt.Rectangle screenArea = new java.awt.Rectangle(0, 0, theArea.width,
 				theArea.height);
 		_view.setScreenArea(screenArea);
-
-		super.setScreenArea(theArea);
 	}
 
 	@Override
@@ -190,10 +245,29 @@ public class GtProjection extends FlatProjection
 		DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(), tl.getLat());
 		DirectPosition2D brDegs = new DirectPosition2D(br.getLong(), br.getLat());
 
-		// put the coords into an envelope
-		Envelope2D env = new Envelope2D(brDegs, tlDegs);
-		ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldCoords);
-		_view.setBounds(rEnv);
+		DirectPosition2D tlM = new DirectPosition2D();
+		DirectPosition2D brM = new DirectPosition2D();
+
+		try
+		{
+			_degs2metres.transform(tlDegs, tlM);
+			_degs2metres.transform(brDegs, brM);
+
+			// put the coords into an envelope
+			Envelope2D env = new Envelope2D(brM, tlM);
+			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldCoords);
+			_view.setBounds(rEnv);
+		}
+		catch (MismatchedDimensionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (TransformException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static class TestProj extends TestCase
