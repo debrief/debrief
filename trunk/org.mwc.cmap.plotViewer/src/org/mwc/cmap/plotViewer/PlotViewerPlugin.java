@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.ui_support.swt.SWTRasterPainter;
+import org.mwc.cmap.gt2plot.GtActivator;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
@@ -38,6 +39,12 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		// hack to initialise the TIFF importers.  I believe we're having classpath issues,
+		// if we don't try to get an image reader right at the start of the app,
+		// we can't get a TIFF loader later on.
+		GtActivator.initialise();
+		
 		// sort out export to WMF
 		ExportWMF.init(org.mwc.cmap.core.CorePlugin.getToolParent());
 		

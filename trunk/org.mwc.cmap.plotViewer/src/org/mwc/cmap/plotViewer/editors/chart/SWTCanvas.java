@@ -180,8 +180,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public SWTCanvas(Composite parent)
 	{
-//		super(new GtProjection());
-		super(null);
+		super(new GtProjection());
+//		super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()

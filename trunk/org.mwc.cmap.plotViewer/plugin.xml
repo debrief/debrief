@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.plotViewer"
    name="Plot Viewer"
-   version="1.0.55"
+   version="1.0.56"
    provider-name="MWC"
    class="org.mwc.cmap.plotViewer.PlotViewerPlugin">
 
