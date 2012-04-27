@@ -8,6 +8,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
- org.mwc.cmap.plotViewer
+ org.mwc.cmap.plotViewer,
+ org.mwc.cmap.gt2Plot;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
