@@ -16,9 +16,10 @@ import org.xml.sax.Attributes;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.Plottable;
-import MWC.GUI.Shapes.ChartWrapper;
-import MWC.Utilities.ReaderWriter.XML.Features.ChartHandler;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
+import MWC.Utilities.ReaderWriter.XML.Features.ChartBoundsHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.CoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
@@ -62,7 +63,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 			}
 		});
 
-		addHandler(new ChartHandler()
+		addHandler(new ChartBoundsHandler()
 		{
 			public void addPlottable(MWC.GUI.Plottable plottable)
 			{
@@ -146,14 +147,27 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 	protected void handleOurselves(String name, Attributes attributes)
 	{
 		// we are starting a new layer, so create it!
-		_myLayer = new MWC.GUI.BaseLayer();
+		_myLayer = getLayer();
 
 		super.handleOurselves(name, attributes);
+	}
+
+	protected BaseLayer getLayer()
+	{
+		return new MWC.GUI.BaseLayer();
 	}
 
 	public void addThis(MWC.GUI.Plottable plottable)
 	{
 		_myLayer.add(plottable);
+		
+		// is this an item that wants to know about the layers object?
+		if (plottable instanceof NeedsToKnowAboutLayers)
+		{
+			NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) plottable;
+			theL.setLayers(_theLayers);
+		}
+
 	}
 
 	public void elementClosed()
@@ -223,7 +237,7 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 				{
 				}
 			});
-			_myExporters.put(ChartWrapper.class, new ChartHandler()
+			_myExporters.put(ChartBoundsWrapper.class, new ChartBoundsHandler()
 			{
 				public void addPlottable(MWC.GUI.Plottable plottable)
 				{
