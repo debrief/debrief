@@ -65,25 +65,6 @@ public class GtActivator extends AbstractUIPlugin
 
 		// Setting the system-wide default at startup time
 		System.setProperty("org.geotools.referencing.forceXY", "true");
-
-		RightClickContextItemGenerator clicker = new RightClickContextItemGenerator()
-		{
-
-			public void generate(IMenuManager parent, Layers theLayers,
-					Layer[] parentLayers, Editable[] subjects)
-			{
-				if (theLayer == null)
-					theLayer = new GTLayer();
-
-				// see if it's already loaded
-				Layer it = theLayers.findLayer(theLayer.getName());
-				if (it == null)
-					theLayers.addThisLayer(theLayer);
-
-			}
-		};
-		RightClickSupport.addRightClickGenerator(clicker);
-
 	}
 
 	/**
