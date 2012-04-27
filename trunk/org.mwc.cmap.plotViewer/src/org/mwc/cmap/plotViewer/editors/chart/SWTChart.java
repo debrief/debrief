@@ -424,7 +424,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		public Cursor getNormalCursor()
 		{
 			// ok, return the 'normal' cursor
-			if (_normalCursor == null)
+			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
 				_normalCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
 
 			return _normalCursor;
@@ -504,7 +504,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		super(theLayers);
 		_theCanvas = createCanvas(parent);
-//		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
 
 		// sort out the area of coverage of the plot
 		if (theLayers != null)
