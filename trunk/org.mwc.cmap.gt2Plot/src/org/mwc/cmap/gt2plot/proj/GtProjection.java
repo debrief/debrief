@@ -48,19 +48,24 @@ public class GtProjection extends FlatProjection
 		// sort out the degs to m transform
 		try
 		{
+			// we'll tell GeoTools to use the projection that's used by most of our charts,
+			// so that the chart will be displayed undistorted
 			_worldCoords = CRS.decode("EPSG:3395");
+			
+			// we also need a way to convert a location in degrees to that used by 
+			// the charts (metres)
 			CoordinateReferenceSystem worldDegs = CRS.decode("EPSG:4326");
 			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
 		}
 		catch (NoSuchAuthorityCodeException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			GtActivator.logError(Status.ERROR,
+					"Can't find the requested authority whilst trying to create CRS transform", e);
 		}
 		catch (FactoryException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			GtActivator.logError(Status.ERROR,
+					"Unexpected problem whilst trying to create CRS transform", e);
 		}
 
 		_view.setCoordinateReferenceSystem(_worldCoords);
