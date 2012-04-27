@@ -24,11 +24,14 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class GtProjection extends PlainProjection
+public class GtProjection extends PlainProjection implements GeoToolsHandler
 {
+	
 	private CoordinateReferenceSystem _worldCoords;
 	protected MathTransform _degs2metres;
 
@@ -385,9 +388,10 @@ public class GtProjection extends PlainProjection
 		return _map;
 	}
 
-	public void addGeoToolsLayer(GeoToolsLayer gt)
+	public void addGeoToolsLayer(ExternallyManagedDataLayer gt)
 	{
-		gt.setMap(_map);
+		GeoToolsLayer geoLayer =(GeoToolsLayer) gt;
+		geoLayer.setMap(_map);
 	}
 
 	/**
