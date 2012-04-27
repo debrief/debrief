@@ -16,7 +16,6 @@ import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.mwc.cmap.gt2plot.GtActivator;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
-import org.opengis.geometry.DirectPosition;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -24,11 +23,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-import MWC.Algorithms.Projections.FlatProjection;
+import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class GtProjection extends FlatProjection
+public class GtProjection extends PlainProjection
 {
 	private CoordinateReferenceSystem _worldCoords;
 	protected MathTransform _degs2metres;
@@ -40,7 +39,7 @@ public class GtProjection extends FlatProjection
 
 	public GtProjection()
 	{
-		super.setName("GeoTools");
+		super("GeoTools");
 
 		_map = new MapContent();
 		_view = _map.getViewport();
@@ -199,7 +198,7 @@ public class GtProjection extends FlatProjection
 				WorldArea newArea = new WorldArea(tl, br);
 				newArea.normalise();
 
-				mySetDataArea(newArea);
+				setDataArea(newArea);
 
 			}
 			catch (MismatchedDimensionException e)
@@ -242,8 +241,6 @@ public class GtProjection extends FlatProjection
 
 	private void mySetDataArea(WorldArea theArea)
 	{
-		System.out.println("new area:" + theArea);
-
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
 
