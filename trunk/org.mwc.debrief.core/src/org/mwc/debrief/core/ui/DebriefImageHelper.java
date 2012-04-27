@@ -34,7 +34,7 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		else if (editable instanceof ChartFolio)
 			res = DebriefPlugin.getImageDescriptor("icons/library.gif");
 		else if (editable instanceof ExternallyManagedDataLayer)
-			res = DebriefPlugin.getImageDescriptor("icons/map.png");
+			res = CorePlugin.getImageDescriptor("icons/map.png");
 		else if (editable instanceof ChartBoundsWrapper)
 			res = CorePlugin.getImageDescriptor("icons/map.png");
 		else if (editable instanceof SensorContactWrapper)
