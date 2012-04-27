@@ -121,24 +121,24 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 				_ukImage.setMap(map);
 			}
 
-			BufferedImage baseImage = drawAwtImage(dest);
-
-			if (swtImage != null && !swtImage.isDisposed())
-			{
-				swtImage.dispose();
-				swtImage = null;
-			}
-			swtImage = new Image(Display.getCurrent(), awtToSwt(baseImage, width + 1,
-					height + 1));
-
-			// org.eclipse.swt.graphics.Image image = new
-			// org.eclipse.swt.graphics.Image(
-			// e.display, convertToSWT(tmpImage));
-			if (dest instanceof SWTCanvasAdapter)
-			{
-				SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
-				swtC.drawSWTImage(swtImage, 0, 0, width, height);
-			}
+//			BufferedImage baseImage = drawAwtImage(width, height, map);
+//
+//			if (swtImage != null && !swtImage.isDisposed())
+//			{
+//				swtImage.dispose();
+//				swtImage = null;
+//			}
+//			swtImage = new Image(Display.getCurrent(), awtToSwt(baseImage, width + 1,
+//					height + 1));
+//
+//			// org.eclipse.swt.graphics.Image image = new
+//			// org.eclipse.swt.graphics.Image(
+//			// e.display, convertToSWT(tmpImage));
+//			if (dest instanceof SWTCanvasAdapter)
+//			{
+//				SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
+//				swtC.drawSWTImage(swtImage, 0, 0, width, height);
+//			}
 		}
 
 		double y2 = Math.random() * 120d;
@@ -146,11 +146,8 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 		dest.drawLine(20, 40, 80, (int) y2);
 	}
 
-	private static BufferedImage drawAwtImage(CanvasType dest)
+	private static BufferedImage drawAwtImage(int width, int height, MapContent map)
 	{
-		GtProjection proj = (GtProjection) dest.getProjection();
-		MapContent map = proj.getMapContent();
-		
 		StreamingRenderer renderer = new StreamingRenderer();
 		renderer.setMapContent(map);
 
@@ -162,9 +159,6 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 		rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
 
 		renderer.setRendererHints(rendererParams);
-		
-		int width = proj.getScreenArea().width;
-		int height = proj.getScreenArea().height;
 		
 		BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
 				BufferedImage.TYPE_INT_ARGB);
