@@ -75,6 +75,7 @@ import org.mwc.cmap.core.wizards.EnterBooleanPage;
 import org.mwc.cmap.core.wizards.EnterRangePage;
 import org.mwc.cmap.core.wizards.EnterStringPage;
 import org.mwc.cmap.core.wizards.SelectColorPage;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -911,12 +912,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent)
+		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
 			public SWTCanvas createCanvas(Composite parent1)
 			{
-				return new CustomisedSWTCanvas(parent1)
+				return new CustomisedSWTCanvas(parent1, _myGeoHandler)
 				{
 
 					/**

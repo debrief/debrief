@@ -56,6 +56,7 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -128,6 +129,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected PartMonitor _myPartMonitor;
 
+	protected GeoToolsHandler _myGeoHandler;
+
 	// //////////////////////////////
 	// constructor
 	// //////////////////////////////
@@ -135,6 +138,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public CorePlotEditor()
 	{
 		super();
+		
+		// create the projection, we're going to need it to load the data, before we have the chart created
+		_myGeoHandler = new GtProjection();
 
 		_myLayers = new Layers(){
 
@@ -148,35 +154,22 @@ public abstract class CorePlotEditor extends EditorPart implements
 			{
 				Layer wrappedLayer = null;
 
-
 				// ok, if this is an externally managed layer (and we're doing
 				// GT-plotting, we will wrap it, and actually add the wrapped layer
 				if (theLayer instanceof ExternallyManagedDataLayer)
-				{
-					// just check we have a GeoTools-style projection
-				  PlainProjection proj = _myChart.getCanvas().getProjection();
-				  boolean haveGtPlot = proj instanceof GtProjection;
-				  
-				  if(!haveGtPlot)
-				  {
-				  	CorePlugin.logError(Status.ERROR, "Can't load externally managed layer into non-GTProjection", null);
-				  	return;
-				  }
-					
-				  GtProjection gp = (GtProjection) proj;
-				  
+				{			  
 				  ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(
-							MWC.GUI.Shapes.ChartWrapper.WORLDIMAGE_TYPE))
+							MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
 					{
 						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
 								dl.getFilename());
 						gt.setVisible(dl.getVisible());
-						gp.addGeoToolsLayer(gt);
+						_myGeoHandler.addGeoToolsLayer(gt);
 						wrappedLayer = gt;
 					}
 					else if (dl.getDataType().equals(
-							MWC.GUI.Shapes.ChartWrapper.SHAPEFILE_TYPE))
+							MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE))
 					{
 						// just see if it's a raster extent layer (special processing)
 						if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
@@ -191,7 +184,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 							GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
 									dl.getFilename());
 							gt.setVisible(dl.getVisible());
-							gp.addGeoToolsLayer(gt);
+							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}
 					}
@@ -458,7 +451,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent)
+		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
 			/**

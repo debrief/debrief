@@ -134,7 +134,9 @@ import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -177,10 +179,11 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 	/**
 	 * default constructor.
+	 * @param projection 
 	 */
-	public SWTCanvas(Composite parent)
+	public SWTCanvas(Composite parent, GeoToolsHandler projection)
 	{
-		super(new GtProjection());
+		super((PlainProjection) projection);
 //		super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);

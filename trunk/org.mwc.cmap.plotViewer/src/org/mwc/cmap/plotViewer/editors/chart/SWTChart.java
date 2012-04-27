@@ -168,7 +168,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.proj.GeoToolsHandler;
 import org.mwc.cmap.gt2plot.proj.GeoToolsPainter;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
@@ -178,6 +177,7 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -210,7 +210,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		private static final long serialVersionUID = 1L;
 
-		public CustomisedSWTCanvas(Composite parent, GtProjection projection)
+		public CustomisedSWTCanvas(Composite parent, GeoToolsHandler projection)
 		{
 			super(parent, projection);
 		}
@@ -520,7 +520,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	public SWTChart(final Layers theLayers, Composite parent, GeoToolsHandler _myProjection)
 	{
 		super(theLayers);
-		_theCanvas = createCanvas(parent, _myProjection);
+		_theCanvas = createCanvas(parent, (GtProjection) _myProjection);
 
 		// sort out the area of coverage of the plot
 		if (theLayers != null)
@@ -684,13 +684,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	/**
 	 * over-rideable member function which allows us to over-ride the canvas which
 	 * gets used.
-	 * @param _myProjection 
+	 * @param projection 
 	 * 
 	 * @return the Canvas to use
 	 */
-	public SWTCanvas createCanvas(Composite parent, GeoToolsHandler _myProjection)
+	public SWTCanvas createCanvas(Composite parent, GtProjection projection)
 	{
-		return new CustomisedSWTCanvas(parent, _myProjection)
+		return new CustomisedSWTCanvas(parent, projection)
 		{
 
 			/**
