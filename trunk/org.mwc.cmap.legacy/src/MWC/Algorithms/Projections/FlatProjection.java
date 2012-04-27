@@ -21,11 +21,42 @@ import MWC.GenericData.WorldVector;
 public class FlatProjection extends PlainProjection
 {
 
+	// //////////////////////////////////////////////////////////////////////////
+	// embedded class, used for editing the projection
+	// //////////////////////////////////////////////////////////////////////////
+	public class FlatProjectionInfo extends Editable.EditorType
+	{
+
+		public FlatProjectionInfo(PlainProjection data)
+		{
+			super(data, data.getName(), "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						prop("DataBorder",
+								"the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
+						prop("ScaleVal",
+								"the scaling factor to use (world units/screen units)") };
+
+				return res;
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
 	// ////////////////////////////////////////////////
 	// member variables
 	// ////////////////////////////////////////////////
@@ -34,6 +65,7 @@ public class FlatProjection extends PlainProjection
 	 */
 	protected WorldLocation _dataOrigin;
 	protected double _scaleVal;
+
 	protected Point _screenOrigin;
 
 	/**
@@ -53,6 +85,10 @@ public class FlatProjection extends PlainProjection
 	private Point scrRes = new Point(0, 0);
 
 	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
 	public FlatProjection()
@@ -60,9 +96,14 @@ public class FlatProjection extends PlainProjection
 		super("Locally flat-Earth projection");
 	}
 
-	// ////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////
+	@Override
+	public Editable.EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new FlatProjectionInfo(this);
+
+		return _myEditor;
+	}
 
 	/**
 	 * return factor which converts from screen to world units (screen = world /
@@ -74,14 +115,99 @@ public class FlatProjection extends PlainProjection
 		return _scaleVal;
 	}
 
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new FlatProjectionInfo(this);
+	public double getScaleVal()
+	{
+		return _scaleVal;
+	}
 
-    return _myEditor;
-  }
-	
+	public void offsetOrigin(boolean updateDataArea)
+	{
+
+		// ensure there's a valid (minimum) value
+		if (_scaleVal < 0.0000002)
+			_scaleVal = 0.0000002;
+
+		// have we got a screen area?
+		if (getScreenArea() == null)
+			return;
+
+		// since this changes the data area rectangle, we should ensure that there
+		// is screen data present
+		if ((getScreenArea().width > 0) && (getScreenArea().height > 0))
+		{
+
+			// create a new offset
+
+			// find the size of the screen in data units
+			double sWidth = getScreenArea().width * _scaleVal;
+			double sHeight = getScreenArea().height * _scaleVal;
+
+			// calculate the desired borders around the screen
+			sWidth = sWidth - getDataArea().getWidth();
+			sHeight = sHeight - getDataArea().getHeight();
+
+			// halve the size of these borders, to give the distance each side
+			double edgeX = sWidth / 2.0;
+			double edgeY = sHeight / 2.0;
+
+			if (updateDataArea)
+			{
+				// work out the new top left
+				WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
+						.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
+
+				// and now the new bottom right
+				WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
+						.getLat() - edgeY,
+						getDataArea().getBottomRight().getLong() + edgeX, 0);
+
+				// and update the data-area - note we call the parent, not the one in
+				// this class,
+				// so that we don't reset the zoom
+				super.setDataArea(new WorldArea(newTL, newBR));
+			}
+
+		}
+
+		_dataOrigin = getDataArea().getCentre();
+
+	}
+
+	@Override
+	public void setDataArea(WorldArea theArea)
+	{
+		super.setDataArea(theArea);
+
+		this.firePropertyChange(PlainProjection.PAN_EVENT, null, theArea);
+
+		// and recalc the scale/origin
+		zoom(0.0);
+	}
+
+	/**
+	 * override the current scale factor
+	 * 
+	 * @param scaleVal
+	 */
+	public void setScaleVal(double scaleVal)
+	{
+		_scaleVal = scaleVal;
+
+		offsetOrigin(true);
+	}
+
+	@Override
+	public void setScreenArea(java.awt.Dimension theArea)
+	{
+		super.setScreenArea(theArea);
+
+		_screenOrigin = new java.awt.Point(theArea.width / 2, theArea.height / 2);
+
+		// and recalc the scale/origin
+		zoom(0.0);
+	}
+
+	@Override
 	public java.awt.Point toScreen(WorldLocation val)
 	{
 		// Point scrRes;
@@ -100,37 +226,37 @@ public class FlatProjection extends PlainProjection
 		WorldLocation myOrigin = null;
 		double bearingOffset = 0.0;
 
-//		try
-//		{
+		// try
+		// {
 
-			// see if we are in relative mode
-			if (super.getPrimaryOriented())
+		// see if we are in relative mode
+		if (super.getPrimaryOriented())
+		{
+			// check if we have a parent defined
+			if (super._relativePlotter != null)
 			{
-				// check if we have a parent defined
-				if (super._relativePlotter != null)
-				{
-					// and the bearing offset
-					bearingOffset = _relativePlotter.getHeading();
-				}
+				// and the bearing offset
+				bearingOffset = _relativePlotter.getHeading();
 			}
+		}
 
-			// see if we are in relative mode
-			if (super.getPrimaryCentred())
+		// see if we are in relative mode
+		if (super.getPrimaryCentred())
+		{
+			// check if we have a parent defined
+			if (super._relativePlotter != null)
 			{
-				// check if we have a parent defined
-				if (super._relativePlotter != null)
-				{
-					// try to get the origin
-					myOrigin = _relativePlotter.getLocation();
-				}
+				// try to get the origin
+				myOrigin = _relativePlotter.getLocation();
 			}
+		}
 
-		//}
-//		catch (java.lang.NullPointerException ne)
-//		{
-//			// don't bother - at least let's plot something
-//
-//		}
+		// }
+		// catch (java.lang.NullPointerException ne)
+		// {
+		// // don't bother - at least let's plot something
+		//
+		// }
 
 		// oh well, just use the traditional (absolute) origin anyway
 		if (myOrigin == null)
@@ -147,9 +273,8 @@ public class FlatProjection extends PlainProjection
 		// Now work in screen coordinates
 		// scrRes = new Point((int)(Math.sin((double)brg) * (double)rng) ,
 		// (int)(Math.cos((double)brg) * (double)rng));
-		final int deltaX = (int) (Math.sin((double) brg) * (double) rng);
-		final int deltaY = (int) (Math
-				.cos((double) brg) * (double) rng);
+		final int deltaX = (int) (Math.sin(brg) * rng);
+		final int deltaY = (int) (Math.cos(brg) * rng);
 		scrRes.move(deltaX, deltaY);
 
 		// invert the y
@@ -163,6 +288,7 @@ public class FlatProjection extends PlainProjection
 		return scrRes;
 	}
 
+	@Override
 	public WorldLocation toWorld(java.awt.Point val)
 	{
 
@@ -227,7 +353,8 @@ public class FlatProjection extends PlainProjection
 		}
 		catch (NullPointerException npe)
 		{
-			// don't worry - we don't have the necessary data - just do normal plotting
+			// don't worry - we don't have the necessary data - just do normal
+			// plotting
 		}
 
 		// oh well, just use the absolute origin anyway
@@ -243,25 +370,8 @@ public class FlatProjection extends PlainProjection
 
 		return _workingLocation;
 	}
-	
-	
 
-	public double getScaleVal()
-	{
-		return _scaleVal;
-	}
-
-	/** override the current scale factor
-	 * 
-	 * @param scaleVal
-	 */
-	public void setScaleVal(double scaleVal)
-	{
-		_scaleVal = scaleVal;
-		
-		offsetOrigin(true);
-	}
-
+	@Override
 	public void zoom(double value)
 	{
 		// check that we have some data
@@ -319,108 +429,4 @@ public class FlatProjection extends PlainProjection
 		}
 	}
 
-	public void offsetOrigin(boolean updateDataArea)
-	{
-
-		// ensure there's a valid (minimum) value
-		if (_scaleVal < 0.0000002)
-			_scaleVal = 0.0000002;
-
-		// have we got a screen area?
-		if (getScreenArea() == null)
-			return;
-
-		// since this changes the data area rectangle, we should ensure that there
-		// is screen data present
-		if ((getScreenArea().width > 0) && (getScreenArea().height > 0))
-		{
-
-			// create a new offset
-
-			// find the size of the screen in data units
-			double sWidth = getScreenArea().width * _scaleVal;
-			double sHeight = getScreenArea().height * _scaleVal;
-
-			// calculate the desired borders around the screen
-			sWidth = sWidth - getDataArea().getWidth();
-			sHeight = sHeight - getDataArea().getHeight();
-
-			// halve the size of these borders, to give the distance each side
-			double edgeX = sWidth / 2.0;
-			double edgeY = sHeight / 2.0;
-
-			if (updateDataArea)
-			{
-				// work out the new top left
-				WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
-						.getLat()
-						+ edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
-
-				// and now the new bottom right
-				WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
-						.getLat()
-						- edgeY, getDataArea().getBottomRight().getLong() + edgeX, 0);
-
-				// and update the data-area - note we call the parent, not the one in
-				// this class,
-				// so that we don't reset the zoom
-				super.setDataArea(new WorldArea(newTL, newBR));
-			}
-
-		}
-
-		_dataOrigin = getDataArea().getCentre();
-
-	}
-
-	public void setDataArea(WorldArea theArea)
-	{
-		super.setDataArea(theArea);
-
-		this.firePropertyChange(PlainProjection.PAN_EVENT, null, theArea);
-
-		// and recalc the scale/origin
-		zoom(0.0);
-	}
-
-	public void setScreenArea(java.awt.Dimension theArea)
-	{
-		super.setScreenArea(theArea);
-
-		_screenOrigin = new java.awt.Point(theArea.width / 2, theArea.height / 2);
-
-		// and recalc the scale/origin
-		zoom(0.0);
-	}
-	
-
-  ////////////////////////////////////////////////////////////////////////////
-  //  embedded class, used for editing the projection
-  ////////////////////////////////////////////////////////////////////////////
-  public class FlatProjectionInfo extends Editable.EditorType
-  {
-
-    public FlatProjectionInfo(PlainProjection data)
-    {
-      super(data, data.getName(), "");
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        PropertyDescriptor[] res = {
-          prop("DataBorder", "the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
-          prop("ScaleVal", "the scaling factor to use (world units/screen units)")
-        };
-
-        return res;
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-	
 }
