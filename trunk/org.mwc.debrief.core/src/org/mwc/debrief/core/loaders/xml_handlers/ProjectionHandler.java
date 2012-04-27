@@ -12,6 +12,7 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 import org.w3c.dom.Element;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.WorldArea;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
 
@@ -134,8 +135,9 @@ abstract class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLR
       proj.setAttribute(PRIMARY_ORIENTED, writeThis(flat.getPrimaryOriented()));
 
       // and now the corners
-      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(flat.getDataArea().getTopLeft(), "tl", proj, doc);
-      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(flat.getDataArea().getBottomRight(), "br", proj, doc);
+      WorldArea dataArea = flat.getDataArea();
+			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(dataArea.getTopLeft(), "tl", proj, doc);
+      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(dataArea.getBottomRight(), "br", proj, doc);
 
       parent.appendChild(proj);
     }
