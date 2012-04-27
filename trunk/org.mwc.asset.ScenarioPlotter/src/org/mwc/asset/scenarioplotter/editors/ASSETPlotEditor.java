@@ -24,6 +24,7 @@ import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -56,6 +57,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	protected ISelectionChangedListener _selectionChangeListener;
 
+	private GtProjection _myProjection;
+
 	// //////////////////////////////
 	// constructor
 	// //////////////////////////////
@@ -64,6 +67,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 		super();
 
+		_myProjection = new GtProjection();
+		
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
 			public void selectionChanged(SelectionChangedEvent event)
@@ -303,7 +308,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent)
+		SWTChart res = new SWTChart(_myLayers, parent, _myProjection)
 		{
 
 			/**
