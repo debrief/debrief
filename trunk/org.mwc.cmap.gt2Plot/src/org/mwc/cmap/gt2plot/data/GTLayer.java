@@ -121,31 +121,7 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 				_ukImage.setMap(map);
 			}
 
-			StreamingRenderer renderer = new StreamingRenderer();
-			renderer.setMapContent(map);
-
-			RenderingHints hints = new RenderingHints(
-					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			renderer.setJava2DHints(hints);
-
-			Map<String, Object> rendererParams = new HashMap<String, Object>();
-			rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
-
-			renderer.setRendererHints(rendererParams);
-
-			BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
-					BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2d = baseImage.createGraphics();
-			g2d.fillRect(0, 0, width + 1, height + 1);
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-
-			// renderer.setContext(context);
-			java.awt.Rectangle awtRectangle = new Rectangle(0, 0, width, height);
-			final ReferencedEnvelope mapAOI = map.getViewport().getBounds();
-			AffineTransform worldToScreen = map.getViewport().getWorldToScreen();
-			renderer.paint(g2d, awtRectangle, mapAOI, worldToScreen);
-			// swtImage.dispose();
+			BufferedImage baseImage = drawAwtImage(dest);
 
 			if (swtImage != null && !swtImage.isDisposed())
 			{
@@ -170,6 +146,43 @@ public class GTLayer extends BaseLayer implements BackgroundLayer
 		dest.drawLine(20, 40, 80, (int) y2);
 	}
 
+	private static BufferedImage drawAwtImage(CanvasType dest)
+	{
+		GtProjection proj = (GtProjection) dest.getProjection();
+		MapContent map = proj.getMapContent();
+		
+		StreamingRenderer renderer = new StreamingRenderer();
+		renderer.setMapContent(map);
+
+		RenderingHints hints = new RenderingHints(
+				RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		renderer.setJava2DHints(hints);
+
+		Map<String, Object> rendererParams = new HashMap<String, Object>();
+		rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
+
+		renderer.setRendererHints(rendererParams);
+		
+		int width = proj.getScreenArea().width;
+		int height = proj.getScreenArea().height;
+		
+		BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
+				BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = baseImage.createGraphics();
+		g2d.fillRect(0, 0, width + 1, height + 1);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+
+		// renderer.setContext(context);
+		java.awt.Rectangle awtRectangle = new Rectangle(0, 0, width, height);
+		final ReferencedEnvelope mapAOI = map.getViewport().getBounds();
+		AffineTransform worldToScreen = map.getViewport().getWorldToScreen();
+		renderer.paint(g2d, awtRectangle, mapAOI, worldToScreen);
+		// swtImage.dispose();
+		
+		return baseImage;
+	}
+	
 	private ImageData awtToSwt(BufferedImage bufferedImage, int width, int height)
 	{
 		final int[] awtPixels = new int[width * height];
