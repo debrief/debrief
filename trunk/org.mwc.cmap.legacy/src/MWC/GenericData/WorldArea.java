@@ -985,4 +985,24 @@ public final class WorldArea implements Serializable
 		return new WorldLocation(_lat, _long, _depth);
 	}
 
+	private void trimLocation(WorldLocation loc)
+	{
+		loc.setLat(Math.min(loc.getLat(), 90));
+		loc.setLat(Math.max(loc.getLat(), -90));
+		
+		loc.setLong(Math.min(loc.getLong(), 180));
+		loc.setLong(Math.max(loc.getLong(), -180));
+		
+	}
+	
+	public void trim()
+	{
+		// do it, one corner at a time
+		trimLocation(_topLeft);
+		trimLocation(_bottomRight);
+		
+		// and sort out the other corners
+		normalise();
+	}
+
 }
