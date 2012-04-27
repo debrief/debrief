@@ -14,6 +14,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.projection.ProjectionException;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gt2plot.GtActivator;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -200,7 +202,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 						tlDegs.x, 0d);
 				WorldArea newArea = new WorldArea(tl, br);
 				newArea.normalise();
-
+				
 				setDataArea(newArea);
 
 			}
@@ -237,6 +239,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public void setDataArea(WorldArea theArea)
 	{
+		// trim the area to sensible bounds
+		theArea.trim();
+		
 		super.setDataArea(theArea);
 
 		mySetDataArea(theArea);
@@ -263,15 +268,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldCoords);
 			_view.setBounds(rEnv);
 		}
+		catch (ProjectionException e)
+		{
+			CorePlugin.logError(Status.ERROR, "trouble with proj, probably zoomed out too far", e);
+		}
 		catch (MismatchedDimensionException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR, "unknown trouble with proj", e);
 		}
 		catch (TransformException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR, "unknown trouble with proj", e);
 		}
 	}
 
