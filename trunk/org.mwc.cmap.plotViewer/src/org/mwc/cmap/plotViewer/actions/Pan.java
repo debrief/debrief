@@ -176,9 +176,11 @@ public class Pan extends CoreDragAction
 		public Cursor getDownCursor()
 		{
 			// ok, return the pan cursor
-			if (_downCursor == null)
+			if ((_downCursor == null) || (_downCursor.isDisposed()))
+			{
 				_downCursor = new Cursor(Display.getDefault(), CorePlugin
 						.getImageDescriptor("icons/hand_fist.ico").getImageData(), 4, 2);
+			}
 
 			return _downCursor;
 		}
@@ -191,7 +193,7 @@ public class Pan extends CoreDragAction
 		public Cursor getNormalCursor()
 		{
 			// ok, return the pan cursor
-			if (_normalCursor == null)
+			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
 				_normalCursor = new Cursor(Display.getDefault(), CorePlugin
 						.getImageDescriptor("icons/hand.ico").getImageData(), 4, 2);
 
