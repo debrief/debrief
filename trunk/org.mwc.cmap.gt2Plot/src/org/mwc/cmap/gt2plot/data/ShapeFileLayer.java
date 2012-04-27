@@ -12,7 +12,7 @@ import org.geotools.styling.Style;
 import org.geotools.swt.utils.Utils;
 
 import MWC.GUI.ExternallyManagedDataLayer;
-import MWC.GUI.Shapes.ChartWrapper;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 
 public class ShapeFileLayer extends GeoToolsLayer
 {
@@ -23,7 +23,7 @@ public class ShapeFileLayer extends GeoToolsLayer
 
 	public ShapeFileLayer(String layerName, String fileName)
 	{
-		super(ChartWrapper.SHAPEFILE_TYPE, layerName, fileName);
+		super(ChartBoundsWrapper.SHAPEFILE_TYPE, layerName, fileName);
 	}
 
 	protected Layer loadLayer(File openFile)
@@ -60,10 +60,10 @@ public class ShapeFileLayer extends GeoToolsLayer
 		if (openFile != null && openFile.exists())
 		{
 			// sort out the name of the map
-			String coverageName = ChartWrapper.getCoverageName(fileName);
+			String coverageName = ChartBoundsWrapper.getCoverageName(fileName);
 
 			// represent it as a normal shapefile
-			res = new ExternallyManagedDataLayer(ChartWrapper.SHAPEFILE_TYPE,
+			res = new ExternallyManagedDataLayer(ChartBoundsWrapper.SHAPEFILE_TYPE,
 					coverageName, fileName);
 		}
 		return res;
