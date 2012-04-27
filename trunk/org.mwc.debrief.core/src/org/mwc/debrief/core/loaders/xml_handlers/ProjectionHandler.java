@@ -22,7 +22,9 @@ abstract class ProjectionHandler extends
 	private static final String PRIMARY_ORIENTED = "PrimaryOriented";
 	private static final String RELATIVE_MODE = "Relative";
 	private static final String PRIMARY_CENTRED = "PrimaryOrigin";
+
 	MWC.GenericData.WorldLocation _tl;
+
 	MWC.GenericData.WorldLocation _br;
 	String _type;
 	double _border;
@@ -37,6 +39,7 @@ abstract class ProjectionHandler extends
 		// handlers for the corners
 		addHandler(new LocationHandler("tl")
 		{
+			@Override
 			public void setLocation(MWC.GenericData.WorldLocation res)
 			{
 				_tl = res;
@@ -44,6 +47,7 @@ abstract class ProjectionHandler extends
 		});
 		addHandler(new LocationHandler("br")
 		{
+			@Override
 			public void setLocation(MWC.GenericData.WorldLocation res)
 			{
 				_br = res;
@@ -52,6 +56,7 @@ abstract class ProjectionHandler extends
 
 		addAttributeHandler(new HandleAttribute("Type")
 		{
+			@Override
 			public void setValue(String name, String val)
 			{
 				_type = val;
@@ -59,6 +64,7 @@ abstract class ProjectionHandler extends
 		});
 		addAttributeHandler(new HandleAttribute("Border")
 		{
+			@Override
 			public void setValue(String name, String val)
 			{
 				try
@@ -74,6 +80,7 @@ abstract class ProjectionHandler extends
 		});
 		addAttributeHandler(new HandleBooleanAttribute(RELATIVE_MODE)
 		{
+			@Override
 			public void setValue(String name, boolean value)
 			{
 				_primaryOriented = value;
@@ -81,6 +88,7 @@ abstract class ProjectionHandler extends
 		});
 		addAttributeHandler(new HandleBooleanAttribute(PRIMARY_ORIENTED)
 		{
+			@Override
 			public void setValue(String name, boolean value)
 			{
 				_primaryOriented = value;
@@ -88,6 +96,7 @@ abstract class ProjectionHandler extends
 		});
 		addAttributeHandler(new HandleBooleanAttribute(PRIMARY_CENTRED)
 		{
+			@Override
 			public void setValue(String name, boolean value)
 			{
 				_primaryCentred = value;
@@ -96,6 +105,35 @@ abstract class ProjectionHandler extends
 
 	}
 
+	public static void exportProjection(
+			MWC.Algorithms.PlainProjection projection, org.w3c.dom.Element parent,
+			org.w3c.dom.Document doc)
+	{
+
+		/*
+		 * <!ELEMENT projection (tl, br)> <!ATTLIST projection type CDATA #REQUIRED
+		 * border CDATA "1.0" relative (TRUE|FALSE) "FALSE" >
+		 */
+
+		Element proj = doc.createElement("projection");
+
+		// first the attributes for the projection
+		proj.setAttribute("Type", "Flat");
+		proj.setAttribute("Border", writeThis(projection.getDataBorder()));
+		proj.setAttribute(PRIMARY_CENTRED,
+				writeThis(projection.getPrimaryCentred()));
+		proj.setAttribute(PRIMARY_ORIENTED,
+				writeThis(projection.getPrimaryOriented()));
+
+		// and now the corners
+		WorldArea dataArea = projection.getDataArea();
+		LocationHandler.exportLocation(dataArea.getTopLeft(), "tl", proj, doc);
+		LocationHandler.exportLocation(dataArea.getBottomRight(), "br", proj, doc);
+
+		parent.appendChild(proj);
+	}
+
+	@Override
 	public final void elementClosed()
 	{
 		MWC.Algorithms.PlainProjection newProj = null;
@@ -117,32 +155,5 @@ abstract class ProjectionHandler extends
 	}
 
 	public abstract void setProjection(PlainProjection proj);
-
-	public static void exportProjection(MWC.Algorithms.PlainProjection projection,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
-	{
-
-		/*
-		 * <!ELEMENT projection (tl, br)> <!ATTLIST projection type CDATA #REQUIRED
-		 * border CDATA "1.0" relative (TRUE|FALSE) "FALSE" >
-		 */
-
-		Element proj = doc.createElement("projection");
-
-		// first the attributes for the projection
-		proj.setAttribute("Type", "Flat");
-		proj.setAttribute("Border", writeThis(projection.getDataBorder()));
-		proj.setAttribute(PRIMARY_CENTRED, writeThis(projection.getPrimaryCentred()));
-		proj.setAttribute(PRIMARY_ORIENTED, writeThis(projection.getPrimaryOriented()));
-
-		// and now the corners
-		WorldArea dataArea = projection.getDataArea();
-		MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
-				dataArea.getTopLeft(), "tl", proj, doc);
-		MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
-				dataArea.getBottomRight(), "br", proj, doc);
-
-		parent.appendChild(proj);
-	}
 
 }
