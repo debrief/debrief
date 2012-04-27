@@ -356,6 +356,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	private void loadThisFile(IEditorInput input)
 	{
 		InputStream is = null;
+		if (!input.exists())
+		{
+			CorePlugin.logError(Status.ERROR,
+					"File cannot be found:" + input.getName(), null);
+			return;
+		}
 		try
 		{
 			IPersistableElement persist = input.getPersistable();
@@ -392,10 +398,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		catch (ResourceException e)
 		{
 			CorePlugin.logError(Status.ERROR,
-					"Resource out of sync, REFRESH the workspace", e);
-			MessageDialog.openError(Display.getDefault().getActiveShell(),
-					"File out of sync",
-					"Please right-click on your navigator project and press Refresh");
+					"Resource out of sync:" + input.getName() + " REFRESH the workspace",
+					null);
+			MessageDialog
+					.openError(
+							Display.getDefault().getActiveShell(),
+							"File out of sync",
+							"This file has been edited or removed:"
+									+ input.getName()
+									+ "\nPlease right-click on your navigator project and press Refresh");
 		}
 		catch (CoreException e)
 		{
