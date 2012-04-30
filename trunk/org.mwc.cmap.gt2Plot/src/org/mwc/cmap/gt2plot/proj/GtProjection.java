@@ -14,6 +14,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.builder.MathTransformBuilder;
+import org.geotools.referencing.operation.matrix.AffineTransform2D;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gt2plot.GtActivator;
@@ -33,14 +35,18 @@ import MWC.GenericData.WorldLocation;
 
 public class GtProjection extends PlainProjection implements GeoToolsHandler
 {
-	
+
 	private CoordinateReferenceSystem _worldCoords;
 	protected MathTransform _degs2metres;
+
+	private WorldLocation _relativeCentre = null;
 
 	private final MapContent _map;
 	// private AffineTransform worldToScreen;
 	// private AffineTransform screenToWorld;
 	private final MapViewport _view;
+	private WorldArea _oldDataArea;
+//	private AffineTransform2D _orientTransform;
 
 	public GtProjection()
 	{
@@ -52,19 +58,26 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		// sort out the degs to m transform
 		try
 		{
-			// we'll tell GeoTools to use the projection that's used by most of our charts,
+			// we'll tell GeoTools to use the projection that's used by most of our
+			// charts,
 			// so that the chart will be displayed undistorted
 			_worldCoords = CRS.decode("EPSG:3395");
-			
-			// we also need a way to convert a location in degrees to that used by 
+
+			// we also need a way to convert a location in degrees to that used by
 			// the charts (metres)
 			CoordinateReferenceSystem worldDegs = CRS.decode("EPSG:4326");
 			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
+			
+			// initialise the orient transform, to identity
+	//		_orientTransform = new AffineTransform2D();
 		}
 		catch (NoSuchAuthorityCodeException e)
 		{
-			GtActivator.logError(Status.ERROR,
-					"Can't find the requested authority whilst trying to create CRS transform", e);
+			GtActivator
+					.logError(
+							Status.ERROR,
+							"Can't find the requested authority whilst trying to create CRS transform",
+							e);
 		}
 		catch (FactoryException e)
 		{
@@ -94,6 +107,66 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public Point toScreen(WorldLocation val)
 	{
+		// special handling: if we're in a relative plotting mode, we need to shift
+		// the projection.  We're choosing to defer handling of this instance until we're actually
+		// plotting the data.
+		// - we cache the current relative centre, and only bother shifting the
+		// transform if it's a new centre.
+
+		// right, quick check. are we in a primary centred mode?
+		if (super.getNonStandardPlotting() && super.getPrimaryCentred())
+		{
+			WorldLocation loc = super._relativePlotter.getLocation();
+
+			// have we got a 'remembered data area'?
+			if (_oldDataArea == null)
+			{
+				// remember the current data area
+				_oldDataArea = super.getDataArea();
+			}
+
+			// ok, handle the changes
+			if (loc != _relativeCentre)
+			{
+				// store the new centre
+				_relativeCentre = loc;
+
+				// set the centre of the new data area
+				WorldArea newArea = new WorldArea(super.getDataArea());
+
+				// shift it to our current centre
+				newArea.setCentre(_relativeCentre);
+
+				// and store this area
+				this.mySetDataArea(newArea);
+			}
+		}
+		else
+		{
+			// are we storing an old data area?
+			if (_oldDataArea != null)
+			{
+				// ok, re-instate that old arae
+				this.mySetDataArea(_oldDataArea);
+
+				// and clear the flag
+				_oldDataArea = null;
+			}
+		}
+		
+		// just see if there's also a rotation
+//		if(super.getPrimaryOriented())
+//		{
+//			// better get shifting.
+//			_orientTransform = new AffineTransform2D();
+//			_orientTransform.rotate(Math.PI/2);
+//		}
+//		else
+//		{
+//			// set it to the identity transform
+//			_orientTransform = new AffineTransform2D();
+//		}
+
 		Point res = null;
 
 		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
@@ -118,8 +191,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (TransformException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			GtActivator.logError(Status.ERROR,
+					"Whilst trying to convert to screen coords", e);
 		}
 		return res;
 	}
@@ -147,13 +220,13 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			GtActivator.logError(Status.ERROR,
+					"Unexpected problem whilst performing screen to world", e);
 		}
 		catch (TransformException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			GtActivator.logError(Status.ERROR,
+					"Unexpected problem whilst performing screen to world", e);
 		}
 		return res;
 	}
@@ -188,38 +261,36 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 				Envelope2D newMapArea = new Envelope2D();
 				newMapArea.setFrameFromCenter(mapM, corner);
-				
+
 				// convert back to friendly units
 				DirectPosition2D tlDegs = new DirectPosition2D();
 				DirectPosition2D brDegs = new DirectPosition2D();
-				
+
 				_degs2metres.inverse().transform(newMapArea.getLowerCorner(), brDegs);
 				_degs2metres.inverse().transform(newMapArea.getUpperCorner(), tlDegs);
 
-				WorldLocation tl = new WorldLocation(brDegs.y,
-						brDegs.x, 0d);
-				WorldLocation br = new WorldLocation(tlDegs.y,
-						tlDegs.x, 0d);
+				WorldLocation tl = new WorldLocation(brDegs.y, brDegs.x, 0d);
+				WorldLocation br = new WorldLocation(tlDegs.y, tlDegs.x, 0d);
 				WorldArea newArea = new WorldArea(tl, br);
 				newArea.normalise();
-				
+
 				setDataArea(newArea);
 
 			}
 			catch (MismatchedDimensionException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst performing zoom", e);
 			}
 			catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GtActivator.logError(Status.ERROR,
+						"Unable to do inverse transform in zoom", e);
 			}
 			catch (TransformException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst performing", e);
 			}
 
 		}
@@ -241,7 +312,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	{
 		// trim the area to sensible bounds
 		theArea.trim();
-		
+
 		super.setDataArea(theArea);
 
 		mySetDataArea(theArea);
@@ -270,7 +341,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (ProjectionException e)
 		{
-			CorePlugin.logError(Status.ERROR, "trouble with proj, probably zoomed out too far", e);
+			CorePlugin.logError(Status.ERROR,
+					"trouble with proj, probably zoomed out too far", e);
 		}
 		catch (MismatchedDimensionException e)
 		{
@@ -397,7 +469,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 	public void addGeoToolsLayer(ExternallyManagedDataLayer gt)
 	{
-		GeoToolsLayer geoLayer =(GeoToolsLayer) gt;
+		GeoToolsLayer geoLayer = (GeoToolsLayer) gt;
 		geoLayer.setMap(_map);
 	}
 
