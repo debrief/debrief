@@ -14,7 +14,7 @@
 	<classpathentry kind="lib" path="libs/gt-coverage-8.0-M4.jar"/>
 	<classpathentry kind="lib" path="libs/gt-main-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/library/main/src/main"/>
 	<classpathentry kind="lib" path="libs/gt-render-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/library/render/src/main/java"/>
-	<classpathentry kind="lib" path="libs/gt-shapefile-8.0-M4.jar"/>
+	<classpathentry kind="lib" path="libs/gt-shapefile-8.0-M4.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/geotools-8.0-M4 src/modules/plugin/shapefile/src/main/java"/>
 	<classpathentry kind="lib" path="libs/jai_codec-1.1.3.jar"/>
 	<classpathentry kind="lib" path="libs/jai_core-1.1.3.jar"/>
 	<classpathentry kind="lib" path="libs/jai_imageio-1.1.jar"/>
