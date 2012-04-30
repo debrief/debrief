@@ -554,8 +554,12 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void showMessage(final String title, final String message)
 	{
-		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), title,
-				message);
+	  Display.getDefault().asyncExec(new Runnable() {
+	    @Override
+	    public void run() {
+	      MessageDialog.openInformation(null, title, message);
+	    }
+	  });
 	}
 
 	/**
