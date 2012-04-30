@@ -14,8 +14,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.operation.builder.MathTransformBuilder;
-import org.geotools.referencing.operation.matrix.AffineTransform2D;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gt2plot.GtActivator;
@@ -42,11 +40,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	private WorldLocation _relativeCentre = null;
 
 	private final MapContent _map;
-	// private AffineTransform worldToScreen;
-	// private AffineTransform screenToWorld;
 	private final MapViewport _view;
 	private WorldArea _oldDataArea;
-//	private AffineTransform2D _orientTransform;
 
 	public GtProjection()
 	{
@@ -67,9 +62,6 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			// the charts (metres)
 			CoordinateReferenceSystem worldDegs = CRS.decode("EPSG:4326");
 			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
-			
-			// initialise the orient transform, to identity
-	//		_orientTransform = new AffineTransform2D();
 		}
 		catch (NoSuchAuthorityCodeException e)
 		{
@@ -87,15 +79,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		_view.setCoordinateReferenceSystem(_worldCoords);
 
+		// SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept constant
 		_view.setMatchingAspectRatio(true);
-
-		// _map.addMapBoundsListener(new MapBoundsListener()
-		// {
-		// public void mapBoundsChanged(MapBoundsEvent event)
-		// {
-		// clearTransforms();
-		// }
-		// });
 
 	}
 
@@ -143,10 +128,10 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		else
 		{
-			// are we storing an old data area?
+			// we're not in primary centred mode. do we need to restore an old data area?
 			if (_oldDataArea != null)
 			{
-				// ok, re-instate that old arae
+				// ok, re-instate that old area
 				this.mySetDataArea(_oldDataArea);
 
 				// and clear the flag
@@ -154,19 +139,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			}
 		}
 		
-		// just see if there's also a rotation
-//		if(super.getPrimaryOriented())
-//		{
-//			// better get shifting.
-//			_orientTransform = new AffineTransform2D();
-//			_orientTransform.rotate(Math.PI/2);
-//		}
-//		else
-//		{
-//			// set it to the identity transform
-//			_orientTransform = new AffineTransform2D();
-//		}
-
+		
 		Point res = null;
 
 		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
@@ -354,6 +327,29 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 	}
 
+
+	public MapContent getMapContent()
+	{
+		return _map;
+	}
+
+	public void addGeoToolsLayer(ExternallyManagedDataLayer gt)
+	{
+		GeoToolsLayer geoLayer = (GeoToolsLayer) gt;
+		geoLayer.setMap(_map);
+	}
+
+	/**
+	 * how many layers do we have loaded?
+	 * 
+	 * @return
+	 */
+	public int numLayers()
+	{
+		return _map.layers().size();
+	}
+
+	
 	public static class TestProj extends TestCase
 	{
 		public void testOne() throws NoSuchAuthorityCodeException,
@@ -460,27 +456,6 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 							.transform(new DirectPosition2D(45, 0), null));
 
 		}
-	}
-
-	public MapContent getMapContent()
-	{
-		return _map;
-	}
-
-	public void addGeoToolsLayer(ExternallyManagedDataLayer gt)
-	{
-		GeoToolsLayer geoLayer = (GeoToolsLayer) gt;
-		geoLayer.setMap(_map);
-	}
-
-	/**
-	 * how many layers do we have loaded?
-	 * 
-	 * @return
-	 */
-	public int numLayers()
-	{
-		return _map.layers().size();
 	}
 
 }
