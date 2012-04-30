@@ -1,8 +1,10 @@
 package org.mwc.cmap.gt2plot.data;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.Status;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -10,6 +12,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.geotools.swt.utils.Utils;
+import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
@@ -46,9 +49,18 @@ public class ShapeFileLayer extends GeoToolsLayer
 				System.err.println("can't find this file");
 			}
 		}
+		catch(FileNotFoundException f)
+		{
+			CorePlugin.logError(Status.ERROR, "Can't find the shape file", f);
+			CorePlugin.showMessage("Load ShapeFile", "Sorry, can't find the requested shapefile:\n" + openFile.getName());
+		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR, "Trouble loading shape file", e);
+		}
+		catch (Exception e)
+		{
+			System.err.println("Surely it will get caught!!!");
 		}
 		return res;
 	}
