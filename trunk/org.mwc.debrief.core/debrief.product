@@ -215,8 +215,8 @@ Library.
    </plugins>
 
    <features>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.158"/>
       <feature id="org.mwc.debrief.combined.feature" version="1.0.202"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.159"/>
    </features>
 
 
