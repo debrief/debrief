@@ -627,7 +627,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
 			// move the start point forward, so the centre of the triangle is over the
 			// point
-			Point p1 = dest.toScreen(centre);
+			Point p0 = dest.toScreen(centre);
+			Point p1 = new Point(p0);
 			p1.translate(-(int) (len / 2d * Math.cos(direction)),
 					-(int) (len / 2d * Math.sin(direction)));
 
