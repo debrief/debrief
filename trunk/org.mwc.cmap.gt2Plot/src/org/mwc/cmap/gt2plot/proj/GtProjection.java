@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.HashMap;
 
 import junit.framework.TestCase;
 
@@ -79,7 +80,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 		_view.setCoordinateReferenceSystem(_worldCoords);
 
-		// SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept constant
+		// SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept
+		// constant
 		_view.setMatchingAspectRatio(true);
 
 	}
@@ -92,8 +94,12 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public Point toScreen(WorldLocation val)
 	{
+
+		Point res = null;
+		
 		// special handling: if we're in a relative plotting mode, we need to shift
-		// the projection.  We're choosing to defer handling of this instance until we're actually
+		// the projection. We're choosing to defer handling of this instance until
+		// we're actually
 		// plotting the data.
 		// - we cache the current relative centre, and only bother shifting the
 		// transform if it's a new centre.
@@ -128,7 +134,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		else
 		{
-			// we're not in primary centred mode. do we need to restore an old data area?
+			// we're not in primary centred mode. do we need to restore an old data
+			// area?
 			if (_oldDataArea != null)
 			{
 				// ok, re-instate that old area
@@ -138,10 +145,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 				_oldDataArea = null;
 			}
 		}
-		
-		
-		Point res = null;
 
+		// and now for the actual projection bit
 		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
 		DirectPosition2D metres = new DirectPosition2D();
 		DirectPosition2D screen = new DirectPosition2D();
@@ -167,6 +172,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			GtActivator.logError(Status.ERROR,
 					"Whilst trying to convert to screen coords", e);
 		}
+
 		return res;
 	}
 
@@ -273,6 +279,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public void setScreenArea(Dimension theArea)
 	{
+		if(theArea.equals(super.getScreenArea()))
+			return;
+		
 		super.setScreenArea(theArea);
 
 		java.awt.Rectangle screenArea = new java.awt.Rectangle(0, 0, theArea.width,
@@ -286,13 +295,21 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		// trim the area to sensible bounds
 		theArea.trim();
 
-		super.setDataArea(theArea);
-
 		mySetDataArea(theArea);
+
+		// and store it in the parent;
+		super.setDataArea(theArea);
 	}
 
 	private void mySetDataArea(WorldArea theArea)
 	{
+		// double-check we're not already ste to this
+		if (theArea.equals(super.getDataArea()))
+		{
+			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
+			return;
+		}
+
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
 
@@ -327,7 +344,6 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 	}
 
-
 	public MapContent getMapContent()
 	{
 		return _map;
@@ -349,7 +365,6 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		return _map.layers().size();
 	}
 
-	
 	public static class TestProj extends TestCase
 	{
 		public void testOne() throws NoSuchAuthorityCodeException,
