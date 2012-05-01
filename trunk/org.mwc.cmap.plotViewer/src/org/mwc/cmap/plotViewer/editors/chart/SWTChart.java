@@ -686,6 +686,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// clear the layers
 		clearImages();
 		_myLayers = null;
+		
+		// and ditch the image template
+		_myImageTemplate = null;
 
 		// instruct the canvas to close
 		_theCanvas.close();
@@ -1084,6 +1087,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 															canvasWidth, canvasHeight);
 													// and remember it.
 													_myImageTemplate = template.getImageData();
+
+													// and ditch the template itself
+													template.dispose();
 												}
 
 												// ok, and now the SWT image
