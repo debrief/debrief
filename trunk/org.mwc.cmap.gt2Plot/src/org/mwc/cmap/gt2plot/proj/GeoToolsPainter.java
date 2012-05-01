@@ -1,5 +1,6 @@
 package org.mwc.cmap.gt2plot.proj;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -12,15 +13,25 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.StreamingRenderer;
 
-/** helper class that produces an image from a GeoTools map
+/**
+ * helper class that produces an image from a GeoTools map
  * 
  * @author ian
- *
+ * 
  */
 public class GeoToolsPainter
 {
 
-	public static BufferedImage drawAwtImage(int width, int height, GtProjection proj)
+	/** utlity function to produce a Java image from the supplied layers
+	 * 
+	 * @param width width of required image
+	 * @param height height of reuqired image
+	 * @param proj projection containing the MapContent 
+	 * @param bkColor (optional) background color to fill the image
+	 * @return
+	 */
+	public static BufferedImage drawAwtImage(int width, int height,
+			GtProjection proj, Color bkColor)
 	{
 		MapContent map = proj.getMapContent();
 		StreamingRenderer renderer = new StreamingRenderer();
@@ -38,7 +49,15 @@ public class GeoToolsPainter
 		BufferedImage baseImage = new BufferedImage(width + 1, height + 1,
 				BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = baseImage.createGraphics();
-	//	g2d.fillRect(0, 0, width + 1, height + 1);
+
+		// do we need to set the background color?
+		if (bkColor != null)
+		{
+			// fill in the background color
+			g2d.setPaint(bkColor);
+			g2d.fillRect(0, 0, baseImage.getWidth(), baseImage.getHeight());
+		}
+
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
