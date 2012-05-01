@@ -165,6 +165,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.preferences.ChartPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
@@ -971,7 +972,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			if (dest instanceof SWTCanvasAdapter)
 			{
 				SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
-				swtC.drawSWTImage(_swtImage, 0, 0, width, height);
+				int alpha = 255;
+				String prefs = CorePlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.CHART_TRANSPARENCY);
+				if(prefs != null)
+					alpha = Integer.parseInt(prefs);
+				swtC.drawSWTImage(_swtImage, 0, 0, width, height, alpha);
 				paintedBackground = true;
 			}
 
@@ -1127,7 +1132,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 												// lastly add this image to our Graphics object
 												canv.drawSWTImage(image, 0, 0, canvasWidth,
-														canvasHeight);
+														canvasHeight, 255);
 											}
 
 										}

@@ -700,7 +700,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 													// lastly add this image to our Graphics object
 													canv.drawSWTImage(image, 0, 0, canvasWidth,
-															canvasHeight);
+															canvasHeight, 255);
 
 													// but, we also have to ditch the image
 													// image.dispose();
