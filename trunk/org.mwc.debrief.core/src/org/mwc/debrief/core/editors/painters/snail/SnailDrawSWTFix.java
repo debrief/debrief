@@ -100,7 +100,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		dest.setColor(col);
 
     // produce the centre point
-    final Point p = new Point(proj.toScreen(fix.getLocation()));
+    final Point centre = new Point(proj.toScreen(fix.getLocation()));
 
     // see if we are in symbol plotting mode
     final SWTPlotHighlighter thisHighlighter = parent.getCurrentPrimaryHighlighter ();
@@ -163,7 +163,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 
 
       // produce the end of the stick (just to establish the length in data units)
-      final Point p2 = new Point(p.x + dx, p.y - dy);
+      final Point p2 = new Point(centre.x + dx, centre.y - dy);
 
       // how long is the stalk in data units?
       final WorldLocation w3 = proj.toWorld(p2);
@@ -175,7 +175,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
       final Point pStalkEnd = proj.toScreen(stalkEnd);
 
       // and plot the stalk itself
-      dest.drawLine(p.x, p.y, pStalkEnd.x, pStalkEnd.y);
+      dest.drawLine(centre.x, centre.y, pStalkEnd.x, pStalkEnd.y);
 
       // extend the area covered to include the stick
       thisR.add(p2);
@@ -216,10 +216,11 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 			final int sWid = msg.length() * 6;
 
 			// shift from the start of the string
-			p.translate(sWid, 0);
+			Point shiftedPoint = new Point(centre);
+			shiftedPoint.translate(sWid, 0);
 
 			// and add to the limits rectangle
-			thisR.add(p);
+			thisR.add(shiftedPoint);
 		}
 
 		return thisR;
