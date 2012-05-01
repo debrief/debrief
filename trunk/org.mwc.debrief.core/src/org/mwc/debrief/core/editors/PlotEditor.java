@@ -329,7 +329,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// stop listening to the time manager
 		_timeManager.removeListener(_timeListener,
 				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
+		
+		_timeManager = null;
+		
+		if(_layerPainterManager != null)
+		{
+			_layerPainterManager.close();
+			_layerPainterManager = null;
+		}
+		
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -926,7 +934,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
-			public SWTCanvas createCanvas(Composite parent1)
+			@Override
+			public SWTCanvas createCanvas(Composite parent1, GtProjection projection)
 			{
 				return new CustomisedSWTCanvas(parent1, _myGeoHandler)
 				{

@@ -264,6 +264,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	public void dispose()
 	{
+		// ok, tell the chart to self-destruct (And dispose/release of any objects)
+		_myChart.close();
+		_myChart = null;
+		
 		super.dispose();
 
 		// empty the part monitor
@@ -272,6 +276,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 			_myPartMonitor.ditch();
 			_myPartMonitor = null;
 		}
+		
+		// and the layers
+		_myLayers.close();
+		_myLayers = null;
+		
+		// some other items
+		_timeListener = null;
 	}
 
 	public void createPartControl(Composite parent)
