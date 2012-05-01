@@ -9,6 +9,8 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
+import java.awt.Color;
+
 import org.xml.sax.Attributes;
 
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
@@ -184,7 +186,33 @@ abstract public class ColourHandler extends MWCXMLReader
     parent.appendChild(eLoc);
 
   }
+  
+  /** produce a color from the comma-separated string
+   * 
+   * @param val
+   * @return
+   */
+  public static Color fromString(String val)
+  {
+  	Color res = null;
+  	String[] items = val.split(",");
+  	if(items.length == 3)
+  	{
+  		res = new Color(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]));
+  	}
+  	return res;
+  }
 
+  /** produce a comma-separated string from the color
+   * 
+   * @param val
+   * @return
+   */
+  public static String toString(Color val)
+  {
+  	return "" + val.getRed() + "," + val.getGreen() + "," + val.getBlue();
+  }
+  
   /**
    * standard exporter, using our proper attribute name
    */
