@@ -954,7 +954,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			// do we have a cached image?
 			if (_swtImage == null)
 			{
-				System.out.println("WRITING NEW GEOTOOLS IMAGE");
 				GtProjection gp = (GtProjection) proj;
 				if (gp.numLayers() > 0)
 				{
@@ -1264,7 +1263,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			// hey, it's not one of our GeoTools layers is it?
 			if (changedLayer instanceof ExternallyManagedDataLayer)
 			{
-				System.out.println("clearing SWT GeoTools image");
 				// ok, ditch the swt image
 				if (_swtImage != null)
 				{
