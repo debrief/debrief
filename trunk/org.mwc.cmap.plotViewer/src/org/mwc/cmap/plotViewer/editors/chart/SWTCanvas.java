@@ -132,7 +132,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
