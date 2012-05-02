@@ -184,6 +184,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.HitTester;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
@@ -687,7 +688,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// clear the layers
 		clearImages();
 		_myLayers = null;
-		
+
 		// and ditch the image template
 		_myImageTemplate = null;
 
@@ -951,11 +952,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			Dimension sa = proj.getScreenArea();
 			int width = sa.width;
 			int height = sa.height;
+			GtProjection gp = (GtProjection) proj;
 
 			// do we have a cached image?
 			if (_swtImage == null)
 			{
-				GtProjection gp = (GtProjection) proj;
+				// nope, do we have any data?
 				if (gp.numLayers() > 0)
 				{
 					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
@@ -973,11 +975,23 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			{
 				SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
 				int alpha = 255;
-				String prefs = CorePlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.CHART_TRANSPARENCY);
-				if(prefs != null)
+				String prefs = CorePlugin.getDefault().getPreferenceStore()
+						.getString(PreferenceConstants.CHART_TRANSPARENCY);
+				if (prefs != null)
 					alpha = Integer.parseInt(prefs);
 				swtC.drawSWTImage(_swtImage, 0, 0, width, height, alpha);
 				paintedBackground = true;
+			}
+			else if (dest instanceof MetafileCanvas)
+			{
+				// but do we have any data?
+				if (gp.numLayers() > 0)
+				{
+					// yes, generate the image
+					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+							dest.getBackgroundColor());
+					dest.drawImage(img, 0, 0, width, height, null);
+				}
 			}
 
 		}
