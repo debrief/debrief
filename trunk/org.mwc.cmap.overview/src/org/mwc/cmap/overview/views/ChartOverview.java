@@ -397,7 +397,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 							// and wrap it
 							DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-									null);
+									null, null);
 
 							// and add it to the clipboard
 							CorePlugin.run(daw);

@@ -757,7 +757,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_ourLayersSubject, secTrack, shiftIt);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject);
+		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject, secTrack);
 
 		// and add it to the clipboard
 		CorePlugin.run(daw);

@@ -398,7 +398,7 @@ public class DragFeature extends CoreDragAction
 			getOperation().apply(_hoverTarget, reverse);
 
 			// and get the chart to redraw itself
-			_myChart.update();
+			_myChart.update(_parentLayer);
 
 			// ok, now calculate the real offset to apply
 			WorldVector forward = _lastLocation.subtract(_startLocation);
@@ -409,7 +409,7 @@ public class DragFeature extends CoreDragAction
 
 			// and wrap it
 			DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart
-					.getLayers());
+					.getLayers(), _parentLayer);
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);

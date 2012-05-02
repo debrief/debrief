@@ -130,7 +130,7 @@ public class Pan extends CoreDragAction
 
 			// and wrap it
 			DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-					_myChart.getLayers());
+					_myChart.getLayers(), null);
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);

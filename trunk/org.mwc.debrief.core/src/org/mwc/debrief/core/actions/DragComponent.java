@@ -382,7 +382,7 @@ public class DragComponent extends DragFeature
 						_hoverComponent, _myChart.getLayers(), _parentLayer);
 
 				// and wrap it
-				DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers());
+				DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers(), _parentLayer);
 
 				// and add it to the clipboard
 				CorePlugin.run(daw);
