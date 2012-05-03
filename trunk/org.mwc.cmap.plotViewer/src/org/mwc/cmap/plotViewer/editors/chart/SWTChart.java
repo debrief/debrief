@@ -416,20 +416,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * 
 		 * @return the new cursor to use, silly.
 		 */
-		public Cursor getDownCursor()
-		{
-			// ok, return the 'normal' cursor
-			if (_downCursor == null)
-				_downCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-
-			return _downCursor;
-		}
-
-		/**
-		 * ok, assign the cursor for when we're just hovering
-		 * 
-		 * @return the new cursor to use, silly.
-		 */
 		public Cursor getNormalCursor()
 		{
 			// ok, return the 'normal' cursor
@@ -973,14 +959,17 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			// ok, now we can paint it
 			if (dest instanceof SWTCanvasAdapter)
 			{
-				SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
-				int alpha = 255;
-				String prefs = CorePlugin.getDefault().getPreferenceStore()
-						.getString(PreferenceConstants.CHART_TRANSPARENCY);
-				if (prefs != null)
-					alpha = Integer.parseInt(prefs);
-				swtC.drawSWTImage(_swtImage, 0, 0, width, height, alpha);
-				paintedBackground = true;
+				if (_swtImage != null)
+				{
+					SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
+					int alpha = 255;
+					String prefs = CorePlugin.getDefault().getPreferenceStore()
+							.getString(PreferenceConstants.CHART_TRANSPARENCY);
+					if (prefs != null)
+						alpha = Integer.parseInt(prefs);
+					swtC.drawSWTImage(_swtImage, 0, 0, width, height, alpha);
+					paintedBackground = true;
+				}
 			}
 			else if (dest instanceof MetafileCanvas)
 			{
