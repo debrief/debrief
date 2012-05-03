@@ -95,7 +95,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	{
 
 		Point res = null;
-		
+
 		// special handling: if we're in a relative plotting mode, we need to shift
 		// the projection. We're choosing to defer handling of this instance until
 		// we're actually
@@ -108,27 +108,31 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		{
 			WorldLocation loc = super._relativePlotter.getLocation();
 
-			// have we got a 'remembered data area'?
-			if (_oldDataArea == null)
+			// do we have a location for this plotter? We may not have...
+			if (loc != null)
 			{
-				// remember the current data area
-				_oldDataArea = super.getDataArea();
-			}
+				// have we got a 'remembered data area'?
+				if (_oldDataArea == null)
+				{
+					// remember the current data area
+					_oldDataArea = super.getDataArea();
+				}
 
-			// ok, handle the changes
-			if (loc != _relativeCentre)
-			{
-				// store the new centre
-				_relativeCentre = loc;
+				// ok, handle the changes
+				if (loc != _relativeCentre)
+				{
+					// store the new centre
+					_relativeCentre = loc;
 
-				// set the centre of the new data area
-				WorldArea newArea = new WorldArea(super.getDataArea());
+					// set the centre of the new data area
+					WorldArea newArea = new WorldArea(super.getDataArea());
 
-				// shift it to our current centre
-				newArea.setCentre(_relativeCentre);
+					// shift it to our current centre
+					newArea.setCentre(_relativeCentre);
 
-				// and store this area
-				this.mySetDataArea(newArea);
+					// and store this area
+					this.mySetDataArea(newArea);
+				}
 			}
 		}
 		else
@@ -278,9 +282,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public void setScreenArea(Dimension theArea)
 	{
-		if(theArea.equals(super.getScreenArea()))
+		if (theArea.equals(super.getScreenArea()))
 			return;
-		
+
 		super.setScreenArea(theArea);
 
 		java.awt.Rectangle screenArea = new java.awt.Rectangle(0, 0, theArea.width,
