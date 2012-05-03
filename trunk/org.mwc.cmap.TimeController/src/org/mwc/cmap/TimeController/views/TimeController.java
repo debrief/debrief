@@ -2294,7 +2294,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			@Override
 			public void run()
 			{
-				setRelativeMode(true, false);
+				// see if we have a primary track...
+				if (_myTrackProvider != null)
+				{
+					if (_myTrackProvider.getPrimaryTrack() == null)
+					{
+						CorePlugin.showMessage("Primary Centred Plotting",
+								"A Primary Track must be specified to use this mode");
+						_normalPlottingMode.setChecked(true);
+						_primaryCentredNorthOrientedPlottingMode.setChecked(false);
+					}
+					else
+						setRelativeMode(true, false);
+				}
 			}
 		};
 		_primaryCentredNorthOrientedPlottingMode
@@ -2305,17 +2317,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_primaryCentredPrimaryOrientedPlottingMode = new Action(
 				"Primary centred/Primary oriented", Action.AS_RADIO_BUTTON)
 		{
+
 			@Override
 			public void run()
 			{
 				setRelativeMode(true, true);
 			}
-
 		};
 		_primaryCentredPrimaryOrientedPlottingMode
 				.setImageDescriptor(TimeControllerPlugin
 						.getImageDescriptor("icons/lock_view2.png"));
-		displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
+		// no, let's not offer primary centred, primary oriented view
+		// displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
 
 	}
 
