@@ -249,7 +249,7 @@ public class DragComponent extends DragFeature
 
 				// reset the cursor on the canvas
 				_newCursor = getNormalCursor();
-
+				
 				// and assign it to the control
 				theCanvas.getCanvas().setCursor(_newCursor);
 			}
@@ -372,7 +372,8 @@ public class DragComponent extends DragFeature
 				_hoverTarget.shift(_hoverComponent, reverse);
 
 				// and get the chart to redraw itself
-				_myChart.update();
+				// No, don't bother - the DebriefActionWrapper handles that
+				// _myChart.update(_parentLayer);
 
 				// ok, now calculate the real offset to apply
 				WorldVector forward = _lastLocation.subtract(_startLocation);
@@ -529,7 +530,8 @@ public class DragComponent extends DragFeature
 			_theFeature.shift(_theComponent, _theOffset);
 
 			// update the layers
-			_theLayers.fireModified(_parentLayer);
+			// no, don't bother - the DebriefActionWrapper handles this
+		//	_theLayers.fireModified(_parentLayer);
 		}
 
 		/**

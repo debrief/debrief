@@ -243,7 +243,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * let people listen out for reformatting changes
 	 */
-	private transient DataListenerAdaptor _dataReformattedListener;
+	private final transient DataListenerAdaptor _dataReformattedListener;
 
 	// ////////////////////////////////////////////////////////
 	// constructor
@@ -874,12 +874,9 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 */
 	public void close()
 	{
-		// ok, forget the layesr object
+		// ok, forget the layesr object - and stop listening to it
 		setLayers(null);
 		
-		// and our reformatted listener
-		_dataReformattedListener = null;
-
 		// remove the layer listeners
 		_theSize = null;
 		_theLayers = null;

@@ -160,19 +160,12 @@ public class FitToWin extends PlainTool {
       
       // get the projection to refit-itself
       _theChart.getCanvas().getProjection().zoom(0.0);
-      
-      
-      // and trigger a redraw
-      _theChart.update();      
     }
     
     public void execute(){
 
       // ask the chart to fit to window
       _theChart.rescale();
-      
-      // and trigger a redraw
-      _theChart.update();
     }
   }
   

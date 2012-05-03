@@ -59,7 +59,7 @@ import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.Plottable;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
@@ -123,7 +123,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	Label _myLabel;
 
-	protected DataListener _listenForMods;
+	protected DataListener2 _listenForMods;
 
 	private boolean _ignoreDirtyCalls;
 
@@ -221,7 +221,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		};
 
-		_listenForMods = new DataListener()
+		_listenForMods = new DataListener2()
 		{
 
 			public void dataModified(Layers theData, Layer changedLayer)
@@ -237,6 +237,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 			public void dataReformatted(Layers theData, Layer changedLayer)
 			{
+				fireDirty();
+			}
+
+			@Override
+			public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+			{
+				layersExtended();
 				fireDirty();
 			}
 

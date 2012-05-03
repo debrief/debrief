@@ -612,7 +612,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		}
 
 		// and fire the modified event
-		fireExtended();
+		fireExtended(null, theLayer);
 	}
 
 	/**

@@ -20,8 +20,8 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.Palette.PlainCreate;
+import MWC.GUI.Tools.Palette.PlainCreate.CreateLabelAction;
 import MWC.GenericData.WorldArea;
 
 /**
@@ -64,22 +64,45 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	{
 		final PlainChart theChart = getChart();
 
-		Action res = createAction(theChart);
+		CreateLabelAction res = createAction(theChart);
 
 		// did we get an action?
 		if (res != null)
 		{
+			// do we know the layer?
+			Layer layer = res.getLayer();
+
+			// is it null? in which case we're adding a new layer
+			if (layer == null)
+			{
+				// try to get the new plottable
+				Plottable pl = res.getNewFeature();
+				if (pl instanceof Layer)
+					layer = (Layer) pl;
+				else
+				{
+					CorePlugin
+							.logError(
+									Status.ERROR,
+									"WE WERE EXPECTING THE NEW FEATURE TO BE A LAYER - in CoreInsertChartFeature",
+									null);
+				}
+			}
+
+			// and the data?
+			Layers data = res.getLayers();
+
 			// ok, now wrap the action
-			DebriefActionWrapper daw = new DebriefActionWrapper(res);
+			DebriefActionWrapper daw = new DebriefActionWrapper(res, data, layer);
 
 			// and add it to our buffer (which will execute it anyway)
 			CorePlugin.run(daw);
 		}
 	}
 
-	protected final Action createAction(PlainChart theChart)
+	protected final CreateLabelAction createAction(PlainChart theChart)
 	{
-		Action res = null;
+		CreateLabelAction res = null;
 		WorldArea wa = theChart.getDataArea();
 
 		// see if we have an area defined

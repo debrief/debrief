@@ -398,7 +398,7 @@ public class DragFeature extends CoreDragAction
 			getOperation().apply(_hoverTarget, reverse);
 
 			// and get the chart to redraw itself
-			_myChart.update(_parentLayer);
+		//	_myChart.update(_parentLayer);
 
 			// ok, now calculate the real offset to apply
 			WorldVector forward = _lastLocation.subtract(_startLocation);
@@ -578,7 +578,8 @@ public class DragFeature extends CoreDragAction
 			_operation.apply(_itemToDrag, _theOffset);
 
 			// update the layers
-			_theLayers.fireModified(_parentLayer);
+			// No, don't bother - let the DebriefActionWrapper fire the event
+			// _theLayers.fireModified(_parentLayer);
 		}
 
 		/**
@@ -593,7 +594,8 @@ public class DragFeature extends CoreDragAction
 			// and apply it
 			_operation.apply(_itemToDrag, reverseVector);
 
-			_theLayers.fireModified(_parentLayer);
+			// No, don't bother - let the DebriefActionWrapper fire the event
+			// _theLayers.fireModified(_parentLayer);
 		}
 
 		/**

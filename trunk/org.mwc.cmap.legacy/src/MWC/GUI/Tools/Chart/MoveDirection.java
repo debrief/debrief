@@ -200,18 +200,12 @@ public class MoveDirection extends PlainTool {
     {
       // set the data area for the chart to the old area
       _theChart1.getCanvas().getProjection().setDataArea(_oldArea);
-
-			_theChart1.update();
-			
     }
     
 		public void execute()
 		{
 			// update the data area
    		_theChart1.getCanvas().getProjection().setDataArea(_newArea);
-      
-      // and trigger a redraw
-      _theChart1.update();
     }
   }
   
