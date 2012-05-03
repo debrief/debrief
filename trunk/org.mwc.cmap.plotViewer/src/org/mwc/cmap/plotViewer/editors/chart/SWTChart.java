@@ -946,6 +946,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				// nope, do we have any data?
 				if (gp.numLayers() > 0)
 				{
+					// now, if we're in relative projection mode, the projection-translate doesn't get 
+					// perfromed until the first toScreen call.  So do a toScreen before
+					// we start plotting the images
+					proj.toScreen(proj.getDataArea().getCentre());
+					
 					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
 							dest.getBackgroundColor());
 					if (img != null)
