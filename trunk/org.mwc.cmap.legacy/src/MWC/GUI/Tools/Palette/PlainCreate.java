@@ -183,6 +183,21 @@ abstract public class PlainCreate extends PlainTool
 			_myData = theData;
 		}
 
+		public Layers getLayers()
+		{
+			return _myData;
+		}
+		
+		public Layer getLayer()
+		{
+			return _theLayer;
+		}
+		
+		public Plottable getNewFeature()
+		{
+			return _theShape;
+		}
+		
 		/**
 		 * specify is this is an operation which can be undone
 		 */
@@ -263,7 +278,8 @@ abstract public class PlainCreate extends PlainTool
 							_myData.addThisLayer((Layer) _theShape);
 							if (_thePanel != null)
 								_thePanel.addEditor(_theShape.getInfo(), newLayer);
-							_myData.fireExtended(_theShape, newLayer);
+							// no need to fire-extended, "add this layer" will have done it for us
+//							_myData.fireExtended(_theShape, newLayer);
 						}
 						else
 						{
