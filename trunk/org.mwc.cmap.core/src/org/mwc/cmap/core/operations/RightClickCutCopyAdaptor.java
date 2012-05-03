@@ -2,6 +2,7 @@ package org.mwc.cmap.core.operations;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
@@ -366,8 +367,7 @@ public class RightClickCutCopyAdaptor
 				 */
 				private void doCut()
 				{
-					boolean multipleLayersModified = false;
-					Layer lastLayerModified = null;
+					Vector<Layer> changedLayers = new Vector<Layer>();
 
 					// remember the previous contents
 					rememberPreviousContents();
@@ -377,6 +377,8 @@ public class RightClickCutCopyAdaptor
 					_myClipboard.setContents(new Object[]
 					{ _data }, new Transfer[]
 					{ transfer });
+					
+					
 
 					for (int i = 0; i < _data.length; i++)
 					{
@@ -389,32 +391,26 @@ public class RightClickCutCopyAdaptor
 							// no, it must be the top layers object
 							_theLayers.removeThisLayer((Layer) thisE);
 
-							// so, we know we've got to remove items from multiple layers
-							multipleLayersModified = true;
+							// no need to remember the layer. the "removeThisLayer" will have fired updates
 						}
 						else
 						{
 							// remove the new data from it's parent
 							parentLayer.removeElement(thisE);
-
-							// let's see if we're editing multiple layers
-							if (!multipleLayersModified)
-							{
-								if (lastLayerModified == null)
-									lastLayerModified = parentLayer;
-								else
-								{
-									if (lastLayerModified != parentLayer)
-										multipleLayersModified = true;
-								}
-							}
+							
+							if(!changedLayers.contains(parentLayer))
+								changedLayers.add(parentLayer);
 						}
 					}
 
-					if (multipleLayersModified)
+					if (changedLayers.size() > 1)
 						_theLayers.fireExtended();
+					else if(changedLayers.size() == 1)
+						_theLayers.fireExtended(null, changedLayers.firstElement());
 					else
-						_theLayers.fireExtended(null, lastLayerModified);
+					{
+						// zero layers listed as changed. no 'firing' necessary
+					}
 				}
 
 			};
