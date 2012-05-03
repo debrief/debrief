@@ -4,13 +4,6 @@
 
    <extension
          point="org.eclipse.ui.views">
-      <view
-            name="GT Test View"
-            icon="icons/sample.gif"
-            category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.cmap.gt2plot.views.ViewTest"
-            id="org.mwc.cmap.gt2plot.views.SampleView">
-      </view>
    </extension>
 
 </plugin>

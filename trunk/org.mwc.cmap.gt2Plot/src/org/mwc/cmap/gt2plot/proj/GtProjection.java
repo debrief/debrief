@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.HashMap;
 
 import junit.framework.TestCase;
 
