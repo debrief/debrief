@@ -28,8 +28,6 @@ public class DebriefActionWrapper extends CMAPOperation
 		_myLayers = theLayers;
 		_changedLayer = changedLayer;
 		_myAction = theAction;
-		if(_changedLayer == null)
-			System.err.println("WE HAVEN'T RECEIVED THE CHANGED LAYER FOR:" + theAction.toString());
 	}
 
 	/**
