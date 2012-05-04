@@ -209,7 +209,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * and our default background color
 	 * 
 	 */
-	private java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.BLACK;
+	private java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
