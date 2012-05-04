@@ -36,7 +36,8 @@ import MWC.GenericData.WorldVector;
 /**
  * @author ian.mayo
  */
-public class DragSegment extends DragFeature {
+public class DragSegment extends DragFeature
+{
 
 	/**
 	 * combination of action & operation, passed to UI inclusion
@@ -45,13 +46,17 @@ public class DragSegment extends DragFeature {
 	 * 
 	 */
 	public static class DragMode extends Action implements
-			DragFeature.DragOperation {
-		public DragMode(String title, String tip) {
+			DragFeature.DragOperation
+	{
+		public DragMode(String title, String tip)
+		{
 			super(title, IAction.AS_RADIO_BUTTON);
 			this.setToolTipText(tip);
 		}
 
-		public void apply(DraggableItem item, WorldVector offset) {
+		@Override
+		public void apply(DraggableItem item, WorldVector offset)
+		{
 			item.shift(offset);
 		}
 
@@ -66,11 +71,12 @@ public class DragSegment extends DragFeature {
 		 * @param parentLayer
 		 */
 		public void findNearest(Layer thisLayer,
-				MWC.GenericData.WorldLocation cursorLoc,
-				java.awt.Point cursorPos, LocationConstruct currentNearest,
-				Layer parentLayer, Layers theLayers) {
+				MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
+				LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
+		{
 			// we only act on track wrappers, check if this is one
-			if (thisLayer instanceof TrackWrapper) {
+			if (thisLayer instanceof TrackWrapper)
+			{
 				TrackWrapper thisTrack = (TrackWrapper) thisLayer;
 				// find it's nearest segment
 				thisTrack.findNearestSegmentHotspotFor(cursorLoc, cursorPos,
@@ -79,7 +85,8 @@ public class DragSegment extends DragFeature {
 		}
 
 		@Override
-		public void run() {
+		public void run()
+		{
 			_currentDragMode = this;
 			super.run();
 		}
@@ -92,17 +99,20 @@ public class DragSegment extends DragFeature {
 	 * @author Ian Mayo
 	 * 
 	 */
-	public class DragSegmentMode extends DragFeature.DragFeatureMode {
+	public class DragSegmentMode extends DragFeature.DragFeatureMode
+	{
 
 		@Override
 		public void doMouseDrag(Point pt, int JITTER, Layers theLayers,
-				SWTCanvas theCanvas) {
+				SWTCanvas theCanvas)
+		{
 
 			// let the parent do the leg-work
 			super.doMouseDrag(pt, JITTER, theLayers, theCanvas);
 
 			// cool, is it a track that we've just dragged?
-			if (_parentLayer instanceof TrackWrapper) {
+			if (_parentLayer instanceof TrackWrapper)
+			{
 				// if the current editor is a track data provider,
 				// tell it that we've shifted
 				IWorkbench wb = PlatformUI.getWorkbench();
@@ -112,7 +122,8 @@ public class DragSegment extends DragFeature {
 				TrackDataProvider dataMgr = (TrackDataProvider) editor
 						.getAdapter(TrackDataProvider.class);
 				// is it one of ours?
-				if (dataMgr != null) {
+				if (dataMgr != null)
+				{
 					{
 						dataMgr.fireTrackShift((TrackWrapper) _parentLayer);
 					}
@@ -121,21 +132,30 @@ public class DragSegment extends DragFeature {
 		}
 
 		@Override
-		public DragOperation getOperation() {
+		public DragOperation getOperation()
+		{
 			return _currentDragMode;
 		}
 	}
 
-	public static interface IconProvider {
+	public static interface IconProvider
+	{
 		public Cursor getHotspotCursor();
 	}
 
-	private static Vector<Action> _dragModes;
-
 	protected static DragMode _currentDragMode;
 
-	public static Vector<Action> getDragModes() {
-		if (_dragModes == null) {
+	private static Vector<Action> _dragModes;
+
+	public DragSegment()
+	{
+
+	}
+
+	public static Vector<Action> getDragModes()
+	{
+		if (_dragModes == null)
+		{
 			_dragModes = new Vector<Action>();
 			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode(
 					"Translate", "Translate whole track");
@@ -156,24 +176,23 @@ public class DragSegment extends DragFeature {
 		return _dragModes;
 	}
 
-	public DragSegment() {
-
-	}
-
 	@Override
-	protected void execute() {
+	protected void execute()
+	{
 		// ok, fire our parent
 		super.execute();
 
 		// now, try to open the stacked dots view
-		try {
+		try
+		{
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
-			page.showView(CorePlugin.STACKED_DOTS);			
-		} catch (PartInitException e) {
-			CorePlugin
-					.logError(IStatus.ERROR, "Failed to open stacked dots", e);
+			page.showView(CorePlugin.STACKED_DOTS);
+		}
+		catch (PartInitException e)
+		{
+			CorePlugin.logError(IStatus.ERROR, "Failed to open stacked dots", e);
 		}
 
 	}
@@ -185,28 +204,32 @@ public class DragSegment extends DragFeature {
 	@Override
 	public void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theLayers) {
+			LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
+	{
 		if (_currentDragMode != null)
 			_currentDragMode.findNearest(thisLayer, cursorLoc, cursorPos,
 					currentNearest, parentLayer, theLayers);
 	}
 
 	@Override
-	public Cursor getDragCursor() {
-		return new Cursor(Display.getDefault(), DebriefPlugin
-				.getImageDescriptor("icons/SelectFeatureHitDown.ico")
-				.getImageData(), 4, 2);
+	public Cursor getDragCursor()
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+				"icons/SelectFeatureHitDown.ico").getImageData(), 4, 2);
 	}
 
 	@Override
-	public PlotMouseDragger getDragMode() {
+	public PlotMouseDragger getDragMode()
+	{
 		return new DragSegmentMode();
 	}
 
 	@Override
-	public Cursor getHotspotCursor(DraggableItem hoverTarget) {
+	public Cursor getHotspotCursor(DraggableItem hoverTarget)
+	{
 		Cursor res = null;
-		if (hoverTarget instanceof IconProvider) {
+		if (hoverTarget instanceof IconProvider)
+		{
 			IconProvider iconP = (IconProvider) hoverTarget;
 			res = iconP.getHotspotCursor();
 		}
