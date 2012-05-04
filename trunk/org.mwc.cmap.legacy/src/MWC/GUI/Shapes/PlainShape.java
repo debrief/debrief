@@ -182,7 +182,7 @@ abstract public class PlainShape implements Serializable, DraggableItem  {
   
   /** our default colour for new features
    */
-  public static final java.awt.Color DEFAULT_COLOR = new java.awt.Color(250, 250, 250);
+  public static final java.awt.Color DEFAULT_COLOR = new java.awt.Color(150, 150, 150);
 
   //////////////////////////////////////////////////
   // constructor
