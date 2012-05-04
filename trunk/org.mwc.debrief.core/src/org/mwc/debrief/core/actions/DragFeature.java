@@ -54,16 +54,6 @@ public class DragFeature extends CoreDragAction
 		private final DragOperation _operation;
 
 		/**
-		 * the layer to update after drag is complete
-		 */
-		private final Layer _parentLayer;
-
-		/**
-		 * the set of layers we're need to update on completion
-		 */
-		private final Layers _theLayers;
-
-		/**
 		 * the offset we're going to apply
 		 */
 		private final WorldVector _theOffset;
@@ -82,8 +72,6 @@ public class DragFeature extends CoreDragAction
 		{
 			_theOffset = theOffset;
 			_itemToDrag = theTrack;
-			_theLayers = theLayers;
-			_parentLayer = parentLayer;
 			_operation = operation;
 		}
 
