@@ -835,7 +835,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					theMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
 
 					// and restore the mouse mode cursor
-					_theCanvas.getCanvas().setCursor(theMode.getNormalCursor());
+					Cursor normalCursor = theMode.getNormalCursor();
+					_theCanvas.getCanvas().setCursor(normalCursor);
 				}
 			}
 			else
@@ -946,11 +947,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				// nope, do we have any data?
 				if (gp.numLayers() > 0)
 				{
-					// now, if we're in relative projection mode, the projection-translate doesn't get 
-					// perfromed until the first toScreen call.  So do a toScreen before
+					// now, if we're in relative projection mode, the projection-translate
+					// doesn't get
+					// perfromed until the first toScreen call. So do a toScreen before
 					// we start plotting the images
 					proj.toScreen(proj.getDataArea().getCentre());
-					
+
 					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
 							dest.getBackgroundColor());
 					if (img != null)
@@ -968,10 +970,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				{
 					SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
 					int alpha = 255;
-					String prefs = CorePlugin.getDefault().getPreferenceStore()
+					String alphaStr = CorePlugin.getDefault().getPreferenceStore()
 							.getString(PreferenceConstants.CHART_TRANSPARENCY);
-					if (prefs != null)
-						alpha = Integer.parseInt(prefs);
+					if (alphaStr != null)
+						if (alphaStr.length() > 0)
+							alpha = Integer.parseInt(alphaStr);
 					swtC.drawSWTImage(_swtImage, 0, 0, width, height, alpha);
 					paintedBackground = true;
 				}
