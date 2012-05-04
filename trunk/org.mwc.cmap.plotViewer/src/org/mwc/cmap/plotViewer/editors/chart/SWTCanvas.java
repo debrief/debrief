@@ -178,12 +178,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 	/**
 	 * default constructor.
-	 * @param projection 
+	 * 
+	 * @param projection
 	 */
 	public SWTCanvas(Composite parent, GeoToolsHandler projection)
 	{
 		super((PlainProjection) projection);
-//		super(null);
+		// super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()
@@ -469,8 +470,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public final void close()
 	{
-		if (!_dblBuff.isDisposed())
-			_dblBuff.dispose();
+		if (_dblBuff != null)
+			if (!_dblBuff.isDisposed())
+				_dblBuff.dispose();
 		_dblBuff = null;
 	}
 
