@@ -144,6 +144,7 @@ import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
@@ -161,7 +162,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
 		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
-		DoNotHighlightMe, TimeStampedDataItem
+		DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
 {
 	/**
 	 * 
