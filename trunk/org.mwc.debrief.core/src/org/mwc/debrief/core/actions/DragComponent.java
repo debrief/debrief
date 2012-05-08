@@ -8,12 +8,10 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -163,7 +161,7 @@ public class DragComponent extends DragFeature
 	 * 
 	 * @author Ian
 	 */
-	final static public class DragComponentMode extends SWTChart.PlotMouseDragger
+	final public class DragComponentMode extends SWTChart.PlotMouseDragger
 	{
 
 		/**
@@ -239,10 +237,8 @@ public class DragComponent extends DragFeature
 					if (_newCursor != null)
 					{
 						_newCursor.dispose();
-						ImageDescriptor imageDescriptor = DebriefPlugin
-								.getImageDescriptor("icons/SelectPointHitDown.ico");
-						ImageData imageData = imageDescriptor.getImageData();
-						_newCursor = new Cursor(Display.getDefault(), imageData, 7, 3);
+						_newCursor = getDragCursor();
+						theCanvas.getCanvas().setCursor(_newCursor);
 					}
 
 				}
@@ -600,5 +596,9 @@ public class DragComponent extends DragFeature
 	{
 		return new DragComponentMode();
 	}
-
+	public Cursor getDragCursor()
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+				"icons/SelectPointHitDown.ico").getImageData(), 7, 3);
+	}
 }
