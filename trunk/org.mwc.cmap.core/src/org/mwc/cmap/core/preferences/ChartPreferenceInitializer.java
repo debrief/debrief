@@ -22,7 +22,6 @@ public class ChartPreferenceInitializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 		store.setDefault(PreferenceConstants.CHART_TRANSPARENCY, "255");
 		store.setDefault(PreferenceConstants.CHART_FOLDER, "");
-
 	}
 
 }
