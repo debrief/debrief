@@ -58,7 +58,7 @@ public interface TrackDataProvider
 	 * 
 	 * @param target what's being dragged
 	 */
-	public void fireTrackShift(TrackWrapper target);
+	public void fireTrackShift(final TrackWrapper target);
 	
 	/** ok, the tracks have changed. tell the world
 	 * 
