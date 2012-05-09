@@ -115,6 +115,28 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 	 */
 	private static final long serialVersionUID = 1L;
 
+ 	private void gtTrimLocation(WorldLocation loc)
+ 	{
+		loc.setLat(Math.min(loc.getLat(), 89.999));
+		loc.setLat(Math.max(loc.getLat(), -89.999));
+ 		
+		loc.setLong(Math.min(loc.getLong(), 179.999));
+		loc.setLong(Math.max(loc.getLong(), -179.999)); 		
+ 	}
+	public void gtTrim(WorldArea area)
+	{
+		WorldLocation topLeft = area.getTopLeft();
+		WorldLocation bottomRight = area.getBottomRight();
+		// do it, one corner at a time
+		gtTrimLocation(topLeft);
+		gtTrimLocation(bottomRight);
+		
+		// and sort out the other corners
+		area.normalise();
+	}
+
+
+	
 	@Override
 	public Point toScreen(WorldLocation val)
 	{
@@ -241,7 +263,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 	public void zoom(double scaleVal)
 	{
 		if (scaleVal == 0)
-			scaleVal = 1;
+			return;
+		// scaleVal = 1;
 		Dimension paneArea = super.getScreenArea();
 		WorldArea dataArea = super.getDataArea();
 		if (dataArea != null)
@@ -280,6 +303,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 				WorldArea newArea = new WorldArea(tl, br);
 				newArea.normalise();
 
+				System.err.println("zoom, about to set:" + newArea);
 				setDataArea(newArea);
 
 			}
@@ -319,8 +343,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 	@Override
 	public void setDataArea(WorldArea theArea)
 	{
-		// trim the area to sensible bounds
-		theArea.trim();
+		System.out.println("new area   :" + theArea);
 
 		mySetDataArea(theArea);
 
@@ -336,6 +359,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
 			return;
 		}
+
+		// trim the area to sensible bounds
+		gtTrim(theArea);
 
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
@@ -521,6 +547,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 		calc.setStartingGeographicPoint(from2D);
 		calc.setDestinationGeographicPoint(to2D);
 		double bearing = calc.getAzimuth();
+		bearing = MWC.Algorithms.Conversions.Degs2Rads(bearing);
 		return bearing;
 	}
 
@@ -530,7 +557,11 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 				base.getLat());
 		GeodeticCalculator calc = new GeodeticCalculator(getCRS2());
 		calc.setStartingGeographicPoint(from2D);
-		calc.setDirection(delta.getBearing(), delta.getRange());
+		double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(delta.getBearing());
+		if(brgDegs > 180)
+			brgDegs -= 360;
+		calc.setDirection(brgDegs,
+				delta.getRange());
 		Point2D to2D = calc.getDestinationGeographicPoint();
 		WorldLocation res = new WorldLocation(to2D.getY(), to2D.getX(),
 				base.getDepth() + delta.getDepth());
@@ -555,8 +586,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 		calc.setDestinationGeographicPoint(to2D);
 		double range = calc.getOrthodromicDistance();
 
-		range = MWC.Algorithms.Conversions.Degs2m(range);
+		range = MWC.Algorithms.Conversions.m2Degs(range);
 		double bearing = calc.getAzimuth();
+		bearing = MWC.Algorithms.Conversions.Degs2Rads(bearing);
 		res.setValues(bearing, range, (to.getDepth() - from.getDepth()));
 		return res;
 	}
@@ -573,6 +605,69 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 			super(val);
 		}
 
+		public void test4326() throws NoSuchAuthorityCodeException,
+				FactoryException
+		{
+			CoordinateReferenceSystem crDegs = CRS.decode("EPSG:4326");
+			GeodeticCalculator calc = new GeodeticCalculator(crDegs);
+			WorldLocation from = new WorldLocation(0, 0, 0);
+			WorldLocation to = new WorldLocation(0, 1, 0);
+			DirectPosition2D from2D = new DirectPosition2D(from.getLong(),
+					from.getLat());
+			DirectPosition2D to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			double range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			double bearing = calc.getAzimuth();
+			assertEquals("over a degree", 1, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.0001);
+
+			from = new WorldLocation(60, 0, 0);
+			to = new WorldLocation(60, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 0.5, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.1);
+
+			from = new WorldLocation(0, 0, 0);
+			to = new WorldLocation(1, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 45, bearing, 0.2);
+
+			from = new WorldLocation(1, 1, 0);
+			to = new WorldLocation(0, 0, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+			if (bearing < 0)
+				bearing += 360;
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 225, bearing, 0.2);
+
+		}
+
 		public void test3395() throws NoSuchAuthorityCodeException,
 				FactoryException
 		{
@@ -586,8 +681,11 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 			calc.setStartingGeographicPoint(from2D);
 			calc.setDestinationGeographicPoint(to2D);
 			double range = calc.getOrthodromicDistance();
+			double bearing = calc.getAzimuth();
 			range = MWC.Algorithms.Conversions.m2Degs(range);
 			assertEquals("over a degree", 1, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.0001);
 
 			from = new WorldLocation(60, 0, 0);
 			to = new WorldLocation(60, 1, 0);
@@ -597,9 +695,39 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler,
 			calc.setDestinationGeographicPoint(to2D);
 			range = calc.getOrthodromicDistance();
 			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
 
 			assertEquals("about 1/2 a degree", 0.5, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.1);
 
+			from = new WorldLocation(0, 0, 0);
+			to = new WorldLocation(1, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 45, bearing, 0.2);
+
+			from = new WorldLocation(1, 1, 0);
+			to = new WorldLocation(0, 0, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+			if (bearing < 0)
+				bearing += 360;
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 225, bearing, 0.2);
 		}
 	}
 
