@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
 import junit.framework.TestCase;
 
@@ -14,6 +15,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.GeodeticCalculator;
 import org.geotools.referencing.operation.projection.ProjectionException;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gt2plot.GtActivator;
@@ -25,16 +27,19 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import MWC.Algorithms.EarthModel;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
-public class GtProjection extends PlainProjection implements GeoToolsHandler
+public class GtProjection extends PlainProjection implements GeoToolsHandler,
+		EarthModel
 {
+	private static CoordinateReferenceSystem _worldDegs;
 
-	private CoordinateReferenceSystem _worldCoords;
 	protected MathTransform _degs2metres;
 
 	private WorldLocation _relativeCentre = null;
@@ -42,6 +47,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	private final MapContent _map;
 	private final MapViewport _view;
 	private WorldArea _oldDataArea;
+
+	private CoordinateReferenceSystem _worldMetres;
 
 	public GtProjection()
 	{
@@ -51,33 +58,28 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		_view = _map.getViewport();
 
 		// sort out the degs to m transform
+
+		// we also need a way to convert a location in degrees to that used by
+		// the charts (metres)
 		try
 		{
-			// we'll tell GeoTools to use the projection that's used by most of our
-			// charts,
-			// so that the chart will be displayed undistorted
-			_worldCoords = CRS.decode("EPSG:3395");
+			_worldMetres = CRS.decode("EPSG:3395");
+			_worldDegs = getCRS2();
+			_degs2metres = CRS.findMathTransform(_worldDegs, _worldMetres);
 
-			// we also need a way to convert a location in degrees to that used by
-			// the charts (metres)
-			CoordinateReferenceSystem worldDegs = CRS.decode("EPSG:4326");
-			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
+			// tell the view what to expect
+			_view.setCoordinateReferenceSystem(_worldMetres);
 		}
 		catch (NoSuchAuthorityCodeException e)
 		{
-			GtActivator
-					.logError(
-							Status.ERROR,
-							"Can't find the requested authority whilst trying to create CRS transform",
-							e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		catch (FactoryException e)
 		{
-			GtActivator.logError(Status.ERROR,
-					"Unexpected problem whilst trying to create CRS transform", e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		_view.setCoordinateReferenceSystem(_worldCoords);
 
 		// SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept
 		// constant
@@ -85,16 +87,59 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 	}
 
+	public static CoordinateReferenceSystem getCRS2()
+	{
+		if (_worldDegs == null)
+			try
+			{
+				_worldDegs = CRS.decode("EPSG:4326");
+			}
+			catch (NoSuchAuthorityCodeException e)
+			{
+				GtActivator
+						.logError(
+								Status.ERROR,
+								"Can't find the requested authority whilst trying to create CRS transform",
+								e);
+			}
+			catch (FactoryException e)
+			{
+				GtActivator.logError(Status.ERROR,
+						"Unexpected problem whilst trying to create CRS transform", e);
+			}
+		return _worldDegs;
+	}
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+ 	private void gtTrimLocation(WorldLocation loc)
+ 	{
+		loc.setLat(Math.min(loc.getLat(), 89.999));
+		loc.setLat(Math.max(loc.getLat(), -89.999));
+ 		
+		loc.setLong(Math.min(loc.getLong(), 179.999));
+		loc.setLong(Math.max(loc.getLong(), -179.999)); 		
+ 	}
+	public void gtTrim(WorldArea area)
+	{
+		WorldLocation topLeft = area.getTopLeft();
+		WorldLocation bottomRight = area.getBottomRight();
+		// do it, one corner at a time
+		gtTrimLocation(topLeft);
+		gtTrimLocation(bottomRight);
+		
+		// and sort out the other corners
+		area.normalise();
+	}
+
+
+	
 	@Override
 	public Point toScreen(WorldLocation val)
 	{
-
-		Point res = null;
 
 		// special handling: if we're in a relative plotting mode, we need to shift
 		// the projection. We're choosing to defer handling of this instance until
@@ -153,6 +198,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
 		DirectPosition2D metres = new DirectPosition2D();
 		DirectPosition2D screen = new DirectPosition2D();
+		Point res = null;
 		try
 		{
 
@@ -217,7 +263,8 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	public void zoom(double scaleVal)
 	{
 		if (scaleVal == 0)
-			scaleVal = 1;
+			return;
+		// scaleVal = 1;
 		Dimension paneArea = super.getScreenArea();
 		WorldArea dataArea = super.getDataArea();
 		if (dataArea != null)
@@ -256,6 +303,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 				WorldArea newArea = new WorldArea(tl, br);
 				newArea.normalise();
 
+				System.err.println("zoom, about to set:" + newArea);
 				setDataArea(newArea);
 
 			}
@@ -295,8 +343,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	@Override
 	public void setDataArea(WorldArea theArea)
 	{
-		// trim the area to sensible bounds
-		theArea.trim();
+		System.out.println("new area   :" + theArea);
 
 		mySetDataArea(theArea);
 
@@ -316,6 +363,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		// trim the coordinates
 		gtTrim(theArea);
 
+		// trim the area to sensible bounds
+		gtTrim(theArea);
+
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
 
@@ -332,7 +382,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 			// put the coords into an envelope
 			Envelope2D env = new Envelope2D(brM, tlM);
-			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldCoords);
+			ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldMetres);
 			_view.setBounds(rEnv);
 		}
 		catch (ProjectionException e)
@@ -491,6 +541,211 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 					+ mc.getViewport().getWorldToScreen()
 							.transform(new DirectPosition2D(45, 0), null));
 
+		}
+	}
+
+	public double rangeBetween(WorldLocation from, WorldLocation to)
+	{
+		DirectPosition2D from2D = new DirectPosition2D(from.getLong(),
+				from.getLat());
+		DirectPosition2D to2D = new DirectPosition2D(to.getLong(), to.getLat());
+		GeodeticCalculator calc = new GeodeticCalculator(getCRS2());
+		calc.setStartingGeographicPoint(from2D);
+		calc.setDestinationGeographicPoint(to2D);
+		double range = calc.getOrthodromicDistance();
+		return range;
+	}
+
+	public double bearingBetween(WorldLocation from, WorldLocation to)
+	{
+		DirectPosition2D from2D = new DirectPosition2D(from.getLong(),
+				from.getLat());
+		DirectPosition2D to2D = new DirectPosition2D(to.getLong(), to.getLat());
+		GeodeticCalculator calc = new GeodeticCalculator(getCRS2());
+		calc.setStartingGeographicPoint(from2D);
+		calc.setDestinationGeographicPoint(to2D);
+		double bearing = calc.getAzimuth();
+		bearing = MWC.Algorithms.Conversions.Degs2Rads(bearing);
+		return bearing;
+	}
+
+	public WorldLocation add(WorldLocation base, WorldVector delta)
+	{
+		DirectPosition2D from2D = new DirectPosition2D(base.getLong(),
+				base.getLat());
+		GeodeticCalculator calc = new GeodeticCalculator(getCRS2());
+		calc.setStartingGeographicPoint(from2D);
+		double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(delta.getBearing());
+		if(brgDegs > 180)
+			brgDegs -= 360;
+		calc.setDirection(brgDegs,
+				delta.getRange());
+		Point2D to2D = calc.getDestinationGeographicPoint();
+		WorldLocation res = new WorldLocation(to2D.getY(), to2D.getX(),
+				base.getDepth() + delta.getDepth());
+		return res;
+	}
+
+	public WorldVector subtract(WorldLocation from, WorldLocation to)
+	{
+		return subtract(from, to, null);
+	}
+
+	public WorldVector subtract(WorldLocation from, WorldLocation to,
+			WorldVector res)
+	{
+		if (res == null)
+			res = new WorldVector(0, 0, 0);
+		DirectPosition2D from2D = new DirectPosition2D(from.getLong(),
+				from.getLat());
+		DirectPosition2D to2D = new DirectPosition2D(to.getLong(), to.getLat());
+		GeodeticCalculator calc = new GeodeticCalculator(getCRS2());
+		calc.setStartingGeographicPoint(from2D);
+		calc.setDestinationGeographicPoint(to2D);
+		double range = calc.getOrthodromicDistance();
+
+		range = MWC.Algorithms.Conversions.m2Degs(range);
+		double bearing = calc.getAzimuth();
+		bearing = MWC.Algorithms.Conversions.Degs2Rads(bearing);
+		res.setValues(bearing, range, (to.getDepth() - from.getDepth()));
+		return res;
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class GtEarthTest extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public GtEarthTest(String val)
+		{
+			super(val);
+		}
+
+		public void test4326() throws NoSuchAuthorityCodeException,
+				FactoryException
+		{
+			CoordinateReferenceSystem crDegs = CRS.decode("EPSG:4326");
+			GeodeticCalculator calc = new GeodeticCalculator(crDegs);
+			WorldLocation from = new WorldLocation(0, 0, 0);
+			WorldLocation to = new WorldLocation(0, 1, 0);
+			DirectPosition2D from2D = new DirectPosition2D(from.getLong(),
+					from.getLat());
+			DirectPosition2D to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			double range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			double bearing = calc.getAzimuth();
+			assertEquals("over a degree", 1, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.0001);
+
+			from = new WorldLocation(60, 0, 0);
+			to = new WorldLocation(60, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 0.5, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.1);
+
+			from = new WorldLocation(0, 0, 0);
+			to = new WorldLocation(1, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 45, bearing, 0.2);
+
+			from = new WorldLocation(1, 1, 0);
+			to = new WorldLocation(0, 0, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+			if (bearing < 0)
+				bearing += 360;
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 225, bearing, 0.2);
+
+		}
+
+		public void test3395() throws NoSuchAuthorityCodeException,
+				FactoryException
+		{
+			CoordinateReferenceSystem crMetres = CRS.decode("EPSG:3395");
+			GeodeticCalculator calc = new GeodeticCalculator(crMetres);
+			WorldLocation from = new WorldLocation(0, 0, 0);
+			WorldLocation to = new WorldLocation(0, 1, 0);
+			DirectPosition2D from2D = new DirectPosition2D(from.getLong(),
+					from.getLat());
+			DirectPosition2D to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			double range = calc.getOrthodromicDistance();
+			double bearing = calc.getAzimuth();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			assertEquals("over a degree", 1, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.0001);
+
+			from = new WorldLocation(60, 0, 0);
+			to = new WorldLocation(60, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 0.5, range, 0.01);
+			assertEquals("correct bearing", Math.PI / 2,
+					MWC.Algorithms.Conversions.Degs2Rads(bearing), 0.1);
+
+			from = new WorldLocation(0, 0, 0);
+			to = new WorldLocation(1, 1, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 45, bearing, 0.2);
+
+			from = new WorldLocation(1, 1, 0);
+			to = new WorldLocation(0, 0, 0);
+			from2D = new DirectPosition2D(from.getLong(), from.getLat());
+			to2D = new DirectPosition2D(to.getLong(), to.getLat());
+			calc.setStartingGeographicPoint(from2D);
+			calc.setDestinationGeographicPoint(to2D);
+			range = calc.getOrthodromicDistance();
+			range = MWC.Algorithms.Conversions.m2Degs(range);
+			bearing = calc.getAzimuth();
+			if (bearing < 0)
+				bearing += 360;
+
+			assertEquals("about 1/2 a degree", 1.411, range, 0.01);
+			assertEquals("correct bearing", 225, bearing, 0.2);
 		}
 	}
 

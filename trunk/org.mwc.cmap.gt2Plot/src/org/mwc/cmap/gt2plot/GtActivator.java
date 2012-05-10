@@ -8,9 +8,11 @@ import javax.imageio.ImageReader;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.Layer;
+import MWC.GenericData.WorldLocation;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -59,6 +61,9 @@ public class GtActivator extends AbstractUIPlugin
 
 		// Setting the system-wide default at startup time
 		System.setProperty("org.geotools.referencing.forceXY", "true");
+		
+		// get the earth model to use our shiny new Gt one
+		WorldLocation.setModel(new GtProjection());
 	}
 
 	/**
