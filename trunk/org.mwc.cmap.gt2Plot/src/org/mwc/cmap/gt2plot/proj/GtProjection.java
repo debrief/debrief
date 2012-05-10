@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -11,6 +12,7 @@ import org.eclipse.core.runtime.Status;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
@@ -18,6 +20,7 @@ import org.geotools.referencing.operation.projection.ProjectionException;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gt2plot.GtActivator;
 import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -42,10 +45,20 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	private final MapContent _map;
 	private final MapViewport _view;
 	private WorldArea _oldDataArea;
+	
+	// to reduce object creation these three objects are created in advance, and reused
+	private final DirectPosition2D _workDegs;
+	private final DirectPosition2D _workMetres;
+	private final DirectPosition2D _workScreen;
 
 	public GtProjection()
 	{
 		super("GeoTools");
+
+		// initialise our working data stores
+		_workDegs = new DirectPosition2D();
+		_workMetres = new DirectPosition2D();
+		_workScreen = new DirectPosition2D();
 
 		_map = new MapContent();
 		_view = _map.getViewport();
@@ -150,20 +163,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 
 		// and now for the actual projection bit
-		DirectPosition2D degs = new DirectPosition2D(val.getLong(), val.getLat());
-		DirectPosition2D metres = new DirectPosition2D();
-		DirectPosition2D screen = new DirectPosition2D();
+		_workDegs.setLocation(val.getLong(), val.getLat());
 		try
 		{
-
-			_degs2metres.transform(degs, metres);
+			_degs2metres.transform(_workDegs, _workMetres);
 
 			// now got to screen
-			_view.getWorldToScreen().transform(metres, screen);
+			_view.getWorldToScreen().transform(_workMetres, _workScreen);
 
 			// output the results
-			res = new Point((int) screen.getCoordinate()[0],
-					(int) screen.getCoordinate()[1]);
+			res = new Point((int) _workScreen.getCoordinate()[0],
+					(int) _workScreen.getCoordinate()[1]);
 		}
 		catch (MismatchedDimensionException e)
 		{
@@ -183,17 +193,15 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	public WorldLocation toWorld(Point val)
 	{
 		WorldLocation res = null;
-		DirectPosition2D screen = new DirectPosition2D(val.x, val.y);
-		DirectPosition2D metres = new DirectPosition2D();
-		DirectPosition2D degs = new DirectPosition2D();
+		_workScreen.setLocation(val.x, val.y);
 
 		try
 		{
 			// now got to screen
-			_view.getScreenToWorld().transform(screen, metres);
-			_degs2metres.inverse().transform(metres, degs);
-			res = new WorldLocation(degs.getCoordinate()[1], degs.getCoordinate()[0],
-					0);
+			_view.getScreenToWorld().transform(_workScreen, _workMetres);
+			_degs2metres.inverse().transform(_workMetres, _workDegs);
+			res = new WorldLocation(_workDegs.getCoordinate()[1],
+					_workDegs.getCoordinate()[0], 0);
 		}
 		catch (MismatchedDimensionException e)
 		{
@@ -312,7 +320,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
 			return;
 		}
-		
+
 		// trim the coordinates
 		gtTrim(theArea);
 
@@ -360,7 +368,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	{
 		loc.setLat(Math.min(loc.getLat(), 89.9999));
 		loc.setLat(Math.max(loc.getLat(), -89.9999));
-		
+
 		loc.setLong(Math.min(loc.getLong(), 179.999));
 		loc.setLong(Math.max(loc.getLong(), -179.999));
 	}
@@ -384,6 +392,68 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	public int numLayers()
 	{
 		return _map.layers().size();
+	}
+
+	/**
+	 * whether the geotools layers overlap with the specified area
+	 * 
+	 * @param area
+	 * @return
+	 */
+	public boolean layersOverlapWith(WorldArea area)
+	{
+		WorldLocation tl = area.getTopLeft();
+		WorldLocation br = area.getBottomRight();
+
+		DirectPosition2D tlDegs = new DirectPosition2D(tl.getLong(), tl.getLat());
+		DirectPosition2D brDegs = new DirectPosition2D(br.getLong(), br.getLat());
+
+		DirectPosition2D tlM = new DirectPosition2D();
+		DirectPosition2D brM = new DirectPosition2D();
+
+		try
+		{
+			_degs2metres.transform(tlDegs, tlM);
+			_degs2metres.transform(brDegs, brM);
+
+			// put the coords into an envelope
+			Envelope2D env = new Envelope2D(brM, tlM);
+			BoundingBox other = new ReferencedEnvelope(env, _worldCoords);
+
+			Iterator<Layer> layers = _map.layers().iterator();
+			while (layers.hasNext())
+			{
+				Layer layer = (Layer) layers.next();
+				if (layer.isVisible())
+				{
+					ReferencedEnvelope thisBounds = layer.getBounds();
+
+					// right, now the painful bit of converting the layers
+					ReferencedEnvelope newBounds = thisBounds.transform(
+							other.getCoordinateReferenceSystem(), false);
+
+					if (newBounds.intersects(other))
+						return true;
+				}
+			}
+		}
+		catch (MismatchedDimensionException e)
+		{
+			CorePlugin.logError(Status.ERROR,
+					"unknown dimension trouble with getting bounds", e);
+		}
+		catch (TransformException e)
+		{
+			CorePlugin.logError(Status.ERROR,
+					"unknown transform trouble with getting bounds", e);
+		}
+		catch (FactoryException e)
+		{
+			CorePlugin.logError(Status.ERROR,
+					"unknown factory trouble with getting bounds", e);
+		}
+
+		return false;
 	}
 
 	public static class TestProj extends TestCase
