@@ -926,19 +926,22 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected void paintBackground(final CanvasType dest)
 	{
-		// fill the background, to start with
-		final Dimension sz = _theCanvas.getSize();
-
+		
+		long startTime = System.currentTimeMillis();
+		
 		// right, don't fill in the background if we're not painting to the screen
 		boolean paintedBackground = false;
 
 		// also plot any GeoTools stuff
 		PlainProjection proj = dest.getProjection();
+		
+		// fill the background, to start with
+		final Dimension sa = proj.getScreenArea();
+		final int width = sa.width;
+		final int height = sa.height;
+
 		if (proj instanceof GtProjection)
 		{
-			Dimension sa = proj.getScreenArea();
-			int width = sa.width;
-			int height = sa.height;
 			GtProjection gp = (GtProjection) proj;
 
 			// do we have a cached image?
@@ -947,18 +950,26 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				// nope, do we have any data?
 				if (gp.numLayers() > 0)
 				{
-					// now, if we're in relative projection mode, the projection-translate
-					// doesn't get
-					// perfromed until the first toScreen call. So do a toScreen before
-					// we start plotting the images
-					proj.toScreen(proj.getDataArea().getCentre());
-
-					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
-							dest.getBackgroundColor());
-					if (img != null)
+					// now, GeoTools paint is an expensive operation, so I'm going to do
+					// all I can to avoid doing it. So, I'm going to see if any of the
+					// layers
+					// overlap with the current drawing area
+					if (gp.layersOverlapWith(proj.getVisibleDataArea()))
 					{
-						_swtImage = new Image(Display.getCurrent(), awtToSwt(img,
-								width + 1, height + 1));
+
+						// now, if we're in relative projection mode, the
+						// projection-translate doesn't get
+						// performed until the first toScreen call. So do a toScreen before
+						// we start plotting the images
+						proj.toScreen(proj.getDataArea().getCentre());
+
+						BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+								dest.getBackgroundColor());
+						if (img != null)
+						{
+							ImageData swtImage = awtToSwt(img, width + 1, height + 1);
+							_swtImage = new Image(Display.getCurrent(), swtImage);
+						}
 					}
 				}
 			}
@@ -1002,9 +1013,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			{
 				final Color theCol = dest.getBackgroundColor();
 				dest.setBackgroundColor(theCol);
-				dest.fillRect(0, 0, sz.width, sz.height);
+				dest.fillRect(0, 0, width, height);
 			}
 		}
+		
+		System.out.println("Elapsed:" + (System.currentTimeMillis() - startTime) + " millis");
 	}
 
 	/**
@@ -1296,6 +1309,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	public static ImageData awtToSwt(BufferedImage bufferedImage, int width,
 			int height)
 	{
+		System.err.println("DOING AWT TO SWT!!!!");
 		final int[] awtPixels = new int[width * height];
 		ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
 		swtImageData.transparentPixel = TRANSPARENT_COLOR;
