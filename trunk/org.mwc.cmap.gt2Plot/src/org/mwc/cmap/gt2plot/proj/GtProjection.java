@@ -312,6 +312,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
 			return;
 		}
+		
+		// trim the coordinates
+		gtTrim(theArea);
 
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
@@ -345,6 +348,21 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		{
 			CorePlugin.logError(Status.ERROR, "unknown trouble with proj", e);
 		}
+	}
+
+	private void gtTrim(WorldArea theArea)
+	{
+		gtTrim(theArea.getTopLeft());
+		gtTrim(theArea.getBottomRight());
+	}
+
+	private void gtTrim(WorldLocation loc)
+	{
+		loc.setLat(Math.min(loc.getLat(), 89.9999));
+		loc.setLat(Math.max(loc.getLat(), -89.9999));
+		
+		loc.setLong(Math.min(loc.getLong(), 179.999));
+		loc.setLong(Math.max(loc.getLong(), -179.999));
 	}
 
 	public MapContent getMapContent()
