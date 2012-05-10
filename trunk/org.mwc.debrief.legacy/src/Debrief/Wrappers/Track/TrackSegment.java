@@ -168,7 +168,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * someone to share life's troubles with
 	 * 
 	 */
-	private static ToolParent _myParent;
+	private transient static ToolParent _myParent;
 
 	/**
 		 * 
@@ -285,7 +285,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	boolean _plotRelative;
 
-	private WorldVector _vecTempLastVector = null;
+	private  transient WorldVector _vecTempLastVector = null;
 
 	protected long _vecTempLastDTG = -2;
 
