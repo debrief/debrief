@@ -267,18 +267,30 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	{
 		_theLayers = new Vector<Editable>(0, 1);
 
-		_formatListener = new PropertyChangeListener()
-		{
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				Layer layer = (Layer) evt.getSource();
-				fireReformatted(layer);
-			}
-		};
+		_formatListener = new MyPropListener();
 
 		produceLists();
+	}
+
+	/** make the property listener class into an embedded class - because
+	 * we were experiencing some not-serializable problems
+	 * 
+	 * @author ian
+	 *
+	 */
+	private class MyPropListener implements PropertyChangeListener, Serializable
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			Layer layer = (Layer) evt.getSource();
+			fireReformatted(layer);
+		}
+
 	}
 
 	// ////////////////////////////////////////////////////
@@ -920,16 +932,16 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
 		public Layer wrapMe();
 	}
-	
-	/** marker for objects that want to know about the parent layer
-	 * (prob because they can create other layers)
+
+	/**
+	 * marker for objects that want to know about the parent layer (prob because
+	 * they can create other layers)
 	 */
 	public static interface NeedsToKnowAboutLayers
 	{
 		public void setLayers(Layers parent);
 	}
 
-	
 	/**
 	 * interface to be implemented by classes intending to watch the full set of
 	 * data for this scenarion
