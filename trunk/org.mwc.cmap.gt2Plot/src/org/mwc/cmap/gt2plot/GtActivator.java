@@ -59,14 +59,6 @@ public class GtActivator extends AbstractUIPlugin
 		super.start(context);
 		plugin = this;
 
-		// HACK: we need to 'pre-initialise' the tiff reader in order
-		// to load world image files
-		Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
-		if (!iter2.hasNext())
-		{
-			CorePlugin.logError(Status.ERROR, "TIF reader not ready", null);
-		}
-
 		// Setting the system-wide default at startup time
 		System.setProperty("org.geotools.referencing.forceXY", "true");
 	}
