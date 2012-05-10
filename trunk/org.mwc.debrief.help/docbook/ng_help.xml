@@ -6341,8 +6341,8 @@ and so on....</programlisting></para>
       <title>Using chart backdrops</title>
       <sect1>
         <title>Introduction</title>
-        <para linkend="external_datasets">VPF and ETOPO (see <xref linkend="external_datasets"/> can
-          only add so much context to the analysis of a dataset<indexterm>
+        <para linkend="external_datasets">VPF and ETOPO (see <xref linkend="external_datasets"/>)
+          can only add so much context to the analysis of a dataset<indexterm>
             <primary>Charts</primary>
             <secondary>Introduction</secondary>
           </indexterm>. Nautical Chart data contains a large volume of additional infromation that
@@ -6410,8 +6410,8 @@ and so on....</programlisting></para>
                 <primary>Charts</primary>
                 <secondary>Transparency</secondary>
               </indexterm> attribute for charts. Use this to vary the transparency of the charts
-              layers.  For most analysis the presence of a chart backdrop can make vessel tracks
-              difficult to distinguish.  Making them semi-transparent fades them away a little -
+              layers. For most analysis the presence of a chart backdrop can make vessel tracks
+              difficult to distinguish. Making them semi-transparent fades them away a little -
               letting you focus on the tracks whilst still being aware of the backdrop chart
               data.</para>
           </note></para>
