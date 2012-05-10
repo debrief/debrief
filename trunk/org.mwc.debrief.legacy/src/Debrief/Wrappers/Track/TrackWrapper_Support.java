@@ -74,14 +74,14 @@ public class TrackWrapper_Support
 		 * property support
 		 * 
 		 */
-		private PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
+		private transient PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		protected TrackWrapper _myTrack;
+		protected  TrackWrapper _myTrack;
 
 		@Override
 		public void addPropertyChangeListener(PropertyChangeListener listener)
