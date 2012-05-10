@@ -164,7 +164,9 @@ public class Pan extends CoreDragAction
 			double oldBorder = proj.getDataBorder();
 			proj.setDataBorderNoZoom(1.0);
 			proj.setDataArea(theArea);
-			proj.zoom(0.0);
+			// in the shiny new GeoTools projection we don't need to fit-to-win after
+			// changing the data area
+			// proj.zoom(0.0);
 			proj.setDataBorderNoZoom(oldBorder);
 		}
 
