@@ -134,7 +134,7 @@ public class RightClickCutCopyAdaptor
 				catch (ClassNotFoundException e)
 				{
 					CorePlugin.logError(Status.ERROR,
-							"Whilst converting from native to java", e);
+							"Whilst converting from native to java, can't find this class:" + e.getMessage(), null);
 				}
 				return myData;
 			}
