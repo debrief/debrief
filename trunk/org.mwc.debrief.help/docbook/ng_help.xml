@@ -6412,8 +6412,9 @@ and so on....</programlisting></para>
               </indexterm> attribute for charts. Use this to vary the transparency of the charts
               layers. For most analysis the presence of a chart backdrop can make vessel tracks
               difficult to distinguish. Making them semi-transparent fades them away a little -
-              letting you focus on the tracks whilst still being aware of the backdrop chart
-              data.</para>
+              letting you focus on the tracks whilst still being aware of the backdrop chart data.
+              Unfortunately, the transparency setting isn't observed when you copy the plot to the
+              clipboard.  Once pasted in MS Word, all charts are painted solid.</para>
           </note></para>
         <para>Once a parent folder is specified, when you click on Insert Chart Library from the
           Chart Features menu Debrief will scan the child folders for correctly named shapefiles and
