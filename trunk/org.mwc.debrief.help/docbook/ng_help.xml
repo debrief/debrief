@@ -6446,6 +6446,10 @@ and so on....</programlisting></para>
             </screenshot>
           </figure>
         </para>
+        <para>The chart will then be loaded as a separate Debrief layer - and appear in the layer
+          manager. As with any other layer, you can control it's visibility using the layer manager.
+          Note, Debrief isn't going to store the chart image in the plot-file, it's just going to
+          store the path to the Image - which will re-loaded next time you open the plot.</para>
       </sect1>
     </chapter>
 
@@ -8402,18 +8406,21 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <listitem>
                 <para>The folder must contain a shapefile named
                     <filename>rasterExtents_ARCS_Export.shp</filename></para>
-                <para>. This shapefile must contain a series of rectangle geometries.  Each
-                  rectangle must have a property named <filename>the_geom</filename> that contains
-                  the coordinates, and one called <filename>Name</filename> that contains the
-                  filename of the respective chart.</para>
+                <para>. This shapefile must contain a series of rectangle geometries - one for each
+                  chart in the folio. Each rectangle must have a property named
+                    <filename>the_geom</filename> that contains the coordinates, and one called
+                    <filename>Name</filename> that contains the filename of the respective
+                  chart.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Chart images</term>
               <listitem>
                 <para>The folder must also contain a series of Tif images with supporting .prj
-                  sidecar files.  (Note: where possible Debrief will generate missing sidecar files
-                  as necessary</para>
+                  sidecar files. (Note: the folios received from UKHO in Autumn 2011 do not contain
+                  sidecar fiels.  Debrief generates the missing sidecar files as necessary. This is
+                  acceptable for UKHO charts, which follow a particular standard - one cannot assume
+                  it non UKHO charts follow the same standard).</para>
               </listitem>
             </varlistentry>
           </variablelist>
