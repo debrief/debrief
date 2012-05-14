@@ -857,7 +857,7 @@ public class XYPlotView extends ViewPart
 		_fitToWindow.setText("Fit to window");
 		_fitToWindow.setToolTipText("Scale the graph to show all data");
 		_fitToWindow.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_size.png"));
+				.getImageDescriptor("icons/fit_to_win.gif"));
 
 		_exportToWMF = new Action()
 		{
