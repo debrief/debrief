@@ -926,9 +926,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected void paintBackground(final CanvasType dest)
 	{
-		
-		long startTime = System.currentTimeMillis();
-		
 		// right, don't fill in the background if we're not painting to the screen
 		boolean paintedBackground = false;
 
@@ -1016,8 +1013,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				dest.fillRect(0, 0, width, height);
 			}
 		}
-		
-		System.out.println("Elapsed:" + (System.currentTimeMillis() - startTime) + " millis");
 	}
 
 	/**
