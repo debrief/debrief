@@ -1,14 +1,8 @@
 package org.mwc.cmap.gt2plot;
 
-import java.util.Iterator;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.core.CorePlugin;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.Layer;
@@ -32,19 +26,6 @@ public class GtActivator extends AbstractUIPlugin
 	 */
 	public GtActivator()
 	{
-	}
-
-	public static void initialise()
-	{
-		// HACK: we need to 'pre-initialise' the tiff reader in order
-		// to load world image files
-		Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
-		if (!iter2.hasNext())
-		{
-			logError(Status.ERROR,
-					"Failed to initialise TIFF reader for Java ImageIO", null);
-			System.err.println("TIFF READER NOT READY");
-		}
 	}
 
 	/*
