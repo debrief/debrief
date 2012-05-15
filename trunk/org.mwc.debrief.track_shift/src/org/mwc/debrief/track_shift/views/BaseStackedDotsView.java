@@ -233,7 +233,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
-		toolBarManager.add(_magicBtn);
+	//	toolBarManager.add(_magicBtn);
 
 		// and a separator
 		toolBarManager.add(new Separator());
