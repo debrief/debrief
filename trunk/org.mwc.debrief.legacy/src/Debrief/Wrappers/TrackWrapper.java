@@ -1937,9 +1937,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public final HiResDate getEndDTG()
 	{
+		HiResDate dtg = null;
 		TimePeriod res = getTimePeriod();
+		if(res != null)
+			dtg = res.getEndDTG();
 
-		return res.getEndDTG();
+		return dtg;
 	}
 
 	/**
