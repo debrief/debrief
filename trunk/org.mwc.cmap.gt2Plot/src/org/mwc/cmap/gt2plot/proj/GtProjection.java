@@ -45,8 +45,9 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	private final MapContent _map;
 	private final MapViewport _view;
 	private WorldArea _oldDataArea;
-	
-	// to reduce object creation these three objects are created in advance, and reused
+
+	// to reduce object creation these three objects are created in advance, and
+	// reused
 	private final DirectPosition2D _workDegs;
 	private final DirectPosition2D _workMetres;
 	private final DirectPosition2D _workScreen;
@@ -243,6 +244,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 					return;
 
 				double scale = _view.getWorldToScreen().getScaleX();
+				scale = Math.min(1000, scale);
 				double newScale = scale / scaleVal;
 
 				DirectPosition2D corner = new DirectPosition2D(mapM.getX() - 0.5d
@@ -322,7 +324,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 
 		// trim the coordinates
-		gtTrim(theArea);
+		gtTrim(theArea);	
 
 		WorldLocation tl = theArea.getTopLeft();
 		WorldLocation br = theArea.getBottomRight();
