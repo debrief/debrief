@@ -595,23 +595,21 @@ public class EditableWrapper implements IPropertySource
 			{
 				// right, we can fire a change if we like. have a look
 				Annotation[] ann = _property.getAnnotationsForGetter();
-				if (ann != null)
+				if ((ann != null) && (ann.length > 0))
 				{
-					if (ann.length > 0)
+					for (int i = 0; i < ann.length; i++)
 					{
-						for (int i = 0; i < ann.length; i++)
+						Annotation thisA = ann[i];
+						if (thisA.annotationType().equals(FireExtended.class))
 						{
-							Annotation thisA = ann[i];
-							if (thisA.annotationType().equals(FireExtended.class))
-							{
-								_wholeLayers.fireExtended(null, _topLevelLayer);
-							}
-							else if (thisA.annotationType().equals(FireReformatted.class))
-							{
-								_wholeLayers.fireModified(_topLevelLayer);
-							}
+							_wholeLayers.fireExtended(null, _topLevelLayer);
+						}
+						else if (thisA.annotationType().equals(FireReformatted.class))
+						{
+							_wholeLayers.fireModified(_topLevelLayer);
 						}
 					}
+
 				}
 				else
 					_wholeLayers.fireReformatted(_topLevelLayer);
@@ -639,21 +637,18 @@ public class EditableWrapper implements IPropertySource
 
 			// right, we can fire a change if we like. have a look
 			Annotation[] ann = _property.getAnnotationsForGetter();
-			if (ann != null)
+			if ((ann != null) && (ann.length > 0))
 			{
-				if (ann.length > 0)
+				for (int i = 0; i < ann.length; i++)
 				{
-					for (int i = 0; i < ann.length; i++)
+					Annotation thisA = ann[i];
+					if (thisA.annotationType().equals(FireExtended.class))
 					{
-						Annotation thisA = ann[i];
-						if (thisA.annotationType().equals(FireExtended.class))
-						{
-							_wholeLayers.fireExtended(null, _topLevelLayer);
-						}
-						else if (thisA.annotationType().equals(FireReformatted.class))
-						{
-							_wholeLayers.fireModified(_topLevelLayer);
-						}
+						_wholeLayers.fireExtended(null, _topLevelLayer);
+					}
+					else if (thisA.annotationType().equals(FireReformatted.class))
+					{
+						_wholeLayers.fireModified(_topLevelLayer);
 					}
 				}
 			}
