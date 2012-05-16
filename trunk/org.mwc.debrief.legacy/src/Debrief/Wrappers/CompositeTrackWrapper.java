@@ -68,8 +68,20 @@ public class CompositeTrackWrapper extends TrackWrapper
 			try
 			{
 				PropertyDescriptor[] res =
-				{ expertProp("Origin", "where this track starts", FORMAT),
-						expertProp("StartDate", "the time this track starts", FORMAT) };
+				{
+						expertProp("Origin", "where this track starts", FORMAT),
+						expertProp("StartDate", "the time this track starts", FORMAT),
+
+						expertLongProp("LabelFrequency", "the label frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("SymbolFrequency", "the symbol frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("ResampleDataAt", "the data sample rate",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("ArrowFrequency", "the direction marker frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+
+				};
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -194,9 +206,19 @@ public class CompositeTrackWrapper extends TrackWrapper
 			// ok, now update the date/location
 			thisOrigin = seg.last().getBounds().getCentre();
 			thisDate = seg.endDTG();
-
-			System.out.println("doing recalc for:" + seg);
 		}
+
+		// ok, sort out the symbol & label freq
+		HiResDate symFreq = this.getSymbolFrequency();
+		HiResDate labelFreq = this.getLabelFrequency();
+
+		this.setSymbolFrequency(new HiResDate(0));
+		this.setLabelFrequency(new HiResDate(0));
+
+		// and restore them
+		setSymbolFrequency(symFreq);
+		setLabelFrequency(labelFreq);
+
 	}
 
 	private abstract static class PlanningCalc
@@ -220,12 +242,12 @@ public class CompositeTrackWrapper extends TrackWrapper
 			long timeMillis = date.getDate().getTime();
 			for (long tNow = timeMillis; tNow < timeMillis + secs * 1000; tNow += 60 * 1000)
 			{
-				System.err.println("new point at:" + tNow);
 				HiResDate thisDtg = new HiResDate(tNow);
 
 				// produce a new position
 				origin = origin.add(vec);
 
+				// ok, do this fix
 				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
 						.getValueIn(WorldSpeed.ft_sec / 3));
 				FixWrapper fw = new FixWrapper(thisF);
