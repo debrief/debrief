@@ -257,6 +257,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 				return;
 
 			double distPerMinute = getMinuteDelta(seg);
+			double timeTravelled = getSecsTravelled(seg);
 
 			// ditch the existing items
 			seg.removeAllElements();
@@ -287,6 +288,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 			}
 		}
 
+		protected abstract double getSecsTravelled(PlanningSegment seg);
+
 		abstract double getMinuteDelta(PlanningSegment seg);
 	}
 
@@ -299,6 +302,14 @@ public class CompositeTrackWrapper extends TrackWrapper
 			// find out how far it travels
 			double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) * 60d;
 			return distPerMinute;
+		}
+
+		@Override
+		protected double getSecsTravelled(PlanningSegment seg)
+		{
+			// how long does it take to travel this distance?
+			double secsTaken = seg.getLength().getValueIn(WorldDistance.METRES) / seg.getSpeed().getValueIn(WorldSpeed.M_sec);
+			return secsTaken;
 		}
 	}
 
@@ -320,10 +331,23 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 			return metresPerMin;
 		}
+
+		@Override
+		protected double getSecsTravelled(PlanningSegment seg)
+		{
+			return seg.getDuration().getValueIn(Duration.SECONDS);
+		}
 	}
 
 	private static class FromSpeedTime extends PlanningCalc
 	{
+
+		@Override
+		protected double getSecsTravelled(PlanningSegment seg)
+		{
+			return seg.getDuration().getValueIn(Duration.SECONDS);
+		}
+
 
 		@Override
 		double getMinuteDelta(PlanningSegment seg)
