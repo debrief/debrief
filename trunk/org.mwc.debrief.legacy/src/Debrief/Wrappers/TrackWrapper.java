@@ -1515,7 +1515,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return
 	 */
 	@Override
-	public final Enumeration<Editable> contiguousElements()
+	public Enumeration<Editable> contiguousElements()
 	{
 		final Vector<Editable> res = new Vector<Editable>(0, 1);
 
@@ -2142,7 +2142,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return _theLabel.getString();
 	}
 
-	/** get our child segments
+	/**
+	 * get our child segments
 	 * 
 	 * @return
 	 */
@@ -2150,7 +2151,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return _thePositions;
 	}
-	
+
 	/**
 	 * whether to show the track label at the start or end of the track
 	 * 

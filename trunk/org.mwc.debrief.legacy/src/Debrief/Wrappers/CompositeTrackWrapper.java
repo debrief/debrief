@@ -9,6 +9,7 @@ import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -141,6 +142,14 @@ public class CompositeTrackWrapper extends TrackWrapper
 	private static final long serialVersionUID = 1L;
 
 	@Override
+	public Enumeration<Editable> contiguousElements()
+	{
+		// we won't return ourselves as one long list, but as a series of track
+		// segments
+		return elements();
+	}
+
+	@Override
 	public void add(Editable point)
 	{
 		if (point instanceof PlanningSegment)
@@ -194,10 +203,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 				theCalc = new FromRangeSpeed();
 				break;
 			case PlanningLegCalcModelPropertyEditor.RANGE_TIME:
-				theCalc = new FromRangeSpeed();
+				theCalc = new FromRangeTime();
 				break;
 			case PlanningLegCalcModelPropertyEditor.SPEED_TIME:
-				theCalc = new FromRangeSpeed();
+				theCalc = new FromSpeedTime();
 				break;
 			}
 
@@ -233,7 +242,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 			// ok build for this segment
 			double secs = seg.getLength().getValueIn(WorldDistance.METRES)
 					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
-			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(seg.getCourse());
+			double courseDegs = seg.getCourse();
+			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
 
 			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
 					distPerMinute, WorldDistance.METRES).getValueIn(WorldDistance.DEGS),
@@ -268,6 +278,39 @@ public class CompositeTrackWrapper extends TrackWrapper
 			double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) / 60d;
 			return distPerMinute;
 		}
-
 	}
+
+	private static class FromRangeTime extends PlanningCalc
+	{
+
+		@Override
+		double getMinuteDelta(PlanningSegment seg)
+		{
+			// home long to travel along it (secs)
+			double travelSecs = seg.getDuration().getValueIn(Duration.SECONDS);
+			double metresPerSec = seg.getLength().getValueIn(WorldDistance.METRES)
+					/ travelSecs;
+
+			double metresPerMin = metresPerSec / 60d;
+
+			// update the speed, so it makes sense in the fix
+			seg.setSpeed(new WorldSpeed(metresPerSec, WorldSpeed.M_sec));
+
+			return metresPerMin;
+		}
+	}
+
+	private static class FromSpeedTime extends PlanningCalc
+	{
+
+		@Override
+		double getMinuteDelta(PlanningSegment seg)
+		{
+			// how far will we travel in time?
+			double metresPerSec = seg.getSpeed().getValueIn(WorldSpeed.M_sec);
+			double metresPerMin = metresPerSec / 60d;
+			return metresPerMin;
+		}
+	}
+
 }
