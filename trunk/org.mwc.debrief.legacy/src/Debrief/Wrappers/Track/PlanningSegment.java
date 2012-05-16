@@ -213,4 +213,11 @@ public class PlanningSegment extends TrackSegment
 
 	}
 
+	public void setSpeedSilent(WorldSpeed worldSpeed)
+	{
+		_mySpeed = worldSpeed;
+		
+		// don't bother triggering recalc
+	}
+
 }
