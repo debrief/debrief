@@ -4,13 +4,19 @@
 package org.mwc.cmap.core.property_support;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -334,6 +340,13 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return res;
 	}
 
+	public Annotation[] getAnnotationsForGetter()
+	{
+		// find out the type of the editor
+		Method write = _thisProp.getWriteMethod();
+		return write.getAnnotations();
+	}
+	
 	public void setValue(Object value)
 	{
 		if (_myHelper != null)
