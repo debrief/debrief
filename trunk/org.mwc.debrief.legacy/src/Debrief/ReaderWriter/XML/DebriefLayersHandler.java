@@ -27,6 +27,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 		
 		addHandler(new ChartFolioHandler(theLayers));
 		addHandler(new DebriefLayerHandler(theLayers));
+		addHandler(new CompositeTrackHandler(theLayers));
 		addHandler(new TrackHandler(theLayers));
 		addHandler(new PatternHandler(theLayers));
 		addHandler(new NarrativeHandler(theLayers));
@@ -66,7 +67,12 @@ public final class DebriefLayersHandler extends MWCXMLReader
 			MWC.GUI.Layer ly = data.elementAt(i);
 
 			// find out which sort of layer this is
-			if (ly instanceof Debrief.Wrappers.TrackWrapper)
+			if (ly instanceof Debrief.Wrappers.CompositeTrackWrapper)
+			{
+				Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler.exportTrack(
+						(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+			}
+			else if (ly instanceof Debrief.Wrappers.TrackWrapper)
 			{
 				Debrief.ReaderWriter.XML.Tactical.TrackHandler.exportTrack(
 						(Debrief.Wrappers.TrackWrapper) ly, layers, doc);

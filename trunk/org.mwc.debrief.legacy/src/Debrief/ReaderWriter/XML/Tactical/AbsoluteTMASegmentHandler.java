@@ -24,10 +24,10 @@ abstract public class AbsoluteTMASegmentHandler extends CoreTMASegmentHandler
 
 	protected WorldLocation _origin;
 	
-	public AbsoluteTMASegmentHandler(Layers theLayers)
+	public AbsoluteTMASegmentHandler()
 	{
 		// inform our parent what type of class we are
-		super(theLayers, TMA_SEGMENT);
+		super(TMA_SEGMENT);
 
 		addHandler(new LocationHandler(ORIGIN)
 		{

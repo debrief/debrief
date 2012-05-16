@@ -27,7 +27,7 @@ abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 	protected  WorldSpeed _speed;
 	protected double _baseFrequency;
 	
-	public CoreTMASegmentHandler(Layers theLayers, String myName)
+	public CoreTMASegmentHandler(String myName)
 	{
 		// inform our parent what type of class we are
 		super(myName);
