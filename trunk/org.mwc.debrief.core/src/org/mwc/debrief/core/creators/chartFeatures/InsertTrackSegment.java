@@ -14,16 +14,16 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 
+import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -40,7 +40,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		// tell the parent we produce a top-level layer
 		super(false);
 	}
-
+	
 	/**
 	 * get a plottable object
 	 * 
@@ -50,46 +50,27 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-
-		// right, what's the area we're looking at
-		WorldArea wa = theChart.getDataArea();
-
-		// get centre of area (at zero depth)
-		WorldLocation centre = wa.getCentreAtSurface();
-
-		HiResDate startD = null, endD = null;
-		AbsoluteTMASegment res = null;
+		PlanningSegment res = null;
 
 		// create input box dialog
 		InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
-				"New track", "What is the start time?", "yyMMdd HHmmss", null);
+				"New track", "What is the name of this leg", "name here", null);
 
 		// did he cancel?
 		if (inp.open() == InputDialog.OK)
 		{
 			// get the results
 			String txt = inp.getValue();
-			startD = DebriefFormatDateTime.parseThis(txt);
+			res = new PlanningSegment();
+			res.setName(txt);
+
+			// give it some default attributes
+			res.setCourse(45);
+			res.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			res.setLength(new WorldDistance(5, WorldDistance.KM));
 		}
 
-		inp = new InputDialog(Display.getCurrent().getActiveShell(), "New track",
-				"And what is the emd time?", "yyMMdd HHmmss", null);
-		// did he cancel?
-		if (inp.open() == InputDialog.OK)
-		{
-			// get the results
-			String txt = inp.getValue();
-			endD = DebriefFormatDateTime.parseThis(txt);
-		}
-
-		if ((startD != null) && (endD != null))
-		{
-			res = new AbsoluteTMASegment(45, new WorldSpeed(10, WorldSpeed.Kts),
-					centre, startD, endD);
-		}
-		
 		return res;
-
 	}
 
 	/**
@@ -150,13 +131,33 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 					// check there's something there
 					if (txt.length() > 0)
 					{
-						res = txt;
-						// create new track
-						TrackWrapper tw = new TrackWrapper();
-						tw.setName(txt);
 
-						// add to layers object
-						theLayers.addThisLayer(tw);
+						res = txt;
+
+						// ok, also get a start time
+						inp = new InputDialog(Display.getCurrent().getActiveShell(),
+								"New track", "Enter start DTG", "yyMMdd hhmmss", null);
+
+						if (inp.open() == InputDialog.OK)
+						{
+							String startDateTxt = inp.getValue();
+							HiResDate startDate = DebriefFormatDateTime
+									.parseThis(startDateTxt);
+							if (startDate != null)
+							{
+								// create new track
+								TrackWrapper tw = new CompositeTrackWrapper(startDate, theChart
+										.getDataArea().getCentre());
+
+								// store the name
+								tw.setName(txt);
+
+								// add to layers object
+								theLayers.addThisLayer(tw);
+							}
+
+						}
+
 					}
 					else
 					{
@@ -187,7 +188,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		while (enumer.hasMoreElements())
 		{
 			Layer thisLayer = (Layer) enumer.nextElement();
-			if (thisLayer instanceof TrackWrapper)
+			if (thisLayer instanceof CompositeTrackWrapper)
 			{
 				res.add(thisLayer.getName());
 			}
