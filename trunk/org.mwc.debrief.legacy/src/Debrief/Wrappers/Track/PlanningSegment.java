@@ -2,15 +2,18 @@ package Debrief.Wrappers.Track;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Enumeration;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.Plottable;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 public class PlanningSegment extends TrackSegment
@@ -108,6 +111,25 @@ public class PlanningSegment extends TrackSegment
 	{
 		// remember the fix
 		this.addFixSilent(fix);
+	}
+
+	@Override
+	public double rangeFrom(WorldLocation other)
+	{
+		double firstRange = Plottable.INVALID_RANGE;
+
+		Enumeration<Editable> numer = this.elements();
+		while (numer.hasMoreElements())
+		{
+			Editable editable = (Editable) numer.nextElement();
+			FixWrapper fw = (FixWrapper) editable;
+			double thisR = fw.rangeFrom(other);
+			if(firstRange == Plottable.INVALID_RANGE)
+				firstRange = thisR;
+			else
+				firstRange = Math.min(firstRange, thisR);
+		}
+		return firstRange;
 	}
 
 	public int getCalculation()

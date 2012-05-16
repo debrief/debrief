@@ -6,6 +6,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
@@ -144,9 +145,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 	@Override
 	public Enumeration<Editable> contiguousElements()
 	{
-		// we won't return ourselves as one long list, but as a series of track
-		// segments
-		return elements();
+		return this.getSegments().elements();
 	}
 
 	@Override
