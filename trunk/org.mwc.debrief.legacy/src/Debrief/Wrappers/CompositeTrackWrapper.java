@@ -6,7 +6,6 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.Track.PlanningSegment;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
@@ -14,6 +13,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
 /**
@@ -174,48 +174,78 @@ public class CompositeTrackWrapper extends TrackWrapper
 			Editable editable = (Editable) numer.nextElement();
 			PlanningSegment seg = (PlanningSegment) editable;
 
+			PlanningCalc theCalc = null;
 			int model = seg.getCalculation();
 			switch (model)
 			{
 			case PlanningLegCalcModelPropertyEditor.RANGE_SPEED:
-				constructFromRangeSpeed(seg, thisOrigin, thisDate);
+				theCalc = new FromRangeSpeed();
 				break;
 			case PlanningLegCalcModelPropertyEditor.RANGE_TIME:
-				constructFromRangeSpeed(seg, thisOrigin, thisDate);
+				theCalc = new FromRangeSpeed();
 				break;
 			case PlanningLegCalcModelPropertyEditor.SPEED_TIME:
-				constructFromRangeSpeed(seg, thisOrigin, thisDate);
+				theCalc = new FromRangeSpeed();
 				break;
 			}
+
+			theCalc.construct(seg, thisOrigin, thisDate);
 
 			// ok, now update the date/location
 			thisOrigin = seg.last().getBounds().getCentre();
 			thisDate = seg.endDTG();
-			
+
 			System.out.println("doing recalc for:" + seg);
 		}
 	}
 
-	private void constructFromRangeSpeed(PlanningSegment seg,
-			WorldLocation thisOrigin, HiResDate thisDate)
+	private abstract static class PlanningCalc
 	{
-		// ditch the existing items
-		seg.removeAllElements();
-		
-		// ok build for this segment
-		double secs = seg.getLength().getValueIn(WorldDistance.METRES) / seg.getSpeed().getValueIn(WorldSpeed.M_sec);
-		double courseRads = MWC.Algorithms.Conversions.Degs2Rads(seg.getCourse());
-		
-		for(long tNow = thisDate.getDate().getTime(); tNow < thisDate.getDate().getTime() + secs; tNow += 60)
+		void construct(PlanningSegment seg, WorldLocation origin, HiResDate date)
 		{
-			System.err.println("new point at:" + tNow);
-			HiResDate thisDtg = new HiResDate(tNow);
-			Fix thisF = new Fix(thisDtg, thisOrigin, courseRads,seg.getSpeed().getValueIn(WorldSpeed.ft_sec / 3) );
-			FixWrapper fw = new FixWrapper(thisF);
-			seg.add(fw);
-		}
-		
-	}
-	
+			double distPerMinute = getMinuteDelta(seg);
 
+			// ditch the existing items
+			seg.removeAllElements();
+
+			// ok build for this segment
+			double secs = seg.getLength().getValueIn(WorldDistance.METRES)
+					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
+			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(seg.getCourse());
+
+			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
+					distPerMinute, WorldDistance.METRES).getValueIn(WorldDistance.DEGS),
+					0);
+
+			long timeMillis = date.getDate().getTime();
+			for (long tNow = timeMillis; tNow < timeMillis + secs * 1000; tNow += 60 * 1000)
+			{
+				System.err.println("new point at:" + tNow);
+				HiResDate thisDtg = new HiResDate(tNow);
+
+				// produce a new position
+				origin = origin.add(vec);
+
+				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
+						.getValueIn(WorldSpeed.ft_sec / 3));
+				FixWrapper fw = new FixWrapper(thisF);
+				seg.add(fw);
+			}
+		}
+
+		abstract double getMinuteDelta(PlanningSegment seg);
+	}
+
+	private static class FromRangeSpeed extends PlanningCalc
+	{
+
+		@Override
+		double getMinuteDelta(PlanningSegment seg)
+		{
+			// find out how far it travels
+			double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) / 60d;
+			return distPerMinute;
+		}
+
+	}
 }

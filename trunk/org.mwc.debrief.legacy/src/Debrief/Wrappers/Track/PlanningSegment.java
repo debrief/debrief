@@ -4,8 +4,10 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
@@ -98,11 +100,22 @@ public class PlanningSegment extends TrackSegment
 	 */
 	int _calcModel;
 
+	/**
+	 * special add-fix, so we don't bother with rename
+	 * 
+	 */
+	public void addFix(final FixWrapper fix)
+	{
+		// remember the fix
+		this.addFixSilent(fix);
+	}
+
 	public int getCalculation()
 	{
 		return _calcModel;
 	}
 
+	@FireExtended
 	public void setCalculation(int calculation)
 	{
 		_calcModel = calculation;
@@ -113,6 +126,7 @@ public class PlanningSegment extends TrackSegment
 		return _myLength;
 	}
 
+	@FireExtended
 	public void setLength(WorldDistance length)
 	{
 		this._myLength = length;
@@ -135,6 +149,7 @@ public class PlanningSegment extends TrackSegment
 		return _mySpeed;
 	}
 
+	@FireExtended
 	public void setSpeed(WorldSpeed speed)
 	{
 		this._mySpeed = speed;
@@ -146,6 +161,7 @@ public class PlanningSegment extends TrackSegment
 		return _myPeriod;
 	}
 
+	@FireExtended
 	public void setDuration(Duration period)
 	{
 		this._myPeriod = period;
