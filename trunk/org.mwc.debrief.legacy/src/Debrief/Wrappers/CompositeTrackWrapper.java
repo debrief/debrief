@@ -111,6 +111,13 @@ public class CompositeTrackWrapper extends TrackWrapper
 		_origin = centre;
 	}
 
+	@Override
+	public void shift(WorldVector vector)
+	{
+		this.getOrigin().addToMe(vector);
+		recalculate();
+	}
+
 	public HiResDate getStartDate()
 	{
 		return _startDate;
