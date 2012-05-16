@@ -6,7 +6,6 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.Track.PlanningSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
@@ -82,6 +81,15 @@ public class CompositeTrackWrapper extends TrackWrapper
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						expertLongProp("ArrowFrequency", "the direction marker frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+
+						expertProp("Color", "the track color", FORMAT),
+						expertProp("SymbolColor", "the color of the symbol (when used)",
+								FORMAT),
+						expertProp("TrackFont", "the track label font", FORMAT),
+						expertProp("NameVisible", "show the track label", VISIBILITY),
+						expertProp("NameAtStart",
+								"whether to show the track name at the start (or end)",
+								VISIBILITY),
 
 				};
 				return res;
@@ -211,9 +219,13 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 			theCalc.construct(seg, thisOrigin, thisDate);
 
-			// ok, now update the date/location
-			thisOrigin = seg.last().getBounds().getCentre();
-			thisDate = seg.endDTG();
+			// did we generate anything?
+			if (seg.size() > 0)
+			{
+				// ok, now update the date/location
+				thisOrigin = seg.last().getBounds().getCentre();
+				thisDate = seg.endDTG();
+			}
 		}
 
 		// ok, sort out the symbol & label freq
@@ -233,6 +245,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 	{
 		void construct(PlanningSegment seg, WorldLocation origin, HiResDate date)
 		{
+			// check we have some data
+			if (date == null || origin == null)
+				return;
+
 			double distPerMinute = getMinuteDelta(seg);
 
 			// ditch the existing items
@@ -274,7 +290,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 		double getMinuteDelta(PlanningSegment seg)
 		{
 			// find out how far it travels
-			double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) / 60d;
+			double distPerMinute = seg.getSpeed().getValueIn(WorldSpeed.M_sec) * 60d;
 			return distPerMinute;
 		}
 	}
@@ -290,10 +306,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 			double metresPerSec = seg.getLength().getValueIn(WorldDistance.METRES)
 					/ travelSecs;
 
-			double metresPerMin = metresPerSec / 60d;
+			double metresPerMin = metresPerSec * 60d;
 
 			// update the speed, so it makes sense in the fix
-			seg.setSpeed(new WorldSpeed(metresPerSec, WorldSpeed.M_sec));
+			seg.setSpeedSilent(new WorldSpeed(metresPerSec, WorldSpeed.M_sec));
 
 			return metresPerMin;
 		}
@@ -307,7 +323,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 		{
 			// how far will we travel in time?
 			double metresPerSec = seg.getSpeed().getValueIn(WorldSpeed.M_sec);
-			double metresPerMin = metresPerSec / 60d;
+			double metresPerMin = metresPerSec * 60d;
 			return metresPerMin;
 		}
 	}
