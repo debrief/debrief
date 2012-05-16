@@ -285,7 +285,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	boolean _plotRelative;
 
-	private  transient WorldVector _vecTempLastVector = null;
+	private transient WorldVector _vecTempLastVector = null;
 
 	protected long _vecTempLastDTG = -2;
 
@@ -596,7 +596,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		{
 			// sort them in dtg order
 			final TrackSegment other = (TrackSegment) arg0;
-			res = startDTG().compareTo(other.startDTG());
+			if ((startDTG() != null) && (other.startDTG() != null))
+				res = startDTG().compareTo(other.startDTG());
+			else
+				res = getName().compareTo(arg0.getName());
 		}
 		else
 		{
@@ -832,11 +835,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	public HiResDate endDTG()
 	{
+		HiResDate res = null;
 		final Collection<Editable> items = getData();
-		final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
-		final Editable last = sortedItems.last();
-		final FixWrapper fw = (FixWrapper) last;
-		return fw.getDateTimeGroup();
+		if ((items != null && (items.size() > 0)))
+		{
+			final SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
+			final Editable last = sortedItems.last();
+			final FixWrapper fw = (FixWrapper) last;
+			res = fw.getDateTimeGroup();
+		}
+		return res;
 	}
 
 	@Override
