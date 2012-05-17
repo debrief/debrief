@@ -609,6 +609,10 @@
          in the render cycle.  So, it has been temporarily removed pending streamlining
          / cacheing of the render pipeline.
          </para>
+        <para> Charting support was recommenced in Spring 2012, and an implementation was found that
+          didn't suffer the previous performance problems (See <xref linkend="ChartBackdrops"/>).
+          Support was also introduced for using Debrief in the process of Exercise Planning (See
+            <xref linkend="ExercisePlanning"/>).</para>
       </sect2>
     </sect1>
 
@@ -6186,6 +6190,151 @@ and so on....</programlisting></para>
               fast PC to produce acceptable screen updates.</para>
             </tip></para>
         </sect2>
+      </sect1>
+    </chapter>
+    <chapter xml:id="ExercisePlanning">
+      <title>Exercise planning</title>
+      <sect1>
+        <title>Introduction</title>
+        <para>In Spring 2012 Debrief received extensions in order to support <indexterm>
+            <primary>Exercise Planning</primary>
+          </indexterm>exercise planning<indexterm>
+            <primary>Planning</primary>
+            <secondary>Exercise planning</secondary>
+          </indexterm>. An analyst is able to generate tracks within Debrief, replay those tracks to
+          verify time/spatial constaints, and finally export the run-plan to MS Word via the
+          clipboard.</para>
+        <para>The exercise planning tracks are generated in a new track-like entity. This new entity
+          has an origin and a start date/time. These provide a quick way of changing the location
+          and/or the start time for a set of vessel runs. The legs generated for a track represent
+          straight line legs for a platform. Each leg is stored according to a demanded course and a
+          leg-length. Leg-length is specified according to one of these calculation models:<variablelist>
+            <varlistentry>
+              <term>Range-Speed</term>
+              <listitem>
+                <para>The time travelled along the leg is deterlimed by the time leg length (range)
+                  / speed</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Time-Speed</term>
+              <listitem>
+                <para>The leg length is determined by the distance travelled in the specified time
+                  at the specified speed</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Range-Time</term>
+              <listitem>
+                <para>The speed along the leg is determined by the speed necessary to travel the
+                  specified distance in the specified time.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>Thus, changing one of the two named parameters will result in the third
+          parameter getting a calculated value.</para>
+      </sect1>
+      <sect1>
+        <title>Creating tracks</title>
+        <para>Newly created planning tracks are created in the centre of the current plot. So, start
+          off by navigating to the part of the world where you roughly want your vessel tracks to
+          be. You'll make more detailed changes to the track location once the track is
+          created.</para>
+        <para>Next, you must select "Create Track Segment" from <application>Debrief</application>'s
+          Drawing Toolbar.<figure>
+            <title>ETOPO2 data sources</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment.png" width="40%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        <para>Next you'll be invited to select which parent track to add the track segment to. In
+          this instance, we don't have an existing track, so select "[New Track...]" from the
+          dialog. Clearly if you were extending an existing planning track you'd select it.<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment2.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+        <para>Since we're creating a new track we now see a couple of dialogs associated with the
+          new track. First we must give the new track a name:<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment3.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+        <para>Next we must specific the starting date/time for the track:<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment4.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+        <para>Once we've finished specifying the track, we must give specify a name for this
+          particular track:<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment5.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>Your track will now appear on the screen, and also in the layer
+          manager.</para>
+        <para>Once you've created a parent track, next time you can select it from the first dialog
+          - after which you just need to specify a leg name,</para>
+      </sect1>
+      <sect1>
+        <title>Manipulating tracks</title>
+        <para>One you've created one or more track legs you can start editing them. There are three
+          ways to edit a leg:<variablelist>
+            <varlistentry>
+              <term>Properties Window</term>
+              <listitem>
+                <para>Select a leg in the Layer Manager, and you'll see the leg properties in the
+                  Properties window. Note the <guimenu>Calculation</guimenu> field, this indicates
+                  which two fields are used to specify the leg length. As you'll see, you can also
+                  amend the leg name, the course, and the depth for that leg.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Layer Manager</term>
+              <listitem>
+                <para>Right-clicking on a leg in the layer manager lets you quickly edit some of the
+                  leg parameters <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/AddSegment6.png" width="40%"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Dragging objects on the plot</term>
+              <listitem>
+                <para>There are two ways of dragging to edit a planning track. You can select
+                    <guibutton>Drag Whole Feature</guibutton>
+                  <inlinemediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/DragWholeFeature.png"/>
+                    </imageobject>
+                  </inlinemediaobject>, and then drag the whole planning track to move it, or select
+                    <guibutton>Drag Component</guibutton>
+                  <inlinemediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/DragComponent.png"/>
+                    </imageobject>
+                  </inlinemediaobject> and then drag an end of a track leg to rotate it.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist><note>
+            <para>It isn't possible to drag to change the length of a leg - since it's unclear which
+              of the two attributes in that segments calculation model the user intends to change.
+            </para>
+          </note></para>
       </sect1>
     </chapter>
 
