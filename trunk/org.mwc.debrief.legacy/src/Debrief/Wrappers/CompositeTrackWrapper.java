@@ -11,6 +11,7 @@ import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
+import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -112,6 +113,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 		_startDate = startDate;
 		_origin = centre;
 		this.setColor(Color.red);
+		
+		// give us a neater set of intervals
+		this.setSymbolFrequency(new HiResDate(0,TimeFrequencyPropertyEditor._5_MINS));
+		this.setLabelFrequency(new HiResDate(0,TimeFrequencyPropertyEditor._15_MINS));
 	}
 
 	@Override
