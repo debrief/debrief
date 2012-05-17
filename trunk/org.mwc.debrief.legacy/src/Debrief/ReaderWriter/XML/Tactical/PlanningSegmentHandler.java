@@ -127,7 +127,7 @@ abstract public class PlanningSegmentHandler extends
 		PlanningSegment res = new PlanningSegment();
 		res.setCourse(_course);
 		res.setDuration(_duration);
-		res.setLength(_length);
+		res.setDistance(_length);
 		res.setSpeed(_speed);
 		res.setCalculation(_calcModel);
 		return res;
@@ -163,7 +163,7 @@ abstract public class PlanningSegmentHandler extends
 		segE.setAttribute(CALC_MODEL, ed.getAsText());
 		
 		// and the planning items
-		WorldDistanceHandler.exportDistance(ps.getLength(), segE, doc);
+		WorldDistanceHandler.exportDistance(ps.getDistance(), segE, doc);
 		WorldSpeedHandler.exportSpeed(ps.getSpeed(), segE, doc);
 		DurationHandler.exportDuration(ps.getDuration(), segE, doc);
 		segE.setAttribute(COURSE,writeThis(ps.getCourse()));

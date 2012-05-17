@@ -1,5 +1,6 @@
 package Debrief.Wrappers;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
@@ -109,6 +110,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 	{
 		_startDate = startDate;
 		_origin = centre;
+		this.setColor(Color.red);
 	}
 
 	@Override
@@ -309,7 +311,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 		protected double getSecsTravelled(PlanningSegment seg)
 		{
 			// how long does it take to travel this distance?
-			double secsTaken = seg.getLength().getValueIn(WorldDistance.METRES)
+			double secsTaken = seg.getDistance().getValueIn(WorldDistance.METRES)
 					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
 			return secsTaken;
 		}
@@ -323,7 +325,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 		{
 			// home long to travel along it (secs)
 			double travelSecs = seg.getDuration().getValueIn(Duration.SECONDS);
-			double metresPerSec = seg.getLength().getValueIn(WorldDistance.METRES)
+			double metresPerSec = seg.getDistance().getValueIn(WorldDistance.METRES)
 					/ travelSecs;
 
 			double metresPerMin = metresPerSec * 60d;

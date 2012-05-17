@@ -10,13 +10,15 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.CardinalPointsPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
+import MWC.GUI.Tools.Chart.RightClickEdit.TreatAsOneItemForFindNearest;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class PlanningSegment extends TrackSegment
+public class PlanningSegment extends TrackSegment implements TreatAsOneItemForFindNearest
 {
 
 	/**
@@ -48,7 +50,7 @@ public class PlanningSegment extends TrackSegment
 						expertProp("Visible", "whether this layer is visible", FORMAT),
 						expertProp("Depth", "The depth for this leg", SPATIAL),
 						expertProp("Course", "The course for this leg", SPATIAL),
-						expertProp("Length", "The distance travelled along this leg",
+						expertProp("Distance", "The distance travelled along this leg",
 								SPATIAL),
 						expertProp("Speed", "The speed travelled along this leg", SPATIAL),
 						expertProp("Duration", "The duration of travel along this leg",
@@ -56,7 +58,8 @@ public class PlanningSegment extends TrackSegment
 						expertProp("Name", "Name of this track segment", FORMAT), };
 
 				res[0].setPropertyEditorClass(PlanningLegCalcModelPropertyEditor.class);
-
+				res[3].setPropertyEditorClass(CardinalPointsPropertyEditor.class);
+				
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -161,13 +164,13 @@ public class PlanningSegment extends TrackSegment
 		_calcModel = calculation;
 	}
 
-	public WorldDistance getLength()
+	public WorldDistance getDistance()
 	{
 		return _myLength;
 	}
 
 	@FireExtended
-	public void setLength(WorldDistance length)
+	public void setDistance(WorldDistance length)
 	{
 		this._myLength = length;
 		recalc();
@@ -212,6 +215,14 @@ public class PlanningSegment extends TrackSegment
 	public Editable.EditorType getInfo()
 	{
 		return new PlanningSegmentInfo(this);
+	}
+
+	/**
+	 * does this item have an editor?
+	 */
+	public boolean hasEditor()
+	{
+		return true;
 	}
 
 	private void recalc()
