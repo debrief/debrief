@@ -9,6 +9,7 @@ import java.util.Enumeration;
 
 import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
@@ -187,6 +188,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 		return _startDate;
 	}
 
+	@FireExtended
 	public void setStartDate(HiResDate startDate)
 	{
 		this._startDate = startDate;
