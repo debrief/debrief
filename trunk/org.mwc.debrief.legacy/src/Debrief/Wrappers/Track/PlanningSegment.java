@@ -12,13 +12,13 @@ import MWC.GUI.FireExtended;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.CardinalPointsPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
-import MWC.GUI.Tools.Chart.RightClickEdit.TreatAsOneItemForFindNearest;
 import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class PlanningSegment extends TrackSegment implements TreatAsOneItemForFindNearest
+public class PlanningSegment extends TrackSegment implements Editable.DoNoInspectChildren
 {
 
 	/**
@@ -229,6 +229,13 @@ public class PlanningSegment extends TrackSegment implements TreatAsOneItemForFi
 	{
 		if (_parent != null)
 			_parent.recalculate();
+	}
+	
+
+	@Override
+	protected void sortOutDate(HiResDate startDTG)
+	{
+		// ignore - we want to keep the layer name
 	}
 
 	@Override
