@@ -10,9 +10,7 @@ import java.util.Enumeration;
 import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.Plottable;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
-import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -124,8 +122,6 @@ public class CompositeTrackWrapper extends TrackWrapper
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		Enumeration<Editable> numer = getSegments().elements();
-		WorldLocation thisOrigin = getOrigin();
-		HiResDate thisDate = getStartDate();
 		while (numer.hasMoreElements())
 		{
 			final PlanningSegment thisSeg = (PlanningSegment) numer.nextElement();
