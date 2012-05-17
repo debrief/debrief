@@ -40,7 +40,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		// tell the parent we produce a top-level layer
 		super(false);
 	}
-	
+
 	/**
 	 * get a plottable object
 	 * 
@@ -133,16 +133,18 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 					{
 
 						res = txt;
+						HiResDate startDate = null;
 
 						// ok, also get a start time
 						inp = new InputDialog(Display.getCurrent().getActiveShell(),
-								"New track", "Enter start DTG", "yyMMdd hhmmss", null);
+								"New track", "Enter start DTG  (yyMMdd hhmmss)", "yyMMdd hhmmss", null);
 
-						if (inp.open() == InputDialog.OK)
+						// keep popping open the dialog until we get valid date, or user
+						// presses cancel
+						while ((startDate == null) && (inp.open() == InputDialog.OK))
 						{
 							String startDateTxt = inp.getValue();
-							HiResDate startDate = DebriefFormatDateTime
-									.parseThis(startDateTxt);
+							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
 							if (startDate != null)
 							{
 								// create new track
@@ -154,6 +156,10 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 
 								// add to layers object
 								theLayers.addThisLayer(tw);
+							}
+							else
+							{
+								res = null;
 							}
 
 						}
