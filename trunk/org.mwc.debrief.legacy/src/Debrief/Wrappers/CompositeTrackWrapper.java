@@ -263,17 +263,14 @@ public class CompositeTrackWrapper extends TrackWrapper
 			seg.removeAllElements();
 
 			// ok build for this segment
-			double secs = seg.getLength().getValueIn(WorldDistance.METRES)
-					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
 			double courseDegs = seg.getCourse();
 			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
 
 			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
-					distPerMinute, WorldDistance.METRES).getValueIn(WorldDistance.DEGS),
-					0);
+					distPerMinute, WorldDistance.METRES), null);
 
 			long timeMillis = date.getDate().getTime();
-			for (long tNow = timeMillis; tNow < timeMillis + secs * 1000; tNow += 60 * 1000)
+			for (long tNow = timeMillis; tNow < timeMillis + timeTravelled * 1000; tNow += 60 * 1000)
 			{
 				HiResDate thisDtg = new HiResDate(tNow);
 
@@ -283,6 +280,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 				// ok, do this fix
 				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
 						.getValueIn(WorldSpeed.ft_sec / 3));
+				
+				// override the depth
+				thisF.getLocation().setDepth(seg.getDepth().getValueIn(WorldDistance.METRES));
+				
 				FixWrapper fw = new FixWrapper(thisF);
 				seg.add(fw);
 			}
@@ -308,7 +309,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 		protected double getSecsTravelled(PlanningSegment seg)
 		{
 			// how long does it take to travel this distance?
-			double secsTaken = seg.getLength().getValueIn(WorldDistance.METRES) / seg.getSpeed().getValueIn(WorldSpeed.M_sec);
+			double secsTaken = seg.getLength().getValueIn(WorldDistance.METRES)
+					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
 			return secsTaken;
 		}
 	}
@@ -327,7 +329,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 			double metresPerMin = metresPerSec * 60d;
 
 			// update the speed, so it makes sense in the fix
-			seg.setSpeedSilent(new WorldSpeed(metresPerSec, WorldSpeed.M_sec));
+			WorldSpeed speedMtrs = new WorldSpeed(metresPerSec, WorldSpeed.M_sec);
+			WorldSpeed speedKTs = new WorldSpeed(
+					speedMtrs.getValueIn(WorldSpeed.Kts), WorldSpeed.Kts);
+			seg.setSpeedSilent(speedKTs);
 
 			return metresPerMin;
 		}
@@ -347,7 +352,6 @@ public class CompositeTrackWrapper extends TrackWrapper
 		{
 			return seg.getDuration().getValueIn(Duration.SECONDS);
 		}
-
 
 		@Override
 		double getMinuteDelta(PlanningSegment seg)

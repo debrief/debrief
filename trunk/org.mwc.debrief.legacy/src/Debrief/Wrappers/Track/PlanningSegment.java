@@ -46,6 +46,7 @@ public class PlanningSegment extends TrackSegment
 						expertProp("Calculation", "How to calculate the leg length",
 								SPATIAL),
 						expertProp("Visible", "whether this layer is visible", FORMAT),
+						expertProp("Depth", "The depth for this leg", SPATIAL),
 						expertProp("Course", "The course for this leg", SPATIAL),
 						expertProp("Length", "The distance travelled along this leg",
 								SPATIAL),
@@ -104,6 +105,23 @@ public class PlanningSegment extends TrackSegment
 	int _calcModel;
 
 	/**
+	 * the depth for this leg
+	 * 
+	 */
+	private WorldDistance _myDepth = new WorldDistance(0, WorldDistance.METRES);
+
+	public WorldDistance getDepth()
+	{
+		return _myDepth;
+	}
+
+	public void setDepth(WorldDistance depth)
+	{
+		_myDepth = depth;
+		recalc();
+	}
+
+	/**
 	 * special add-fix, so we don't bother with rename
 	 * 
 	 */
@@ -124,7 +142,7 @@ public class PlanningSegment extends TrackSegment
 			Editable editable = (Editable) numer.nextElement();
 			FixWrapper fw = (FixWrapper) editable;
 			double thisR = fw.rangeFrom(other);
-			if(firstRange == Plottable.INVALID_RANGE)
+			if (firstRange == Plottable.INVALID_RANGE)
 				firstRange = thisR;
 			else
 				firstRange = Math.min(firstRange, thisR);
@@ -216,7 +234,7 @@ public class PlanningSegment extends TrackSegment
 	public void setSpeedSilent(WorldSpeed worldSpeed)
 	{
 		_mySpeed = worldSpeed;
-		
+
 		// don't bother triggering recalc
 	}
 
