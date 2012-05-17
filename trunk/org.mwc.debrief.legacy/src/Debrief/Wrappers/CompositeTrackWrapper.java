@@ -92,7 +92,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("NameAtStart",
 								"whether to show the track name at the start (or end)",
-								VISIBILITY),
+								VISIBILITY), 
+					  expertProp("Name", "the track name", FORMAT),
 
 				};
 				return res;
@@ -113,10 +114,12 @@ public class CompositeTrackWrapper extends TrackWrapper
 		_startDate = startDate;
 		_origin = centre;
 		this.setColor(Color.red);
-		
+
 		// give us a neater set of intervals
-		this.setSymbolFrequency(new HiResDate(0,TimeFrequencyPropertyEditor._5_MINS));
-		this.setLabelFrequency(new HiResDate(0,TimeFrequencyPropertyEditor._15_MINS));
+		this.setSymbolFrequency(new HiResDate(0,
+				TimeFrequencyPropertyEditor._5_MINS));
+		this.setLabelFrequency(new HiResDate(0,
+				TimeFrequencyPropertyEditor._15_MINS));
 	}
 
 	@Override
@@ -347,7 +350,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 				FixWrapper fw = new FixWrapper(thisF);
 				seg.add(fw);
-				
+
 				// produce a new position
 				origin = origin.add(vec);
 			}
@@ -375,6 +378,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 			// how long does it take to travel this distance?
 			double secsTaken = seg.getDistance().getValueIn(WorldDistance.METRES)
 					/ seg.getSpeed().getValueIn(WorldSpeed.M_sec);
+
+			// sort out the leg length
+			seg.setDurationSilent(new Duration(secsTaken, Duration.SECONDS));
+
 			return secsTaken;
 		}
 	}
@@ -423,6 +430,12 @@ public class CompositeTrackWrapper extends TrackWrapper
 			// how far will we travel in time?
 			double metresPerSec = seg.getSpeed().getValueIn(WorldSpeed.M_sec);
 			double metresPerMin = metresPerSec * 60d;
+
+			double distanceM = metresPerSec * getSecsTravelled(seg);
+			WorldDistance wd = new WorldDistance(distanceM, WorldDistance.METRES);
+			seg.setDistanceSilent(new WorldDistance(wd.getValueIn(WorldDistance.NM),
+					WorldDistance.NM));
+
 			return metresPerMin;
 		}
 	}

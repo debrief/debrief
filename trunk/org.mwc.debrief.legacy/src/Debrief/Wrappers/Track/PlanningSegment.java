@@ -18,7 +18,8 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class PlanningSegment extends TrackSegment implements Editable.DoNoInspectChildren
+public class PlanningSegment extends TrackSegment implements
+		Editable.DoNoInspectChildren
 {
 
 	/**
@@ -59,7 +60,7 @@ public class PlanningSegment extends TrackSegment implements Editable.DoNoInspec
 
 				res[0].setPropertyEditorClass(PlanningLegCalcModelPropertyEditor.class);
 				res[3].setPropertyEditorClass(CardinalPointsPropertyEditor.class);
-				
+
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -230,7 +231,6 @@ public class PlanningSegment extends TrackSegment implements Editable.DoNoInspec
 		if (_parent != null)
 			_parent.recalculate();
 	}
-	
 
 	@Override
 	protected void sortOutDate(HiResDate startDTG)
@@ -252,7 +252,18 @@ public class PlanningSegment extends TrackSegment implements Editable.DoNoInspec
 	public void setSpeedSilent(WorldSpeed worldSpeed)
 	{
 		_mySpeed = worldSpeed;
+		// don't bother triggering recalc
+	}
 
+	public void setDistanceSilent(WorldDistance worldDistance)
+	{
+		_myLength = worldDistance;
+		// don't bother triggering recalc
+	}
+
+	public void setDurationSilent(Duration duration)
+	{
+		_myPeriod = duration;
 		// don't bother triggering recalc
 	}
 
