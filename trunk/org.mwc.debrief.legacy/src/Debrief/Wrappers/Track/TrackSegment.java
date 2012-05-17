@@ -1135,7 +1135,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	public void sortOutDate(HiResDate startDTG)
+	protected void sortOutDate(HiResDate startDTG)
 	{
 		if (getData().size() > 0)
 		{
