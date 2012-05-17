@@ -15,8 +15,12 @@ public class CompositeTrackHandler extends TrackHandler
 	private static final String COMPOSITE_TRACK = "composite_track";
 	private static final String ORIGIN = "Origin";
 	private static final String START_TIME = "StartTime";
+	private static final String SYMBOL_INTERVAL = "SymbolIntervalMillis";
+	private static final String LABEL_INTERVAL = "LabelIntervalMillis";
 	protected WorldLocation _origin;
 	protected HiResDate _startTime;
+	protected int _symInt;
+	protected int _labInt;
 
 	public CompositeTrackHandler(Layers theLayers)
 	{
@@ -40,6 +44,22 @@ public class CompositeTrackHandler extends TrackHandler
 				_startTime = DebriefFormatDateTime.parseThis(value);
 			}
 		});
+
+		addAttributeHandler(new HandleAttribute(SYMBOL_INTERVAL)
+		{
+			public void setValue(String name, String value)
+			{
+				_symInt = Integer.parseInt(value);
+			}
+		});
+		addAttributeHandler(new HandleAttribute(LABEL_INTERVAL)
+		{
+			public void setValue(String name, String value)
+			{
+				_labInt = Integer.parseInt(value);
+			}
+		});
+
 	}
 
 	@Override
@@ -56,11 +76,29 @@ public class CompositeTrackHandler extends TrackHandler
 		comp.setOrigin(_origin);
 		comp.setStartDate(_startTime);
 
+		// and the symbol intervals
+		if (_symInt != -1)
+		{
+			comp.setSymbolFrequency(new HiResDate(_symInt));
+		}
+
+		// and the symbol intervals
+		if (_labInt != -1)
+		{
+			comp.setLabelFrequency(new HiResDate(_labInt));
+		}
+
 		// and let the parent do its bit
 		super.elementClosed();
-		
+
 		// and trigger a recalculation
 		comp.recalculate();
+
+		// and do some resetting
+		_origin = null;
+		_startTime = null;
+		_symInt = -1;
+		_labInt = -1;
 	}
 
 	public static void exportTrack(Debrief.Wrappers.TrackWrapper track,
@@ -70,11 +108,19 @@ public class CompositeTrackHandler extends TrackHandler
 		final Element trk = doc.createElement(COMPOSITE_TRACK);
 		parent.appendChild(trk);
 		exportTrackObject(track, trk, doc);
-		
+
 		// we also need to send the DTG & origin
-		LocationHandler.exportLocation(comp.getOrigin(), ORIGIN	, trk, doc);
+		LocationHandler.exportLocation(comp.getOrigin(), ORIGIN, trk, doc);
 		trk.setAttribute(START_TIME, writeThis(comp.getStartDate()));
+
+		// we also wish to store the symbol and label frequencies - they're more
+		// effective in
+		// planning charts
+		HiResDate symInt = track.getSymbolFrequency();
+		HiResDate labInt = track.getLabelFrequency();
+
+		trk.setAttribute(SYMBOL_INTERVAL, writeThis(symInt.getDate().getTime()));
+		trk.setAttribute(LABEL_INTERVAL, writeThis(labInt.getDate().getTime()));
 	}
 
-	
 }
