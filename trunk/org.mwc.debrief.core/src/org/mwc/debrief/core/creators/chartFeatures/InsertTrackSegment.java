@@ -157,13 +157,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 								// add to layers object
 								theLayers.addThisLayer(tw);
 							}
-							else
-							{
-								res = null;
-							}
-
 						}
-
 					}
 					else
 					{
