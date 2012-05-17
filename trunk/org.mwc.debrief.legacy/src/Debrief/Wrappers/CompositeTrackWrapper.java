@@ -187,6 +187,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 	public void setStartDate(HiResDate startDate)
 	{
 		this._startDate = startDate;
+		recalculate();
 	}
 
 	public WorldLocation getOrigin()
@@ -197,6 +198,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 	public void setOrigin(WorldLocation origin)
 	{
 		this._origin = origin;
+		recalculate();
 	}
 
 	/**
@@ -331,12 +333,9 @@ public class CompositeTrackWrapper extends TrackWrapper
 					distPerMinute, WorldDistance.METRES), null);
 
 			long timeMillis = date.getDate().getTime();
-			for (long tNow = timeMillis; tNow < timeMillis + timeTravelled * 1000; tNow += 60 * 1000)
+			for (long tNow = timeMillis; tNow <= timeMillis + timeTravelled * 1000; tNow += 60 * 1000)
 			{
 				HiResDate thisDtg = new HiResDate(tNow);
-
-				// produce a new position
-				origin = origin.add(vec);
 
 				// ok, do this fix
 				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
@@ -348,6 +347,9 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 				FixWrapper fw = new FixWrapper(thisF);
 				seg.add(fw);
+				
+				// produce a new position
+				origin = origin.add(vec);
 			}
 		}
 
