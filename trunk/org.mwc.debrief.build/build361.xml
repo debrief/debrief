@@ -156,6 +156,10 @@
 		<copy todir="${usbDest}/" verbose="true">
 			<fileset file="${deployDest}/Repository.zip" />
 		</copy>
+		
+		<copy todir="${usbDest}/DebriefNG" verbose="true">
+			<fileset dir="${deployDest}/DebriefNG" />
+		</copy>
 	</target>
 
 </project>
