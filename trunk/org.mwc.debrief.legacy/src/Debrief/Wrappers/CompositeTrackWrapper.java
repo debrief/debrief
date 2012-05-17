@@ -1,6 +1,7 @@
 package Debrief.Wrappers;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
@@ -9,7 +10,9 @@ import java.util.Enumeration;
 import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
+import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -111,6 +114,61 @@ public class CompositeTrackWrapper extends TrackWrapper
 		_startDate = startDate;
 		_origin = centre;
 		this.setColor(Color.red);
+	}
+
+	@Override
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+			ComponentConstruct currentNearest, Layer parentLayer)
+	{
+		// initialise thisDist, since we're going to be over-writing it
+		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
+
+		Enumeration<Editable> numer = getSegments().elements();
+		WorldLocation thisOrigin = getOrigin();
+		HiResDate thisDate = getStartDate();
+		while (numer.hasMoreElements())
+		{
+			final PlanningSegment thisSeg = (PlanningSegment) numer.nextElement();
+			if (thisSeg.getVisible())
+			{
+				// produce a location for the end
+				FixWrapper endFix = (FixWrapper) thisSeg.last();
+				if (endFix != null)
+				{
+
+					// how far away is it?
+					thisDist = endFix.getLocation().rangeFrom(cursorLoc, thisDist);
+
+					final WorldLocation fixLocation = new WorldLocation(
+							endFix.getLocation())
+					{
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public void addToMe(WorldVector delta)
+						{
+							super.addToMe(delta);
+
+							// so, what's the bearing back to the leg start?
+							double newBearing = super.bearingFrom(thisSeg.first().getBounds()
+									.getCentre());
+
+							newBearing = MWC.Algorithms.Conversions.Rads2Degs(newBearing);
+
+							// limit the bearing to the nearest 5 deg marker
+							int m = ((int) newBearing / 10);
+							newBearing = m * 10d;
+
+							thisSeg.setCourse(newBearing);
+						}
+					};
+
+					// try range
+					currentNearest
+							.checkMe(this, thisDist, null, parentLayer, fixLocation);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -282,10 +340,11 @@ public class CompositeTrackWrapper extends TrackWrapper
 				// ok, do this fix
 				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
 						.getValueIn(WorldSpeed.ft_sec / 3));
-				
+
 				// override the depth
-				thisF.getLocation().setDepth(seg.getDepth().getValueIn(WorldDistance.METRES));
-				
+				thisF.getLocation().setDepth(
+						seg.getDepth().getValueIn(WorldDistance.METRES));
+
 				FixWrapper fw = new FixWrapper(thisF);
 				seg.add(fw);
 			}
