@@ -337,7 +337,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 					Object next = enumer.nextElement();
 
 					// is this item a layer itself?
-					if ((next instanceof Layer) &&(!(next instanceof TreatAsOneItemForFindNearest)))
+					if ((next instanceof Layer) &&(!(next instanceof Editable.DoNoInspectChildren)))
 					{
 						// cast to Layer
 						Layer l = (Layer) next;
@@ -1393,11 +1393,6 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		}
 	}
 
-	public static interface TreatAsOneItemForFindNearest
-	{
-		
-	}
-	
 	// ///////////////////////////////////////////////////////////
 	// embedded interface for classes which may wish to add menu
 	// items

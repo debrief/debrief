@@ -1054,4 +1054,10 @@ public interface Editable
       }
     }
   }
+
+
+	public static interface DoNoInspectChildren
+	{
+		
+	}
 }
