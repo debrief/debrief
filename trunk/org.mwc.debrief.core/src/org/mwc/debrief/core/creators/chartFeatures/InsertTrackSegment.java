@@ -67,7 +67,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			// give it some default attributes
 			res.setCourse(45);
 			res.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			res.setLength(new WorldDistance(5, WorldDistance.KM));
+			res.setDistance(new WorldDistance(5, WorldDistance.KM));
 		}
 
 		return res;
