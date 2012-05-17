@@ -22,6 +22,7 @@ import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
+import MWC.GUI.Properties.DoNotUseTagEditorInPropertiesView;
 
 public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 {
@@ -47,7 +48,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		_myHelper = findHelperFor(prop, subject);
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings(
+	{ "rawtypes" })
 	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
 	{
 		EditorHelper res = null;
@@ -72,12 +74,15 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			{
 				final java.beans.PropertyEditor propEditor = (java.beans.PropertyEditor) theEditor;
 				// ok. wrap it.
-				if (propEditor.getTags() != null)
+				if (!(propEditor instanceof DoNotUseTagEditorInPropertiesView))
 				{
-					// ok - do one of the combo-box editor types
-					final String[] theTags = propEditor.getTags();
-					res = new TagListHelper(theTags, propEditor);
+					if (propEditor.getTags() != null)
+					{
+						// ok - do one of the combo-box editor types
+						final String[] theTags = propEditor.getTags();
+						res = new TagListHelper(theTags, propEditor);
 
+					}
 				}
 			}
 		}
@@ -346,7 +351,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		Method write = _thisProp.getWriteMethod();
 		return write.getAnnotations();
 	}
-	
+
 	public void setValue(Object value)
 	{
 		if (_myHelper != null)
@@ -363,18 +368,18 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		}
 		catch (IllegalArgumentException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
+			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
+					+ value, e);
 		}
 		catch (IllegalAccessException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
+			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
+					+ value, e);
 		}
 		catch (InvocationTargetException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
+			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
+					+ value, e);
 		}
 
 	}
