@@ -3299,56 +3299,58 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			else
 			{
-
-				// pass through the track setting the values
-
-				// sort out the start and finish times
-				long start_time = getStartDTG().getMicros();
-				final long end_time = getEndDTG().getMicros();
-
-				// first check that there is a valid time period between start
-				// time
-				// and end time
-				if (start_time + freq < end_time)
+				if (getStartDTG() != null)
 				{
-					long num = start_time / freq;
+					// pass through the track setting the values
 
-					// we need to add one to the quotient if it has rounded down
-					if (start_time % freq == 0)
+					// sort out the start and finish times
+					long start_time = getStartDTG().getMicros();
+					final long end_time = getEndDTG().getMicros();
+
+					// first check that there is a valid time period between start
+					// time
+					// and end time
+					if (start_time + freq < end_time)
 					{
-						// start is at our freq, so we don't need to increment
-						// it
+						long num = start_time / freq;
+
+						// we need to add one to the quotient if it has rounded down
+						if (start_time % freq == 0)
+						{
+							// start is at our freq, so we don't need to increment
+							// it
+						}
+						else
+						{
+							num++;
+						}
+
+						// calculate new start time
+						start_time = num * freq;
 					}
 					else
 					{
-						num++;
+						// there is not one of our 'intervals' between the start and
+						// the end,
+						// so use the start time
 					}
 
-					// calculate new start time
-					start_time = num * freq;
-				}
-				else
-				{
-					// there is not one of our 'intervals' between the start and
-					// the end,
-					// so use the start time
-				}
-
-				while (start_time <= end_time)
-				{
-					// right, increment the start time by one, because we were
-					// getting the
-					// fix immediately before the requested time
-					final HiResDate thisDTG = new HiResDate(0, start_time);
-					final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
-					// check we found some
-					if (list.length > 0)
+					while (start_time <= end_time)
 					{
-						final FixWrapper fw = (FixWrapper) list[0];
-						setter.execute(fw, true);
+						// right, increment the start time by one, because we were
+						// getting the
+						// fix immediately before the requested time
+						final HiResDate thisDTG = new HiResDate(0, start_time);
+						final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
+						// check we found some
+						if (list.length > 0)
+						{
+							final FixWrapper fw = (FixWrapper) list[0];
+							setter.execute(fw, true);
+						}
+						// produce the next time step
+						start_time += freq;
 					}
-					// produce the next time step
-					start_time += freq;
 				}
 			}
 
