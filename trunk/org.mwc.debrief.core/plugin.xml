@@ -141,7 +141,7 @@
 
 
 			<action class="org.mwc.debrief.core.actions.DragSegment" icon="icons/SelectSegment.png"
-				id="org.mwc.debrief.core.DragSegment" label="Drag &amp;Track Segment"
+				id="org.mwc.debrief.core.DragSegment" label="Drag &amp;TMA Segment"
 				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
 				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
 
