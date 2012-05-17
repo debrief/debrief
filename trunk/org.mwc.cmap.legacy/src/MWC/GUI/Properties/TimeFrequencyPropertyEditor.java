@@ -60,7 +60,17 @@ import MWC.GenericData.TimePeriod;
 public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
 {
 
-  /**
+  public static final long _60_MINS = 60 * 60 * 1000000l;
+
+  public static final long _30_MINS = 30 * 60 * 1000000l;
+
+  public static final long _15_MINS = 15 * 60 * 1000000l;
+
+  public static final long _10_MINS = 10 * 60 * 1000000l;
+
+  public static final long _5_MINS = 5 * 60 * 1000000l;
+
+	/**
    * the value used to represent ALL items
    */
   public static long SHOW_ALL_FREQUENCY = TimePeriod.INVALID_TIME;
@@ -110,15 +120,15 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
       1 * 60 * 1000000l,
       2 * 60 * 1000000l,
       3 * 60 * 1000000l,
-      5 * 60 * 1000000l,
-      10 * 60 * 1000000l,
-      15 * 60 * 1000000l,
-      30 * 60 * 1000000l,
-      60 * 60 * 1000000l,
-      2 * 60 * 60 * 1000000l,
-      6 * 60 * 60 * 1000000l,
-      12 * 60 * 60 * 1000000l,
-      24 * 60 * 60 * 1000000l,
+      _5_MINS,
+      _10_MINS,
+      _15_MINS,
+      _30_MINS,
+      _60_MINS,
+      2 * _60_MINS,
+      6 * _60_MINS,
+      12 * _60_MINS,
+      24 * _60_MINS,
       0};
 
 
