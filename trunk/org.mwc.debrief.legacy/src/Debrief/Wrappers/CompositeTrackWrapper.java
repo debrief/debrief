@@ -5,9 +5,12 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
@@ -54,10 +57,12 @@ public class CompositeTrackWrapper extends TrackWrapper
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class<TrackWrapper> c = TrackWrapper.class;
+			final Class<CompositeTrackWrapper> c = CompositeTrackWrapper.class;
 
 			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape") };
+			{
+					method(c, "exportThis", null, "Export Shape"),
+					method(c, "appendReverse", null, "Append reverse version of segments"), };
 
 			return mds;
 		}
@@ -94,8 +99,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("NameAtStart",
 								"whether to show the track name at the start (or end)",
-								VISIBILITY), 
-					  expertProp("Name", "the track name", FORMAT),
+								VISIBILITY), expertProp("Name", "the track name", FORMAT),
 
 				};
 				return res;
@@ -114,7 +118,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 	public CompositeTrackWrapper(HiResDate startDate, WorldLocation centre)
 	{
 		super();
-		
+
 		_startDate = startDate;
 		_origin = centre;
 		this.setColor(Color.red);
@@ -223,8 +227,6 @@ public class CompositeTrackWrapper extends TrackWrapper
 		return _myEditor;
 	}
 
-	
-	
 	@Override
 	protected void paintThisFix(CanvasType dest, WorldLocation lastLocation,
 			FixWrapper fw)
@@ -236,8 +238,6 @@ public class CompositeTrackWrapper extends TrackWrapper
 		super.paintThisFix(dest, lastLocation, fw);
 	}
 
-
-
 	/**
 	 * 
 	 */
@@ -247,6 +247,50 @@ public class CompositeTrackWrapper extends TrackWrapper
 	public Enumeration<Editable> contiguousElements()
 	{
 		return this.getSegments().elements();
+	}
+
+	public void appendReverse()
+	{
+		System.out.println("doing reverse!");
+
+		// ok, get the legs
+		SegmentList list = super.getSegments();
+		ArrayList<PlanningSegment> holder = new ArrayList<PlanningSegment>();
+		Enumeration<Editable> iterator = list.elements();
+		while (iterator.hasMoreElements())
+		{
+			// put this element at the start
+			holder.add(0, (PlanningSegment) iterator.nextElement());
+		}
+
+		// now run the legs back in reverse
+		Iterator<PlanningSegment> iter2 = holder.iterator();
+		while (iter2.hasNext())
+		{
+			PlanningSegment pl = iter2.next();
+			
+			try
+			{
+				PlanningSegment pl2 = (PlanningSegment) pl.clone();
+				// now reverse it
+				double newCourse = pl2.getCourse() + 180d;
+				if (newCourse > 360)
+					newCourse -= 360;
+				pl2.setCourse(newCourse);
+
+				// show the name as reversed
+				pl2.setName(pl2.getName() + "(R)");
+
+				// ok, now add it
+				this.add(pl2);
+			}
+			catch (CloneNotSupportedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 
 	@Override
