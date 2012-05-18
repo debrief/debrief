@@ -20,7 +20,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 public class PlanningSegment extends TrackSegment implements
-		Editable.DoNoInspectChildren
+		Editable.DoNoInspectChildren, Cloneable
 {
 
 	/**
@@ -232,6 +232,19 @@ public class PlanningSegment extends TrackSegment implements
 		recalc();
 	}
 
+	
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		PlanningSegment res = (PlanningSegment) super.clone();
+		
+		// give it a new date value
+		res._created = new Date();
+		
+		return res;
+	}
+
 	@Override
 	public Editable.EditorType getInfo()
 	{
@@ -285,6 +298,21 @@ public class PlanningSegment extends TrackSegment implements
 	{
 		_myPeriod = duration;
 		// don't bother triggering recalc
+	}
+
+	public PlanningSegment createCopy()
+	{
+		PlanningSegment res = new PlanningSegment();
+		res._calcModel = _calcModel;
+		res._myCourseDegs = _myCourseDegs;
+		res._myDepth = _myDepth;
+		res._myLength = _myLength;
+		res._myPeriod = _myPeriod;
+		res._mySpeed = _mySpeed;
+		res._parent = _parent;
+		
+		
+		return res;
 	}
 
 }
