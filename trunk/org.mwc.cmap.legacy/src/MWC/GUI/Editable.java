@@ -785,7 +785,8 @@ public interface Editable
       }
       catch (Exception e)
       {
-        MWC.Utilities.Errors.Trace.trace(e);
+      	String msg = "Failed to find method " + name + " for " + theClass;
+        MWC.Utilities.Errors.Trace.trace(e, msg);
       }
       return res;
     }
