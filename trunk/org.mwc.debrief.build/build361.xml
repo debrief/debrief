@@ -1,4 +1,4 @@
-<project default="build">
+<project default="compile_and_deploy">
 	<property file="build361.properties" />
 
 	<!-- get it built in the correct place -->
@@ -54,11 +54,21 @@
 	</target>
 
 
+	<target name="replace_exe" description="insert an exe with correct icons">
+		<!-- and replace the exe with one that has the correct icons -->
+		<copy overwrite="true" file="${basedir}/DebriefNG.exe" todir="${deployDest}/DebriefNG" />
+	</target>
+
+	<target name="compile_and_deploy" depends="build, deploy">
+	</target>
+
 	<target name="deploy" description="move compiled bits to deploy folder">
 
 		<antcall target="move_files_to_deploy_directory" />
 
 		<antcall target="provide_custom_versions" />
+
+		<antcall target="replace_exe" />
 
 		<antcall target="sort_out_exe_permissions" />
 
@@ -122,6 +132,7 @@
 
 		<!-- and zip the repo, to help move it -->
 		<zip basedir="${repoDest}" destfile="${deployDest}/Repository.zip" />
+
 	</target>
 
 
@@ -156,7 +167,7 @@
 		<copy todir="${usbDest}/" verbose="true">
 			<fileset file="${deployDest}/Repository.zip" />
 		</copy>
-		
+
 		<copy todir="${usbDest}/DebriefNG" verbose="true">
 			<fileset dir="${deployDest}/DebriefNG" />
 		</copy>
