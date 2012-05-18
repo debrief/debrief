@@ -8,6 +8,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.Track.PlanningSegment;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
@@ -112,6 +113,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 	public CompositeTrackWrapper(HiResDate startDate, WorldLocation centre)
 	{
+		super();
+		
 		_startDate = startDate;
 		_origin = centre;
 		this.setColor(Color.red);
@@ -219,6 +222,21 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 		return _myEditor;
 	}
+
+	
+	
+	@Override
+	protected void paintThisFix(CanvasType dest, WorldLocation lastLocation,
+			FixWrapper fw)
+	{
+		// set the fix font-size to be my font-size
+		fw.setFont(this.getTrackFont());
+
+		// and now let it paint
+		super.paintThisFix(dest, lastLocation, fw);
+	}
+
+
 
 	/**
 	 * 

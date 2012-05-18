@@ -2947,7 +2947,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 						if (_showPositions && fw.getVisible())
 						{
-							fw.paintMe(dest, lastLocation, fw.getColor());
+							// this next method just paints the fix. we've put the 
+							// call into paintThisFix so we can override the painting
+							// in the CompositeTrackWrapper class
+							paintThisFix(dest, lastLocation, fw);
 						}
 					}
 				}
@@ -3046,6 +3049,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // if the label is visible
 
 		} // if visible
+	}
+
+	/** get the fix to paint itself
+	 * 
+	 * @param dest
+	 * @param lastLocation
+	 * @param fw
+	 */
+	protected void paintThisFix(final CanvasType dest,
+			WorldLocation lastLocation, final FixWrapper fw)
+	{
+		fw.paintMe(dest, lastLocation, fw.getColor());
 	}
 
 	/**
