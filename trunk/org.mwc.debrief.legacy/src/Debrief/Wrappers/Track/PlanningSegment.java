@@ -2,6 +2,7 @@ package Debrief.Wrappers.Track;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Date;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
@@ -95,6 +96,11 @@ public class PlanningSegment extends TrackSegment implements
 	 * 
 	 */
 	WorldSpeed _mySpeed;
+	
+	/** the date this segment was created - used to force sort order by the order they were read in
+	 * 
+	 */
+	private Date _created = new Date();
 
 	/**
 	 * how far to travel for (optional)
@@ -133,6 +139,20 @@ public class PlanningSegment extends TrackSegment implements
 	{
 		// remember the fix
 		this.addFixSilent(fix);
+	}
+
+	
+	
+	@Override
+	public int compareTo(Plottable arg0)
+	{
+		int res = 1;
+		if(arg0 instanceof PlanningSegment)
+		{
+			PlanningSegment other = (PlanningSegment) arg0;
+			res = this._created.compareTo(other._created);
+		}
+		return res;
 	}
 
 	@Override
