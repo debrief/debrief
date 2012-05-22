@@ -26,7 +26,7 @@ public final class NarrativeEntry implements
     private String _type;
     String _DTGString = null;
     
-    private NarrativeEntryInfo _myInfo;
+    private transient NarrativeEntryInfo _myInfo;
 
     /**
      * 

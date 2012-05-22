@@ -129,10 +129,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private int _lineWidth = 1;
 
-	/** anybody listening to this narrative data
+	/**
+	 * anybody listening to this narrative data
 	 * 
 	 */
-    private Vector<INarrativeListener> _myListeners;
+	private transient Vector<INarrativeListener> _myListeners;
 
 	/**
 	 * property type to signify data being added or removed
@@ -225,16 +226,16 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and inform anybody who happens to be listening
 			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
-			
+
 			// and the narrative listeners, if we have one
-			if(_myListeners != null)
+			if (_myListeners != null)
 			{
-			    for (Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
-                        .hasNext();)
-                {
-                    INarrativeListener thisL = iter.next();
-                    thisL.entryRemoved((NarrativeEntry) editable);
-                }
+				for (Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
+						.hasNext();)
+				{
+					INarrativeListener thisL = iter.next();
+					thisL.entryRemoved((NarrativeEntry) editable);
+				}
 			}
 		}
 	}
@@ -276,7 +277,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		return _myEntries;
 	}
 
-	
 	public boolean hasOrderedChildren()
 	{
 		return true;
@@ -341,8 +341,9 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				entryTxt += "\n and more...";
 			}
-			NarrativeEntry ne = new NarrativeEntry(title, "type_" + (int) (Math.random() * 5),
-					new HiResDate(newDate.getTime() + i * 10000, 0), entryTxt);
+			NarrativeEntry ne = new NarrativeEntry(title, "type_"
+					+ (int) (Math.random() * 5), new HiResDate(newDate.getTime() + i
+					* 10000, 0), entryTxt);
 
 			res.add(ne);
 		}
@@ -355,7 +356,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	// internally
 	// outside as an Enumeration
 	// /////////////////////////////////////////////////////////////////
-	protected static final class IteratorWrapper implements java.util.Enumeration<Editable>
+	protected static final class IteratorWrapper implements
+			java.util.Enumeration<Editable>
 	{
 		private final java.util.Iterator<Editable> _val;
 
@@ -420,7 +422,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			try
 			{
-				final PropertyDescriptor[] res = { prop("Name", "the name for this narrative"), };
+				final PropertyDescriptor[] res =
+				{ prop("Name", "the name for this narrative"), };
 
 				return res;
 			}
@@ -435,7 +438,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			// just add the reset color field first
 			final Class<NarrativeWrapper> c = NarrativeWrapper.class;
 
-			final MethodDescriptor[] mds = { method(c, "exportShape", null, "Export Shape") };
+			final MethodDescriptor[] mds =
+			{ method(c, "exportShape", null, "Export Shape") };
 
 			return mds;
 		}
@@ -466,7 +470,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public NarrativeEntry[] getNarrativeHistory(String[] categories)
 	{
-		NarrativeEntry[] res = new NarrativeEntry[]{};
+		NarrativeEntry[] res = new NarrativeEntry[]
+		{};
 		// ok, cn
 		Vector<NarrativeEntry> theNarrs = new Vector<NarrativeEntry>(10, 10);
 		Iterator<Editable> iter = getData().iterator();
@@ -482,15 +487,16 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 	public void addNarrativeListener(String category, INarrativeListener listener)
 	{
-	    if(_myListeners == null)
-	        _myListeners = new Vector<INarrativeListener>(1,1);
-	        
-        _myListeners.add(listener);
+		if (_myListeners == null)
+			_myListeners = new Vector<INarrativeListener>(1, 1);
+
+		_myListeners.add(listener);
 	}
 
-	public void removeNarrativeListener(String category, INarrativeListener listener)
+	public void removeNarrativeListener(String category,
+			INarrativeListener listener)
 	{
-	    _myListeners.remove(listener);
+		_myListeners.remove(listener);
 	}
 
 }
