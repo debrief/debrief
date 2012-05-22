@@ -100,6 +100,7 @@ import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.BaseLayer;
@@ -964,6 +965,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							{ theParentLayer }, new Layer[]
 							{ theParentLayer }, getLayers(), true);
 						}
+						else if (selected instanceof PlanningSegment)
+						{
+							PlanningSegment ps = (PlanningSegment) selected;
+							TrackWrapper parent11 = ps.getWrapper();
+							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
+							{ parent11 }, new Layer[]
+							{ theParentLayer }, new Layer[]
+							{ theParentLayer }, getLayers(), true);
+						}
+						
 					}
 				};
 			}
