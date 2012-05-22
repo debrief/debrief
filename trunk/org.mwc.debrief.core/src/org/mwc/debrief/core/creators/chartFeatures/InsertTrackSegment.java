@@ -34,11 +34,20 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 {
 
 	private static final String NEW_LAYER_COMMAND = "[New Track...]";
+	private final Layer _parentLayer;
 
-	public InsertTrackSegment()
+	public InsertTrackSegment(Layer parent)
 	{
 		// tell the parent we produce a top-level layer
 		super(false);
+		
+		// and store the parent laye
+		_parentLayer = parent;
+	}
+
+	public InsertTrackSegment()
+	{
+		this(null);
 	}
 
 	/**
@@ -79,6 +88,9 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	protected String getLayerName()
 	{
 		String res = null;
+		
+		if(_parentLayer != null)
+			return _parentLayer.getName();
 
 		// ok, get the non-track layers for the current plot
 
