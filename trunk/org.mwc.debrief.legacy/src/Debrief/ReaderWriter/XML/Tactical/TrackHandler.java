@@ -66,7 +66,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	{
 		final Element trk = doc.createElement(TRACK);
 		parent.appendChild(trk);
-		exportTrack(track, trk, doc);
+		exportTrackObject(track, trk, doc);
 	}
 
 	protected static void exportTrackObject(Debrief.Wrappers.TrackWrapper track,
