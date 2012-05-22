@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
@@ -214,6 +215,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 			}};
 		
 		CompositeTrackWrapper.setNewLegHelper(triggerNewLeg);
+		CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
 
 	}
 

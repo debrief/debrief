@@ -9,12 +9,15 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import com.apple.eawt.Application;
+
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.Duration;
@@ -120,6 +123,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 	}
 
 	private static GiveMeALeg _triggerNewLeg;
+
+	private static ToolParent _toolParent;
 
 	private HiResDate _startDate;
 	private WorldLocation _origin;
@@ -258,10 +263,20 @@ public class CompositeTrackWrapper extends TrackWrapper
 		return this.getSegments().elements();
 	}
 
+	/** popup a dialog to add a new leg
+	 * 
+	 */
 	public void addLeg()
 	{
 		if(_triggerNewLeg != null)
 			_triggerNewLeg.createLegFor(this);
+		else
+		{
+			if(_toolParent != null)
+				_toolParent.logError(ToolParent.ERROR, "CompositeTrackWrapper does not have leg-trigger helper", null);
+			else
+				throw new RuntimeException("CompositeTrackWrapper has not been configured in app start");
+		}
 	}
 	
 	@FireExtended
@@ -531,6 +546,15 @@ public class CompositeTrackWrapper extends TrackWrapper
 	public static void setNewLegHelper(GiveMeALeg triggerNewLeg)
 	{
 		_triggerNewLeg = triggerNewLeg;
+	}
+
+	/** learn about the tool-parent that we're to use
+	 * 
+	 * @param toolParent
+	 */
+	public static void initialise(ToolParent toolParent)
+	{
+		_toolParent = toolParent;
 	}
 
 }
