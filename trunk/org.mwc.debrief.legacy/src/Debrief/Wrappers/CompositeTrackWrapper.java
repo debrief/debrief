@@ -34,6 +34,12 @@ import MWC.TacticalData.Fix;
  */
 public class CompositeTrackWrapper extends TrackWrapper
 {
+	
+	
+	public static interface GiveMeALeg
+	{
+		public void createLegFor(Layer parent);
+	}
 
 	/**
 	 * class containing editable details of a track
@@ -61,6 +67,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 			final MethodDescriptor[] mds =
 			{
+					method(c, "addLeg", null, "Add new leg"),
 					method(c, "exportThis", null, "Export Shape"),
 					method(c, "appendReverse", null, "Append reverse version of segments"), };
 
@@ -111,6 +118,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 		}
 
 	}
+
+	private static GiveMeALeg _triggerNewLeg;
 
 	private HiResDate _startDate;
 	private WorldLocation _origin;
@@ -249,6 +258,13 @@ public class CompositeTrackWrapper extends TrackWrapper
 		return this.getSegments().elements();
 	}
 
+	public void addLeg()
+	{
+		if(_triggerNewLeg != null)
+			_triggerNewLeg.createLegFor(this);
+	}
+	
+	@FireExtended
 	public void appendReverse()
 	{
 		System.out.println("doing reverse!");
@@ -286,11 +302,15 @@ public class CompositeTrackWrapper extends TrackWrapper
 			}
 			catch (CloneNotSupportedException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 		}
+
+	//	TrackWrapper.findNearest IS BROKEN AFTER WE DO REVERTSE
+		
+		// ok, better throw in a recalculate
+		this.recalculate();
 	}
 
 	@Override
@@ -502,6 +522,15 @@ public class CompositeTrackWrapper extends TrackWrapper
 
 			return metresPerMin;
 		}
+	}
+
+	/** store helps that will aid us in creating a leg - it's an RCP thing, not a legacy thing
+	 * 
+	 * @param triggerNewLeg
+	 */
+	public static void setNewLegHelper(GiveMeALeg triggerNewLeg)
+	{
+		_triggerNewLeg = triggerNewLeg;
 	}
 
 }

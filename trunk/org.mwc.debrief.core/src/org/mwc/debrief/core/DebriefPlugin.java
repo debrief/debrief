@@ -25,9 +25,13 @@ import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.ImportAsTrack;
 import org.mwc.debrief.core.ContextOperations.MergeContacts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
+import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
 
+import Debrief.Wrappers.CompositeTrackWrapper;
+import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
+import MWC.GUI.Layer;
 import MWC.GUI.MessageProvider;
 import MWC.Utilities.ReaderWriter.ImportManager;
 
@@ -199,6 +203,17 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		// give the LayerManager our image creator.
 		CoreViewLabelProvider.addImageHelper(_myImageHelper  );
 
+//		 provide helper for triggering 'new-leg' operation
+		GiveMeALeg triggerNewLeg = new GiveMeALeg(){
+
+			@Override
+			public void createLegFor(Layer parent)
+			{
+				InsertTrackSegment ts= new InsertTrackSegment(parent);
+				ts.run(null);
+			}};
+		
+		CompositeTrackWrapper.setNewLegHelper(triggerNewLeg);
 
 	}
 
