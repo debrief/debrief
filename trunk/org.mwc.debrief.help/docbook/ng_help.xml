@@ -2775,18 +2775,16 @@ and so on....</programlisting></para>
               </mediaobject>
             </screenshot></para>
 
-          <para>On completion you'll see a visible split in the track, and the
-          track represented as two segments in the layer manager.<screenshot>
+          <para>On completion you'll see a visible split in the track, and the track represented as
+            two segments in the layer manager.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackAfterSplit.png"
-                             scalefit="1" width="100%"></imagedata>
+                  <imagedata fileref="figures/TrackAfterSplit.png" scalefit="1" width="100%"/>
                 </imageobject>
               </mediaobject>
-            </screenshot>The track segments are named according to the DTG of
-          their start point. The two track segments can now be manipulated
-          separately (dragged) using the 'drag track segment' tool as
-          described later (see <xref linkend="DraggingTracks" />).</para>
+            </screenshot>The track segments are named according to the DTG of their start point. The
+            two track segments can now be manipulated separately (dragged) using the 'drag TMA
+            segment' tool as described later (see <xref linkend="DraggingTracks"/>).</para>
         </sect2>
 
         <sect2 xml:id="JoinTrackSections">
@@ -6335,6 +6333,42 @@ and so on....</programlisting></para>
               of the two attributes in that segments calculation model the user intends to change.
             </para>
           </note></para>
+      </sect1>
+      <sect1>
+        <title>XY plots of planning tracks</title>
+        <para>If you're a clever-clogs scientist doing fancy things like producing run-plans that
+          have a predictable bearing rate, or range between the participants then this is just up
+          your street.  If you request an XY Plot of two planning tracks, you can then configure the
+          graph to update itself as the tracks change.</para>
+        <para>Here's how you do it:<orderedlist>
+            <listitem>
+              <para>Select your two tracks in the Layer Manager</para>
+            </listitem>
+            <listitem>
+              <para>Right-click on one of the tracks</para>
+            </listitem>
+            <listitem>
+              <para>Select <guimenuitem>View XY Plot</guimenuitem> from the popup menu</para>
+            </listitem>
+            <listitem>
+              <para>From the popup dialog, select the calculation you're after</para>
+            </listitem>
+            <listitem>
+              <para>Then indicate which is the primary track (though it's irrelevant to many
+                calcs)</para>
+            </listitem>
+            <listitem>
+              <para>Once the plot appears, check that the Auto-Sync toggle button in the graph
+                toolbar is selected <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/synced.gif"/>
+                  </imageobject>
+                </inlinemediaobject>.  </para>
+            </listitem>
+          </orderedlist></para>
+        <para>Now, when you drag or otherwise manipulate your tracks the graph will update to show
+          the new relationship between the tracks.  Clearly you un-set the auto-sync toggle to shop
+          updating with the plot.</para>
       </sect1>
     </chapter>
 
