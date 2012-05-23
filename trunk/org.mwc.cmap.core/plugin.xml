@@ -57,6 +57,11 @@
                name="*">
          </export>
       </library>
+      <library name="libs/commons-io-2.3.jar">
+         <export
+               name="*">
+         </export>
+      </library>
    </runtime>
 
    <requires>
