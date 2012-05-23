@@ -117,7 +117,7 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 			}
 			else
 			{
-				if (file.getName().endsWith(WorldImageLayer.RASTER_FILE + ".shp"))
+				if (file.getName().equals(WorldImageLayer.RASTER_FILE + ".shp"))
 				{
 					matches.add(file);
 				}
