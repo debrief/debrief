@@ -124,11 +124,8 @@ abstract public class PlanningSegmentHandler extends
 
 	protected TrackSegment createTrack()
 	{
-		PlanningSegment res = new PlanningSegment();
-		res.setCourse(_course);
+		PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length);
 		res.setDuration(_duration);
-		res.setDistance(_length);
-		res.setSpeed(_speed);
 		res.setCalculation(_calcModel);
 		return res;
 	}
