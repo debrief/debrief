@@ -20,7 +20,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 public class PlanningSegment extends TrackSegment implements
-		Editable.DoNoInspectChildren, Cloneable
+		Cloneable, Editable.DoNoInspectChildren
 {
 
 	/**
@@ -119,6 +119,34 @@ public class PlanningSegment extends TrackSegment implements
 	 * 
 	 */
 	private WorldDistance _myDepth = new WorldDistance(0, WorldDistance.METRES);
+
+	/** copy constructor
+	 * 
+	 * @param other
+	 */
+	private PlanningSegment(PlanningSegment other)
+	{
+		_calcModel = other._calcModel;
+		_created = new Date();
+		_myCourseDegs = other._myCourseDegs;
+		_myDepth = new WorldDistance(other._myDepth);
+		_myLength = new WorldDistance(other._myLength);
+		_myPeriod = new Duration(other._myPeriod);
+		_mySpeed = new WorldSpeed(other._mySpeed);
+		_parent = other._parent;
+		this.setName(other.getName());
+	}
+
+	public PlanningSegment(String name, double courseDegs, WorldSpeed worldSpeed,
+			WorldDistance worldDistance)
+	{
+		this.setName(name);
+		this.setCourse(courseDegs);
+		this.setSpeedSilent(worldSpeed);
+		this.setDistanceSilent(worldDistance);
+		
+		this.recalc();
+	}
 
 	public WorldDistance getDepth()
 	{
@@ -237,10 +265,13 @@ public class PlanningSegment extends TrackSegment implements
 	@Override
 	public Object clone() throws CloneNotSupportedException
 	{
-		PlanningSegment res = (PlanningSegment) super.clone();
+		PlanningSegment res = new PlanningSegment(this);
 		
 		// give it a new date value
 		res._created = new Date();
+		
+		// ditch the points - they'll get recalculated
+		this.removeAllElements();
 		
 		return res;
 	}
@@ -302,7 +333,7 @@ public class PlanningSegment extends TrackSegment implements
 
 	public PlanningSegment createCopy()
 	{
-		PlanningSegment res = new PlanningSegment();
+		PlanningSegment res = new PlanningSegment(this);
 		res._calcModel = _calcModel;
 		res._myCourseDegs = _myCourseDegs;
 		res._myDepth = _myDepth;
