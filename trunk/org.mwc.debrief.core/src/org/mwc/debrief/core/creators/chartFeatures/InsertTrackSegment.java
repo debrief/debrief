@@ -40,7 +40,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	{
 		// tell the parent we produce a top-level layer
 		super(false);
-		
+
 		// and store the parent laye
 		_parentLayer = parent;
 	}
@@ -70,13 +70,8 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		{
 			// get the results
 			String txt = inp.getValue();
-			res = new PlanningSegment();
-			res.setName(txt);
-
-			// give it some default attributes
-			res.setCourse(45);
-			res.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			res.setDistance(new WorldDistance(5, WorldDistance.KM));
+			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
+					new WorldDistance(5, WorldDistance.KM));
 		}
 
 		return res;
@@ -88,8 +83,8 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	protected String getLayerName()
 	{
 		String res = null;
-		
-		if(_parentLayer != null)
+
+		if (_parentLayer != null)
 			return _parentLayer.getName();
 
 		// ok, get the non-track layers for the current plot
@@ -149,7 +144,8 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 
 						// ok, also get a start time
 						inp = new InputDialog(Display.getCurrent().getActiveShell(),
-								"New track", "Enter start DTG  (yyMMdd hhmmss)", "yyMMdd hhmmss", null);
+								"New track", "Enter start DTG  (yyMMdd hhmmss)",
+								"yyMMdd hhmmss", null);
 
 						// keep popping open the dialog until we get valid date, or user
 						// presses cancel

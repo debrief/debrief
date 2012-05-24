@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import com.apple.eawt.Application;
-
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
@@ -282,8 +280,6 @@ public class CompositeTrackWrapper extends TrackWrapper
 	@FireExtended
 	public void appendReverse()
 	{
-		System.out.println("doing reverse!");
-
 		// ok, get the legs
 		SegmentList list = super.getSegments();
 		ArrayList<PlanningSegment> holder = new ArrayList<PlanningSegment>();
@@ -303,6 +299,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 			try
 			{
 				PlanningSegment pl2 = (PlanningSegment) pl.clone();
+				
 				// now reverse it
 				double newCourse = pl2.getCourse() + 180d;
 				if (newCourse > 360)
@@ -321,8 +318,6 @@ public class CompositeTrackWrapper extends TrackWrapper
 			}
 			
 		}
-
-	//	TrackWrapper.findNearest IS BROKEN AFTER WE DO REVERTSE
 		
 		// ok, better throw in a recalculate
 		this.recalculate();
