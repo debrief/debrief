@@ -314,7 +314,7 @@ public final class ImportFix implements PlainLineImporter {
 		// the track name may contain spaces - wrap in quotes if we have to
 		line = exportTrackName(theFix.getTrackWrapper().getName(), line);
 
-		line += " " + ImportReplay.replaySymbolFor(theFix.getColor());
+		line += " " + ImportReplay.replaySymbolFor(theFix.getColor(), null);
 		line += " "
 				+ MWC.Utilities.TextFormatting.DebriefFormatLocation
 						.toString(fix.getLocation());

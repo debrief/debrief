@@ -8990,6 +8990,46 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 
                     <entry></entry>
                   </row>
+                  <row>
+                    <entry>
+                      <para>I</para>
+                    </entry>
+                    <entry>
+                      <para>Cross</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>J</para>
+                    </entry>
+                    <entry>
+                      <para>Square</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>K</para>
+                    </entry>
+                    <entry>
+                      <para>Datum</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>L</para>
+                    </entry>
+                    <entry>
+                      <para>Reference Position</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
                 </tbody>
               </tgroup>
             </table><note>

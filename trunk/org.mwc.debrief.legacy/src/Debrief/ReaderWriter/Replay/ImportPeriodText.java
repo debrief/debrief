@@ -205,7 +205,7 @@ final class ImportPeriodText implements PlainLineImporter
 
     TimePeriod theTime = theLabel.getTimePeriod();
 
-    line = _myType + " " + ImportReplay.replaySymbolFor(theLabel.getColor());
+    line = _myType + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType());
     line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(theTime.getStartDTG());
     line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(theTime.getEndDTG());
     line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
