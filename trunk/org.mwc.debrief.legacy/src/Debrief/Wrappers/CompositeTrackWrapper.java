@@ -36,8 +36,7 @@ import MWC.TacticalData.Fix;
  */
 public class CompositeTrackWrapper extends TrackWrapper
 {
-	
-	
+
 	public static interface GiveMeALeg
 	{
 		public void createLegFor(Layer parent);
@@ -109,7 +108,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("NameAtStart",
 								"whether to show the track name at the start (or end)",
-								VISIBILITY), expertProp("Name", "the track name", FORMAT),
+								VISIBILITY),
+						expertProp("Name", "the track name", FORMAT),
+						expertLongProp("SymbolType",
+								"the type of symbol plotted for this label", MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class),
 
 				};
 				return res;
@@ -263,29 +265,34 @@ public class CompositeTrackWrapper extends TrackWrapper
 		return this.getSegments().elements();
 	}
 
-	/** popup a dialog to add a new leg
+	/**
+	 * popup a dialog to add a new leg
 	 * 
 	 */
 	public void addLeg()
 	{
-		if(_triggerNewLeg != null)
+		if (_triggerNewLeg != null)
 			_triggerNewLeg.createLegFor(this);
 		else
 		{
-			if(_toolParent != null)
-				_toolParent.logError(ToolParent.ERROR, "CompositeTrackWrapper does not have leg-trigger helper", null);
+			if (_toolParent != null)
+				_toolParent.logError(ToolParent.ERROR,
+						"CompositeTrackWrapper does not have leg-trigger helper", null);
 			else
-				throw new RuntimeException("CompositeTrackWrapper has not been configured in app start");
+				throw new RuntimeException(
+						"CompositeTrackWrapper has not been configured in app start");
 		}
 	}
 
-	/** popup a dialog to add a new leg
+	/**
+	 * popup a dialog to add a new leg
 	 * 
 	 */
 	@FireExtended
 	public void addClosingLeg()
 	{
-		this.add(new ClosingSegment("Closing segment", 45, new WorldSpeed(12, WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM)));
+		this.add(new ClosingSegment("Closing segment", 45, new WorldSpeed(12,
+				WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM)));
 	}
 
 	@FireExtended
@@ -306,11 +313,11 @@ public class CompositeTrackWrapper extends TrackWrapper
 		while (iter2.hasNext())
 		{
 			PlanningSegment pl = iter2.next();
-			
+
 			try
 			{
 				PlanningSegment pl2 = (PlanningSegment) pl.clone();
-				
+
 				// now reverse it
 				double newCourse = pl2.getCourse() + 180d;
 				if (newCourse > 360)
@@ -327,9 +334,9 @@ public class CompositeTrackWrapper extends TrackWrapper
 			{
 				e.printStackTrace();
 			}
-			
+
 		}
-		
+
 		// ok, better throw in a recalculate
 		this.recalculate();
 	}
@@ -339,18 +346,19 @@ public class CompositeTrackWrapper extends TrackWrapper
 	{
 		if (point instanceof PlanningSegment)
 		{
-			
+
 			// hey, is this a closing segment?
-			if(point instanceof ClosingSegment)
+			if (point instanceof ClosingSegment)
 			{
 				// do we already have one?
-				if(this.getSegments().last() instanceof ClosingSegment)
+				if (this.getSegments().last() instanceof ClosingSegment)
 				{
 					// skip....
-					_toolParent.logError(ToolParent.WARNING, "Already have closing segment", null);
+					_toolParent.logError(ToolParent.WARNING,
+							"Already have closing segment", null);
 				}
 			}
-			
+
 			// take a copy of the name, to stop it getting manmgled
 			String name = point.getName();
 
@@ -408,19 +416,22 @@ public class CompositeTrackWrapper extends TrackWrapper
 			}
 
 			// see if this is the closing segment
-			if(seg instanceof ClosingSegment)
+			if (seg instanceof ClosingSegment)
 			{
 				// what's the range and bearing back to the origin
 				WorldVector offset = getOrigin().subtract(thisOrigin);
-				
+
 				// and store it.
 				seg.setSpeedSilent(new WorldSpeed(12, WorldSpeed.Kts));
-				seg.setDistanceSilent(new WorldDistance(offset.getRange(), WorldDistance.DEGS));
-				seg.setCourseSilent(MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing()));
-				seg.setDepthSilent(new WorldDistance(offset.getDepth(), WorldDistance.METRES));
-				
+				seg.setDistanceSilent(new WorldDistance(offset.getRange(),
+						WorldDistance.DEGS));
+				seg.setCourseSilent(MWC.Algorithms.Conversions.Rads2Degs(offset
+						.getBearing()));
+				seg.setDepthSilent(new WorldDistance(offset.getDepth(),
+						WorldDistance.METRES));
+
 			}
-			
+
 			theCalc.construct(seg, thisOrigin, thisDate);
 
 			// did we generate anything?
@@ -571,7 +582,9 @@ public class CompositeTrackWrapper extends TrackWrapper
 		}
 	}
 
-	/** store helps that will aid us in creating a leg - it's an RCP thing, not a legacy thing
+	/**
+	 * store helps that will aid us in creating a leg - it's an RCP thing, not a
+	 * legacy thing
 	 * 
 	 * @param triggerNewLeg
 	 */
@@ -580,7 +593,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 		_triggerNewLeg = triggerNewLeg;
 	}
 
-	/** learn about the tool-parent that we're to use
+	/**
+	 * learn about the tool-parent that we're to use
 	 * 
 	 * @param toolParent
 	 */
