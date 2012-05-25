@@ -2,7 +2,6 @@ package Debrief.Wrappers.Track;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Date;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
@@ -23,6 +22,7 @@ public class PlanningSegment extends TrackSegment implements
 		Cloneable, Editable.DoNoInspectChildren
 {
 
+	
 	/**
 	 * class containing editable details of a track
 	 */
@@ -100,7 +100,7 @@ public class PlanningSegment extends TrackSegment implements
 	/** the date this segment was created - used to force sort order by the order they were read in
 	 * 
 	 */
-	private Date _created = new Date();
+	private long _created = System.nanoTime();
 
 	/**
 	 * how far to travel for (optional)
@@ -127,7 +127,7 @@ public class PlanningSegment extends TrackSegment implements
 	private PlanningSegment(PlanningSegment other)
 	{
 		_calcModel = other._calcModel;
-		_created = new Date();
+		_created = System.nanoTime();
 		_myCourseDegs = other._myCourseDegs;
 		_myDepth = new WorldDistance(other._myDepth);
 		_myLength = new WorldDistance(other._myLength);
@@ -178,7 +178,9 @@ public class PlanningSegment extends TrackSegment implements
 		if(arg0 instanceof PlanningSegment)
 		{
 			PlanningSegment other = (PlanningSegment) arg0;
-			res = this._created.compareTo(other._created);
+			Long myTime = _created;
+			Long hisTime = other._created;
+			res = myTime.compareTo(hisTime);
 		}
 		return res;
 	}
@@ -259,19 +261,11 @@ public class PlanningSegment extends TrackSegment implements
 		this._myPeriod = period;
 		recalc();
 	}
-
-	
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException
 	{
 		PlanningSegment res = new PlanningSegment(this);
-		
-		// give it a new date value
-		res._created = new Date();
-		
-		// ditch the points - they'll get recalculated
-		this.removeAllElements();
 		
 		return res;
 	}
