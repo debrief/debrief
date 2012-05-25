@@ -154,7 +154,7 @@
 	</target>
 
 
-	<target name="copy_to_usb" depends="deploy">
+	<target name="copy_to_usb">
 
 		<property name="usbDest" value="/Volumes/UNTITLED/" />
 
