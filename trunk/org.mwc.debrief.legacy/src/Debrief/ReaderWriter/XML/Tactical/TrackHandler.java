@@ -188,6 +188,11 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 			AbsoluteTMASegmentHandler.exportThisTMASegment(doc, trk,
 					(AbsoluteTMASegment) segment);
 		}
+		else if (segment instanceof PlanningSegment.ClosingSegment)
+		{
+			PlanningSegmentHandler.exportThisClosingSegment(doc, trk,
+					(PlanningSegment) segment);
+		}
 		else if (segment instanceof PlanningSegment)
 		{
 			PlanningSegmentHandler.exportThisSegment(doc, trk,
@@ -238,6 +243,13 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		});
 
 		addHandler(new PlanningSegmentHandler()
+		{
+			public void addSegment(TrackSegment segment)
+			{
+				addThis(segment);
+			}
+		});
+		addHandler(new PlanningSegmentHandler(PlanningSegmentHandler.CLOSING_SEGMENT)
 		{
 			public void addSegment(TrackSegment segment)
 			{

@@ -22,6 +22,27 @@ public class PlanningSegment extends TrackSegment implements
 		Cloneable, Editable.DoNoInspectChildren
 {
 
+	/** special case that gives us a leg that goes back to the start
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static class ClosingSegment extends PlanningSegment
+	{
+
+		public ClosingSegment(String name, double courseDegs,
+				WorldSpeed worldSpeed, WorldDistance worldDistance)
+		{
+			super(name, courseDegs, worldSpeed, worldDistance);
+			this.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
+		}
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+	}
 	
 	/**
 	 * class containing editable details of a track
@@ -159,6 +180,11 @@ public class PlanningSegment extends TrackSegment implements
 		recalc();
 	}
 
+
+	public void setDepthSilent(WorldDistance depth)
+	{
+		_myDepth = depth;
+	}
 	/**
 	 * special add-fix, so we don't bother with rename
 	 * 
@@ -175,7 +201,12 @@ public class PlanningSegment extends TrackSegment implements
 	public int compareTo(Plottable arg0)
 	{
 		int res = 1;
-		if(arg0 instanceof PlanningSegment)
+		if(arg0 instanceof ClosingSegment)
+		{
+			// the closing semgent will always come after
+			res = -1;
+		}
+		else if(arg0 instanceof PlanningSegment)
 		{
 			PlanningSegment other = (PlanningSegment) arg0;
 			Long myTime = _created;
@@ -236,6 +267,11 @@ public class PlanningSegment extends TrackSegment implements
 	{
 		this._myCourseDegs = courseDegs;
 		recalc();
+	}
+
+	public void setCourseSilent(double courseDegs)
+	{
+		this._myCourseDegs = courseDegs;
 	}
 
 	public WorldSpeed getSpeed()

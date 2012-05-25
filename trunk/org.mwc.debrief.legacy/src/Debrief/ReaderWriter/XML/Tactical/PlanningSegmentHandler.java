@@ -9,6 +9,7 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Track.PlanningSegment;
@@ -27,6 +28,7 @@ abstract public class PlanningSegmentHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 	private static final String COURSE = "course";
+	public static final String CLOSING_SEGMENT = "closing_segment";
 	private static final String PLANNING_SEGMENT = "planning_segment";
 	public static final String VISIBLE = "Visible";
 	public static final String NAME = "Name";
@@ -44,8 +46,13 @@ abstract public class PlanningSegmentHandler extends
 
 	public PlanningSegmentHandler()
 	{
+		this(PLANNING_SEGMENT);
+	}
+	
+	public PlanningSegmentHandler(String segType)
+	{
 		// inform our parent what type of class we are
-		super(PLANNING_SEGMENT);
+		super(segType);
 
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
@@ -143,8 +150,13 @@ abstract public class PlanningSegmentHandler extends
 	public static Element exportThisSegment(org.w3c.dom.Document doc, Element trk,
 			PlanningSegment seg)
 	{
+		return exportThisSegment(doc, trk, seg, PLANNING_SEGMENT);
+	}
+	public static Element exportThisSegment(org.w3c.dom.Document doc, Element trk,
+			PlanningSegment seg, String segName)
+	{
 		PlanningSegment ps = (PlanningSegment) seg;
-		final Element segE = doc.createElement(PLANNING_SEGMENT);
+		final Element segE = doc.createElement(segName);
 		trk.appendChild(segE);
 
 		LineStylePropertyEditor ls = new LineStylePropertyEditor();
@@ -169,5 +181,11 @@ abstract public class PlanningSegmentHandler extends
 	}
 
 	abstract public void addSegment(TrackSegment segment);
+
+	public static Element exportThisClosingSegment(Document doc, Element trk,
+			PlanningSegment segment)
+	{
+			return exportThisSegment(doc, trk, segment, CLOSING_SEGMENT);
+	}
 
 }

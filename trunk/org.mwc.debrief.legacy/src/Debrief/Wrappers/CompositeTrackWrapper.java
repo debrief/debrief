@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import Debrief.Wrappers.Track.PlanningSegment;
+import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -69,6 +70,7 @@ public class CompositeTrackWrapper extends TrackWrapper
 			final MethodDescriptor[] mds =
 			{
 					method(c, "addLeg", null, "Add new leg"),
+					method(c, "addClosingLeg", null, "Add closing leg"),
 					method(c, "exportThis", null, "Export Shape"),
 					method(c, "appendReverse", null, "Append reverse version of segments"), };
 
@@ -276,7 +278,16 @@ public class CompositeTrackWrapper extends TrackWrapper
 				throw new RuntimeException("CompositeTrackWrapper has not been configured in app start");
 		}
 	}
-	
+
+	/** popup a dialog to add a new leg
+	 * 
+	 */
+	@FireExtended
+	public void addClosingLeg()
+	{
+		this.add(new ClosingSegment("Closing segment", 45, new WorldSpeed(12, WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM)));
+	}
+
 	@FireExtended
 	public void appendReverse()
 	{
@@ -328,6 +339,18 @@ public class CompositeTrackWrapper extends TrackWrapper
 	{
 		if (point instanceof PlanningSegment)
 		{
+			
+			// hey, is this a closing segment?
+			if(point instanceof ClosingSegment)
+			{
+				// do we already have one?
+				if(this.getSegments().last() instanceof ClosingSegment)
+				{
+					// skip....
+					_toolParent.logError(ToolParent.WARNING, "Already have closing segment", null);
+				}
+			}
+			
 			// take a copy of the name, to stop it getting manmgled
 			String name = point.getName();
 
@@ -384,6 +407,20 @@ public class CompositeTrackWrapper extends TrackWrapper
 				break;
 			}
 
+			// see if this is the closing segment
+			if(seg instanceof ClosingSegment)
+			{
+				// what's the range and bearing back to the origin
+				WorldVector offset = getOrigin().subtract(thisOrigin);
+				
+				// and store it.
+				seg.setSpeedSilent(new WorldSpeed(12, WorldSpeed.Kts));
+				seg.setDistanceSilent(new WorldDistance(offset.getRange(), WorldDistance.DEGS));
+				seg.setCourseSilent(MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing()));
+				seg.setDepthSilent(new WorldDistance(offset.getDepth(), WorldDistance.METRES));
+				
+			}
+			
 			theCalc.construct(seg, thisOrigin, thisDate);
 
 			// did we generate anything?
