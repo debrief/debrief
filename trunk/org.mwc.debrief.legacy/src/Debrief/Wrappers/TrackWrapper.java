@@ -2147,7 +2147,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @return
 	 */
-	protected SegmentList getSegments()
+	public SegmentList getSegments()
 	{
 		return _thePositions;
 	}
