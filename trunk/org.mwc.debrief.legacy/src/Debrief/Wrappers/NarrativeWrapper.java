@@ -87,6 +87,8 @@ package Debrief.Wrappers;
 import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.util.Date;
 import java.util.Iterator;
@@ -135,6 +137,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private transient Vector<INarrativeListener> _myListeners;
 
+	private final PropertyChangeListener _dateChangeListener;
 	/**
 	 * property type to signify data being added or removed
 	 */
@@ -150,6 +153,22 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public NarrativeWrapper(final String title)
 	{
+		_dateChangeListener = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				// double-check it's the date
+				if (evt.getPropertyName().equals(NarrativeEntry.DTG))
+				{
+					// ok, remove this entry
+					_myEntries.remove(evt.getSource());
+
+					// and replace it
+					_myEntries.add((Editable) evt.getSource());
+				}
+			}
+		};
 		_myEntries = new java.util.TreeSet<Editable>();
 		_myName = title;
 	}
@@ -226,6 +245,9 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and inform anybody who happens to be listening
 			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
+			
+			// stop listening to it
+			editable.getInfo().removePropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
 
 			// and the narrative listeners, if we have one
 			if (_myListeners != null)
@@ -245,6 +267,10 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		// check it's a narrative entry
 		if (editable instanceof NarrativeEntry)
 		{
+			// listen for date changes, since we'll have to re-order
+			editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG,
+					_dateChangeListener);
+
 			_myEntries.add(editable);
 
 			// and inform anybody who happens to be listening
