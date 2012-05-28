@@ -2813,6 +2813,11 @@ and so on....</programlisting></para>
           produce a warning when the analyst tries to merge overlapping
           tracks. When it does, just delete one or more overlapping points and
           trigger the operation again.</para>
+          <para>Once you have performed a <guibutton>merge</guibutton> operation on a collection of
+            track segments they are no longer relative to the ownship track (in terms of
+            range/bearing).  They are now standalone tracks and can by Copy/Paste-d into another
+            Debrief plot if you wish.  The equivalent operation to make a TMA Segment standalone is
+            to select <guibutton>Convert [xxx] into standalone track</guibutton></para>
         </sect2>
 
         <sect2 xml:id="CombineTrackSections">
