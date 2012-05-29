@@ -352,6 +352,11 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return write.getAnnotations();
 	}
 
+	public Editable getEditable()
+	{
+		return _subject;
+	}
+	
 	public void setValue(Object value)
 	{
 		if (_myHelper != null)
