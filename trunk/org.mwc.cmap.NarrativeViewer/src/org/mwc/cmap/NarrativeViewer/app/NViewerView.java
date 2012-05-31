@@ -45,6 +45,9 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
@@ -101,11 +104,11 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
 	protected ControllableTime _controllableTime;
 
-	/** the current editor (we store this so we can create bookmarks
+	/**
+	 * the current editor (we store this so we can create bookmarks
 	 * 
 	 */
 	private IEditorPart _currentEditor;
-
 
 	/**
 	 * the people listening to us
@@ -113,6 +116,42 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 	Vector<ISelectionChangedListener> _selectionListeners;
 
 	private Action _setAsBookmarkAction;
+
+	protected Layers _myLayers;
+
+	/**
+	 * we need to listen out for layer modifications
+	 * 
+	 */
+	protected final DataListener _layerListener;
+
+	public NViewerView()
+	{
+		_layerListener = new DataListener()
+		{
+
+			@Override
+			public void dataModified(Layers theData, Layer changedLayer)
+			{
+				if (changedLayer == _myRollingNarrative)
+					setInput(_myRollingNarrative);
+			}
+
+			@Override
+			public void dataExtended(Layers theData)
+			{
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void dataReformatted(Layers theData, Layer changedLayer)
+			{
+				if (changedLayer == _myRollingNarrative)
+					setInput(_myRollingNarrative);
+			}
+		};
+	}
 
 	public void createPartControl(Composite parent)
 	{
@@ -129,6 +168,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		myViewer = new NarrativeViewer(rootPanel, Activator.getInstance()
 				.getPreferenceStore());
 		rootPanelLayout.topControl = myViewer;
+		
+		getSite().setSelectionProvider(this);
 
 		// sort out the initial time format
 		final String startFormat = DateFormatPropertyEditor.getTagList()[3];
@@ -157,7 +198,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		{
 			public void cellDoubleClicked(int col, int row, int statemask)
 			{
-				final NarrativeEntry theEntry = myViewer.getModel().getEntryAt(col, row);
+				final NarrativeEntry theEntry = myViewer.getModel()
+						.getEntryAt(col, row);
 				fireNewSeletion(theEntry);
 			}
 		});
@@ -260,7 +302,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		_controlTime.setChecked(true);
 		menuManager.add(_controlTime);
 		toolManager.add(_controlTime);
-		
+
 		// now the add-bookmark item
 		_setAsBookmarkAction = new Action("Add DTG as bookmark",
 				Action.AS_PUSH_BUTTON)
@@ -377,6 +419,19 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
 	protected void setInput(IRollingNarrativeProvider newNarr)
 	{
+
+		if (newNarr != _myRollingNarrative)
+			if (_myRollingNarrative != null)
+			{
+				
+				// clear what's displayed
+				myViewer.setInput(null);
+				
+				// stop listening to old narrative
+				_myRollingNarrative.removeNarrativeListener(
+						IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+			}
+
 		// check it has some data
 		NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[]
 		{});
@@ -430,7 +485,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 	{
 
 		final NViewerView me = this;
-		
+
 		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
@@ -438,7 +493,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 							IWorkbenchPart parentPart)
 					{
 						IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
-						setInput(newNarr);
+						if (newNarr != _myRollingNarrative)
+						{
+							setInput(newNarr);
+						}
 					}
 				});
 
@@ -451,7 +509,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 							IWorkbenchPart parentPart)
 					{
 						IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
-						setInput(newNarr);
+						if (newNarr != _myRollingNarrative)
+						{
+							setInput(newNarr);
+						}
 					}
 
 				});
@@ -470,6 +531,45 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 									IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
 							myViewer.setInput(null);
 							_myRollingNarrative = null;
+						}
+					}
+				});
+
+		// //////////////////////////////////////////
+		// and the layers - to hear about refresh
+		// //////////////////////////////////////////
+
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						Layers layer = (Layers) part;
+						if (layer != _myLayers)
+						{
+							// ditch to old layers
+							ditchOldLayers();
+
+							_myLayers = layer;
+							_myLayers.addDataModifiedListener(_layerListener);
+							_myLayers.addDataReformattedListener(_layerListener);
+						}
+					}
+
+				});
+
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						Layers layer = (Layers) part;
+						if (layer == _myLayers)
+						{
+							// ditch to old layers
+							ditchOldLayers();
 						}
 					}
 				});
@@ -513,7 +613,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 							}
 							_myTemporalDataset.addListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-							
+
 							// and is it an editor we want to remember?
 							// hmm, do we want to store this part?
 							if (parentPart instanceof IEditorPart)
@@ -594,6 +694,15 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
+	}
+
+	protected void ditchOldLayers()
+	{
+		if (_myLayers != null)
+		{
+			_myLayers.removeDataModifiedListener(_layerListener);
+			_myLayers = null;
+		}
 	}
 
 	@Override
@@ -763,7 +872,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 			}
 		}
 	}
-	
 
 	protected void addMarker()
 	{
@@ -776,20 +884,20 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 				// aaah, and is there a file present?
 				IFileEditorInput ife = (IFileEditorInput) input;
 				IResource file = ife.getFile();
-				
+
 				// check we have a selection
-				int [] rows = myViewer.getRowSelection();
-				if(rows.length == 1)
+				int[] rows = myViewer.getRowSelection();
+				if (rows.length == 1)
 				{
 					NarrativeEntry entry = myViewer.getModel().getEntryAt(0, rows[0]);
-					long tNow =entry.getDTG().getMicros();
-					String currentText = FormatDateTime.toString(tNow / 1000) ;
+					long tNow = entry.getDTG().getMicros();
+					String currentText = FormatDateTime.toString(tNow / 1000);
 					if (file != null)
 					{
 						// yup, get the description
 						InputDialog inputD = new InputDialog(getViewSite().getShell(),
-								"Add bookmark at this DTG", "Enter description of this bookmark",
-								currentText, null);
+								"Add bookmark at this DTG",
+								"Enter description of this bookmark", currentText, null);
 						inputD.open();
 
 						String content = inputD.getValue();

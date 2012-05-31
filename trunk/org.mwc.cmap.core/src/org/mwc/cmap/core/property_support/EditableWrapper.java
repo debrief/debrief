@@ -584,7 +584,7 @@ public class EditableWrapper implements IPropertySource
 
 			// ok, and tell any listeners that want to know
 			// - the only listener I can think of is the Java3d properties viewer
-			_property._subject.getInfo().fireChanged(_property.getValue(),
+			_property._subject.getInfo().fireChanged(_property.getEditable(),
 					_property.getDisplayName(), _oldValue, _newValue);
 
 			// fire the reformatted event for the parent layer
