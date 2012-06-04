@@ -39,7 +39,7 @@ import flanagan.math.MinimisationFunction;
 public class OptimiseTest
 {
 	private static final String ONLY_ONE_TRACK = "Only one whole Track may be selected for the optimisation";
-	private static final String ONLY_SECONDARY = "Optimisation is only supported for denoted Secondary Track";
+	private static final String ONLY_SECONDARY = "Optimisation is only supported for denoted Secondary Track, or it's child segments";
 	private static final String INVALID_SELECTION = "Only Track or Track Segment items may be selected";
 	private static final String NO_VALID_SEL = "Please select a single Track, or multiple Track Segments from the Layer Manager to optimise";
 	final static private String NO_MIXED_ITEMS = "Sorry, you can't mix Track and Track-Segment items in the optimisation";
@@ -433,7 +433,7 @@ public class OptimiseTest
 
 				res += score;
 			}
-
+			
 			// do the calc
 			return res;
 		}
