@@ -233,7 +233,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
-	//	toolBarManager.add(_magicBtn);
+		toolBarManager.add(_magicBtn);
 
 		// and a separator
 		toolBarManager.add(new Separator());
@@ -288,7 +288,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							Editable item = ew.getEditable();
 							if (item instanceof DraggableItem)
 							{
-								
+
 								dragees.add((DraggableItem) item);
 							}
 						}
@@ -657,7 +657,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.getImageDescriptor("icons/reveal.gif"));
 
 		// now the course action
-		_magicBtn = new Action("Magic", IAction.AS_PUSH_BUTTON)
+		_magicBtn = new Action("Attempt to auto-stack dots", IAction.AS_PUSH_BUTTON)
 		{
 			@Override
 			public void run()
@@ -666,35 +666,29 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				doMagic();
 			}
 		};
+		_magicBtn.setImageDescriptor(Activator
+				.getImageDescriptor("icons/magic_hat.png"));
 
 	}
 
 	protected void doMagic()
 	{
 		// right, find the layer manager
-		IViewPart mgr = this.getViewSite().getPage().findView(CorePlugin.LAYER_MANAGER);
-		ISelectionProvider selProvider = (ISelectionProvider) mgr.getAdapter(ISelectionProvider.class);
-		IStructuredSelection sel = (IStructuredSelection) selProvider.getSelection();
-		
+		IViewPart mgr = this.getViewSite().getPage()
+				.findView(CorePlugin.LAYER_MANAGER);
+		ISelectionProvider selProvider = (ISelectionProvider) mgr
+				.getAdapter(ISelectionProvider.class);
+		IStructuredSelection sel = (IStructuredSelection) selProvider
+				.getSelection();
+
 		// ok, see if we've got something of value
 		Vector<DraggableItem> dragees = new Vector<DraggableItem>();
-		String troubles = OptimiseTest.getDraggables(dragees, sel, _myHelper.getSecondaryTrack());
-		
-		if(troubles != null)
+		String troubles = OptimiseTest.getDraggables(dragees, sel,
+				_myHelper.getSecondaryTrack());
+
+		if (troubles != null)
 		{
 			CorePlugin.showMessage("Optimise solution", troubles);
-			return;
-		}
-		
-		
-		if (_draggableSelection != null)
-		{
-			Iterator<DraggableItem> iter = _draggableSelection.iterator();
-			while (iter.hasNext())
-			{
-				DraggableItem draggableItem = (DraggableItem) iter.next();
-				System.out.println(draggableItem);
-			}
 			return;
 		}
 
@@ -708,14 +702,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// initial estimates
 		double[] start =
-		{ 0, 0 };
+		{ 180, 2000 };
 
 		// initial step sizes
 		double[] step =
-		{ 20, 400 };
+		{ 90, 400 };
 
 		// convergence tolerance
-		double ftol = 1e-8;
+		double ftol = 1e-10;
 
 		// set the min/max bearing
 		min.addConstraint(0, -1, 0d);
@@ -726,15 +720,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		min.addConstraint(1, 1, 6000d);
 
 		// Nelder and Mead minimisation procedure
-		min.nelderMead(funct, start, step, ftol, 4000);
+		min.nelderMead(funct, start, step, ftol, 10000);
 
 		// get the results out
 		double[] param = min.getParamValues();
 
 		double bearing = param[0];
 		double range = param[1];
-
-		System.out.println("calc result is brg:" + bearing + " rng:" + range);
 
 		// produce a world-vector
 		WorldVector vec = new WorldVector(
@@ -757,10 +749,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_ourLayersSubject, secTrack, shiftIt);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject, secTrack);
+		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject,
+				secTrack);
 
 		// and add it to the clipboard
 		CorePlugin.run(daw);
+
+		// cool, is it a track that we've just dragged?
+		if (secTrack instanceof TrackWrapper)
+		{
+			updateStackedDots(false);
+		}
 
 	}
 
