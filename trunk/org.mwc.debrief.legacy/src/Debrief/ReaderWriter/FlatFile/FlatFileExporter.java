@@ -429,7 +429,6 @@ public class FlatFileExporter
 		return res;
 	}
 
-
 	/**
 	 * export the dataset to a string
 	 * 
@@ -776,8 +775,7 @@ public class FlatFileExporter
 		// <Units>
 		// <Geo_Origin_X> <Geo_Origin_Y>
 
-		String header = "STRAND Scenario Report " + fileVersion
-				+ BRK;
+		String header = "STRAND Scenario Report " + fileVersion + BRK;
 
 		// and the prot marking
 		header += protMarking + BRK;
@@ -940,7 +938,8 @@ public class FlatFileExporter
 		// right, we're going to loop through the two tracks producing positions
 		// at all the specified times
 
-		final NumberFormat dp2 = new DecimalFormat("0.00");
+		final NumberFormat dp4 = new DecimalFormat("0.0000");
+		final NumberFormat dopplerFormat = new DecimalFormat("0.00000000");
 
 		// remember the primary interpolation
 		final boolean primaryInterp = primaryTrack.getInterpolatePoints();
@@ -953,11 +952,11 @@ public class FlatFileExporter
 		WorldLocation origin = null;
 
 		// have a look at the depth
-		String strS1fwd = dp2.format(s1fwd);
+		String strS1fwd = dp4.format(s1fwd);
 		String strS1aft = "0";
 		if (sensorType1.startsWith("T"))
 		{
-			strS1aft = dp2.format(s1aft);
+			strS1aft = dp4.format(s1aft);
 		}
 
 		// and sensor 2?
@@ -965,10 +964,10 @@ public class FlatFileExporter
 		String strS2aft = "0";
 		if (sensor2 != null)
 		{
-			strS2fwd = dp2.format(s2fwd);
+			strS2fwd = dp4.format(s2fwd);
 			if (sensorType2.startsWith("T"))
 			{
-				strS2aft = dp2.format(s2aft);
+				strS2aft = dp4.format(s2aft);
 			}
 		}
 
@@ -1038,7 +1037,7 @@ public class FlatFileExporter
 			if (sensor2 != null)
 			{
 
-				 sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
+				sensor2Fix = primaryTrack.getBacktraceTo(thisDTG,
 						sensor2.getSensorOffset(), sensor2.getWormInHole());
 				sensor2Loc = sensor2Fix.getLocation();
 
@@ -1074,8 +1073,8 @@ public class FlatFileExporter
 				senFreq1 = cutS1.getFrequency();
 
 			// sensor status
-			final int senStat1 = typeFor(sensor1,sensorType1, cutS1);
-			
+			final int senStat1 = typeFor(sensor1, sensorType1, cutS1);
+
 			double theBearing1 = 0;
 			double senSpd1 = sensorFix.getSpeed();
 			double sen1Heading = sensorFix.getCourseDegs();
@@ -1091,7 +1090,7 @@ public class FlatFileExporter
 			double senHeading2 = 0;
 			final int senStat2 = typeFor(sensor2, sensorType2, cutS2);
 			double senFreq2 = 0;
-	
+
 			if (sensor2 != null)
 			{
 				if ((cutS2 != null) && (cutS2.getHasFrequency()))
@@ -1103,7 +1102,7 @@ public class FlatFileExporter
 					theBearing2 = cutS2.getBearing();
 					theBearing2 = trimDegs(theBearing2);
 				}
-				
+
 				senSpd2 = sensor2Fix.getSpeed();
 				senHeading2 = sensor2Fix.getCourseDegs();
 			}
@@ -1131,46 +1130,46 @@ public class FlatFileExporter
 
 			final String Time = "" + secs;
 			final String OS_Status = "" + osStat;
-			final String OS_X = "" + priX;
-			final String OS_Y = "" + priY;
-			final String OS_Speed = "" + dp2.format(priFix.getSpeed());
-			final String OS_Heading = dp2.format(priFix.getCourseDegs());
-			final String OS_Depth = dp2.format(priFix.getDepth());
+			final String OS_X = "" + dp4.format(priX);
+			final String OS_Y = "" + dp4.format(priY);
+			final String OS_Speed = "" + dp4.format(priFix.getSpeed());
+			final String OS_Heading = dp4.format(priFix.getCourseDegs());
+			final String OS_Depth = dp4.format(priFix.getDepth());
 			final String Sensor_Status = "" + senStat1;
-			final String Sensor_X = "" + sen1X;
-			final String Sensor_Y = "" + sen1Y;
-			final String Sensor_Brg = dp2.format(theBearing1);
+			final String Sensor_X = "" + dp4.format(sen1X);
+			final String Sensor_Y = "" + dp4.format(sen1Y);
+			final String Sensor_Brg = dp4.format(theBearing1);
 			final String Sensor_Bacc = "" + 0;
 			final String Sensor_Freq = "" + senFreq1;
 			final String Sensor_Facc = "" + 0;
-			final String Sensor_Speed = "" + dp2.format(senSpd1);
-			final String Sensor_Heading = "" + dp2.format(sen1Heading);
+			final String Sensor_Speed = "" + dp4.format(senSpd1);
+			final String Sensor_Heading = "" + dp4.format(sen1Heading);
 			final String Sensor_Type = sensorType1;
-			final String Sensor_Doppler = "" + s1doppler;
+			final String Sensor_Doppler = "" + dopplerFormat.format(s1doppler);
 			final String Sensor_Depth_Fwd = strS1fwd;
 			final String Sensor_Depth_Aft = strS1aft;
 
 			final String Sensor2_Status = "" + senStat2;
-			final String Sensor2_X = "" + sen2X;
-			final String Sensor2_Y = "" + sen2Y;
-			final String Sensor2_Brg = dp2.format(theBearing2);
+			final String Sensor2_X = "" + dp4.format(sen2X);
+			final String Sensor2_Y = "" + dp4.format(sen2Y);
+			final String Sensor2_Brg = dp4.format(theBearing2);
 			final String Sensor2_Bacc = "" + 0;
 			final String Sensor2_Freq = "" + senFreq2;
 			final String Sensor2_Facc = "" + 0;
-			final String Sensor2_Speed = "" + dp2.format(senSpd2);
-			final String Sensor2_Heading = "" + dp2.format(senHeading2);
+			final String Sensor2_Speed = "" + dp4.format(senSpd2);
+			final String Sensor2_Heading = "" + dp4.format(senHeading2);
 			final String Sensor2_Type = sensorType2;
-			final String Sensor2_Doppler = "" + s2doppler;
+			final String Sensor2_Doppler = "" + dopplerFormat.format(s2doppler);
 			final String Sensor2_Depth_Fwd = strS2fwd;
 			final String Sensor2_Depth_Aft = strS2aft;
 
 			final String Msd_Status = "" + 15;
-			final String Msd_X = "" + msdX;
-			final String Msd_Y = "" + msdY;
-			final String Msd_Speed = "" + msdFix.getSpeed();
+			final String Msd_X = "" + dp4.format(msdX);
+			final String Msd_Y = "" + dp4.format(msdY);
+			final String Msd_Speed = "" + dp4.format(msdFix.getSpeed());
 			double msdCourse = msdFix.getCourseDegs();
 			msdCourse = trimDegs(msdCourse);
-			final String Msd_Heading = dp2.format(msdCourse);
+			final String Msd_Heading = dp4.format(msdCourse);
 			final String Msd_Depth = "" + msdFix.getDepth();
 
 			final String nextLine = collateLine2(Time, OS_Status, OS_X, OS_Y,
@@ -1195,31 +1194,32 @@ public class FlatFileExporter
 		return buffer.toString();
 	}
 
-	private static int typeFor(SensorWrapper sensor, String sensorType, SensorContactWrapper cut)
+	private static int typeFor(SensorWrapper sensor, String sensorType,
+			SensorContactWrapper cut)
 	{
 		int res = 0;
-		
-		if(sensor != null)
+
+		if (sensor != null)
 		{
 			res = res | 1 | 8 | 16 | 32 | 64 | 128;
-			if(sensorType.startsWith("T"))
+			if (sensorType.startsWith("T"))
 			{
 				res = res | 256;
 			}
-			
-			if(cut != null)
+
+			if (cut != null)
 			{
-				if(cut.getHasBearing())
+				if (cut.getHasBearing())
 					res = res | 2;
-				
-				if(cut.getHasFrequency())
+
+				if (cut.getHasFrequency())
 					res = res | 4;
 			}
 		}
-		
+
 		return res;
 	}
-	
+
 	private double trimDegs(double brgVal)
 	{
 		if (brgVal > 360)
