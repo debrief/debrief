@@ -13,7 +13,13 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
@@ -23,6 +29,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
 
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -401,6 +408,28 @@ public class DragFeature extends CoreDragAction
 			_lastLocation = null;
 			_myCanvas = null;
 			_startLocation = null;
+			
+
+			// cool, is it a track that we've just dragged?
+			if (_parentLayer instanceof TrackWrapper)
+			{
+				// if the current editor is a track data provider,
+				// tell it that we've shifted
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				IWorkbenchPage page = win.getActivePage();
+				IEditorPart editor = page.getActiveEditor();
+				TrackDataProvider dataMgr = (TrackDataProvider) editor
+						.getAdapter(TrackDataProvider.class);
+				// is it one of ours?
+				if (dataMgr != null)
+				{
+					{
+						dataMgr.fireTrackShift((TrackWrapper) _parentLayer);
+					}
+				}
+			}
+			
 		}
 
 		/**
