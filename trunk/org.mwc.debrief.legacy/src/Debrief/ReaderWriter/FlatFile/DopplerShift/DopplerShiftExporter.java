@@ -92,6 +92,7 @@ public class DopplerShiftExporter
 		Enumeration<Editable> sensors = sensorHost.getSensors().elements();
 		if (sensors != null)
 		{
+			System.out.println("-------------------");
 			while (sensors.hasMoreElements())
 			{
 				SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
@@ -199,8 +200,14 @@ public class DopplerShiftExporter
 							Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
 							if ((matches != null) && (matches.length > 0))
 							{
-								FixWrapper hostFix = (FixWrapper) matches[0];
 
+								// we used to use the platform position, let's use the sensor position 
+								// FixWrapper hostFix = (FixWrapper) matches[0];
+
+								// put the sensor location into the
+								FixWrapper hostFix = sensorHost.getBacktraceTo(scw.getDTG(), wrapper.getSensorOffset(),wrapper.getWormInHole());
+								
+								
 								final Doublet thisDub = new Doublet(scw, targetFix,
 										targetParent, hostFix);
 

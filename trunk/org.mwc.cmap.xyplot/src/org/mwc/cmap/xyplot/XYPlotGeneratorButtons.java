@@ -30,6 +30,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
+import org.mwc.cmap.xyplot.views.XYPlotView.DatasetProvider;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
@@ -233,7 +234,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	 * @param parentLayers
 	 * @param subjects
 	 */
-	public void generate(IMenuManager parent, Layers theLayers,
+	public void generate(IMenuManager parent, final Layers theLayers,
 			Layer[] parentLayers, final Editable[] subjects)
 	{
 		final Vector<Editable> candidates = new Vector<Editable>(0, 1);
@@ -286,7 +287,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 						IEditorPart editor = page.getActiveEditor();
 
 						// get ready for the start/end times
-						HiResDate startTime, endTime;
+						HiResDate startTime;
+						HiResDate endTime;
 
 						try
 						{
@@ -307,7 +309,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 							// ok, sort out what we're plotting
 							// find out what the user wants to view
-							ShowTimeVariablePlot3.CalculationHolder theHolder = getChoice();
+							final ShowTimeVariablePlot3.CalculationHolder theHolder = getChoice();
 
 							// did user cancel?
 							if (theHolder == null)
@@ -319,23 +321,24 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// who is the primary?
 							// declare the primary track (even though we may end up not using
 							// it)
-							WatchableList thePrimary = null;
+							WatchableList tmpPrimary = null;
 
 							// is this a relative calculation?
 							if (theHolder._isRelative)
 							{
 								// retrieve the necessary input data
-								thePrimary = getPrimary(subjects);
+								tmpPrimary = getPrimary(subjects);
 							}
+							final WatchableList thePrimary = tmpPrimary;
 
 							// ////////////////////////////////////////////////
 							// sort out the title
 							// ////////////////////////////////////////////////
 							// get the title to use
 							String theTitle = myOperation.getTitle() + " vs Time plot";
-							
+
 							// if we just got one track - put the name in the title
-							if(subjects.length == 1)
+							if (subjects.length == 1)
 								theTitle = subjects[0].getName() + " " + theTitle;
 
 							// is this a relative operation
@@ -354,7 +357,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
 							// put our subjects into a vector
-							Vector<WatchableList> theTracks = new Vector<WatchableList>(0, 1);
+							final Vector<WatchableList> theTracks = new Vector<WatchableList>(
+									0, 1);
 							for (int i = 0; i < subjects.length; i++)
 							{
 								Editable thisS = subjects[i];
@@ -411,15 +415,32 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								if (thePrimary.getEndDTG() != null)
 									endTime = thePrimary.getEndDTG();
 							}
+							
+							final HiResDate finalStart = startTime;
+							final HiResDate finalEnd = endTime;
 
-							// right, now for the data
-							AbstractSeriesDataset ds = ShowTimeVariablePlot3.getDataSeries(
-									thePrimary, theHolder, theTracks, startTime, endTime, null);
+							DatasetProvider prov = new DatasetProvider()
+							{
+
+								@Override
+								public AbstractSeriesDataset getDataset()
+								{
+									return ShowTimeVariablePlot3.getDataSeries(thePrimary,
+											theHolder, theTracks, finalStart, finalEnd, null);
+								}
+								
+								@Override
+								public Layers getLayers()
+								{
+									return theLayers;
+								}
+							};
 
 							// ok, try to retrieve the view
 							IViewReference plotRef = page.findViewReference(plotId, theTitle);
 							XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-							plotter.showPlot(theTitle, ds, myOperation.toString() + " ("
+
+							plotter.showPlot(theTitle, prov, myOperation.toString() + " ("
 									+ myOperation.getUnits() + ")", theHolder._theFormatter,
 									thePlotId);
 						}

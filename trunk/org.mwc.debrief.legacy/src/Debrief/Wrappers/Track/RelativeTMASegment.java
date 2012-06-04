@@ -130,7 +130,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * the layers we look at to find our host
 	 * 
 	 */
-	private final Layers _theLayers;
+	private transient final Layers _theLayers;
 
 	private SensorContactWrapper _firstSensorContact;
 

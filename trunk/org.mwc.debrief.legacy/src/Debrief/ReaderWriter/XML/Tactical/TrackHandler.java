@@ -19,7 +19,9 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -29,10 +31,10 @@ import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
-public final class TrackHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
+	private static final String TRACK = "track";
 	private static final String SYMBOL_COLOR = "SymbolColor";
 	private static final String SYMBOL_WIDTH = "SYMBOL_WIDTH";
 	private static final String SYMBOL_LENGTH = "SYMBOL_LENGTH";
@@ -62,6 +64,14 @@ public final class TrackHandler extends
 	public static void exportTrack(Debrief.Wrappers.TrackWrapper track,
 			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
 	{
+		final Element trk = doc.createElement(TRACK);
+		parent.appendChild(trk);
+		exportTrackObject(track, trk, doc);
+	}
+
+	protected static void exportTrackObject(Debrief.Wrappers.TrackWrapper track,
+			org.w3c.dom.Element trk, org.w3c.dom.Document doc)
+	{
 
 		/*
 		 * <!ELEMENT track (colour,((fix|contact)*))> <!ATTLIST track name CDATA
@@ -71,7 +81,6 @@ public final class TrackHandler extends
 		 * (Top|Left|Bottom|Centre|Right) "Right" Symbol CDATA "SQUARE" >
 		 */
 
-		final Element trk = doc.createElement("track");
 		trk.setAttribute("Name", toXML(track.getName()));
 		trk.setAttribute("Visible", writeThis(track.getVisible()));
 		trk.setAttribute("PositionsVisible", writeThis(track.getPositionsVisible()));
@@ -163,8 +172,6 @@ public final class TrackHandler extends
 				break;
 			}
 		}
-
-		parent.appendChild(trk);
 	}
 
 	private static void exportThisTrackSegment(org.w3c.dom.Document doc,
@@ -181,6 +188,16 @@ public final class TrackHandler extends
 			AbsoluteTMASegmentHandler.exportThisTMASegment(doc, trk,
 					(AbsoluteTMASegment) segment);
 		}
+		else if (segment instanceof PlanningSegment.ClosingSegment)
+		{
+			PlanningSegmentHandler.exportThisClosingSegment(doc, trk,
+					(PlanningSegment) segment);
+		}
+		else if (segment instanceof PlanningSegment)
+		{
+			PlanningSegmentHandler.exportThisSegment(doc, trk,
+					(PlanningSegment) segment);
+		}
 		else
 
 			TrackSegmentHandler.exportThisSegment(doc, trk, (TrackSegment) segment);
@@ -188,8 +205,13 @@ public final class TrackHandler extends
 
 	public TrackHandler(MWC.GUI.Layers theLayers)
 	{
+		this(theLayers, TRACK);
+	}
+
+	protected TrackHandler(MWC.GUI.Layers theLayers, String name)
+	{
 		// inform our parent what type of class we are
-		super("track");
+		super(name);
 
 		// store the layers object, so that we can add ourselves to it
 		_theLayers = theLayers;
@@ -220,7 +242,22 @@ public final class TrackHandler extends
 			}
 		});
 
-		addHandler(new AbsoluteTMASegmentHandler(_theLayers)
+		addHandler(new PlanningSegmentHandler()
+		{
+			public void addSegment(TrackSegment segment)
+			{
+				addThis(segment);
+			}
+		});
+		addHandler(new PlanningSegmentHandler(PlanningSegmentHandler.CLOSING_SEGMENT)
+		{
+			public void addSegment(TrackSegment segment)
+			{
+				addThis(segment);
+			}
+		});
+
+		addHandler(new AbsoluteTMASegmentHandler()
 		{
 			public void addSegment(TrackSegment segment)
 			{
@@ -429,7 +466,7 @@ public final class TrackHandler extends
 	}
 
 	@Override
-	public final void elementClosed()
+	public void elementClosed()
 	{
 		// ok, the symbol should be sorted, do the lengths
 		if (_symLength != null)
@@ -451,12 +488,15 @@ public final class TrackHandler extends
 	protected final void handleOurselves(String name, Attributes attributes)
 	{
 		// create the wrapper
-		_myTrack = new Debrief.Wrappers.TrackWrapper();
+		_myTrack = getWrapper();
 
 		// marry them together
-
 		super.handleOurselves(name, attributes);
+	}
 
+	protected TrackWrapper getWrapper()
+	{
+		return new TrackWrapper();
 	}
 
 }

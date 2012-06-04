@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
@@ -25,9 +26,13 @@ import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.ImportAsTrack;
 import org.mwc.debrief.core.ContextOperations.MergeContacts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
+import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
 
+import Debrief.Wrappers.CompositeTrackWrapper;
+import Debrief.Wrappers.CompositeTrackWrapper.GiveMeALeg;
+import MWC.GUI.Layer;
 import MWC.GUI.MessageProvider;
 import MWC.Utilities.ReaderWriter.ImportManager;
 
@@ -199,6 +204,18 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		// give the LayerManager our image creator.
 		CoreViewLabelProvider.addImageHelper(_myImageHelper  );
 
+//		 provide helper for triggering 'new-leg' operation
+		GiveMeALeg triggerNewLeg = new GiveMeALeg(){
+
+			@Override
+			public void createLegFor(Layer parent)
+			{
+				InsertTrackSegment ts= new InsertTrackSegment(parent);
+				ts.run(null);
+			}};
+		
+		CompositeTrackWrapper.setNewLegHelper(triggerNewLeg);
+		CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
 
 	}
 

@@ -57,6 +57,7 @@ public interface SWTPlotHighlighter extends Editable {
 	 */
 	public final class RectangleHighlight implements SWTPlotHighlighter {
 
+		public static final String DEFAULT_HIGHLIGHT = "Default Highlight";
 		private Color _myColor = Color.white;
 		private int _mySize = 5;
 
@@ -172,7 +173,7 @@ public interface SWTPlotHighlighter extends Editable {
 		 * @return the name of this editable object
 		 */
 		public final String getName() {
-			return "Default Highlight";
+			return DEFAULT_HIGHLIGHT;
 		}
 
 		/**
@@ -222,6 +223,15 @@ public interface SWTPlotHighlighter extends Editable {
 		public final void setSize(final BoundedInteger val) {
 			_mySize = val.getCurrent();
 		}
+		
+		/** easy access for the actual size value (used to restore plot preferences)
+		 * 
+		 * @param size
+		 */
+		public final void setRawSize(int size)
+		{
+			_mySize = size;
+		}
 
 		/**
 		 * return the current highlight colour
@@ -256,7 +266,7 @@ public interface SWTPlotHighlighter extends Editable {
 			 *            the object we are editing
 			 */
 			public RectangleHighlightInfo(final RectangleHighlight data) {
-				super(data, "Default Highlight", "");
+				super(data, DEFAULT_HIGHLIGHT, "");
 			}
 
 			/**

@@ -56,9 +56,10 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.Plottable;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
@@ -122,11 +123,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	Label _myLabel;
 
-	protected DataListener _listenForMods;
+	protected DataListener2 _listenForMods;
 
 	private boolean _ignoreDirtyCalls;
 
 	protected PartMonitor _myPartMonitor;
+
+	protected GeoToolsHandler _myGeoHandler;
 
 	// //////////////////////////////
 	// constructor
@@ -135,6 +138,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public CorePlotEditor()
 	{
 		super();
+		
+		// create the projection, we're going to need it to load the data, before we have the chart created
+		_myGeoHandler = new GtProjection();
 
 		_myLayers = new Layers(){
 
@@ -148,35 +154,22 @@ public abstract class CorePlotEditor extends EditorPart implements
 			{
 				Layer wrappedLayer = null;
 
-
 				// ok, if this is an externally managed layer (and we're doing
 				// GT-plotting, we will wrap it, and actually add the wrapped layer
 				if (theLayer instanceof ExternallyManagedDataLayer)
-				{
-					// just check we have a GeoTools-style projection
-				  PlainProjection proj = _myChart.getCanvas().getProjection();
-				  boolean haveGtPlot = proj instanceof GtProjection;
-				  
-				  if(!haveGtPlot)
-				  {
-				  	CorePlugin.logError(Status.ERROR, "Can't load externally managed layer into non-GTProjection", null);
-				  	return;
-				  }
-					
-				  GtProjection gp = (GtProjection) proj;
-				  
+				{			  
 				  ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(
-							MWC.GUI.Shapes.ChartWrapper.WORLDIMAGE_TYPE))
+							MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
 					{
 						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
 								dl.getFilename());
 						gt.setVisible(dl.getVisible());
-						gp.addGeoToolsLayer(gt);
+						_myGeoHandler.addGeoToolsLayer(gt);
 						wrappedLayer = gt;
 					}
 					else if (dl.getDataType().equals(
-							MWC.GUI.Shapes.ChartWrapper.SHAPEFILE_TYPE))
+							MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE))
 					{
 						// just see if it's a raster extent layer (special processing)
 						if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
@@ -191,7 +184,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 							GeoToolsLayer gt = new ShapeFileLayer(dl.getName(),
 									dl.getFilename());
 							gt.setVisible(dl.getVisible());
-							gp.addGeoToolsLayer(gt);
+							_myGeoHandler.addGeoToolsLayer(gt);
 							wrappedLayer = gt;
 						}
 					}
@@ -228,7 +221,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		};
 
-		_listenForMods = new DataListener()
+		_listenForMods = new DataListener2()
 		{
 
 			public void dataModified(Layers theData, Layer changedLayer)
@@ -244,6 +237,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 			public void dataReformatted(Layers theData, Layer changedLayer)
 			{
+				fireDirty();
+			}
+
+			@Override
+			public void dataExtended(Layers theData, Plottable newItem, Layer parent)
+			{
+				layersExtended();
 				fireDirty();
 			}
 
@@ -271,6 +271,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	public void dispose()
 	{
+		// ok, tell the chart to self-destruct (And dispose/release of any objects)
+		_myChart.close();
+		_myChart = null;
+		
 		super.dispose();
 
 		// empty the part monitor
@@ -279,6 +283,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 			_myPartMonitor.ditch();
 			_myPartMonitor = null;
 		}
+		
+		// and the layers
+		_myLayers.close();
+		_myLayers = null;
+		
+		// some other items
+		_timeListener = null;
 	}
 
 	public void createPartControl(Composite parent)
@@ -458,7 +469,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent)
+		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
 			/**

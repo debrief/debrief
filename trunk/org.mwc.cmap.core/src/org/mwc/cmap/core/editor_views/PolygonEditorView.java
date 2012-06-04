@@ -366,7 +366,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 		// ok - draw the polygon
 		int counter = 2;
-		dest.setColor(java.awt.Color.WHITE);
+		dest.setColor(java.awt.Color.gray);
 		Collection<WorldLocation> pts = _myPath.getPoints();
 		Point lastP = null;
 		Point startP = null;

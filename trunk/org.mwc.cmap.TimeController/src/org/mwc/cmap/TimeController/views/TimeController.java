@@ -741,22 +741,47 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 			{
 				final TimePeriod newPeriod = (TimePeriod) event.getNewValue();
-				_slideManager
-						.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
-
-				Display.getDefault().asyncExec(new Runnable()
+				if (newPeriod == null)
 				{
-					public void run()
+					Display.getDefault().asyncExec(new Runnable()
 					{
-						// and our range selector - first the outer
-						// ranges
-						_dtgRangeSlider.updateOuterRanges(newPeriod);
+						public void run()
+						{
 
-						// ok, now the user ranges...
-						_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
-								newPeriod.getEndDTG());
-					}
-				});
+							// hey, we haven't got a time period- disable
+							_wholePanel.setEnabled(false);
+							
+							// hey - remember the updated time range (largely so
+							// that we can
+							// restore from file later on)
+							_myStepperProperties.setSliderStartTime(null);
+							_myStepperProperties.setSliderEndTime(null);
+
+						}
+					});
+				}
+				else
+				{
+					_slideManager.resetRange(newPeriod.getStartDTG(),
+							newPeriod.getEndDTG());
+
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							// ok, double-check we're enabled
+							_wholePanel.setEnabled(true);
+
+							// and our range selector - first the outer
+							// ranges
+							_dtgRangeSlider.updateOuterRanges(newPeriod);
+
+							// ok, now the user ranges...
+							_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
+									newPeriod.getEndDTG());
+						}
+					});
+				}
 			}
 
 			// also double-check if it's time to enable our interface
@@ -843,11 +868,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				 */
 				TimePeriod timeP = _myTemporalDataset.getPeriod();
 
-				// do we represent a valid time?
-				if (timeP.contains(newDTG))
+				if (timeP != null)
 				{
-					// yes, fire the new DTG
-					fireNewTime(newDTG);
+					// do we represent a valid time?
+					if (timeP.contains(newDTG))
+					{
+						// yes, fire the new DTG
+						fireNewTime(newDTG);
+					}
 				}
 			}
 		}
@@ -2294,7 +2322,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			@Override
 			public void run()
 			{
-				setRelativeMode(true, false);
+				// see if we have a primary track...
+				if (_myTrackProvider != null)
+				{
+					if (_myTrackProvider.getPrimaryTrack() == null)
+					{
+						CorePlugin.showMessage("Primary Centred Plotting",
+								"A Primary Track must be specified to use this mode");
+						_normalPlottingMode.setChecked(true);
+						_primaryCentredNorthOrientedPlottingMode.setChecked(false);
+					}
+					else
+						setRelativeMode(true, false);
+				}
 			}
 		};
 		_primaryCentredNorthOrientedPlottingMode
@@ -2305,17 +2345,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_primaryCentredPrimaryOrientedPlottingMode = new Action(
 				"Primary centred/Primary oriented", Action.AS_RADIO_BUTTON)
 		{
+
 			@Override
 			public void run()
 			{
 				setRelativeMode(true, true);
 			}
-
 		};
 		_primaryCentredPrimaryOrientedPlottingMode
 				.setImageDescriptor(TimeControllerPlugin
 						.getImageDescriptor("icons/lock_view2.png"));
-		displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
+		// no, let's not offer primary centred, primary oriented view
+		// displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
 
 	}
 

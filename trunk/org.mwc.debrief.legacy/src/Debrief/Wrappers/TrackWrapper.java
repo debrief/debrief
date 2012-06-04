@@ -66,7 +66,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * iteself, but the responsibility for the fixes within the track are demoted to
  * the FixWrapper
  */
-public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
+public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
 		HasDraggableComponents, ProvidesContiguousElements
 {
@@ -1134,7 +1134,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * our editable details
 	 */
-	transient private Editable.EditorType _myEditor = null;
+	protected transient Editable.EditorType _myEditor = null;
 
 	/**
 	 * keep a list of points waiting to be plotted
@@ -1263,7 +1263,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the point to add
 	 */
 	@Override
-	public final void add(final MWC.GUI.Editable point)
+	public void add(final MWC.GUI.Editable point)
 	{
 		boolean done = false;
 		// see what type of object this is
@@ -1343,7 +1343,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theFix
 	 *          the Fix to be added
 	 */
-	public final void addFix(final FixWrapper theFix)
+	public void addFix(final FixWrapper theFix)
 	{
 		// do we have any track segments
 		if (_thePositions.size() == 0)
@@ -1387,7 +1387,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the layer to add to ourselves
 	 */
 	@Override
-	public final void append(final Layer other)
+	public void append(final Layer other)
 	{
 		// is it a track?
 		if ((other instanceof TrackWrapper) || (other instanceof TrackSegment))
@@ -1515,7 +1515,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return
 	 */
 	@Override
-	public final Enumeration<Editable> contiguousElements()
+	public Enumeration<Editable> contiguousElements()
 	{
 		final Vector<Editable> res = new Vector<Editable>(0, 1);
 
@@ -1937,9 +1937,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public final HiResDate getEndDTG()
 	{
+		HiResDate dtg = null;
 		TimePeriod res = getTimePeriod();
+		if (res != null)
+			dtg = res.getEndDTG();
 
-		return res.getEndDTG();
+		return dtg;
 	}
 
 	/**
@@ -1948,7 +1951,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return the details
 	 */
 	@Override
-	public final Editable.EditorType getInfo()
+	public Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)
 			_myEditor = new trackInfo(this);
@@ -2140,6 +2143,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
+	 * get our child segments
+	 * 
+	 * @return
+	 */
+	public SegmentList getSegments()
+	{
+		return _thePositions;
+	}
+
+	/**
 	 * whether to show the track label at the start or end of the track
 	 * 
 	 * @return yes/no to indicate <I>At Start</I>
@@ -2210,125 +2223,131 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final TrackSegment firstSeg = (TrackSegment) _thePositions.first();
 			final TrackSegment lastSeg = (TrackSegment) _thePositions.last();
 
-			// see if this DTG is inside our data range
-			// in which case we will just return null
-			final FixWrapper theFirst = (FixWrapper) firstSeg.first();
-			final FixWrapper theLast = (FixWrapper) lastSeg.last();
-
-			if ((srchDTG.greaterThan(theFirst.getTime()))
-					&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
+			if ((firstSeg != null) && (firstSeg.size() > 0))
 			{
-				// yes it's inside our data range, find the first fix
-				// after the indicated point
 
-				// right, increment the time, since we want to allow matching
-				// points
-				// HiResDate DTG = new HiResDate(0, srchDTG.getMicros() + 1);
+				// see if this DTG is inside our data range
+				// in which case we will just return null
+				final FixWrapper theFirst = (FixWrapper) firstSeg.first();
+				final FixWrapper theLast = (FixWrapper) lastSeg.last();
 
-				// see if we have to create our local temporary fix
-				if (nearestFix == null)
+				if ((srchDTG.greaterThan(theFirst.getTime()))
+						&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
 				{
-					nearestFix = new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0, 0.0));
-				}
-				else
-					nearestFix.getFix().setTime(srchDTG);
+					// yes it's inside our data range, find the first fix
+					// after the indicated point
 
-				// right, we really should be filtering the list according to if
-				// the
-				// points are visible.
-				// how do we do filters?
+					// right, increment the time, since we want to allow matching
+					// points
+					// HiResDate DTG = new HiResDate(0, srchDTG.getMicros() + 1);
 
-				// get the data. use tailSet, since it's inclusive...
-				SortedSet<Editable> set = getRawPositions().tailSet(nearestFix);
-
-				// see if the requested DTG was inside the range of the data
-				if (!set.isEmpty() && (set.size() > 0))
-				{
-					res = (FixWrapper) set.first();
-
-					// is this one visible?
-					if (!res.getVisible())
+					// see if we have to create our local temporary fix
+					if (nearestFix == null)
 					{
-						// right, the one we found isn't visible. duplicate the
-						// set, so that
-						// we can remove items
-						// without affecting the parent
-						set = new TreeSet<Editable>(set);
-
-						// ok, start looping back until we find one
-						while ((!res.getVisible()) && (set.size() > 0))
-						{
-
-							// the first one wasn't, remove it
-							set.remove(res);
-							if (set.size() > 0)
-								res = (FixWrapper) set.first();
-						}
+						nearestFix = new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0,
+								0.0));
 					}
+					else
+						nearestFix.getFix().setTime(srchDTG);
 
-				}
+					// right, we really should be filtering the list according to if
+					// the
+					// points are visible.
+					// how do we do filters?
 
-				// right, that's the first points on or before the indicated
-				// DTG. Are we
-				// meant
-				// to be interpolating?
-				if (res != null)
-					if (getInterpolatePoints())
+					// get the data. use tailSet, since it's inclusive...
+					SortedSet<Editable> set = getRawPositions().tailSet(nearestFix);
+
+					// see if the requested DTG was inside the range of the data
+					if (!set.isEmpty() && (set.size() > 0))
 					{
-						// right - just check that we aren't actually on the
-						// correct time
-						// point.
-						// HEY, USE THE ORIGINAL SEARCH TIME, NOT THE
-						// INCREMENTED ONE,
-						// SINCE WE DON'T WANT TO COMPARE AGAINST A MODIFIED
-						// TIME
+						res = (FixWrapper) set.first();
 
-						if (!res.getTime().equals(srchDTG))
+						// is this one visible?
+						if (!res.getVisible())
 						{
+							// right, the one we found isn't visible. duplicate the
+							// set, so that
+							// we can remove items
+							// without affecting the parent
+							set = new TreeSet<Editable>(set);
 
-							// right, we haven't found an actual data point.
-							// Better calculate
-							// one
-
-							// hmm, better also find the point before our one.
-							// the
-							// headSet operation is exclusive - so we need to
-							// find the one
-							// after the first
-							final SortedSet<Editable> otherSet = getRawPositions().headSet(
-									nearestFix);
-
-							FixWrapper previous = null;
-
-							if (!otherSet.isEmpty())
+							// ok, start looping back until we find one
+							while ((!res.getVisible()) && (set.size() > 0))
 							{
-								previous = (FixWrapper) otherSet.last();
-							}
 
-							// did it work?
-							if (previous != null)
-							{
-								// cool, sort out the interpolated point USING
-								// THE ORIGINAL
-								// SEARCH TIME
-								res = getInterpolatedFix(previous, res, srchDTG);
+								// the first one wasn't, remove it
+								set.remove(res);
+								if (set.size() > 0)
+									res = (FixWrapper) set.first();
 							}
 						}
+
 					}
 
-			}
-			else if (srchDTG.equals(theFirst.getDTG()))
-			{
-				// aaah, special case. just see if we're after a data point
-				// that's the
-				// same
-				// as our start time
-				res = theFirst;
+					// right, that's the first points on or before the indicated
+					// DTG. Are we
+					// meant
+					// to be interpolating?
+					if (res != null)
+						if (getInterpolatePoints())
+						{
+							// right - just check that we aren't actually on the
+							// correct time
+							// point.
+							// HEY, USE THE ORIGINAL SEARCH TIME, NOT THE
+							// INCREMENTED ONE,
+							// SINCE WE DON'T WANT TO COMPARE AGAINST A MODIFIED
+							// TIME
+
+							if (!res.getTime().equals(srchDTG))
+							{
+
+								// right, we haven't found an actual data point.
+								// Better calculate
+								// one
+
+								// hmm, better also find the point before our one.
+								// the
+								// headSet operation is exclusive - so we need to
+								// find the one
+								// after the first
+								final SortedSet<Editable> otherSet = getRawPositions().headSet(
+										nearestFix);
+
+								FixWrapper previous = null;
+
+								if (!otherSet.isEmpty())
+								{
+									previous = (FixWrapper) otherSet.last();
+								}
+
+								// did it work?
+								if (previous != null)
+								{
+									// cool, sort out the interpolated point USING
+									// THE ORIGINAL
+									// SEARCH TIME
+									res = getInterpolatedFix(previous, res, srchDTG);
+								}
+							}
+						}
+
+				}
+				else if (srchDTG.equals(theFirst.getDTG()))
+				{
+					// aaah, special case. just see if we're after a data point
+					// that's the
+					// same
+					// as our start time
+					res = theFirst;
+				}
 			}
 
 			// and remember this fix
 			lastFix = res;
 			lastDTG = srchDTG;
+
 		}
 
 		if (res != null)
@@ -2517,12 +2536,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		while (segs.hasMoreElements())
 		{
 			TrackSegment seg = (TrackSegment) segs.nextElement();
-			if (res == null)
-				res = new TimePeriod.BaseTimePeriod(seg.startDTG(), seg.endDTG());
-			else
+
+			// do we have a dtg?
+			if ((seg.startDTG() != null) && (seg.endDTG() != null))
 			{
-				res.extend(seg.startDTG());
-				res.extend(seg.endDTG());
+				// yes, get calculating
+				if (res == null)
+					res = new TimePeriod.BaseTimePeriod(seg.startDTG(), seg.endDTG());
+				else
+				{
+					res.extend(seg.startDTG());
+					res.extend(seg.endDTG());
+				}
 			}
 		}
 		return res;
@@ -2922,7 +2947,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 						if (_showPositions && fw.getVisible())
 						{
-							fw.paintMe(dest, lastLocation, fw.getColor());
+							// this next method just paints the fix. we've put the 
+							// call into paintThisFix so we can override the painting
+							// in the CompositeTrackWrapper class
+							paintThisFix(dest, lastLocation, fw);
 						}
 					}
 				}
@@ -3021,6 +3049,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // if the label is visible
 
 		} // if visible
+	}
+
+	/** get the fix to paint itself
+	 * 
+	 * @param dest
+	 * @param lastLocation
+	 * @param fw
+	 */
+	protected void paintThisFix(final CanvasType dest,
+			WorldLocation lastLocation, final FixWrapper fw)
+	{
+		fw.paintMe(dest, lastLocation, fw.getColor());
 	}
 
 	/**
@@ -3274,56 +3314,58 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			else
 			{
-
-				// pass through the track setting the values
-
-				// sort out the start and finish times
-				long start_time = getStartDTG().getMicros();
-				final long end_time = getEndDTG().getMicros();
-
-				// first check that there is a valid time period between start
-				// time
-				// and end time
-				if (start_time + freq < end_time)
+				if (getStartDTG() != null)
 				{
-					long num = start_time / freq;
+					// pass through the track setting the values
 
-					// we need to add one to the quotient if it has rounded down
-					if (start_time % freq == 0)
+					// sort out the start and finish times
+					long start_time = getStartDTG().getMicros();
+					final long end_time = getEndDTG().getMicros();
+
+					// first check that there is a valid time period between start
+					// time
+					// and end time
+					if (start_time + freq < end_time)
 					{
-						// start is at our freq, so we don't need to increment
-						// it
+						long num = start_time / freq;
+
+						// we need to add one to the quotient if it has rounded down
+						if (start_time % freq == 0)
+						{
+							// start is at our freq, so we don't need to increment
+							// it
+						}
+						else
+						{
+							num++;
+						}
+
+						// calculate new start time
+						start_time = num * freq;
 					}
 					else
 					{
-						num++;
+						// there is not one of our 'intervals' between the start and
+						// the end,
+						// so use the start time
 					}
 
-					// calculate new start time
-					start_time = num * freq;
-				}
-				else
-				{
-					// there is not one of our 'intervals' between the start and
-					// the end,
-					// so use the start time
-				}
-
-				while (start_time <= end_time)
-				{
-					// right, increment the start time by one, because we were
-					// getting the
-					// fix immediately before the requested time
-					final HiResDate thisDTG = new HiResDate(0, start_time);
-					final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
-					// check we found some
-					if (list.length > 0)
+					while (start_time <= end_time)
 					{
-						final FixWrapper fw = (FixWrapper) list[0];
-						setter.execute(fw, true);
+						// right, increment the start time by one, because we were
+						// getting the
+						// fix immediately before the requested time
+						final HiResDate thisDTG = new HiResDate(0, start_time);
+						final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
+						// check we found some
+						if (list.length > 0)
+						{
+							final FixWrapper fw = (FixWrapper) list[0];
+							setter.execute(fw, true);
+						}
+						// produce the next time step
+						start_time += freq;
 					}
-					// produce the next time step
-					start_time += freq;
 				}
 			}
 

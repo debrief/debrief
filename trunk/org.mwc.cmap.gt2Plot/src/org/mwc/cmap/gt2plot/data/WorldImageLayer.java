@@ -28,7 +28,7 @@ import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.ChartFolio;
-import MWC.GUI.Shapes.ChartWrapper;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -43,7 +43,7 @@ public class WorldImageLayer extends GeoToolsLayer
 
 	public WorldImageLayer(String layerName, String fileName)
 	{
-		super(ChartWrapper.WORLDIMAGE_TYPE, layerName, fileName);
+		super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
 	}
 	
 	protected Layer loadLayer(File openFile)
@@ -90,7 +90,7 @@ public class WorldImageLayer extends GeoToolsLayer
 						coverageName.length());
 
 			// also create a layer wrapper
-			res = new ExternallyManagedDataLayer(ChartWrapper.WORLDIMAGE_TYPE,
+			res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
 					coverageName, fileName);
 		}
 		return res;
@@ -168,7 +168,7 @@ public class WorldImageLayer extends GeoToolsLayer
 						// generate the filename
 						String path = parentPath + File.separator + name + ".tif";
 						
-						ChartWrapper cw = new ChartWrapper(name, area.getTopLeft(), area.getBottomRight(), Color.red, path );
+						ChartBoundsWrapper cw = new ChartBoundsWrapper(name, area.getTopLeft(), area.getBottomRight(), Color.red, path );
 						cw.setLayers(parent);
 						cw.setLabelLocation(LocationPropertyEditor.CENTRE);
 						cw.setLabelVisible(false);

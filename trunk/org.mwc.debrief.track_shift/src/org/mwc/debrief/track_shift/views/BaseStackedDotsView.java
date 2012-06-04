@@ -233,7 +233,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
-		toolBarManager.add(_magicBtn);
+	//	toolBarManager.add(_magicBtn);
 
 		// and a separator
 		toolBarManager.add(new Separator());
@@ -757,7 +757,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_ourLayersSubject, secTrack, shiftIt);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject);
+		DebriefActionWrapper daw = new DebriefActionWrapper(dta, _ourLayersSubject, secTrack);
 
 		// and add it to the clipboard
 		CorePlugin.run(daw);

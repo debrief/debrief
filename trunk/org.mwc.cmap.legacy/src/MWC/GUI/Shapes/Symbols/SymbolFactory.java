@@ -120,11 +120,19 @@ import java.util.Iterator;
 public class SymbolFactory
 {
 
-  //////////////////////////////////////////////////
+  private static final String SQUARE = "Square";
+
+	private static final String CROSS = "Cross";
+
+	//////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////
 
-  public static final String MERCHANT = "Merchant";
+  private static final String REFERENCE_POSITION = "Reference Position";
+
+	private static final String DATUM = "Datum";
+
+	public static final String MERCHANT = "Merchant";
 
 	public static final String SUBMARINE = "Submarine";
 
@@ -383,6 +391,13 @@ public class SymbolFactory
       _theVesselIds.put("Minesweeper", "N");
       _theVesselIds.put("Troop_Carrier", "R");
       _theVesselIds.put("Unknown", "@");
+      
+      // put in some symbols, they're useful for text labels
+      _theVesselIds.put(CROSS, "I");
+      _theVesselIds.put(SQUARE, "J");
+      _theVesselIds.put(DATUM, "K");
+      _theVesselIds.put(REFERENCE_POSITION, "L");
+      
 
       // and another (A SSET related entry)
       _theVesselIds.put("MPA", "A");
@@ -398,7 +413,7 @@ public class SymbolFactory
       buoys.put("Lofar", MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
       buoys.put("Barra", MWC.GUI.Shapes.Symbols.Buoys.BarraSym.class);
       buoys.put("Kingpin", MWC.GUI.Shapes.Symbols.Buoys.KingpinSym.class);
-      buoys.put("Square", MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
+      buoys.put(SQUARE, MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
 
       // just put in the difar sym as a general sonar buoy symbol
       buoys.put("Sonar_Buoy", MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
@@ -408,11 +423,11 @@ public class SymbolFactory
       /////////////////////////////////////////
       _theFactory._theSymbols.put("FilledSquare", MWC.GUI.Shapes.Symbols.Geog.FilledSquareSymbol.class);
       _theFactory._theSymbols.put("FilledCircle", MWC.GUI.Shapes.Symbols.Geog.FilledCircleSymbol.class);
-      _theFactory._theSymbols.put("Square", MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
+      _theFactory._theSymbols.put(SQUARE, MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
       _theFactory._theSymbols.put("Circle", MWC.GUI.Shapes.Symbols.Geog.CircleSymbol.class);
-      _theFactory._theSymbols.put("Cross", MWC.GUI.Shapes.Symbols.Geog.CrossSymbol.class);
-      _theFactory._theSymbols.put("Reference Position", MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.class);
-      _theFactory._theSymbols.put("Datum", MWC.GUI.Shapes.Symbols.Geog.DatumSym.class);
+      _theFactory._theSymbols.put(CROSS, MWC.GUI.Shapes.Symbols.Geog.CrossSymbol.class);
+      _theFactory._theSymbols.put(REFERENCE_POSITION, MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.class);
+      _theFactory._theSymbols.put(DATUM, MWC.GUI.Shapes.Symbols.Geog.DatumSym.class);
       _theFactory._theSymbols.put("Missile", MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
 
       // put the sub-lists into the main list

@@ -337,7 +337,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 					Object next = enumer.nextElement();
 
 					// is this item a layer itself?
-					if (next instanceof Layer)
+					if ((next instanceof Layer) &&(!(next instanceof Editable.DoNoInspectChildren)))
 					{
 						// cast to Layer
 						Layer l = (Layer) next;

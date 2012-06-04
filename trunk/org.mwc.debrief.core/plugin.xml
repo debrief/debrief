@@ -141,7 +141,7 @@
 
 
 			<action class="org.mwc.debrief.core.actions.DragSegment" icon="icons/SelectSegment.png"
-				id="org.mwc.debrief.core.DragSegment" label="Drag &amp;Track Segment"
+				id="org.mwc.debrief.core.DragSegment" label="Drag &amp;TMA Segment"
 				menubarPath="org.mwc.debrief.core.EditorView/viewRadio" style="radio"
 				toolbarPath="org.mwc.debrief.core.EditorView/viewRadio" />
 
@@ -251,7 +251,7 @@
 				label="&amp;Line" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
-			<!--
+			
 				<action
 				class="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
 				icon="icons/track_segment.gif"
@@ -259,7 +259,7 @@
 				label="&amp;Track Segment"
 				menubarPath="org.mwc.debrief.core.EditorShapes/shapes" style="push"
 				toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
-			-->
+			
 
 			<action class="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
 				icon="icons/auto_layer.gif" id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
@@ -283,23 +283,16 @@
 	<extension id="Debrief" point="org.eclipse.core.runtime.products">
 		<product application="org.eclipse.ui.ide.workbench"
 			description="Debrief Maritime Analysis Software" name="DebriefNG">
-			<property name="appName" value="DebriefNG">
-			</property>
-			<property name="preferenceCustomization" value="plugin_customization.ini">
-			</property>
-			<property name="introTitle" value="Welcome to Debrief NG (with S2R)" />
+			<property name="appName" value="DebriefNG" />
+			<property name="preferenceCustomization" value="plugin_customization.ini"/>
+			<property name="introTitle" value="Welcome to Debrief NG (with Charts)" />
 			<property name="introBrandingImage" value="product:icons/debrief_icon.gif" />
 			<property name="introBrandingImageText" value="Debrief, from the Maritime Warfare Centre" />
-			<property name="aboutImage" value="icons/DebriefNGlogo.gif">
-			</property>
-			<property name="windowImages" value="icons/icon.gif">
-			</property>
-			<property name="startupForegroundColor" value="000000">
-			</property>
-			<property name="startupMessageRect" value="0,0,0,0">
-			</property>
-			<property name="startupProgressRect" value="0,0,0,0">
-			</property>
+			<property name="aboutImage" value="icons/DebriefNGlogo.gif"/>
+			<property name="windowImages" value="icons/icon.gif"/>
+			<property name="startupForegroundColor" value="000000"/>
+			<property name="startupMessageRect" value="0,0,0,0"/>
+			<property name="startupProgressRect" value="0,0,0,0"/>
 		</product>
 	</extension>
 

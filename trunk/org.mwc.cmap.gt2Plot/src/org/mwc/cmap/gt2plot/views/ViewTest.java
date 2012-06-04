@@ -86,8 +86,6 @@ public class ViewTest extends ViewPart
 
 	private AffineTransform worldToScreen;
 
-	private AffineTransform screenToWorld;
-
 	private Canvas canvas;
 
 	private Image swtImage;
@@ -307,7 +305,7 @@ public class ViewTest extends ViewPart
 		worldToScreen = new AffineTransform(scale, 0, 0, -scale, -xoff, yoff);
 		try
 		{
-			screenToWorld = worldToScreen.createInverse();
+			worldToScreen.createInverse();
 
 		}
 		catch (NoninvertibleTransformException ex)

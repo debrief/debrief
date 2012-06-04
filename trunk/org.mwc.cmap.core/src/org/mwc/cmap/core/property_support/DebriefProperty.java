@@ -4,18 +4,25 @@
 package org.mwc.cmap.core.property_support;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
+import MWC.GUI.Properties.DoNotUseTagEditorInPropertiesView;
 
 public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 {
@@ -41,7 +48,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		_myHelper = findHelperFor(prop, subject);
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings(
+	{ "rawtypes" })
 	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
 	{
 		EditorHelper res = null;
@@ -66,12 +74,15 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 			{
 				final java.beans.PropertyEditor propEditor = (java.beans.PropertyEditor) theEditor;
 				// ok. wrap it.
-				if (propEditor.getTags() != null)
+				if (!(propEditor instanceof DoNotUseTagEditorInPropertiesView))
 				{
-					// ok - do one of the combo-box editor types
-					final String[] theTags = propEditor.getTags();
-					res = new TagListHelper(theTags, propEditor);
+					if (propEditor.getTags() != null)
+					{
+						// ok - do one of the combo-box editor types
+						final String[] theTags = propEditor.getTags();
+						res = new TagListHelper(theTags, propEditor);
 
+					}
 				}
 			}
 		}
@@ -334,6 +345,18 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return res;
 	}
 
+	public Annotation[] getAnnotationsForGetter()
+	{
+		// find out the type of the editor
+		Method write = _thisProp.getWriteMethod();
+		return write.getAnnotations();
+	}
+
+	public Editable getEditable()
+	{
+		return _subject;
+	}
+	
 	public void setValue(Object value)
 	{
 		if (_myHelper != null)
@@ -350,18 +373,18 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		}
 		catch (IllegalArgumentException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
+			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
+					+ value, e);
 		}
 		catch (IllegalAccessException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
+			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
+					+ value, e);
 		}
 		catch (InvocationTargetException e)
 		{
-			CorePlugin.logError(Status.ERROR,
-					"Whilst setting property value for:" + value, e);
+			CorePlugin.logError(Status.ERROR, "Whilst setting property value for:"
+					+ value, e);
 		}
 
 	}

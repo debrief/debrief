@@ -101,17 +101,6 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.REL_BEARING_FORMAT,
 				"Relative &bearing format:", 1, _relBearingTags, getFieldEditorParent()));
-		
-		addField(new ScaleFieldEditor(PreferenceConstants.CHART_TRANSPARENCY,
-				"Chart backdrop transparency (0=transparent, 255=solid):",
-				getFieldEditorParent(), 0,255,1,10));
-		
-		addField(new DirectoryFieldEditor(PreferenceConstants.CHART_FOLDER,
-				"Parent folder for chart libraries",
-				getFieldEditorParent()));
-		
-
-		
 	}
 
 	/*
@@ -131,9 +120,6 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 		public static final String RNG_UNITS = MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY;
 		public static final String REL_BEARING_FORMAT = relBearingCalc.REL_BEARING_FORMAT;
 		public static final String IMPORT_MODE = ImportReplay.TRACK_IMPORT_MODE;
-		public static final String CHART_TRANSPARENCY = "CHART_TRANSPARENCY";
-		public static final String CHART_FOLDER = "CHART_FOLDER";
-
 	}
 
 }

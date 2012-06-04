@@ -136,6 +136,10 @@ final class ImportLabel implements PlainLineImporter
     LabelWrapper lw = new LabelWrapper(theText,
                                        theLoc,
                                        ImportReplay.replayColorFor(theSymbology));
+    
+    // also get the symbol type
+    String symType = ImportReplay.replayTrackSymbolFor(theSymbology);
+    lw.setSymbolType(symType);
 
     return lw;
   }
@@ -159,7 +163,7 @@ final class ImportLabel implements PlainLineImporter
     // no, just output it as a dumb text label
     line = _myType;
 
-    line = line + " " + ImportReplay.replaySymbolFor(theLabel.getColor()) + " ";
+    line = line + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType()) + " ";
 
     line = line + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
 

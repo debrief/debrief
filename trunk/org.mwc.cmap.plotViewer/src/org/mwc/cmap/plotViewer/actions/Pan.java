@@ -130,7 +130,7 @@ public class Pan extends CoreDragAction
 
 			// and wrap it
 			DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-					_myChart.getLayers());
+					_myChart.getLayers(), null);
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);
@@ -164,7 +164,9 @@ public class Pan extends CoreDragAction
 			double oldBorder = proj.getDataBorder();
 			proj.setDataBorderNoZoom(1.0);
 			proj.setDataArea(theArea);
-			proj.zoom(0.0);
+			// in the shiny new GeoTools projection we don't need to fit-to-win after
+			// changing the data area
+			// proj.zoom(0.0);
 			proj.setDataBorderNoZoom(oldBorder);
 		}
 
@@ -176,9 +178,11 @@ public class Pan extends CoreDragAction
 		public Cursor getDownCursor()
 		{
 			// ok, return the pan cursor
-			if (_downCursor == null)
+			if ((_downCursor == null) || (_downCursor.isDisposed()))
+			{
 				_downCursor = new Cursor(Display.getDefault(), CorePlugin
 						.getImageDescriptor("icons/hand_fist.ico").getImageData(), 4, 2);
+			}
 
 			return _downCursor;
 		}
@@ -191,7 +195,7 @@ public class Pan extends CoreDragAction
 		public Cursor getNormalCursor()
 		{
 			// ok, return the pan cursor
-			if (_normalCursor == null)
+			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
 				_normalCursor = new Cursor(Display.getDefault(), CorePlugin
 						.getImageDescriptor("icons/hand.ico").getImageData(), 4, 2);
 

@@ -31,7 +31,7 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 	public RelativeTMASegmentHandler(Layers theLayers)
 	{
 		// inform our parent what type of class we are
-		super(theLayers, TMA_SEGMENT);
+		super(TMA_SEGMENT);
 
 		_theLayers = theLayers;
 

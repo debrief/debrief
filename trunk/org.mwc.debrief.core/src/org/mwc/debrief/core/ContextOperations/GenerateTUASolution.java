@@ -168,40 +168,47 @@ public class GenerateTUASolution implements RightClickContextItemGenerator
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
 			IEditorPart editor = page.getActiveEditor();
-			TimeProvider timer = (TimeProvider) editor.getAdapter(TimeProvider.class);
-			final HiResDate tNow = timer.getTime();
+			if (editor != null)
+			{
+				TimeProvider timer = (TimeProvider) editor
+						.getAdapter(TimeProvider.class);
+				if (timer != null)
+				{
+					final HiResDate tNow = timer.getTime();
 
-			// ok, do I know how to create a TMA segment from this?
-			Editable onlyOne = subjects[0];
-			if (onlyOne instanceof TrackWrapper)
-			{
-				final TrackWrapper tw = (TrackWrapper) onlyOne;
-				// cool wrap it in an action.
-				_myAction = new Action("Generate TUA Ellipse for this track")
-				{
-					@Override
-					public void run()
+					// ok, do I know how to create a TMA segment from this?
+					Editable onlyOne = subjects[0];
+					if (onlyOne instanceof TrackWrapper)
 					{
-						// get the supporting data
-						NewSolutionWizard wizard = new NewSolutionWizard(tNow, tw, null);
-						runOperation(theLayers, wizard);
+						final TrackWrapper tw = (TrackWrapper) onlyOne;
+						// cool wrap it in an action.
+						_myAction = new Action("Generate TUA Ellipse for this track")
+						{
+							@Override
+							public void run()
+							{
+								// get the supporting data
+								NewSolutionWizard wizard = new NewSolutionWizard(tNow, tw, null);
+								runOperation(theLayers, wizard);
+							}
+						};
 					}
-				};
-			}
-			else if (onlyOne instanceof TMAWrapper)
-			{
-				final TMAWrapper tw = (TMAWrapper) onlyOne;
-				// cool wrap it in an action.
-				_myAction = new Action("Generate TUA Ellipse within this group")
-				{
-					@Override
-					public void run()
+					else if (onlyOne instanceof TMAWrapper)
 					{
-						// get the supporting data
-						NewSolutionWizard wizard = new NewSolutionWizard(tNow, null, tw);
-						runOperation(theLayers, wizard);
+						final TMAWrapper tw = (TMAWrapper) onlyOne;
+						// cool wrap it in an action.
+						_myAction = new Action("Generate TUA Ellipse within this group")
+						{
+							@Override
+							public void run()
+							{
+								// get the supporting data
+								NewSolutionWizard wizard = new NewSolutionWizard(tNow, null, tw);
+								runOperation(theLayers, wizard);
+							}
+						};
 					}
-				};
+				}
 			}
 		}
 

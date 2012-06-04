@@ -1,22 +1,11 @@
 package org.mwc.cmap.gt2plot;
 
-import java.util.Iterator;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.core.property_support.RightClickSupport;
-import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.cmap.gt2plot.data.GTLayer;
 import org.osgi.framework.BundleContext;
 
-import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -39,18 +28,6 @@ public class GtActivator extends AbstractUIPlugin
 	{
 	}
 
-	public static void initialise()
-	{
-		// HACK:  we need to 'pre-initialise' the tiff reader in order 
-		// to load world image files
-		Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
-		if(!iter2.hasNext())
-		{
-			logError(Status.ERROR, "Failed to initialise TIFF reader for Java ImageIO", null);
-			System.err.println("TIFF READER NOT READY");
-		}
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -65,25 +42,6 @@ public class GtActivator extends AbstractUIPlugin
 
 		// Setting the system-wide default at startup time
 		System.setProperty("org.geotools.referencing.forceXY", "true");
-
-		RightClickContextItemGenerator clicker = new RightClickContextItemGenerator()
-		{
-
-			public void generate(IMenuManager parent, Layers theLayers,
-					Layer[] parentLayers, Editable[] subjects)
-			{
-				if (theLayer == null)
-					theLayer = new GTLayer();
-
-				// see if it's already loaded
-				Layer it = theLayers.findLayer(theLayer.getName());
-				if (it == null)
-					theLayers.addThisLayer(theLayer);
-
-			}
-		};
-		RightClickSupport.addRightClickGenerator(clicker);
-
 	}
 
 	/**

@@ -133,6 +133,7 @@ package org.mwc.cmap.plotViewer.editors.chart;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -157,25 +158,33 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.preferences.ChartPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
+import org.mwc.cmap.gt2plot.proj.GeoToolsPainter;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.HitTester;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
@@ -204,9 +213,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		private static final long serialVersionUID = 1L;
 
-		public CustomisedSWTCanvas(Composite parent)
+		public CustomisedSWTCanvas(Composite parent, GeoToolsHandler projection)
 		{
-			super(parent);
+			super(parent, projection);
 		}
 
 		/**
@@ -407,24 +416,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * 
 		 * @return the new cursor to use, silly.
 		 */
-		public Cursor getDownCursor()
-		{
-			// ok, return the 'normal' cursor
-			if (_downCursor == null)
-				_downCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-
-			return _downCursor;
-		}
-
-		/**
-		 * ok, assign the cursor for when we're just hovering
-		 * 
-		 * @return the new cursor to use, silly.
-		 */
 		public Cursor getNormalCursor()
 		{
 			// ok, return the 'normal' cursor
-			if (_normalCursor == null)
+			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
 				_normalCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
 
 			return _normalCursor;
@@ -491,6 +486,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	private boolean _repainting = false;
 
+	private Image _swtImage;
+
+	/**
+	 * colour palette for our image
+	 * 
+	 */
+	private static final PaletteData PALETTE_DATA = new PaletteData(0xFF0000,
+			0xFF00, 0xFF);
+
+	/** RGB value to use as transparent color */
+	private static final int TRANSPARENT_COLOR = 0x123456;
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -499,12 +506,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * 
 	 * @param theLayers
 	 *          the data to plot
+	 * @param _myProjection
 	 */
-	public SWTChart(final Layers theLayers, Composite parent)
+	public SWTChart(final Layers theLayers, Composite parent,
+			GeoToolsHandler _myProjection)
 	{
 		super(theLayers);
-		_theCanvas = createCanvas(parent);
-//		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
+		_theCanvas = createCanvas(parent, (GtProjection) _myProjection);
 
 		// sort out the area of coverage of the plot
 		if (theLayers != null)
@@ -646,6 +654,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 		// and clear out our buffered layers (they all need to be repainted anyway)
 		_myLayers.clear();
+
+		// also ditch the GeoTools image, if we have one
+		if (_swtImage != null)
+		{
+			// hey, we're done
+			_swtImage.dispose();
+			_swtImage = null;
+		}
+
 	}
 
 	/**
@@ -658,6 +675,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		clearImages();
 		_myLayers = null;
 
+		// and ditch the image template
+		_myImageTemplate = null;
+
 		// instruct the canvas to close
 		_theCanvas.close();
 		_theCanvas = null;
@@ -669,11 +689,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * over-rideable member function which allows us to over-ride the canvas which
 	 * gets used.
 	 * 
+	 * @param projection
+	 * 
 	 * @return the Canvas to use
 	 */
-	public SWTCanvas createCanvas(Composite parent)
+	public SWTCanvas createCanvas(Composite parent, GtProjection projection)
 	{
-		return new CustomisedSWTCanvas(parent)
+		return new CustomisedSWTCanvas(parent, projection)
 		{
 
 			/**
@@ -813,7 +835,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					theMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
 
 					// and restore the mouse mode cursor
-					_theCanvas.getCanvas().setCursor(theMode.getNormalCursor());
+					Cursor normalCursor = theMode.getNormalCursor();
+					_theCanvas.getCanvas().setCursor(normalCursor);
 				}
 			}
 			else
@@ -903,17 +926,93 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected void paintBackground(final CanvasType dest)
 	{
-		// fill the background, to start with
-		final Dimension sz = _theCanvas.getSize();
-
 		// right, don't fill in the background if we're not painting to the screen
-		if (dest instanceof SWTCanvas)
+		boolean paintedBackground = false;
+
+		// also plot any GeoTools stuff
+		PlainProjection proj = dest.getProjection();
+		
+		// fill the background, to start with
+		final Dimension sa = proj.getScreenArea();
+		final int width = sa.width;
+		final int height = sa.height;
+
+		if (proj instanceof GtProjection)
 		{
-			final Color theCol = dest.getBackgroundColor();
-			dest.setBackgroundColor(theCol);
-			dest.fillRect(0, 0, sz.width, sz.height);
+			GtProjection gp = (GtProjection) proj;
+
+			// do we have a cached image?
+			if (_swtImage == null)
+			{
+				// nope, do we have any data?
+				if (gp.numLayers() > 0)
+				{
+					// now, GeoTools paint is an expensive operation, so I'm going to do
+					// all I can to avoid doing it. So, I'm going to see if any of the
+					// layers
+					// overlap with the current drawing area
+					if (gp.layersOverlapWith(proj.getVisibleDataArea()))
+					{
+
+						// now, if we're in relative projection mode, the
+						// projection-translate doesn't get
+						// performed until the first toScreen call. So do a toScreen before
+						// we start plotting the images
+						proj.toScreen(proj.getDataArea().getCentre());
+
+						BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+								dest.getBackgroundColor());
+						if (img != null)
+						{
+							ImageData swtImage = awtToSwt(img, width + 1, height + 1);
+							_swtImage = new Image(Display.getCurrent(), swtImage);
+						}
+					}
+				}
+			}
+
+			// ok, now we can paint it
+			if (dest instanceof SWTCanvasAdapter)
+			{
+				if (_swtImage != null)
+				{
+					SWTCanvasAdapter swtC = (SWTCanvasAdapter) dest;
+					int alpha = 255;
+					String alphaStr = CorePlugin.getDefault().getPreferenceStore()
+							.getString(PreferenceConstants.CHART_TRANSPARENCY);
+					if (alphaStr != null)
+						if (alphaStr.length() > 0)
+							alpha = Integer.parseInt(alphaStr);
+					swtC.drawSWTImage(_swtImage, 0, 0, width, height, alpha);
+					paintedBackground = true;
+				}
+			}
+			else if (dest instanceof MetafileCanvas)
+			{
+				// but do we have any data?
+				if (gp.numLayers() > 0)
+				{
+					// yes, generate the image
+					BufferedImage img = GeoToolsPainter.drawAwtImage(width, height, gp,
+							dest.getBackgroundColor());
+					dest.drawImage(img, 0, 0, width, height, null);
+				}
+			}
+
 		}
 
+		// have we painted the background yet?
+		if (!paintedBackground)
+		{
+			// hey, we don't have GeoTools to paint for us, fill in the background
+			// but, only fill in the background if we're not painting to the screen
+			if (dest instanceof SWTCanvas)
+			{
+				final Color theCol = dest.getBackgroundColor();
+				dest.setBackgroundColor(theCol);
+				dest.fillRect(0, 0, width, height);
+			}
+		}
 	}
 
 	/**
@@ -1011,6 +1110,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 															canvasWidth, canvasHeight);
 													// and remember it.
 													_myImageTemplate = template.getImageData();
+
+													// and ditch the template itself
+													template.dispose();
 												}
 
 												// ok, and now the SWT image
@@ -1049,7 +1151,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 												// lastly add this image to our Graphics object
 												canv.drawSWTImage(image, 0, 0, canvasWidth,
-														canvasHeight);
+														canvasHeight, 255);
 											}
 
 										}
@@ -1169,11 +1271,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			// and ditch the image
 			if (theImage != null)
 			{
+				// dispose of the image
 				theImage.dispose();
-			}
 
-			// just delete that layer
-			_myLayers.remove(changedLayer);
+				// and delete that layer
+				_myLayers.remove(changedLayer);
+			}
 
 			// NO, don't GC. If we change lots of items, we do lots of garbage
 			// collections, and each
@@ -1181,9 +1284,47 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			// --- chuck in a GC, to clear the old image allocation
 			// --- System.gc();
 
+			// hey, it's not one of our GeoTools layers is it?
+			if (changedLayer instanceof ExternallyManagedDataLayer)
+			{
+				// ok, ditch the swt image
+				if (_swtImage != null)
+				{
+					_swtImage.dispose();
+					_swtImage = null;
+				}
+			}
+
 			// and trigger update
 			_theCanvas.updateMe();
+
 		}
+	}
+
+	public static ImageData awtToSwt(BufferedImage bufferedImage, int width,
+			int height)
+	{
+		System.err.println("DOING AWT TO SWT!!!!");
+		final int[] awtPixels = new int[width * height];
+		ImageData swtImageData = new ImageData(width, height, 24, PALETTE_DATA);
+		swtImageData.transparentPixel = TRANSPARENT_COLOR;
+		int step = swtImageData.depth / 8;
+		final byte[] data = swtImageData.data;
+		bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
+		for (int i = 0; i < height; i++)
+		{
+			int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
+			for (int j = 0; j < width; j++)
+			{
+				int rgb = awtPixels[j + i * width];
+				for (int k = swtImageData.depth - 8; k >= 0; k -= 8)
+				{
+					data[idx++] = (byte) ((rgb >> k) & 0xFF);
+				}
+			}
+		}
+
+		return swtImageData;
 	}
 
 }

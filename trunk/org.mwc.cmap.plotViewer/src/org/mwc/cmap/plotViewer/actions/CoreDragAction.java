@@ -3,6 +3,7 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
+import org.eclipse.swt.graphics.Cursor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
@@ -37,7 +38,8 @@ abstract public class CoreDragAction extends CoreEditorAction
 		CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(newMode, oldMode, myChart);
 		
 		// initialise the cursor
-		myChart.getCanvasControl().setCursor(newMode.getNormalCursor());
+		final Cursor normalCursor = newMode.getNormalCursor();
+		myChart.getCanvasControl().setCursor(normalCursor);
 		
 		// and wrap it
 		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);

@@ -17,7 +17,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
-abstract public class ChartHandler extends
+abstract public class ChartBoundsHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements  PlottableExporter
 {
 
@@ -49,7 +49,7 @@ abstract public class ChartHandler extends
 	private static final String SHAPE_VISIBLE = "Visible";
 	private static final String LABEL_LOCATION = "LabelLocation";
 	private static final String LABEL_TEXT = "Label";
-	public ChartHandler()
+	public ChartBoundsHandler()
 	{
 		// inform our parent what type of class we are
 		super(CHART_REFERENCE);
@@ -134,7 +134,7 @@ abstract public class ChartHandler extends
 	public void elementClosed()
 	{
 
-		MWC.GUI.Shapes.ChartWrapper sw = new MWC.GUI.Shapes.ChartWrapper(
+		MWC.GUI.Shapes.ChartBoundsWrapper sw = new MWC.GUI.Shapes.ChartBoundsWrapper(
 				_label, _tl, _br, _col, _filename);
 
 		if (_theLocation != null)
@@ -162,7 +162,7 @@ abstract public class ChartHandler extends
 		// output the shape related stuff first
 		org.w3c.dom.Element theShape = doc.createElement(CHART_REFERENCE);
 
-		MWC.GUI.Shapes.ChartWrapper sw = (MWC.GUI.Shapes.ChartWrapper) plottable;
+		MWC.GUI.Shapes.ChartBoundsWrapper sw = (MWC.GUI.Shapes.ChartBoundsWrapper) plottable;
 
 		// put the parameters into the parent
 		theShape.setAttribute(LABEL_TEXT, toXML(sw.getName()));

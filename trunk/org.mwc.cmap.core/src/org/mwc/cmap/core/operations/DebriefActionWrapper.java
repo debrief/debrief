@@ -3,6 +3,7 @@ package org.mwc.cmap.core.operations;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.*;
 
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Tools.Action;
 
@@ -13,17 +14,19 @@ public class DebriefActionWrapper extends CMAPOperation
 
 	final private Layers _myLayers;
 
+	private Layer _changedLayer;
+
 	/**
 	 * constructor, so that we can wrap our action
 	 * 
 	 * @param theAction
 	 */
-	public DebriefActionWrapper(Action theAction, final Layers theLayers)
+	public DebriefActionWrapper(Action theAction, final Layers theLayers, final Layer changedLayer)
 	{
 		super(theAction.toString());
 
 		_myLayers = theLayers;
-
+		_changedLayer = changedLayer;
 		_myAction = theAction;
 	}
 
@@ -34,7 +37,7 @@ public class DebriefActionWrapper extends CMAPOperation
 	 */
 	public DebriefActionWrapper(Action theAction)
 	{
-		this(theAction, null);
+		this(theAction, null, null);
 	}
 
 	// ////////////////////////////////////////////////////////////
@@ -48,7 +51,7 @@ public class DebriefActionWrapper extends CMAPOperation
 
 		// hey, fire update
 		if (_myLayers != null)
-			_myLayers.fireModified(null);
+			_myLayers.fireModified(_changedLayer);
 
 		return Status.OK_STATUS;
 	}
@@ -63,7 +66,7 @@ public class DebriefActionWrapper extends CMAPOperation
 
 			// and fire update
 			if (_myLayers != null)
-				_myLayers.fireModified(null);
+				_myLayers.fireModified(_changedLayer);
 
 		}
 
@@ -79,7 +82,7 @@ public class DebriefActionWrapper extends CMAPOperation
 
 			// and fire update
 			if (_myLayers != null)
-				_myLayers.fireModified(null);
+				_myLayers.fireModified(_changedLayer);
 		}
 
 		return Status.OK_STATUS;

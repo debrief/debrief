@@ -4,7 +4,7 @@
 		<description>In addition to geospatial data, Debrief offers the ability to analyse time-stamped textual comments - referred to as Narrative data.  Narrative data is shown in its own view, and is displayed dynamically in association with the current exercise time.</description>
 	</intro>
 	<item title="Check you have some data" skip="true">
-		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  Also check you have our sample data-files - it they're not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
+		<description>In the top left hand corner of Debrief you should find the Navigator window.  If it isn't there, select "Navigator" from Debrief's Window/Show View menu.  Also check you have our sample data-files - it they're not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample plot-file">
 		<description>Double-click on 'sample.xml' in the Navigator window, and the sample plot will open.</description>

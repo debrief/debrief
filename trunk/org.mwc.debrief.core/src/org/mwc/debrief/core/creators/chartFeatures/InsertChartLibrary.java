@@ -4,8 +4,12 @@
 package org.mwc.debrief.core.creators.chartFeatures;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
@@ -39,37 +43,41 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 	{
 		String chartLib = CorePlugin.getToolParent().getProperty(
 				ChartPrefsPage.PreferenceConstants.CHART_FOLDER);
-		
+
 		// has it been set?
-		if(chartLib == null)
+		if (chartLib == null)
 		{
-			CorePlugin.showMessage("Load chart library", "To load a chart library you must first specify a root folder via\nWindows/Preferences/Maritime Analysis");
+			CorePlugin
+					.showMessage(
+							"Load chart library",
+							"To load a chart library you must first specify a root folder via\nWindows/Preferences/Maritime Analysis");
 			return null;
 		}
-
-		Vector<File> matches = new Vector<File>();
 
 		File parent = new File(chartLib);
 
 		// is it a real directory
-		if(!parent.exists())
+		if (!parent.exists())
 		{
-			CorePlugin.showMessage("Load chart library", 
-					"Unable to find the chart library defined in:\nWindows/Preferences/Maritime Analysis");
+			CorePlugin
+					.showMessage(
+							"Load chart library",
+							"Unable to find the chart library defined in:\nWindows/Preferences/Maritime Analysis");
 			return null;
 		}
-		
-		File[] list = parent.listFiles();
-		findMatches(list, matches);
+
+		IOFileFilter fileFilter = new WildcardFileFilter(
+				WorldImageLayer.RASTER_FILE + ".shp");
+		Collection<File> list = FileUtils.listFiles(parent, fileFilter, TrueFileFilter.INSTANCE);
 
 		Plottable res = null;
-		if (matches.size() > 0)
+		if (list.size() > 0)
 		{
 			// ok, let the user choose which one
 			ListDialog dl = new ListDialog(Display.getCurrent().getActiveShell());
 			dl.setLabelProvider(new FileLabelProvider());
 			dl.setContentProvider(new ArrayContentProvider());
-			dl.setInput(matches.toArray());
+			dl.setInput(list.toArray());
 			dl.setTitle("Load chart library");
 			dl.setMessage("The following chart libraries have been found in the \nfolder specifed in the 'Maritime Analysis' Preferences.\n\nIndicate which library you wish to load.");
 			dl.open();
@@ -103,26 +111,4 @@ public class InsertChartLibrary extends CoreInsertChartFeature
 		}
 
 	}
-
-	private void findMatches(final File[] list, Vector<File> matches)
-	{
-		// ok, go through them
-		for (int i = 0; i < list.length; i++)
-		{
-			File file = list[i];
-			if (file.isDirectory())
-			{
-				File[] thisList = file.listFiles();
-				findMatches(thisList, matches);
-			}
-			else
-			{
-				if (file.getName().endsWith(WorldImageLayer.RASTER_FILE + ".shp"))
-				{
-					matches.add(file);
-				}
-			}
-		}
-	}
-
 }

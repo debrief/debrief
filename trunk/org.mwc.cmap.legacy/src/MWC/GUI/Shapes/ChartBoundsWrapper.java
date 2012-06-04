@@ -242,7 +242,7 @@ import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class ChartWrapper extends MWC.GUI.PlainWrapper implements
+public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 		NeedsToKnowAboutLayers
 {
 
@@ -307,7 +307,7 @@ public class ChartWrapper extends MWC.GUI.PlainWrapper implements
 	public final class ChartInfo extends Editable.EditorType
 	{
 
-		public ChartInfo(final ChartWrapper data, final String theName)
+		public ChartInfo(final ChartBoundsWrapper data, final String theName)
 		{
 			super(data, theName, data._theShape.getType() + ":");
 		}
@@ -327,9 +327,9 @@ public class ChartWrapper extends MWC.GUI.PlainWrapper implements
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class<?> c = ChartWrapper.class;
+			final Class<?> c = ChartBoundsWrapper.class;
 			final MethodDescriptor[] mds =
-			{ method(c, "loadThis", null, "Load this chart") };
+			{ method(c, "loadThisChart", null, "Load this chart") };
 
 			return mds;
 		}
@@ -361,7 +361,7 @@ public class ChartWrapper extends MWC.GUI.PlainWrapper implements
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public ChartWrapper(final String label, final WorldLocation tl,
+	public ChartBoundsWrapper(final String label, final WorldLocation tl,
 			WorldLocation br, final java.awt.Color theColor, String fileName)
 	{
 		_theShape = new RectangleShape(tl, br);
@@ -475,7 +475,7 @@ public class ChartWrapper extends MWC.GUI.PlainWrapper implements
 		_myLayers = parent;
 	}
 
-	public void loadThis()
+	public void loadThisChart()
 	{
 		System.err.println("loading:" + _fileName + " into:" + _myLayers);
 
@@ -518,7 +518,7 @@ public class ChartWrapper extends MWC.GUI.PlainWrapper implements
 		_theLabel.setVisible(val);
 
 		// ok, inform any listeners
-		getSupport().firePropertyChange(ChartWrapper.LABEL_VIS_CHANGED, null,
+		getSupport().firePropertyChange(ChartBoundsWrapper.LABEL_VIS_CHANGED, null,
 				new Boolean(val));
 
 	}

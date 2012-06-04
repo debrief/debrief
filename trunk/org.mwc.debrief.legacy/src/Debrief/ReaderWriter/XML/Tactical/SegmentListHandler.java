@@ -35,7 +35,7 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
       	addThisSegment(segment);
       }
     });
-    addHandler(new AbsoluteTMASegmentHandler(theLayers)
+    addHandler(new AbsoluteTMASegmentHandler()
     {
       public void addSegment(TrackSegment segment)
       {

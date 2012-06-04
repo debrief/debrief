@@ -33,7 +33,7 @@ public class ChartFolio extends BaseLayer
 	@Override
 	public void add(Editable thePlottable)
 	{
-		if (thePlottable instanceof ChartWrapper)
+		if (thePlottable instanceof ChartBoundsWrapper)
 			super.add(thePlottable);
 		else
 			throw new RuntimeException("Can only hold chart wrappers!");
@@ -53,7 +53,7 @@ public class ChartFolio extends BaseLayer
 		while (iter.hasMoreElements())
 		{
 			Editable editable = (Editable) iter.nextElement();
-			ChartWrapper chart = (ChartWrapper) editable;
+			ChartBoundsWrapper chart = (ChartBoundsWrapper) editable;
 			chart.setLabelVisible(showNames);
 		}
 	}
@@ -71,7 +71,7 @@ public class ChartFolio extends BaseLayer
 		while (iter.hasMoreElements())
 		{
 			Editable editable = (Editable) iter.nextElement();
-			ChartWrapper chart = (ChartWrapper) editable;
+			ChartBoundsWrapper chart = (ChartBoundsWrapper) editable;
 			chart.setColor(lineColor);
 		}
 	}

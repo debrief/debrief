@@ -4,7 +4,7 @@
 		<description>Debrief NG stores it's data in a local folder called a Project.  It's into this folder that you place analysis files and links to existing data folders elsewhere on your machine/network.  This tutorial will lead you through creating a new, blank project.  </description>
 	</intro>
 	<item title="Check Navigator is open">
-		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.</description>
+		<description>In the top left hand corner of Debrief you should find the Navigator window.  If it isn't there, select "Navigator" from Debrief's Window/Show View menu.</description>
 	</item>
  <item
        skip="true"
@@ -16,7 +16,7 @@
  <item
        title="Learn about the Quick Access panel">
     <description>
-       Alternatively, where ever you are in Debrief, you can popup the quick access panel.  Just hold down the <b>[ctrl]</b> key, press <b>3</b> and a yellow post-it like menu will appear.  As you start typing &apos;Navigator&apos; the list of available commands will shrink down until your required view is open.  Obviously, this is of greater relevance to those who favour keyboard over mouse.
+       Alternatively, whereever you are in Debrief, you can popup the quick access panel.  Just hold down the <b>[ctrl]</b> key, press <b>3</b> and a yellow post-it like menu will appear.  As you start typing &apos;Navigator&apos; the list of available commands will shrink down until your required view is open.  Obviously, this is of greater relevance to those who favour keyboard over mouse.
     </description>
  </item>
  <item

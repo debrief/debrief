@@ -15,8 +15,9 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Shapes.ChartFolio;
-import MWC.GUI.Shapes.ChartWrapper;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.TacticalData.NarrativeEntry;
 
 public class DebriefImageHelper implements ViewLabelImageHelper
@@ -32,7 +33,9 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			res = CorePlugin.getImageDescriptor("icons/SensorFit.png");
 		else if (editable instanceof ChartFolio)
 			res = DebriefPlugin.getImageDescriptor("icons/library.gif");
-		else if (editable instanceof ChartWrapper)
+		else if (editable instanceof ExternallyManagedDataLayer)
+			res = CorePlugin.getImageDescriptor("icons/map.png");
+		else if (editable instanceof ChartBoundsWrapper)
 			res = CorePlugin.getImageDescriptor("icons/map.png");
 		else if (editable instanceof SensorContactWrapper)
 			res = CorePlugin.getImageDescriptor("icons/active16.png");

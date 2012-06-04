@@ -10,274 +10,277 @@ import java.util.Date;
 
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public final class NarrativeEntry implements 
-        MWC.GUI.Plottable, Serializable, ExcludeFromRightClickEdit
+public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
+		ExcludeFromRightClickEdit
 {
-    // ///////////////////////////////////////////
-    // member variables
-    // ///////////////////////////////////////////
-    private String _track;
-    private HiResDate _DTG;
-    private String _entry;
-    private String _type;
-    String _DTGString = null;
-    
-    private NarrativeEntryInfo _myInfo;
 
-    /**
+	public static final String DTG = "DTG";
+
+	// ///////////////////////////////////////////
+	// member variables
+	// ///////////////////////////////////////////
+	private String _track;
+	private HiResDate _DTG;
+	private String _entry;
+	private String _type;
+	String _DTGString = null;
+
+	private transient NarrativeEntryInfo _myInfo;
+
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    // ///////////////////////////////////////////
-    // constructor
-    // ///////////////////////////////////////////
+	// ///////////////////////////////////////////
+	// constructor
+	// ///////////////////////////////////////////
 
-    /**
-     * new constructor - for narrative entries which include the type of entry
-     * (typically for SMNT narratives)
-     * 
-     * @param track
-     *            name of the track this applies to
-     * @param type
-     *            what sort of entry this is (or null)
-     * @param DTG
-     *            when the entry was recorded
-     * @param entry
-     *            the content of the entry
-     */
-    public NarrativeEntry(final String track, final String type,
-            final HiResDate DTG, final String entry)
-    {
-        _track = track;
-        _DTG = DTG;
-        _entry = entry;
-        _type = type;
-    }
+	/**
+	 * new constructor - for narrative entries which include the type of entry
+	 * (typically for SMNT narratives)
+	 * 
+	 * @param track
+	 *          name of the track this applies to
+	 * @param type
+	 *          what sort of entry this is (or null)
+	 * @param DTG
+	 *          when the entry was recorded
+	 * @param entry
+	 *          the content of the entry
+	 */
+	public NarrativeEntry(final String track, final String type,
+			final HiResDate DTG, final String entry)
+	{
+		_track = track;
+		_DTG = DTG;
+		_entry = entry;
+		_type = type;
+	}
 
-    /**
-     * old constructor - for when narratives didn't include the type attribute
-     * 
-     * @param track
-     *            name of the track this applies to
-     * @param DTG
-     *            when the entry was recorded
-     * @param entry
-     *            the content of the entry
-     */
-    public NarrativeEntry(final String track, final HiResDate DTG,
-            final String entry)
-    {
-        this(track, null, DTG, entry);
-    }
+	/**
+	 * old constructor - for when narratives didn't include the type attribute
+	 * 
+	 * @param track
+	 *          name of the track this applies to
+	 * @param DTG
+	 *          when the entry was recorded
+	 * @param entry
+	 *          the content of the entry
+	 */
+	public NarrativeEntry(final String track, final HiResDate DTG,
+			final String entry)
+	{
+		this(track, null, DTG, entry);
+	}
 
-    // ///////////////////////////////////////////
-    // accessor methods
-    // ///////////////////////////////////////////
-    public final String getTrackName()
-    {
-        return _track;
-    }
+	// ///////////////////////////////////////////
+	// accessor methods
+	// ///////////////////////////////////////////
+	public final String getTrackName()
+	{
+		return _track;
+	}
 
-    public final String getSource()
-    {
-        return _track;
-    }
-    public final void setSource(String track)
-    {
-        _track = track;
-    }
-    
-    public final String getEntry()
-    {
-        return _entry;
-    }
+	public final String getSource()
+	{
+		return _track;
+	}
 
-    public final HiResDate getDTG()
-    {
-        return _DTG;
-    }
-    
-    public void setDTG(HiResDate date)
-    {
-        _DTG = date;
-    }
+	@FireReformatted
+	public final void setSource(String track)
+	{
+		_track = track;
+	}
 
-    public final String getType()
-    {
-        return _type;
-    }
+	public final String getEntry()
+	{
+		return _entry;
+	}
 
-    public void setType(String type)
-    {
-        _type = type;
-    }
-    
-    public final String getDTGString()
-    {
-        if (_DTGString == null)
-            _DTGString = DebriefFormatDateTime.toStringHiRes(_DTG);
+	@FireReformatted
+	public void setEntry(String val)
+	{
+		_entry = val;
+	}
 
-        return _DTGString;
-    }
+	public final HiResDate getDTG()
+	{
+		return _DTG;
+	}
 
-    /**
-     * member function to meet requirements of comparable interface *
-     */
-    public final int compareTo(final Plottable o)
-    {
-        final NarrativeEntry other = (NarrativeEntry) o;
-        int res = 0;
+	@FireExtended
+	public void setDTG(HiResDate date)
+	{
+		_DTG = date;
+	}
 
-        // are we looking at the same item?
-        if (o.equals(this))
-        {
-            res = 0;
-        }
-        else if (_DTG.lessThan(other._DTG))
-            res = -1;
-        else
-            res = 1;
+	public final String getType()
+	{
+		return _type;
+	}
 
-        return res;
+	@FireReformatted
+	public void setType(String type)
+	{
+		_type = type;
+	}
 
-    }
+	public final String getDTGString()
+	{
+		if (_DTGString == null)
+			_DTGString = DebriefFormatDateTime.toStringHiRes(_DTG);
 
-    // ///////////////////////////////////////////
-    // member methods to meet requirements of Plottable interface
-    // ///////////////////////////////////////////
+		return _DTGString;
+	}
 
-    /**
-     * paint this object to the specified canvas
-     */
-    public final void paint(final MWC.GUI.CanvasType dest)
-    {
-    }
+	/**
+	 * member function to meet requirements of comparable interface *
+	 */
+	public final int compareTo(final Plottable o)
+	{
+		final NarrativeEntry other = (NarrativeEntry) o;
+		return _DTG.compareTo(other._DTG);
+	}
 
-    /**
-     * find the data area occupied by this item
-     */
-    public final MWC.GenericData.WorldArea getBounds()
-    {
-        return null;
-    }
+	// ///////////////////////////////////////////
+	// member methods to meet requirements of Plottable interface
+	// ///////////////////////////////////////////
 
-    /**
-     * it this item currently visible?
-     */
-    public final boolean getVisible()
-    {
-        return true;
-    }
+	/**
+	 * paint this object to the specified canvas
+	 */
+	public final void paint(final MWC.GUI.CanvasType dest)
+	{
+	}
 
-    /**
-     * set the visibility (although we ignore this)
-     */
-    public final void setVisible(final boolean val)
-    {
-    }
+	/**
+	 * find the data area occupied by this item
+	 */
+	public final MWC.GenericData.WorldArea getBounds()
+	{
+		return null;
+	}
 
-    /**
-     * how far away are we from this point? or return null if it can't be
-     * calculated
-     */
-    public final double rangeFrom(final MWC.GenericData.WorldLocation other)
-    {
-        return -1;
-    }
+	/**
+	 * it this item currently visible?
+	 */
+	public final boolean getVisible()
+	{
+		return true;
+	}
 
-    /**
-     * get the editor for this item
-     * 
-     * @return the BeanInfo data for this editable object
-     */
-    public final MWC.GUI.Editable.EditorType getInfo()
-    {
-        if(_myInfo == null)
-            _myInfo = new NarrativeEntryInfo(this, this.toString());
-        return _myInfo;
-    }
+	/**
+	 * set the visibility (although we ignore this)
+	 */
+	public final void setVisible(final boolean val)
+	{
+	}
 
-    /**
-     * whether there is any edit information for this item this is a convenience
-     * function to save creating the EditorType data first
-     * 
-     * @return yes/no
-     */
-    public final boolean hasEditor()
-    {
-        return true;
-    }
+	/**
+	 * how far away are we from this point? or return null if it can't be
+	 * calculated
+	 */
+	public final double rangeFrom(final MWC.GenericData.WorldLocation other)
+	{
+		return -1;
+	}
 
-    /**
-     * get the name of this entry, using the formatted DTG
-     */
-    public final String getName()
-    {
-        return DebriefFormatDateTime.toStringHiRes(_DTG);
-    }
+	/**
+	 * get the editor for this item
+	 * 
+	 * @return the BeanInfo data for this editable object
+	 */
+	public final MWC.GUI.Editable.EditorType getInfo()
+	{
+		if (_myInfo == null)
+			_myInfo = new NarrativeEntryInfo(this, this.toString());
+		return _myInfo;
+	}
 
-    public final String toString()
-    {
-        return getName();
-    }
-    
-    // ////////////////////////////////////////////////////
-    // bean info for this class
-    // ///////////////////////////////////////////////////
-    public final class NarrativeEntryInfo extends Editable.EditorType
-    {
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 * 
+	 * @return yes/no
+	 */
+	public final boolean hasEditor()
+	{
+		return true;
+	}
 
-        public NarrativeEntryInfo(final NarrativeEntry data, final String theName)
-        {
-            super(data, theName, data.toString());
-        }
+	/**
+	 * get the name of this entry, using the formatted DTG
+	 */
+	public final String getName()
+	{
+		return DebriefFormatDateTime.toStringHiRes(_DTG);
+	}
 
-        public final PropertyDescriptor[] getPropertyDescriptors()
-        {
-            try
-            {
-                final PropertyDescriptor[] myRes = {
-                        
-                        prop("Type", "the type of entry", FORMAT),
-                        prop("Source", "the source for this entry", FORMAT),
-                        prop("DTG", "the time this entry was recorded", FORMAT),
-                        };
+	public final String toString()
+	{
+		return getName();
+	}
 
-                return myRes;
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public final class NarrativeEntryInfo extends Editable.EditorType
+	{
 
-            }
-            catch (IntrospectionException e)
-            {
-                e.printStackTrace();
-                return super.getPropertyDescriptors();
-            }
-        }
+		public NarrativeEntryInfo(final NarrativeEntry data, final String theName)
+		{
+			super(data, theName, data.toString());
+		}
 
-    }    
+		public final PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] myRes =
+				{
 
- // ////////////////////////////////////////////////////////////////////////////////////////////////
-    // testing for this class
-    // ////////////////////////////////////////////////////////////////////////////////////////////////
-    static public final class testMe extends junit.framework.TestCase
-    {
-        static public final String TEST_ALL_TEST_TYPE = "UNIT";
+				prop("Type", "the type of entry", FORMAT),
+						prop("Source", "the source for this entry", FORMAT),
+						prop(DTG, "the time this entry was recorded", FORMAT),
+						prop("Entry", "the content of this entry", FORMAT), };
 
-        public testMe(final String val)
-        {
-            super(val);
-        }
+				return myRes;
 
-        public final void testMyParams()
-        {
-            HiResDate hd = new HiResDate(new Date());
-            final NarrativeEntry ne = new NarrativeEntry("aaa", "bbb", hd, "vvvv"); 
-            editableTesterSupport.testParams(ne, this);
-        }
-    }
+			}
+			catch (IntrospectionException e)
+			{
+				e.printStackTrace();
+				return super.getPropertyDescriptors();
+			}
+		}
+
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		public final void testMyParams()
+		{
+			HiResDate hd = new HiResDate(new Date());
+			final NarrativeEntry ne = new NarrativeEntry("aaa", "bbb", hd, "vvvv");
+			editableTesterSupport.testParams(ne, this);
+		}
+	}
 
 }

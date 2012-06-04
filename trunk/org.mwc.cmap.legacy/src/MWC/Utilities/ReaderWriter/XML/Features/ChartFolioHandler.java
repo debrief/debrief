@@ -11,7 +11,6 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -57,6 +56,7 @@ public class ChartFolioHandler extends LayerHandler
 
 	}
 	
+	@Override
 	protected BaseLayer getLayer()
 	{
 		return new ChartFolio(_showNames, _theColor);

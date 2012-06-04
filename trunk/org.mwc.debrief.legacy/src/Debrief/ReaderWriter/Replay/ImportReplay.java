@@ -1089,7 +1089,7 @@ public class ImportReplay extends PlainImporterBase
 		return res;
 	}
 
-	static public String replaySymbolFor(Color theCol)
+	static public String replaySymbolFor(Color theCol, String theSymbol)
 	{
 		String res = null;
 
@@ -1105,11 +1105,21 @@ public class ImportReplay extends PlainImporterBase
 			}
 		}
 
+		String symTxt;
+		if(theSymbol == null)
+		{
+			symTxt = "@";
+		}
+		else
+		{
+			symTxt = SymbolFactory.findIdForSymbolType(theSymbol);
+		}
+		
 		// label not found, make it RED
 		if (res == null)
-			res = "@A";
-		else
-			res = "@" + res;
+			res = "A";
+		
+		res = symTxt + res;
 
 		return res;
 

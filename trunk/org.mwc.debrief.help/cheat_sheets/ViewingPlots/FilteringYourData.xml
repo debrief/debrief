@@ -4,7 +4,7 @@
 		<description>With ever-increasing data rates from multiple recording systems it is easy for an analysis plot to become swamped.  Debrief NG provides tools to reduce the volume and type of data displayed.  This tutorial will lead you through the management of large volumes of data.</description>
 	</intro>
 	<item title="Check you have some data">
-		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  We're going to be working with the Sample.xml data-file from Debrief's sample data distribution.  If you can't see the sample data, refer to the online help covering how to find/load it. </description>
+		<description>In the top left hand corner of Debrief you should find the Navigator window.  If it isn't there, select "Navigator" from Debrief's Window/Show View menu.  We're going to be working with the Sample.xml data-file from Debrief's sample data distribution.  If you can't see the sample data, refer to the online help covering how to find/load it. </description>
 	</item>
 	<item title="Open a sample file">
 		<description>Now double-click on <b>Sample.xml</b> in the navigator window.  Our sample Debrief plot should now open</description>
@@ -13,7 +13,7 @@
 		<description>To be sure you can see all of the data, perform a fit-to-window operation, either via the Fit-to-Window button on the toolbar, or by the Fit-to-window button on the Chart Overview panel.</description>
 	</item>
 	<item title="Open the Layer Manager">
-		<description>Next, make sure the Layer Manager is visible.  Remember if any screen component it isn't visible you just load it by selecting it from the 'Window/Show View' menu.</description>
+		<description>Next, make sure the Layer Manager is visible.  Remember if any screen component isn't visible you just load it by selecting it from the 'Window/Show View' menu.</description>
 	</item>
 	<item title="Hide shape">
 		<description>In the layer manager, expand the layer titled "Misc (xx items)".  At the top of the Layer Manager, is a toolbar of operations that can be applied to plot items.  After selecting an annotation from within that layer, click on the empty rectangle icon in the Layer Manager toolbar (next to the tick-in-rectangle). You should see the green tick disappear, together with the shape on the plot.  Show the shape again - but this time use the Layer Manager drop-down menu (at the right of the Layer Manager's toolbar). (Note that you can hide/reveal more than one item at a time by holding down the control key to perform a multiple selection.)</description>

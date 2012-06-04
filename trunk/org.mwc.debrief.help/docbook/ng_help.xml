@@ -609,6 +609,10 @@
          in the render cycle.  So, it has been temporarily removed pending streamlining
          / cacheing of the render pipeline.
          </para>
+        <para> Charting support was recommenced in Spring 2012, and an implementation was found that
+          didn't suffer the previous performance problems (See <xref linkend="ChartBackdrops"/>).
+          Support was also introduced for using Debrief in the process of Exercise Planning (See
+            <xref linkend="ExercisePlanning"/>).</para>
       </sect2>
     </sect1>
 
@@ -2771,18 +2775,16 @@ and so on....</programlisting></para>
               </mediaobject>
             </screenshot></para>
 
-          <para>On completion you'll see a visible split in the track, and the
-          track represented as two segments in the layer manager.<screenshot>
+          <para>On completion you'll see a visible split in the track, and the track represented as
+            two segments in the layer manager.<screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/TrackAfterSplit.png"
-                             scalefit="1" width="100%"></imagedata>
+                  <imagedata fileref="figures/TrackAfterSplit.png" scalefit="1" width="100%"/>
                 </imageobject>
               </mediaobject>
-            </screenshot>The track segments are named according to the DTG of
-          their start point. The two track segments can now be manipulated
-          separately (dragged) using the 'drag track segment' tool as
-          described later (see <xref linkend="DraggingTracks" />).</para>
+            </screenshot>The track segments are named according to the DTG of their start point. The
+            two track segments can now be manipulated separately (dragged) using the 'drag TMA
+            segment' tool as described later (see <xref linkend="DraggingTracks"/>).</para>
         </sect2>
 
         <sect2 xml:id="JoinTrackSections">
@@ -2811,6 +2813,11 @@ and so on....</programlisting></para>
           produce a warning when the analyst tries to merge overlapping
           tracks. When it does, just delete one or more overlapping points and
           trigger the operation again.</para>
+          <para>Once you have performed a <guibutton>merge</guibutton> operation on a collection of
+            track segments they are no longer relative to the ownship track (in terms of
+            range/bearing).  They are now standalone tracks and can by Copy/Paste-d into another
+            Debrief plot if you wish.  The equivalent operation to make a TMA Segment standalone is
+            to select <guibutton>Convert [xxx] into standalone track</guibutton></para>
         </sect2>
 
         <sect2 xml:id="CombineTrackSections">
@@ -6188,6 +6195,187 @@ and so on....</programlisting></para>
         </sect2>
       </sect1>
     </chapter>
+    <chapter xml:id="ExercisePlanning">
+      <title>Exercise planning</title>
+      <sect1>
+        <title>Introduction</title>
+        <para>In Spring 2012 Debrief received extensions in order to support <indexterm>
+            <primary>Exercise Planning</primary>
+          </indexterm>exercise planning<indexterm>
+            <primary>Planning</primary>
+            <secondary>Exercise planning</secondary>
+          </indexterm>. An analyst is able to generate tracks within Debrief, replay those tracks to
+          verify time/spatial constaints, and finally export the run-plan to MS Word via the
+          clipboard.</para>
+        <para>The exercise planning tracks are generated in a new track-like entity. This new entity
+          has an origin and a start date/time. These provide a quick way of changing the location
+          and/or the start time for a set of vessel runs. The legs generated for a track represent
+          straight line legs for a platform. Each leg is stored according to a demanded course and a
+          leg-length. Leg-length is specified according to one of these calculation models:<variablelist>
+            <varlistentry>
+              <term>Range-Speed</term>
+              <listitem>
+                <para>The time travelled along the leg is deterlimed by the time leg length (range)
+                  / speed</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Time-Speed</term>
+              <listitem>
+                <para>The leg length is determined by the distance travelled in the specified time
+                  at the specified speed</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Range-Time</term>
+              <listitem>
+                <para>The speed along the leg is determined by the speed necessary to travel the
+                  specified distance in the specified time.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>Thus, changing one of the two named parameters will result in the third
+          parameter getting a calculated value.</para>
+      </sect1>
+      <sect1>
+        <title>Creating tracks</title>
+        <para>Newly created planning tracks are created in the centre of the current plot. So, start
+          off by navigating to the part of the world where you roughly want your vessel tracks to
+          be. You'll make more detailed changes to the track location once the track is
+          created.</para>
+        <para>Next, you must select "Create Track Segment" from <application>Debrief</application>'s
+          Drawing Toolbar.<figure>
+            <title>ETOPO2 data sources</title>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/AddSegment.png" width="40%"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </figure></para>
+        <para>Next you'll be invited to select which parent track to add the track segment to. In
+          this instance, we don't have an existing track, so select "[New Track...]" from the
+          dialog. Clearly if you were extending an existing planning track you'd select it.<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment2.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+        <para>Since we're creating a new track we now see a couple of dialogs associated with the
+          new track. First we must give the new track a name:<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment3.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+        <para>Next we must specific the starting date/time for the track:<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment4.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+        <para>Once we've finished specifying the track, we must give specify a name for this
+          particular track:<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment5.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>Your track will now appear on the screen, and also in the layer
+          manager.</para>
+        <para>Once you've created a parent track, next time you can select it from the first dialog
+          - after which you just need to specify a leg name,</para>
+      </sect1>
+      <sect1>
+        <title>Manipulating tracks</title>
+        <para>One you've created one or more track legs you can start editing them. There are three
+          ways to edit a leg:<variablelist>
+            <varlistentry>
+              <term>Properties Window</term>
+              <listitem>
+                <para>Select a leg in the Layer Manager, and you'll see the leg properties in the
+                  Properties window. Note the <guimenu>Calculation</guimenu> field, this indicates
+                  which two fields are used to specify the leg length. As you'll see, you can also
+                  amend the leg name, the course, and the depth for that leg.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Layer Manager</term>
+              <listitem>
+                <para>Right-clicking on a leg in the layer manager lets you quickly edit some of the
+                  leg parameters <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/AddSegment6.png" width="40%"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Dragging objects on the plot</term>
+              <listitem>
+                <para>There are two ways of dragging to edit a planning track. You can select
+                    <guibutton>Drag Whole Feature</guibutton>
+                  <inlinemediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/DragWholeFeature.png"/>
+                    </imageobject>
+                  </inlinemediaobject>, and then drag the whole planning track to move it, or select
+                    <guibutton>Drag Component</guibutton>
+                  <inlinemediaobject>
+                    <imageobject>
+                      <imagedata fileref="figures/DragComponent.png"/>
+                    </imageobject>
+                  </inlinemediaobject> and then drag an end of a track leg to rotate it.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist><note>
+            <para>It isn't possible to drag to change the length of a leg - since it's unclear which
+              of the two attributes in that segments calculation model the user intends to change.
+            </para>
+          </note></para>
+      </sect1>
+      <sect1>
+        <title>XY plots of planning tracks</title>
+        <para>If you're a clever-clogs scientist doing fancy things like producing run-plans that
+          have a predictable bearing rate, or range between the participants then this is just up
+          your street.  If you request an XY Plot of two planning tracks, you can then configure the
+          graph to update itself as the tracks change.</para>
+        <para>Here's how you do it:<orderedlist>
+            <listitem>
+              <para>Select your two tracks in the Layer Manager</para>
+            </listitem>
+            <listitem>
+              <para>Right-click on one of the tracks</para>
+            </listitem>
+            <listitem>
+              <para>Select <guimenuitem>View XY Plot</guimenuitem> from the popup menu</para>
+            </listitem>
+            <listitem>
+              <para>From the popup dialog, select the calculation you're after</para>
+            </listitem>
+            <listitem>
+              <para>Then indicate which is the primary track (though it's irrelevant to many
+                calcs)</para>
+            </listitem>
+            <listitem>
+              <para>Once the plot appears, check that the Auto-Sync toggle button in the graph
+                toolbar is selected <inlinemediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/synced.gif"/>
+                  </imageobject>
+                </inlinemediaobject>.  </para>
+            </listitem>
+          </orderedlist></para>
+        <para>Now, when you drag or otherwise manipulate your tracks the graph will update to show
+          the new relationship between the tracks.  Clearly you un-set the auto-sync toggle to shop
+          updating with the plot.</para>
+      </sect1>
+    </chapter>
 
     <chapter xml:id="viewing_narratives">
       <title>Viewing narratives</title>
@@ -6341,8 +6529,8 @@ and so on....</programlisting></para>
       <title>Using chart backdrops</title>
       <sect1>
         <title>Introduction</title>
-        <para linkend="external_datasets">VPF and ETOPO (see <xref linkend="external_datasets"/> can
-          only add so much context to the analysis of a dataset<indexterm>
+        <para linkend="external_datasets">VPF and ETOPO (see <xref linkend="external_datasets"/>)
+          can only add so much context to the analysis of a dataset<indexterm>
             <primary>Charts</primary>
             <secondary>Introduction</secondary>
           </indexterm>. Nautical Chart data contains a large volume of additional infromation that
@@ -6410,10 +6598,11 @@ and so on....</programlisting></para>
                 <primary>Charts</primary>
                 <secondary>Transparency</secondary>
               </indexterm> attribute for charts. Use this to vary the transparency of the charts
-              layers.  For most analysis the presence of a chart backdrop can make vessel tracks
-              difficult to distinguish.  Making them semi-transparent fades them away a little -
-              letting you focus on the tracks whilst still being aware of the backdrop chart
-              data.</para>
+              layers. For most analysis the presence of a chart backdrop can make vessel tracks
+              difficult to distinguish. Making them semi-transparent fades them away a little -
+              letting you focus on the tracks whilst still being aware of the backdrop chart data.
+              Unfortunately, the transparency setting isn't observed when you copy the plot to the
+              clipboard.  Once pasted in MS Word, all charts are painted solid.</para>
           </note></para>
         <para>Once a parent folder is specified, when you click on Insert Chart Library from the
           Chart Features menu Debrief will scan the child folders for correctly named shapefiles and
@@ -6445,6 +6634,10 @@ and so on....</programlisting></para>
             </screenshot>
           </figure>
         </para>
+        <para>The chart will then be loaded as a separate Debrief layer - and appear in the layer
+          manager. As with any other layer, you can control it's visibility using the layer manager.
+          Note, Debrief isn't going to store the chart image in the plot-file, it's just going to
+          store the path to the Image - which will re-loaded next time you open the plot.</para>
       </sect1>
     </chapter>
 
@@ -8401,18 +8594,21 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <listitem>
                 <para>The folder must contain a shapefile named
                     <filename>rasterExtents_ARCS_Export.shp</filename></para>
-                <para>. This shapefile must contain a series of rectangle geometries.  Each
-                  rectangle must have a property named <filename>the_geom</filename> that contains
-                  the coordinates, and one called <filename>Name</filename> that contains the
-                  filename of the respective chart.</para>
+                <para>. This shapefile must contain a series of rectangle geometries - one for each
+                  chart in the folio. Each rectangle must have a property named
+                    <filename>the_geom</filename> that contains the coordinates, and one called
+                    <filename>Name</filename> that contains the filename of the respective
+                  chart.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
               <term>Chart images</term>
               <listitem>
                 <para>The folder must also contain a series of Tif images with supporting .prj
-                  sidecar files.  (Note: where possible Debrief will generate missing sidecar files
-                  as necessary</para>
+                  sidecar files. (Note: the folios received from UKHO in Autumn 2011 do not contain
+                  sidecar fiels.  Debrief generates the missing sidecar files as necessary. This is
+                  acceptable for UKHO charts, which follow a particular standard - one cannot assume
+                  it non UKHO charts follow the same standard).</para>
               </listitem>
             </varlistentry>
           </variablelist>
@@ -8798,6 +8994,46 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry></entry>
 
                     <entry></entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>I</para>
+                    </entry>
+                    <entry>
+                      <para>Cross</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>J</para>
+                    </entry>
+                    <entry>
+                      <para>Square</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>K</para>
+                    </entry>
+                    <entry>
+                      <para>Datum</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>L</para>
+                    </entry>
+                    <entry>
+                      <para>Reference Position</para>
+                    </entry>
+                    <entry/>
+                    <entry/>
                   </row>
                 </tbody>
               </tgroup>

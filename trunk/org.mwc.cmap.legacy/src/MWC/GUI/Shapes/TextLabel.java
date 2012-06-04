@@ -518,7 +518,7 @@ public class TextLabel extends PlainShape implements Editable
 		}
 
 		// convert the location
-		java.awt.Point theOrigin = dest.toScreen(_theLocation);
+		final java.awt.Point theOrigin = dest.toScreen(_theLocation);
 
 		// sort out the color
 		Color myColor = getColor();
@@ -538,11 +538,12 @@ public class TextLabel extends PlainShape implements Editable
 		Point offset = getOffset(_myWidth, lineHeight, blockHeight);
 
 		// offset the central location
-		theOrigin.translate(offset.x, offset.y);
+		Point newP = new Point(theOrigin);
+		newP.translate(offset.x, offset.y);
 
 		if (_theFont != null)
 		{
-			this.paintMultiLine(dest, _theString, _theFont, theOrigin);
+			this.paintMultiLine(dest, _theString, _theFont, newP);
 		}
 		else
 		{

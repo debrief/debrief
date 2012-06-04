@@ -85,7 +85,8 @@ public class ZoomOut extends PlainTool
       _theChart.getCanvas().getProjection().zoom(_zoomFactor);
       
       // and trigger a redraw
-      _theChart.update();
+      // no, don't bother - the chart catches the data-area change
+   //   _theChart.update();
     }
   }
   

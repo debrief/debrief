@@ -25,7 +25,7 @@ public class FitToWindow extends CoreEditorAction
 		Action theAction = 	new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
 		
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers());
+		DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers(), null);
 		
 		// and add it to the clipboard
 		CorePlugin.run(daw);

@@ -253,18 +253,12 @@ public class Pan extends PlainDragTool implements Serializable
     {
       // set the area
       setNewArea(_theChart.getCanvas().getProjection(), _oldArea);
-
-      // and redraw
-      _theChart.update();
     }
 
     public void execute()
     {
       // set the area
       setNewArea(_theChart.getCanvas().getProjection(), _newArea);
-
-      // and redraw
-      _theChart.update();
     }
 
     protected void setNewArea(PlainProjection proj, WorldArea theArea){

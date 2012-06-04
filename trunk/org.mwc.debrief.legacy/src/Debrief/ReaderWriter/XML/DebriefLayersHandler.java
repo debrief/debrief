@@ -12,6 +12,7 @@ package Debrief.ReaderWriter.XML;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.Tactical.*;
+import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
@@ -23,14 +24,17 @@ public final class DebriefLayersHandler extends MWCXMLReader
 	{
 		// inform our parent what type of class we are
 		super("layers");
-
+		
 		addHandler(new ChartFolioHandler(theLayers));
 		addHandler(new DebriefLayerHandler(theLayers));
+		addHandler(new CompositeTrackHandler(theLayers));
 		addHandler(new TrackHandler(theLayers));
 		addHandler(new PatternHandler(theLayers));
 		addHandler(new NarrativeHandler(theLayers));
 		addHandler(new ETOPOHandler(theLayers));
 		addHandler(new TOPOHandler(theLayers));
+		addHandler(new ExternallyManagedLayerHandler(theLayers));
+
 	}
 
 	public static void exportThis(Debrief.GUI.Frames.Session session,
@@ -63,7 +67,12 @@ public final class DebriefLayersHandler extends MWCXMLReader
 			MWC.GUI.Layer ly = data.elementAt(i);
 
 			// find out which sort of layer this is
-			if (ly instanceof Debrief.Wrappers.TrackWrapper)
+			if (ly instanceof Debrief.Wrappers.CompositeTrackWrapper)
+			{
+				Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler.exportTrack(
+						(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+			}
+			else if (ly instanceof Debrief.Wrappers.TrackWrapper)
 			{
 				Debrief.ReaderWriter.XML.Tactical.TrackHandler.exportTrack(
 						(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
@@ -89,6 +98,10 @@ public final class DebriefLayersHandler extends MWCXMLReader
 			else if (ly instanceof MWC.GUI.ETOPO.ETOPO_2_Minute)
 			{
 				TOPOHandler.exportThisPlottable(ly, layers, doc);
+			}
+			else if (ly instanceof ExternallyManagedDataLayer)
+			{
+				ExternallyManagedLayerHandler.exportThisPlottable(ly, layers, doc);
 			}
 			else if (ly instanceof MWC.GUI.BaseLayer)
 			{

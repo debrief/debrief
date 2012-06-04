@@ -6,7 +6,7 @@
       </intro>
       <taskGroup kind="sequence" name="Defining your workspace" skip="false">
          <intro>
-            In comparison with prior versions of Debrief, Debrief NG introduces the concept of a Workspace - a central repository for your assorted analysis-related documents.  Within this workspace your work is grouped into individual projects: thus you can quickly switch between concurrent analysis tasks.  Debrief&apos;s provision of projects alows you to quickly drag and drop Debrief data-files and plots.
+            In comparison with prior versions of Debrief, Debrief NG introduces the concept of a Workspace - a central repository for your assorted analysis-related documents.  Within this workspace your work is grouped into individual projects: thus you can quickly switch between concurrent analysis tasks.  Debrief&apos;s provision of projects allows you to quickly drag and drop Debrief data-files and plots.
          </intro>
          <onCompletion>
             Right, Debrief now knows where to find your data.  In the next series of steps you will load and examine some data.

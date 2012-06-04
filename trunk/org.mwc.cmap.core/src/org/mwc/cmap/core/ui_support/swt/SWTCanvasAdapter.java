@@ -209,7 +209,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	 * and our default background color
 	 * 
 	 */
-	private java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.BLACK;
+	private java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.LIGHT_GRAY;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -550,13 +550,17 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 	}
 
 	public final boolean drawSWTImage(final Image img, final int x, final int y,
-			final int width, final int height)
+			final int width, final int height, int alphaTransparency)
 	{
 		if (_theDest == null)
 			return true;
 
 		if (!_theDest.isDisposed())
+		{
+			_theDest.setAlpha(alphaTransparency);
 			_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+			_theDest.setAlpha(255);
+		}
 
 		// return _theDest.drawImage(img, x, y, width, height, observer);
 

@@ -21,6 +21,7 @@ import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.overview.Activator;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 
@@ -61,11 +62,14 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 	private org.eclipse.jface.action.Action _fitToWindow;
 
+	private GtProjection _myProjection;
+
 	/**
 	 * The constructor.
 	 */
 	public ChartOverview()
 	{
+		_myProjection = new GtProjection();
 	}
 
 	/**
@@ -74,14 +78,13 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 */
 	public void createPartControl(Composite parent)
 	{
-		
-		// declare our context sensitive help
-		CorePlugin.declareContextHelp(parent, 
-				"org.mwc.debrief.help.OverviewChart");
 
-		
+		// declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.OverviewChart");
+
 		// hey, first create the chart
-		_myOverviewChart = new OverviewSWTChart(parent){
+		_myOverviewChart = new OverviewSWTChart(parent)
+		{
 
 			/**
 			 * 
@@ -91,11 +94,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			IControllableViewport getParentViewport()
 			{
 				return _targetViewport;
-			}};
+			}
+		};
 
 		// use our special dragger
 		_myOverviewChart.setDragMode(new MyZoomMode());
-		
+
 		// and update the chart
 		_myOverviewChart.setChartOverview(this);
 
@@ -129,7 +133,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		// /////////////////////////////////////////
 		// ok - listen out for changes in the view
 		// /////////////////////////////////////////
-		watchMyParts();	
+		watchMyParts();
 	}
 
 	/**
@@ -137,11 +141,13 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 */
 	private void watchMyParts()
 	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						Layers provider = (Layers) part;
 
@@ -157,7 +163,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						if (part == _targetLayers)
 						{
@@ -166,10 +173,11 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(IControllableViewport.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(IControllableViewport.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						IControllableViewport provider = (IControllableViewport) part;
 
@@ -188,10 +196,11 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(IControllableViewport.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(IControllableViewport.class,
+				PartMonitor.CLOSED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						if (part == _targetViewport)
 						{
@@ -201,7 +210,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				});
 
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+				.getActivePage());
 	}
 
 	/**
@@ -213,9 +223,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	protected void paintDataRect(CanvasType dest)
 	{
 		// check we're alive
-		if(_targetViewport == null)
+		if (_targetViewport == null)
 			return;
-		
+
 		// get the projection
 		final PlainProjection proj = _targetViewport.getProjection();
 
@@ -234,7 +244,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			return;
 
 		// produce the screen coordinate in the overview
-		final Point thePt = _myOverviewChart.getCanvas().getProjection().toScreen(loc);
+		final Point thePt = _myOverviewChart.getCanvas().getProjection()
+				.toScreen(loc);
 
 		// did it work?
 		if (thePt == null)
@@ -245,9 +256,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 		// create the screen coordinates
 		final Point tl = new Point(thePt);
-		final Point br = new Point(_myOverviewChart.getCanvas().getProjection().toScreen(loc));
+		final Point br = new Point(_myOverviewChart.getCanvas().getProjection()
+				.toScreen(loc));
 
-		//    
+		//
 		// // also, draw in the data-area
 		// WorldArea dataRect = _currentViewport.getViewport();
 		// // convert to my coords
@@ -303,7 +315,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 		// and the help link
 		manager.add(new Separator());
-		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.OverviewChart", null, this));
+		manager.add(CorePlugin.createOpenHelpAction(
+				"org.mwc.debrief.help.OverviewChart", null, this));
 	}
 
 	private void makeActions()
@@ -317,8 +330,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			}
 		};
 		_fitToWindow.setText("Fit to window");
-		_fitToWindow.setToolTipText("Zoom the selected plot out to show the full data");
-		_fitToWindow.setImageDescriptor(Activator.getImageDescriptor("icons/fit_to_win.gif"));
+		_fitToWindow
+				.setToolTipText("Zoom the selected plot out to show the full data");
+		_fitToWindow.setImageDescriptor(Activator
+				.getImageDescriptor("icons/fit_to_win.gif"));
 
 	}
 
@@ -336,8 +351,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 		SWTCanvas _myCanvas;
 
-		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theLayers, SWTCanvas theCanvas)
+		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
 		{
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
@@ -347,9 +362,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				int deltaY = _startPoint.y - pt.y;
 				if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
 					return;
-				Tracker _dragTracker = new Tracker((Composite) _myCanvas.getCanvas(), SWT.RESIZE);
-				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY);
-				_dragTracker.setRectangles(new Rectangle[] { rect });
+				Tracker _dragTracker = new Tracker((Composite) _myCanvas.getCanvas(),
+						SWT.RESIZE);
+				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
+						deltaY);
+				_dragTracker.setRectangles(new Rectangle[]
+				{ rect });
 				boolean dragResult = _dragTracker.open();
 				if (dragResult)
 				{
@@ -357,9 +375,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					Rectangle res = rects[0];
 					// get world area
 					java.awt.Point tl = new java.awt.Point(res.x, res.y);
-					java.awt.Point br = new java.awt.Point(res.x + res.width, res.y + res.height);
-					WorldLocation locA = new WorldLocation(_myCanvas.getProjection().toWorld(tl));
-					WorldLocation locB = new WorldLocation(_myCanvas.getProjection().toWorld(br));
+					java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
+							+ res.height);
+					WorldLocation locA = new WorldLocation(_myCanvas.getProjection()
+							.toWorld(tl));
+					WorldLocation locB = new WorldLocation(_myCanvas.getProjection()
+							.toWorld(br));
 					WorldArea area = new WorldArea(locA, locB);
 
 					// hmm, check we have a controllable viewport
@@ -371,10 +392,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 							// ok, we also need to get hold of the target chart
 							WorldArea oldArea = _targetViewport.getViewport();
-							Action theAction = new OverviewZoomInAction(_targetViewport, oldArea, area);
+							Action theAction = new OverviewZoomInAction(_targetViewport,
+									oldArea, area);
 
 							// and wrap it
-							DebriefActionWrapper daw = new DebriefActionWrapper(theAction, null);
+							DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
+									null, null);
 
 							// and add it to the clipboard
 							CorePlugin.run(daw);
@@ -396,8 +419,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			_startPoint = null;
 		}
 
-		public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas,
-				PlainChart theChart)
+		public void mouseDown(org.eclipse.swt.graphics.Point point,
+				SWTCanvas canvas, PlainChart theChart)
 		{
 			_startPoint = point;
 			_myCanvas = canvas;
@@ -414,8 +437,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 		private WorldArea _newArea;
 
-		public OverviewZoomInAction(IControllableViewport theChart, WorldArea oldArea,
-				WorldArea newArea)
+		public OverviewZoomInAction(IControllableViewport theChart,
+				WorldArea oldArea, WorldArea newArea)
 		{
 			_theViewport = theChart;
 			_oldArea = oldArea;
@@ -462,13 +485,13 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		return null;
 	}
 
-	protected static class OverviewSWTCanvas extends SWTCanvas
+	protected class OverviewSWTCanvas extends SWTCanvas
 	{
 		public OverviewSWTCanvas(Composite parent)
 		{
-			super(parent);
+			super(parent, _myProjection);
 		}
-		
+
 		/**
 		 * 
 		 */
@@ -483,7 +506,6 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		{
 			// ignore - we don't do text in overview
 		}
-
 
 	}
 
@@ -511,36 +533,40 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		}
 	}
 
-	abstract public static class OverviewSWTChart extends SWTChart
+	abstract public class OverviewSWTChart extends SWTChart
 	{
 
 		ChartOverview _parentView;
-		
+
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
 		abstract IControllableViewport getParentViewport();
-		
+
 		public OverviewSWTChart(Composite parent)
 		{
-			super(null, parent);
-			
+			super(null, parent, _myProjection);
+
 			// ok, setup double-click handler to zoom in on target location
-			this.addCursorDblClickedListener(new ChartDoubleClickListener(){
-				public void cursorDblClicked(PlainChart theChart, WorldLocation theLocation, Point thePoint)
+			this.addCursorDblClickedListener(new ChartDoubleClickListener()
+			{
+				public void cursorDblClicked(PlainChart theChart,
+						WorldLocation theLocation, Point thePoint)
 				{
 					// ok - got location centre plot on target loc
-					WorldArea currentArea = new WorldArea(getParentViewport().getViewport());
-					
+					WorldArea currentArea = new WorldArea(getParentViewport()
+							.getViewport());
+
 					currentArea.setCentre(theLocation);
-					
+
 					getParentViewport().setViewport(currentArea);
-					
+
 					// and trigger an update
 					getParentViewport().update();
-				}});
+				}
+			});
 		}
 
 		public void setChartOverview(ChartOverview view)
@@ -572,16 +598,19 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				{
 
 					// hey, we've plotted at least once, has the data area changed?
-					if (_lastDataArea != _parentView._myOverviewChart.getCanvas().getProjection().getDataArea())
+					if (_lastDataArea != _parentView._myOverviewChart.getCanvas()
+							.getProjection().getDataArea())
 					{
 						// remember the data area for next time
-						_lastDataArea = _parentView._myOverviewChart.getCanvas().getProjection().getDataArea();
+						_lastDataArea = _parentView._myOverviewChart.getCanvas()
+								.getProjection().getDataArea();
 
 						// clear out all of the layers we are using
 						_myLayers.clear();
 					}
 
-					int canvasHeight = _parentView._myOverviewChart.getCanvas().getSize().getSize().height;
+					int canvasHeight = _parentView._myOverviewChart.getCanvas().getSize()
+							.getSize().height;
 					int canvasWidth = _parentView._myOverviewChart.getCanvas().getSize().width;
 
 					paintBackground(dest);
@@ -632,7 +661,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 														Image tmpTemplate = new Image(Display.getCurrent(),
 																canvasWidth, canvasHeight);
 														_myImageTemplate = tmpTemplate.getImageData();
-														
+
 														tmpTemplate.dispose();
 														tmpTemplate = null;
 													}
@@ -641,8 +670,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 													GC newGC = new GC(image);
 
 													// wrap the GC into something we know how to plot to.
-													SWTCanvasAdapter ca = new OverviewSWTCanvasAdapter(dest
-															.getProjection());
+													SWTCanvasAdapter ca = new OverviewSWTCanvasAdapter(
+															dest.getProjection());
 
 													ca.setScreenSize(dest.getProjection().getScreenArea());
 
@@ -658,7 +687,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 													// store this image in our list, indexed by the layer
 													// object itself
 													_myLayers.put(thisLayer, image);
-													
+
 													// and ditch the GC
 													newGC.dispose();
 												}
@@ -670,10 +699,11 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 													SWTCanvas canv = (SWTCanvas) dest;
 
 													// lastly add this image to our Graphics object
-													canv.drawSWTImage(image, 0, 0, canvasWidth, canvasHeight);
-													
+													canv.drawSWTImage(image, 0, 0, canvasWidth,
+															canvasHeight, 255);
+
 													// but, we also have to ditch the image
-											//		image.dispose();
+													// image.dispose();
 												}
 
 											}
@@ -735,8 +765,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		boolean res = true;
 
 		// no, don't check for ETOPO data - just paint the lot.
-//		if (thisLayer instanceof SpatialRasterPainter)
-//			res = false;
+		// if (thisLayer instanceof SpatialRasterPainter)
+		// res = false;
 
 		return res;
 	}

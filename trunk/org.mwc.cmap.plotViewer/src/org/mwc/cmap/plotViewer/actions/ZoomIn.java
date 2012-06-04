@@ -75,7 +75,7 @@ public class ZoomIn extends CoreDragAction
 
 						// and wrap it
 						DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-								theLayers);
+								theLayers, null);
 
 						// and add it to the clipboard
 						CorePlugin.run(daw);

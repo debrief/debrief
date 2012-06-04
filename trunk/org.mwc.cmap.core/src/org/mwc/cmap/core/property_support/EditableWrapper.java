@@ -2,6 +2,7 @@ package org.mwc.cmap.core.property_support;
 
 import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
@@ -17,6 +18,8 @@ import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
+import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.Griddable.NonBeanPropertyDescriptor;
 import MWC.GUI.GriddableSeriesMarker;
@@ -494,7 +497,7 @@ public class EditableWrapper implements IPropertySource
 
 	final public boolean hasChildren()
 	{
-		return (_editable instanceof Layer);
+		return ((_editable instanceof Layer) && (!(_editable instanceof Editable.DoNoInspectChildren)));
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -581,7 +584,7 @@ public class EditableWrapper implements IPropertySource
 
 			// ok, and tell any listeners that want to know
 			// - the only listener I can think of is the Java3d properties viewer
-			_property._subject.getInfo().fireChanged(_property.getValue(),
+			_property._subject.getInfo().fireChanged(_property.getEditable(),
 					_property.getDisplayName(), _oldValue, _newValue);
 
 			// fire the reformatted event for the parent layer
@@ -589,7 +592,29 @@ public class EditableWrapper implements IPropertySource
 			// object
 			// (it could be an xy plot)
 			if (_wholeLayers != null)
-				_wholeLayers.fireReformatted(_topLevelLayer);
+			{
+				// right, we can fire a change if we like. have a look
+				Annotation[] ann = _property.getAnnotationsForGetter();
+				if ((ann != null) && (ann.length > 0))
+				{
+					for (int i = 0; i < ann.length; i++)
+					{
+						Annotation thisA = ann[i];
+						if (thisA.annotationType().equals(FireExtended.class))
+						{
+							_wholeLayers.fireExtended(null, _topLevelLayer);
+						}
+						else if (thisA.annotationType().equals(FireReformatted.class))
+						{
+							_wholeLayers.fireModified(_topLevelLayer);
+						}
+					}
+
+				}
+				else
+					_wholeLayers.fireReformatted(_topLevelLayer);
+
+			}
 
 			return Status.OK_STATUS;
 		}
@@ -610,8 +635,25 @@ public class EditableWrapper implements IPropertySource
 			_property._subject.getInfo().fireChanged(_property.getValue(),
 					_property.getDisplayName(), _newValue, _oldValue);
 
-			// fire the reformatted event for the parent layer
-			_wholeLayers.fireReformatted(_topLevelLayer);
+			// right, we can fire a change if we like. have a look
+			Annotation[] ann = _property.getAnnotationsForGetter();
+			if ((ann != null) && (ann.length > 0))
+			{
+				for (int i = 0; i < ann.length; i++)
+				{
+					Annotation thisA = ann[i];
+					if (thisA.annotationType().equals(FireExtended.class))
+					{
+						_wholeLayers.fireExtended(null, _topLevelLayer);
+					}
+					else if (thisA.annotationType().equals(FireReformatted.class))
+					{
+						_wholeLayers.fireModified(_topLevelLayer);
+					}
+				}
+			}
+			else
+				_wholeLayers.fireReformatted(_topLevelLayer);
 
 			// and return the status
 			return Status.OK_STATUS;

@@ -24,6 +24,7 @@ import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -36,7 +37,8 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Layers.DataListener2;
+import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 
 public class ASSETPlotEditor extends CorePlotEditor
@@ -56,6 +58,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	protected ISelectionChangedListener _selectionChangeListener;
 
+	private GtProjection _myProjection;
+
 	// //////////////////////////////
 	// constructor
 	// //////////////////////////////
@@ -63,6 +67,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public ASSETPlotEditor()
 	{
 		super();
+
+		_myProjection = new GtProjection();
 
 		_selectionChangeListener = new ISelectionChangedListener()
 		{
@@ -76,7 +82,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		};
 
-		_listenForMods = new DataListener()
+		_listenForMods = new DataListener2()
 		{
 			public void dataModified(Layers theData, Layer changedLayer)
 			{
@@ -89,6 +95,12 @@ public class ASSETPlotEditor extends CorePlotEditor
 			}
 
 			public void dataReformatted(Layers theData, Layer changedLayer)
+			{
+				fireDirty();
+			}
+
+			@Override
+			public void dataExtended(Layers theData, Plottable newItem, Layer parent)
 			{
 				fireDirty();
 			}
@@ -303,7 +315,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent)
+		SWTChart res = new SWTChart(_myLayers, parent, _myProjection)
 		{
 
 			/**

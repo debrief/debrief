@@ -133,12 +133,20 @@ public class RightClickSupport
 
 					final MethodDescriptor thisMethD = meths[i];
 
-					// create button for this method
-					Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
-							editables, thisMethD.getMethod(), myTopLayer, theLayers);
+					if (thisMethD == null)
+					{
+						CorePlugin.logError(Status.ERROR,
+								"Failed to create method, props may be wrongly named", null);
+					}
+					else
+					{
+						// create button for this method
+						Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
+								editables, thisMethD.getMethod(), myTopLayer, theLayers);
 
-					// ok - add to the list.
-					manager.add(doThisAction);
+						// ok - add to the list.
+						manager.add(doThisAction);
+					}
 				}
 			}
 

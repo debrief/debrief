@@ -7,6 +7,9 @@ import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
@@ -148,6 +151,22 @@ public class CorePlugin extends AbstractUIPlugin
 	public void start(BundleContext context) throws Exception
 	{
 		super.start(context);
+		
+		
+		// hack to initialise the TIFF importers.  I believe we're having classpath issues,
+		// if we don't try to get an image reader right at the start of the app,
+    // we can't get a TIFF loader later on.
+		Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
+		if (!iter2.hasNext())
+		{
+			logError(Status.ERROR,
+					"Failed to initialise TIFF reader for Java ImageIO", null);
+			System.err.println("TIFF READER NOT READY");
+		}
+		else
+		{
+			logError(Status.INFO, "Successfully loaded TIFF reader for Java ImageIO", null);
+		}
 
 		// create something capable of handling legacy preferences
 		_toolParent = new DebriefToolParent(getPreferenceStore(), getHistory());
@@ -554,8 +573,12 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void showMessage(final String title, final String message)
 	{
-		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), title,
-				message);
+	  Display.getDefault().asyncExec(new Runnable() {
+	    @Override
+	    public void run() {
+	      MessageDialog.openInformation(null, title, message);
+	    }
+	  });
 	}
 
 	/**

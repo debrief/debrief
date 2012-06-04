@@ -8,25 +8,36 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
@@ -34,74 +45,115 @@ import MWC.GenericData.*;
 public class DragComponent extends DragFeature
 {
 
-	public static void findNearest(Layer thisLayer,
-			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct currentNearest,
-			Layer parentLayer)
+	/**
+	 * action representing a track being dragged. It's undo-able and redo-able,
+	 * since it's quite simple really.
+	 */
+	public static final class DragComponentAction implements MWC.GUI.Tools.Action
 	{
-		// 
-		Layer thisParentLayer;
-		if (parentLayer == null)
-			thisParentLayer = thisLayer;
-		else
-			thisParentLayer = parentLayer;
+		/**
+		 * the layer to update after drag is complete
+		 */
+		private Layer _parentLayer;
 
-		// so, step through this layer
-		if (thisLayer.getVisible())
+		/**
+		 * the component we're going to shift
+		 */
+		private WorldLocation _theComponent;
+
+		/**
+		 * the track we're going to apply it to
+		 */
+		private final HasDraggableComponents _theFeature;
+
+		/**
+		 * the set of layers we're need to update on completion
+		 */
+		private final Layers _theLayers;
+
+		/**
+		 * the offset we're going to apply
+		 */
+		private final WorldVector _theOffset;
+
+		/**
+		 * constructor - providing the parameters to store to execute/reproduce the
+		 * operation
+		 * 
+		 * @param theOffset
+		 * @param theFeature
+		 * @param theLayers
+		 */
+		public DragComponentAction(final WorldVector theOffset,
+				final HasDraggableComponents theFeature, WorldLocation theComponent,
+				final Layers theLayers, final Layer parentLayer)
 		{
-			boolean sorted = false;
-
-			// is this layer a track?
-			if (thisLayer instanceof HasDraggableComponents)
-			{
-				HasDraggableComponents dw = (HasDraggableComponents) thisLayer;
-
-				// yup, find the distance to it's nearest point
-				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, thisParentLayer);
-
-				// right, this one's processed. carry on
-				sorted = true;
-			}
-
-			// have we processed this item
-			if (!sorted)
-			{
-				// nope, let's just run through it
-				Enumeration<Editable> pts = thisLayer.elements();
-				while (pts.hasMoreElements())
-				{
-					Plottable pt = (Plottable) pts.nextElement();
-
-					// is this item a layer itself?
-					if (pt instanceof Layer)
-					{
-						findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest, thisParentLayer);
-					}
-					else
-					{
-						HasDraggableComponents draggable = null;
-
-						// is it a shape?
-						if (pt instanceof HasDraggableComponents)
-						{
-							draggable = (HasDraggableComponents) pt;
-
-							// yup, find the distance to it's nearest point
-							draggable.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
-									thisParentLayer);
-
-							// right, this one's processed. carry on
-							sorted = true;
-						}
-					}
-				}
-			}
+			_theOffset = theOffset;
+			_theFeature = theFeature;
+			_theLayers = theLayers;
+			_parentLayer = parentLayer;
+			_theComponent = theComponent;
 		}
-	}
 
-	public PlotMouseDragger getDragMode()
-	{
-		return new DragComponentMode();
+		/**
+		 * this method calls the 'do' event in the parent tool, passing the
+		 * necessary data to it
+		 */
+		@Override
+		public void execute()
+		{
+			// apply the shift
+			_theFeature.shift(_theComponent, _theOffset);
+
+			// update the layers
+			// no, don't bother - the DebriefActionWrapper handles this
+			// _theLayers.fireModified(_parentLayer);
+		}
+
+		/**
+		 * @return boolean flag to indicate whether this action may be redone
+		 */
+		@Override
+		public boolean isRedoable()
+		{
+			return true;
+		}
+
+		/**
+		 * @return boolean flag to describe whether this operation may be undone
+		 */
+		@Override
+		public boolean isUndoable()
+		{
+			return true;
+		}
+
+		/**
+		 * @return a string representation of the object.
+		 */
+		@Override
+		public String toString()
+		{
+			final String res = "Drag " + _theFeature.getName()
+					+ _theOffset.toString();
+			return res;
+		}
+
+		/**
+		 * this method calls the 'undo' event in the parent tool, passing the
+		 * necessary data to it
+		 */
+		@Override
+		public void undo()
+		{
+			// reverse the drag direction
+			final WorldVector reverseVector = _theOffset.generateInverse();
+
+			// and apply it
+			_theFeature.shift(_theComponent, reverseVector);
+
+			_theLayers.fireModified(_parentLayer);
+		}
 	}
 
 	/**
@@ -109,8 +161,42 @@ public class DragComponent extends DragFeature
 	 * 
 	 * @author Ian
 	 */
-	final static public class DragComponentMode extends SWTChart.PlotMouseDragger
+	final public class DragComponentMode extends SWTChart.PlotMouseDragger
 	{
+
+		/**
+		 * the component we're going to drag
+		 */
+		protected WorldLocation _hoverComponent;
+
+		/**
+		 * the thing we're currently hovering over
+		 */
+		protected HasDraggableComponents _hoverTarget;
+
+		private WorldLocation _lastLocation;
+
+		/**
+		 * the last place we dragged over
+		 */
+		java.awt.Point _lastPoint;
+
+		/**
+		 * the canvas we're updating..
+		 */
+		SWTCanvas _myCanvas;
+
+		private PlainChart _myChart;
+
+		/**
+		 * the hand cursor we show when dragging
+		 */
+		Cursor _newCursor;
+
+		/**
+		 * the layer to update when dragging is complete
+		 */
+		private Layer _parentLayer;
 
 		/**
 		 * the start point, in world coordinates (so we don't have to calculate it
@@ -123,39 +209,84 @@ public class DragComponent extends DragFeature
 		 */
 		Point _startPoint;
 
-		/**
-		 * the canvas we're updating..
-		 */
-		SWTCanvas _myCanvas;
+		@Override
+		@SuppressWarnings("deprecation")
+		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt,
+				int JITTER, Layers theLayers, SWTCanvas theCanvas)
+		{
+			if ((_startPoint != null) && (_hoverTarget != null))
+			{
+				GC gc = new GC(_myCanvas.getCanvas());
 
-		/**
-		 * the last place we dragged over
-		 */
-		java.awt.Point _lastPoint;
+				// This is the same as a !XOR
+				gc.setXORMode(true);
+				gc.setForeground(gc.getBackground());
 
-		/**
-		 * the thing we're currently hovering over
-		 */
-		protected HasDraggableComponents _hoverTarget;
+				// Erase existing track, if we have one
+				if (_lastPoint != null)
+				{
+					drawHere(gc, null);
+				}
+				else
+				{
+					// we're drawing for the first time. make the last location equal the
+					// start location
+					_lastLocation = _startLocation;
 
-		/**
-		 * the component we're going to drag
-		 */
-		protected WorldLocation _hoverComponent;
+					// override the icon we're using
+					if (_newCursor != null)
+					{
+						_newCursor.dispose();
+						_newCursor = getDragCursor();
+						theCanvas.getCanvas().setCursor(_newCursor);
+					}
 
-		/**
-		 * the hand cursor we show when dragging
-		 */
-		Cursor _newCursor;
+				}
 
-		/**
-		 * the layer to update when dragging is complete
-		 */
-		private Layer _parentLayer;
+				// remember where we are
+				_lastPoint = new java.awt.Point(pt.x, pt.y);
+				WorldLocation newLocation = new WorldLocation(_myCanvas.getProjection()
+						.toWorld(_lastPoint));
 
-		private WorldLocation _lastLocation;
+				// now work out the vector from the last place plotted to the current
+				// place
+				WorldVector offset = newLocation.subtract(_lastLocation);
 
-		private PlainChart _myChart;
+				// draw new track
+				drawHere(gc, offset);
+
+				// remember the last location
+				_lastLocation = newLocation;
+
+				// cool, is it a track that we've just dragged?
+				if (_hoverTarget instanceof TrackWrapper)
+				{
+					// if the current editor is a track data provider,
+					// tell it that we've shifted
+					IWorkbench wb = PlatformUI.getWorkbench();
+					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+					IWorkbenchPage page = win.getActivePage();
+					IEditorPart editor = page.getActiveEditor();
+					TrackDataProvider dataMgr = (TrackDataProvider) editor
+							.getAdapter(TrackDataProvider.class);
+					// is it one of ours?
+					if (dataMgr != null)
+					{
+						{
+							dataMgr.fireTrackShift((TrackWrapper) _hoverTarget);
+						}
+					}
+				}
+
+				// and ditch the GC
+				gc.dispose();
+			}
+			else
+			{
+				// System.out.println("no point.");
+			}
+
+		}
 
 		/**
 		 * follow the mouse being moved over the plot. switch cursor when we're over
@@ -166,8 +297,9 @@ public class DragComponent extends DragFeature
 		 * @param theLayers
 		 * @param theCanvas
 		 */
-		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theData, SWTCanvas theCanvas)
+		@Override
+		public void doMouseMove(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theData, SWTCanvas theCanvas)
 		{
 
 			// check we're not currently dragging something
@@ -219,8 +351,9 @@ public class DragComponent extends DragFeature
 				{
 					// ok - change what the cursor looks liks
 					// create the new cursor
-					_newCursor = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-							"icons/SelectPointHit.ico").getImageData(), 7, 3);
+					_newCursor = new Cursor(Display.getDefault(), DebriefPlugin
+							.getImageDescriptor("icons/SelectPointHit.ico").getImageData(),
+							7, 3);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -255,96 +388,10 @@ public class DragComponent extends DragFeature
 			}
 		}
 
-		public Cursor getNormalCursor()
-		{
-			Cursor res = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-					"icons/SelectPoint.ico").getImageData(), 7, 3);
-
-			return res;
-		}
-
+		@Override
 		@SuppressWarnings("deprecation")
-		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
-				Layers theLayers, SWTCanvas theCanvas)
-		{
-			if ((_startPoint != null) && (_hoverTarget != null))
-			{
-				GC gc = new GC(_myCanvas.getCanvas());
-
-				// This is the same as a !XOR
-				gc.setXORMode(true);
-				gc.setForeground(gc.getBackground());
-
-				// Erase existing track, if we have one
-				if (_lastPoint != null)
-				{
-					drawHere(gc, null);
-				}
-				else
-				{
-					// we're drawing for the first time. make the last location equal the
-					// start location
-					_lastLocation = _startLocation;
-					
-					// override the icon we're using
-					if (_newCursor != null)
-					{
-						_newCursor.dispose();
-						ImageDescriptor imageDescriptor = DebriefPlugin.getImageDescriptor(
-														"icons/SelectPointHitDown.ico");
-						ImageData imageData = imageDescriptor.getImageData();
-						_newCursor = new Cursor(Display.getDefault(), imageData, 7, 3);
-					}					
-					
-				}
-
-				// remember where we are
-				_lastPoint = new java.awt.Point(pt.x, pt.y);
-				WorldLocation newLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
-						_lastPoint));
-
-				// now work out the vector from the last place plotted to the current
-				// place
-				WorldVector offset = newLocation.subtract(_lastLocation);
-
-				// draw new track
-				drawHere(gc, offset);
-
-				// remember the last location
-				_lastLocation = newLocation;
-
-				// cool, is it a track that we've just dragged?
-				if (_hoverTarget instanceof TrackWrapper)
-				{
-					// if the current editor is a track data provider,
-					// tell it that we've shifted
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-					IWorkbenchPage page = win.getActivePage();
-					IEditorPart editor = page.getActiveEditor();
-					TrackDataProvider dataMgr = (TrackDataProvider) editor
-							.getAdapter(TrackDataProvider.class);
-					// is it one of ours?
-					if (dataMgr != null)
-					{
-						{
-							dataMgr.fireTrackShift((TrackWrapper) _hoverTarget);
-						}
-					}
-				}
-				
-				// and ditch the GC
-				gc.dispose();
-			}
-			else
-			{
-				// System.out.println("no point.");
-			}
-
-		}
-
-		@SuppressWarnings("deprecation")
-		final public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
+		final public void doMouseUp(org.eclipse.swt.graphics.Point point,
+				int keyState)
 		{
 			// just check we actually dragged something
 			if (_hoverTarget != null)
@@ -372,17 +419,19 @@ public class DragComponent extends DragFeature
 				_hoverTarget.shift(_hoverComponent, reverse);
 
 				// and get the chart to redraw itself
-				_myChart.update();
+				// No, don't bother - the DebriefActionWrapper handles that
+				// _myChart.update(_parentLayer);
 
 				// ok, now calculate the real offset to apply
 				WorldVector forward = _lastLocation.subtract(_startLocation);
 
 				// put it into our action
-				DragComponentAction dta = new DragComponentAction(forward, _hoverTarget,
-						_hoverComponent, _myChart.getLayers(), _parentLayer);
+				DragComponentAction dta = new DragComponentAction(forward,
+						_hoverTarget, _hoverComponent, _myChart.getLayers(), _parentLayer);
 
 				// and wrap it
-				DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers());
+				DebriefActionWrapper daw = new DebriefActionWrapper(dta,
+						_myChart.getLayers(), _parentLayer);
 
 				// and add it to the clipboard
 				CorePlugin.run(daw);
@@ -395,17 +444,6 @@ public class DragComponent extends DragFeature
 			_myCanvas = null;
 			_startLocation = null;
 			_hoverTarget = null;
-		}
-
-		final public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas,
-				PlainChart theChart)
-		{
-			_startPoint = new Point(point.x, point.y);
-			_myCanvas = canvas;
-			_lastPoint = null;
-			_startLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
-					new java.awt.Point(point.x, point.y)));
-			_myChart = theChart;
 		}
 
 		/**
@@ -429,26 +467,31 @@ public class DragComponent extends DragFeature
 			{
 				private static final long serialVersionUID = 1L;
 
+				@Override
+				public void drawImage(Image image, int x, int y, int width, int height)
+				{
+				}
+
+				@Override
+				public void drawText(Font theFont, String theStr, int x, int y)
+				{
+				}
+
+				@Override
+				public void drawText(String theStr, int x, int y)
+				{
+				}
+
+				@Override
 				public void setColor(Color theCol)
 				{
 					// ignore the color change, we just want to keep it white...
 				}
 
+				@Override
 				protected void switchAntiAliasOn(boolean val)
 				{
 					// ignore this, we won't be anti-aliasing
-				}
-
-				public void drawImage(Image image, int x, int y, int width, int height)
-				{
-				}
-
-				public void drawText(Font theFont, String theStr, int x, int y)
-				{
-				}
-
-				public void drawText(String theStr, int x, int y)
-				{
 				}
 
 			};
@@ -458,110 +501,104 @@ public class DragComponent extends DragFeature
 			ca.endDraw(null);
 		}
 
-	}
-
-	/**
-	 * action representing a track being dragged. It's undo-able and redo-able,
-	 * since it's quite simple really.
-	 */
-	public static final class DragComponentAction implements MWC.GUI.Tools.Action
-	{
-		/**
-		 * the offset we're going to apply
-		 */
-		private final WorldVector _theOffset;
-
-		/**
-		 * the track we're going to apply it to
-		 */
-		private final HasDraggableComponents _theFeature;
-
-		/**
-		 * the set of layers we're need to update on completion
-		 */
-		private final Layers _theLayers;
-
-		/**
-		 * the layer to update after drag is complete
-		 */
-		private Layer _parentLayer;
-
-		/**
-		 * the component we're going to shift
-		 */
-		private WorldLocation _theComponent;
-
-		/**
-		 * constructor - providing the parameters to store to execute/reproduce the
-		 * operation
-		 * 
-		 * @param theOffset
-		 * @param theFeature
-		 * @param theLayers
-		 */
-		public DragComponentAction(final WorldVector theOffset,
-				final HasDraggableComponents theFeature, WorldLocation theComponent,
-				final Layers theLayers, final Layer parentLayer)
+		@Override
+		public Cursor getNormalCursor()
 		{
-			_theOffset = theOffset;
-			_theFeature = theFeature;
-			_theLayers = theLayers;
-			_parentLayer = parentLayer;
-			_theComponent = theComponent;
-		}
+			Cursor res = new Cursor(Display.getDefault(), DebriefPlugin
+					.getImageDescriptor("icons/SelectPoint.ico").getImageData(), 7, 3);
 
-		/**
-		 * @return a string representation of the object.
-		 */
-		public String toString()
-		{
-			final String res = "Drag " + _theFeature.getName() + _theOffset.toString();
 			return res;
 		}
 
-		/**
-		 * this method calls the 'do' event in the parent tool, passing the
-		 * necessary data to it
-		 */
-		public void execute()
+		@Override
+		final public void mouseDown(org.eclipse.swt.graphics.Point point,
+				SWTCanvas canvas, PlainChart theChart)
 		{
-			// apply the shift
-			_theFeature.shift(_theComponent, _theOffset);
-
-			// update the layers
-			_theLayers.fireModified(_parentLayer);
+			_startPoint = new Point(point.x, point.y);
+			_myCanvas = canvas;
+			_lastPoint = null;
+			_startLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
+					new java.awt.Point(point.x, point.y)));
+			_myChart = theChart;
 		}
 
-		/**
-		 * this method calls the 'undo' event in the parent tool, passing the
-		 * necessary data to it
-		 */
-		public void undo()
+	}
+
+	public static void findNearest(Layer thisLayer,
+			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
+			MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct currentNearest,
+			Layer parentLayer)
+	{
+		//
+		Layer thisParentLayer;
+		if (parentLayer == null)
+			thisParentLayer = thisLayer;
+		else
+			thisParentLayer = parentLayer;
+
+		// so, step through this layer
+		if (thisLayer.getVisible())
 		{
-			// reverse the drag direction
-			final WorldVector reverseVector = _theOffset.generateInverse();
+			boolean sorted = false;
 
-			// and apply it
-			_theFeature.shift(_theComponent, reverseVector);
+			// is this layer a track?
+			if (thisLayer instanceof HasDraggableComponents)
+			{
+				HasDraggableComponents dw = (HasDraggableComponents) thisLayer;
 
-			_theLayers.fireModified(_parentLayer);
-		}
+				// yup, find the distance to it's nearest point
+				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
+						thisParentLayer);
 
-		/**
-		 * @return boolean flag to indicate whether this action may be redone
-		 */
-		public boolean isRedoable()
-		{
-			return true;
-		}
+				// right, this one's processed. carry on
+				sorted = true;
+			}
 
-		/**
-		 * @return boolean flag to describe whether this operation may be undone
-		 */
-		public boolean isUndoable()
-		{
-			return true;
+			// have we processed this item
+			if (!sorted)
+			{
+				// nope, let's just run through it
+				Enumeration<Editable> pts = thisLayer.elements();
+				while (pts.hasMoreElements())
+				{
+					Plottable pt = (Plottable) pts.nextElement();
+
+					// is this item a layer itself?
+					if (pt instanceof Layer)
+					{
+						findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest,
+								thisParentLayer);
+					}
+					else
+					{
+						HasDraggableComponents draggable = null;
+
+						// is it a shape?
+						if (pt instanceof HasDraggableComponents)
+						{
+							draggable = (HasDraggableComponents) pt;
+
+							// yup, find the distance to it's nearest point
+							draggable.findNearestHotSpotIn(cursorPos, cursorLoc,
+									currentNearest, thisParentLayer);
+
+							// right, this one's processed. carry on
+							sorted = true;
+						}
+					}
+				}
+			}
 		}
 	}
 
+	@Override
+	public PlotMouseDragger getDragMode()
+	{
+		return new DragComponentMode();
+	}
+	public Cursor getDragCursor()
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+				"icons/SelectPointHitDown.ico").getImageData(), 7, 3);
+	}
 }

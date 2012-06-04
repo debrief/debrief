@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
@@ -74,6 +75,8 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 
 	protected TemporalLayerPainter _myPainter;
 
+	private GtProjection _myProjection;
+
 	@Override
 	protected void checkSubclass()
 	{
@@ -99,9 +102,11 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 		_myPainter = _snailPainter;
 		_snailPainter.getSnailProperties().setTrailLength(new Duration(30, Duration.MINUTES));
 
+		_myProjection = new GtProjection();
+		
 		_myLayers = new Layers();
 
-		_myChart = new SWTChart(_myLayers, this)
+		_myChart = new SWTChart(_myLayers, this, _myProjection)
 		{
 			/**
 			 * 

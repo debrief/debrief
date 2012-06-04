@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NetAsset2
 Bundle-SymbolicName: org.mwc.asset.NetAsset2;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-Activator: org.mwc.asset.netasset2.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core,
  org.mwc.cmap.plotViewer,
  org.mwc.debrief.legacy,
- org.mwc.debrief.core
+ org.mwc.debrief.core,
+ org.mwc.cmap.gt2Plot;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,

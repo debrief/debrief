@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.combined.feature"
       label="Combined Maritime Analysis Platform plugins"
-      version="1.0.158"
+      version="1.0.160"
       provider-name="MWC">
 
    <description>
@@ -277,6 +277,13 @@ Library.
 
    <plugin
          id="org.mwc.cmap.LiveDataMonitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.cmap.gt2Plot"
          download-size="0"
          install-size="0"
          version="0.0.0"

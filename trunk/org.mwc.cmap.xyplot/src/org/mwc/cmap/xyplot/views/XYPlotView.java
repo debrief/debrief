@@ -62,17 +62,20 @@ import org.mwc.cmap.xyplot.XYPlotPlugin;
 
 import Debrief.GUI.Tote.StepControl;
 import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.JFreeChart.DateAxisEditor;
+import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.JFreeChart.RelativeDateAxis;
 import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
-import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 
@@ -82,6 +85,29 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class XYPlotView extends ViewPart
 {
+
+	/**
+	 * hide the implemetnation of something that can provide a dataset.
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static interface DatasetProvider
+	{
+		/**
+		 * get (recalculate) the dataset
+		 * 
+		 * @return
+		 */
+		public AbstractSeriesDataset getDataset();
+
+		/**
+		 * get the layers that this data comes from
+		 * 
+		 * @return
+		 */
+		Layers getLayers();
+	}
 
 	// //////////////////////////////////////////////////
 	// data we store between sessions
@@ -214,6 +240,21 @@ public class XYPlotView extends ViewPart
 
 	private String _myId;
 
+	/** the special action that indicates if we should listen to our data changing, but
+	 * only if we have a data provider
+	 */
+	private Action _listenForDataChanges;
+
+	/** a helper that's able to generate a dataset
+	 * 
+	 */
+	private transient DatasetProvider _provider;
+
+	/** our pre-generated layer listener
+	 * 
+	 */
+	protected DataListener _modifiedListener;
+
 	/**
 	 * The constructor.
 	 */
@@ -237,6 +278,9 @@ public class XYPlotView extends ViewPart
 	public void showPlot(String title, AbstractSeriesDataset dataset,
 			String units, formattingOperation theFormatter, String thePlotId)
 	{
+
+		_listenForDataChanges.setEnabled(false);
+
 		// right, store the incoming data, so we can save it when/if
 		// Eclipse closes with this view still open
 		_myTitle = title;
@@ -292,6 +336,27 @@ public class XYPlotView extends ViewPart
 			restorePreviousPlot();
 		}
 
+		_modifiedListener = new DataListener()
+		{
+
+			@Override
+			public void dataModified(Layers theData, Layer changedLayer)
+			{
+				regenerateData();
+			}
+
+			@Override
+			public void dataExtended(Layers theData)
+			{
+				regenerateData();
+			}
+
+			@Override
+			public void dataReformatted(Layers theData, Layer changedLayer)
+			{
+			}
+		};
+
 	}
 
 	/**
@@ -307,8 +372,7 @@ public class XYPlotView extends ViewPart
 			_myTitle = _myMemento.getString(TITLE);
 			_myUnits = _myMemento.getString(UNITS);
 			_myId = _myMemento.getString(PLOT_ID);
-			
-			
+
 			// get our special streaming library ready
 			XStream xs = new XStream(new DomDriver());
 
@@ -334,18 +398,18 @@ public class XYPlotView extends ViewPart
 			// sort out the fixed duration bits - now we've got our plot
 			String theDur = _myMemento.getString(FIXED_DURATION);
 			Duration someDur = null;
-			if(theDur != null)
+			if (theDur != null)
 			{
 				long dur = Long.parseLong(theDur);
 				someDur = new Duration(dur, Duration.MILLISECONDS);
 			}
 			Boolean doFixed = _myMemento.getBoolean(DISPLAY_FIXED_DURATION);
-			if(doFixed != null)
+			if (doFixed != null)
 			{
 				this._thePlotArea.setFixedDuration(someDur);
 				this._thePlotArea.setDisplayFixedDuration(doFixed);
 			}
-			
+
 			// right the plot's done, put back in our fancy formatting bits
 			String str;
 			str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
@@ -517,14 +581,14 @@ public class XYPlotView extends ViewPart
 		_thePlot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
 		_thePlot.setDomainCrosshairStroke(new BasicStroke(1));
 		_thePlot.setRangeCrosshairStroke(new BasicStroke(1));
-		
+
 		// and the plot object to display the cross hair value
 		final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
 		annot.setTextAnchor(TextAnchor.TOP_LEFT);
 		annot.setPaint(Color.black);
 		annot.setBackgroundPaint(Color.white);
 		_thePlot.addAnnotation(annot);
-		
+
 		_thePlotArea.addProgressListener(new ChartProgressListener()
 		{
 			public void chartProgress(ChartProgressEvent cpe)
@@ -540,19 +604,19 @@ public class XYPlotView extends ViewPart
 
 				// and write the text
 				String numA = MWC.Utilities.TextFormatting.GeneralFormat
-				.formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
-				Date newDate = new Date((long)_thePlot.getDomainCrosshairValue());
+						.formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
+				Date newDate = new Date((long) _thePlot.getDomainCrosshairValue());
 				final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 				_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 				String dateVal = _df.format(newDate);
-				String theMessage =  " [" + dateVal + "," + numA + "]";
+				String theMessage = " [" + dateVal + "," + numA + "]";
 				annot.setText(theMessage);
-				
+
 				// aah, now we have to add and then remove the annotation in order
 				// for the new text value to be displayed. Watch and learn...
 				_thePlot.removeAnnotation(annot);
 				_thePlot.addAnnotation(annot);
-				
+
 			}
 		});
 
@@ -564,11 +628,11 @@ public class XYPlotView extends ViewPart
 
 	private void setupFiringChangesToChart()
 	{
-		
+
 		// see if we've alreay been configured
-		if(_timeListener != null)
+		if (_timeListener != null)
 			return;
-		
+
 		// get the document being edited
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
@@ -775,6 +839,7 @@ public class XYPlotView extends ViewPart
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
 		manager.add(_editMyProperties);
+		manager.add(_listenForDataChanges);
 	}
 
 	private void makeActions()
@@ -792,6 +857,17 @@ public class XYPlotView extends ViewPart
 				.setToolTipText("Change editable properties for this chart");
 		_editMyProperties.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/properties.gif"));
+
+		_listenForDataChanges = new Action("Listen for data changes", SWT.TOGGLE)
+		{
+			public void run()
+			{
+				super.run();
+				doListenStatusUpdate();
+			}
+		};
+		_listenForDataChanges.setToolTipText("Auto-sync with calculated track data.");
+		_listenForDataChanges.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
 
 		_switchAxes = new Action("Plot as waterfall", SWT.TOGGLE)
 		{
@@ -823,7 +899,7 @@ public class XYPlotView extends ViewPart
 				try
 				{
 					_thePlot.setGrowWithTime(_growPlot.isChecked());
-					
+
 					// may aswell trigger a redraw
 					_chartInPanel.invalidate();
 				}
@@ -857,7 +933,7 @@ public class XYPlotView extends ViewPart
 		_fitToWindow.setText("Fit to window");
 		_fitToWindow.setToolTipText("Scale the graph to show all data");
 		_fitToWindow.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_size.png"));
+				.getImageDescriptor("icons/fit_to_win.gif"));
 
 		_exportToWMF = new Action()
 		{
@@ -884,6 +960,68 @@ public class XYPlotView extends ViewPart
 		_exportToClipboard.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/copy.png"));
 
+	}
+
+	protected void doListenStatusUpdate()
+	{
+		boolean doListen = _listenForDataChanges.isChecked();
+		if (_provider != null)
+		{
+			Layers layers = _provider.getLayers();
+			if (layers != null)
+			{
+				if (doListen)
+				{
+					layers.addDataModifiedListener(_modifiedListener);
+					layers.addDataExtendedListener(_modifiedListener);
+				}
+				else
+				{
+					layers.removeDataExtendedListener(_modifiedListener);
+					layers.removeDataModifiedListener(_modifiedListener);
+				}
+			}
+		}
+
+	}
+
+	
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		
+		// closing, ditch the listenesr
+		ditchListeners();
+	}
+
+	protected void ditchListeners()
+	{
+		if (_provider != null)
+		{
+			Layers layers = _provider.getLayers();
+			if (layers != null)
+			{
+				layers.removeDataExtendedListener(_modifiedListener);
+				layers.removeDataModifiedListener(_modifiedListener);
+			}
+		}
+
+	}
+
+	protected void regenerateData()
+	{
+		if (_provider != null)
+		{
+			AbstractSeriesDataset ds = _provider.getDataset();
+			if (ds != null)
+			{
+				// store the dataset
+				_dataset = ds;
+
+				_thePlot.setDataset((XYDataset) _dataset);
+			}
+		}
 	}
 
 	private void hookDoubleClickAction()
@@ -956,19 +1094,21 @@ public class XYPlotView extends ViewPart
 	public void saveState(IMemento memento)
 	{
 		// check we have some data
-		if(_thePlotArea == null)
+		if (_thePlotArea == null)
 			return;
-		
+
 		// let our parent go for it first
 		super.saveState(memento);
 
 		memento.putString(TITLE, _myTitle);
 		memento.putString(UNITS, _myUnits);
 		memento.putString(PLOT_ID, _myId);
-		
+
 		// sort out the fixed duration bits
-		memento.putBoolean(DISPLAY_FIXED_DURATION, this._thePlotArea.getDisplayFixedDuration() );
-		memento.putString(FIXED_DURATION,"" + this._thePlotArea.getFixedDuration().getMillis() );
+		memento.putBoolean(DISPLAY_FIXED_DURATION,
+				this._thePlotArea.getDisplayFixedDuration());
+		memento.putString(FIXED_DURATION, ""
+				+ this._thePlotArea.getFixedDuration().getMillis());
 
 		// store whether the axes are switched
 		memento.putString(DO_WATERFALL, Boolean.toString(_switchAxes.isChecked()));
@@ -1050,6 +1190,43 @@ public class XYPlotView extends ViewPart
 		{
 			_myString = string;
 		}
+	}
+
+	public void showPlot(String theTitle, DatasetProvider prov, String units2,
+			formattingOperation theFormatter, String thePlotId)
+
+	{
+		// right, store the incoming data, so we can save it when/if
+		// Eclipse closes with this view still open
+		_myTitle = theTitle;
+		_myUnits = units2;
+		_theFormatter = theFormatter;
+		_myId = thePlotId;
+
+		// ok, update the plot.
+		this.setPartName(_myTitle);
+
+		_provider = prov;
+		if (_provider != null)
+		{
+			AbstractSeriesDataset ds = _provider.getDataset();
+			if (ds != null)
+			{
+				// store the dataset
+				_dataset = ds;
+				// ok, fill in the plot
+				fillThePlot(_myTitle, _myUnits, _theFormatter, ds);
+			}
+		}
+
+		// and set the right value
+		_listenForDataChanges.setEnabled(true);
+
+		// and tell it to start listening
+		_listenForDataChanges.setChecked(true);
+
+		// and process the new state
+		doListenStatusUpdate();
 	}
 
 }

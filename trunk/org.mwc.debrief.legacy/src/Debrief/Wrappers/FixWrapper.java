@@ -619,16 +619,18 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		{
 			// ok, have a go at drawing an arrow...
 			double direction = (this.getFix().getCourse() + Math.PI / 2);
-			
+
 			double theScale = _theLocationWrapper.getSymbolScale();
-			
+
 			double len = 30d * theScale;
 			double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
-			
-			// move the start point forward, so the centre of the triangle is over the point
-			Point p1 = dest.toScreen(centre);
-			p1.translate(-(int) (len/2d * Math.cos(direction)),
-					-(int) (len/2d * Math.sin(direction)));
+
+			// move the start point forward, so the centre of the triangle is over the
+			// point
+			Point p0 = dest.toScreen(centre);
+			Point p1 = new Point(p0);
+			p1.translate(-(int) (len / 2d * Math.cos(direction)),
+					-(int) (len / 2d * Math.sin(direction)));
 
 			// now the back corners
 			Point p2 = new Point(p1);
@@ -687,7 +689,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	{
 		_theFont = theFont;
 
-		_theLabel.setFont(getFont());
+		if (_theLabel != null)
+			_theLabel.setFont(getFont());
 	}
 
 	@Override

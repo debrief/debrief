@@ -132,9 +132,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -177,11 +178,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 	/**
 	 * default constructor.
+	 * 
+	 * @param projection
 	 */
-	public SWTCanvas(Composite parent)
+	public SWTCanvas(Composite parent, GeoToolsHandler projection)
 	{
-		super(new GtProjection());
-//		super(null);
+		super((PlainProjection) projection);
+		// super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()
@@ -467,8 +470,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public final void close()
 	{
-		if (!_dblBuff.isDisposed())
-			_dblBuff.dispose();
+		if (_dblBuff != null)
+			if (!_dblBuff.isDisposed())
+				_dblBuff.dispose();
 		_dblBuff = null;
 	}
 

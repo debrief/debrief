@@ -75,6 +75,7 @@ import org.mwc.cmap.core.wizards.EnterBooleanPage;
 import org.mwc.cmap.core.wizards.EnterRangePage;
 import org.mwc.cmap.core.wizards.EnterStringPage;
 import org.mwc.cmap.core.wizards.SelectColorPage;
+import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -99,6 +100,7 @@ import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.BaseLayer;
@@ -328,7 +330,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// stop listening to the time manager
 		_timeManager.removeListener(_timeListener,
 				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
+		
+		_timeManager = null;
+		
+		if(_layerPainterManager != null)
+		{
+			_layerPainterManager.close();
+			_layerPainterManager = null;
+		}
+		
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -355,6 +365,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	private void loadThisFile(IEditorInput input)
 	{
 		InputStream is = null;
+		if (!input.exists())
+		{
+			CorePlugin.logError(Status.ERROR,
+					"File cannot be found:" + input.getName(), null);
+			return;
+		}
 		try
 		{
 			IPersistableElement persist = input.getPersistable();
@@ -391,10 +407,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		catch (ResourceException e)
 		{
 			CorePlugin.logError(Status.ERROR,
-					"Resource out of sync, REFRESH the workspace", e);
-			MessageDialog.openError(Display.getDefault().getActiveShell(),
-					"File out of sync",
-					"Please right-click on your navigator project and press Refresh");
+					"Resource out of sync:" + input.getName() + " REFRESH the workspace",
+					null);
+			MessageDialog
+					.openError(
+							Display.getDefault().getActiveShell(),
+							"File out of sync",
+							"This file has been edited or removed:"
+									+ input.getName()
+									+ "\nPlease right-click on your navigator project and press Refresh");
 		}
 		catch (CoreException e)
 		{
@@ -911,12 +932,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent)
+		SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
 		{
 
-			public SWTCanvas createCanvas(Composite parent1)
+			@Override
+			public SWTCanvas createCanvas(Composite parent1, GtProjection projection)
 			{
-				return new CustomisedSWTCanvas(parent1)
+				return new CustomisedSWTCanvas(parent1, _myGeoHandler)
 				{
 
 					/**
@@ -943,6 +965,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							{ theParentLayer }, new Layer[]
 							{ theParentLayer }, getLayers(), true);
 						}
+						else if (selected instanceof PlanningSegment)
+						{
+							PlanningSegment ps = (PlanningSegment) selected;
+							TrackWrapper parent11 = ps.getWrapper();
+							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
+							{ parent11 }, new Layer[]
+							{ theParentLayer }, new Layer[]
+							{ theParentLayer }, getLayers(), true);
+						}
+						
 					}
 				};
 			}
@@ -1456,10 +1488,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// we should also recalculate the time period we cover
 		TimePeriod timePeriod = getPeriodFor(_myLayers);
 
-		if (timePeriod != null)
-		{
-			_timeManager.setPeriod(this, timePeriod);
-		}
+		// and share the good news.
+		_timeManager.setPeriod(this, timePeriod);
 
 		// and tell the track data manager that something's happened. One of
 		// it's

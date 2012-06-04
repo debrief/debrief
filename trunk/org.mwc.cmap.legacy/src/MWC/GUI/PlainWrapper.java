@@ -203,7 +203,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
      * provide support for property changes, should we require it
      * 
      */
-    private java.beans.PropertyChangeSupport _pSupport = null;
+    private transient java.beans.PropertyChangeSupport _pSupport = null;
 
     // ///////////////////////////////////////////////////////////
     // constructor

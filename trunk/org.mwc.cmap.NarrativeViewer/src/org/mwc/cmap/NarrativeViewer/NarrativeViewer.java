@@ -22,210 +22,245 @@ import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 import de.kupzog.ktable.KTableCellResizeAdapter;
 import de.kupzog.ktable.SWTX;
 
-public class NarrativeViewer extends KTable {
+public class NarrativeViewer extends KTable
+{
 
 	final NarrativeViewerModel myModel;
 	private NarrativeViewerActions myActions;
-    public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore) {
+
+	public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore)
+	{
 		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
-		myModel = new NarrativeViewerModel(preferenceStore, new ColumnSizeCalculator() {
-			@SuppressWarnings("synthetic-access")
-			public int getColumnWidth(int col) {
-				return getColumnRight(col) - getColumnLeft(col);
-			}
-		});
-		
-		myModel.addColumnVisibilityListener(new Column.VisibilityListener() {
-			public void columnVisibilityChanged(Column column, boolean actualIsVisible) {
+		myModel = new NarrativeViewerModel(preferenceStore,
+				new ColumnSizeCalculator()
+				{
+					@SuppressWarnings("synthetic-access")
+					public int getColumnWidth(int col)
+					{
+						return getColumnRight(col) - getColumnLeft(col);
+					}
+				});
+
+		myModel.addColumnVisibilityListener(new Column.VisibilityListener()
+		{
+			public void columnVisibilityChanged(Column column, boolean actualIsVisible)
+			{
 				refresh();
 			}
 		});
 		setModel(myModel);
 
-		addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
+		addControlListener(new ControlAdapter()
+		{
+			public void controlResized(ControlEvent e)
+			{
 				onColumnsResized(false);
 			}
 		});
 
-		addCellResizeListener(new KTableCellResizeAdapter() {
-			public void columnResized(int col, int newWidth) {
+		addCellResizeListener(new KTableCellResizeAdapter()
+		{
+			public void columnResized(int col, int newWidth)
+			{
 				onColumnsResized(false);
 			}
 		});
 
-		addCellDoubleClickListener(new KTableCellDoubleClickAdapter() {
-			public void fixedCellDoubleClicked(int col, int row, int statemask) {
+		addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
+		{
+			public void fixedCellDoubleClicked(int col, int row, int statemask)
+			{
 				Column column = myModel.getVisibleColumn(col);
 				showFilterDialog(column);
 				ColumnFilter filter = column.getFilter();
-				if (filter != null){
-					
+				if (filter != null)
+				{
+
 				}
 			}
 		});
 	}
-	
-	public NarrativeViewerActions getViewerActions(){
-		if (myActions == null){
+
+	public NarrativeViewerActions getViewerActions()
+	{
+		if (myActions == null)
+		{
 			myActions = new NarrativeViewerActions(this);
 		}
 		return myActions;
 	}
-	
-	public NarrativeViewerModel getModel() {
-		return (NarrativeViewerModel)super.getModel();
+
+	public NarrativeViewerModel getModel()
+	{
+		return (NarrativeViewerModel) super.getModel();
 	}
 
-	public void showFilterDialog(Column column) {
-		if (!myModel.hasInput()) {
+	public void showFilterDialog(Column column)
+	{
+		if (!myModel.hasInput())
+		{
 			return;
 		}
-		
+
 		ColumnFilter filter = column.getFilter();
-		if (filter == null){
+		if (filter == null)
+		{
 			return;
 		}
 
-		FilterDialog dialog = new FilterDialog(getShell(), myModel.getInput(), column);
+		FilterDialog dialog = new FilterDialog(getShell(), myModel.getInput(),
+				column);
 
-		if (Dialog.OK == dialog.open()) {
+		if (Dialog.OK == dialog.open())
+		{
 			dialog.commitFilterChanges();
 			refresh();
 		}
 	}
 
-	void onColumnsResized(boolean force) {
+	void onColumnsResized(boolean force)
+	{
 		GC gc = new GC(this);
 		myModel.onColumnsResized(gc, force);
 		gc.dispose();
 	}
 
-	public void setInput(IRollingNarrativeProvider entryWrapper) {
+	public void setInput(IRollingNarrativeProvider entryWrapper)
+	{
 		myModel.setInput(entryWrapper);
 		refresh();
 	}
-	
-	
 
-	public void setTimeFormatter(TimeFormatter timeFormatter) {
+	public void setTimeFormatter(TimeFormatter timeFormatter)
+	{
 		myModel.setTimeFormatter(timeFormatter);
 		redraw();
 	}
 
-	public void refresh() {
+	public void refresh()
+	{
 		onColumnsResized(true);
 		redraw();
 	}
 
-	public boolean isWrappingEntries() {
+	public boolean isWrappingEntries()
+	{
 		return myModel.isWrappingEntries();
 	}
 
-	public void setWrappingEntries(boolean shouldWrap) {
-		if (myModel.setWrappingEntries(shouldWrap)) {
+	public void setWrappingEntries(boolean shouldWrap)
+	{
+		if (myModel.setWrappingEntries(shouldWrap))
+		{
 			refresh();
-		}     
+		}
 	}
 
-	/** the controlling time has updated
+	/**
+	 * the controlling time has updated
 	 * 
-	 * @param dtg the selected dtg
+	 * @param dtg
+	 *          the selected dtg
 	 */
-    public void setDTG(HiResDate dtg)
-    {
-        // find the table entry immediately after or on this DTG
-    		int theIndex = -1;
-    		int thisIndex = 0;
-    		
-    		// retrieve the list of visible rows
-        LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
-        
-        // step through them
-        for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator.hasNext();)
-				{        	
-					NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
-					
-					// get the date
-          HiResDate dt = narrativeEntry.getDTG();
-          
-          // is this what we're looking for?
-          if(dt.greaterThanOrEqualTo(dtg))            	
-          {
-          	// yup, remember the index
-            theIndex = thisIndex;
-            break;
-          }             
-					
-          // increment the counter
-          thisIndex++;
-				}
-        
-        
-        // ok, try to select this entry
-        if(theIndex > -1)
-        {
-        	// just check it's not already selected
-          int[] currentRows = super.getRowSelection();
-          if(currentRows.length == 1)
-          {
-          	// don't bother, we've already selected it
-          	if(currentRows[0] == theIndex + 1)
-          		return;
-          }
+	public void setDTG(HiResDate dtg)
+	{
+		// find the table entry immediately after or on this DTG
+		int theIndex = -1;
+		int thisIndex = 0;
 
-        	
-        	// to make sure the desired entry is fully visible (even if it's a multi-line one),
-        	// select the entry after our target one, then our target entry.
-          super.setSelection(1, theIndex + 2, true);
-          
-          // right, it's currently looking at the entry after our one.  Now select our one.
-          super.setSelection(1, theIndex + 1, true);
-        }
+		// retrieve the list of visible rows
+		LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
 
-    }
-    
+		// step through them
+		for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+				.hasNext();)
+		{
+			NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
 
-  	/** the controlling time has updated
-  	 * 
-  	 * @param dtg the selected dtg
-  	 */
-      public void setEntry(NarrativeEntry entry)
-      {
-          // find the table entry immediately after or on this DTG
-      		int theIndex = -1;
-      		int thisIndex = 0;
-      		
-      		// retrieve the list of visible rows
-          LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
-          
-          // step through them
-          for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator.hasNext();)
-  				{        	
-  					NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
-  					
-  					if(narrativeEntry == entry)
-  					{
-            	// yup, remember the index
-              theIndex = thisIndex;
-              break;
-            }             
-  					
-            // increment the counter
-            thisIndex++;
-  				}
-          
-          // ok, try to select this entry
-          if(theIndex > -1)
-          {
-          	// to make sure the desired entry is fully visible (even if it's a multi-line one),
-          	// select the entry after our target one, then our target entry.
-            super.setSelection(1, theIndex + 2, true);
-            
-            // right, it's currently looking at the entry after our one.  Now select our one.
-            super.setSelection(1, theIndex + 1, true);
-          }
+			// get the date
+			HiResDate dt = narrativeEntry.getDTG();
 
-      }
+			// is this what we're looking for?
+			if (dt.greaterThanOrEqualTo(dtg))
+			{
+				// yup, remember the index
+				theIndex = thisIndex;
+				break;
+			}
+
+			// increment the counter
+			thisIndex++;
+		}
+
+		// ok, try to select this entry
+		if (theIndex > -1)
+		{
+			// just check it's not already selected
+			int[] currentRows = super.getRowSelection();
+			if (currentRows.length == 1)
+			{
+				// don't bother, we've already selected it
+				if (currentRows[0] == theIndex + 1)
+					return;
+			}
+
+			// to make sure the desired entry is fully visible (even if it's a
+			// multi-line one),
+			// select the entry after our target one, then our target entry.
+			super.setSelection(1, theIndex + 2, true);
+
+			// right, it's currently looking at the entry after our one. Now select
+			// our one.
+			super.setSelection(1, theIndex + 1, true);
+		}
+
+	}
+
+	/**
+	 * the controlling time has updated
+	 * 
+	 * @param dtg
+	 *          the selected dtg
+	 */
+	public void setEntry(NarrativeEntry entry)
+	{
+		// find the table entry immediately after or on this DTG
+		int theIndex = -1;
+		int thisIndex = 0;
+
+		// retrieve the list of visible rows
+		LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+
+		// step through them
+		for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator
+				.hasNext();)
+		{
+			NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+
+			if (narrativeEntry == entry)
+			{
+				// yup, remember the index
+				theIndex = thisIndex;
+				break;
+			}
+
+			// increment the counter
+			thisIndex++;
+		}
+
+		// ok, try to select this entry
+		if (theIndex > -1)
+		{
+			// to make sure the desired entry is fully visible (even if it's a
+			// multi-line one),
+			// select the entry after our target one, then our target entry.
+			super.setSelection(1, theIndex + 2, true);
+
+			// right, it's currently looking at the entry after our one. Now select
+			// our one.
+			super.setSelection(1, theIndex + 1, true);
+		}
+
+	}
 }

@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.core"
    name="CMap Core Resources Plug-in"
-   version="1.0.144"
+   version="1.0.145"
    provider-name="MWC"
    class="org.mwc.cmap.core.CorePlugin">
 
@@ -28,6 +28,36 @@
          </export>
       </library>
       <library name="libs/mockito-all-1.8.5.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+      <library name="image_libs/imageio-ext-tiff-1.1.2.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+      <library name="image_libs/imageio-ext-utilities-1.1.2.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+      <library name="image_libs/jai_codec-1.1.3.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+      <library name="image_libs/jai_core-1.1.3.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+      <library name="image_libs/jai_imageio-1.1.jar">
+         <export
+               name="*">
+         </export>
+      </library>
+      <library name="libs/commons-io-2.3.jar">
          <export
                name="*">
          </export>

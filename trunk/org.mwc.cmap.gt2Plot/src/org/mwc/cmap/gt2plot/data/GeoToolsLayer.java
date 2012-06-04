@@ -2,8 +2,10 @@ package org.mwc.cmap.gt2plot.data;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.Status;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
+import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.ExternallyManagedDataLayer;
 
@@ -87,6 +89,11 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 		if (openFile != null && openFile.exists())
 		{
 			_myLayer = loadLayer(openFile);
+		}
+		else
+		{
+			CorePlugin.logError(Status.WARNING, "GeoTools file not found:" + super.getFilename(), null);
+			CorePlugin.showMessage("Load GIS dataset", "Sorry, can't find the file:\n" + super.getFilename());
 		}
 
 		// ok, add ourselves to the map
