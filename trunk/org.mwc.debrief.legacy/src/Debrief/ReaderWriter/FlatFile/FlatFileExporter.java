@@ -938,8 +938,8 @@ public class FlatFileExporter
 		// right, we're going to loop through the two tracks producing positions
 		// at all the specified times
 
-		final NumberFormat dp4 = new DecimalFormat("0.0000");
-		final NumberFormat dopplerFormat = new DecimalFormat("0.00000000");
+		final NumberFormat dp4 = new DecimalFormat("0.####");
+		final NumberFormat dopplerFormat = new DecimalFormat("0.########");
 
 		// remember the primary interpolation
 		final boolean primaryInterp = primaryTrack.getInterpolatePoints();
@@ -1140,7 +1140,7 @@ public class FlatFileExporter
 			final String Sensor_Y = "" + dp4.format(sen1Y);
 			final String Sensor_Brg = dp4.format(theBearing1);
 			final String Sensor_Bacc = "" + 0;
-			final String Sensor_Freq = "" + senFreq1;
+			final String Sensor_Freq = "" + dp4.format(senFreq1);
 			final String Sensor_Facc = "" + 0;
 			final String Sensor_Speed = "" + dp4.format(senSpd1);
 			final String Sensor_Heading = "" + dp4.format(sen1Heading);
@@ -1154,7 +1154,7 @@ public class FlatFileExporter
 			final String Sensor2_Y = "" + dp4.format(sen2Y);
 			final String Sensor2_Brg = dp4.format(theBearing2);
 			final String Sensor2_Bacc = "" + 0;
-			final String Sensor2_Freq = "" + senFreq2;
+			final String Sensor2_Freq = "" + dp4.format(senFreq2);
 			final String Sensor2_Facc = "" + 0;
 			final String Sensor2_Speed = "" + dp4.format(senSpd2);
 			final String Sensor2_Heading = "" + dp4.format(senHeading2);
