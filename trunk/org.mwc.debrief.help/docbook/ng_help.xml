@@ -4,50 +4,39 @@
 <book version="5.0" xmlns="http://docbook.org/ns/docbook">
   <info>
     <title>Debrief NG User Documentation</title>
-
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="figures/DebriefNGlogo.gif"></imagedata>
+        <imagedata align="center" fileref="figures/DebriefNGlogo.gif"/>
       </imageobject>
     </mediaobject>
-
     <author>
       <personname>Ian Mayo</personname>
-
       <affiliation>
         <org>
-          <orgname></orgname>
-
+          <orgname/>
           <orgdiv><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/planet.gif"></imagedata>
+                <imagedata fileref="figures/planet.gif"/>
               </imageobject>
             </inlinemediaobject></orgdiv>
-
           <orgdiv><inlinemediaobject>
               <imageobject>
-                <imagedata fileref="figures/mwc_crest.gif"></imagedata>
+                <imagedata fileref="figures/mwc_crest.gif"/>
               </imageobject>
             </inlinemediaobject></orgdiv>
         </org>
       </affiliation>
     </author>
-
     <edition>Documentation for Debrief NG</edition>
-
-    <pubdate>Summer 2011</pubdate>
-
+    <pubdate>Summer 2012</pubdate>
     <abstract>
       <title>Contact details</title>
-
-      <para>Should you wish to learn more about
-      <application>Debrief</application> please contact one of the
-      following:</para>
-
+      <para>Should you wish to learn more about <application>Debrief</application> please contact
+        one of the following:</para>
       <formalpara>
         <title>Debrief Project Sponsor</title>
-
-        <para><address>
+        <para>
+          <address>
             <personname>Lt Cdr Bob Mannion</personname>
             <personname>SO2 UW OA</personname>
             <otheraddr>Maritime Warfare Centre</otheraddr>
@@ -56,13 +45,13 @@
             <state>HANTS</state>
             <country>UK</country>
             <postcode>  PO14 1AS</postcode>
-          </address></para>
+          </address>
+        </para>
       </formalpara>
-
-      <formalpara  xml:id="project_manager">
+      <formalpara xml:id="project_manager">
         <title>Debrief Project Manager</title>
-
-        <para><address>
+        <para>
+          <address>
             <personname>Mr Ian A Mayo</personname>
             <personname>Debrief Project Manager</personname>
             <otheraddr>PlanetMayo Ltd</otheraddr>
@@ -72,156 +61,106 @@
             <country>UK</country>
             <postcode>  PO16 8YE</postcode>
             <country>e-mail: ian@planetmayo.com</country>
-          </address></para>
+          </address>
+        </para>
       </formalpara>
     </abstract>
-
     <revhistory>
       <revision>
-        <revnumber>2.4</revnumber>
-
-        <date>1st June 2011</date>
-
+        <revnumber>2.5</revnumber>
+        <date>10th June 2012</date>
         <authorinitials>IM</authorinitials>
-
-        <revremark>Full document update/tidying. Update to DocBook
-        5.0</revremark>
+        <revremark>Include Charting, plus Exercise Planning</revremark>
       </revision>
-
+      <revision>
+        <revnumber>2.4</revnumber>
+        <date>1st June 2011</date>
+        <authorinitials>IM</authorinitials>
+        <revremark>Full document update/tidying. Update to DocBook 5.0</revremark>
+      </revision>
       <revision>
         <revnumber>2.3</revnumber>
-
         <date>1st December 2010</date>
-
         <authorinitials>IM</authorinitials>
-
-        <revremark>Add guidance for right-click integration, worm in the
-        hole</revremark>
+        <revremark>Add guidance for right-click integration, worm in the hole</revremark>
       </revision>
-
       <revision>
         <revnumber>2.2</revnumber>
-
         <date>1st July 2009</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Update for single-sided reconstruction</revremark>
       </revision>
-
       <revision>
         <revnumber>2.1</revnumber>
-
         <date>1st July 2007</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Polish final Debrief NG content</revremark>
       </revision>
-
       <revision>
         <revnumber>2.0</revnumber>
-
         <date>1st March 2006</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Start transition to Debrief NG</revremark>
       </revision>
-
       <revision>
         <revnumber>1.7</revnumber>
-
         <date>10th July 2004</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Include track-shifting</revremark>
       </revision>
-
       <revision>
         <revnumber>1.6</revnumber>
-
         <date>10th March 2003</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Update to Debrief 2003 functionality</revremark>
       </revision>
-
       <revision>
         <revnumber>1.5</revnumber>
-
         <date>10th Nov 2002</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Add ETOPO-2 data support</revremark>
       </revision>
-
       <revision>
         <revnumber>1.4</revnumber>
-
         <date>10th July 2002</date>
-
         <authorinitials>IM</authorinitials>
-
-        <revremark>D2002 post-beta revisions, including starting with higher
-        memory allocation</revremark>
+        <revremark>D2002 post-beta revisions, including starting with higher memory
+          allocation</revremark>
       </revision>
-
       <revision>
         <revnumber>1.3</revnumber>
-
         <date>7th May 2002</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Update to reflect Debrief 2002</revremark>
       </revision>
-
       <revision>
         <revnumber>1.2</revnumber>
-
         <date>13th February 2002</date>
-
         <authorinitials>IM</authorinitials>
-
-        <revremark>Bought up to date with new features (per-fix colouring,
-        cascade/tile, x-y plot tracking bar)</revremark>
+        <revremark>Bought up to date with new features (per-fix colouring, cascade/tile, x-y plot
+          tracking bar)</revremark>
       </revision>
-
       <revision>
         <revnumber>1.1</revnumber>
-
         <date>25th October 2001</date>
-
         <authorinitials>IM</authorinitials>
-
         <revremark>Acknowledged Debrief users added, together with extended
-        Welcome/History</revremark>
+          Welcome/History</revremark>
       </revision>
-
       <revision>
         <revnumber>1.0</revnumber>
-
         <date>8th October 2001</date>
-
         <authorinitials>IM</authorinitials>
-
-        <revremark>Initial version, following collation of existing HTML pages
-        to DocBook format, together with full review by SMTAC OA.</revremark>
+        <revremark>Initial version, following collation of existing HTML pages to DocBook format,
+          together with full review by SMTAC OA.</revremark>
       </revision>
     </revhistory>
-
     <copyright>
-      <year>2000-2011</year>
-
-      <holder>Maritime Warfare Centre Ltd. Permission is granted to copy,
-      distribute and/or modify this document under the terms of the GNU Free
-      Documentation License, Version 1.1 or any later version published by the
-      Free Software Foundation. A copy of the license is included in the
-      section entitled "GNU Free Documentation License".</holder>
+      <year>2000-2012</year>
+      <holder>Maritime Warfare Centre Ltd. Permission is granted to copy, distribute and/or modify
+        this document under the terms of the GNU Free Documentation License, Version 1.1 or any
+        later version published by the Free Software Foundation. A copy of the license is included
+        in the section entitled "GNU Free Documentation License".</holder>
     </copyright>
   </info>
 
