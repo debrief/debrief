@@ -304,6 +304,9 @@ public class ImportKML
 			e.printStackTrace();
 		}
 
+		// lastly, clear the 'last layer' object
+		lastLayer = null;
+		
 	}
 
 	/** utility to run through the contents of a LineString item - presuming the presence of altitude data
