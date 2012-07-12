@@ -1,0 +1,4461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="ExpertGPS 1.9 b7" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd http://www.topografix.com/GPX/gpx_overlay/0/3 http://www.topografix.com/GPX/gpx_overlay/0/3/gpx_overlay.xsd">
+<metadata>
+<time>2005-06-27T01:25:45Z</time>
+<bounds minlat="42.7166667340991" minlon="-2.25000003373716" maxlat="49.0166666776889" maxlon="8.70000000192784"/>
+</metadata>
+<wpt lat="46.9000000084657" lon="-2.14999998939689">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050100</name>
+<cmt>FROMENTINE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050100</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.9499999887263" lon="-2.18333330957064">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050102</name>
+<cmt>BARBTRE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050102</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.999999968987" lon="-2.25000003373716">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050104</name>
+<cmt>NOIRMOUTIER</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050104</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.8500000282051" lon="-1.88333326036887">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050200</name>
+<cmt>CHALLANS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050200</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.6333332794377" lon="-1.86666668410103">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050205</name>
+<cmt>BRTIGNOLLES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050205</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.5333333189165" lon="-1.78333329984763">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050206</name>
+<cmt>OLONNE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050206</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.4999999987427" lon="-1.78333329984763">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050207</name>
+<cmt>LES SABLES-D'OLO</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050207</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.4166666983083" lon="-1.54999997481238">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050209</name>
+<cmt>SAINT-VINCENT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050209</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.333333314055" lon="-1.29999998969026">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050212</name>
+<cmt>L'AIGUILLON</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050212</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.5833332991771" lon="-1.23333326552374">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050214</name>
+<cmt>CHTEAU-GUIBERT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050214</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.7166666636911" lon="-1.18333328526312">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050215</name>
+<cmt>SAINT-MARTIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050215</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.7666667277707" lon="-1.23333326552374">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050216</name>
+<cmt>LES ESSARTS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050216</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.6500000233436" lon="-0.733333295279493">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050300</name>
+<cmt>LA CHTAIGNERAIE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050300</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.8333332842992" lon="-0.883333319880379">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050302</name>
+<cmt>SAINT-MICHEL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050302</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="46.8833332645598" lon="-0.899999979967251">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050303</name>
+<cmt>LES PESSES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050303</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.133333333501" lon="-0.649999994845129">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050304</name>
+<cmt>CORON</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050304</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.1499999935878" lon="-0.449999989983626">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050305</name>
+<cmt>TRMONT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050305</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.0666666931535" lon=".0166666600868727">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050306</name>
+<cmt>LES-TROIS-MOUTIE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050306</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.3833333186231" lon="0.683333315018875">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050309</name>
+<cmt>TOURS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050309</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.3833333186231" lon="0.683333315018875">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050400</name>
+<cmt>TOURS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050400</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.4166667226159" lon="0.983333280401615">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050401</name>
+<cmt>AMBOISE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050401</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.4666667028765" lon="1.1333333050025">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050402</name>
+<cmt>RILLY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050402</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.5000000230502" lon="1.18333328526312">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050403</name>
+<cmt>ONZAIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050403</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.5833333234846" lon="1.333333309864">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050404</name>
+<cmt>BLOIS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050404</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.6166667274774" lon="1.51666673845767">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050500</name>
+<cmt>CHAMBORD</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050500</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.6166667274774" lon="1.74999997967388">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050501</name>
+<cmt>VILLENY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050501</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.4833332791443" lon="2.43333329469276">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050502</name>
+<cmt>AUBIGNY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050502</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.4499999589706" lon="2.64999995964114">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050503</name>
+<cmt>VAILLY-SUR-SAULD</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050503</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.7000000279117" lon="2.63333329955426">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050505</name>
+<cmt>GIEN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050505</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.2999999586772" lon="4.08333331384541">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050600</name>
+<cmt>TROYES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050600</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.3666666828437" lon="4.81666669294393">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050601</name>
+<cmt>NULLY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050601</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.4499999832781" lon="5.16666672240632">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050603</name>
+<cmt>SUZANNECOURT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050603</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.600000007879" lon="5.68333326891841">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050606</name>
+<cmt>CHALAINES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050606</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.6666667320455" lon="5.90000001768581">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050607</name>
+<cmt>DOMMARTIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050607</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.6833333083134" lon="6.19999998306856">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050609</name>
+<cmt>NANCY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050609</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.600000007879" lon="6.50000003227033">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050700</name>
+<cmt>LUNVILLE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050700</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.3500000227569" lon="6.63333331296531">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050701</name>
+<cmt>RAMBERVILLERS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050701</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.5166667074446" lon="7.33333328807106">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050704</name>
+<cmt>URMATT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050704</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.733333288574" lon="7.71666672152622">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050705</name>
+<cmt>BRUMATH</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050705</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.8499999930011" lon="8.20000003168359">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050706</name>
+<cmt>RASTATT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050706</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="49.0166666776889" lon="8.4000000365451">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050707</name>
+<cmt>KARLSRUHE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050707</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.8833333131749" lon="8.70000000192784">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050800</name>
+<cmt>PFORZHEIM</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050800</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.6499999881396" lon="8.08333332725645">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050805</name>
+<cmt>SASBACH</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050805</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.2999999586772" lon="7.6666667412656">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050806</name>
+<cmt>FRIESENHEIM</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050806</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.199999998156" lon="7.76666670178684">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050807</name>
+<cmt>KENZINGEN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050807</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.1833333380691" lon="7.43333333241132">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050808</name>
+<cmt>ILLHAEUSERN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050808</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.066666717461" lon="6.88333329808743">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050810</name>
+<cmt>GRARDMER</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050810</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.066666717461" lon="6.88333329808743">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050900</name>
+<cmt>GRARDMER (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050900</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.8833332888673" lon="6.98333325860867">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050906</name>
+<cmt>HUSSEREN-WESSERL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050906</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.799999988433" lon="6.95000002225395">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050909</name>
+<cmt>OBERBRUCK</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050909</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.7500000081724" lon="7.06666672668109">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050910</name>
+<cmt>SENTHEIM</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050910</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="47.7500000081724" lon="7.33333328807106">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050911</name>
+<cmt>MULHOUSE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050911</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.1666666888787" lon="5.71666667291118">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051000</name>
+<cmt>GRENOBLE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051000</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.3333332897474" lon="5.98333331812018">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051001</name>
+<cmt>GONCELIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051001</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.6166666788623" lon="6.76666667747932">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051004</name>
+<cmt>BOURG-SAINT-MAUR</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051004</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.4166666740008" lon="6.64999997305218">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051005</name>
+<cmt>COURCHEVEL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051005</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.4166666740008" lon="6.64999997305218">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051100</name>
+<cmt>COURCHEVEL (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051100</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.2000000090525" lon="6.46666671209658">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051101</name>
+<cmt>LA LCHERE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051101</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.3500000336533" lon="6.3166666874957">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051103</name>
+<cmt>SAINT-AVRE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051103</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.2166666691393" lon="6.46666671209658">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051104</name>
+<cmt>SAINT-MICHEL (00</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051104</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.7500000190688" lon="6.66666671695809">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051109</name>
+<cmt>BRIANON</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051109</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.7500000190688" lon="6.66666671695809">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051200</name>
+<cmt>BRIANON (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051200</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.7500000190688" lon="6.58333333270469">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051201</name>
+<cmt>LA ROCHE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051201</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.5666666742942" lon="6.50000003227033">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051202</name>
+<cmt>EMBRUN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051202</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.3666666694327" lon="6.30000002740882">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051205</name>
+<cmt>SELONNET</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051205</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.0833332803178" lon="6.24999996332917">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051210</name>
+<cmt>DIGNE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051210</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.5833333100735" lon="5.00000003771856">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051300</name>
+<cmt>MIRAMAS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051300</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.7166666745876" lon="4.80000003285706">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051301</name>
+<cmt>MAUSSANNE: SEE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051301</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.9833333197966" lon="4.21666667835942">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051304</name>
+<cmt>MOUSSAC</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051304</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.5999999701604" lon="3.8833333089839">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051305</name>
+<cmt>MONTPELLIER</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051305</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.3166666648646" lon="3.46666672299306">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051400</name>
+<cmt>AGDE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051400</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.1833333003505" lon="2.99999998910353">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051401</name>
+<cmt>NARBONNE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051401</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="42.9499999753153" lon="2.25000003373716">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051407</name>
+<cmt>COUIZA</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051407</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="42.7166667340991" lon="1.83333328010825">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051409</name>
+<cmt>AX</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051409</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.2833332608718" lon="1.34999996995088">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051500</name>
+<cmt>LZAT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051500</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="42.9333333152284" lon="1.00000002430752">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051502</name>
+<cmt>ARGEIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051502</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="42.9166667389606" lon="0.699999975105748">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051505</name>
+<cmt>SAINT-BAT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051505</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="42.8166666946203" lon="0.316666709288644">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051509</name>
+<cmt>SAINT-LARY-SOULA</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051509</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.383333305212" lon="-0.600000014584511">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051600</name>
+<cmt>MOURENX</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051600</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.0500000196556" lon="-0.433333329896753">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051604</name>
+<cmt>BIELLE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051604</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.0833333398293" lon="-0.249999985122122">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051606</name>
+<cmt>ARTHEZ</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051606</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.3000000047777" lon="-0.366666689549262">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051608</name>
+<cmt>PAU</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051608</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.3000000047777" lon="-0.366666689549262">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051700</name>
+<cmt>PAU (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051700</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.383333305212" lon="0.150000024600886">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051702</name>
+<cmt>RABASTENS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051702</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.3499999850383" lon="1.03333326066223">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051704</name>
+<cmt>POUY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051704</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.383333305212" lon="1.68333333932639">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051706</name>
+<cmt>GARDOUCH</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051706</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.4666666894654" lon="1.99999996479601">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051708</name>
+<cmt>REVEL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051708</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.9333333395359" lon="2.14999998939689">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051800</name>
+<cmt>ALBI</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051800</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="43.9000000193622" lon="2.3499999942584">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051801</name>
+<cmt>VILLEFRANCHE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051801</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.0166667237893" lon="2.96666666892978">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051803</name>
+<cmt>SAINT-ROME</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051803</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.3000000290852" lon="3.18333333387816">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051806</name>
+<cmt>LE MASSEGROS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051806</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="44.5166666940336" lon="3.49999995934777">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051809</name>
+<cmt>MENDE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051809</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.5500000385148" lon="3.24999997422565">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051900</name>
+<cmt>ISSOIRE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051900</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.5666666986017" lon="3.56666668351429">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051902</name>
+<cmt>SAINT-LOY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051902</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.5500000385148" lon="3.75000002828892">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051903</name>
+<cmt>AMBERT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051903</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.5166667183411" lon="3.91666671297668">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051905</name>
+<cmt>SAINT-ANTHME</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051905</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.2166666691393" lon="3.81666666863641">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051908</name>
+<cmt>BELLEVUE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051908</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.0333333243647" lon="3.8833333089839">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051909</name>
+<cmt>LE PUY-EN VELAY:</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051909</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.0666667283575" lon="4.00000001341104">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052000</name>
+<cmt>SAINT-TIENNE: SE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052000</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.5166667183411" lon="4.36666670296031">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052001</name>
+<cmt>SAINT-HAND</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052001</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="45.5500000385148" lon="4.51666672756119">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052003</name>
+<cmt>SAINT-ROMAIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052003</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.600000007879" lon="2.48333327495338">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052100</name>
+<cmt>CORBEIL-ESSONNES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052100</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.6499999881396" lon="2.08333326523037">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052101</name>
+<cmt>LIMOURS-EN-HUREP</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052101</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.7666666925667" lon="2.26666669382403">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052103</name>
+<cmt>CHTENAY-MALABRY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052103</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<wpt lat="48.8736519635537" lon="2.29491102530574">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052115</name>
+<cmt>PARIS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052115</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</wpt>
+<rte>
+<number>1</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage01</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="46.9000000084657" lon="-2.14999998939689">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050100</name>
+<cmt>FROMENTINE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050100</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.9499999887263" lon="-2.18333330957064">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050102</name>
+<cmt>BARBTRE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050102</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.999999968987" lon="-2.25000003373716">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050104</name>
+<cmt>NOIRMOUTIER</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050104</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>2</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage02</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="46.8500000282051" lon="-1.88333326036887">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050200</name>
+<cmt>CHALLANS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050200</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.6333332794377" lon="-1.86666668410103">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050205</name>
+<cmt>BRTIGNOLLES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050205</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.5333333189165" lon="-1.78333329984763">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050206</name>
+<cmt>OLONNE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050206</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.4999999987427" lon="-1.78333329984763">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050207</name>
+<cmt>LES SABLES-D'OLO</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050207</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.4166666983083" lon="-1.54999997481238">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050209</name>
+<cmt>SAINT-VINCENT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050209</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.333333314055" lon="-1.29999998969026">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050212</name>
+<cmt>L'AIGUILLON</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050212</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.5833332991771" lon="-1.23333326552374">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050214</name>
+<cmt>CHTEAU-GUIBERT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050214</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.7166666636911" lon="-1.18333328526312">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050215</name>
+<cmt>SAINT-MARTIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050215</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.7666667277707" lon="-1.23333326552374">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050216</name>
+<cmt>LES ESSARTS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050216</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>3</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage03</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="46.6500000233436" lon="-0.733333295279493">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050300</name>
+<cmt>LA CHTAIGNERAIE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050300</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.8333332842992" lon="-0.883333319880379">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050302</name>
+<cmt>SAINT-MICHEL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050302</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="46.8833332645598" lon="-0.899999979967251">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050303</name>
+<cmt>LES PESSES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050303</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.133333333501" lon="-0.649999994845129">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050304</name>
+<cmt>CORON</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050304</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.1499999935878" lon="-0.449999989983626">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050305</name>
+<cmt>TRMONT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050305</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.0666666931535" lon=".0166666600868727">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050306</name>
+<cmt>LES-TROIS-MOUTIE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050306</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.3833333186231" lon="0.683333315018875">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050309</name>
+<cmt>TOURS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050309</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>4</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage04</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="47.3833333186231" lon="0.683333315018875">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050400</name>
+<cmt>TOURS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050400</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.4166667226159" lon="0.983333280401615">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050401</name>
+<cmt>AMBOISE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050401</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.4666667028765" lon="1.1333333050025">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050402</name>
+<cmt>RILLY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050402</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.5000000230502" lon="1.18333328526312">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050403</name>
+<cmt>ONZAIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050403</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.5833333234846" lon="1.333333309864">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050404</name>
+<cmt>BLOIS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050404</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>5</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage05</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="47.6166667274774" lon="1.51666673845767">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050500</name>
+<cmt>CHAMBORD</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050500</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.6166667274774" lon="1.74999997967388">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050501</name>
+<cmt>VILLENY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050501</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.4833332791443" lon="2.43333329469276">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050502</name>
+<cmt>AUBIGNY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050502</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.4499999589706" lon="2.64999995964114">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050503</name>
+<cmt>VAILLY-SUR-SAULD</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050503</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.7000000279117" lon="2.63333329955426">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050505</name>
+<cmt>GIEN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050505</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>6</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage06</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="48.2999999586772" lon="4.08333331384541">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050600</name>
+<cmt>TROYES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050600</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.3666666828437" lon="4.81666669294393">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050601</name>
+<cmt>NULLY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050601</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.4499999832781" lon="5.16666672240632">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050603</name>
+<cmt>SUZANNECOURT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050603</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.600000007879" lon="5.68333326891841">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050606</name>
+<cmt>CHALAINES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050606</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.6666667320455" lon="5.90000001768581">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050607</name>
+<cmt>DOMMARTIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050607</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.6833333083134" lon="6.19999998306856">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050609</name>
+<cmt>NANCY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050609</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>7</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage07</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="48.600000007879" lon="6.50000003227033">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050700</name>
+<cmt>LUNVILLE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050700</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.3500000227569" lon="6.63333331296531">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050701</name>
+<cmt>RAMBERVILLERS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050701</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.5166667074446" lon="7.33333328807106">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050704</name>
+<cmt>URMATT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050704</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.733333288574" lon="7.71666672152622">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050705</name>
+<cmt>BRUMATH</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050705</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.8499999930011" lon="8.20000003168359">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050706</name>
+<cmt>RASTATT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050706</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="49.0166666776889" lon="8.4000000365451">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050707</name>
+<cmt>KARLSRUHE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050707</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>8</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage08</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="48.8833333131749" lon="8.70000000192784">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050800</name>
+<cmt>PFORZHEIM</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050800</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.6499999881396" lon="8.08333332725645">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050805</name>
+<cmt>SASBACH</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050805</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.2999999586772" lon="7.6666667412656">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050806</name>
+<cmt>FRIESENHEIM</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050806</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.199999998156" lon="7.76666670178684">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050807</name>
+<cmt>KENZINGEN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050807</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.1833333380691" lon="7.43333333241132">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050808</name>
+<cmt>ILLHAEUSERN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050808</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.066666717461" lon="6.88333329808743">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050810</name>
+<cmt>GRARDMER</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050810</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>9</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage09</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="48.066666717461" lon="6.88333329808743">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050900</name>
+<cmt>GRARDMER (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050900</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.8833332888673" lon="6.98333325860867">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050906</name>
+<cmt>HUSSEREN-WESSERL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050906</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.799999988433" lon="6.95000002225395">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050909</name>
+<cmt>OBERBRUCK</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050909</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.7500000081724" lon="7.06666672668109">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050910</name>
+<cmt>SENTHEIM</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050910</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="47.7500000081724" lon="7.33333328807106">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF050911</name>
+<cmt>MULHOUSE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF050911</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>10</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage10</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="45.1666666888787" lon="5.71666667291118">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051000</name>
+<cmt>GRENOBLE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051000</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.3333332897474" lon="5.98333331812018">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051001</name>
+<cmt>GONCELIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051001</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.6166666788623" lon="6.76666667747932">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051004</name>
+<cmt>BOURG-SAINT-MAUR</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051004</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.4166666740008" lon="6.64999997305218">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051005</name>
+<cmt>COURCHEVEL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051005</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>11</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage11</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="45.4166666740008" lon="6.64999997305218">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051100</name>
+<cmt>COURCHEVEL (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051100</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.2000000090525" lon="6.46666671209658">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051101</name>
+<cmt>LA LCHERE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051101</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.3500000336533" lon="6.3166666874957">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051103</name>
+<cmt>SAINT-AVRE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051103</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.2166666691393" lon="6.46666671209658">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051104</name>
+<cmt>SAINT-MICHEL (00</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051104</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.7500000190688" lon="6.66666671695809">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051109</name>
+<cmt>BRIANON</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051109</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>12</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage12</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="44.7500000190688" lon="6.66666671695809">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051200</name>
+<cmt>BRIANON (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051200</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.7500000190688" lon="6.58333333270469">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051201</name>
+<cmt>LA ROCHE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051201</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.5666666742942" lon="6.50000003227033">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051202</name>
+<cmt>EMBRUN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051202</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.3666666694327" lon="6.30000002740882">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051205</name>
+<cmt>SELONNET</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051205</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.0833332803178" lon="6.24999996332917">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051210</name>
+<cmt>DIGNE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051210</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>13</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage13</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="43.5833333100735" lon="5.00000003771856">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051300</name>
+<cmt>MIRAMAS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051300</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.7166666745876" lon="4.80000003285706">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051301</name>
+<cmt>MAUSSANNE: SEE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051301</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.9833333197966" lon="4.21666667835942">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051304</name>
+<cmt>MOUSSAC</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051304</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.5999999701604" lon="3.8833333089839">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051305</name>
+<cmt>MONTPELLIER</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051305</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>14</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage14</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="43.3166666648646" lon="3.46666672299306">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051400</name>
+<cmt>AGDE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051400</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.1833333003505" lon="2.99999998910353">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051401</name>
+<cmt>NARBONNE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051401</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="42.9499999753153" lon="2.25000003373716">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051407</name>
+<cmt>COUIZA</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051407</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="42.7166667340991" lon="1.83333328010825">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051409</name>
+<cmt>AX</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051409</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>15</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage15</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="43.2833332608718" lon="1.34999996995088">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051500</name>
+<cmt>LZAT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051500</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="42.9333333152284" lon="1.00000002430752">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051502</name>
+<cmt>ARGEIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051502</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="42.9166667389606" lon="0.699999975105748">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051505</name>
+<cmt>SAINT-BAT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051505</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="42.8166666946203" lon="0.316666709288644">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051509</name>
+<cmt>SAINT-LARY-SOULA</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051509</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>16</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage16</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="43.383333305212" lon="-0.600000014584511">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051600</name>
+<cmt>MOURENX</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051600</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.0500000196556" lon="-0.433333329896753">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051604</name>
+<cmt>BIELLE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051604</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.0833333398293" lon="-0.249999985122122">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051606</name>
+<cmt>ARTHEZ</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051606</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.3000000047777" lon="-0.366666689549262">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051608</name>
+<cmt>PAU</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051608</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>17</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage17</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="43.3000000047777" lon="-0.366666689549262">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051700</name>
+<cmt>PAU (001)</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051700</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.383333305212" lon="0.150000024600886">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051702</name>
+<cmt>RABASTENS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051702</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.3499999850383" lon="1.03333326066223">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051704</name>
+<cmt>POUY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051704</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.383333305212" lon="1.68333333932639">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051706</name>
+<cmt>GARDOUCH</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051706</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.4666666894654" lon="1.99999996479601">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051708</name>
+<cmt>REVEL</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051708</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>18</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage18</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="43.9333333395359" lon="2.14999998939689">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051800</name>
+<cmt>ALBI</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051800</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="43.9000000193622" lon="2.3499999942584">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051801</name>
+<cmt>VILLEFRANCHE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051801</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.0166667237893" lon="2.96666666892978">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051803</name>
+<cmt>SAINT-ROME</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051803</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.3000000290852" lon="3.18333333387816">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051806</name>
+<cmt>LE MASSEGROS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051806</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="44.5166666940336" lon="3.49999995934777">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051809</name>
+<cmt>MENDE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051809</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>19</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage19</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="45.5500000385148" lon="3.24999997422565">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051900</name>
+<cmt>ISSOIRE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051900</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.5666666986017" lon="3.56666668351429">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051902</name>
+<cmt>SAINT-LOY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051902</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.5500000385148" lon="3.75000002828892">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051903</name>
+<cmt>AMBERT</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051903</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.5166667183411" lon="3.91666671297668">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051905</name>
+<cmt>SAINT-ANTHME</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051905</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.2166666691393" lon="3.81666666863641">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051908</name>
+<cmt>BELLEVUE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051908</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.0333333243647" lon="3.8833333089839">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF051909</name>
+<cmt>LE PUY-EN VELAY:</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF051909</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>20</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage20</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="45.0666667283575" lon="4.00000001341104">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052000</name>
+<cmt>SAINT-TIENNE: SE</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052000</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.5166667183411" lon="4.36666670296031">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052001</name>
+<cmt>SAINT-HAND</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052001</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="45.5500000385148" lon="4.51666672756119">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052003</name>
+<cmt>SAINT-ROMAIN</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052003</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<rte>
+<number>21</number>
+<type>Road</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>Stage21</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+<line xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<color>ff00ff</color>
+<opacity>1</opacity>
+<width>0.4</width>
+<pattern>Solid</pattern>
+</line>
+</extensions>
+<rtept lat="48.600000007879" lon="2.48333327495338">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052100</name>
+<cmt>CORBEIL-ESSONNES</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052100</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.6499999881396" lon="2.08333326523037">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052101</name>
+<cmt>LIMOURS-EN-HUREP</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052101</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.7666666925667" lon="2.26666669382403">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052103</name>
+<cmt>CHTENAY-MALABRY</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052103</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+<rtept lat="48.8736519635537" lon="2.29491102530574">
+<time>2005-06-27T00:59:10Z</time>
+<name>TDF052115</name>
+<cmt>PARIS</cmt>
+<sym>Waypoint</sym>
+<type>Other</type>
+<extensions>
+<label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/3">
+<label_text>TDF052115</label_text>
+<text xmlns="http://www.topografix.com/GPX/gpx_style/0/2">
+<font>
+<family generic="sans-serif">
+<face>Arial</face>
+</family>
+</font>
+</text>
+</label>
+</extensions>
+</rtept>
+</rte>
+<extensions>
+</extensions>
+</gpx>
