@@ -111,7 +111,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 								VISIBILITY),
 						expertProp("Name", "the track name", FORMAT),
 						expertLongProp("SymbolType",
-								"the type of symbol plotted for this label", MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class),
+								"the type of symbol plotted for this label",
+								MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class),
 
 				};
 				return res;
@@ -136,7 +137,8 @@ public class CompositeTrackWrapper extends TrackWrapper
 		super();
 
 		_startDate = startDate;
-		_origin = new WorldLocation(centre);
+		if (centre != null)
+			_origin = new WorldLocation(centre);
 		this.setColor(Color.red);
 
 		// give us a neater set of intervals
