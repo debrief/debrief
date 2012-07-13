@@ -131,12 +131,12 @@ public class CompositeTrackWrapper extends TrackWrapper
 	private HiResDate _startDate;
 	private WorldLocation _origin;
 
-	public CompositeTrackWrapper(HiResDate startDate, WorldLocation centre)
+	public CompositeTrackWrapper(HiResDate startDate, final WorldLocation centre)
 	{
 		super();
 
 		_startDate = startDate;
-		_origin = centre;
+		_origin = new WorldLocation(centre);
 		this.setColor(Color.red);
 
 		// give us a neater set of intervals
