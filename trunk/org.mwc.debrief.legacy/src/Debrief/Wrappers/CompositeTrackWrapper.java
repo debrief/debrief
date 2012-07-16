@@ -188,6 +188,10 @@ public class CompositeTrackWrapper extends TrackWrapper
 							// limit the bearing to the nearest 5 deg marker
 							int m = ((int) newBearing / 10);
 							newBearing = m * 10d;
+							
+							// trim it to being positive
+							if(newBearing < 0)
+								newBearing += 360;
 
 							thisSeg.setCourse(newBearing);
 						}
