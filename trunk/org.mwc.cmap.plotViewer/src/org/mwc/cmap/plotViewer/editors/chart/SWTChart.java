@@ -721,17 +721,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * create the transparent image we need to for collating multiple layers into
 	 * an image
 	 * 
-	 * @param canvasHeight
-	 * @param canvasWidth
+	 * @param myImageTemplate the image we're going to copy
 	 * @return
 	 */
-	protected org.eclipse.swt.graphics.Image createSWTImage(
+	protected static org.eclipse.swt.graphics.Image createSWTImage(
 			ImageData myImageTemplate)
 	{
-		_myImageTemplate.transparentPixel = _myImageTemplate.palette
-				.getPixel(new RGB(255, 255, 255));
+		Color trColor = Color.white;
+		int transPx = myImageTemplate.palette
+				.getPixel(new RGB(trColor.getRed(), trColor.getGreen(), trColor
+						.getBlue()));
+		myImageTemplate.transparentPixel = transPx;
 		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
-				Display.getCurrent(), _myImageTemplate);
+				Display.getCurrent(), myImageTemplate);
 		return image;
 	}
 
@@ -931,7 +933,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 		// also plot any GeoTools stuff
 		PlainProjection proj = dest.getProjection();
-		
+
 		// fill the background, to start with
 		final Dimension sa = proj.getScreenArea();
 		final int width = sa.width;
@@ -1118,7 +1120,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												// ok, and now the SWT image
 												image = createSWTImage(_myImageTemplate);
 
+												// we need to wrap it into a GC so we can write to it.
 												GC newGC = new GC(image);
+												
+												// in Windows 7 & OSX we've had problem where anti-aliased text bleeds through assigned
+												// transparent shade. This makes the text look really blurry.  So, turn off anti-aliasd text
+												newGC.setTextAntialias(SWT.OFF);
 
 												// wrap the GC into something we know how to plot to.
 												SWTCanvasAdapter ca = new SWTCanvasAdapter(
