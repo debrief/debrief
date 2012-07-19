@@ -10,7 +10,7 @@
 package MWC.GUI.ETOPO;
 
 // Standard imports
-import javax.vecmath.Vector3f;
+//import javax.vecmath.Vector3f;
 
 // Application specific imports
 //import org.j3d.geom.GeometryGenerator;
@@ -1546,184 +1546,187 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      */
     private final void regenerateNormals()
     {
-        if(!normalsChanged)
-            return;
-
-        normalsChanged = false;
-
-        if((terrainNormals == null) ||
-           (numTerrainValues > terrainNormals.length))
-        {
-            terrainNormals = new float[numTerrainValues];
-        }
-
-        Vector3f norm;
-        int count = 0;
-        int base_count = 0;
-        int i, j;
-        int width_inc = widthPoints * 3;
-
-        // The first edge
-        // corner point - normal based on only that face
-        norm = createFaceNormal(terrainCoordinates, width_inc, 0, 3);
-
-        terrainNormals[count++] = norm.x;
-        terrainNormals[count++] = norm.y;
-        terrainNormals[count++] = norm.z;
-
-        base_count = 3;
-
-        for(i = 1; i < (widthPoints - 1); i++)
-        {
-            norm = calcSideAverageNormal(terrainCoordinates,
-                                         base_count,
-                                         base_count + 3,
-                                         base_count + width_inc,
-                                         base_count - 3);
-
-            terrainNormals[count++] = norm.x;
-            terrainNormals[count++] = norm.y;
-            terrainNormals[count++] = norm.z;
-
-            base_count += 3;
-        }
-
-        // Last corner point of the first row
-        norm = createFaceNormal(terrainCoordinates,
-                                base_count,
-                                base_count + width_inc,
-                                base_count - 3);
-
-        terrainNormals[count++] = norm.x;
-        terrainNormals[count++] = norm.y;
-        terrainNormals[count++] = norm.z;
-
-        base_count += 3;
-
-        // Now, process all of the internal points
-        for(i = 1; i < (depthPoints - 1); i++)
-        {
-
-            norm = calcSideAverageNormal(terrainCoordinates,
-                                         base_count,
-                                         base_count - width_inc,
-                                         base_count + 3,
-                                         base_count + width_inc);
-
-            terrainNormals[count++] = norm.x;
-            terrainNormals[count++] = norm.y;
-            terrainNormals[count++] = norm.z;
-
-            base_count += 3;
-
-            for(j = 1; j < (widthPoints - 1); j++)
-            {
-
-                norm = calcQuadAverageNormal(terrainCoordinates,
-                                             base_count,
-                                             base_count + 3,
-                                             base_count + width_inc,
-                                             base_count - 3,
-                                             base_count - width_inc);
-
-                terrainNormals[count++] = norm.x;
-                terrainNormals[count++] = norm.y;
-                terrainNormals[count++] = norm.z;
-
-                base_count += 3;
-            }
-
-            // Last point of the row
-            norm = calcSideAverageNormal(terrainCoordinates,
-                                         base_count,
-                                         base_count + width_inc,
-                                         base_count - 3,
-                                         base_count - width_inc);
-
-            terrainNormals[count++] = norm.x;
-            terrainNormals[count++] = norm.y;
-            terrainNormals[count++] = norm.z;
-
-            base_count += 3;
-        }
-
-        // The last edge
-        // corner point - normal based on only that face
-        norm = createFaceNormal(terrainCoordinates,
-                                base_count,
-                                base_count - width_inc,
-                                base_count + 3);
-
-        terrainNormals[count++] = norm.x;
-        terrainNormals[count++] = norm.y;
-        terrainNormals[count++] = norm.z;
-
-        base_count += 3;
-
-        for(i = 1; i < (widthPoints - 1); i++)
-        {
-            norm = calcSideAverageNormal(terrainCoordinates,
-                                         base_count,
-                                         base_count - 3,
-                                         base_count - width_inc,
-                                         base_count + 3);
-
-            terrainNormals[count++] = norm.x;
-            terrainNormals[count++] = norm.y;
-            terrainNormals[count++] = norm.z;
-
-            base_count += 3;
-        }
-
-        // Last corner point of the first row
-        norm = createFaceNormal(terrainCoordinates,
-                                base_count,
-                                base_count - 3,
-                                base_count - width_inc);
-
-        terrainNormals[count++] = norm.x;
-        terrainNormals[count++] = norm.y;
-        terrainNormals[count++] = norm.z;
+    	
+    	throw new RuntimeException("Legacy Java3d support has been deprecated");
+    	
+//        if(!normalsChanged)
+//            return;
+//
+//        normalsChanged = false;
+//
+//        if((terrainNormals == null) ||
+//           (numTerrainValues > terrainNormals.length))
+//        {
+//            terrainNormals = new float[numTerrainValues];
+//        }
+//
+//        Vector3f norm;
+//        int count = 0;
+//        int base_count = 0;
+//        int i, j;
+//        int width_inc = widthPoints * 3;
+//
+//        // The first edge
+//        // corner point - normal based on only that face
+//        norm = createFaceNormal(terrainCoordinates, width_inc, 0, 3);
+//
+//        terrainNormals[count++] = norm.x;
+//        terrainNormals[count++] = norm.y;
+//        terrainNormals[count++] = norm.z;
+//
+//        base_count = 3;
+//
+//        for(i = 1; i < (widthPoints - 1); i++)
+//        {
+//            norm = calcSideAverageNormal(terrainCoordinates,
+//                                         base_count,
+//                                         base_count + 3,
+//                                         base_count + width_inc,
+//                                         base_count - 3);
+//
+//            terrainNormals[count++] = norm.x;
+//            terrainNormals[count++] = norm.y;
+//            terrainNormals[count++] = norm.z;
+//
+//            base_count += 3;
+//        }
+//
+//        // Last corner point of the first row
+//        norm = createFaceNormal(terrainCoordinates,
+//                                base_count,
+//                                base_count + width_inc,
+//                                base_count - 3);
+//
+//        terrainNormals[count++] = norm.x;
+//        terrainNormals[count++] = norm.y;
+//        terrainNormals[count++] = norm.z;
+//
+//        base_count += 3;
+//
+//        // Now, process all of the internal points
+//        for(i = 1; i < (depthPoints - 1); i++)
+//        {
+//
+//            norm = calcSideAverageNormal(terrainCoordinates,
+//                                         base_count,
+//                                         base_count - width_inc,
+//                                         base_count + 3,
+//                                         base_count + width_inc);
+//
+//            terrainNormals[count++] = norm.x;
+//            terrainNormals[count++] = norm.y;
+//            terrainNormals[count++] = norm.z;
+//
+//            base_count += 3;
+//
+//            for(j = 1; j < (widthPoints - 1); j++)
+//            {
+//
+//                norm = calcQuadAverageNormal(terrainCoordinates,
+//                                             base_count,
+//                                             base_count + 3,
+//                                             base_count + width_inc,
+//                                             base_count - 3,
+//                                             base_count - width_inc);
+//
+//                terrainNormals[count++] = norm.x;
+//                terrainNormals[count++] = norm.y;
+//                terrainNormals[count++] = norm.z;
+//
+//                base_count += 3;
+//            }
+//
+//            // Last point of the row
+//            norm = calcSideAverageNormal(terrainCoordinates,
+//                                         base_count,
+//                                         base_count + width_inc,
+//                                         base_count - 3,
+//                                         base_count - width_inc);
+//
+//            terrainNormals[count++] = norm.x;
+//            terrainNormals[count++] = norm.y;
+//            terrainNormals[count++] = norm.z;
+//
+//            base_count += 3;
+//        }
+//
+//        // The last edge
+//        // corner point - normal based on only that face
+//        norm = createFaceNormal(terrainCoordinates,
+//                                base_count,
+//                                base_count - width_inc,
+//                                base_count + 3);
+//
+//        terrainNormals[count++] = norm.x;
+//        terrainNormals[count++] = norm.y;
+//        terrainNormals[count++] = norm.z;
+//
+//        base_count += 3;
+//
+//        for(i = 1; i < (widthPoints - 1); i++)
+//        {
+//            norm = calcSideAverageNormal(terrainCoordinates,
+//                                         base_count,
+//                                         base_count - 3,
+//                                         base_count - width_inc,
+//                                         base_count + 3);
+//
+//            terrainNormals[count++] = norm.x;
+//            terrainNormals[count++] = norm.y;
+//            terrainNormals[count++] = norm.z;
+//
+//            base_count += 3;
+//        }
+//
+//        // Last corner point of the first row
+//        norm = createFaceNormal(terrainCoordinates,
+//                                base_count,
+//                                base_count - 3,
+//                                base_count - width_inc);
+//
+//        terrainNormals[count++] = norm.x;
+//        terrainNormals[count++] = norm.y;
+//        terrainNormals[count++] = norm.z;
     }
 
-    /**
-     * Convenience method to calculate the average normal value between
-     * two quads - ie along the side of an object
-     *
-     * @param coords The coordinates to generate from
-     * @param p The centre point
-     * @param p1 The first point of the first side
-     * @param p2 The middle, shared side point
-     * @param p3 The last point of the second side
-     * @return The averaged vector
-     */
-    private Vector3f calcSideAverageNormal(float[] coords,
-                                           int p,
-                                           int p1,
-                                           int p2,
-                                           int p3)
-    {
-        Vector3f norm;
-        float x, y, z;
-
-        // Normal first for the previous quad
-        norm = createFaceNormal(terrainCoordinates, p, p1, p2);
-        x = norm.x;
-        y = norm.y;
-        z = norm.z;
-
-        // Normal for the next quad
-        norm = createFaceNormal(terrainCoordinates, p, p2, p3);
-
-        // create the average of each compoenent for the final normal
-        norm.x = (norm.x + x) / 2;
-        norm.y = (norm.y + y) / 2;
-        norm.z = (norm.z + z) / 2;
-
-        norm.normalize();
-
-        return norm;
-    }
+//    /**
+//     * Convenience method to calculate the average normal value between
+//     * two quads - ie along the side of an object
+//     *
+//     * @param coords The coordinates to generate from
+//     * @param p The centre point
+//     * @param p1 The first point of the first side
+//     * @param p2 The middle, shared side point
+//     * @param p3 The last point of the second side
+//     * @return The averaged vector
+//     */
+//    private Vector3f calcSideAverageNormal(float[] coords,
+//                                           int p,
+//                                           int p1,
+//                                           int p2,
+//                                           int p3)
+//    {
+//        Vector3f norm;
+//        float x, y, z;
+//
+//        // Normal first for the previous quad
+//        norm = createFaceNormal(terrainCoordinates, p, p1, p2);
+//        x = norm.x;
+//        y = norm.y;
+//        z = norm.z;
+//
+//        // Normal for the next quad
+//        norm = createFaceNormal(terrainCoordinates, p, p2, p3);
+//
+//        // create the average of each compoenent for the final normal
+//        norm.x = (norm.x + x) / 2;
+//        norm.y = (norm.y + y) / 2;
+//        norm.z = (norm.z + z) / 2;
+//
+//        norm.normalize();
+//
+//        return norm;
+//    }
 
     /**
      * Convenience method to create quad average normal amongst four
@@ -1738,48 +1741,48 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
      * @param p4 shared point between third and fourth quad
      * @return The averaged vector
      */
-    private Vector3f calcQuadAverageNormal(float[] coords,
-                                           int p,
-                                           int p1,
-                                           int p2,
-                                           int p3,
-                                           int p4)
-    {
-        Vector3f norm;
-        float x, y, z;
-
-        // Normal first for quads 1 & 2
-        norm = createFaceNormal(terrainCoordinates, p, p2, p1);
-        x = norm.x;
-        y = norm.y;
-        z = norm.z;
-
-        // Normal for the quads 2 & 3
-        norm = createFaceNormal(terrainCoordinates, p, p2, p3);
-
-        x += norm.x;
-        y += norm.y;
-        z += norm.z;
-
-        // Normal for quads 3 & 4
-        norm = createFaceNormal(terrainCoordinates, p, p3, p4);
-
-        x += norm.x;
-        y += norm.y;
-        z += norm.z;
-
-        // Normal for quads 1 & 4
-        norm = createFaceNormal(terrainCoordinates, p, p4, p1);
-
-        // create the average of each compoenent for the final normal
-        norm.x = (norm.x + x) / 4;
-        norm.y = (norm.y + y) / 4;
-        norm.z = (norm.z + z) / 4;
-
-        norm.normalize();
-
-        return norm;
-    }
+//    private Vector3f calcQuadAverageNormal(float[] coords,
+//                                           int p,
+//                                           int p1,
+//                                           int p2,
+//                                           int p3,
+//                                           int p4)
+//    {
+//        Vector3f norm;
+//        float x, y, z;
+//
+//        // Normal first for quads 1 & 2
+//        norm = createFaceNormal(terrainCoordinates, p, p2, p1);
+//        x = norm.x;
+//        y = norm.y;
+//        z = norm.z;
+//
+//        // Normal for the quads 2 & 3
+//        norm = createFaceNormal(terrainCoordinates, p, p2, p3);
+//
+//        x += norm.x;
+//        y += norm.y;
+//        z += norm.z;
+//
+//        // Normal for quads 3 & 4
+//        norm = createFaceNormal(terrainCoordinates, p, p3, p4);
+//
+//        x += norm.x;
+//        y += norm.y;
+//        z += norm.z;
+//
+//        // Normal for quads 1 & 4
+//        norm = createFaceNormal(terrainCoordinates, p, p4, p1);
+//
+//        // create the average of each compoenent for the final normal
+//        norm.x = (norm.x + x) / 4;
+//        norm.y = (norm.y + y) / 4;
+//        norm.z = (norm.z + z) / 4;
+//
+//        norm.normalize();
+//
+//        return norm;
+//    }
 
     /**
      * Regenerate the texture coordinate points.

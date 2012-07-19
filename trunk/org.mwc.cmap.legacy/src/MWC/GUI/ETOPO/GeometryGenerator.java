@@ -10,7 +10,7 @@
 package MWC.GUI.ETOPO;
 
 // Standard imports
-import javax.vecmath.Vector3f;
+// import javax.vecmath.Vector3f;
 
 // Application specific imports
 // none
@@ -50,15 +50,18 @@ import javax.vecmath.Vector3f;
 public abstract class GeometryGenerator
 {
     /** Working values for the normal generation */
-    private Vector3f normal;
-    private Vector3f v0;
-    private Vector3f v1;
+//    private Vector3f normal;
+//    private Vector3f v0;
+//    private Vector3f v1;
 
     protected GeometryGenerator()
     {
-        v0 = new Vector3f();
-        v1 = new Vector3f();
-        normal = new Vector3f();
+    	throw new RuntimeException("Legacy Java3d support has been deprecated");
+
+//    	
+//        v0 = new Vector3f();
+//        v1 = new Vector3f();
+//        normal = new Vector3f();
     }
 
     /**
@@ -99,21 +102,21 @@ public abstract class GeometryGenerator
      * @param p2 The index of the second point
      * @return A temporary value containing the normal value
      */
-    protected Vector3f createFaceNormal(float[] coords, int p, int p1, int p2)
-    {
-        v0.x = coords[p1]     - coords[p];
-        v0.y = coords[p1 + 1] - coords[p + 1];
-        v0.z = coords[p1 + 2] - coords[p + 2];
-
-        v1.x = coords[p]     - coords[p2];
-        v1.y = coords[p + 1] - coords[p2 + 1];
-        v1.z = coords[p + 2] - coords[p2 + 2];
-
-        normal.cross(v0, v1);
-        normal.normalize();
-
-        return normal;
-    }
+//    protected Vector3f createFaceNormal(float[] coords, int p, int p1, int p2)
+//    {
+//        v0.x = coords[p1]     - coords[p];
+//        v0.y = coords[p1 + 1] - coords[p + 1];
+//        v0.z = coords[p1 + 2] - coords[p + 2];
+//
+//        v1.x = coords[p]     - coords[p2];
+//        v1.y = coords[p + 1] - coords[p2 + 1];
+//        v1.z = coords[p + 2] - coords[p2 + 2];
+//
+//        normal.cross(v0, v1);
+//        normal.normalize();
+//
+//        return normal;
+//    }
 
     /**
      * Create a normal based on the given vertex position, assuming that it is
@@ -124,68 +127,68 @@ public abstract class GeometryGenerator
      * @param p The index of the point to calculate
      * @return A temporary value containing the normal value
      */
-    protected Vector3f createRadialNormal(float[] coords, int p)
-    {
-        float x = coords[p];
-        float y = coords[p + 1];
-        float z = coords[p + 2];
+//    protected Vector3f createRadialNormal(float[] coords, int p)
+//    {
+//        float x = coords[p];
+//        float y = coords[p + 1];
+//        float z = coords[p + 2];
+//
+//        float mag = x * x + y * y + z * z;
+//
+//        if(mag != 0.0)
+//        {
+//            mag = 1.0f / ((float) Math.sqrt(mag));
+//            normal.x = x * mag;
+//            normal.y = y * mag;
+//            normal.z = z * mag;
+//        }
+//        else
+//        {
+//            normal.x = 0;
+//            normal.y = 0;
+//            normal.z = 0;
+//        }
+//
+//        return normal;
+//    }
 
-        float mag = x * x + y * y + z * z;
-
-        if(mag != 0.0)
-        {
-            mag = 1.0f / ((float) Math.sqrt(mag));
-            normal.x = x * mag;
-            normal.y = y * mag;
-            normal.z = z * mag;
-        }
-        else
-        {
-            normal.x = 0;
-            normal.y = 0;
-            normal.z = 0;
-        }
-
-        return normal;
-    }
-
-    /**
-     * Create a normal based on the given vertex position, assuming that it is
-     * a point in space, relative to the given point. This will create a normal
-     * that points directly along the vector from the given point to the
-     * coordinate.
-     *
-     * @param coords The coordinate array to read values from
-     * @param p The index of the point to calculate
-     * @param origin The origin to calculate relative to
-     * @param originOffset The offset into the origin array to use
-     * @return A temporary value containing the normal value
-     */
-    protected Vector3f createRadialNormal(float[] coords,
-                                          int p,
-                                          float[] origin,
-                                          int originOffset)
-    {
-        float x = coords[p] - origin[originOffset];
-        float y = coords[p + 1] - origin[originOffset + 1];
-        float z = coords[p + 2] - origin[originOffset + 2];
-
-        float mag = x * x + y * y + z * z;
-
-        if(mag != 0.0)
-        {
-            mag = 1.0f / ((float) Math.sqrt(mag));
-            normal.x = x * mag;
-            normal.y = y * mag;
-            normal.z = z * mag;
-        }
-        else
-        {
-            normal.x = 0;
-            normal.y = 0;
-            normal.z = 0;
-        }
-
-        return normal;
-    }
+//    /**
+//     * Create a normal based on the given vertex position, assuming that it is
+//     * a point in space, relative to the given point. This will create a normal
+//     * that points directly along the vector from the given point to the
+//     * coordinate.
+//     *
+//     * @param coords The coordinate array to read values from
+//     * @param p The index of the point to calculate
+//     * @param origin The origin to calculate relative to
+//     * @param originOffset The offset into the origin array to use
+//     * @return A temporary value containing the normal value
+//     */
+//    protected Vector3f createRadialNormal(float[] coords,
+//                                          int p,
+//                                          float[] origin,
+//                                          int originOffset)
+//    {
+//        float x = coords[p] - origin[originOffset];
+//        float y = coords[p + 1] - origin[originOffset + 1];
+//        float z = coords[p + 2] - origin[originOffset + 2];
+//
+//        float mag = x * x + y * y + z * z;
+//
+//        if(mag != 0.0)
+//        {
+//            mag = 1.0f / ((float) Math.sqrt(mag));
+//            normal.x = x * mag;
+//            normal.y = y * mag;
+//            normal.z = z * mag;
+//        }
+//        else
+//        {
+//            normal.x = 0;
+//            normal.y = 0;
+//            normal.z = 0;
+//        }
+//
+//        return normal;
+//    }
 }
