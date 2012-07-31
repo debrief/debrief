@@ -461,6 +461,18 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		return _theShape;
 	}
 
+  /**
+   * instruct this object to clear itself out, ready for ditching
+   * 
+   */
+  public void closeMe()
+  {
+  	// stop listening to property changes
+  	_theShape.removePropertyListener(this);
+  	_theLabel.removePropertyListener(this);
+  	super.closeMe();
+  }
+	
 	public final WorldArea getBounds()
 	{
 		// get the bounds from the data object (or its location object)
@@ -605,9 +617,12 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		if (p1.getSource() == _theShape)
 		{
-			if (p1.getPropertyName().equals("Location"))
+			if (p1.getPropertyName().equals(LOCATION_CHANGED))
 			{
 				updateLabelLocation();
+				
+				this.getInfo().fireChanged(this, LOCATION_CHANGED,null,  _theShape.getBounds().getCentre());
+				
 			}
 		}
 	}
