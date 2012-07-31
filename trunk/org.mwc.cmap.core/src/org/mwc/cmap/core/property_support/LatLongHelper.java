@@ -70,22 +70,21 @@ public class LatLongHelper extends EditorHelper
 	public Object translateToSWT(Object orig)
 	{
 		WorldLocation value = (WorldLocation) orig;
-		
+
 		// do we have a list?
-		if(_myLocations == null)
-		  _myLocations = new HashMap<WorldLocation, LatLongPropertySource>();
-		
-		
+		if (_myLocations == null)
+			_myLocations = new HashMap<WorldLocation, LatLongPropertySource>();
+
 		LatLongPropertySource res = null;
-		
+
 		// do we know this one already?
 		res = _myLocations.get(value);
-		if(res == null)
+		if (res == null)
 		{
 			res = new LatLongPropertySource((WorldLocation) value);
 			_myLocations.put(value, res);
 		}
-		
+
 		// ok, we've received a location. Return our new property source
 		// representing a
 		// DTG
@@ -344,7 +343,7 @@ public class LatLongHelper extends EditorHelper
 		{
 			return _originalLocation;
 		}
-		
+
 		/**
 		 * @see org.eclipse.ui.views.properties.IPropertySource#isPropertySet(Object)
 		 */
@@ -441,13 +440,27 @@ public class LatLongHelper extends EditorHelper
 			// hold on, do we have a depth?
 			if (_depth != null)
 				depth = _depth.getValueIn(WorldDistance.METRES);
+			WorldLocation res = null;
+			try
+			{
+				// produce a new location from our data values
+				double dLatDeg = Double.parseDouble(_latDeg);
+				double dLatMin = Double.parseDouble(_latMin);
+				double dLatSec = Double.parseDouble(_latSec);
+				double dLongDeg = Double.parseDouble(_longDeg);
+				double dLongMin = Double.parseDouble(_longMin);
+				double dLongSec = Double.parseDouble(_longSec);
 
-			// produce a new location from our data values
-			WorldLocation res = new WorldLocation(Double.parseDouble(_latDeg), Double
-					.parseDouble(_latMin), Double.parseDouble(_latSec),
-					_latHem.charAt(0), Double.parseDouble(_longDeg), Double
-							.parseDouble(_longMin), Double.parseDouble(_longSec), _longHem
-							.charAt(0), depth);
+				res = new WorldLocation(dLatDeg, dLatMin, dLatSec, _latHem.charAt(0),
+						dLongDeg, dLongMin, dLongSec, _longHem.charAt(0), depth);
+
+			}
+			catch (NumberFormatException ee)
+			{
+				CorePlugin.logError(Status.ERROR,
+						"Failed to correctly parse double in lat helper", ee);
+				res = _originalLocation;
+			}
 
 			return res;
 		}
@@ -508,9 +521,11 @@ public class LatLongHelper extends EditorHelper
 				}
 				else
 				{
-					CorePlugin.showMessage("Paste location",
-							"Sorry the clipboard text is not in the right format (two doubles, separated by a space)."
-									+ "\nContents:" + txt);
+					CorePlugin
+							.showMessage(
+									"Paste location",
+									"Sorry the clipboard text is not in the right format (two doubles, separated by a space)."
+											+ "\nContents:" + txt);
 				}
 			}
 			else
