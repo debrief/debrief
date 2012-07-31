@@ -135,6 +135,8 @@
 
 package MWC.GUI;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -154,7 +156,7 @@ import MWC.GenericData.WorldLocation;
 /**
  * a list of Plottables
  */
-public class Plottables implements Plottable, Serializable, PlottablesType
+public class Plottables implements Plottable, Serializable, PlottablesType, PropertyChangeListener
 {
 
 	static final long serialVersionUID = 4094060714021604632L;
@@ -451,6 +453,9 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 
 		// right, add it.
 		_thePlottables.add(thePlottable);
+		
+		// try to listen out for if the plottable moves
+		thePlottable.getInfo().addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, this);
 
 		// hmm, if it's got bounds, let's clear the world area - that's
 		// if we've got a world area... It may have already been cleared...
@@ -477,6 +482,10 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 */
 	public void removeElement(Editable p)
 	{
+		
+		// stop listening to it
+		stopListeningTo(p);
+		
 		// double check we've got it.
 		boolean worked = _thePlottables.remove(p);
 
@@ -490,11 +499,28 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		_myArea = null;
 	}
 
+	/** remove location change listener from the supplied item
+	 * 
+	 * @param p
+	 */
+	private void stopListeningTo(final Editable p)
+	{
+		p.getInfo().removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, this);
+	}
+
 	/**
 	 * clera the list
 	 */
 	public void removeAllElements()
 	{
+		// undo all the moved listeners
+		Iterator<Editable> iter = _thePlottables.iterator();
+		while (iter.hasNext())
+		{
+			Editable editable = (Editable) iter.next();
+			stopListeningTo(editable);
+		}
+		
 		_thePlottables.clear();
 
 		// clear the area
@@ -547,7 +573,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	{
 		return (Plottable) _thePlottables.last();
 	}
-	
+
 	/**
 	 * @return all items in our list greater or equal to fromElement
 	 */
@@ -650,6 +676,14 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			Assert.assertEquals("list", pl.size(), 0);
 		}
 
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent arg0)
+	{		
+		// just double check the argument
+		if(arg0.getPropertyName().equals(PlainWrapper.LOCATION_CHANGED))
+			_myArea = null;
 	}
 
 }
