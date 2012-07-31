@@ -156,7 +156,8 @@ import MWC.GenericData.WorldLocation;
 /**
  * a list of Plottables
  */
-public class Plottables implements Plottable, Serializable, PlottablesType, PropertyChangeListener
+public class Plottables implements Plottable, Serializable, PlottablesType,
+		PropertyChangeListener
 {
 
 	static final long serialVersionUID = 4094060714021604632L;
@@ -357,18 +358,16 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 				// is this item visible?
 				if (thisOne.getVisible())
 				{
-					if (res == null)
-					{
-						WorldArea thisA = thisOne.getBounds();
-						if (thisA != null)
+					final WorldArea thisA = thisOne.getBounds();
+					if (thisA != null)
+						if (res == null)
+						{
 							res = new WorldArea(thisA);
-					}
-					else
-					{
-						WorldArea thisA = thisOne.getBounds();
-						if (thisA != null)
+						}
+						else
+						{
 							res.extend(thisOne.getBounds());
-					}
+						}
 				}
 			}
 		}
@@ -453,9 +452,10 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 
 		// right, add it.
 		_thePlottables.add(thePlottable);
-		
+
 		// try to listen out for if the plottable moves
-		thePlottable.getInfo().addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, this);
+		thePlottable.getInfo().addPropertyChangeListener(
+				PlainWrapper.LOCATION_CHANGED, this);
 
 		// hmm, if it's got bounds, let's clear the world area - that's
 		// if we've got a world area... It may have already been cleared...
@@ -482,10 +482,10 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 	 */
 	public void removeElement(Editable p)
 	{
-		
+
 		// stop listening to it
 		stopListeningTo(p);
-		
+
 		// double check we've got it.
 		boolean worked = _thePlottables.remove(p);
 
@@ -499,13 +499,15 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 		_myArea = null;
 	}
 
-	/** remove location change listener from the supplied item
+	/**
+	 * remove location change listener from the supplied item
 	 * 
 	 * @param p
 	 */
 	private void stopListeningTo(final Editable p)
 	{
-		p.getInfo().removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, this);
+		p.getInfo().removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+				this);
 	}
 
 	/**
@@ -520,7 +522,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 			Editable editable = (Editable) iter.next();
 			stopListeningTo(editable);
 		}
-		
+
 		_thePlottables.clear();
 
 		// clear the area
@@ -680,9 +682,9 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
-	{		
+	{
 		// just double check the argument
-		if(arg0.getPropertyName().equals(PlainWrapper.LOCATION_CHANGED))
+		if (arg0.getPropertyName().equals(PlainWrapper.LOCATION_CHANGED))
 			_myArea = null;
 	}
 
