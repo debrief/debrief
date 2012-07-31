@@ -64,6 +64,12 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		_map = new MapContent();
 		_view = _map.getViewport();
 
+		// set the aspect radio matching to true.  The default 
+		// value for this was false - but when we did fit to
+		// window, it wasn't putting the specified area in the centre of the shape
+		_view.setMatchingAspectRatio(true);
+
+
 		// sort out the degs to m transform
 		try
 		{
@@ -322,7 +328,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
 			return;
 		}
-
+		
 		// trim the coordinates
 		gtTrim(theArea);	
 
