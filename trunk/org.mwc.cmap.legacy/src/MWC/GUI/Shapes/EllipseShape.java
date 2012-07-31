@@ -139,6 +139,7 @@ import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -427,7 +428,7 @@ public class EllipseShape extends PlainShape implements Editable
     calcPoints();
 
     // inform our listeners
-    firePropertyChange("Location", oldLocation, _theCentre);
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, oldLocation, _theCentre);
   }
 
   /**
@@ -488,7 +489,7 @@ public class EllipseShape extends PlainShape implements Editable
     calcPoints();
     
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);    
 
   }
 
@@ -508,7 +509,7 @@ public class EllipseShape extends PlainShape implements Editable
     calcPoints();
     
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);    
 
   }
 
@@ -523,7 +524,7 @@ public class EllipseShape extends PlainShape implements Editable
     calcPoints();
     
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);    
 
   }
 

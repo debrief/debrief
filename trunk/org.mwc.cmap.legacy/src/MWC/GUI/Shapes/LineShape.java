@@ -135,6 +135,7 @@ import java.util.Vector;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -259,7 +260,7 @@ public class LineShape extends PlainShape implements Editable, HasDraggableCompo
   {
     _start = loc;
     calcCentre();
-    firePropertyChange("Location", null, null);
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
   }
 
   /**
@@ -281,7 +282,7 @@ public class LineShape extends PlainShape implements Editable, HasDraggableCompo
   {
     _end = loc;
     calcCentre();
-    firePropertyChange("Location", null, null);
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
   }
 
 

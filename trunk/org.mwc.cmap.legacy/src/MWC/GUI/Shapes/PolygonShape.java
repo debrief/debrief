@@ -86,6 +86,7 @@ import java.util.Iterator;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -222,7 +223,7 @@ public class PolygonShape extends PlainShape implements Editable, HasDraggableCo
     calcPoints();
     
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);    
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);    
     
   }
 
@@ -340,7 +341,7 @@ public class PolygonShape extends PlainShape implements Editable, HasDraggableCo
     calcPoints();
     
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
   }
 
 
@@ -433,7 +434,7 @@ public class PolygonShape extends PlainShape implements Editable, HasDraggableCo
 		calcPoints();
 		
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);		
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);		
 	}  
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -483,7 +484,7 @@ public class PolygonShape extends PlainShape implements Editable, HasDraggableCo
 		calcPoints();
 		
     // and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 		
 	}
 

@@ -95,6 +95,7 @@ import java.util.Collection;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.SteppingBoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -512,14 +513,14 @@ public class WheelShape extends PlainShape implements Editable
 	public void setCentre(WorldLocation centre)
 	{
 		// inform our listeners
-		firePropertyChange("Location", _theCentre, centre);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
 		// make the change
 		_theCentre = centre;
 		// and calc the new summary data
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 
 	}
 
@@ -541,7 +542,7 @@ public class WheelShape extends PlainShape implements Editable
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 
 	}
 
@@ -559,7 +560,7 @@ public class WheelShape extends PlainShape implements Editable
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 
 	}
 
@@ -575,7 +576,7 @@ public class WheelShape extends PlainShape implements Editable
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 
 	}
 
@@ -597,7 +598,7 @@ public class WheelShape extends PlainShape implements Editable
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 
 	}
 }

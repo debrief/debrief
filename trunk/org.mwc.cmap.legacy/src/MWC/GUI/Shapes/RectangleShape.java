@@ -152,6 +152,7 @@ import java.util.Vector;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -317,7 +318,7 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		WorldLocation br = _myArea.getBottomRight();
 		_myArea = new WorldArea(loc, br);
 
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
 	/**
@@ -341,7 +342,7 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		WorldLocation tl = _myArea.getTopLeft();
 		_myArea = new WorldArea(tl, loc);
 
-		firePropertyChange("Location", null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
 	// ////////////////////////////////////////////////////
@@ -414,7 +415,7 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		_myArea.normalise();
 		
 		// and inform the parent, so we can shift the label location
-		firePropertyChange("Location", null, null);		
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);		
 	}
 
 	/** move one of the corners of the shape
@@ -429,7 +430,7 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		_myArea.normalise();
 		
 		// and inform the parent, so we can shift the label location
-		firePropertyChange("Location", null, null);		
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);		
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
