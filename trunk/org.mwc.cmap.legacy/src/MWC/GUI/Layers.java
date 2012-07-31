@@ -336,11 +336,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
 		while (it.hasNext())
 		{
 			Layer thisL = (Layer) it.next();
-			WorldArea newBounds = thisL.getBounds();
+			final WorldArea newBounds = thisL.getBounds();
 			if (newBounds != null)
 			{
 				if (res == null)
-					res = newBounds;
+					res = new WorldArea(newBounds);
 				else
 					res.extend(newBounds);
 			}
