@@ -1416,9 +1416,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public final void closeMe()
 	{
-		// do the parent
-		super.closeMe();
-
 		// and my objects
 		// first ask them to close themselves
 		final Enumeration<Editable> it = getPositions();
@@ -1479,6 +1476,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// and our editor
 		_myEditor = null;
+		
+		// now get the parent to close itself
+		super.closeMe();
 	}
 
 	/**
