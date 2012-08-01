@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.20" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.21" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -49,7 +49,7 @@
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
-      <plugin id="org.eclipse.core.resources.win32" fragment=""/>
+      <plugin id="org.eclipse.core.resources.win32"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
@@ -67,7 +67,7 @@
       <plugin id="org.eclipse.platform"/>
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.tomcat" fragment=""/>
+      <plugin id="org.eclipse.tomcat"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.cheatsheets"/>
       <plugin id="org.eclipse.ui.forms"/>
@@ -85,9 +85,9 @@
       <plugin id="org.mwc.cmap.core"/>
       <plugin id="org.mwc.cmap.layer_manager"/>
       <plugin id="org.mwc.cmap.legacy"/>
-      <plugin id="org.mwc.cmap.narrative" fragment=""/>
+      <plugin id="org.mwc.cmap.narrative"/>
       <plugin id="org.mwc.cmap.plotViewer"/>
-      <plugin id="org.mwc.cmap.static_resources" fragment=""/>
+      <plugin id="org.mwc.cmap.static_resources"/>
       <plugin id="org.mwc.cmap.tests"/>
       <plugin id="org.mwc.cmap.tote"/>
       <plugin id="org.mwc.cmap.xyplot"/>
@@ -97,9 +97,9 @@
    </plugins>
 
    <features>
-      <feature id="org.mwc.asset.core.feature" version="1.0.32"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.202"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.159"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.33"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.164"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.207"/>
    </features>
 
 

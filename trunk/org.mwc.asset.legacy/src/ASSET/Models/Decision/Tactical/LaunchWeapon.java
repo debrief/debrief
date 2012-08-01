@@ -533,6 +533,8 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
         res.append("\n");
         next = bg.readLine();
       }
+      bg.close();
+
     }
     catch (java.io.IOException ee)
     {

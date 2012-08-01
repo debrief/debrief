@@ -130,6 +130,8 @@ abstract class LaunchWeaponHandler extends CoreDecisionHandler
         final java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
         bw.write(bb.getLaunchType());
 
+        bw.close();
+        
         // insert the filename
         thisPart.setAttribute(TYPE_FILENAME, fName);
 

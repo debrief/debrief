@@ -69,6 +69,8 @@ abstract class CircularDatumSearchHandler extends CoreDecisionHandler
             res.append("\n");
             next = bg.readLine();
           }
+          
+          bg.close();
           // store the data
           _buoyFileName = val;
           _buoyType = res.toString();
@@ -111,6 +113,8 @@ abstract class CircularDatumSearchHandler extends CoreDecisionHandler
             res.append("\n");
             next = bg.readLine();
           }
+          bg.close();
+
           // store the data
           _weaponFileName = val;
           _weaponType = res.toString();
