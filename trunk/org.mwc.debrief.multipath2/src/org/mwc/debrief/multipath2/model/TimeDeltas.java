@@ -120,6 +120,10 @@ public class TimeDeltas
 			values.add(delay / 1000);
 			
 		}
+		
+		bufRdr.close();
+
+		
 		if (values.size() > 0)
 		{
 			// just check the values are of the correct order

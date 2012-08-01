@@ -59,6 +59,9 @@ public class SVP
 					values.add(Double.valueOf(thisE));
 			}
 		}
+		
+		bufRdr.close();
+
 
 		if (values.size() > 0)
 		{

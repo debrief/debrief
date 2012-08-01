@@ -62,6 +62,9 @@ public class RangeValues
 				values.add(thisRange);
 			}
 		}
+		
+		bufRdr.close();
+		
 		if (values.size() > 0)
 		{
 			_ranges = new double[values.size()];

@@ -2201,12 +2201,15 @@ class FindByContent extends JPanel implements FindFilterFactory
 						{
 							if (!callback.reportProgress(this, f, counter, fileLength))
 							{
+								locator.close();
 								return false;
 							}
 							callbackCounter = 20;
 						}
 					}
 				}
+				
+				locator.close(); 
 			}
 			catch (LocatedException e)
 			{

@@ -372,6 +372,9 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
 							firstLine += newLine;
 						}
+						
+						re.close();
+						re = null;
 
 						// our text (called firstLine) should have around 200 chars in it
 						// now.

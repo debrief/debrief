@@ -107,6 +107,8 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
 
         // read in the session
         Session st = (Session)ois.readObject();
+        
+        ois.close();
 
         // setup the GUI
         st.initialiseForm(_theApplication);
