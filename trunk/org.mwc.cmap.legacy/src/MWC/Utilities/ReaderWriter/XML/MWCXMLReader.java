@@ -394,7 +394,14 @@ public class MWCXMLReader extends DefaultHandler {
 	}
 
 	static public String writeThis(final double val) {
-		return shortFormat.format(val);
+		final double outVal;
+		
+		// check for NaN
+		if(Double.isNaN(val))
+			outVal = 0;
+		else
+			outVal = val;
+		return shortFormat.format(outVal);
 	}
 
 	static public String writeThis(final Date val) {
