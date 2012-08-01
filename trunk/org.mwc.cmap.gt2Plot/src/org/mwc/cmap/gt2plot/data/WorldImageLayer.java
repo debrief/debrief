@@ -40,12 +40,11 @@ public class WorldImageLayer extends GeoToolsLayer
 {
 	public final static String RASTER_FILE = "rasterExtents_ARCS_Export";
 
-
 	public WorldImageLayer(String layerName, String fileName)
 	{
 		super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
 	}
-	
+
 	protected Layer loadLayer(File openFile)
 	{
 		Layer res = null;
@@ -57,12 +56,10 @@ public class WorldImageLayer extends GeoToolsLayer
 			RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
 			Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
 
-			
 			GeneralParameterValue[] params = null;
-			
+
 			res = new GridReaderLayer(tiffReader, defaultStyle, params);
-			
-			
+
 		}
 		return res;
 	}
@@ -96,9 +93,6 @@ public class WorldImageLayer extends GeoToolsLayer
 		return res;
 
 	}
-	
-
-
 
 	public static class RasterExtentHelper
 	{
@@ -108,18 +102,18 @@ public class WorldImageLayer extends GeoToolsLayer
 			File theFile = new File(fileName);
 			String parentPath = theFile.getParent();
 			int slasher = parentPath.lastIndexOf(File.separator);
-			String folderName = parentPath.substring(slasher+1);
-			
+			String folderName = parentPath.substring(slasher + 1);
+
 			MWC.GUI.Layer res = new ChartFolio(false, Color.red);
 			res.setName("Chart lib:" + folderName);
-			
+
 			loadExtentsFor(res, fileName, parent);
-			
+
 			return res;
 		}
-		
 
-		protected static void loadExtentsFor(MWC.GUI.Layer extents, String fileName, Layers parent)
+		protected static void loadExtentsFor(MWC.GUI.Layer extents,
+				String fileName, Layers parent)
 		{
 			// ok, get the extents for this file
 
@@ -133,7 +127,7 @@ public class WorldImageLayer extends GeoToolsLayer
 
 				// sort out the parent path
 				final String parentPath = openFile.getParent();
-				
+
 				// hey, can we parse it?
 				SimpleFeatureCollection fs = featureSource.getFeatures();
 				SimpleFeatureIterator fiter = fs.features();
@@ -167,8 +161,9 @@ public class WorldImageLayer extends GeoToolsLayer
 					{
 						// generate the filename
 						String path = parentPath + File.separator + name + ".tif";
-						
-						ChartBoundsWrapper cw = new ChartBoundsWrapper(name, area.getTopLeft(), area.getBottomRight(), Color.red, path );
+
+						ChartBoundsWrapper cw = new ChartBoundsWrapper(name,
+								area.getTopLeft(), area.getBottomRight(), Color.red, path);
 						cw.setLayers(parent);
 						cw.setLabelLocation(LocationPropertyEditor.CENTRE);
 						cw.setLabelVisible(false);
@@ -188,7 +183,7 @@ public class WorldImageLayer extends GeoToolsLayer
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 
 		private static WorldArea getGeometry(Object value)
@@ -205,8 +200,13 @@ public class WorldImageLayer extends GeoToolsLayer
 					for (int i = 0; i < coords.length; i++)
 					{
 						Coordinate coordinate = coords[i];
+						final double zDepth;
+						if (Double.isNaN(coordinate.z))
+							zDepth = 0;
+						else
+							zDepth = coordinate.z;
 						WorldLocation newL = new WorldLocation(coordinate.y, coordinate.x,
-								coordinate.z);
+								zDepth);
 						if (res == null)
 							res = new WorldArea(newL, newL);
 						else
@@ -216,6 +216,5 @@ public class WorldImageLayer extends GeoToolsLayer
 			}
 			return res;
 		}
-		
 	}
 }
