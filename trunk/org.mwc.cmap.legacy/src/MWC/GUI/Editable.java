@@ -266,27 +266,27 @@ public interface Editable
     /**
      * the data item for this object
      */
-    final Object _data;
+    private final Object _data;
 
     /**
      * the name of this instance
      */
-    final String _name;
+    private final String _name;
 
     /**
      * the class of this object
      */
-    final Class<?> _class;
+    private final Class<?> _class;
 
     /**
      * the name used for the display of this type of object
      */
-    final String _displayName;
+    private final String _displayName;
 
     /**
      * helper class for managing properties
      */
-    PropertyChangeSupport _pSupport = null;
+    private PropertyChangeSupport _pSupport = null;
 
     /**
      * the path to the icon for this object. Icon is shown in Layer Manager
@@ -487,6 +487,7 @@ public interface Editable
     public final void removePropertyChangeListener(final String propertyName,
         final PropertyChangeListener listener)
     {
+    	if(_pSupport != null)
       _pSupport.removePropertyChangeListener(propertyName, listener);
     }
 
