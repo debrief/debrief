@@ -212,12 +212,8 @@ public class LineShape extends PlainShape implements Editable,
 			double len = 15d * theScale;
 			double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
 
-			// move the start point forward, so the centre of the triangle is over the
-			// point
-			Point p0 = dest.toScreen(_end);
-			Point p1 = new Point(p0);
-//			p1.translate(-(int) (len / 2d * Math.cos(direction)),
-//					-(int) (len / 2d * Math.sin(direction)));
+			// find the tip of the arrow
+			Point p1 = dest.toScreen(_end);
 
 			// now the back corners
 			Point p2 = new Point(p1);
