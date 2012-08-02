@@ -121,9 +121,7 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Shapes;
-
 
 import java.awt.Color;
 import java.awt.Point;
@@ -140,277 +138,321 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class LineShape extends PlainShape implements Editable, HasDraggableComponents
+public class LineShape extends PlainShape implements Editable,
+		HasDraggableComponents
 {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  // keep track of versions
-  static final long serialVersionUID = 1;
+	// ////////////////////////////////////////////////
+	// member variables
+	// ////////////////////////////////////////////////
+	// keep track of versions
+	static final long serialVersionUID = 1;
 
-  private WorldLocation _start;
-  private WorldLocation _end;
-  private WorldLocation _centre;
+	private WorldLocation _start;
+	private WorldLocation _end;
+	private WorldLocation _centre;
 
-  /**
-   * our editor
-   */
-  transient private Editable.EditorType _myEditor;
+	private boolean _arrowAtEnd = false;
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor;
 
-  public LineShape(WorldLocation start,
-                   WorldLocation end)
-  {
-    super(0, 1, "Line");
-    // store the data
-    _start = start;
-    _end = end;
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
 
-    calcCentre();
-  }
+	public LineShape(WorldLocation start, WorldLocation end)
+	{
+		super(0, 1, "Line");
+		// store the data
+		_start = start;
+		_end = end;
 
-  private void calcCentre()
-  {
-    _centre = new WorldArea(_start, _end).getCentre();
-  }
+		calcCentre();
+	}
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	private void calcCentre()
+	{
+		_centre = new WorldArea(_start, _end).getCentre();
+	}
 
-  public void paint(CanvasType dest)
-  {
-    // are we visible?
-    if (!getVisible())
-      return;
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
 
-    if (this.getColor() != null)
-      dest.setColor(this.getColor());
+	public void paint(CanvasType dest)
+	{
+		// are we visible?
+		if (!getVisible())
+			return;
 
-    // get the origin
-    Point start = new Point(dest.toScreen(_start));
+		if (this.getColor() != null)
+			dest.setColor(this.getColor());
 
-    // get the width and height
-    Point end = new Point(dest.toScreen(_end));
+		// get the origin
+		Point start = new Point(dest.toScreen(_start));
 
-    // and now draw it
-    dest.drawLine(start.x, start.y, end.x, end.y);
+		// get the width and height
+		Point end = new Point(dest.toScreen(_end));
 
-  }
+		// and now draw it
+		dest.drawLine(start.x, start.y, end.x, end.y);
 
-  public MWC.GenericData.WorldArea getBounds()
-  {
-    return new WorldArea(_start, _end);
-  }
+		if (getArrowAtEnd())
+		{
 
-  /**
-   * get the range from the indicated world location -
-   * making this abstract allows for individual shapes
-   * to have 'hit-spots' in various locations.
-   */
-  public double rangeFrom(WorldLocation point)
-  {
-    double r1 = point.rangeFrom(_start);
-    double r2 = point.rangeFrom(_end);
-    return Math.min(r1, r2);
-  }
+			// sort out the direction
+			double direction = _end.bearingFrom(_start)  + Math.PI / 2;
 
-  public boolean hasEditor()
-  {
-    return true;
-  }
+			// and the size
+			double theScale = 1;
 
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new LineInfo(this, getName());
+			double len = 15d * theScale;
+			double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
 
-    return _myEditor;
-  }
+			// move the start point forward, so the centre of the triangle is over the
+			// point
+			Point p0 = dest.toScreen(_end);
+			Point p1 = new Point(p0);
+//			p1.translate(-(int) (len / 2d * Math.cos(direction)),
+//					-(int) (len / 2d * Math.sin(direction)));
 
-  /**
-   * get the 'anchor point' for any labels attached to
-   * this shape
-   */
-  public MWC.GenericData.WorldLocation getAnchor()
-  {
-    return _centre;
-  }
+			// now the back corners
+			Point p2 = new Point(p1);
+			p2.translate((int) (len * Math.cos(direction - angle)),
+					(int) (len * Math.sin(direction - angle)));
+			Point p3 = new Point(p1);
+			p3.translate((int) (len * Math.cos(direction + angle)),
+					(int) (len * Math.sin(direction + angle)));
 
-  /**
-   * get the start of the line
-   *
-   * @return WorldLocation representing the start
-   */
-  public WorldLocation getLine_Start()
-  {
-    return _start;
-  }
+			dest.fillPolygon(new int[]
+			{ p1.x, p2.x, p3.x }, new int[]
+			{ p1.y, p2.y, p3.y }, 3);
 
-  /**
-   * set the start of the line
-   *
-   * @param loc WorldLocation representing the start of the line
-   */
-  public void setLine_Start(WorldLocation loc)
-  {
-    _start = loc;
-    calcCentre();
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-  }
+		}
 
-  /**
-   * get the end of the line
-   *
-   * @return WorldLocation representing the end
-   */
-  public WorldLocation getLineEnd()
-  {
-    return _end;
-  }
+	}
 
-  /**
-   * set the end of the line
-   *
-   * @param loc WorldLocation representing the end of the line
-   */
-  public void setLineEnd(WorldLocation loc)
-  {
-    _end = loc;
-    calcCentre();
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-  }
+	public boolean getArrowAtEnd()
+	{
+		return _arrowAtEnd;
+	}
 
+	public void setArrowAtEnd(boolean lineAtEnd)
+	{
+		_arrowAtEnd = lineAtEnd;
+	}
 
-  public Color getLineColor()
-  {
-    return super.getColor();
-  }
+	public MWC.GenericData.WorldArea getBounds()
+	{
+		return new WorldArea(_start, _end);
+	}
 
-  public void setLineColor(Color val)
-  {
-    super.setColor(val);
-  }
+	/**
+	 * get the range from the indicated world location - making this abstract
+	 * allows for individual shapes to have 'hit-spots' in various locations.
+	 */
+	public double rangeFrom(WorldLocation point)
+	{
+		double r1 = point.rangeFrom(_start);
+		double r2 = point.rangeFrom(_end);
+		return Math.min(r1, r2);
+	}
 
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public class LineInfo extends Editable.EditorType
-  {
+	public boolean hasEditor()
+	{
+		return true;
+	}
 
-    public LineInfo(LineShape data,
-                    String theName)
-    {
-      super(data, theName, "");
-    }
+	public Editable.EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new LineInfo(this, getName());
 
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        PropertyDescriptor[] res = {
-          prop("Line_Start", "the start of the line"),
-          prop("LineEnd", "the end of the line"),
-        };
+		return _myEditor;
+	}
 
-        return res;
+	/**
+	 * get the 'anchor point' for any labels attached to this shape
+	 */
+	public MWC.GenericData.WorldLocation getAnchor()
+	{
+		return _centre;
+	}
 
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+	/**
+	 * get the start of the line
+	 * 
+	 * @return WorldLocation representing the start
+	 */
+	public WorldLocation getLine_Start()
+	{
+		return _start;
+	}
 
-  //////////////////////////////////////////////////////
-  // label/anchor support
-  /////////////////////////////////////////////////////
-  public WorldLocation getAnchor(int location)
-  {
-    WorldLocation loc = null;
+	/**
+	 * set the start of the line
+	 * 
+	 * @param loc
+	 *          WorldLocation representing the start of the line
+	 */
+	public void setLine_Start(WorldLocation loc)
+	{
+		_start = loc;
+		calcCentre();
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+	}
 
-    WorldLocation north = null;
-    WorldLocation south = null;
-    WorldLocation east = null;
-    WorldLocation west = null;
+	/**
+	 * get the end of the line
+	 * 
+	 * @return WorldLocation representing the end
+	 */
+	public WorldLocation getLineEnd()
+	{
+		return _end;
+	}
 
-    if (_start.getLat() > _end.getLat())
-    {
-      north = _start;
-      south = _end;
-    }
-    else
-    {
-      north = _end;
-      south = _start;
-    }
+	/**
+	 * set the end of the line
+	 * 
+	 * @param loc
+	 *          WorldLocation representing the end of the line
+	 */
+	public void setLineEnd(WorldLocation loc)
+	{
+		_end = loc;
+		calcCentre();
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+	}
 
-    if (_start.getLong() > _end.getLong())
-    {
-      east = _start;
-      west = _end;
-    }
-    else
-    {
-      east = _end;
-      west = _start;
-    }
+	public Color getLineColor()
+	{
+		return super.getColor();
+	}
 
-    switch (location)
-    {
-      case MWC.GUI.Properties.LocationPropertyEditor.TOP:
-        {
-          loc = north;
-          break;
-        }
-      case MWC.GUI.Properties.LocationPropertyEditor.BOTTOM:
-        {
-          loc = south;
-          break;
-        }
-      case MWC.GUI.Properties.LocationPropertyEditor.LEFT:
-        {
-          loc = west;
-          break;
-        }
-      case MWC.GUI.Properties.LocationPropertyEditor.RIGHT:
-        {
-          loc = east;
-          break;
-        }
-      case MWC.GUI.Properties.LocationPropertyEditor.CENTRE:
-        {
-          loc = _centre;
-        }
-    }
+	public void setLineColor(Color val)
+	{
+		super.setColor(val);
+	}
 
-    return loc;
-  }
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class LineInfo extends Editable.EditorType
+	{
 
-  /**
-   * get the shape as a series of WorldLocation points.
-   * Joined up, these form a representation of the shape
-   */
-  public Collection<WorldLocation> getDataPoints()
-  {
-    Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
-    res.add(_start);
-    res.add(_end);
+		public LineInfo(LineShape data, String theName)
+		{
+			super(data, theName, "");
+		}
 
-    return res;
-  }
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						prop("Line_Start", "the start of the line", SPATIAL),
+						prop("LineEnd", "the end of the line", SPATIAL),
+						prop("ArrowAtEnd",
+								"whether to show an arrow at one end of the line", FORMAT), };
+
+				return res;
+
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////
+	// label/anchor support
+	// ///////////////////////////////////////////////////
+	public WorldLocation getAnchor(int location)
+	{
+		WorldLocation loc = null;
+
+		WorldLocation north = null;
+		WorldLocation south = null;
+		WorldLocation east = null;
+		WorldLocation west = null;
+
+		if (_start.getLat() > _end.getLat())
+		{
+			north = _start;
+			south = _end;
+		}
+		else
+		{
+			north = _end;
+			south = _start;
+		}
+
+		if (_start.getLong() > _end.getLong())
+		{
+			east = _start;
+			west = _end;
+		}
+		else
+		{
+			east = _end;
+			west = _start;
+		}
+
+		switch (location)
+		{
+		case MWC.GUI.Properties.LocationPropertyEditor.TOP:
+		{
+			loc = north;
+			break;
+		}
+		case MWC.GUI.Properties.LocationPropertyEditor.BOTTOM:
+		{
+			loc = south;
+			break;
+		}
+		case MWC.GUI.Properties.LocationPropertyEditor.LEFT:
+		{
+			loc = west;
+			break;
+		}
+		case MWC.GUI.Properties.LocationPropertyEditor.RIGHT:
+		{
+			loc = east;
+			break;
+		}
+		case MWC.GUI.Properties.LocationPropertyEditor.CENTRE:
+		{
+			loc = _centre;
+		}
+		}
+
+		return loc;
+	}
+
+	/**
+	 * get the shape as a series of WorldLocation points. Joined up, these form a
+	 * representation of the shape
+	 */
+	public Collection<WorldLocation> getDataPoints()
+	{
+		Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
+		res.add(_start);
+		res.add(_end);
+
+		return res;
+	}
 
 	public void shift(WorldVector vector)
 	{
 		setLine_Start(getLine_Start().add(vector));
 		setLineEnd(getLineEnd().add(vector));
 	}
-	
 
 	public void shift(WorldLocation feature, WorldVector vector)
 	{
@@ -422,32 +464,31 @@ public class LineShape extends PlainShape implements Editable, HasDraggableCompo
 			ComponentConstruct currentNearest, Layer parentLayer)
 	{
 
-		// right - the first two points are easy, we just pass the location directly to the caller
+		// right - the first two points are easy, we just pass the location directly
+		// to the caller
 		checkThisOne(_start, cursorLoc, currentNearest, this, parentLayer);
 		checkThisOne(_end, cursorLoc, currentNearest, this, parentLayer);
-	}	
-	
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class LineTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	}
 
-    public LineTest(String val)
-    {
-      super(val);
-    }
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class LineTest extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public void testMyParams()
-    {
-      WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
-      MWC.GUI.Editable ed = new LineShape(scrap, scrap);
-      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+		public LineTest(String val)
+		{
+			super(val);
+		}
+
+		public void testMyParams()
+		{
+			WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
+			MWC.GUI.Editable ed = new LineShape(scrap, scrap);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
 
 }
-
-

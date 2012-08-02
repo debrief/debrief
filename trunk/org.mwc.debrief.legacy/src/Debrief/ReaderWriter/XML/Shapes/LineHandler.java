@@ -16,8 +16,12 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract public class LineHandler extends ShapeHandler implements PlottableExporter
 {
 
+	private final static String ARROW_AT_END="ArrowAtEnd";
+	
   MWC.GenericData.WorldLocation _start;
   MWC.GenericData.WorldLocation _end;
+
+	protected boolean _arrowAtEnd = false;
 
   public LineHandler()
   {
@@ -37,12 +41,20 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
         _end = res;
       }
     });
+    addAttributeHandler(new HandleBooleanAttribute(ARROW_AT_END)
+    {
+      public void setValue(String name, boolean value)
+      {
+        _arrowAtEnd = value;
+      }
+    });
 
   }
 
   public final MWC.GUI.Shapes.PlainShape getShape()
   {
     MWC.GUI.Shapes.LineShape ls = new MWC.GUI.Shapes.LineShape(_start, _end);
+    ls.setArrowAtEnd(_arrowAtEnd);
     return ls;
   }
 
@@ -52,6 +64,7 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
 
     // reset the local parameters
     _start = _end = null;
+    _arrowAtEnd = false;
   }
 
   public final void exportThisPlottable(MWC.GUI.Plottable plottable,org.w3c.dom.Element parent, org.w3c.dom.Document doc)
@@ -72,6 +85,7 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
       MWC.GUI.Shapes.LineShape cs = (MWC.GUI.Shapes.LineShape)ps;
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLine_Start(), "tl", ePlottable, doc);
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLineEnd(), "br", ePlottable, doc);
+      ePlottable.setAttribute(ARROW_AT_END, writeThis(cs.getArrowAtEnd()));
     }
     else
     {
