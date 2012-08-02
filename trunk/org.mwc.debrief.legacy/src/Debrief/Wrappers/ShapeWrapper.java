@@ -461,18 +461,18 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		return _theShape;
 	}
 
-  /**
-   * instruct this object to clear itself out, ready for ditching
-   * 
-   */
-  public void closeMe()
-  {
-  	// stop listening to property changes
-  	_theShape.removePropertyListener(this);
-  	_theLabel.removePropertyListener(this);
-  	super.closeMe();
-  }
-	
+	/**
+	 * instruct this object to clear itself out, ready for ditching
+	 * 
+	 */
+	public void closeMe()
+	{
+		// stop listening to property changes
+		_theShape.removePropertyListener(this);
+		_theLabel.removePropertyListener(this);
+		super.closeMe();
+	}
+
 	public final WorldArea getBounds()
 	{
 		// get the bounds from the data object (or its location object)
@@ -520,9 +520,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	public final void setLabelColor(final java.awt.Color theCol)
 	{
 		_theLabel.setColor(theCol);
-
-		// also set the colour in the parent
-		// super.setColor(theCol);
 	}
 
 	public final java.awt.Color getLabelColor()
@@ -620,9 +617,12 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 			if (p1.getPropertyName().equals(LOCATION_CHANGED))
 			{
 				updateLabelLocation();
-				
-				this.getInfo().fireChanged(this, LOCATION_CHANGED,null,  _theShape.getBounds().getCentre());
-				
+
+				if (_theShape != null)
+					if (_theShape.getBounds() != null)
+							this.getInfo().fireChanged(this, LOCATION_CHANGED, null,
+									_theShape.getBounds().getCentre());
+
 			}
 		}
 	}
@@ -814,9 +814,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// if we have a property support class, fire the filtered event
-		if (getSupport() != null)
-			getSupport().firePropertyChange(
-					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
+		getSupport().firePropertyChange(
+				MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
 
 	}
 
