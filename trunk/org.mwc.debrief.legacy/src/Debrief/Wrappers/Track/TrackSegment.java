@@ -36,6 +36,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import flanagan.interpolation.CubicSpline;
 
@@ -349,6 +350,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		this.setPlotRelative(isDR);
 
+		if (_myParent != null)
+		{
+			_myParent.logError(ToolParent.INFO, "new segment DR:" + isDR, null);
+		}
+
 		// now the num to use
 		int oneUse = 2;
 		int twoUse = 2;
@@ -366,6 +372,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					+ " fixes from first segment", null);
 			_myParent.logError(ToolParent.INFO, "extracted " + twoElements.length
 					+ " fixes from second segment", null);
+
+			// extra diagnostics
+			for (int i = 0; i < allElements.length; i++)
+			{
+				FixWrapper fixWrapper = allElements[i];
+				_myParent.logError(
+						ToolParent.INFO,
+						"item: "
+								+ i
+								+ " is "
+								+ fixWrapper.getLocation()
+								+ " at:"
+								+ DebriefFormatDateTime.toString(fixWrapper.getTime().getDate()
+										.getTime()), null);
+			}
+
 		}
 
 		// generate the location spline
@@ -427,6 +449,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// entry
 		for (long tNow = tStart; tNow < tEnd + tDelta; tNow += tDelta)
 		{
+
+			// debug. get a human-readable date
+			HiResDate tmpD = new HiResDate(tNow);
+
 			final double thisLat = latSpline.interpolate(tNow);
 			final double thisLong = longSpline.interpolate(tNow);
 			final double thisDepth = depthSpline.interpolate(tNow);
@@ -434,6 +460,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// create the new location
 			WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
 					thisDepth);
+
+			// diagnostics
+			if (_myParent != null)
+			{
+				_myParent.logError(ToolParent.INFO,
+						"" + DebriefFormatDateTime.toString(tmpD.getDate().getTime())
+								+ "  -  " + newLocation, null);
+			}
 
 			WorldVector offset = newLocation.subtract(origin.getLocation());
 			final double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
