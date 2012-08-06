@@ -75,3 +75,7 @@ trunk/org.mwc.cmap.combined.feature/root_installs/DebriefNG.pdf
 trunk/org.mwc.debrief.build/buildDirectory
 trunk/deploy/DebriefNG_64
 DebriefNG-win32.win32.x86_64.zip
+trunk/org.mwc.cmap.gt2Plot/javaCompiler...args
+trunk/org.mwc.cmap.gt2Plot/build.xml
+trunk/org.mwc.debrief.GNDManager/javaCompiler...args
+trunk/org.mwc.debrief.GNDManager/build.xml
