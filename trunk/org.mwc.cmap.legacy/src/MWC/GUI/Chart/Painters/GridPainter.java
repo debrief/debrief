@@ -150,6 +150,8 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import com.apple.eawt.Application;
+
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
@@ -395,6 +397,13 @@ public class GridPainter implements Plottable, Serializable
 		for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs)
 		{
 			Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
+			
+			if(p3 == null)
+			{
+				// code red, zoomed out too far!!!!
+				// gracefully quit
+				return;
+			}
 
 			// the delta in screen coordinates
 			int dy = 0;
