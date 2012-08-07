@@ -200,6 +200,11 @@ abstract public class CoreTMASegment extends TrackSegment
 		}
 	}
 
+	public String getDragTextMessage()
+	{
+		return _dragMsg;
+	}
+
 	@Override
 	abstract public void rotate(double brg, final WorldLocation origin);
 
