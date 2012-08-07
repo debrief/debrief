@@ -151,7 +151,7 @@ public class Pan extends PlainDragTool implements Serializable
     WorldArea _newArea = new WorldArea(_oldArea);
     _newArea.setCentre(newCentre);
 
-    super.doExecute(new PanAction(getChart(), _oldArea, _newArea));
+    super.doExecute(new PanAction(getChart().getCanvas().getProjection(), _oldArea, _newArea));
 
   }
 
@@ -222,15 +222,15 @@ public class Pan extends PlainDragTool implements Serializable
 
   public static class PanAction implements Action{
 
-    private PlainChart _theChart;
+    private PlainProjection _theProj;
     private WorldArea _oldArea;
     private WorldArea _newArea;
 
 
-    public PanAction(PlainChart theChart,
+    public PanAction(PlainProjection theProjection,
                      WorldArea oldArea,
                      WorldArea newArea){
-      _theChart = theChart;
+    	_theProj = theProjection;
       _oldArea = oldArea;
       _newArea = newArea;
     }
@@ -252,20 +252,27 @@ public class Pan extends PlainDragTool implements Serializable
     public void undo()
     {
       // set the area
-      setNewArea(_theChart.getCanvas().getProjection(), _oldArea);
+      setNewArea(_theProj, _oldArea);
     }
 
     public void execute()
     {
       // set the area
-      setNewArea(_theChart.getCanvas().getProjection(), _newArea);
+      setNewArea(_theProj, _newArea);
     }
 
-    protected void setNewArea(PlainProjection proj, WorldArea theArea){
+    /** re-usable method for setting the data area. We've made it public so that it can be used
+     * both during a drag operation, and at the end of that operation
+     * @param proj the viewport that we're adjusting
+     * @param theArea the new area to show
+     */
+    public static void setNewArea(final PlainProjection proj, final WorldArea theArea){
       double oldBorder = proj.getDataBorder();
       proj.setDataBorderNoZoom(1.0);
       proj.setDataArea(theArea);
-      proj.zoom(0.0);
+      // Note: pre-GeoTools we used to have to do a zero zoom to fit to window
+      // after changing the data area. We don't now.
+      // proj.zoom(0.0);
       proj.setDataBorderNoZoom(oldBorder);
     }
 

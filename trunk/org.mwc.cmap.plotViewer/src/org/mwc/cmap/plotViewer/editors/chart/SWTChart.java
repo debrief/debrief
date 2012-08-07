@@ -437,6 +437,21 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
 				SWTCanvas canvas, PlainChart theChart);
 
+		public void close()
+		{
+			// ditch our objects
+			if (_downCursor != null)
+			{
+				_downCursor.dispose();
+				_downCursor = null;
+			}
+			if (_normalCursor != null)
+			{
+				_normalCursor.dispose();
+				_normalCursor = null;
+			}
+		}
+
 	}
 
 	/**
@@ -721,16 +736,16 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * create the transparent image we need to for collating multiple layers into
 	 * an image
 	 * 
-	 * @param myImageTemplate the image we're going to copy
+	 * @param myImageTemplate
+	 *          the image we're going to copy
 	 * @return
 	 */
 	protected static org.eclipse.swt.graphics.Image createSWTImage(
 			ImageData myImageTemplate)
 	{
 		Color trColor = Color.white;
-		int transPx = myImageTemplate.palette
-				.getPixel(new RGB(trColor.getRed(), trColor.getGreen(), trColor
-						.getBlue()));
+		int transPx = myImageTemplate.palette.getPixel(new RGB(trColor.getRed(),
+				trColor.getGreen(), trColor.getBlue()));
 		myImageTemplate.transparentPixel = transPx;
 		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
 				Display.getCurrent(), myImageTemplate);
@@ -1122,9 +1137,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 												// we need to wrap it into a GC so we can write to it.
 												GC newGC = new GC(image);
-												
-												// in Windows 7 & OSX we've had problem where anti-aliased text bleeds through assigned
-												// transparent shade. This makes the text look really blurry.  So, turn off anti-aliasd text
+
+												// in Windows 7 & OSX we've had problem where
+												// anti-aliased text bleeds through assigned
+												// transparent shade. This makes the text look really
+												// blurry. So, turn off anti-aliasd text
 												newGC.setTextAntialias(SWT.OFF);
 
 												// wrap the GC into something we know how to plot to.

@@ -3,20 +3,22 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
-import java.awt.Point;
-
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.*;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.Chart.Pan.PanAction;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
@@ -26,11 +28,6 @@ public class Pan extends CoreDragAction
 
 	public static class PanMode extends SWTChart.PlotMouseDragger
 	{
-		Point _startPoint;
-
-		SWTCanvas _myCanvas;
-
-		PlainChart _myChart;
 
 		/**
 		 * the hand cursor we show when dragging
@@ -57,18 +54,28 @@ public class Pan extends CoreDragAction
 		WorldLocation _lastLocation;
 
 		/**
-		 * where we started dragging from
+		 * keep track of the layers, since we need to update them in the action
 		 * 
 		 */
-		protected WorldLocation _theStart;
+		private Layers _theLayers;
 
-		protected WorldLocation _theEnd;
+		/**
+		 * the chart that we need to refresh during drag
+		 * 
+		 */
+		private PlainChart _myChart;
+
+		/**
+		 * the viewport that we're controlling
+		 * 
+		 */
+		private PlainProjection _theProjection;
 
 		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
 				final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
 		{
-			WorldLocation theLocation = _myChart.getCanvas().getProjection()
-					.toWorld(new java.awt.Point(pt.x, pt.y));
+			WorldLocation theLocation = theCanvas.getProjection().toWorld(
+					new java.awt.Point(pt.x, pt.y));
 
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
@@ -82,14 +89,14 @@ public class Pan extends CoreDragAction
 				WorldArea newArea = new WorldArea(_lastArea.getTopLeft().add(wv),
 						_lastArea.getBottomRight().add(wv));
 
-				// ok, store the new area
-				setNewArea(_myChart.getCanvas().getProjection(), newArea);
+				// ok, set the new area
+				MWC.GUI.Tools.Chart.Pan.PanAction.setNewArea(theCanvas.getProjection(),
+						newArea);
+
+				_myChart.update();
 
 				// remember the last area
-				_lastArea = _myChart.getCanvas().getProjection().getDataArea();
-
-				// and get the chart to redraw itself
-				_myChart.update();
+				_lastArea = theCanvas.getProjection().getDataArea();
 			}
 			else
 				_lastLocation = new WorldLocation(theLocation);
@@ -102,35 +109,12 @@ public class Pan extends CoreDragAction
 			_newCursor.dispose();
 			_newCursor = null;
 
-			// we've got to restore the old area in order to calculate
-			// the destination position in terms of old coordinates
-			// instead of the current screen coordinates
-			setNewArea(_myChart.getCanvas().getProjection(), _originalArea);
-
-			// now we can do our data/world transform correctly
-			_theEnd = _myChart.getCanvas().toWorld(
-					new java.awt.Point(point.x, point.y));
-
-			// sort out the vector to apply to the corners
-			WorldVector wv = _theStart.subtract(_theEnd);
-
-			// apply this vector to the corners
-			WorldLocation currentCentre = _originalArea.getCentre();
-			WorldLocation newCentre = currentCentre.add(wv);
-
-			// and store the new area
-			WorldArea _newArea = new WorldArea(_originalArea);
-			_newArea.setCentre(newCentre);
-
-			// cool, sorted. remember the action
-			Action theAction = new PanAction(_myChart, _originalArea, _newArea);
-
-			System.out.println("start point cleared.");
-			_startPoint = null;
+			// cool, sorted. create an action, so we can put it into the undo buffer.
+			Action theAction = new PanAction(_theProjection, _originalArea, _lastArea);
 
 			// and wrap it
 			DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
-					_myChart.getLayers(), null);
+					_theLayers, null);
 
 			// and add it to the clipboard
 			CorePlugin.run(daw);
@@ -139,35 +123,20 @@ public class Pan extends CoreDragAction
 		public void mouseDown(org.eclipse.swt.graphics.Point point,
 				SWTCanvas canvas, PlainChart theChart)
 		{
-			_startPoint = new java.awt.Point(point.x, point.y);
-			_myCanvas = canvas;
+			_theProjection = theChart.getCanvas().getProjection();
+			_theLayers = theChart.getLayers();
 			_myChart = theChart;
 
-			_originalArea = new WorldArea(_myChart.getCanvas().getProjection()
-					.getVisibleDataArea());
+			_originalArea = new WorldArea(_theProjection.getVisibleDataArea());
 
 			_lastArea = new WorldArea(_originalArea);
 			_lastLocation = null;
-
-			_theStart = new WorldLocation(_myChart.getCanvas().getProjection()
-					.toWorld(new java.awt.Point(point.x, point.y)));
 
 			// create the new cursor
 			_newCursor = getDownCursor();
 
 			// and assign it to the control
 			canvas.getCanvas().setCursor(_newCursor);
-		}
-
-		protected void setNewArea(PlainProjection proj, WorldArea theArea)
-		{
-			double oldBorder = proj.getDataBorder();
-			proj.setDataBorderNoZoom(1.0);
-			proj.setDataArea(theArea);
-			// in the shiny new GeoTools projection we don't need to fit-to-win after
-			// changing the data area
-			// proj.zoom(0.0);
-			proj.setDataBorderNoZoom(oldBorder);
 		}
 
 		/**
@@ -194,7 +163,7 @@ public class Pan extends CoreDragAction
 		 */
 		public Cursor getNormalCursor()
 		{
-			// ok, return the pan cursor
+			// ok, return the normal cursor
 			if ((_normalCursor == null) || (_normalCursor.isDisposed()))
 				_normalCursor = new Cursor(Display.getDefault(), CorePlugin
 						.getImageDescriptor("icons/hand.ico").getImageData(), 4, 2);
