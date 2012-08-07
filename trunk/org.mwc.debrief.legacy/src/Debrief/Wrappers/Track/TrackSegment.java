@@ -464,9 +464,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// diagnostics
 			if (_myParent != null)
 			{
-				_myParent.logError(ToolParent.INFO,
-						"" + DebriefFormatDateTime.toString(tmpD.getDate().getTime())
-								+ "  -  " + newLocation, null);
+				_myParent.logError(
+						ToolParent.INFO,
+						"new point is: " + newLocation + "  at  "
+								+ DebriefFormatDateTime.toString(tmpD.getDate().getTime()),
+						null);
 			}
 
 			WorldVector offset = newLocation.subtract(origin.getLocation());
