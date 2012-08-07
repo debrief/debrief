@@ -88,7 +88,7 @@ final class SwingOverviewChart extends SwingChart implements java.beans.Property
         // instead of the current screen coordinates
         setNewArea(getChart().getCanvas().getProjection(), oldArea);
 
-        super.doExecute(new PanAction(getChart(), oldArea, newArea));
+        super.doExecute(new PanAction(getChart().getCanvas().getProjection(), oldArea, newArea));
 
       }
     };
