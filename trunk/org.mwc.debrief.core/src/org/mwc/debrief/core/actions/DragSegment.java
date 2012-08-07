@@ -19,9 +19,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.plotViewer.editors.chart.CoreTracker;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.actions.drag.CoreDragOperation;
 import org.mwc.debrief.core.actions.drag.RotateDragMode;
 import org.mwc.debrief.core.actions.drag.ShearDragMode;
 import org.mwc.debrief.core.actions.drag.StretchDragMode;
@@ -128,6 +130,15 @@ public class DragSegment extends DragFeature
 						dataMgr.fireTrackShift((TrackWrapper) _parentLayer);
 					}
 				}
+			}
+						
+			// if it's a CoreDragOperation it may have some progress text
+			if(_hoverTarget instanceof CoreDragOperation)
+			{
+				CoreDragOperation cdo = (CoreDragOperation) _hoverTarget;
+				String msg = cdo.getDragMsg();
+				if(msg != null)
+					CoreTracker.write(msg);
 			}
 		}
 

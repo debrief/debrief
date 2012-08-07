@@ -3,55 +3,32 @@
  */
 package org.mwc.debrief.core.actions.drag;
 
-import java.awt.Point;
-
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
 import Debrief.Wrappers.Track.TrackSegment;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class TranslateOperation implements DraggableItem, IconProvider
+public class TranslateOperation extends CoreDragOperation implements
+		DraggableItem, IconProvider
 {
-
-	final private TrackSegment _mySegment;
 	private Cursor _hotspotCursor;
 
 	public TranslateOperation(TrackSegment segment)
 	{
-		_mySegment = segment;
-
-	}
-
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
-	{
-	}
-
-	public String getName()
-	{
-		return "centre point";
-	}
-
-	public void paint(CanvasType dest)
-	{
-		_mySegment.paint(dest);
+		super(segment, "centre point");
 	}
 
 	public void shift(WorldVector vector)
 	{
 		//
-		_mySegment.shift(vector);
+		_segment.shift(vector);
 
 		// tell the segment it's shifted
-		_mySegment.clearBounds();
+		_segment.clearBounds();
 	}
 
 	public Cursor getHotspotCursor()

@@ -247,6 +247,7 @@ public class DragFeature extends CoreDragAction
 				// ok, let's ditch the GC
 				gc.dispose();
 
+
 			}
 			else
 			{
