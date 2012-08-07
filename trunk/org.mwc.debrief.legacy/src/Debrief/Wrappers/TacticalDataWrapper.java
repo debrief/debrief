@@ -961,7 +961,6 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * 
 	 * @param visibleFrequency
 	 */
-	@FireReformatted
 	public void setVisibleFrequency(final HiResDate visibleFrequency)
 	{
 		_lastVisibleFrequency = visibleFrequency;

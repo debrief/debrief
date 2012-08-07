@@ -606,13 +606,13 @@ public class EditableWrapper implements IPropertySource
 						}
 						else if (thisA.annotationType().equals(FireReformatted.class))
 						{
-							_wholeLayers.fireModified(_topLevelLayer);
+							_wholeLayers.fireReformatted(_topLevelLayer);
 						}
 					}
 
 				}
 				else
-					_wholeLayers.fireReformatted(_topLevelLayer);
+					_wholeLayers.fireModified(_topLevelLayer);
 
 			}
 

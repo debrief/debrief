@@ -581,6 +581,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		return _theLabel.getString();
 	}
 
+	@FireReformatted
 	public final void setLabel(final String val)
 	{
 		_theLabel.setString(val);

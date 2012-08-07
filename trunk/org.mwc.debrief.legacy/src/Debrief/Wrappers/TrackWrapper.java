@@ -3233,7 +3233,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theVal
 	 *          frequency in seconds
 	 */
-	@FireReformatted
 	public final void setArrowFrequency(final HiResDate theVal)
 	{
 		this._lastArrowFrequency = theVal;
@@ -3383,7 +3382,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theVal
 	 *          frequency to use
 	 */
-	@FireReformatted
 	public final void setLabelFrequency(final HiResDate theVal)
 	{
 		this._lastLabelFrequency = theVal;
@@ -3412,7 +3410,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @param val
 	 */
-	@FireReformatted
 	public void setLineStyle(int val)
 	{
 		_lineStyle = val;
@@ -3421,7 +3418,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the line thickness (convenience wrapper around width)
 	 */
-	@FireReformatted
 	public void setLineThickness(final int val)
 	{
 		_lineWidth = val;
@@ -3432,7 +3428,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @param linkPositions
 	 */
-	@FireReformatted
 	public void setLinkPositions(boolean linkPositions)
 	{
 		_linkPositions = linkPositions;
@@ -3457,7 +3452,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param val
 	 *          yes no for <I>show label at start</I>
 	 */
-	@FireReformatted
 	public final void setNameAtStart(final boolean val)
 	{
 		_LabelAtStart = val;
@@ -3469,7 +3463,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param val
 	 *          the relative location
 	 */
-	@FireReformatted
 	public final void setNameLocation(final Integer val)
 	{
 		_theLabel.setRelativeLocation(val);
@@ -3481,13 +3474,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param val
 	 *          yes/no
 	 */
-	@FireReformatted
 	public final void setNameVisible(final boolean val)
 	{
 		_theLabel.setVisible(val);
 	}
 
-	@FireReformatted
 	public void setPlotArrayCentre(boolean plotArrayCentre)
 	{
 		_plotArrayCentre = plotArrayCentre;
@@ -3499,7 +3490,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param val
 	 *          yes/no
 	 */
-	@FireReformatted
 	public final void setPositionsVisible(final boolean val)
 	{
 		_showPositions = val;
@@ -3511,7 +3501,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theVal
 	 *          frequency to use
 	 */
-	@FireExtended
 	public final void setResampleDataAt(final HiResDate theVal)
 	{
 		this._lastDataFrequency = theVal;
@@ -3573,7 +3562,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	@FireReformatted
 	public final void setSymbolColor(Color col)
 	{
 		_theSnailShape.setColor(col);
@@ -3585,7 +3573,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theVal
 	 *          frequency in seconds
 	 */
-	@FireReformatted
 	public final void setSymbolFrequency(final HiResDate theVal)
 	{
 		this._lastSymbolFrequency = theVal;
@@ -3618,7 +3605,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	@FireReformatted
 	public final void setSymbolType(final String val)
 	{
 		// is this the type of our symbol?
@@ -3640,7 +3626,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
-	@FireReformatted
 	public void setSymbolWidth(WorldDistance symbolWidth)
 	{
 		if (_theSnailShape instanceof WorldScaledSym)
@@ -3670,7 +3655,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param font
 	 *          the font to use for the label
 	 */
-	@FireReformatted
 	public final void setTrackFont(final java.awt.Font font)
 	{
 		_theLabel.setFont(font);

@@ -225,6 +225,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	}
 
 	@Override
+	@FireReformatted
 	public void setName(String theName)
 	{
 		super.setName(theName);

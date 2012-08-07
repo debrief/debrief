@@ -785,13 +785,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _showArrow;
 	}
 
-	@FireReformatted
 	public void setArrowShowing(boolean val)
 	{
 		_showArrow = val;
 	}
 
-	@FireReformatted
 	public final void setSymbolShowing(final boolean val)
 	{
 		_showSymbol = val;

@@ -513,6 +513,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theName
 	 *          the name as a String
 	 */
+	@FireReformatted
 	public void setName(final String theName)
 	{
 		_theLabel.setString(theName);
