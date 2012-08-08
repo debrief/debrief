@@ -88,12 +88,16 @@ public class WorldLocation implements Serializable, Cloneable
 
 	/**
 	 * long winded constructor, taking raw arguments
+	 * note: if there are decimal parts of degs or mins then the contents
+	 * of the mins & secs, or secs (resp) are ignored.  So, if there's
+	 * 22.5 in the mins and 10 in the secs, this will go to 22 mins, 30 secs -
+	 * using the mins fractional component and ignoring the secs value.
 	 */
 	public WorldLocation(double latDegs, double latMin, double latSec,
 			char latHem, double longDegs, double longMin, double longSec,
 			char longHem, double theDepth)
 	{
-		// this constructor can compensate for decimal values of degs and mins,
+		// this constructor allows for decimal values of degs and mins,
 		// cascading them as appropriate
 
 		// just check if we've got decimal values for degs or minutes. If so,
@@ -102,14 +106,15 @@ public class WorldLocation implements Serializable, Cloneable
 		if (dec > 0)
 		{
 			latDegs -= dec;
-			latMin += dec * 60d;
+			latMin = dec * 60d;
+			latSec = 0;
 		}
 
 		dec = decimalComponentOf(latMin);
 		if (dec > 0)
 		{
 			latMin -= dec;
-			latSec += dec * 60d;
+			latSec = dec * 60d;
 		}
 
 		// Now for longitude:
@@ -120,14 +125,15 @@ public class WorldLocation implements Serializable, Cloneable
 		if (dec > 0)
 		{
 			longDegs -= dec;
-			longMin += dec * 60d;
+			longMin = dec * 60d;
+			longSec = 0;
 		}
 
 		dec = decimalComponentOf(longMin);
 		if (dec > 0)
 		{
 			longMin -= dec;
-			longSec += dec * 60d;
+			longSec = dec * 60d;
 		}
 
 		// ok - do the store
