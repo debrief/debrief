@@ -365,7 +365,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		FixWrapper[] allElements = new FixWrapper[oneUse + twoUse];
 		System.arraycopy(oneElements, 0, allElements, 0, oneUse);
 		System.arraycopy(twoElements, 0, allElements, oneUse, twoUse);
-
+		
 		if (_myParent != null)
 		{
 			_myParent.logError(ToolParent.INFO, "extracted " + oneElements.length
@@ -409,16 +409,19 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		CubicSpline depthSpline = new CubicSpline(times, depths);
 
 		// what's the interval?
-		long tDelta = twoElements[1].getDateTimeGroup().getDate().getTime()
-				- twoElements[0].getDateTimeGroup().getDate().getTime();
-		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
-		long tEnd = trackTwo.startDTG().getDate().getTime();
+		long tDelta = oneElements[1].getDateTimeGroup().getDate().getTime()
+				- oneElements[0].getDateTimeGroup().getDate().getTime();
 
 		// just check it's achievable
 		if (tDelta == 0)
 			throw new RuntimeException(
 					"cannot generate infill when calculated step time is zero");
 
+		// also give the time delta a minimum step size (10 secs), we were getting really
+		// screwy infills generated with tiny time deltas
+		tDelta = Math.max(tDelta, 10000);
+		
+		
 		if (_myParent != null)
 		{
 			_myParent.logError(ToolParent.INFO, " using time delta of " + tDelta
@@ -426,6 +429,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					null);
 		}
 
+		// sort out the start & end times of the infill segment
+		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
+		long tEnd = trackTwo.startDTG().getDate().getTime();
+
+		
 		// remember the last point on the first track, in case we're generating
 		// a
 		// relative solution
@@ -447,7 +455,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// - so that we can generate the correct course and speed for the last
 		// DR
 		// entry
-		for (long tNow = tStart; tNow < tEnd + tDelta; tNow += tDelta)
+		for (long tNow = tStart; tNow <= tEnd; tNow += tDelta)
 		{
 
 			// debug. get a human-readable date
