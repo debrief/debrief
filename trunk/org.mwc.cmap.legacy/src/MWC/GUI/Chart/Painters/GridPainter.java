@@ -150,7 +150,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-import com.apple.eawt.Application;
+
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
