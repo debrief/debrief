@@ -23,6 +23,7 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Palette.PlainCreate;
 import MWC.GUI.Tools.Palette.PlainCreate.CreateLabelAction;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * @author ian.mayo
@@ -56,6 +57,24 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	{
 		_theParent = theParent;
 	}
+	
+	
+	/** convenience method to return the centre of hte visible area, at the surface
+	 * 
+	 * @param theChart
+	 * @return
+	 */
+	protected static WorldLocation getCentre(PlainChart theChart)
+	{
+		// right, what's the area we're looking at
+		WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
+		
+		// get centre of area (at zero depth)
+		WorldLocation centre = wa.getCentreAtSurface();
+		
+		return centre;
+	}
+
 
 	/**
 	 * and execute..

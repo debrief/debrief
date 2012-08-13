@@ -29,6 +29,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	private static final String DEFAULT_TARGET_LAYER = "Misc";
 
+	
 	/**
 	 * get a plottable object
 	 * 
@@ -38,11 +39,8 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-		// right, what's the area we're looking at
-		WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
-		
-		// get centre of area (at zero depth)
-		WorldLocation centre = wa.getCentreAtSurface();
+		// get centre of area 
+		WorldLocation centre = getCentre(theChart);
 
 		// create the shape, based on the centre
 		PlainShape shape = getShape(centre);

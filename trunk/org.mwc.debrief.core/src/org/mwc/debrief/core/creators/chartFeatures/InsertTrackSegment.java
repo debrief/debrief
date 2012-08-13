@@ -24,6 +24,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -155,9 +156,11 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
 							if (startDate != null)
 							{
+								// get the centre of the visible area
+								WorldLocation wc = getCentre(theChart);
+								
 								// create new track
-								TrackWrapper tw = new CompositeTrackWrapper(startDate, theChart
-										.getDataArea().getCentre());
+								TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
 
 								// store the name
 								tw.setName(txt);
