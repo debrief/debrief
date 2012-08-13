@@ -191,6 +191,8 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	public static final java.awt.Color DEFAULT_COLOR = new java.awt.Color(150,
 			150, 150);
 
+
+	
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
@@ -249,12 +251,6 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 */
 	public abstract double rangeFrom(MWC.GenericData.WorldLocation point);
 
-	/**
-	 * get the shape as a series of WorldLocation points. Joined up, these form a
-	 * representation of the shape
-	 * 
-	 */
-	abstract public java.util.Collection<WorldLocation> getDataPoints();
 
 	/**
 	 * is this shape filled? (where applicable)

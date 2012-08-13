@@ -315,7 +315,6 @@ import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.Chart.DblClickEdit;
@@ -338,7 +337,6 @@ import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldVector;
 
 /**
@@ -422,13 +420,13 @@ abstract public class AnalysisView extends PlainView implements
 		// see if this is an action button, or it toggles as part of a group
 		if (item.getToggleGroup() == null)
 		{
-			_theToolbar.addTool(item.getTool(), item.getShortCut(), item
-					.getMnemonic());
+			_theToolbar.addTool(item.getTool(), item.getShortCut(),
+					item.getMnemonic());
 		}
 		else
 		{
-			_theToolbar.addToggleTool(item.getMenuName(), item.getTool(), item
-					.getShortCut(), item.getMnemonic());
+			_theToolbar.addToggleTool(item.getMenuName(), item.getTool(),
+					item.getShortCut(), item.getMnemonic());
 		}
 	}
 
@@ -457,8 +455,7 @@ abstract public class AnalysisView extends PlainView implements
 
 		// create our right click editor, and add it's helpers
 		final RightClickEdit rc = new RightClickEdit(getProperties());
-		rc
-				.addMenuCreator(new MWC.Algorithms.Editors.ProjectionEditPopupMenuAdaptor());
+		rc.addMenuCreator(new MWC.Algorithms.Editors.ProjectionEditPopupMenuAdaptor());
 		rc.addMenuCreator(new MWC.GUI.LayerManager.EditLayersPopupMenuAdaptor());
 		rc.addMenuCreator(new MWC.GUI.Canvas.EditCanvasPopupMenuAdaptor(getChart()
 				.getCanvas()));
@@ -470,8 +467,8 @@ abstract public class AnalysisView extends PlainView implements
 		_rightClicker = new RightClickCutCopyAdaptor(_theSession.getClipboard(),
 				_theSession.getUndoBuffer());
 		rc.addPlottableMenuCreator(_rightClicker, _theProperties);
-		rc.addPlottableMenuCreator(new RightClickPasteAdaptor(_theSession
-				.getClipboard()), _theProperties);
+		rc.addPlottableMenuCreator(
+				new RightClickPasteAdaptor(_theSession.getClipboard()), _theProperties);
 
 		// we also want to try to give these properties to the layers object, so
 		// that it can be edited
@@ -512,7 +509,6 @@ abstract public class AnalysisView extends PlainView implements
 		_theTools.addElement(new MenuItemInfo("File", null, "Import Range",
 				new ImportRangeData(_theParent, _theProperties, _theSession.getData()),
 				null, 'G'));
-
 
 		// NOTE: wrap this next creator, in case we haven't got the right files
 		// avaialble
@@ -661,9 +657,8 @@ abstract public class AnalysisView extends PlainView implements
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
-						return new ShapeWrapper("new polygon", new PolygonShape(
-								new WorldPath(new WorldLocation[]
-								{ centre })), java.awt.Color.red, null);
+						return new ShapeWrapper("new polygon", null, java.awt.Color.red,
+								null);
 					}
 				}, null, ' '));
 

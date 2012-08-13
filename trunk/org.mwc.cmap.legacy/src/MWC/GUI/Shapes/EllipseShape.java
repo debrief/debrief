@@ -134,7 +134,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
@@ -264,13 +263,6 @@ public class EllipseShape extends PlainShape implements Editable
       dest.drawPolygon(xPoints, yPoints, len);
   }
 
-  /**
-   * get the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
-   */
-  public Collection<WorldLocation> getDataPoints()
-  {
-    return _theDataPoints;
-  }
 
   /**
    * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape

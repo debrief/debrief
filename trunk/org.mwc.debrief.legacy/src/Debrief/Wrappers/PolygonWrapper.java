@@ -244,6 +244,8 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Shapes.PolygonShape;
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -252,10 +254,9 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
-		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
-		MWC.GenericData.Watchable, DraggableItem, HasDraggableComponents,
-		DoNotHighlightMe
+public class PolygonWrapper extends MWC.GUI.PlainWrapper implements
+		java.beans.PropertyChangeListener, MWC.GenericData.Watchable,
+		WatchableList, DraggableItem, HasDraggableComponents, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -267,7 +268,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	public final class ShapeInfo extends Editable.EditorType
 	{
 
-		public ShapeInfo(final ShapeWrapper data, final String theName)
+		public ShapeInfo(final PolygonWrapper data, final String theName)
 		{
 			super(data, theName, data._theShape.getType() + ":");
 		}
@@ -289,7 +290,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		public final BeanInfo[] getAdditionalBeanInfo()
 		{
 			// get our shape back
-			final ShapeWrapper sp = (ShapeWrapper) super.getData();
+			final PolygonWrapper sp = (PolygonWrapper) super.getData();
 			final MWC.GUI.Shapes.PlainShape ps = sp._theShape;
 			if (sp instanceof MWC.GUI.Editable)
 			{
@@ -309,9 +310,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class<?> c = ShapeWrapper.class;
+			final Class<?> c = PolygonWrapper.class;
 			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape") };
+			{ method(c, "exportThis", null, "Export Shape"),
+					method(c, "addNode", null, "Add node") };
 			return mds;
 		}
 
@@ -373,97 +375,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 			super(val);
 		}
 
-		public final void testMyParams()
-		{
-			final MWC.GUI.Shapes.PlainShape ps = new MWC.GUI.Shapes.CircleShape(
-					new WorldLocation(2d, 2d, 2d), 12);
-			MWC.GUI.Editable ed = new ShapeWrapper("", ps, java.awt.Color.red,
-					new HiResDate(0));
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public final void testTimes()
-		{
-
-			final WorldLocation scrapLoc = new WorldLocation(1, 1, 1);
-			final WorldLocation scrapLoc2 = new WorldLocation(1, 3, 1);
-
-			final WatchableList.TestWatchables tw = new WatchableList.TestWatchables()
-			{
-				@Override
-				public WatchableList getBothDates(final HiResDate startDate,
-						final HiResDate endDate)
-				{
-					final ShapeWrapper sw = new ShapeWrapper("blank",
-							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
-							java.awt.Color.red, null)
-					{
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						protected long getThreshold()
-						{
-							return 5000 * 1000;
-						}
-					};
-					sw.setTime_Start(new HiResDate(startDate));
-					sw.setTimeEnd(new HiResDate(endDate));
-					return sw;
-				}
-
-				@Override
-				public WatchableList getNullDates()
-				{
-					final ShapeWrapper sw = new ShapeWrapper("blank",
-							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
-							java.awt.Color.red, null)
-					{
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						protected long getThreshold()
-						{
-							return 5000 * 1000;
-						}
-					};
-					sw.setTime_Start(null);
-					sw.setTimeEnd(null);
-					return sw;
-				}
-
-				@Override
-				public WatchableList getStartDateOnly(final HiResDate startDate)
-				{
-					final ShapeWrapper sw = new ShapeWrapper("blank",
-							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
-							java.awt.Color.red, null)
-					{
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						protected long getThreshold()
-						{
-							return 5000 * 1000;
-						}
-					};
-					sw.setTime_Start(new HiResDate(startDate));
-					sw.setTimeEnd(null);
-					return sw;
-				}
-			};
-
-			tw.doTest(this);
-		}
 	}
 
 	/**
@@ -476,12 +387,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	static final long serialVersionUID = 1;
 
-	public static void main(final String[] args)
-	{
-		final testMe tm = new testMe("scrap");
-		tm.testTimes();
-	}
-
 	/**
 	 * the label
 	 */
@@ -490,7 +395,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the symbol for this label
 	 */
-	final MWC.GUI.Shapes.PlainShape _theShape;
+	final PolygonShape _theShape;
 
 	/**
 	 * the start dtg for this label (although) this will frequently be null, for
@@ -511,15 +416,20 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	transient private Editable.EditorType _myEditor = null;
 
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-
 	/**
 	 * the style of line to use for this feature
 	 * 
 	 */
 	private int _lineStyle;
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * the width to draw this line
+	 */
+	private int _lineWidth;
 
 	//
 	// /** get the start time for this shape
@@ -538,21 +448,17 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	// }
 	//
 
-	/**
-	 * the width to draw this line
-	 */
-	private int _lineWidth;
-
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public ShapeWrapper(final String label,
-			final MWC.GUI.Shapes.PlainShape theShape, final java.awt.Color theColor,
-			final HiResDate theDate)
+	public PolygonWrapper(final String label, final Vector<PolygonNode> vector,
+			final java.awt.Color theColor, final HiResDate theDate)
 	{
-		_theLabel = new MWC.GUI.Shapes.TextLabel(theShape, label);
 		// store the shape
-		_theShape = theShape;
+		_theShape = new PolygonShape(vector);
+
+		// and the label
+		_theLabel = new MWC.GUI.Shapes.TextLabel(_theShape, label);
 
 		// store the name of the shape
 		_theShape.setName(getName());
@@ -577,6 +483,11 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		// the label
 		_theShape.addPropertyListener(this);
 		_theLabel.addPropertyListener(this);
+	}
+
+	public void addNode()
+	{
+		_theShape.addNode();
 	}
 
 	/**
@@ -633,7 +544,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		if (_theShape instanceof HasDraggableComponents)
 		{
-			HasDraggableComponents dragger = (HasDraggableComponents) _theShape;
+			HasDraggableComponents dragger = _theShape;
 			dragger.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
 					parentLayer);
 		}
@@ -810,7 +721,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public final String getName()
 	{
-		return _theLabel.getString();
+		return "Polygon " + _theShape.getPoints().size() + " points";
 	}
 
 	@Override
@@ -1109,7 +1020,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		_theLabel.setVisible(val);
 
 		// ok, inform any listeners
-		getSupport().firePropertyChange(ShapeWrapper.LABEL_VIS_CHANGED, null,
+		getSupport().firePropertyChange(PolygonWrapper.LABEL_VIS_CHANGED, null,
 				new Boolean(val));
 
 	}
@@ -1168,7 +1079,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public final String toString()
 	{
-		return _theShape.getName() + ":" + _theLabel.getString();
+		return getName();
 	}
 
 	private void updateLabelLocation()

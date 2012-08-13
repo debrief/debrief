@@ -127,8 +127,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
-import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -429,19 +427,6 @@ public class LineShape extends PlainShape implements Editable,
 		}
 
 		return loc;
-	}
-
-	/**
-	 * get the shape as a series of WorldLocation points. Joined up, these form a
-	 * representation of the shape
-	 */
-	public Collection<WorldLocation> getDataPoints()
-	{
-		Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
-		res.add(_start);
-		res.add(_end);
-
-		return res;
 	}
 
 	public void shift(WorldVector vector)

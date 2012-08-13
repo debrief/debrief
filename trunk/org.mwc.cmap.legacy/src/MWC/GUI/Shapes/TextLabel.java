@@ -150,7 +150,6 @@ package MWC.GUI.Shapes;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
-import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -557,15 +556,6 @@ public class TextLabel extends PlainShape implements Editable
 	public void setFixedOffset(java.awt.Dimension offset)
 	{
 		_theFixedOffset = offset;
-	}
-
-	/**
-	 * get the shape as a series of WorldLocation points. Joined up, these form a
-	 * representation of the shape
-	 */
-	public Collection<WorldLocation> getDataPoints()
-	{
-		return null;
 	}
 
 	/**

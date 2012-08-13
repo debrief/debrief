@@ -10,7 +10,9 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  */
 
 import java.util.Iterator;
+import java.util.Vector;
 
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
@@ -51,6 +53,21 @@ abstract public class WorldPathHandler extends MWCXMLReader {
 
   abstract public void setPath(WorldPath path);
 
+  public static void exportThis(Vector<PolygonNode> nodes, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  {
+    org.w3c.dom.Element eLoc = doc.createElement(_myType);
+
+    // step through the list
+    Iterator<PolygonNode> it = nodes.iterator();
+
+    while(it.hasNext())
+    {
+      WorldLocation wl = (WorldLocation)it.next().getLocation();
+      LocationHandler.exportLocation(wl, POINT, eLoc, doc);
+    }
+    parent.appendChild(eLoc);
+  }
+
 
   public static void exportThis(WorldPath path, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
   {
@@ -64,8 +81,6 @@ abstract public class WorldPathHandler extends MWCXMLReader {
       WorldLocation wl = (WorldLocation)it.next();
       LocationHandler.exportLocation(wl, POINT, eLoc, doc);
     }
-
-
     parent.appendChild(eLoc);
   }
 

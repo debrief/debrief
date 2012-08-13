@@ -97,9 +97,6 @@ public class ElevationGridGenerator extends GeometryGenerator
     private boolean terrainChanged;
 
     /** Flag to indicate the terrain values have changed */
-    private boolean normalsChanged;
-
-    /** Flag to indicate the terrain values have changed */
     private boolean texcoordsChanged;
 
     /** The number of quads in the terrain */
@@ -173,7 +170,6 @@ public class ElevationGridGenerator extends GeometryGenerator
         this.baseHeight = baseHeight;
 
         terrainChanged = true;
-        normalsChanged = true;
         texcoordsChanged = true;
     }
 
@@ -215,7 +211,6 @@ public class ElevationGridGenerator extends GeometryGenerator
         this.baseHeight = baseHeight;
 
         terrainChanged = true;
-        normalsChanged = true;
         texcoordsChanged = true;
     }
 
@@ -248,7 +243,6 @@ public class ElevationGridGenerator extends GeometryGenerator
         if((terrainWidth != w) || (terrainDepth != d))
         {
             terrainChanged = true;
-            normalsChanged = true;
             texcoordsChanged = true;
             terrainDepth = d;
             terrainWidth = w;
@@ -257,7 +251,6 @@ public class ElevationGridGenerator extends GeometryGenerator
         if((wPnts != widthPoints) || (dPnts != depthPoints))
         {
             terrainChanged = true;
-            normalsChanged = true;
             texcoordsChanged = true;
             widthPoints = wPnts;
             depthPoints = dPnts;
@@ -280,7 +273,6 @@ public class ElevationGridGenerator extends GeometryGenerator
         arrayHeights = null;
 
         terrainChanged = true;
-        normalsChanged = true;
     }
 
     /**
@@ -297,7 +289,6 @@ public class ElevationGridGenerator extends GeometryGenerator
         flatHeights = null;
 
         terrainChanged = true;
-        normalsChanged = true;
     }
 
     /**

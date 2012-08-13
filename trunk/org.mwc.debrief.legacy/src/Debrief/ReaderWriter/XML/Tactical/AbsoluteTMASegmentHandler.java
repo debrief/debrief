@@ -13,7 +13,6 @@ import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
-import MWC.GUI.Layers;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 

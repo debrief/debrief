@@ -130,8 +130,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
-import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -523,32 +521,6 @@ public class ArcShape extends CircleShape
   //////////////////////////////////////////////////
   // 3-d support
   //////////////////////////////////////////////////
-  /**
-   * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
-   */
-  public Collection<WorldLocation> getDataPoints()
-  {
-    // get ready to store the list
-    Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
-
-    // convert the radius to degs
-    double radDegs =_theRadius.getValueIn(WorldDistance.DEGS);
-
-
-    for (int i = 0; i <= NUM_SEGMENTS1; i++)
-    {
-      // produce the current bearing
-      double this_brg = (360.0 / NUM_SEGMENTS1 * i) / 180.0 * Math.PI;
-
-      // create a new point at our indicated radius on the current bearing
-      WorldLocation wl = new WorldLocation(_theCentre.add(new WorldVector(this_brg, radDegs, 0)));
-
-      res.add(wl);
-    }
-
-    return res;
-
-  }
 
   //////////////////////////////////////////////////////
   // bean info for this class

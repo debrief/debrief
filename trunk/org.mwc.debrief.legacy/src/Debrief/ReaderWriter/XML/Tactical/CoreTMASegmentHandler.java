@@ -12,7 +12,6 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Track.CoreTMASegment;
-import MWC.GUI.Layers;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 

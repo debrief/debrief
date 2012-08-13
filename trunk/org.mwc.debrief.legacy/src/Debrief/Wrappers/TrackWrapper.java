@@ -35,7 +35,6 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
-import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;

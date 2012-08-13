@@ -91,7 +91,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -317,16 +316,6 @@ public class WheelShape extends PlainShape implements Editable
 	public WorldLocation getCentre()
 	{
 		return _theCentre;
-	}
-
-	/**
-	 * get the shape as a series of WorldLocation points. Joined up, these form a
-	 * representation of the shape
-	 */
-	@Override
-	public Collection<WorldLocation> getDataPoints()
-	{
-		return null;
 	}
 
 	public Editable.EditorType getInfo()

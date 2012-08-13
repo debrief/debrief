@@ -9,9 +9,15 @@ package Debrief.ReaderWriter.XML.Shapes;
  * @version 1.0
  */
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.xml.sax.Attributes;
 
 import MWC.GUI.Shapes.PolygonShape;
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
+import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldPathHandler;
@@ -65,7 +71,14 @@ abstract public class PolygonHandler extends ShapeHandler implements PlottableEx
 
   public final MWC.GUI.Shapes.PlainShape getShape()
   {
-    PolygonShape poly = new PolygonShape(_polygon);
+  	Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+  	Collection<WorldLocation> iter = _polygon.getPoints();
+  	for (Iterator<WorldLocation> iterator = iter.iterator(); iterator.hasNext();)
+		{
+			WorldLocation worldLocation = (WorldLocation) iterator.next();
+			nodes.add(new PolygonNode("" + (nodes.size() + 1), worldLocation));
+		}
+    PolygonShape poly = new PolygonShape(nodes);
     if(_filled != null)
       poly.setFilled(_filled.booleanValue());
     if(_closed != null)
@@ -77,7 +90,62 @@ abstract public class PolygonHandler extends ShapeHandler implements PlottableEx
 
 	public void elementClosed()
 	{
-		super.elementClosed();
+		
+		PolygonShape shape = (PolygonShape) getShape();
+		    shape.setColor(_col);
+		    Debrief.Wrappers.PolygonWrapper sw = new Debrief.Wrappers.PolygonWrapper(_myType, shape.getPoints(), _col, null);
+
+		    if (_label != null)
+		    {
+		      sw.setLabel(_label);
+		    }
+		    if (_font != null)
+		    {
+		      sw.setFont(_font);
+		    }
+		    if (_startDTG != null)
+		    {
+		      sw.setTime_Start(_startDTG);
+		    }
+		    if ((_endDTG !=null) && (! _endDTG.equals(_startDTG)))
+		    {
+		      sw.setTimeEnd(_endDTG);
+		    }
+		    if (_theLocation != null)
+		    {
+		      sw.setLabelLocation(_theLocation);
+		    }
+		    if (_fontCol != null)
+		    {
+		      sw.setLabelColor(_fontCol);
+		    }
+		    // line style?
+		    if(_lineStyle != null)
+		    {
+		    	sw.setLineStyle(_lineStyle.intValue());
+		    }
+		    // line width?
+		    if(_lineThickness != null)
+		    {
+		    	sw.setLineThickness(_lineThickness.intValue());
+		    }
+		    sw.setVisible(_isVisible);
+		    sw.setLabelVisible(_labelVisible);
+		    
+
+		    addPlottable(sw);
+
+		    // reset the local parameters
+		    _startDTG = _endDTG = null;
+		    _col = null;
+		    _fontCol = null;
+		    _label = null;
+		    _font = null;
+		    _theLocation = null;
+		    _isVisible = true;
+		    _lineStyle = null;
+		    _lineThickness = null;
+		  
 		
 		// reset our temp variables
 		
