@@ -79,7 +79,7 @@
 	</target>
 
 
-	<target name="docbook_to_internet" depends="docbook_to_eclipse">
+	<target name="docbook_to_internet" >
 
 		<!-- help the ftp task get going-->
 		<property environment="env" />
