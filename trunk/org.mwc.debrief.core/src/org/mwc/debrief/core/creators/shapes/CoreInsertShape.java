@@ -38,10 +38,9 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-
 		// right, what's the area we're looking at
-		WorldArea wa = theChart.getDataArea();
-
+		WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
+		
 		// get centre of area (at zero depth)
 		WorldLocation centre = wa.getCentreAtSurface();
 
