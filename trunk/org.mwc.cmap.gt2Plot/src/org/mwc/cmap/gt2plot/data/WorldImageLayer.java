@@ -24,11 +24,10 @@ import org.opengis.feature.Property;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 
-import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
-import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
+import MWC.GUI.Shapes.ChartFolio;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -69,30 +68,30 @@ public class WorldImageLayer extends GeoToolsLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static MWC.GUI.Layer read(String fileName)
-	{
-
-		MWC.GUI.Layer res = null;
-		File openFile = new File(fileName);
-		if (openFile != null && openFile.exists())
-		{
-			// sort out the name of the map
-			String coverageName = fileName;
-			final int dotIndex = coverageName.lastIndexOf(".");
-			coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(
-					0, dotIndex);
-			final int pathIndex = coverageName.lastIndexOf(File.separator);
-			if (pathIndex > 0)
-				coverageName = coverageName.substring(pathIndex + 1,
-						coverageName.length());
-
-			// also create a layer wrapper
-			res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
-					coverageName, fileName);
-		}
-		return res;
-
-	}
+//	public static MWC.GUI.Layer read(String fileName)
+//	{
+//
+//		MWC.GUI.Layer res = null;
+//		File openFile = new File(fileName);
+//		if (openFile != null && openFile.exists())
+//		{
+//			// sort out the name of the map
+//			String coverageName = fileName;
+//			final int dotIndex = coverageName.lastIndexOf(".");
+//			coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(
+//					0, dotIndex);
+//			final int pathIndex = coverageName.lastIndexOf(File.separator);
+//			if (pathIndex > 0)
+//				coverageName = coverageName.substring(pathIndex + 1,
+//						coverageName.length());
+//
+//			// also create a layer wrapper
+//			res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
+//					coverageName, fileName);
+//		}
+//		return res;
+//
+//	}
 
 	public static class RasterExtentHelper
 	{
