@@ -205,7 +205,8 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
 
-public class RightClickEdit implements PlainChart.ChartClickListener, Serializable
+public class RightClickEdit implements PlainChart.ChartClickListener,
+		Serializable
 {
 	/**
 	 * 
@@ -224,9 +225,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 	/**
 	 * this static hashtable contains multiple lists of plottable extras, indexed
-	 * by the properties panel they edit <p/> PlottableExtras are lists of
-	 * additional classes which are able to extend the popup menu once a Plottable
-	 * has been selected
+	 * by the properties panel they edit
+	 * <p/>
+	 * PlottableExtras are lists of additional classes which are able to extend
+	 * the popup menu once a Plottable has been selected
 	 */
 	private Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>> _thePlottableExtras;
 
@@ -247,7 +249,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	/**
 	 * get the list of extra editors which we know about
 	 */
-	public java.util.Vector<PlottableMenuCreator> getExtraPlottableEditors(PropertiesPanel thePanel)
+	public java.util.Vector<PlottableMenuCreator> getExtraPlottableEditors(
+			PropertiesPanel thePanel)
 	{
 		return (Vector<PlottableMenuCreator>) _thePlottableExtras.get(thePanel);
 	}
@@ -262,7 +265,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		_theExtras.removeElement(mn);
 	}
 
-	public void addPlottableMenuCreator(PlottableMenuCreator mn, PropertiesPanel thePanel)
+	public void addPlottableMenuCreator(PlottableMenuCreator mn,
+			PropertiesPanel thePanel)
 	{
 		// see if we have a list for this panel
 		Vector<PlottableMenuCreator> obj = _thePlottableExtras.get(thePanel);
@@ -285,7 +289,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		vt.addElement(mn);
 	}
 
-	public void removePlottableMenuCreator(PlottableMenuCreator mn, PropertiesPanel thePanel)
+	public void removePlottableMenuCreator(PlottableMenuCreator mn,
+			PropertiesPanel thePanel)
 	{
 		// see if we have a list for this panel
 		Vector<PlottableMenuCreator> oj = _thePlottableExtras.get(thePanel);
@@ -337,7 +342,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 					Object next = enumer.nextElement();
 
 					// is this item a layer itself?
-					if ((next instanceof Layer) &&(!(next instanceof Editable.DoNoInspectChildren)))
+					if ((next instanceof Layer)
+							&& (!(next instanceof Editable.DoNoInspectChildren)))
 					{
 						// cast to Layer
 						Layer l = (Layer) next;
@@ -352,46 +358,52 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 						{
 							Plottable p = (Plottable) next;
 
-							// is there an editor for this item
-							if (p.hasEditor())
+							// is it visible even?
+							if (p.getVisible())
 							{
-								// how far away is it?
-								double rng = p.rangeFrom(cursorPos);
 
-								// does it return a range?
-								if (rng != -1.0)
+								// is there an editor for this item
+								if (p.hasEditor())
 								{
-									// has our results object been initialised?
-									if (currentNearest.object == null)
+									// how far away is it?
+									double rng = p.rangeFrom(cursorPos);
+
+									// does it return a range?
+									if (rng != -1.0)
 									{
-										// no, just copy in the data
-										currentNearest.setData(p, rng, thisLayer);
+										// has our results object been initialised?
+										if (currentNearest.object == null)
+										{
+											// no, just copy in the data
+											currentNearest.setData(p, rng, thisLayer);
+										}
+										else
+										{
+											// yes it has, copy the data items in
+											if (rng < currentNearest.distance)
+											{
+												currentNearest.setData(p, rng, thisLayer);
+											}
+										}
 									}
 									else
 									{
-										// yes it has, copy the data items in
-										if (rng < currentNearest.distance)
+										// not range related, add to our list of non-location
+										// related
+										// entities (unless it's a type we specifically exclude from
+										// right-click editing, like Narrative Entries)
+										if (p instanceof ExcludeFromRightClickEdit)
 										{
-											currentNearest.setData(p, rng, thisLayer);
+											// just ignore it, we don't want to show it.
 										}
+										else
+											currentNearest.addRangeIndependent(p);
 									}
 								}
 								else
 								{
-									// not range related, add to our list of non-location related
-									// entities (unless it's a type we specifically exclude from
-									//  right-click editing, like Narrative Entries)
-									if(p instanceof ExcludeFromRightClickEdit)
-									{
-										// just ignore it, we don't want to show it.
-									}
-									else
-										currentNearest.addRangeIndependent(p);
+									// no editor, so we can't create a menu item for it anyway
 								}
-							}
-							else
-							{
-								// no editor, so we can't create a menu item for it anyway
 							}
 						} // else-part of is this a layer
 					} // stepping through the enumereration
@@ -459,8 +471,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 		// so, we've spotted a valid plottable, see if there are any
 		// other operations to apply to it.
-		JPopupMenu theMenu = createMenu((Plottable) res, thePoint, theParent, theCanvas,
-				theData, topLayer);
+		JPopupMenu theMenu = createMenu((Plottable) res, thePoint, theParent,
+				theCanvas, theData, topLayer);
 
 		// separator, before we get the real tat
 		theMenu.addSeparator();
@@ -478,7 +490,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		}
 
 		// are there any non-position related points?
-		if ((noPoints != null) && ( res == null))
+		if ((noPoints != null) && (res == null))
 		{
 
 			Enumeration<Plottable> pts = noPoints.elements();
@@ -488,20 +500,22 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 				// and add the items, starting with the plottable itself
 				Editable.EditorType et2 = p.getInfo();
-				JMenuItem m = new JMenuItem("Edit " + et2.getBeanDescriptor().getDisplayName());
-				m.addActionListener(new EditThisActionListener(_thePanel, et2, theParent));
+				JMenuItem m = new JMenuItem("Edit "
+						+ et2.getBeanDescriptor().getDisplayName());
+				m.addActionListener(new EditThisActionListener(_thePanel, et2,
+						theParent));
 				theMenu.add(m);
 
 				// create temporary menu to hold any editors for this additional item
 				JMenu mn = new JMenu(et2.getBeanDescriptor().getDisplayName());
 
 				// try for any boolean editors for this other object
-				createBooleanEditors(mn, (Editable) et2.getData(), theCanvas, _thePanel, theData,
-						theParent, topLayer);
+				createBooleanEditors(mn, (Editable) et2.getData(), theCanvas,
+						_thePanel, theData, theParent, topLayer);
 
 				// try for any boolean editors for this other object
-				createSelectionEditors(mn, (Editable) et2.getData(), theCanvas, _thePanel,
-						theData, theParent, topLayer);
+				createSelectionEditors(mn, (Editable) et2.getData(), theCanvas,
+						_thePanel, theData, theParent, topLayer);
 
 				// put in the separator if we need to
 				if (mn.getItemCount() > 0)
@@ -525,24 +539,25 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 	}
 
-	protected JPopupMenu createMenu(Plottable data, Point thePoint, Layer theParent,
-			CanvasType theCanvas, Layers theLayers, Layer updateLayer)
+	protected JPopupMenu createMenu(Plottable data, Point thePoint,
+			Layer theParent, CanvasType theCanvas, Layers theLayers, Layer updateLayer)
 	{
 		Vector<PlottableMenuCreator> oj = null;
 
 		if (_thePlottableExtras != null)
-			oj =  _thePlottableExtras.get(_thePanel);
+			oj = _thePlottableExtras.get(_thePanel);
 
-		JPopupMenu res = createMenuFor(data, thePoint, theCanvas, theParent, _thePanel,
-				theLayers, oj, updateLayer);
+		JPopupMenu res = createMenuFor(data, thePoint, theCanvas, theParent,
+				_thePanel, theLayers, oj, updateLayer);
 
 		return res;
 
 	}
 
 	static public JPopupMenu createMenuFor(Editable data, Point thePoint,
-			CanvasType theCanvas, Layer theParent, PropertiesPanel thePanel, Layers theLayers,
-			java.util.Vector<PlottableMenuCreator> extras, Layer updateLayer)
+			CanvasType theCanvas, Layer theParent, PropertiesPanel thePanel,
+			Layers theLayers, java.util.Vector<PlottableMenuCreator> extras,
+			Layer updateLayer)
 	{
 
 		// change the panel parameter to be a final
@@ -562,30 +577,31 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 			{
 				// and add the items, starting with the plottable itself
 				Editable.EditorType et2 = bi;
-				JMenuItem m = new JMenuItem("Edit " + et2.getBeanDescriptor().getDisplayName());
+				JMenuItem m = new JMenuItem("Edit "
+						+ et2.getBeanDescriptor().getDisplayName());
 				m.addActionListener(new EditThisActionListener(myPanel, et2, theParent));
 				pi.add(m);
 
 				JMenu mp = new JMenu(et2.getBeanDescriptor().getDisplayName());
 
 				// also see if there are any boolean property editors for this ite,
-				createBooleanEditors(mp, data, theCanvas, thePanel, theLayers, theParent,
-						updateLayer);
+				createBooleanEditors(mp, data, theCanvas, thePanel, theLayers,
+						theParent, updateLayer);
 
 				// are we showing combined lists?
 				if (bi.combinePropertyLists())
-					createAdditionalBooleanEditors(mp, data, theCanvas, thePanel, theLayers,
-							theParent, updateLayer);
+					createAdditionalBooleanEditors(mp, data, theCanvas, thePanel,
+							theLayers, theParent, updateLayer);
 
 				// also see if there are any lists of properties which
 				// we can create as a drop down list
-				createSelectionEditors(mp, data, theCanvas, thePanel, theLayers, theParent,
-						updateLayer);
+				createSelectionEditors(mp, data, theCanvas, thePanel, theLayers,
+						theParent, updateLayer);
 
 				// are we showing combined lists?
 				if (bi.combinePropertyLists())
-					createAdditionalSelectionEditors(mp, data, theCanvas, thePanel, theLayers,
-							theParent, updateLayer);
+					createAdditionalSelectionEditors(mp, data, theCanvas, thePanel,
+							theLayers, theParent, updateLayer);
 
 				// put in the separator if we need to
 				if (mp.getItemCount() > 0)
@@ -637,9 +653,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 											+ et.getBeanDescriptor().getDisplayName());
 
 									// and add an action listener
-									mi
-											.addActionListener(new EditThisActionListener(myPanel, et,
-													theParent));
+									mi.addActionListener(new EditThisActionListener(myPanel, et,
+											theParent));
 
 									// add to the popup menu
 									pi.add(mi);
@@ -651,12 +666,12 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 								JMenu mn = new JMenu(et.getBeanDescriptor().getDisplayName());
 
 								// try for any boolean editors for this other object
-								createBooleanEditors(mn, (Editable) et.getData(), theCanvas, thePanel,
-										theLayers, theParent, updateLayer);
+								createBooleanEditors(mn, (Editable) et.getData(), theCanvas,
+										thePanel, theLayers, theParent, updateLayer);
 
 								// try for any list editors for this other object
-								createSelectionEditors(mn, (Editable) et.getData(), theCanvas, thePanel,
-										theLayers, theParent, updateLayer);
+								createSelectionEditors(mn, (Editable) et.getData(), theCanvas,
+										thePanel, theLayers, theParent, updateLayer);
 
 								// put in the separator if we need to
 								if (mn.getItemCount() > 0)
@@ -692,9 +707,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 				Enumeration<PlottableMenuCreator> creators = extras.elements();
 				while (creators.hasMoreElements())
 				{
-					PlottableMenuCreator mc = (PlottableMenuCreator) creators.nextElement();
-					mc.createMenu(pi, data, thePoint, theCanvas, thePanel, theParent, theLayers,
-							updateLayer);
+					PlottableMenuCreator mc = (PlottableMenuCreator) creators
+							.nextElement();
+					mc.createMenu(pi, data, thePoint, theCanvas, thePanel, theParent,
+							theLayers, updateLayer);
 					// pi.addSeparator();
 				}
 			} // whether there were actually any plottable extras
@@ -708,7 +724,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 	}
 
-	protected void showMenu(JPopupMenu theMenu, Point thePoint, CanvasType theCanvas)
+	protected void showMenu(JPopupMenu theMenu, Point thePoint,
+			CanvasType theCanvas)
 	{
 		if (theCanvas instanceof java.awt.Canvas)
 		{
@@ -730,8 +747,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		theCanvas = null;
 	}
 
-	static protected void createAdditionalMethodInvokers(JMenu theMenu, Editable theItem,
-			CanvasType theCanvas)
+	static protected void createAdditionalMethodInvokers(JMenu theMenu,
+			Editable theItem, CanvasType theCanvas)
 	{
 
 		Editable.EditorType bi = theItem.getInfo();
@@ -779,8 +796,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 				// get this method
 				MethodDescriptor md = mds[i];
 				Method me = md.getMethod();
-				JMenuItem m2 = new ourMenuItem(md.getDisplayName(), me, theItem, theCanvas,
-						theItem);
+				JMenuItem m2 = new ourMenuItem(md.getDisplayName(), me, theItem,
+						theCanvas, theItem);
 				theMenu.add(m2);
 
 			}
@@ -788,9 +805,9 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 	}
 
-	static protected void createAdditionalBooleanEditors(JMenu theMenu, Editable theItem,
-			CanvasType theCanvas, PropertiesPanel thePanel, Layers theLayers,
-			Layer parentLayer, Layer updateLayer)
+	static protected void createAdditionalBooleanEditors(JMenu theMenu,
+			Editable theItem, CanvasType theCanvas, PropertiesPanel thePanel,
+			Layers theLayers, Layer parentLayer, Layer updateLayer)
 	{
 
 		Editable.EditorType bi = theItem.getInfo();
@@ -814,8 +831,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 					if (bd != null)
 					{
 						// try for any boolean editors for this other object
-						createBooleanEditors(theMenu, (Editable) et.getData(), theCanvas, thePanel,
-								theLayers, parentLayer, updateLayer);
+						createBooleanEditors(theMenu, (Editable) et.getData(), theCanvas,
+								thePanel, theLayers, parentLayer, updateLayer);
 					}
 				}
 			}
@@ -848,13 +865,13 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 						// get the current value
 						Method getter = prop.getReadMethod();
 						Method setter = prop.getWriteMethod();
-						Object val = getter.invoke(theItem,(Object[]) null);
+						Object val = getter.invoke(theItem, (Object[]) null);
 						boolean current = ((Boolean) val).booleanValue();
 						cm.setState(current);
 
-						BooleanOperationAction action = new BooleanOperationAction(setter, theItem,
-								prop.getDisplayName(), theCanvas, !current, theItem.getInfo(), theLayers,
-								parentLayer, updateLayer);
+						BooleanOperationAction action = new BooleanOperationAction(setter,
+								theItem, prop.getDisplayName(), theCanvas, !current,
+								theItem.getInfo(), theLayers, parentLayer, updateLayer);
 
 						cm.addItemListener(new DoThisListener(action, myPanel.getBuffer()));
 
@@ -870,9 +887,9 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		}
 	}
 
-	static protected void createAdditionalSelectionEditors(JMenu theMenu, Editable theItem,
-			CanvasType theCanvas, PropertiesPanel thePanel, Layers theLayers,
-			Layer parentLayer, Layer updateLayer)
+	static protected void createAdditionalSelectionEditors(JMenu theMenu,
+			Editable theItem, CanvasType theCanvas, PropertiesPanel thePanel,
+			Layers theLayers, Layer parentLayer, Layer updateLayer)
 	{
 
 		Editable.EditorType bi = theItem.getInfo();
@@ -896,8 +913,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 					if (bd != null)
 					{
 						// try for any boolean editors for this other object
-						createSelectionEditors(theMenu, (Editable) et.getData(), theCanvas, thePanel,
-								theLayers, parentLayer, updateLayer);
+						createSelectionEditors(theMenu, (Editable) et.getData(), theCanvas,
+								thePanel, theLayers, parentLayer, updateLayer);
 					}
 				}
 			}
@@ -905,8 +922,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	}
 
 	static protected void createSelectionEditors(JMenu theMenu, Editable theItem,
-			CanvasType theCanvas, PropertiesPanel thePanel, Layers theLayers, Layer theParent,
-			Layer updateLayer)
+			CanvasType theCanvas, PropertiesPanel thePanel, Layers theLayers,
+			Layer theParent, Layer updateLayer)
 	{
 
 		PropertiesPanel myPanel = thePanel;
@@ -977,7 +994,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 							Object val = null;
 							try
 							{
-								val = getter.invoke(theItem, (Object[])null);
+								val = getter.invoke(theItem, (Object[]) null);
 							}
 							catch (Exception e)
 							{
@@ -994,21 +1011,22 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 								String thisTag = tags[j];
 
 								// create the item
-								JCheckBoxMenuItem thisOption = new JCheckBoxMenuItem(thisTag, thisTag
-										.equals(current));
+								JCheckBoxMenuItem thisOption = new JCheckBoxMenuItem(thisTag,
+										thisTag.equals(current));
 
 								// add it to the menu
 								thisMen.add(thisOption);
 
 								// create the custom action
-								SelectionOperationAction action = new SelectionOperationAction(setter,
-										theItem, prop.getDisplayName(), theCanvas, tags[j], current, pe,
-										theItem.getInfo(), theLayers, theParent, updateLayer);
+								SelectionOperationAction action = new SelectionOperationAction(
+										setter, theItem, prop.getDisplayName(), theCanvas, tags[j],
+										current, pe, theItem.getInfo(), theLayers, theParent,
+										updateLayer);
 
 								// create the action listener
 
-								thisOption
-										.addItemListener(new DoThisListener(action, myPanel.getBuffer()));
+								thisOption.addItemListener(new DoThisListener(action, myPanel
+										.getBuffer()));
 							}
 
 							// and add ourselves to the menu
@@ -1025,7 +1043,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	// menu action
 	// //////////////////////////////////////////////////////////
 
-	static public class EditThisActionListener implements java.awt.event.ActionListener
+	static public class EditThisActionListener implements
+			java.awt.event.ActionListener
 	{
 		PropertiesPanel _myPanel;
 
@@ -1036,8 +1055,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		 */
 		Layer _parentLayer;
 
-		public EditThisActionListener(PropertiesPanel thePanel, Editable.EditorType editor,
-				Layer parentLayer)
+		public EditThisActionListener(PropertiesPanel thePanel,
+				Editable.EditorType editor, Layer parentLayer)
 		{
 			_myPanel = thePanel;
 			_myEditor = editor;
@@ -1140,8 +1159,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 		protected Editable _theEditable;
 
-		public ourMenuItem(String name, Method m, Object data, CanvasType theCanvas,
-				Editable theEditable)
+		public ourMenuItem(String name, Method m, Object data,
+				CanvasType theCanvas, Editable theEditable)
 		{
 			super(name);
 			_myData = data;
@@ -1162,10 +1181,11 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		{
 			try
 			{
-				_myMethod.invoke(_myData, (Object[])null);
+				_myMethod.invoke(_myData, (Object[]) null);
 				_theCanvas.updateMe();
 				// inform the object that we've updated it.
-				_theEditable.getInfo().fireChanged(this, _myMethod.toString(), null, null);
+				_theEditable.getInfo().fireChanged(this, _myMethod.toString(), null,
+						null);
 
 			}
 			catch (Exception e)
@@ -1189,8 +1209,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 		CanvasType _theChart;
 
-		protected PlainOperationAction(Object theData, Editable.EditorType theEditor,
-				String theDescriptor, CanvasType theChart)
+		protected PlainOperationAction(Object theData,
+				Editable.EditorType theEditor, String theDescriptor, CanvasType theChart)
 		{
 			_theData = theData;
 			_theEditor = theEditor;
@@ -1230,9 +1250,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 		Layer _updateLayer;
 
-		public BooleanOperationAction(Method theSetter, Object theData, String descriptor,
-				CanvasType theChart, boolean newVal, Editable.EditorType theEditor,
-				Layers theLayers, Layer theParent, Layer updateLayer)
+		public BooleanOperationAction(Method theSetter, Object theData,
+				String descriptor, CanvasType theChart, boolean newVal,
+				Editable.EditorType theEditor, Layers theLayers, Layer theParent,
+				Layer updateLayer)
 		{
 			super(theData, theEditor, descriptor, theChart);
 			_theSetter = theSetter;
@@ -1258,7 +1279,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 			// hey, do the opposite!
 			try
 			{
-				Object args[] = { new Boolean(!_newVal) };
+				Object args[] =
+				{ new Boolean(!_newVal) };
 				_theSetter.invoke(_theData1, args);
 
 				// inform the editable that we've updated it
@@ -1279,7 +1301,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 			// hey, do it!
 			try
 			{
-				Object args[] = { new Boolean(_newVal) };
+				Object args[] =
+				{ new Boolean(_newVal) };
 				_theSetter.invoke(_theData1, args);
 
 				// inform the editable that we've updated it
@@ -1313,10 +1336,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 		Layer _updateLayer;
 
-		public SelectionOperationAction(Method theSetter, Object theData, String descriptor,
-				CanvasType theChart, String newVal, String oldVal, PropertyEditor editor,
-				Editable.EditorType theEditor, Layers theLayers, Layer theParent,
-				Layer updateLayer)
+		public SelectionOperationAction(Method theSetter, Object theData,
+				String descriptor, CanvasType theChart, String newVal, String oldVal,
+				PropertyEditor editor, Editable.EditorType theEditor, Layers theLayers,
+				Layer theParent, Layer updateLayer)
 		{
 			super(theData, theEditor, descriptor, theChart);
 			_theSetter = theSetter;
@@ -1351,7 +1374,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 				_editor.setAsText(_oldVal);
 				Object val = _editor.getValue();
 
-				Object args[] = { val };
+				Object args[] =
+				{ val };
 				_theSetter.invoke(_theData, args);
 
 				// inform the editable that we've updated it
@@ -1377,7 +1401,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 				Object val = _editor.getValue();
 
 				// prepare the storage data
-				Object args[] = { val };
+				Object args[] =
+				{ val };
 				_theSetter.invoke(_theData, args);
 
 				// inform the editable that we've updated it
@@ -1414,8 +1439,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		 *          the set of layers (plus data) currently in use
 		 */
 		public void createMenu(JPopupMenu menu, java.awt.Point thePoint,
-				MWC.GUI.CanvasType theCanvas, MWC.GUI.Properties.PropertiesPanel thePanel,
-				MWC.GUI.Layers theData);
+				MWC.GUI.CanvasType theCanvas,
+				MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData);
 
 	}
 
@@ -1425,22 +1450,24 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	// ///////////////////////////////////////////////////
 	abstract static public class BaseMenuCreator implements MenuCreator
 	{
-		abstract public void createMenu(javax.swing.JPopupMenu menu, java.awt.Point thePoint,
-				MWC.GUI.CanvasType theCanvas, MWC.GUI.Properties.PropertiesPanel thePanel,
-				MWC.GUI.Layers theData);
+		abstract public void createMenu(javax.swing.JPopupMenu menu,
+				java.awt.Point thePoint, MWC.GUI.CanvasType theCanvas,
+				MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData);
 
 		protected void createAdditionalItems(javax.swing.JPopupMenu menu,
-				MWC.GUI.CanvasType theCanvas, MWC.GUI.Properties.PropertiesPanel thePanel,
-				Editable theEditable, MWC.GUI.Layers theData)
+				MWC.GUI.CanvasType theCanvas,
+				MWC.GUI.Properties.PropertiesPanel thePanel, Editable theEditable,
+				MWC.GUI.Layers theData)
 		{
 			// create the editable properties and method invokers for this object
 			JMenu subMenu = new JMenu(theEditable.getInfo().getBeanDescriptor()
 					.getDisplayName());
-			createBooleanEditors(subMenu, theEditable, theCanvas, thePanel, theData, null, null);
+			createBooleanEditors(subMenu, theEditable, theCanvas, thePanel, theData,
+					null, null);
 
 			// try for any enumererated editors for this other object
-			createSelectionEditors(subMenu, theEditable, theCanvas, thePanel, theData, null,
-					null);
+			createSelectionEditors(subMenu, theEditable, theCanvas, thePanel,
+					theData, null, null);
 
 			// lastly create any applicable methods
 			createMethodInvokers(subMenu, theEditable, theCanvas);
