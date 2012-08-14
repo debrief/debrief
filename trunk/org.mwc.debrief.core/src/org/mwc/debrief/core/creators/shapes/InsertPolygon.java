@@ -9,6 +9,7 @@ import Debrief.Wrappers.PolygonWrapper;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.WorldLocation;
 
@@ -45,11 +46,16 @@ public class InsertPolygon extends CoreInsertShape
 
 		// create the shape, based on the centre
 		Vector<PolygonNode> path2 = new Vector<PolygonNode>();
-		path2.add(new PolygonNode("1", centre));
+
+		PolygonShape newShape = new PolygonShape(path2);
 
 		// and now wrap the shape
 		PolygonWrapper theWrapper = new PolygonWrapper("New " + getShapeName(),
-				path2, PlainShape.DEFAULT_COLOR, null);
+				newShape, PlainShape.DEFAULT_COLOR, null);
+
+		// store the new point
+		path2
+				.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
 
 		return theWrapper;
 

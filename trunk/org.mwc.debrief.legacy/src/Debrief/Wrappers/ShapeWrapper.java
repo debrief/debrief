@@ -509,7 +509,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * our editor
 	 */
-	transient private Editable.EditorType _myEditor = null;
+	protected transient Editable.EditorType _myEditor = null;
 
 	// ///////////////////////////////////////////////////////////
 	// member functions
@@ -520,23 +520,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 */
 	private int _lineStyle;
-
-	//
-	// /** get the start time for this shape
-	// */
-	// public final HiResDate xxxgetTimeStart()
-	// {
-	// // HI-RES NOT DONE - ditch this
-	// return _theStartDTG;
-	// }
-	//
-	// /** get the end time for this shape
-	// */
-	// public HiResDate getTime_End()
-	// {
-	// return _theEndDTG;
-	// }
-	//
 
 	/**
 	 * the width to draw this line
@@ -649,7 +632,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public final WorldArea getBounds()
+	public WorldArea getBounds()
 	{
 		// get the bounds from the data object (or its location object)
 		final WorldArea res = new WorldArea(_theLabel.getBounds());
@@ -699,7 +682,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public final Editable.EditorType getInfo()
+	public Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)
 			_myEditor = new ShapeInfo(this, this.getName());
@@ -1079,7 +1062,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@FireReformatted
-	public final void setLabel(final String val)
+	public void setLabel(final String val)
 	{
 		_theLabel.setString(val);
 	}
@@ -1166,7 +1149,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	@Override
-	public final String toString()
+	public String toString()
 	{
 		return _theShape.getName() + ":" + _theLabel.getString();
 	}

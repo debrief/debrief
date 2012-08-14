@@ -225,50 +225,47 @@ package Debrief.Wrappers;
 // Initial revision
 //
 
-import java.awt.Font;
-import java.awt.Point;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Vector;
 
-import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.FireReformatted;
+import MWC.GUI.ExportLayerAsSingleItem;
+import MWC.GUI.Exportable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers;
 import MWC.GUI.Properties.LineStylePropertyEditor;
-import MWC.GUI.Shapes.DraggableItem;
-import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
-import MWC.GenericData.Watchable;
-import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
 
-public class PolygonWrapper extends MWC.GUI.PlainWrapper implements
-		java.beans.PropertyChangeListener, MWC.GenericData.Watchable,
-		WatchableList, DraggableItem, HasDraggableComponents, DoNotHighlightMe
+/**
+ * extended shapewrapper class, that introduces support for showing the child
+ * nodes in the layer manager
+ * 
+ * @author ian
+ * 
+ */
+public class PolygonWrapper extends ShapeWrapper implements Layer,
+		ExportLayerAsSingleItem
 {
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
 	// ///////////////////////////////////////////////////
-	public final class ShapeInfo extends Editable.EditorType
+	public final class PolygonWrapperInfo extends Editable.EditorType
 	{
 
-		public ShapeInfo(final PolygonWrapper data, final String theName)
+		public PolygonWrapperInfo(final PolygonWrapper data, final String theName)
 		{
 			super(data, theName, data._theShape.getType() + ":");
 		}
@@ -363,131 +360,32 @@ public class PolygonWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-	}
-
-	/**
-	 * property name to indicate that the symbol visibility has been changed
-	 */
-	public static final String LABEL_VIS_CHANGED = "LABEL_VIS_CHANGE";
-
-	/**
-	 * keep track of versions
-	 */
-	static final long serialVersionUID = 1;
-
-	/**
-	 * the label
-	 */
-	private final MWC.GUI.Shapes.TextLabel _theLabel;
-
-	/**
-	 * the symbol for this label
-	 */
-	final PolygonShape _theShape;
-
-	/**
-	 * the start dtg for this label (although) this will frequently be null, for
-	 * non time-related entities. Where no end DTG is provided, this will be used
-	 * as a centre point
-	 */
-	private HiResDate _theStartDTG = null;
-
-	/**
-	 * the end dtg for this label (although) this will frequently be null, for non
-	 * time-related entities. Where no end DTG is provided, this will be used as a
-	 * centre point
-	 */
-	private HiResDate _theEndDTG = null;
-
-	/**
-	 * our editor
-	 */
-	transient private Editable.EditorType _myEditor = null;
-
-	/**
-	 * the style of line to use for this feature
-	 * 
-	 */
-	private int _lineStyle;
-
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-
-	/**
-	 * the width to draw this line
-	 */
-	private int _lineWidth;
-
-	//
-	// /** get the start time for this shape
-	// */
-	// public final HiResDate xxxgetTimeStart()
-	// {
-	// // HI-RES NOT DONE - ditch this
-	// return _theStartDTG;
-	// }
-	//
-	// /** get the end time for this shape
-	// */
-	// public HiResDate getTime_End()
-	// {
-	// return _theEndDTG;
-	// }
-	//
-
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public PolygonWrapper(final String label, final Vector<PolygonNode> vector,
+	public PolygonWrapper(final String label, final PolygonShape shape,
 			final java.awt.Color theColor, final HiResDate theDate)
 	{
-		// store the shape
-		_theShape = new PolygonShape(vector);
-
-		// and the label
-		_theLabel = new MWC.GUI.Shapes.TextLabel(_theShape, label);
-
-		// store the name of the shape
-		_theShape.setName(getName());
-
-		_theLabel.setFont(new Font("Sans Serif", Font.PLAIN, 9));
-		_theLabel.setColor(theColor);
-
-		// override the shape, just to be sure...
-		_theShape.setColor(theColor);
-
-		// tell the parent object what colour we are
-		super.setColor(theColor);
-
-		// store the date (which is initially used as a centre time)
-		setTime_Start(theDate);
-		setTimeEnd(null);
-
-		// also update the location of the text anchor
-		updateLabelLocation();
-
-		// add ourselves as the listener to the shape and
-		// the label
-		_theShape.addPropertyListener(this);
-		_theLabel.addPropertyListener(this);
+		super(label, shape, theColor, theDate);
+		setName(label);
+		super.setLabelLocation(LocationPropertyEditor.CENTRE);
 	}
 
+	private PolygonShape getPoly()
+	{
+		return (PolygonShape) _theShape;
+	}
+
+	@FireExtended
 	public void addNode()
 	{
-		_theShape.addNode();
+		getPoly().addNode();
+	}
+
+	@Override
+	public final WorldArea getBounds()
+	{
+		return _theShape.getBounds();
 	}
 
 	/**
@@ -497,595 +395,104 @@ public class PolygonWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public void closeMe()
 	{
-		// stop listening to property changes
-		_theShape.removePropertyListener(this);
-		_theLabel.removePropertyListener(this);
+		// stop listening to node changes
+
+		// and let the parent close
 		super.closeMe();
 	}
 
-	/**
-	 * filter the list to the specified time period
-	 * 
-	 * @param start
-	 *          the start dtg of the period
-	 * @param end
-	 *          the end dtg of the period
-	 */
 	@Override
-	public final void filterListTo(final HiResDate start, final HiResDate end)
-	{
-		// do we have a DTG?
-		if (getStartDTG() == null)
-		{
-			// don't bother, we don't have a DTG
-			return;
-		}
-
-		// see if we are visible between the period
-		final Collection<Editable> list = getItemsBetween(start, end);
-
-		this.setVisible(false);
-
-		if (list != null)
-		{
-			if (list.size() > 0)
-				this.setVisible(true);
-		}
-
-		// if we have a property support class, fire the filtered event
-		getSupport().firePropertyChange(
-				MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
-
-	}
-
-	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
-	{
-		if (_theShape instanceof HasDraggableComponents)
-		{
-			HasDraggableComponents dragger = _theShape;
-			dragger.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
-					parentLayer);
-		}
-	}
-
-	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
-	{
-		_theShape.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
-				parentLayer, theData);
-
-	}
-
-	@Override
-	public final WorldArea getBounds()
-	{
-		// get the bounds from the data object (or its location object)
-		final WorldArea res = new WorldArea(_theLabel.getBounds());
-		res.extend(_theShape.getBounds());
-		return res;
-	}
-
-	/**
-	 * method to fulfil requirements of WatchableList
-	 */
-	@Override
-	public final java.awt.Color getColor()
-	{
-		return super.getColor();
-	}
-
-	@Override
-	public final double getCourse()
-	{
-		// null implementation, not valid
-		return 0;
-	}
-
-	/**
-	 * get the depth of the object. In this case, return the depth of the centre
-	 * of the area covered by the shape
-	 * 
-	 * @return the depth
-	 */
-	@Override
-	public final double getDepth()
-	{
-		// return the centre of the shape
-		return _theShape.getBounds().getCentre().getDepth();
-	}
-
-	@Override
-	public final HiResDate getEndDTG()
-	{
-		// return value, or -1 to indicate not time related
-		return _theEndDTG;
-	}
-
-	public final Font getFont()
-	{
-		return _theLabel.getFont();
-	}
-
-	@Override
-	public final Editable.EditorType getInfo()
+	public Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)
-			_myEditor = new ShapeInfo(this, this.getName());
+			_myEditor = new PolygonWrapperInfo(this, this.getName());
 
 		return _myEditor;
 	}
 
-	@Override
-	public final java.util.Collection<Editable> getItemsBetween(
-			final HiResDate start, final HiResDate end)
+	public String toString()
 	{
-		java.util.Vector<Editable> res = null;
+		return getName() + " (" + (getPoly().getPoints().size()) + " nodes)";
+	}
 
-		final HiResDate myStart = getStartDTG();
-		final HiResDate myEnd = getEndDTG();
+	// /////////////////////////////////
+	// LAYER SUPPORT
+	// ////////////////////////////////
 
-		// do we have any time data at all?
-		if (myStart == null)
+	@Override
+	public void exportShape()
+	{
+		MWC.Utilities.ReaderWriter.ImportManager
+				.exportThis(";;Layer: " + getName());
+
+		Editable pl = this;
+		if (pl instanceof Exportable)
 		{
-			// no, so just return ourselves anyway
-			res = new Vector<Editable>(0, 1);
-			res.add(this);
-			return res;
+			Exportable e = (Exportable) pl;
+			e.exportThis();
 		}
-
-		boolean done = false; // whether we have been able to process the
-		// times
-
-		// do we have an end time?
-		if (myEnd != null)
-		{
-			// see if our time period overlaps
-			if ((myStart.lessThan(end)) && (myEnd.greaterThan(start)))
-			{
-				res = new Vector<Editable>(0, 1);
-				res.addElement(this);
-			}
-
-			done = true;
-		}
-
-		// ok, handled instance where we have start and end times. if we just
-		// have a start time, see if it is inside the valid period
-		if (!done)
-		{
-
-			// use the start time as a centre time
-			if ((myStart.greaterThanOrEqualTo(start))
-					&& (myStart.lessThanOrEqualTo(end)))
-			{
-				res = new Vector<Editable>(0, 1);
-				res.addElement(this);
-			}
-			else
-			{
-				// no, it's outside the period
-			}
-
-		}
-
-		return res;
-	}
-
-	public final String getLabel()
-	{
-		return _theLabel.getString();
-	}
-
-	public final java.awt.Color getLabelColor()
-	{
-		return _theLabel.getColor();
-	}
-
-	public final Integer getLabelLocation()
-	{
-		return _theLabel.getRelativeLocation();
-	}
-
-	/**
-	 * whether to show the label for this shape
-	 */
-	public final boolean getLabelVisible()
-	{
-		return _theLabel.getVisible();
-	}
-
-	public final int getLineStyle()
-	{
-		return _lineStyle;
-	}
-
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 * 
-	 * @return
-	 */
-	public int getLineThickness()
-	{
-		return _lineWidth;
 	}
 
 	@Override
-	public final WorldLocation getLocation()
+	public void exportThis()
 	{
-		return this.getBounds().getCentre();
+		// TODO Auto-generated method stub
+		super.exportThis();
 	}
 
 	@Override
-	public final String getName()
+	public void append(Layer other)
 	{
-		return "Polygon " + _theShape.getPoints().size() + " points";
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
+	public void setName(String val)
 	{
-
-		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[]
-		{};
-
-		// special case, have we been asked for an invalid time period?
-		if (DTG == TimePeriod.INVALID_DATE)
-		{
-			// yes, just return ourselves
-			return new Watchable[]
-			{ this };
-		}
-		else
-		{
-			// do we know about time?
-			if (this.getStartDTG() != null)
-			{
-				// do we have a finish time
-				if (getEndDTG() != null)
-				{
-					if ((getStartDTG().lessThan(DTG)) && (getEndDTG().greaterThan(DTG)))
-					{
-						// yes, it's within our time period
-						res = new MWC.GenericData.Watchable[]
-						{ this };
-					}
-					else
-					{
-						// no, it's outside our time period
-						// - just return our default res
-					}
-				}
-				else
-				{
-					// no end value, see if we are within time threshold of
-					// supplied time
-
-					// find how far we are from the DTG
-					final long diff = Math.abs(DTG.getMicros()
-							- this.getStartDTG().getMicros());
-
-					// is this within our threshold?
-					if (diff <= getThreshold())
-						res = new MWC.GenericData.Watchable[]
-						{ this };
-					else
-						res = new MWC.GenericData.Watchable[]
-						{};
-				}
-			}
-			else
-			{
-				// so, we don't have a start time.
-				// are we also missing the end time?
-				if (_theEndDTG == null)
-				{
-					// yup, say we were nearest
-					res = new MWC.GenericData.Watchable[]
-					{ this };
-				}
-			}// this whole object is a watchable
-
-		}
-
-		return res;
-	}
-
-	/**
-	 * get the shape we are containing
-	 */
-	public final MWC.GUI.Shapes.PlainShape getShape()
-	{
-		return _theShape;
+		getPoly().setName(val);
 	}
 
 	@Override
-	public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
+	public void setLabel(String val)
 	{
-		return null;
+		setName(val);
+		super.setLabel(val);
 	}
 
 	@Override
-	public final double getSpeed()
-	{
-		// null implementation, not valid
-		return 0;
-	}
-
-	@Override
-	public final HiResDate getStartDTG()
-	{
-		// return value, or -1 to indicate not time related
-		return _theStartDTG;
-	}
-
-	/**
-	 * get the threshold for which points should be visible
-	 * 
-	 * @return time either side in milliseconds
-	 */
-	protected long getThreshold()
-	{
-		long res = MWC.GenericData.WatchableList.TIME_THRESHOLD;
-		final String appThreshold = Debrief.GUI.Frames.Application
-				.getThisProperty("STEP_THRESHOLD");
-
-		if (appThreshold != null)
-		{
-			if (appThreshold.length() > 0)
-			{
-				try
-				{
-					// get actual value (in seconds)
-					res = Long.parseLong(appThreshold);
-					// convert to micros
-					res *= 1000000;
-				}
-				catch (Exception e)
-				{
-					MWC.Utilities.Errors.Trace.trace(e,
-							"Retrieving step threshold from properties");
-				}
-			}
-
-		}
-
-		return res;
-	}
-
-	/**
-	 * method to fulfil requirements of Watchable
-	 */
-	@Override
-	public final HiResDate getTime()
-	{
-		return getStartDTG();
-	}
-
-	// ////////////////////////////////////////////////
-	// PROPERTY ACCESSORS - we're providing DTG accessor methods
-	// which start with the same phrase so that in an alphabetically
-	// sorted property editor they appear together
-	// ////////////////////////////////////////////////
-	/**
-	 * get the start time for this shape
-	 */
-	public final HiResDate getTime_Start()
-	{
-		return getStartDTG();
-	}
-
-	// ////////////////////////////////////////////////////
-	// watchableList support
-	// ///////////////////////////////////////////////////
-
-	/**
-	 * get the end time for this shape
-	 */
-	public final HiResDate getTimeEnd()
-	{
-		return getEndDTG();
-	}
-
-	// ///////////////////////////////////
-	// manage the time period
-	// ///////////////////////////////////
-	public final TimePeriod getTimePeriod()
-	{
-		TimePeriod res = null;
-
-		if (getStartDTG() != null)
-		{
-			res = new TimePeriod.BaseTimePeriod(getStartDTG(), getEndDTG());
-		}
-		return res;
-	}
-
-	/**
-	 * does this item have an editor?
-	 */
-	@Override
-	public final boolean hasEditor()
+	public boolean hasOrderedChildren()
 	{
 		return true;
 	}
 
 	@Override
-	public final void paint(final CanvasType dest)
+	@FireExtended
+	public void add(Editable point)
 	{
-		// check if we are visible
-		if (getVisible())
+		if (point instanceof PolygonNode)
 		{
-			// sort out the line style
-			dest.setLineStyle(_lineStyle);
-
-			// store the current line width
-			float lineWid = dest.getLineWidth();
-
-			// and the line width
-			dest.setLineWidth(_lineWidth);
-
-			// first paint the symbol
-			_theShape.paint(dest);
-
-			// and restore the line style
-			dest.setLineStyle(CanvasType.SOLID);
-
-			// and restore the line width
-			dest.setLineWidth(lineWid);
-
-			// now paint the text
-			_theLabel.paint(dest);
+			getPoly().add(point);
 		}
 	}
 
-	// ////////////////////////////////////////////////////
-	// property change support
-	// ///////////////////////////////////////////////////
 	@Override
-	public final void propertyChange(final PropertyChangeEvent p1)
+	@FireExtended
+	public void removeElement(Editable point)
 	{
-		if (p1.getSource() == _theShape)
+		if (point instanceof PolygonNode)
 		{
-			if (p1.getPropertyName().equals(LOCATION_CHANGED))
-			{
-				updateLabelLocation();
-
-				if (_theShape != null)
-					if (_theShape.getBounds() != null)
-						this.getInfo().fireChanged(this, LOCATION_CHANGED, null,
-								_theShape.getBounds().getCentre());
-
-			}
+			getPoly().removeElement(point);
 		}
 	}
 
-	/**
-	 * find the range from this shape to some point
-	 */
 	@Override
-	public final double rangeFrom(final WorldLocation other)
+	public Enumeration<Editable> elements()
 	{
-		return Math.min(_theLabel.rangeFrom(other), _theShape.rangeFrom(other));
+		Vector<PolygonNode> nodes = getPoly().getPoints();
+		Vector<Editable> editables = new Vector<Editable>();
+		editables.addAll(nodes);
+		return editables.elements();
 	}
 
-	@Override
-	@FireReformatted
-	public final void setColor(final java.awt.Color theCol)
-	{
-		super.setColor(theCol);
-
-		// and set the colour of the shape
-		_theShape.setColor(theCol);
-
-		// don't forget the color of the label
-		_theLabel.setColor(theCol);
-	}
-
-	public final void setFont(final Font theFont)
-	{
-		_theLabel.setFont(theFont);
-	}
-
-	@FireReformatted
-	public final void setLabel(final String val)
-	{
-		_theLabel.setString(val);
-	}
-
-	public final void setLabelColor(final java.awt.Color theCol)
-	{
-		_theLabel.setColor(theCol);
-	}
-
-	// ////////////////////////////////////////////////////
-	// watchable support
-	// ///////////////////////////////////////////////////
-
-	public final void setLabelLocation(final Integer val)
-	{
-		_theLabel.setRelativeLocation(val);
-
-		// and update the label relative to the shape if necessary
-		updateLabelLocation();
-	}
-
-	/**
-	 * whether to show the label for this shape
-	 */
-	public final void setLabelVisible(final boolean val)
-	{
-		_theLabel.setVisible(val);
-
-		// ok, inform any listeners
-		getSupport().firePropertyChange(PolygonWrapper.LABEL_VIS_CHANGED, null,
-				new Boolean(val));
-
-	}
-
-	public final void setLineStyle(final int style)
-	{
-		_lineStyle = style;
-	}
-
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 */
-	public void setLineThickness(int val)
-	{
-		_lineWidth = val;
-	}
-
-	/**
-	 * set the start time for this shape
-	 */
-	public final void setTime_Start(HiResDate val)
-	{
-		_theStartDTG = val;
-	}
-
-	/**
-	 * set the start time for this shape
-	 */
-	public final void setTimeEnd(HiResDate val)
-	{
-		_theEndDTG = val;
-	}
-
-	public final void setTimePeriod(final TimePeriod val)
-	{
-		this.setTime_Start(val.getStartDTG());
-		this.setTimeEnd(val.getEndDTG());
-	}
-
-	@Override
-	public void shift(WorldLocation feature, WorldVector vector)
-	{
-		// ok, move the indicated point
-		WorldLocation theLoc = feature;
-		theLoc.addToMe(vector);
-	}
-
-	@Override
-	public void shift(WorldVector vector)
-	{
-		// ok - apply the offset
-		DraggableItem dragee = _theShape;
-		dragee.shift(vector);
-	}
-
-	@Override
-	public final String toString()
-	{
-		return getName();
-	}
-
-	private void updateLabelLocation()
-	{
-		final WorldLocation newLoc = _theShape.getAnchor(_theLabel
-				.getRelativeLocation().intValue());
-		_theLabel.setLocation(newLoc);
-	}
 }

@@ -215,7 +215,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		sb.append("Shape");
 		sb.append(System.currentTimeMillis());
 
-		_myName = sb.toString();
+		setName(sb.toString());
 
 		// declare the property support
 		_pSupport = new PropertyChangeSupport(this);
@@ -306,7 +306,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * 
 	 * @return String representing name of this shape
 	 */
-	final public String getName()
+	public String getName()
 	{
 		return _myName;
 	}
