@@ -600,8 +600,10 @@
 				</xs:sequence>
 				<xs:attribute name="ArrowAtEnd" type="xs:boolean" use="optional">
 					<xs:annotation>
-						<xs:documentation>Whether to draw an arrow at the end of the line</xs:documentation>
-					</xs:annotation></xs:attribute>
+						<xs:documentation>Whether to draw an arrow at the end of the line
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -618,8 +620,21 @@
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="Closed" type="xs:boolean" />
+				<xs:attribute name="Closed" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>Whether to draw an extra line from the last
+							point back to the origin
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="Filled" type="xs:boolean" />
+				<xs:attribute name="LabelNodes" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to show a text label for each polygon
+							node
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
