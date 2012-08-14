@@ -264,6 +264,7 @@ import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.ExportLayerAsSingleItem;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
@@ -933,9 +934,9 @@ public class ImportReplay extends PlainImporterBase
 		checkImporters();
 
 		// just see if it is a track which we are trying to export
-		if (item instanceof Layer)
+		if ((item instanceof Layer) && !(item instanceof ExportLayerAsSingleItem))
 		{
-
+			// ok, work through the layer
 			Layer tw = (Layer) item;
 			// ha-ha! export the points one at a time
 			java.util.Enumeration<Editable> iter = tw.elements();
