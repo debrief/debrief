@@ -88,7 +88,8 @@ public abstract class PlainImporterBase implements PlainImporter
 	 */
 	protected String[] _myTypes;
 
-	/** the block of text we're collating
+	/**
+	 * the block of text we're collating
 	 * 
 	 */
 	private StringBuffer _beingExported;
@@ -227,7 +228,8 @@ public abstract class PlainImporterBase implements PlainImporter
 		return counter;
 	}
 
-	/** get everything ready for the export
+	/**
+	 * get everything ready for the export
 	 * 
 	 * @param item
 	 */
@@ -244,29 +246,36 @@ public abstract class PlainImporterBase implements PlainImporter
 	 */
 	public void endExport(Plottable item)
 	{
-		// get the clipboard;
-		java.awt.datatransfer.Clipboard cl = Toolkit.getDefaultToolkit().getSystemClipboard();
-	
-		// create the string to write
-		java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(
-				_beingExported.toString());
-		
-		// dump it on there.
-		cl.setContents(ss, ss);
+		// check the export worked
+		if (_beingExported != null)
+		{
+
+			// get the clipboard;
+			java.awt.datatransfer.Clipboard cl = Toolkit.getDefaultToolkit()
+					.getSystemClipboard();
+
+			// create the string to write
+			java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(
+					_beingExported.toString());
+
+			// dump it on there.
+			cl.setContents(ss, ss);
+		}
 	}
 
-	/** append this line to what we're building up
+	/**
+	 * append this line to what we're building up
 	 * 
 	 * @param txt
 	 */
 	protected void addThisToExport(String txt)
-	{	
+	{
 		// initialise the export string?
-		if(_beingExported == null)
+		if (_beingExported == null)
 			_beingExported = new StringBuffer();
 		else
 			_beingExported.append('\n');
-		
+
 		_beingExported.append(txt);
 	}
 }
