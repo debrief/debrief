@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Plottable;
@@ -19,7 +20,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
 public class PlanningSegment extends TrackSegment implements
-		Cloneable, Editable.DoNoInspectChildren
+		Cloneable, Editable.DoNoInspectChildren, CreateEditorForParent
 {
 
 	/** special case that gives us a leg that goes back to the start
@@ -374,6 +375,12 @@ public class PlanningSegment extends TrackSegment implements
 		
 		
 		return res;
+	}
+
+	@Override
+	public Editable getParent()
+	{
+		return getWrapper();
 	}
 
 }

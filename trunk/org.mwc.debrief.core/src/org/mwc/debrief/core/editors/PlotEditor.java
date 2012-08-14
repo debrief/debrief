@@ -95,16 +95,15 @@ import org.osgi.framework.Bundle;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.PlanningSegment;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -954,26 +953,36 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					public void doSupplementalRightClickProcessing(
 							MenuManager menuManager, Plottable selected, Layer theParentLayer)
 					{
-						// hmm, is it a fix. if it is, also flash up the track
-						if (selected instanceof FixWrapper)
+						if(selected instanceof CreateEditorForParent)
 						{
 							// get the parent track
-							FixWrapper fix = (FixWrapper) selected;
-							TrackWrapper parent11 = fix.getTrackWrapper();
+							CreateEditorForParent editor =  (CreateEditorForParent) selected;
+							Editable parent11 = editor.getParent();
 							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
 							{ parent11 }, new Layer[]
 							{ theParentLayer }, new Layer[]
 							{ theParentLayer }, getLayers(), true);
 						}
-						else if (selected instanceof PlanningSegment)
-						{
-							PlanningSegment ps = (PlanningSegment) selected;
-							TrackWrapper parent11 = ps.getWrapper();
-							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
-							{ parent11 }, new Layer[]
-							{ theParentLayer }, new Layer[]
-							{ theParentLayer }, getLayers(), true);
-						}
+//						// hmm, is it a fix. if it is, also flash up the track
+//						if (selected instanceof FixWrapper)
+//						{
+//							// get the parent track
+//							FixWrapper fix = (FixWrapper) selected;
+//							TrackWrapper parent11 = fix.getTrackWrapper();
+//							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
+//							{ parent11 }, new Layer[]
+//							{ theParentLayer }, new Layer[]
+//							{ theParentLayer }, getLayers(), true);
+//						}
+//						else if (selected instanceof PlanningSegment)
+//						{
+//							PlanningSegment ps = (PlanningSegment) selected;
+//							TrackWrapper parent11 = ps.getWrapper();
+//							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
+//							{ parent11 }, new Layer[]
+//							{ theParentLayer }, new Layer[]
+//							{ theParentLayer }, getLayers(), true);
+//						}
 						
 					}
 				};
