@@ -85,7 +85,6 @@ public class DebriefLayerHandler extends
 				addThis(plottable);
 			}
 		});
-
 		addHandler(new LabelHandler()
 		{
 			public void addPlottable(MWC.GUI.Plottable plottable)
@@ -178,6 +177,7 @@ public class DebriefLayerHandler extends
 				{
 				}
 			});
+
 			_myExporters.put(Debrief.Wrappers.LabelWrapper.class, new LabelHandler()
 			{
 				public void addPlottable(MWC.GUI.Plottable plottable)

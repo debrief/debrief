@@ -5,12 +5,15 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -27,8 +30,14 @@ public class PolygonShape extends PlainShape implements Editable,
 	// member variables
 	// ////////////////////////////////////////////////
 
-	public static class PolygonNode implements Editable
+	public static class PolygonNode implements Editable, Plottable,
+			CreateEditorForParent, Serializable
 	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		// ////////////////////////////////////////////////////
 		// bean info for this class
@@ -64,12 +73,32 @@ public class PolygonShape extends PlainShape implements Editable,
 
 		private String _myName;
 		private WorldLocation _myLocation;
-		private EditorType _myEditor;
+		private transient EditorType _myEditor;
+		private transient PolygonShape _myParent;
 
-		public PolygonNode(String name, WorldLocation location)
+		public PolygonNode(String name, WorldLocation location, PolygonShape parent)
 		{
 			_myName = name;
 			_myLocation = location;
+			_myParent = parent;
+		}
+
+		@Override
+		public String toString()
+		{
+			return getName();
+		}
+
+		/**
+		 * self-destruct
+		 * 
+		 */
+		public void close()
+		{
+			_myName = null;
+			_myLocation = null;
+			_myEditor = null;
+			_myParent = null;
 		}
 
 		@Override
@@ -103,6 +132,49 @@ public class PolygonShape extends PlainShape implements Editable,
 			return _myEditor;
 		}
 
+		@Override
+		public int compareTo(Plottable o)
+		{
+			return this.toString().compareTo(o.toString());
+		}
+
+		@Override
+		public void paint(CanvasType dest)
+		{
+			// ingore
+			System.err.println("a polygon node should not be painting itself!");
+		}
+
+		@Override
+		public WorldArea getBounds()
+		{
+			return new WorldArea(_myLocation, _myLocation);
+		}
+
+		@Override
+		public boolean getVisible()
+		{
+			return true;
+		}
+
+		@Override
+		public void setVisible(boolean val)
+		{
+			// ignore
+		}
+
+		@Override
+		public double rangeFrom(WorldLocation other)
+		{
+			return _myLocation.rangeFrom(other);
+		}
+
+		@Override
+		public Editable getParent()
+		{
+			return _myParent;
+		}
+
 	}
 
 	/**
@@ -132,6 +204,12 @@ public class PolygonShape extends PlainShape implements Editable,
 	 * 
 	 */
 	private boolean _closePolygon = true;
+
+	/**
+	 * whether to show labels for the nodes
+	 * 
+	 */
+	private boolean _showLabels = true;
 
 	// ////////////////////////////////////////////////
 	// constructor
@@ -190,7 +268,8 @@ public class PolygonShape extends PlainShape implements Editable,
 
 			while (points.hasNext())
 			{
-				WorldLocation next = (WorldLocation) points.next().getLocation();
+				PolygonNode node = points.next();
+				WorldLocation next = node.getLocation();
 
 				// convert to screen
 				Point thisP = dest.toScreen(next);
@@ -201,6 +280,13 @@ public class PolygonShape extends PlainShape implements Editable,
 
 				// move the counter
 				counter++;
+
+				if (_showLabels)
+				{
+					// and show this label
+					int yPos = thisP.y + 5;
+					dest.drawText(node.getName(), thisP.x + 5, yPos);
+				}
 			}
 
 			// ok, now plot it
@@ -225,6 +311,16 @@ public class PolygonShape extends PlainShape implements Editable,
 		// and inform the parent (so it can move the label)
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 
+	}
+
+	public boolean getShowNodeLabels()
+	{
+		return _showLabels;
+	}
+
+	public void setShowNodeLabels(boolean showLabels)
+	{
+		_showLabels = showLabels;
 	}
 
 	/**
@@ -345,8 +441,6 @@ public class PolygonShape extends PlainShape implements Editable,
 		return _myEditor;
 	}
 
-	
-	
 	/**
 	 * get the 'anchor point' for any labels attached to this shape
 	 */
@@ -389,6 +483,7 @@ public class PolygonShape extends PlainShape implements Editable,
 			{
 				PropertyDescriptor[] res =
 				{ prop("Filled", "whether to fill the polygon"),
+						prop("ShowNodeLabels", "whether to label the nodes"),
 						prop("Closed", "whether to close the polygon (ignored if filled)") };
 				return res;
 
@@ -489,7 +584,18 @@ public class PolygonShape extends PlainShape implements Editable,
 	public void addNode()
 	{
 		WorldLocation theLoc = getBounds().getCentreAtSurface();
-		PolygonNode newNode = new PolygonNode("" + (_nodes.size() + 1), theLoc);
+
+		final String theName;
+		if (_nodes.size() == 0)
+			theName = "1";
+		else
+		{
+			String lastName = _nodes.lastElement().getName();
+			int nameCtr = Integer.parseInt(lastName);
+			theName = "" + (nameCtr + 1);
+		}
+
+		PolygonNode newNode = new PolygonNode(theName, theLoc, this);
 		_nodes.add(newNode);
 	}
 
@@ -513,18 +619,25 @@ public class PolygonShape extends PlainShape implements Editable,
 	}
 
 	@Override
+	@FireExtended
 	public void add(Editable point)
 	{
-		// TODO Auto-generated method stub
-
+		if (point instanceof PolygonNode)
+		{
+			_nodes.add((PolygonNode) point);
+			calcPoints();
+		}
 	}
 
 	@Override
+	@FireExtended
 	public void removeElement(Editable point)
 	{
 		if (point instanceof PolygonNode)
 		{
 			_nodes.remove(point);
+			PolygonNode node = (PolygonNode) point;
+			node.close();
 		}
 		else
 		{

@@ -9,6 +9,7 @@ package Debrief.ReaderWriter.XML.Shapes;
  * @version 1.0
  */
 
+import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -142,13 +143,21 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
 
   }
-
-  public void elementClosed()
+  
+  
+  protected ShapeWrapper getWrapper()
   {
     MWC.GUI.Shapes.PlainShape shape = getShape();
     shape.setColor(_col);
     Debrief.Wrappers.ShapeWrapper sw = new Debrief.Wrappers.ShapeWrapper(_myType, shape, _col, null);
+    return sw; 	
+  }
 
+  public void elementClosed()
+  {
+
+  	ShapeWrapper sw = getWrapper();
+  	
     if (_label != null)
     {
       sw.setLabel(_label);

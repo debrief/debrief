@@ -16,8 +16,9 @@ import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
-import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
+import MWC.GUI.Shapes.ChartFolio;
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.TacticalData.NarrativeEntry;
 
 public class DebriefImageHelper implements ViewLabelImageHelper
@@ -51,9 +52,11 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			res = CorePlugin.getImageDescriptor("icons/Location.png");
 		else if (editable instanceof ShapeWrapper)
 			res = CorePlugin.getImageDescriptor("icons/shape.gif");
+		else if (editable instanceof PolygonNode)
+			res = CorePlugin.getImageDescriptor("icons/fix.gif");
 		else if (editable instanceof LabelWrapper)
 			res = CorePlugin.getImageDescriptor("icons/shape.gif");
-
+		 
 		return res;
 	}
 
