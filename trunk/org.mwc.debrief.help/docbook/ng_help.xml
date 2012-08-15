@@ -6182,16 +6182,13 @@ and so on....</programlisting></para>
           be. You'll make more detailed changes to the track location once the track is
           created.</para>
         <para>Next, you must select "Create Track Segment" from <application>Debrief</application>'s
-          Drawing Toolbar.<figure>
-            <title>ETOPO2 data sources</title>
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/AddSegment.png" width="40%"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure></para>
+          Drawing Toolbar.<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/AddSegment.png" width="40%"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
         <para>Next you'll be invited to select which parent track to add the track segment to. In
           this instance, we don't have an existing track, so select "[New Track...]" from the
           dialog. Clearly if you were extending an existing planning track you'd select it.<screenshot>
@@ -6230,7 +6227,7 @@ and so on....</programlisting></para>
       </sect1>
       <sect1>
         <title>Manipulating tracks</title>
-        <para>One you've created one or more track legs you can start editing them. There are three
+        <para>One you've created one or more track legs you can start editing them. There are four
           ways to edit a leg:<variablelist>
             <varlistentry>
               <term>Properties Window</term>
@@ -6269,14 +6266,30 @@ and so on....</programlisting></para>
                     <imageobject>
                       <imagedata fileref="figures/DragComponent.png"/>
                     </imageobject>
-                  </inlinemediaobject> and then drag an end of a track leg to rotate it.</para>
+                  </inlinemediaobject> and then drag an end of a track leg to rotate it.<note>
+                    <para>It isn't possible to drag to change the length of a leg - since it's
+                      unclear which of the two attributes in that segments calculation model the
+                      user intends to change. </para>
+                  </note></para>
               </listitem>
             </varlistentry>
-          </variablelist><note>
-            <para>It isn't possible to drag to change the length of a leg - since it's unclear which
-              of the two attributes in that segments calculation model the user intends to change.
-            </para>
-          </note></para>
+            <varlistentry>
+              <term>Using the Grid editor</term>
+              <listitem>
+                <para>If you open the Grid Editor (See <xref linkend="GridEditor"/>) you can view
+                  your set of legs in tabular form<screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/legsInGridEditor.png" width="80%"/>
+                      </imageobject>
+                    </mediaobject>
+                  </screenshot></para>
+                <para>Note also that the <guimenu>Grid Editor</guimenu> toolbar includes an
+                    <guimenu>Export to Clipboard</guimenu> function that will copy your legs to the
+                  clipboard in CSV format</para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
       </sect1>
       <sect1>
         <title>XY plots of planning tracks</title>

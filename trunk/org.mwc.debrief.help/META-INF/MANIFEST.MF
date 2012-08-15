@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Help Plug-in
 Bundle-SymbolicName: org.mwc.debrief.help; singleton:=true
-Bundle-Version: 1.0.89
+Bundle-Version: 1.0.90
 Bundle-Activator: org.mwc.debrief.help.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
