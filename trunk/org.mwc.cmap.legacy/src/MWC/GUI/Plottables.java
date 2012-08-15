@@ -395,6 +395,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	/**
 	 * set the name of the plottable
 	 */
+	@FireReformatted
 	public void setName(String theName)
 	{
 		_theName = theName;
