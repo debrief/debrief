@@ -125,6 +125,28 @@ public class GriddableWrapper implements GriddableSeries
 		// _item.getLayers().fireModified(_item.getTopLevelLayer());
 	}
 
+	public void fireReformatted(TimeStampedDataItem subject)
+	{
+		cachedFireReformatted(_item.getLayers(), _item.getTopLevelLayer());
+	}
+
+	private void cachedFireReformatted(final Layers layers, final Layer topLayer)
+	{
+		// create the runnable
+		Runnable runme = new Runnable()
+		{
+			public void run()
+			{
+				if (layers != null)
+					layers.fireReformatted(topLayer);
+			}
+		};
+
+		// add it to the cache
+		myStack.addEvent(runme);
+
+	}
+
 	private void cachedFireModified(final Layers layers, final Layer topLayer)
 	{
 		// create the runnable

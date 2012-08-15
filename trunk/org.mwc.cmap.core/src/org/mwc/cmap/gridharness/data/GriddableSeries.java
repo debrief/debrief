@@ -59,6 +59,7 @@ public interface GriddableSeries {
 	public void setOnlyShowVisibleItems(final boolean val);	
 
 	public void fireModified(TimeStampedDataItem subject); // indicate that a row has been changed
+	public void fireReformatted(TimeStampedDataItem subject);// indicate that a row has been reformatted
 
 	public void deleteItem(TimeStampedDataItem subject); // managed the deletion of the item, broadcasting the DELETED event
 
@@ -83,4 +84,5 @@ public interface GriddableSeries {
 	 * 		if item is not applicable to this series
 	 */
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item);
+
 }

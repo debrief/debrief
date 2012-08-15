@@ -1,6 +1,9 @@
 package org.mwc.cmap.core;
 
 import java.awt.Color;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -58,7 +61,7 @@ import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class CorePlugin extends AbstractUIPlugin
+public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 {
 
 	/**
@@ -151,11 +154,11 @@ public class CorePlugin extends AbstractUIPlugin
 	public void start(BundleContext context) throws Exception
 	{
 		super.start(context);
-		
-		
-		// hack to initialise the TIFF importers.  I believe we're having classpath issues,
+
+		// hack to initialise the TIFF importers. I believe we're having classpath
+		// issues,
 		// if we don't try to get an image reader right at the start of the app,
-    // we can't get a TIFF loader later on.
+		// we can't get a TIFF loader later on.
 		Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
 		if (!iter2.hasNext())
 		{
@@ -165,7 +168,8 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 		else
 		{
-			logError(Status.INFO, "Successfully loaded TIFF reader for Java ImageIO", null);
+			logError(Status.INFO, "Successfully loaded TIFF reader for Java ImageIO",
+					null);
 		}
 
 		// create something capable of handling legacy preferences
@@ -189,15 +193,15 @@ public class CorePlugin extends AbstractUIPlugin
 
 		// and the range calculator (it needs to know for the user pref on units)
 		rangeCalc.init(_toolParent);
-		
+
 		// and the old error logger
 		Trace.initialise(_toolParent);
-		
-		// the VPF database may wish to announce some kind of warning 
+
+		// the VPF database may wish to announce some kind of warning
 		// if it can't find it's data
 		VPFDatabaseHandler.initialise(_toolParent);
 
-    // there again, the track wrapper may have problems when it's 
+		// there again, the track wrapper may have problems when it's
 		TrackSegment.initialise(_toolParent);
 	}
 
@@ -242,6 +246,20 @@ public class CorePlugin extends AbstractUIPlugin
 		{
 			return key;
 		}
+	}
+
+	public static void writeToClipboard(String txt)
+	{
+
+		// create the clipboard buffer
+		java.awt.datatransfer.Clipboard clip = java.awt.Toolkit.getDefaultToolkit()
+				.getSystemClipboard();
+
+		// put the string in a holder
+		StringSelection sel = new java.awt.datatransfer.StringSelection(txt);
+
+		// and put it on the clipboard
+		clip.setContents(sel, null);
 	}
 
 	/**
@@ -375,8 +393,8 @@ public class CorePlugin extends AbstractUIPlugin
 		{
 
 			// get rid of the title
-			String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt
-					.length());
+			String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(),
+					txt.length());
 			StringTokenizer st = new StringTokenizer(dataPart);
 			String latP = st.nextToken(",");
 			String longP = st.nextToken(",");
@@ -384,8 +402,8 @@ public class CorePlugin extends AbstractUIPlugin
 			Double _lat = new Double(latP);
 			Double _long = new Double(longP);
 			Double _depth = new Double(depthP);
-			res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth
-					.doubleValue());
+			res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(),
+					_depth.doubleValue());
 		}
 		else
 		{
@@ -429,12 +447,16 @@ public class CorePlugin extends AbstractUIPlugin
 					Double longMin = Double.parseDouble(st.nextToken());
 					Double longSec = Double.parseDouble(st.nextToken());
 					char longHem = st.nextToken().charAt(0);
-					res = new WorldLocation(latDegs, latMin, latSec, latHem, longDegs, longMin, longSec, longHem, 0);
+					res = new WorldLocation(latDegs, latMin, latSec, latHem, longDegs,
+							longMin, longSec, longHem, 0);
 				}
 				catch (Exception e)
 				{
-					CorePlugin.logError(Status.ERROR,
-							"whilst trying to get (dd mm ss.ss H dd mm ss.ss h) location off clipboard", e);
+					CorePlugin
+							.logError(
+									Status.ERROR,
+									"whilst trying to get (dd mm ss.ss H dd mm ss.ss h) location off clipboard",
+									e);
 				}
 			}
 			else if (numTokens == 6)
@@ -447,12 +469,16 @@ public class CorePlugin extends AbstractUIPlugin
 					Double longDegs = Double.parseDouble(st.nextToken());
 					Double longMin = Double.parseDouble(st.nextToken());
 					char longHem = st.nextToken().charAt(0);
-					res = new WorldLocation(latDegs, latMin, 0, latHem, longDegs, longMin, 0, longHem, 0);
+					res = new WorldLocation(latDegs, latMin, 0, latHem, longDegs,
+							longMin, 0, longHem, 0);
 				}
 				catch (Exception e)
 				{
-					CorePlugin.logError(Status.ERROR,
-							"whilst trying to get (dd mm.mmm H dd mm.mmm h) location off clipboard", e);
+					CorePlugin
+							.logError(
+									Status.ERROR,
+									"whilst trying to get (dd mm.mmm H dd mm.mmm h) location off clipboard",
+									e);
 				}
 			}
 		}
@@ -507,7 +533,7 @@ public class CorePlugin extends AbstractUIPlugin
 					message, exception);
 			singleton.getLog().log(stat);
 		}
-		
+
 		// also throw it to the console
 		if (exception != null)
 			exception.printStackTrace();
@@ -573,12 +599,14 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void showMessage(final String title, final String message)
 	{
-	  Display.getDefault().asyncExec(new Runnable() {
-	    @Override
-	    public void run() {
-	      MessageDialog.openInformation(null, title, message);
-	    }
-	  });
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openInformation(null, title, message);
+			}
+		});
 	}
 
 	/**
@@ -691,6 +719,13 @@ public class CorePlugin extends AbstractUIPlugin
 				.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
 		return noSeconds ? SexagesimalSupport._DD_MM_MMM
 				: SexagesimalSupport._DD_MM_SS_SSS;
+	}
+
+	@Override
+	public void lostOwnership(java.awt.datatransfer.Clipboard arg0,
+			Transferable arg1)
+	{
+		// don't worry, just ignore it
 	}
 
 }

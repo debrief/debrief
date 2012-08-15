@@ -1,5 +1,7 @@
 package org.mwc.cmap.grideditor.command;
 
+import java.lang.reflect.Method;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,6 +10,7 @@ import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 import org.mwc.cmap.gridharness.data.UnitsSet;
 import org.mwc.cmap.gridharness.data.ValueInUnits;
 
+import MWC.GUI.FireReformatted;
 import MWC.GUI.TimeStampedDataItem;
 
 
@@ -44,6 +47,16 @@ public class SetDescriptorValueOperation extends AbstractGridEditorOperation {
 		BeanUtil.setItemValue(subject, getOperationEnvironment().getDescriptor(), myNewValue);
 		EnvironmentState resultState = new ElementHasValueState(subject, getOperationEnvironment().getDescriptor());
 		if (myFireRefresh) {
+			
+			
+			String setterName = BeanUtil.getSetterName(getOperationEnvironment().getDescriptor());
+			Method setter = BeanUtil.getSetter(subject, getOperationEnvironment().getDescriptor(), setterName);
+
+			if (setter.isAnnotationPresent(FireReformatted.class))
+			{
+				getOperationEnvironment().getSeries().fireReformatted(subject);
+			}
+			
 			getOperationEnvironment().getSeries().fireModified(subject);
 		}
 		return resultState;

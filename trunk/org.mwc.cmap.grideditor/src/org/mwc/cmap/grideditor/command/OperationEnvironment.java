@@ -17,9 +17,9 @@ public class OperationEnvironment {
 
 	private final IUndoContext myUndoContext;
 
-	public OperationEnvironment(IUndoContext undoContext, GriddableSeries series) {
-		this(undoContext, series, null, null);
-	}
+//	public OperationEnvironment(IUndoContext undoContext, GriddableSeries series) {
+//		this(undoContext, series, null, null);
+//	}
 
 	public OperationEnvironment(IUndoContext undoContext, GriddableSeries series, TimeStampedDataItem optionalSubject) {
 		this(undoContext, series, optionalSubject, null);

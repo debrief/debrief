@@ -78,6 +78,11 @@ public class PositionList implements GriddableSeries {
 	public void fireModified(TimeStampedDataItem subject) {
 		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, subject);
 	}
+	
+	public void fireReformatted(TimeStampedDataItem subject) {
+		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, subject);
+	}
+
 
 	public GriddableItemDescriptor[] getAttributes() {
 		if (_myAttributes == null) {

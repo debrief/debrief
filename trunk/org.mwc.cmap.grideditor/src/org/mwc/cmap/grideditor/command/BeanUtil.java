@@ -106,7 +106,8 @@ public class BeanUtil
 		}
 		return resultType.cast(result);
 	}
-
+	
+	
 	/**
 	 * Reflectively invokes setter associated with given
 	 * {@link GriddableItemDescriptor} on given subject
@@ -169,7 +170,28 @@ public class BeanUtil
 		}
 
 		String setterName = getSetterName(descriptor);
+		Method setter = getSetter(item, descriptor, setterName);
+
+		try
+		{
+			setter.invoke(item, value);
+		}
+		catch (Exception e)
+		{
+			throw new IllegalArgumentException(//
+					"Can't invoke setter " + setterName + //
+							" for object " + item + //
+							" of class " + item.getClass() + //
+							" and actual parameter : " + value, e);
+		}
+	}
+
+
+	public static Method getSetter(TimeStampedDataItem item,
+			GriddableItemDescriptor descriptor, String setterName)
+	{
 		Method setter = null;
+		
 		try
 		{
 			setter = item.getClass().getMethod(setterName, descriptor.getType());
@@ -208,19 +230,7 @@ public class BeanUtil
 							" is not applicable to item: " + item.getClass() + //
 							", there are no setters with name : " + setterName + //
 							" and parameter type : " + descriptor.getType());
-
-		try
-		{
-			setter.invoke(item, value);
-		}
-		catch (Exception e)
-		{
-			throw new IllegalArgumentException(//
-					"Can't invoke setter " + setterName + //
-							" for object " + item + //
-							" of class " + item.getClass() + //
-							" and actual parameter : " + value, e);
-		}
+		return setter;
 	}
 
 	public static Object getItemValue(TimeStampedDataItem item,
@@ -234,7 +244,7 @@ public class BeanUtil
 		return "get" + capitalize(descriptor.getName());
 	}
 
-	private static String getSetterName(GriddableItemDescriptor descriptor)
+	public static String getSetterName(GriddableItemDescriptor descriptor)
 	{
 		return "set" + capitalize(descriptor.getName());
 	}

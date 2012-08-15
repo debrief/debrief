@@ -594,7 +594,7 @@ public class EditableWrapper implements IPropertySource
 			if (_wholeLayers != null)
 			{
 				// right, we can fire a change if we like. have a look
-				Annotation[] ann = _property.getAnnotationsForGetter();
+				Annotation[] ann = _property.getAnnotationsForSetter();
 				if ((ann != null) && (ann.length > 0))
 				{
 					for (int i = 0; i < ann.length; i++)
@@ -636,7 +636,7 @@ public class EditableWrapper implements IPropertySource
 					_property.getDisplayName(), _newValue, _oldValue);
 
 			// right, we can fire a change if we like. have a look
-			Annotation[] ann = _property.getAnnotationsForGetter();
+			Annotation[] ann = _property.getAnnotationsForSetter();
 			if ((ann != null) && (ann.length > 0))
 			{
 				for (int i = 0; i < ann.length; i++)
@@ -690,5 +690,4 @@ public class EditableWrapper implements IPropertySource
 		}
 
 	}
-
 }

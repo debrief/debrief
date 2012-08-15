@@ -19,6 +19,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.grideditor.data.GriddableWrapper;
 import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
 
+import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
 
 public class GridEditorView extends ViewPart
@@ -83,9 +84,14 @@ public class GridEditorView extends ViewPart
 		if (firstElement instanceof EditableWrapper)
 		{
 			EditableWrapper wrapped = (EditableWrapper) firstElement;
-			if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
+			Object value = wrapped.getEditableValue();
+			if (wrapped != null)
 			{
-				res = new GriddableWrapper(wrapped);
+				if ((value instanceof GriddableSeriesMarker)
+						&& !(value instanceof Editable.DoNoInspectChildren))
+				{
+					res = new GriddableWrapper(wrapped);
+				}
 			}
 		}
 		else
@@ -97,10 +103,15 @@ public class GridEditorView extends ViewPart
 				EditableWrapper wrapped = (EditableWrapper) is
 						.getAdapter(EditableWrapper.class);
 				if (wrapped != null)
-					if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
+				{
+					Object value = wrapped.getEditableValue();
+
+					if ((value instanceof GriddableSeriesMarker)
+							&& !(value instanceof Editable.DoNoInspectChildren))
 					{
 						res = new GriddableWrapper(wrapped);
 					}
+				}
 			}
 		}
 
@@ -140,11 +151,11 @@ public class GridEditorView extends ViewPart
 		{
 			return;
 		}
-		
+
 		// am I even tracking the selection?
-		if(!myUI.getTable().isTrackingSelection())
+		if (!myUI.getTable().isTrackingSelection())
 			return;
-		
+
 		GriddableWrapper input = extractGriddableSeries(actualSelection);
 
 		if (input == null)

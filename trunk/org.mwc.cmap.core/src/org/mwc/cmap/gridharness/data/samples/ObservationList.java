@@ -16,8 +16,8 @@ import org.mwc.cmap.gridharness.data.WorldDistance2;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 
-
-public class ObservationList implements GriddableSeries {
+public class ObservationList implements GriddableSeries
+{
 
 	private GriddableItemDescriptor[] _myAttributes;
 
@@ -30,71 +30,95 @@ public class ObservationList implements GriddableSeries {
 	private java.beans.PropertyChangeSupport _pSupport;
 
 	@SuppressWarnings("unchecked")
-	public ObservationList(String name, Vector<TimeStampedDataItem> positions) {
+	public ObservationList(String name, Vector<TimeStampedDataItem> positions)
+	{
 		_myName = name;
 		_myData = (Vector<TimeStampedDataItem>) positions.clone();
 		_myDataRO = Collections.unmodifiableList(_myData);
 		_pSupport = new PropertyChangeSupport(this);
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
+	public void addPropertyChangeListener(PropertyChangeListener listener)
+	{
 		_pSupport.addPropertyChangeListener(listener);
 	}
 
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
+	public void removePropertyChangeListener(PropertyChangeListener listener)
+	{
 		_pSupport.removePropertyChangeListener(listener);
 	}
 
-	public void makeSubtleChange() {
+	public void makeSubtleChange()
+	{
 		// choose object fairly near top
 		int range = Math.min(_myData.size(), 10);
-		Observation thisP = (Observation) _myData.elementAt((int) (Math.random() * range));
+		Observation thisP = (Observation) _myData
+				.elementAt((int) (Math.random() * range));
 		thisP.setBearing(thisP.getBearing() + 1.4 * (Math.random() > 0.5 ? 1 : -1));
 		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, thisP);
 	}
 
-	public void deleteItem(TimeStampedDataItem subject) {
+	public void deleteItem(TimeStampedDataItem subject)
+	{
 		int index = _myData.indexOf(subject);
-		if (index < 0) {
+		if (index < 0)
+		{
 			throw new NoSuchElementException();
 		}
 		_myData.remove(subject);
 		_pSupport.firePropertyChange(PROPERTY_DELETED, index, subject);
 	}
 
-	public void insertItem(TimeStampedDataItem subject) {
+	public void insertItem(TimeStampedDataItem subject)
+	{
 		insertItemAt(subject, getItems().size());
 	}
 
-	public void insertItemAt(TimeStampedDataItem subject, int index) {
+	public void insertItemAt(TimeStampedDataItem subject, int index)
+	{
 		_myData.add(index, subject);
 		_pSupport.firePropertyChange(PROPERTY_ADDED, index, subject);
 	}
 
-	public void fireModified(TimeStampedDataItem subject) {
+	public void fireModified(TimeStampedDataItem subject)
+	{
 		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, subject);
 	}
 
-	public GriddableItemDescriptor[] getAttributes() {
-		if (_myAttributes == null) {
+	public void fireReformatted(TimeStampedDataItem subject)
+	{
+		_pSupport.firePropertyChange(PROPERTY_CHANGED, null, subject);
+	}
+
+	public GriddableItemDescriptor[] getAttributes()
+	{
+		if (_myAttributes == null)
+		{
 			_myAttributes = new GriddableItemDescriptor[2];
-			_myAttributes[0] = new GriddableItemDescriptor("Bearing", "Bearing", double.class, new DoubleHelper());
-			_myAttributes[1] = new GriddableItemDescriptor("Range", "Range", WorldDistance2.class, new WorldDistanceHelper());
+			_myAttributes[0] = new GriddableItemDescriptor("Bearing", "Bearing",
+					double.class, new DoubleHelper());
+			_myAttributes[1] = new GriddableItemDescriptor("Range", "Range",
+					WorldDistance2.class, new WorldDistanceHelper());
 		}
 		return _myAttributes;
 	}
 
-	public List<TimeStampedDataItem> getItems() {
+	public List<TimeStampedDataItem> getItems()
+	{
 		return _myDataRO;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return _myName;
 	}
 
-	public TimeStampedDataItem makeCopy(TimeStampedDataItem item) {
-		if (false == item instanceof Observation) {
-			throw new IllegalArgumentException("I am expecting the Observation's, don't know how to copy " + item);
+	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	{
+		if (false == item instanceof Observation)
+		{
+			throw new IllegalArgumentException(
+					"I am expecting the Observation's, don't know how to copy " + item);
 		}
 		Observation template = (Observation) item;
 		Observation result = new Observation();
@@ -104,27 +128,37 @@ public class ObservationList implements GriddableSeries {
 		return result;
 	}
 
-	public String toString() {
+	public String toString()
+	{
 		return getName();
 	}
 
-	public static ObservationList getShortSample(PropertyChangeListener pcl) {
+	public static ObservationList getShortSample(PropertyChangeListener pcl)
+	{
 		Vector<TimeStampedDataItem> pts = new Vector<TimeStampedDataItem>();
-		pts.add(new Observation(new HiResDate(10000), 12, new WorldDistance2(12, WorldDistance2.METRES)));
-		pts.add(new Observation(new HiResDate(20000), 10, new WorldDistance2(14, WorldDistance2.METRES)));
-		pts.add(new Observation(new HiResDate(30000), 11, new WorldDistance2(15, WorldDistance2.METRES)));
-		pts.add(new Observation(new HiResDate(45000), 11, new WorldDistance2(16, WorldDistance2.METRES)));
-		pts.add(new Observation(new HiResDate(50000), 10, new WorldDistance2(18, WorldDistance2.METRES)));
+		pts.add(new Observation(new HiResDate(10000), 12, new WorldDistance2(12,
+				WorldDistance2.METRES)));
+		pts.add(new Observation(new HiResDate(20000), 10, new WorldDistance2(14,
+				WorldDistance2.METRES)));
+		pts.add(new Observation(new HiResDate(30000), 11, new WorldDistance2(15,
+				WorldDistance2.METRES)));
+		pts.add(new Observation(new HiResDate(45000), 11, new WorldDistance2(16,
+				WorldDistance2.METRES)));
+		pts.add(new Observation(new HiResDate(50000), 10, new WorldDistance2(18,
+				WorldDistance2.METRES)));
 		ObservationList res = new ObservationList("Short Obs", pts);
 		res.addPropertyChangeListener(pcl);
 		return res;
 	}
 
-	public static ObservationList getLongSample(PropertyChangeListener pcl) {
+	public static ObservationList getLongSample(PropertyChangeListener pcl)
+	{
 		Vector<TimeStampedDataItem> pts = new Vector<TimeStampedDataItem>();
 
-		for (int i = 0; i < 3000; i++) {
-			pts.add(new Observation(new HiResDate(i * 10000), 12, new WorldDistance2(2d + Math.random() * 600, WorldDistance2.METRES)));
+		for (int i = 0; i < 3000; i++)
+		{
+			pts.add(new Observation(new HiResDate(i * 10000), 12, new WorldDistance2(
+					2d + Math.random() * 600, WorldDistance2.METRES)));
 		}
 		ObservationList res = new ObservationList("Long Obs", pts);
 		res.addPropertyChangeListener(pcl);
@@ -134,7 +168,7 @@ public class ObservationList implements GriddableSeries {
 	public void setOnlyShowVisibleItems(boolean val)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

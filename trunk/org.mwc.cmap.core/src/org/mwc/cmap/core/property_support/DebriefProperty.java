@@ -345,7 +345,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
 		return res;
 	}
 
-	public Annotation[] getAnnotationsForGetter()
+	public Annotation[] getAnnotationsForSetter()
 	{
 		// find out the type of the editor
 		Method write = _thisProp.getWriteMethod();

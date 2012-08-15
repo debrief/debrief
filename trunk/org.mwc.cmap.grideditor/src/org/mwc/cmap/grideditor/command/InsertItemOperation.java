@@ -18,7 +18,7 @@ public class InsertItemOperation extends AbstractGridEditorOperation {
 	public InsertItemOperation(OperationEnvironment environment, int insertPosition) {
 		super("Adding item to series", environment);
 		if (environment.getSubject() == null) {
-			throw new IllegalArgumentException("I need a subject item to insert");
+			throw new IllegalArgumentException("I need a subject item to insert. Is the makeCopy method implemented?");
 		}
 		myInsertPosition = insertPosition;
 	}
