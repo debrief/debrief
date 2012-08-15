@@ -2318,18 +2318,20 @@ and so on....</programlisting></para>
               </screenshot>
             </figure></para>
 
-          <para>The properties shown are similar to those shown for most other
-          shapes, with the exception of the actual location of the polygon.
-          Instead of being able to directly edit the points in the polygon, an
-          indication of the number of points is provided, together with a
-          button which will take you to the Path editor. The Path editor is
-          shown below: <figure xml:id="path_editor_demo">
+          <para>The properties shown are similar to those shown for most other shapes, with the
+            exception of the actual locations of the polygon. Change the location of the nodes that
+            form the polygon by selecting them in the Layer Manager then editing them  the
+            Properties View (see <xref linkend="properties_view"/>).  New nodes are created by
+            right-clicking on the Polygon (in the Layer Manager or on the Plot), and selecting
+              <guimenu>Add Node</guimenu>. </para>
+          <para> Instead of being able to directly edit the points in the polygon, an indication of
+            the number of points is provided, together with a button which will take you to the Path
+            editor. The Path editor is shown below: <figure xml:id="path_editor_demo">
               <title>Path editor</title>
-
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PathEditor.png" width="269"></imagedata>
+                    <imagedata fileref="figures/PathEditor.png" width="269"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
