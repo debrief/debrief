@@ -401,7 +401,6 @@ public class TrackWrapper_Support
 				seg.setWrapper(_myTrack);
 			}
 		}
-
 	}
 
 }

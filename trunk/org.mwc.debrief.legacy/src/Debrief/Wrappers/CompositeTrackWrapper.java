@@ -15,7 +15,9 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
@@ -34,7 +36,8 @@ import MWC.TacticalData.Fix;
  * @author ian
  * 
  */
-public class CompositeTrackWrapper extends TrackWrapper
+public class CompositeTrackWrapper extends TrackWrapper implements
+		GriddableSeriesMarker
 {
 
 	public static interface GiveMeALeg
@@ -188,9 +191,9 @@ public class CompositeTrackWrapper extends TrackWrapper
 							// limit the bearing to the nearest 5 deg marker
 							int m = ((int) newBearing / 10);
 							newBearing = m * 10d;
-							
+
 							// trim it to being positive
-							if(newBearing < 0)
+							if (newBearing < 0)
 								newBearing += 360;
 
 							thisSeg.setCourse(newBearing);
@@ -607,6 +610,61 @@ public class CompositeTrackWrapper extends TrackWrapper
 	public static void initialise(ToolParent toolParent)
 	{
 		_toolParent = toolParent;
+	}
+
+	/**
+	 * indicate that planning segments have an order
+	 * 
+	 */
+	@Override
+	public boolean hasOrderedChildren()
+	{
+		return true;
+	}
+
+	@Override
+	public Enumeration<Editable> elements()
+	{
+		/**
+		 * just return the track segments, we don't contain any other data...
+		 * 
+		 */
+		return _thePositions.elements();
+	}
+
+	@Override
+	public Editable getSampleGriddable()
+	{
+		String name = "new leg";
+		double courseDegs = 45d;
+		WorldSpeed worldSpeed = new WorldSpeed(10, WorldSpeed.Kts);
+		WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
+		return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance);
+	}
+
+	@Override
+	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	{
+		// make a copy
+		PlanningSegment newSeg = new PlanningSegment((PlanningSegment) item);
+		return newSeg;
+	}
+
+	@Override
+	public boolean supportsAddRemove()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean requiresManualSave()
+	{
+		return false;
+	}
+
+	@Override
+	public void doSave(String message)
+	{
 	}
 
 }

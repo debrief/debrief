@@ -1170,7 +1170,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the list of wrappers we hold
 	 */
-	private SegmentList _thePositions;
+	protected SegmentList _thePositions;
 
 	/**
 	 * the symbol to pass on to a snail plotter
@@ -1559,7 +1559,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @return the points in this track
 	 */
 	@Override
-	public final Enumeration<Editable> elements()
+	public Enumeration<Editable> elements()
 	{
 		final TreeSet<Editable> res = new TreeSet<Editable>();
 

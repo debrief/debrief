@@ -10,8 +10,9 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
-import MWC.GUI.Properties.CardinalPointsPropertyEditor;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -19,14 +20,15 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class PlanningSegment extends TrackSegment implements
-		Cloneable, Editable.DoNoInspectChildren, CreateEditorForParent
+public class PlanningSegment extends TrackSegment implements Cloneable,
+		Editable.DoNoInspectChildren, CreateEditorForParent, TimeStampedDataItem
 {
 
-	/** special case that gives us a leg that goes back to the start
+	/**
+	 * special case that gives us a leg that goes back to the start
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	public static class ClosingSegment extends PlanningSegment
 	{
@@ -42,13 +44,13 @@ public class PlanningSegment extends TrackSegment implements
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		
+
 	}
-	
+
 	/**
 	 * class containing editable details of a track
 	 */
-	public class PlanningSegmentInfo extends Editable.EditorType
+	public class PlanningSegmentInfo extends Griddable
 	{
 
 		/**
@@ -69,8 +71,6 @@ public class PlanningSegment extends TrackSegment implements
 			{
 				final PropertyDescriptor[] res =
 				{
-						expertProp("Calculation", "How to calculate the leg length",
-								SPATIAL),
 						expertProp("Visible", "whether this layer is visible", FORMAT),
 						expertProp("Depth", "The depth for this leg", SPATIAL),
 						expertProp("Course", "The course for this leg", SPATIAL),
@@ -80,10 +80,6 @@ public class PlanningSegment extends TrackSegment implements
 						expertProp("Duration", "The duration of travel along this leg",
 								SPATIAL),
 						expertProp("Name", "Name of this track segment", FORMAT), };
-
-				res[0].setPropertyEditorClass(PlanningLegCalcModelPropertyEditor.class);
-				res[3].setPropertyEditorClass(CardinalPointsPropertyEditor.class);
-
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -91,6 +87,39 @@ public class PlanningSegment extends TrackSegment implements
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
+		}
+
+		@Override
+		public PropertyDescriptor[] getGriddablePropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+								prop("Name", "the name for this leg",
+										FORMAT),
+						prop("Course", "the course for this leg", SPATIAL),
+						prop("Speed", "the speed at which to travel on this leg", SPATIAL),
+						prop("Distance", "how long this leg is", SPATIAL),
+						prop("Duration", "how long the vessel travels on this leg",
+								TEMPORAL),
+						prop("Depth", "depth to travel at on this leg", SPATIAL),
+
+				};
+				return res;
+
+			}
+			catch (final IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+
+		@Override
+		public NonBeanPropertyDescriptor[] getNonBeanGriddableDescriptors()
+		{
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
@@ -118,8 +147,10 @@ public class PlanningSegment extends TrackSegment implements
 	 * 
 	 */
 	WorldSpeed _mySpeed;
-	
-	/** the date this segment was created - used to force sort order by the order they were read in
+
+	/**
+	 * the date this segment was created - used to force sort order by the order
+	 * they were read in
 	 * 
 	 */
 	private long _created = System.nanoTime();
@@ -142,11 +173,12 @@ public class PlanningSegment extends TrackSegment implements
 	 */
 	private WorldDistance _myDepth = new WorldDistance(0, WorldDistance.METRES);
 
-	/** copy constructor
+	/**
+	 * copy constructor
 	 * 
 	 * @param other
 	 */
-	private PlanningSegment(PlanningSegment other)
+	public PlanningSegment(PlanningSegment other)
 	{
 		_calcModel = other._calcModel;
 		_created = System.nanoTime();
@@ -166,7 +198,7 @@ public class PlanningSegment extends TrackSegment implements
 		this.setCourse(courseDegs);
 		this.setSpeedSilent(worldSpeed);
 		this.setDistanceSilent(worldDistance);
-		
+
 		this.recalc();
 	}
 
@@ -181,11 +213,11 @@ public class PlanningSegment extends TrackSegment implements
 		recalc();
 	}
 
-
 	public void setDepthSilent(WorldDistance depth)
 	{
 		_myDepth = depth;
 	}
+
 	/**
 	 * special add-fix, so we don't bother with rename
 	 * 
@@ -196,18 +228,16 @@ public class PlanningSegment extends TrackSegment implements
 		this.addFixSilent(fix);
 	}
 
-	
-	
 	@Override
 	public int compareTo(Plottable arg0)
 	{
 		int res = 1;
-		if(arg0 instanceof ClosingSegment)
+		if (arg0 instanceof ClosingSegment)
 		{
 			// the closing semgent will always come after
 			res = -1;
 		}
-		else if(arg0 instanceof PlanningSegment)
+		else if (arg0 instanceof PlanningSegment)
 		{
 			PlanningSegment other = (PlanningSegment) arg0;
 			Long myTime = _created;
@@ -298,12 +328,12 @@ public class PlanningSegment extends TrackSegment implements
 		this._myPeriod = period;
 		recalc();
 	}
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException
 	{
 		PlanningSegment res = new PlanningSegment(this);
-		
+
 		return res;
 	}
 
@@ -372,8 +402,7 @@ public class PlanningSegment extends TrackSegment implements
 		res._myPeriod = _myPeriod;
 		res._mySpeed = _mySpeed;
 		res._parent = _parent;
-		
-		
+
 		return res;
 	}
 
@@ -381,6 +410,19 @@ public class PlanningSegment extends TrackSegment implements
 	public Editable getParent()
 	{
 		return getWrapper();
+	}
+
+	@Override
+	public HiResDate getDTG()
+	{
+		return this.startDTG();
+	}
+
+	@Override
+	public void setDTG(HiResDate date)
+	{
+		// ingore, we don't set the DTG for a planning segment
+		System.err.println("Should not set DTG for planning segment");
 	}
 
 }
