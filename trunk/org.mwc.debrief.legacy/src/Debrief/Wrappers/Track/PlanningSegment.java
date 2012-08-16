@@ -13,6 +13,7 @@ import MWC.GUI.FireExtended;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Properties.CardinalPointsPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -71,6 +72,8 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 			{
 				final PropertyDescriptor[] res =
 				{
+						expertProp("Calculation", "How to calculate the leg length",
+								SPATIAL),
 						expertProp("Visible", "whether this layer is visible", FORMAT),
 						expertProp("Depth", "The depth for this leg", SPATIAL),
 						expertProp("Course", "The course for this leg", SPATIAL),
@@ -80,6 +83,10 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 						expertProp("Duration", "The duration of travel along this leg",
 								SPATIAL),
 						expertProp("Name", "Name of this track segment", FORMAT), };
+
+				res[0].setPropertyEditorClass(PlanningLegCalcModelPropertyEditor.class);
+				res[3].setPropertyEditorClass(CardinalPointsPropertyEditor.class);
+
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -96,8 +103,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 			{
 				final PropertyDescriptor[] res =
 				{
-								prop("Name", "the name for this leg",
-										FORMAT),
+						prop("Name", "the name for this leg", FORMAT),
 						prop("Course", "the course for this leg", SPATIAL),
 						prop("Speed", "the speed at which to travel on this leg", SPATIAL),
 						prop("Distance", "how long this leg is", SPATIAL),
@@ -273,6 +279,12 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 
 	@FireExtended
 	public void setCalculation(int calculation)
+	{
+		_calcModel = calculation;
+	}
+
+	@FireExtended
+	public void setCalculation(Integer calculation)
 	{
 		_calcModel = calculation;
 	}

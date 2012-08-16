@@ -164,12 +164,10 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 					exportThisTrackSegment(doc, trk, editable);
 				}
 				trk.appendChild(sList);
-				break;
 			}
 			else if (next instanceof TrackSegment)
 			{
 				exportThisTrackSegment(doc, trk, (TrackSegment) next);
-				break;
 			}
 		}
 	}
