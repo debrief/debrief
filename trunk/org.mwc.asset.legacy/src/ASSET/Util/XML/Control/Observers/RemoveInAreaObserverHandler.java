@@ -9,7 +9,6 @@ package ASSET.Util.XML.Control.Observers;
  * @version 1.0
  */
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.RemoveInAreaObserver;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
@@ -101,7 +100,7 @@ abstract class RemoveInAreaObserverHandler extends
 	static public void exportThis(final Object toExport,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 //		// create ourselves
 //		final org.w3c.dom.Element thisPart = doc.createElement(type);
 //

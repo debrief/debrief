@@ -452,5 +452,6 @@ Export-Package: ASSET;
 Bundle-ClassPath: libs/postgis_1.3.5.jar,
  libs/postgresql-8.3-604.jdbc4.jar,
  .,
- libs/jaxen-1.1.3.jar
+ libs/jaxen-1.1.3.jar,
+ libs/xercesImpl-2.7.1.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

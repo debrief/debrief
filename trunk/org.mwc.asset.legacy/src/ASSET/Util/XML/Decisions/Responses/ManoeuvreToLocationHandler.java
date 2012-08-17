@@ -14,7 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
+import org.apache.xml.serialize.XMLSerializer;
 
 import ASSET.Models.Decision.Responses.ManoeuvreToLocation;
 import ASSET.Models.Decision.Responses.Response;
