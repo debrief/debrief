@@ -1,3 +1,5 @@
+package Debrief.GUI;
+
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: DebriefApp.java,v $
 // @author $Author: Ian.Mayo $
