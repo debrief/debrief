@@ -52,31 +52,57 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	public static class testListMgt extends TestCase
 	{
+		
+		public void testSpline()
+		{
+			// generate the location spline
+			double[] times = new double[]{3d,4d,8d,9d};
+			double[] lats = new double[]{1d,1d,3d,4d};
+			double[] longs = new double[]{1d,2d,4d,4d};
+
+			CubicSpline latSpline = new CubicSpline(times, lats);
+			CubicSpline longSpline = new CubicSpline(times, longs);
+
+			for (int t=0;t<4;t++)
+			{
+				System.out.println(longs[t] + ", " + lats[t] + "," +  times[t]);
+			}
+
+
+			for (long t=50;t<80;t++)
+			{
+				double tNow = t/10d;
+				final double thisLat = latSpline.interpolate(tNow);
+				final double thisLong = longSpline.interpolate(tNow);
+				System.out.println(thisLong + ", " + thisLat + ", " + tNow);
+			}
+		}
+		
 		public void testLast()
 		{
 			TrackSegment ts0 = new TrackSegment();
-			FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(1000),
+			FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
+					new WorldLocation(1, -1, 3), 1, 2));
+			FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
+					new WorldLocation(1, 0, 3), 1, 2));
+			FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(30000),
+					new WorldLocation(1, 1, 3), 1, 2));
+			FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(40000),
 					new WorldLocation(1, 2, 3), 1, 2));
-			FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(2000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(3000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(4000),
-					new WorldLocation(2, 1, 3), 1, 2));
 			ts0.addFix(newFix1);
 			ts0.addFix(newFix2);
 			ts0.addFix(newFix3);
 			ts0.addFix(newFix4);
 
 			TrackSegment ts1 = new TrackSegment();
-			FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(15000),
-					new WorldLocation(1, 2, 3), 1, 2));
-			FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(16000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(17000),
-					new WorldLocation(2, 1, 3), 1, 2));
-			FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(18000),
-					new WorldLocation(2, 1, 3), 1, 2));
+			FixWrapper newFix5 = new FixWrapper(new Fix(new HiResDate(150000),
+					new WorldLocation(3, 4, 3), 1, 2));
+			FixWrapper newFix6 = new FixWrapper(new Fix(new HiResDate(160000),
+					new WorldLocation(4, 4, 3), 1, 2));
+			FixWrapper newFix7 = new FixWrapper(new Fix(new HiResDate(170000),
+					new WorldLocation(5, 4, 3), 1, 2));
+			FixWrapper newFix8 = new FixWrapper(new Fix(new HiResDate(180000),
+					new WorldLocation(6, 4, 3), 1, 2));
 			ts1.addFix(newFix5);
 			ts1.addFix(newFix6);
 			ts1.addFix(newFix7);
@@ -84,6 +110,16 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 			TrackSegment newS = new TrackSegment(ts0, ts1);
 			assertEquals("got lots of points", 10, newS.size());
+			
+			// have a look at the generated points
+			Enumeration<Editable> pts = newS.elements();
+			while (pts.hasMoreElements())
+			{
+				Editable editable = (Editable) pts.nextElement();
+				FixWrapper fix = (FixWrapper) editable;
+				System.out.println(fix.getLocation().getLat() + ", " + fix.getLocation().getLong() + " , " + fix.getDateTimeGroup().getDate().getTime());
+			}
+			System.out.println("========");
 
 			// cause the monster problem
 			newFix6.setDateTimeGroup(new HiResDate(15000));
@@ -96,7 +132,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			try
 			{
 				newS = new TrackSegment(ts0, ts1);
-				assertEquals("got lots of points", 5, newS.size());
+				assertEquals("got lots of points", 10, newS.size());
 			}
 			catch (RuntimeException re)
 			{
