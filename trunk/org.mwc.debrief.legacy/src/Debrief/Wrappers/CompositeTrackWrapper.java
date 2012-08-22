@@ -17,6 +17,8 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
@@ -37,7 +39,7 @@ import MWC.TacticalData.Fix;
  * 
  */
 public class CompositeTrackWrapper extends TrackWrapper implements
-		GriddableSeriesMarker
+		GriddableSeriesMarker, NeedsToKnowAboutLayers
 {
 
 	public static interface GiveMeALeg
@@ -665,6 +667,19 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	@Override
 	public void doSave(String message)
 	{
+	}
+
+	@Override
+	public void setLayers(Layers parent)
+	{
+		// ok, we've been pasted. just double check that our children know who is the boss
+		Enumeration<Editable> numer = getSegments().elements();
+		while (numer.hasMoreElements())
+		{
+			Editable editable = (Editable) numer.nextElement();
+			PlanningSegment seg = (PlanningSegment) editable;
+			seg.setWrapper(this);
+		}
 	}
 
 }
