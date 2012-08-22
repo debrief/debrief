@@ -21,7 +21,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-import org.apache.xml.serialize.XMLSerializer;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * class which reads in a man to course response

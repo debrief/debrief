@@ -15,7 +15,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import org.apache.xml.serialize.*;
 
 import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
@@ -30,6 +29,9 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.LayersHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * @author IAN MAYO
