@@ -4,15 +4,6 @@
 <session>
 <layers>
 <layer LineThickness="0" Name="Misc" Visible="true">
-<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Visible="true">
-<colour Value="YELLOW"/>
-<fontcolour Value="YELLOW"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<centre>
-<shortLocation Depth="0.000" Lat="22.1357533" Long="-21.3900751"/>
-</centre>
-<Radius Units="yds" Value="4000.0000000"/>
-</circle>
 <line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
 <colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
 <fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
@@ -22,17 +13,6 @@
 </tl>
 <br>
 <shortLocation Depth="0.000" Lat="22.0491010" Long="-21.4909578"/>
-</br>
-</line>
-<line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
-<colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
-<fontcolour Value="CYAN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<tl>
-<shortLocation Depth="0.000" Lat="21.9900078" Long="-21.4569510"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="22.0286703" Long="-21.3554914"/>
 </br>
 </line>
 <textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
