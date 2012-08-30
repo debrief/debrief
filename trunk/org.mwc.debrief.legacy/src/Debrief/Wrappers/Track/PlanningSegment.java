@@ -306,6 +306,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		return _myCourseDegs;
 	}
 
+	@FireExtended
 	public void setCourse(double courseDegs)
 	{
 		this._myCourseDegs = courseDegs;

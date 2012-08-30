@@ -14,14 +14,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
-import org.apache.xml.serialize.XMLSerializer;
-
 import ASSET.Models.Decision.Responses.ManoeuvreToLocation;
 import ASSET.Models.Decision.Responses.Response;
 import ASSET.Util.XML.Utils.ASSETLocationHandler;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
+
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class ManoeuvreToLocationHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader

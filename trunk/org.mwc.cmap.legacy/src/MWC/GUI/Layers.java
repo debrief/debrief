@@ -571,6 +571,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
 			NeedsWrappingInLayerManager nl = (NeedsWrappingInLayerManager) theLayer;
 			theLayer = nl.wrapMe();
 		}
+		
+		// does it need to know about the layers, or that it has been added to the layers?
+		if(theLayer instanceof NeedsToKnowAboutLayers)
+		{
+			NeedsToKnowAboutLayers need = (NeedsToKnowAboutLayers) theLayer;
+			need.setLayers(this);
+		}
 
 		addThisLayerDoNotResize(theLayer);
 
