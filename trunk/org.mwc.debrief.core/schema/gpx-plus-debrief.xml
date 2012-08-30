@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
+    xmlns:p="http://www.topografix.com/GPX/1/1" creator="test" version="1.1">
+
+    <p:metadata>
+        <p:name>1285669575458</p:name>
+        <p:desc>Saved with Debrief version dated Fri Apr 27 09:31:37 BST 2012</p:desc>
+        <p:time>2012-04-27T16:29:38+01:00</p:time>
+    </p:metadata>
+
+    <p:rte>
+        <p:name>Chart lib:JW_Area_1</p:name>
+    </p:rte>
+
+    <p:trk>
+        <p:name>NELSON</p:name>
+        <p:trkseg>
+            <p:trkpt lat="22.1862861" lon="-21.6978806">
+                <p:ele>0.000</p:ele>
+                <p:time>2012-04-27T16:29:38+01:00</p:time>
+                <p:extensions>
+                    <deb:track xmlns:deb="org.mwc.debrief.core" NameAtStart="true" LineThickness="1"
+                        InterpolatePoints="true" LinkPositions="true"/>
+                </p:extensions>
+            </p:trkpt>
+        </p:trkseg>
+    </p:trk>
+
+</p:gpx>

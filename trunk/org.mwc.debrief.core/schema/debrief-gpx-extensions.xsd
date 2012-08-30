@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="org.mwc.debrief.core"
+	elementFormDefault="qualified" xmlns="org.mwc.debrief.core">
+
+	<xs:annotation>
+		<xs:documentation>
+			This schema defines the Debrief extensions to be used with the GPX 1.1 schema.
+			The root elements
+			defined by this schema are intended to be used as child
+			elements of the "extensions" elements in the GPX 1.1 schema.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="track" type="trackType" />
+	<xs:element name="chart_folio" type="chartFolioType" />
+
+	<xs:complexType name="trackType">
+		<!-- <xs:choice minOccurs="0" maxOccurs="unbounded"> <xs:element name="sensor" type="sensor" /> <xs:element name="fix" 
+			type="fix" /> <xs:element name="tma" type="tma" /> <xs:element name="TrackSegment" type="TrackSegment" /> <xs:element name="RelativeTMASegment" 
+			type="RelativeTMASegment" /> <xs:element name="AbsoluteTMASegment" type="AbsoluteTMASegment" /> <xs:element name="SegmentList" 
+			type="SegmentList" /> <xs:element name="colour" type="colourType" /> <xs:element name="SymbolColor" type="colourType" /> 
+			<xs:element name="font" type="font" /> <xs:element name="SYMBOL_WIDTH" type="worldDistanceType" /> <xs:element name="SYMBOL_LENGTH" 
+			type="worldDistanceType" /> </xs:choice> -->
+		<xs:attribute name="InterpolatePoints" default="true" type="xs:boolean" />
+		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
+		<xs:attribute name="LineStyle" default="1" type="xs:integer" />
+		<xs:attribute name="LinkPositions" default="true" type="xs:boolean" />
+		<!-- <xs:attribute name="Name" use="required" type="xs:string" /> -->
+		<xs:attribute name="NameAtStart" default="true" type="xs:boolean" />
+		<xs:attribute name="NameLocation" default="Right" type="xs:string" />
+		<xs:attribute name="NameVisible" default="true" type="xs:boolean" />
+		<xs:attribute name="PlotArrayCentre" default="true" type="xs:boolean" />
+		<xs:attribute name="PositionsLinked" default="true" type="xs:boolean" />
+		<xs:attribute name="PositionsVisible" default="true" type="xs:boolean" />
+		<xs:attribute name="SensorsVisible" default="true" type="xs:boolean" />
+		<xs:attribute name="SolutionsVisible" default="true" type="xs:boolean" />
+		<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="chartFolioType">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<!-- <xs:element name="colour" type="colourType" /> <xs:element name="coastline" type="coastline" /> <xs:element name="vpf_coastline" 
+				type="vpf_coastline" /> -->
+			<xs:element name="ChartReference" type="chartReferenceType" />
+			<!-- <xs:element name="scale" type="scale" /> <xs:element name="grid" type="grid" /> <xs:element name="LocalGrid" type="LocalGrid" 
+				/> <xs:element name="Grid4W" type="Grid4W" /> <xs:element name="vpf_database" type="vpf_database" /> -->
+		</xs:choice>
+		<xs:attribute name="LineThickness" use="required" type="xs:integer" />
+		<xs:attribute name="Name" use="required" type="xs:string" />
+		<xs:attribute name="Visible" use="required" type="xs:boolean" />
+		<xs:attribute name="SHOW_NAMES" use="required" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="chartReferenceType">
+		<xs:all>
+			<xs:element minOccurs="0" name="font" type="fontType" />
+			<xs:element minOccurs="0" name="colour" type="colourType" />
+			<xs:element minOccurs="0" name="TopLeft" type="locationType" />
+			<xs:element minOccurs="0" name="BottomRight" type="locationType" />
+		</xs:all>
+		<xs:attribute name="FileName" type="xs:string" />
+		<xs:attribute name="Label" type="xs:string" />
+		<xs:attribute name="LabelLocation" type="labelLocationType" />
+		<xs:attribute name="LabelVisible" default="true" type="xs:boolean" />
+		<xs:attribute name="Visible" default="true" type="xs:boolean" />
+	</xs:complexType>
+	<xs:simpleType name="colourElement">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="255" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="colourType">
+		<xs:attribute name="CustomBlue" type="colourElement" />
+		<xs:attribute name="CustomGreen" type="colourElement" />
+		<xs:attribute name="CustomRed" type="colourElement" />
+		<xs:attribute name="Value" use="required" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="locationType">
+		<xs:choice maxOccurs="1" minOccurs="0">
+			<xs:element name="shortLocation">
+				<xs:complexType>
+					<xs:attribute name="Depth" use="required" type="xs:double" />
+					<xs:attribute name="Lat" use="required" type="xs:double" />
+					<xs:attribute name="Long" use="required" type="xs:double" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="longLocation">
+				<xs:complexType>
+					<xs:attribute name="LatDeg" use="required" type="xs:integer" />
+					<xs:attribute name="LatMin" use="required" type="xs:double" />
+					<xs:attribute name="LatSec" use="required" type="xs:double" />
+					<xs:attribute name="LatHem" use="required" type="xs:double" />
+					<xs:attribute name="LongDeg" use="required" type="xs:integer" />
+					<xs:attribute name="LongMin" use="required" type="xs:double" />
+					<xs:attribute name="LongSec" use="required" type="xs:double" />
+					<xs:attribute name="LongHem" use="required" type="xs:double" />
+					<xs:attribute name="Depth" use="required" type="xs:double" />
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="labelLocationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Top" />
+			<xs:enumeration value="Left" />
+			<xs:enumeration value="Bottom" />
+			<xs:enumeration value="Centre" />
+			<xs:enumeration value="Right" />
+			<xs:enumeration value="Middle" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="fontType">
+		<xs:attribute name="Bold" type="xs:boolean" />
+		<xs:attribute name="Family" use="required" type="xs:string" />
+		<xs:attribute name="Italic" type="xs:boolean" />
+		<xs:attribute name="Size" use="required" type="xs:integer" />
+	</xs:complexType>
+</xs:schema>

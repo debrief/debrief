@@ -2,6 +2,7 @@ package MWC.GenericData;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 
@@ -76,6 +77,28 @@ public class WorldLocation implements Serializable, Cloneable
 	}
 
 	/**
+	 * create a new location, in World coordinates. Added to support GPX.
+	 * 
+	 * @date August 22, 2012
+	 * @author Aravind R. Yarram <yaravind@gmail.com>
+	 * 
+	 * @category gpx
+	 * 
+	 * @param LatVal
+	 *          Latitude in degrees
+	 * @param LongVal
+	 *          Longitude in degrees
+	 * @param DepthVal
+	 *          Depth in metres
+	 */
+	public WorldLocation(BigDecimal LatVal, BigDecimal LongVal, BigDecimal DepthVal)
+	{
+		_theLat = LatVal.doubleValue();
+		_theLong = LongVal.doubleValue();
+		_theDepth = DepthVal.doubleValue();
+	}
+
+	/**
 	 * copy constructor
 	 * 
 	 * @param other
@@ -87,14 +110,13 @@ public class WorldLocation implements Serializable, Cloneable
 	}
 
 	/**
-	 * long winded constructor, taking raw arguments
-	 * note: if there are decimal parts of degs or mins then the contents
-	 * of the mins & secs, or secs (resp) are ignored.  So, if there's
-	 * 22.5 in the mins and 10 in the secs, this will go to 22 mins, 30 secs -
-	 * using the mins fractional component and ignoring the secs value.
+	 * long winded constructor, taking raw arguments note: if there are decimal
+	 * parts of degs or mins then the contents of the mins & secs, or secs (resp)
+	 * are ignored. So, if there's 22.5 in the mins and 10 in the secs, this will
+	 * go to 22 mins, 30 secs - using the mins fractional component and ignoring
+	 * the secs value.
 	 */
-	public WorldLocation(double latDegs, double latMin, double latSec,
-			char latHem, double longDegs, double longMin, double longSec,
+	public WorldLocation(double latDegs, double latMin, double latSec, char latHem, double longDegs, double longMin, double longSec,
 			char longHem, double theDepth)
 	{
 		// this constructor allows for decimal values of degs and mins,
@@ -247,7 +269,9 @@ public class WorldLocation implements Serializable, Cloneable
 	{
 		// check we have our model
 		if (_model == null)
+		{
 			_model = new MWC.Algorithms.EarthModels.FlatEarth();
+		}
 
 		res = _model.subtract(other, this, res);
 
@@ -265,7 +289,9 @@ public class WorldLocation implements Serializable, Cloneable
 	{
 		// check we have our model
 		if (_model == null)
+		{
 			_model = new MWC.Algorithms.EarthModels.FlatEarth();
+		}
 
 		// ok, how far apart are they?
 		WorldVector sep = _model.subtract(other, this);
@@ -294,8 +320,7 @@ public class WorldLocation implements Serializable, Cloneable
 	 * 
 	 * @return the range
 	 */
-	final public WorldDistance rangeFrom(WorldLocation lineStart,
-			WorldLocation lineEnd)
+	final public WorldDistance rangeFrom(WorldLocation lineStart, WorldLocation lineEnd)
 	{
 		return perpendicularDistanceBetween(lineStart, lineEnd);
 	}
@@ -325,11 +350,9 @@ public class WorldLocation implements Serializable, Cloneable
 	final public WorldLocation rotatePoint(final WorldLocation pOrigin, double brg)
 	{
 		double resLong = pOrigin.getLong()
-				+ (Math.cos((brg)) * (this.getLong() - pOrigin.getLong()) - Math
-						.sin(brg) * (this.getLat() - pOrigin.getLat()));
+				+ (Math.cos((brg)) * (this.getLong() - pOrigin.getLong()) - Math.sin(brg) * (this.getLat() - pOrigin.getLat()));
 		double resLat = pOrigin.getLat()
-				+ (Math.sin((brg)) * (this.getLong() - pOrigin.getLong()) + Math
-						.cos(brg) * (this.getLat() - pOrigin.getLat()));
+				+ (Math.sin((brg)) * (this.getLong() - pOrigin.getLong()) + Math.cos(brg) * (this.getLat() - pOrigin.getLat()));
 		WorldLocation res = new WorldLocation(resLat, resLong, 0d);
 		return res;
 	}
@@ -345,17 +368,23 @@ public class WorldLocation implements Serializable, Cloneable
 	{
 		// check we have our model
 		if (_model == null)
+		{
 			_model = new MWC.Algorithms.EarthModels.FlatEarth();
+		}
 
 		// do the calculation with our current model
-		
+
 		// do we have a range?
 		final WorldLocation res;
-		
-		if((delta.getRange() == 0) && (delta.getDepth() == 0))
+
+		if ((delta.getRange() == 0) && (delta.getDepth() == 0))
+		{
 			res = new WorldLocation(this);
+		}
 		else
+		{
 			res = new WorldLocation(_model.add(this, delta));
+		}
 
 		// and return the resutls
 		return res;
@@ -403,6 +432,7 @@ public class WorldLocation implements Serializable, Cloneable
 
 	}
 
+	@Override
 	public String toString()
 	{
 		String res = "";
@@ -411,6 +441,7 @@ public class WorldLocation implements Serializable, Cloneable
 		return res;
 	}
 
+	@Override
 	final public boolean equals(Object other)
 	{
 		boolean res = false;
@@ -428,13 +459,19 @@ public class WorldLocation implements Serializable, Cloneable
 
 		boolean res = true;
 		if (o._theDepth != _theDepth)
+		{
 			res = false;
+		}
 		// ok, let's allow a little flexibility here... lets
 		// do it to the nearest 10e-10 meters (yes, a millionth of a meter)
 		if (Math.abs(o._theLat - _theLat) > 1.0E-11)
+		{
 			res = false;
+		}
 		if (Math.abs(o._theLong - _theLong) > 1.0E-11)
+		{
 			res = false;
+		}
 
 		return res;
 	}
@@ -481,44 +518,50 @@ public class WorldLocation implements Serializable, Cloneable
 	 *          end point of the line
 	 * @return perpendicular distance off track.
 	 */
-	protected WorldDistance perpendicularDistanceBetween(WorldLocation lineStart,
-			WorldLocation lineEnd)
+	protected WorldDistance perpendicularDistanceBetween(WorldLocation lineStart, WorldLocation lineEnd)
 	{
-		
+
 		Point2D pStart = new Point2D.Double(lineStart.getLong(), lineStart.getLat());
 		Point2D pEnd = new Point2D.Double(lineEnd.getLong(), lineEnd.getLat());
 		Point2D tgt = new Point2D.Double(this.getLong(), this.getLat());
-		
+
 		double res = distanceToSegment(pStart, pEnd, tgt);
 		WorldDistance distance = new WorldDistance(res, WorldDistance.DEGS);
-		
-		//Note: we were using an algorithm to calculate the dist to a point on a continuous line, not
-		// a line segment.  The above code class the correct algorithm.
-//		// sort out known angles
-//		double thetaOne = lineEnd.bearingFrom(lineStart);
-//		double thetaTwo = Math.PI - lineStart.bearingFrom(this);
-//		double thetaThree = thetaOne + thetaTwo;
-//
-//		// and the single known distance
-//		double rangeToP1 = lineStart.rangeFrom(this);
-//
-//		// now do our trig.
-//		double sinThetaThree = Math.abs(Math.sin(thetaThree));
-//		WorldDistance distance = new WorldDistance(rangeToP1 * sinThetaThree,
-//				WorldDistance.DEGS);
+
+		// Note: we were using an algorithm to calculate the dist to a point on a
+		// continuous line, not
+		// a line segment. The above code class the correct algorithm.
+		// // sort out known angles
+		// double thetaOne = lineEnd.bearingFrom(lineStart);
+		// double thetaTwo = Math.PI - lineStart.bearingFrom(this);
+		// double thetaThree = thetaOne + thetaTwo;
+		//
+		// // and the single known distance
+		// double rangeToP1 = lineStart.rangeFrom(this);
+		//
+		// // now do our trig.
+		// double sinThetaThree = Math.abs(Math.sin(thetaThree));
+		// WorldDistance distance = new WorldDistance(rangeToP1 * sinThetaThree,
+		// WorldDistance.DEGS);
 
 		// sorted.
 		return distance;
 	}
 
-	/** algorithm taken from DistancePoint.java
-	 * DistancePointSegmentExample, calculate distance to line
-   * Copyright (C) 2008 Pieter Iserbyt <pieter.iserbyt@gmail.com>
-   * Alogrithm found via Stack Overflow page at: http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
-   * 
-	 * @param lineStart point (in degs) for line start
-	 * @param lineEnd point (in degs) for line end
-	 * @param tgtPoint point (in degs) for point of interest
+	/**
+	 * algorithm taken from DistancePoint.java DistancePointSegmentExample,
+	 * calculate distance to line Copyright (C) 2008 Pieter Iserbyt
+	 * <pieter.iserbyt@gmail.com> Alogrithm found via Stack Overflow page at:
+	 * http:
+	 * //stackoverflow.com/questions/849211/shortest-distance-between-a-point-
+	 * and-a-line-segment
+	 * 
+	 * @param lineStart
+	 *          point (in degs) for line start
+	 * @param lineEnd
+	 *          point (in degs) for line end
+	 * @param tgtPoint
+	 *          point (in degs) for point of interest
 	 * @return distance in degs from line to point
 	 */
 	private static double distanceToSegment(Point2D lineStart, Point2D lineEnd, Point2D tgtPoint)
@@ -532,8 +575,7 @@ public class WorldLocation implements Serializable, Cloneable
 			throw new IllegalArgumentException("lineStart and lineEnd cannot be the same point");
 		}
 
-		final double u = ((tgtPoint.getX() - lineStart.getX()) * xDelta + (tgtPoint.getY() - lineStart.getY())
-				* yDelta)
+		final double u = ((tgtPoint.getX() - lineStart.getX()) * xDelta + (tgtPoint.getY() - lineStart.getY()) * yDelta)
 				/ (xDelta * xDelta + yDelta * yDelta);
 
 		final Point2D closestPoint;
@@ -547,8 +589,7 @@ public class WorldLocation implements Serializable, Cloneable
 		}
 		else
 		{
-			closestPoint = new Point2D.Double(lineStart.getX() + u * xDelta, lineStart.getY() + u
-					* yDelta);
+			closestPoint = new Point2D.Double(lineStart.getX() + u * xDelta, lineStart.getY() + u * yDelta);
 		}
 
 		return closestPoint.distance(tgtPoint);
@@ -571,11 +612,11 @@ public class WorldLocation implements Serializable, Cloneable
 			super(val);
 		}
 
+		@Override
 		public final void setUp()
 		{
 			// set the earth model we are expecting
-			MWC.GenericData.WorldLocation
-					.setModel(new MWC.Algorithms.EarthModels.FlatEarth());
+			MWC.GenericData.WorldLocation.setModel(new MWC.Algorithms.EarthModels.FlatEarth());
 
 			w1 = new WorldLocation(12.3, 12.4, 12.5);
 			w2 = new WorldLocation(12.3, 12.4, 12.5);
@@ -584,6 +625,7 @@ public class WorldLocation implements Serializable, Cloneable
 			w5 = new WorldLocation(12.225, 12.275, 12.5);
 		}
 
+		@Override
 		public final void tearDown()
 		{
 			w1 = null;
@@ -602,30 +644,25 @@ public class WorldLocation implements Serializable, Cloneable
 			WorldLocation p2 = new WorldLocation(12, 4, 0);
 
 			WorldDistance res = me.perpendicularDistanceBetween(p1, p2);
-			assertEquals("off-track error is correct", 4.0,
-					res.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct", 4.0, res.getValueIn(WorldDistance.DEGS), 0.001);
 
 			p2 = new WorldLocation(9, 2, 0);
 			res = me.perpendicularDistanceBetween(p1, p2);
-			assertEquals("off-track error is correct", 2.5997,
-					res.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct", 2.5997, res.getValueIn(WorldDistance.DEGS), 0.001);
 
 			p2 = new WorldLocation(-4, -4, 0);
 			res = me.perpendicularDistanceBetween(p1, p2);
-			assertEquals("off-track error is correct", 4.9497,
-					res.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct", 4.9497, res.getValueIn(WorldDistance.DEGS), 0.001);
 
 			res = me.rangeFrom(p1, p2);
-			assertEquals("off-track error is correct (using range from operator)",
-					4.9497, res.getValueIn(WorldDistance.DEGS), 0.001);
+			assertEquals("off-track error is correct (using range from operator)", 4.9497, res.getValueIn(WorldDistance.DEGS), 0.001);
 
 		}
 
 		public void testDecimalConstructor()
 		{
 			// test the secs component
-			WorldLocation worldLoc = new WorldLocation(22, 0, 45, 'N', 22, 0, 1.45,
-					'W', 0);
+			WorldLocation worldLoc = new WorldLocation(22, 0, 45, 'N', 22, 0, 1.45, 'W', 0);
 			assertEquals("right lat", 22.0125, worldLoc.getLat(), 0.001);
 			assertEquals("right long", -22.000402, worldLoc.getLong(), 0.00001);
 
@@ -661,10 +698,8 @@ public class WorldLocation implements Serializable, Cloneable
 		public final void testConstructor()
 		{
 			WorldLocation v1 = new WorldLocation(12.225, 12.275, 12.5);
-			WorldLocation v2 = new WorldLocation(12, 13.5, 0, 'N', 12, 16.5, 0, 'E',
-					12.5);
-			WorldLocation v3 = new WorldLocation(12, 13, 30, 'N', 12, 16, 30, 'E',
-					12.5);
+			WorldLocation v2 = new WorldLocation(12, 13.5, 0, 'N', 12, 16.5, 0, 'E', 12.5);
+			WorldLocation v3 = new WorldLocation(12, 13, 30, 'N', 12, 16, 30, 'E', 12.5);
 			WorldLocation v4 = new WorldLocation(w5);
 
 			assertTrue("v1 (d,d,d)", v1.equals(w5));
@@ -778,12 +813,9 @@ public class WorldLocation implements Serializable, Cloneable
 		 * @param height
 		 *          the height
 		 */
-		public LocalLocation(WorldDistance north, WorldDistance east,
-				WorldDistance height)
+		public LocalLocation(WorldDistance north, WorldDistance east, WorldDistance height)
 		{
-			super(north.getValueIn(WorldDistance.DEGS), east
-					.getValueIn(WorldDistance.DEGS), -height
-					.getValueIn(WorldDistance.METRES));
+			super(north.getValueIn(WorldDistance.DEGS), east.getValueIn(WorldDistance.DEGS), -height.getValueIn(WorldDistance.METRES));
 		}
 
 		/**
@@ -796,8 +828,7 @@ public class WorldLocation implements Serializable, Cloneable
 		 */
 		public LocalLocation(WorldDistance north, WorldDistance east, double height)
 		{
-			super(north.getValueIn(WorldDistance.DEGS), east
-					.getValueIn(WorldDistance.DEGS), -height);
+			super(north.getValueIn(WorldDistance.DEGS), east.getValueIn(WorldDistance.DEGS), -height);
 		}
 
 		/**
@@ -814,22 +845,18 @@ public class WorldLocation implements Serializable, Cloneable
 		/**
 		 * long winded constructor, taking raw arguments
 		 */
-		public LocalLocation(int latDegs, int latMin, double latSec, char latHem,
-				int longDegs, int longMin, double longSec, char longHem,
+		public LocalLocation(int latDegs, int latMin, double latSec, char latHem, int longDegs, int longMin, double longSec, char longHem,
 				WorldDistance height)
 		{
-			super(latDegs, latMin, latSec, latHem, longDegs, longMin, longSec,
-					longHem, -height.getValueIn(WorldDistance.METRES));
+			super(latDegs, latMin, latSec, latHem, longDegs, longMin, longSec, longHem, -height.getValueIn(WorldDistance.METRES));
 		}
 
 		/**
 		 * long winded constructor, taking raw arguments
 		 */
-		public LocalLocation(int latDegs, int latMin, double latSec, char latHem,
-				int longDegs, int longMin, double longSec, char longHem)
+		public LocalLocation(int latDegs, int latMin, double latSec, char latHem, int longDegs, int longMin, double longSec, char longHem)
 		{
-			super(latDegs, latMin, latSec, latHem, longDegs, longMin, longSec,
-					longHem, 0);
+			super(latDegs, latMin, latSec, latHem, longDegs, longMin, longSec, longHem, 0);
 		}
 	}
 
@@ -840,4 +867,3 @@ public class WorldLocation implements Serializable, Cloneable
 	}
 
 }
- 

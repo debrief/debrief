@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:gpx creator="test" version="1.1" xmlns:p="http://www.topografix.com/GPX/1/1" xmlns:deb="org.mwc.debrief.core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.topografix.com/GPX/1/1 ../../../../../../schema/gpx.xsd 
+	org.mwc.debrief.core ../../../../../../schema/debrief-gpx-extensions.xsd">
+
+	<p:metadata>
+		<p:name>1285669575458</p:name>
+		<p:desc>Saved with Debrief version dated Fri Apr 27 09:31:37 BST 2012</p:desc>
+		<p:time>2012-04-27T16:29:38+01:00</p:time>
+	</p:metadata>
+
+	<p:trk>
+		<p:name>NELSON</p:name>
+		<p:extensions>
+			<deb:track/>
+		</p:extensions>
+		<p:trkseg>
+			<p:trkpt lat="22.1862861" lon="-21.6978806">
+				<p:ele>0.000</p:ele>
+				<p:time>2012-04-27T16:29:38+01:00</p:time>
+			</p:trkpt>
+		</p:trkseg>
+	</p:trk>
+
+	<p:extensions>
+		<deb:chart_folio LineThickness="1" Name="Chart lib:JW_Area_1" SHOW_NAMES="false" Visible="true">
+			<deb:ChartReference FileName="/Volumes/path/image.tif" Label="CHART_REF_NAME" LabelLocation="Centre"
+				LabelVisibility="false" Visible="true">
+				<deb:colour Value="RED" />
+				<deb:TopLeft>
+					<deb:shortLocation Depth="0.000" Lat="54.8698412" Long="-5.7864695" />
+				</deb:TopLeft>
+				<deb:BottomRight>
+					<deb:shortLocation Depth="0.000" Lat="52.7236897" Long="-5.1346823" />
+				</deb:BottomRight>
+			</deb:ChartReference>
+		</deb:chart_folio>
+	</p:extensions>
+</p:gpx>
