@@ -12,6 +12,7 @@ package ASSET.Util.XML.Decisions.Responses;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
 import ASSET.Models.Decision.Responses.ManoeuvreToLocation;
@@ -21,10 +22,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
-public class ManoeuvreToLocationHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
 	private final static String type = "ManoeuvreToLocation";
@@ -42,6 +40,7 @@ public class ManoeuvreToLocationHandler extends
 
 		addAttributeHandler(new HandleAttribute("Name")
 		{
+			@Override
 			public void setValue(String name, final String val)
 			{
 				_name = val;
@@ -50,6 +49,7 @@ public class ManoeuvreToLocationHandler extends
 
 		addHandler(new WorldSpeedHandler()
 		{
+			@Override
 			public void setSpeed(WorldSpeed res)
 			{
 				_mySpeed = res;
@@ -58,6 +58,7 @@ public class ManoeuvreToLocationHandler extends
 
 		addHandler(new ASSETLocationHandler(LOCATION)
 		{
+			@Override
 			public void setLocation(final WorldLocation res)
 			{
 				_myLocation = res;
@@ -65,6 +66,7 @@ public class ManoeuvreToLocationHandler extends
 		});
 	}
 
+	@Override
 	public void elementClosed()
 	{
 		final Response ml = new ManoeuvreToLocation(_myLocation, _mySpeed);
@@ -83,8 +85,7 @@ public class ManoeuvreToLocationHandler extends
 	{
 	}
 
-	static public void exportThis(final Object toExport,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// create ourselves
 		final org.w3c.dom.Element thisPart = doc.createElement(type);
@@ -101,8 +102,7 @@ public class ManoeuvreToLocationHandler extends
 			WorldSpeedHandler.exportSpeed(SPEED, bb.getSpeed(), thisPart, doc);
 		}
 
-		ASSETLocationHandler.exportLocation(bb.getLocation(), LOCATION, thisPart,
-				doc);
+		ASSETLocationHandler.exportLocation(bb.getLocation(), LOCATION, thisPart, doc);
 
 		parent.appendChild(thisPart);
 
@@ -127,29 +127,26 @@ public class ManoeuvreToLocationHandler extends
 			// ok, let's go for it
 			final MyReaderWriter mr = new MyReaderWriter()
 			{
+				@Override
 				public void responseIs(final Response rec)
 				{
 					resp = (ManoeuvreToLocation) rec;
 				}
 			};
 
-			ManoeuvreToLocation ml = new ManoeuvreToLocation(new WorldLocation(1, 1,
-					1), new WorldSpeed(12, WorldSpeed.M_sec));
+			ManoeuvreToLocation ml = new ManoeuvreToLocation(new WorldLocation(1, 1, 1), new WorldSpeed(12, WorldSpeed.M_sec));
 			ml.setName("bingop");
 			java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
 			mr.exportThis(ml, os);
 
 			// great, now try to read it in!
-			java.io.InputStream is = new java.io.ByteArrayInputStream(os
-					.toByteArray());
+			java.io.InputStream is = new java.io.ByteArrayInputStream(os.toByteArray());
 			mr.importThis("", is);
 
 			// check we got it
 			assertEquals("it has the correct name", resp.getName(), "bingop");
-			assertEquals("it has the correct speed", resp.getSpeed().getValueIn(
-					WorldSpeed.M_sec), 12, 0.001);
-			assertEquals("correct location", resp.getLocation(), new WorldLocation(1,
-					1, 1));
+			assertEquals("it has the correct speed", resp.getSpeed().getValueIn(WorldSpeed.M_sec), 12, 0.001);
+			assertEquals("correct location", resp.getLocation(), new WorldLocation(1, 1, 1));
 
 			// second try, with missing speed
 			ml = new ManoeuvreToLocation(new WorldLocation(1, 1, 1), null);
@@ -164,13 +161,11 @@ public class ManoeuvreToLocationHandler extends
 			// check we got it
 			assertEquals("it has the correct name", resp.getName(), "bingop");
 			assertEquals("it has the correct (null) speed", resp.getSpeed(), null);
-			assertEquals("correct location", resp.getLocation(), new WorldLocation(1,
-					1, 1));
+			assertEquals("correct location", resp.getLocation(), new WorldLocation(1, 1, 1));
 
 		}
 
-		abstract protected class MyReaderWriter extends
-				ASSET.Util.XML.ASSETReaderWriter
+		abstract protected class MyReaderWriter extends ASSET.Util.XML.ASSETReaderWriter
 		{
 
 			abstract public void responseIs(Response rec);
@@ -178,10 +173,12 @@ public class ManoeuvreToLocationHandler extends
 			/**
 			 * handle the import of XML data into an existing session
 			 */
+			@Override
 			public void importThis(String fName, final java.io.InputStream is)
 			{
 				final MWC.Utilities.ReaderWriter.XML.MWCXMLReader handler = new ManoeuvreToLocationHandler()
 				{
+					@Override
 					public void setResponse(final Response dec)
 					{
 						responseIs(dec);
@@ -196,25 +193,23 @@ public class ManoeuvreToLocationHandler extends
 			/**
 			 * exporting the session
 			 */
-			public void exportThis(final ManoeuvreToLocation scenario,
-					final java.io.OutputStream os)
+			public void exportThis(final ManoeuvreToLocation scenario, final java.io.OutputStream os)
 			{
 				try
 				{
-				final Document doc = DocumentBuilderFactory.newInstance()
-						.newDocumentBuilder().newDocument();
-				final org.w3c.dom.Element scen = doc.createElement("Test");
-				ManoeuvreToLocationHandler.exportThis(scenario, scen, doc);
-				doc.appendChild(scen);
+					final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+					final org.w3c.dom.Element scen = doc.createElement("Test");
+					ManoeuvreToLocationHandler.exportThis(scenario, scen, doc);
+					doc.appendChild(scen);
 
-				// ok, we should be done now
+					// ok, we should be done now
 
-				// Write the DOM document to the file
-				XMLSerializer serializer = new XMLSerializer();
-				serializer.setOutputByteStream(os);
-				serializer.serialize(doc);
+					// Write the DOM document to the file
+					XMLSerializer serializer = new XMLSerializer();
+					serializer.setOutputByteStream(os);
+					serializer.serialize(doc);
 
-				// ok, we should be done now
+					// ok, we should be done now
 				}
 				catch (java.io.IOException e)
 				{

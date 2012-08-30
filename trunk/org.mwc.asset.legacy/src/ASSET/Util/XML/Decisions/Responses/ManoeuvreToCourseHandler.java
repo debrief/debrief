@@ -12,6 +12,7 @@ package ASSET.Util.XML.Decisions.Responses;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
 import ASSET.Models.Decision.Responses.ManoeuvreToCourse;
@@ -21,16 +22,13 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 /**
  * class which reads in a man to course response
  * 
  * @see ASSET.Models.Decision.Responses.ManoeuvreToCourse
  */
 
-public class ManoeuvreToCourseHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+public class ManoeuvreToCourseHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
 	private final static String type = "ManoeuvreToCourse";
@@ -74,6 +72,7 @@ public class ManoeuvreToCourseHandler extends
 
 		addAttributeHandler(new HandleAttribute("Name")
 		{
+			@Override
 			public void setValue(String name, final String val)
 			{
 				_name = val;
@@ -82,6 +81,7 @@ public class ManoeuvreToCourseHandler extends
 
 		addHandler(new WorldSpeedHandler(SPEED)
 		{
+			@Override
 			public void setSpeed(WorldSpeed res)
 			{
 				_mySpeed = res;
@@ -89,6 +89,7 @@ public class ManoeuvreToCourseHandler extends
 		});
 		addHandler(new WorldDistanceHandler(Height)
 		{
+			@Override
 			public void setWorldDistance(WorldDistance res)
 			{
 				_myHeight = res;
@@ -97,6 +98,7 @@ public class ManoeuvreToCourseHandler extends
 
 		addAttributeHandler(new HandleDoubleAttribute(COURSE)
 		{
+			@Override
 			public void setValue(String name, final double val)
 			{
 				_myCourse = new Float(val);
@@ -105,6 +107,7 @@ public class ManoeuvreToCourseHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(RELATIVE_SPEED)
 		{
+			@Override
 			public void setValue(String name, final boolean val)
 			{
 				_relativeSpeed = val;
@@ -113,6 +116,7 @@ public class ManoeuvreToCourseHandler extends
 
 		addAttributeHandler(new HandleBooleanAttribute(RELATIVE_COURSE)
 		{
+			@Override
 			public void setValue(String name, final boolean val)
 			{
 				_relativeCourse = val;
@@ -120,10 +124,10 @@ public class ManoeuvreToCourseHandler extends
 		});
 	}
 
+	@Override
 	public void elementClosed()
 	{
-		final Response ml = new ManoeuvreToCourse(_mySpeed, _relativeSpeed,
-				_myCourse, _relativeCourse, _myHeight);
+		final Response ml = new ManoeuvreToCourse(_mySpeed, _relativeSpeed, _myCourse, _relativeCourse, _myHeight);
 		ml.setName(_name);
 
 		// finally output it
@@ -140,8 +144,7 @@ public class ManoeuvreToCourseHandler extends
 	{
 	}
 
-	static public void exportThis(final Object toExport,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
 	{
 		// create ourselves
 		final org.w3c.dom.Element thisPart = doc.createElement(type);
@@ -169,8 +172,7 @@ public class ManoeuvreToCourseHandler extends
 		// and the Height
 		if (bb.getHeight() != null)
 		{
-			WorldDistanceHandler
-					.exportDistance(Height, bb.getHeight(), thisPart, doc);
+			WorldDistanceHandler.exportDistance(Height, bb.getHeight(), thisPart, doc);
 		}
 
 		parent.appendChild(thisPart);
@@ -196,28 +198,26 @@ public class ManoeuvreToCourseHandler extends
 			// ok, let's go for it
 			final MyReaderWriter mr = new MyReaderWriter()
 			{
+				@Override
 				public void responseIs(final Response rec)
 				{
 					resp = (ManoeuvreToCourse) rec;
 				}
 			};
 
-			ManoeuvreToCourse ml = new ManoeuvreToCourse(new WorldSpeed(12,
-					WorldSpeed.M_sec), false, new Float(12), true, new WorldDistance(14,
+			ManoeuvreToCourse ml = new ManoeuvreToCourse(new WorldSpeed(12, WorldSpeed.M_sec), false, new Float(12), true, new WorldDistance(14,
 					WorldDistance.METRES));
 			ml.setName("bingop");
 			java.io.ByteArrayOutputStream os = new java.io.ByteArrayOutputStream();
 			mr.exportThis(ml, os);
 
 			// great, now try to read it in!
-			java.io.InputStream is = new java.io.ByteArrayInputStream(os
-					.toByteArray());
+			java.io.InputStream is = new java.io.ByteArrayInputStream(os.toByteArray());
 			mr.importThis("", is);
 
 			// check we got it
 			assertEquals("it has the correct name", resp.getName(), "bingop");
-			assertEquals("it has the correct speed", resp.getSpeed().getValueIn(
-					WorldSpeed.M_sec), 12, 0.001);
+			assertEquals("it has the correct speed", resp.getSpeed().getValueIn(WorldSpeed.M_sec), 12, 0.001);
 			assertEquals("correct course", resp.getCourse().floatValue(), 12f, 0.001);
 
 			// second try, with missing speed
@@ -245,10 +245,12 @@ public class ManoeuvreToCourseHandler extends
 			/**
 			 * handle the import of XML data into an existing session
 			 */
+			@Override
 			public void importThis(String fName, final java.io.InputStream is)
 			{
 				final MWC.Utilities.ReaderWriter.XML.MWCXMLReader handler = new ManoeuvreToCourseHandler()
 				{
+					@Override
 					public void setResponse(final Response dec)
 					{
 						responseIs(dec);
@@ -263,15 +265,13 @@ public class ManoeuvreToCourseHandler extends
 			/**
 			 * exporting the session
 			 */
-			public void exportThis(final ManoeuvreToCourse scenario,
-					final java.io.OutputStream os)
+			public void exportThis(final ManoeuvreToCourse scenario, final java.io.OutputStream os)
 			{
 				try
 				{
 					// output the XML header stuff
 					// output the plot
-					final Document doc = DocumentBuilderFactory.newInstance()
-							.newDocumentBuilder().newDocument();
+					final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 					final org.w3c.dom.Element scen = doc.createElement("Test");
 					ManoeuvreToCourseHandler.exportThis(scenario, scen, doc);
 					doc.appendChild(scen);
