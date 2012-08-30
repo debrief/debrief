@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<p:gpx creator="test" version="1.1" xmlns:p="http://www.topografix.com/GPX/1/1" xmlns:deb="org.mwc.debrief.core"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<p:gpx creator="test" version="1.1" xmlns:p="http://www.topografix.com/GPX/1/1"
+	xmlns:deb="org.mwc.debrief.core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.topografix.com/GPX/1/1 ../../../../../../schema/gpx.xsd 
 	org.mwc.debrief.core ../../../../../../schema/debrief-gpx-extensions.xsd">
 
@@ -13,9 +13,11 @@
 	<p:trk>
 		<p:name>NELSON</p:name>
 		<p:extensions>
-			<deb:track NameAtStart="false" LineThickness="2" InterpolatePoints="false" LinkPositions="false" LineStyle="2"
-				NameLocation="Centre" NameVisible="false" PlotArrayCentre="false" PositionsLinked="false" PositionsVisible="false"
-				SensorsVisible="false" SolutionsVisible="false" Symbol="SQUARE" Visible="false" />
+			<deb:track NameAtStart="false" LineThickness="2"
+				InterpolatePoints="false" LinkPositions="false" LineStyle="2"
+				NameLocation="Centre" NameVisible="false" PlotArrayCentre="false"
+				PositionsLinked="false" PositionsVisible="false" SensorsVisible="false"
+				SolutionsVisible="false" Symbol="SQUARE" Visible="false" />
 		</p:extensions>
 		<p:trkseg>
 			<p:trkpt lat="22.1862861" lon="-21.6978806">
@@ -26,17 +28,100 @@
 	</p:trk>
 
 	<p:extensions>
-		<deb:chart_folio LineThickness="1" Name="Chart lib:JW_Area_1" SHOW_NAMES="false" Visible="true">
-			<deb:ChartReference FileName="/Volumes/path/image.tif" Label="CHART_REF_NAME" LabelLocation="Centre"
-				LabelVisible="false" Visible="true" >
-				<deb:colour Value="RED" />
-				<deb:TopLeft>
-					<deb:shortLocation Depth="0.000" Lat="54.8698412" Long="-5.7864695" />
-				</deb:TopLeft>
-				<deb:BottomRight>
-					<deb:shortLocation Depth="0.000" Lat="52.7236897" Long="-5.1346823" />
-				</deb:BottomRight>
-			</deb:ChartReference>
-		</deb:chart_folio>
+		<deb:plot Created="Wed Aug 01 15:00:06 BST 2012" Name="Debrief Plot"
+			PlotId="1285669575458">
+			<deb:details
+				Text="Saved with Debrief version dated Tue Jul 24 15:21:38 BST 2012" />
+			<deb:session>
+				<deb:layers>
+					<deb:layer LineThickness="0" Name="Misc" Visible="true">
+						<deb:line Label="other line" LabelLocation="Left" LabelVisible="true"
+							LineThickness="0" Visible="true">
+							<deb:colour CustomBlue="250" CustomGreen="250" CustomRed="250"
+								Value="custom" />
+							<deb:fontcolour CustomBlue="250" CustomGreen="250"
+								CustomRed="250" Value="custom" />
+							<deb:font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+							<deb:tl>
+								<deb:shortLocation Depth="0.000" Lat="22.0313639"
+									Long="-21.4512846" />
+							</deb:tl>
+							<deb:br>
+								<deb:shortLocation Depth="0.000" Lat="22.0491010"
+									Long="-21.4909578" />
+							</deb:br>
+						</deb:line>
+						<deb:textlabel Label="Some label" LabelLocation="Left"
+							LabelVisible="true" Scale="Large" Symbol="FilledCircle"
+							SymbolVisible="true" Visible="true">
+							<deb:colour Value="RED" />
+							<deb:font Bold="false" Family="Sans Serif" Italic="false" Size="9" />
+							<deb:centre>
+								<deb:shortLocation Depth="0.000" Lat="22.1168829"
+									Long="-21.4851252" />
+							</deb:centre>
+						</deb:textlabel>
+						<deb:rectangle Filled="false" Label="NOGO DELTA"
+							LabelLocation="Right" LabelVisible="true" LineThickness="2"
+							Visible="true">
+							<deb:colour Value="GREEN" />
+							<deb:fontcolour Value="GREEN" />
+							<deb:font Bold="false" Family="Sans Serif" Italic="false" Size="12" />
+							<deb:tl>
+								<deb:shortLocation Depth="0.000" Lat="22.1749400"
+									Long="-21.5391250" />
+							</deb:tl>
+							<deb:br>
+								<deb:shortLocation Depth="0.000" Lat="22.1408431"
+									Long="-21.5166453" />
+							</deb:br>
+						</deb:rectangle>
+					</deb:layer>
+				</deb:layers>
+				<deb:projection Border="1.100" PrimaryOriented="false"
+					PrimaryOrigin="false" Type="Flat">
+					<deb:tl>
+						<deb:shortLocation Depth="0.000" Lat="59.2561787" Long="-7.1303964" />
+					</deb:tl>
+					<deb:br>
+						<deb:shortLocation Depth="0.000" Lat="57.1630975" Long="-3.6597905" />
+					</deb:br>
+				</deb:projection>
+				<deb:gui>
+					<deb:tote />
+					<deb:component Type="Stepper">
+						<deb:property Name="GREEN" Value="64" />
+						<deb:property Name="DateFormat" Value="yy/MM/dd HH:mm" />
+						<deb:property Name="ShadeArcs" Value="true" />
+						<deb:property Name="Radius" Value="3500.000" />
+						<deb:property Name="Highlighter" Value="Default Highlight" />
+						<deb:property Name="RectHighlight_Size" Value="5" />
+						<deb:property Name="RectHighlight_Color" Value="255,255,255" />
+						<deb:property Name="BLUE" Value="64" />
+						<deb:property Name="LinkPositions" Value="true" />
+						<deb:property Name="RED" Value="64" />
+						<deb:property Name="CurrentTime" Value="951212 102144" />
+						<deb:property Name="NumRings" Value="1" />
+						<deb:property Name="Toolbox_Start_Time" Value="951212 050000" />
+						<deb:property Name="PointSize" Value="5" />
+						<deb:property Name="LargeStep" Value="10.0 minutes" />
+						<deb:property Name="UseTrackColor" Value="false" />
+						<deb:property Name="AutoStepInterval" Value="1.0 seconds" />
+						<deb:property Name="Toolbox_End_Time" Value="951212 114500" />
+						<deb:property Name="Cursor" Value="Normal" />
+						<deb:property Name="TrailLength" Value="15.0 minutes" />
+						<deb:property Name="PlotTrackName" Value="false" />
+						<deb:property Name="FadePoints" Value="true" />
+						<deb:property Name="SpokeSeparation" Value="45" />
+						<deb:property Name="VectorStretch" Value="1.000" />
+						<deb:property Name="SmallStep" Value="1.0 minutes" />
+						<deb:property Name="Arcs" Value="119" />
+					</deb:component>
+					<deb:Background>
+						<deb:colour Value="BLACK" />
+					</deb:Background>
+				</deb:gui>
+			</deb:session>
+		</deb:plot>
 	</p:extensions>
 </p:gpx>
