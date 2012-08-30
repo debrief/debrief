@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot Created="Wed Aug 01 15:00:06 BST 2012" Name="Debrief Plot" PlotId="1285669575458">
+<details Text="Saved with Debrief version dated Tue Jul 24 15:21:38 BST 2012"/>
+<session>
+<layers>
+<layer LineThickness="0" Name="Misc" Visible="true">
+<circle Filled="false" Label="Stovepipe" LabelLocation="Bottom" LabelVisible="true" LineThickness="3" Visible="true">
+<colour Value="YELLOW"/>
+<fontcolour Value="YELLOW"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="22.1357533" Long="-21.3900751"/>
+</centre>
+<Radius Units="yds" Value="4000.0000000"/>
+</circle>
+<line Label="other line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="0.000" Lat="22.0313639" Long="-21.4512846"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="22.0491010" Long="-21.4909578"/>
+</br>
+</line>
+<line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
+<fontcolour Value="CYAN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="21.9900078" Long="-21.4569510"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="22.0286703" Long="-21.3554914"/>
+</br>
+</line>
+<textlabel Label="Some label" LabelLocation="Left" LabelVisible="true" Scale="Large" Symbol="FilledCircle" SymbolVisible="true" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<centre>
+<shortLocation Depth="0.000" Lat="22.1168829" Long="-21.4851252"/>
+</centre>
+</textlabel>
+<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
+<colour Value="GREEN"/>
+<fontcolour Value="GREEN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="22.1749400" Long="-21.5391250"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="22.1408431" Long="-21.5166453"/>
+</br>
+</rectangle>
+</layer>
+<track InterpolatePoints="false" LineStyle="0" LineThickness="2" LinkPositions="true" Name="NELSON" NameAtStart="true" NameLocation="Right" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="true" SolutionsVisible="true" Symbol="ScaledSubmarine" Visible="true">
+<colour Value="RED"/>
+<SymbolColor Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<SYMBOL_LENGTH Units="m" Value="100.0000000"/>
+<SYMBOL_WIDTH Units="m" Value="20.0000000"/>
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
+<fix ArrowShowing="false" Course="269.700" Dtg="951212 050000" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="22.1862861" Long="-21.6978806"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="269.700" Dtg="951212 050100" Label="0501" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="22.1862722" Long="-21.7008278"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="269.900" Dtg="951212 050200" Label="0502" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="22.1862528" Long="-21.7041139"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="268.700" Dtg="951212 050300" Label="0503" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="22.1862528" Long="-21.7075750"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="270.600" Dtg="951212 050400" Label="0504" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="22.1861889" Long="-21.7112028"/>
+</centre>
+</fix>
+<fix ArrowShowing="false" Course="269.400" Dtg="951212 050500" Label="0505" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="0.000" Lat="22.1862194" Long="-21.7148528"/>
+</centre>
+</fix>
+</TrackSegment>
+</track>
+</layers>
+<projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
+<tl>
+<shortLocation Depth="0.000" Lat="59.2561787" Long="-7.1303964"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="57.1630975" Long="-3.6597905"/>
+</br>
+</projection>
+<gui>
+<tote/>
+<component Type="Stepper">
+<property Name="GREEN" Value="64"/>
+<property Name="DateFormat" Value="yy/MM/dd HH:mm"/>
+<property Name="ShadeArcs" Value="true"/>
+<property Name="Radius" Value="3500.000"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="RectHighlight_Size" Value="5"/>
+<property Name="RectHighlight_Color" Value="255,255,255"/>
+<property Name="BLUE" Value="64"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="RED" Value="64"/>
+<property Name="CurrentTime" Value="951212 102144"/>
+<property Name="NumRings" Value="1"/>
+<property Name="Toolbox_Start_Time" Value="951212 050000"/>
+<property Name="PointSize" Value="5"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="UseTrackColor" Value="false"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="Toolbox_End_Time" Value="951212 114500"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="Arcs" Value="119"/>
+</component>
+<Background>
+<colour Value="BLACK"/>
+</Background>
+</gui>
+</session>
+</plot>
