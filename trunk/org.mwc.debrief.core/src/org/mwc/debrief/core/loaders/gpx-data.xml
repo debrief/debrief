@@ -13,7 +13,7 @@
 	<p:trk>
 		<p:name>NELSON</p:name>
 		<p:extensions>
-			<deb:track NameAtStart="false" LineThickness="2"
+			<deb:trackExtension NameAtStart="false" LineThickness="2"
 				InterpolatePoints="false" LinkPositions="false" LineStyle="2"
 				NameLocation="Centre" NameVisible="false" PlotArrayCentre="false"
 				PositionsLinked="false" PositionsVisible="false" SensorsVisible="false"
@@ -23,23 +23,41 @@
 			<p:trkpt lat="22.1862861" lon="-21.6978806">
 				<p:ele>0.000</p:ele>
 				<p:time>2012-04-27T16:29:38+01:00</p:time>
+				<p:extensions>
+					<deb:fixExtension ArrowShowing="false" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true" />
+				</p:extensions>
 			</p:trkpt>
 			<p:trkpt lat="22.2862861" lon="-21.7978806">
 				<p:ele>0.000</p:ele>
 				<p:time>2012-04-27T16:30:38+01:00</p:time>
+				<p:extensions>
+					<deb:fixExtension ArrowShowing="false" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true" />
+				</p:extensions>
 			</p:trkpt>
 			<p:trkpt lat="22.4862861" lon="-21.2978806">
 				<p:ele>0.000</p:ele>
 				<p:time>2012-04-27T16:31:38+01:00</p:time>
+				<p:extensions>
+					<deb:fixExtension ArrowShowing="false" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true" />
+				</p:extensions>
 			</p:trkpt>
 			<p:trkpt lat="22.1862861" lon="-21.5978806">
 				<p:ele>0.000</p:ele>
 				<p:time>2012-04-27T16:32:38+01:00</p:time>
+				<p:extensions>
+					<deb:fixExtension ArrowShowing="false" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true" />
+				</p:extensions>
 			</p:trkpt>
 			<p:trkpt lat="22.3862861" lon="-21.1978806">
 				<p:ele>0.000</p:ele>
 				<p:time>2012-04-27T16:33:38+01:00</p:time>
+				<p:extensions>
+					<deb:fixExtension ArrowShowing="false" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true" />
+				</p:extensions>
 			</p:trkpt>
+			<p:extensions>
+				<deb:trackSegmentExtension  LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true" />
+			</p:extensions>
 		</p:trkseg>
 	</p:trk>
 
