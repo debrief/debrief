@@ -5,12 +5,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Enumeration;
+
 import org.junit.Test;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldLocation;
@@ -64,10 +67,29 @@ public class JaxbGpxHelperTest
 		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
 		assertEquals(-21.6978806, trackStart.getLong(), 0.0000001);
 		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
-		assertTrue("1 track point is present in the gpx xml", segment.elements().hasMoreElements());
+
+		int trackPointCount = 0;
+		Enumeration<Editable> elements = segment.elements();
+		while (elements.hasMoreElements())
+		{
+			trackPointCount++;
+			elements.nextElement();
+
+		}
+		assertEquals("5 track points are present in the gpx xml", 5, trackPointCount);
 
 		FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());
+
+		assertEquals(269.700, fix.getCourse(), 0.0000001);
+		assertTrue(fix.getArrowShowing());
+		assertFalse(fix.getLabelShowing());
+		assertFalse(fix.getLineShowing());
+		assertFalse(fix.getSymbolShowing());
+		assertFalse(fix.getVisible());
+		assertEquals("120500", fix.getLabel());
+		assertEquals(2.000, fix.getSpeed(), 0.001);
+		assertEquals(Integer.valueOf(LocationPropertyEditor.LEFT), fix.getLabelLocation());
 	}
 
 	/**
@@ -107,12 +129,21 @@ public class JaxbGpxHelperTest
 
 		// assert Fix
 		WorldLocation trackStart = segment.getTrackStart();
-		assertNotNull("Since there is only one track it should be the start of the track ", trackStart);
+		assertNotNull("The first track should be start of the track", trackStart);
 
 		assertEquals(22.1862861, trackStart.getLat(), 0.0000001);
 		assertEquals(-21.6978806, trackStart.getLong(), 0.0000001);
 		assertEquals(0.000, trackStart.getDepth(), 0.0000001);
-		assertTrue("1 track point is present in the gpx xml", segment.elements().hasMoreElements());
+
+		int trackPointCount = 0;
+		Enumeration<Editable> elements = segment.elements();
+		while (elements.hasMoreElements())
+		{
+			trackPointCount++;
+			elements.nextElement();
+
+		}
+		assertEquals("1 track point is present in the gpx xml", 1, trackPointCount);
 
 		FixWrapper fix = (FixWrapper) segment.elements().nextElement();
 		assertNotNull(fix.getTime());

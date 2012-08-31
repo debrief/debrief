@@ -24,7 +24,7 @@
 				<p:ele>0.000</p:ele>
 				<p:time>2012-04-27T16:29:38+01:00</p:time>
 				<p:extensions>
-					<deb:fixExtension ArrowShowing="false" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true" />
+					<deb:fixExtension ArrowShowing="true" Course="269.700" Label="120500" LabelLocation="Left" LabelShowing="false" LineShowing="false" Speed="2.000" SymbolShowing="false" Visible="false" />
 				</p:extensions>
 			</p:trkpt>
 			<p:trkpt lat="22.2862861" lon="-21.7978806">

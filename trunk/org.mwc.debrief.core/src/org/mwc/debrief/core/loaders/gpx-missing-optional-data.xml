@@ -13,7 +13,7 @@
 	<p:trk>
 		<p:name>NELSON</p:name>
 		<p:extensions>
-			<deb:track/>
+			<deb:trackExtension />
 		</p:extensions>
 		<p:trkseg>
 			<p:trkpt lat="22.1862861" lon="-21.6978806">

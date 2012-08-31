@@ -10,7 +10,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.gpx.TrackType;
+import org.mwc.debrief.core.gpx.TrackExtensionType;
 import org.mwc.debrief.core.loaders.DebriefJaxbContextAware;
 import org.w3c.dom.Node;
 
@@ -19,6 +19,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Properties.LocationPropertyEditor;
 
+import com.topografix.gpx.v11.ExtensionsType;
 import com.topografix.gpx.v11.GpxType;
 import com.topografix.gpx.v11.TrkType;
 import com.topografix.gpx.v11.TrksegType;
@@ -58,6 +59,7 @@ public class TrackMapper implements DebriefJaxbContextAware
 
 				for (WptType waypointType : gpxSegment.getTrkpt())
 				{
+					fixMapper.setJaxbContext(debriefContext);
 					FixWrapper fix = fixMapper.fromGpx(waypointType);
 					segment.add(fix);
 				}
@@ -74,28 +76,32 @@ public class TrackMapper implements DebriefJaxbContextAware
 
 		try
 		{
-			List<Object> any = gpxTrack.getExtensions().getAny();
+			ExtensionsType extensions = gpxTrack.getExtensions();
+			if (extensions != null)
+			{
+				List<Object> any = extensions.getAny();
 
-			Unmarshaller unmarshaller = debriefContext.createUnmarshaller();
-			Object object = unmarshaller.unmarshal((Node) any.get(0));
-			TrackType trackExtension = (TrackType) JAXBIntrospector.getValue(object);
+				Unmarshaller unmarshaller = debriefContext.createUnmarshaller();
+				Object object = unmarshaller.unmarshal((Node) any.get(0));
+				TrackExtensionType trackExtension = (TrackExtensionType) JAXBIntrospector.getValue(object);
 
-			track.setNameAtStart(trackExtension.isNameAtStart());
-			track.setLineThickness(trackExtension.getLineThickness().intValue());
-			track.setInterpolatePoints(trackExtension.isInterpolatePoints());
-			track.setLinkPositions(trackExtension.isLinkPositions());
-			track.setLineStyle(trackExtension.getLineStyle().intValue());
-			LocationPropertyEditor nameLocationConverter = new LocationPropertyEditor();
-			nameLocationConverter.setAsText(trackExtension.getNameLocation());
-			track.setNameLocation(((Integer) nameLocationConverter.getValue()).intValue());
-			track.getSensors().setVisible(trackExtension.isSensorsVisible());
-			track.getSolutions().setVisible(trackExtension.isSolutionsVisible());
-			track.setNameVisible(trackExtension.isNameVisible());
-			track.setPlotArrayCentre(trackExtension.isPlotArrayCentre());
-			track.setPositionsVisible(trackExtension.isPositionsVisible());
-			track.setLinkPositions(trackExtension.isLinkPositions());
-			track.setVisible(trackExtension.isVisible());
-			track.setSymbolType(trackExtension.getSymbol());
+				track.setNameAtStart(trackExtension.isNameAtStart());
+				track.setLineThickness(trackExtension.getLineThickness().intValue());
+				track.setInterpolatePoints(trackExtension.isInterpolatePoints());
+				track.setLinkPositions(trackExtension.isLinkPositions());
+				track.setLineStyle(trackExtension.getLineStyle().intValue());
+				LocationPropertyEditor nameLocationConverter = new LocationPropertyEditor();
+				nameLocationConverter.setAsText(trackExtension.getNameLocation());
+				track.setNameLocation(((Integer) nameLocationConverter.getValue()).intValue());
+				track.getSensors().setVisible(trackExtension.isSensorsVisible());
+				track.getSolutions().setVisible(trackExtension.isSolutionsVisible());
+				track.setNameVisible(trackExtension.isNameVisible());
+				track.setPlotArrayCentre(trackExtension.isPlotArrayCentre());
+				track.setPositionsVisible(trackExtension.isPositionsVisible());
+				track.setLinkPositions(trackExtension.isLinkPositions());
+				track.setVisible(trackExtension.isVisible());
+				track.setSymbolType(trackExtension.getSymbol());
+			}
 		}
 		catch (JAXBException e)
 		{
