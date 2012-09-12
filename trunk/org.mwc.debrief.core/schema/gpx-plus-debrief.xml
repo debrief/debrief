@@ -71,8 +71,7 @@
     </p:trk>
 
     <p:extensions>
-        <deb:plot Created="Wed Aug 01 15:00:06 BST 2012" Name="Debrief Plot" PlotId="1285669575458">
-            <deb:details Text="Saved with Debrief version dated Tue Jul 24 15:21:38 BST 2012"/>
+        <deb:plot>
             <deb:session>
                 <deb:layers>
                     <deb:layer LineThickness="0" Name="Misc" Visible="true">
