@@ -572,6 +572,7 @@
 			<xs:element name="circle" type="circle" />
 			<xs:element name="Arc" type="Arc" />
 			<xs:element name="wheel" type="wheel" />
+			<xs:element name="range_rings" type="range_rings" />
 		</xs:choice>
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
@@ -698,6 +699,18 @@
 				<xs:attribute name="Inner" type="xs:string" />
 				<xs:attribute name="Outer" type="xs:string" />
 				<xs:attribute name="SpokeSize" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="range_rings">
+		<xs:complexContent>
+			<xs:extension base="shape">
+				<xs:sequence>
+					<xs:element name="centre" type="locationType" />
+					<xs:element name="RingWidth" type="worldDistanceType" />
+				</xs:sequence>
+				<xs:attribute name="NumRings" type="xs:int" />
+				<xs:attribute name="RangeLabelLoc" type="xs:string" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
