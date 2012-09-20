@@ -216,7 +216,7 @@ Library.
 
    <features>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.178"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.221"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.222"/>
    </features>
 
 
