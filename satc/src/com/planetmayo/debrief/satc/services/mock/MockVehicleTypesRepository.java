@@ -11,15 +11,8 @@ public class MockVehicleTypesRepository implements VehicleTypesRepository {
 	@Override
 	public List<VehicleType> getAllTypes() {
 		return Arrays.asList(
-				createType("UK Cross Channel Ferry"),
-				createType("Medium Tanker"),
-				createType("Large Tanker")
-		);
-	}
-	
-	private VehicleType createType(String name) {
-		VehicleType type = new VehicleType();
-		type.setName(name);
-		return type;
+				new VehicleType("UK Cross Channel Ferry", 12, 30,400, 1600, 0.2, 0.4), 
+				new VehicleType("Medium Tanker", 8, 15, 800,2600, 1, 3), 
+				new VehicleType("Large Tanker", 8, 12, 1400, 4600, 1,3));
 	}
 }
