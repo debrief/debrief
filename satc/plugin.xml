@@ -5,7 +5,21 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="Sample Category"
+            name="Debrief SATC"
+            id="com.planetmayo.debrief.satc">
+      </category>
+      <view
+            name="Maintain Contributions"
+            icon="icons/sample.gif"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc.views.MaintainContributionsView"
+            id="com.planetmayo.debrief.satc.views.MaintainContributionsView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Debrief SATC"
             id="com.planetmayo.debrief.satc">
       </category>
       <view
@@ -15,7 +29,7 @@
             class="com.planetmayo.debrief.satc.views.SampleView"
             id="com.planetmayo.debrief.satc.views.SampleView">
       </view>
-   </extension>
+   </extension>   
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
