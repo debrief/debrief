@@ -8640,15 +8640,16 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           recommended that they are stored in separate files, to ease reading
           and plotting track-data only.</para>
 
-          <para>The standard data format is as follows:<screen>            <markup>
-123456789012345678901234567890123456789012345678901234567890123456789012
-YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
-            </markup> </screen>or since Autumn 2004 multi-word track names can
-          be entered by enclosing them in double-quotation marks (") and
-          4-figure year values are supported: <screen
-          xml:id="quoted_track_names">            <markup>
+          <para>The standard data format is as
+            follows:<screen>            <markup>
+1234567890123456789012345678901234567890123456789012345678901234567890123456789
+YYMMDD HHMMSS.SSS XXXXXX SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD xx...xx
+            </markup> </screen>or
+            since Autumn 2004 multi-word track names can be entered by enclosing them in
+            double-quotation marks (") and 4-figure year values are supported:
+            <screen xml:id="quoted_track_names">            <markup>
 12345678901234567890123456789012345678901234567890123456789012345678901234567890
-YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
+YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD xx...xxx
             </markup>      </screen></para>
 
           <para>The field descriptions are: <table frame="all"
@@ -8763,7 +8764,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                   </row>
 
                   <row>
-                    <entry><para>13</para></entry>
+                    <entry><para>15</para></entry>
 
                     <entry><para>Depth (metres) <footnote>
                         <para>Where depth data is not available, the IEE
@@ -8771,6 +8772,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                         <application>Debrief</application> reflects the
                         absence of this data where applicable.</para>
                       </footnote></para></entry>
+                  </row>
+                  <row>
+                    <entry>16</entry>
+                    <entry>Text label (optional).  Any text appearing after the depth value is used
+                      as a label for that position. If no label is supplied a time-related label is
+                      generated.</entry>
                   </row>
                 </tbody>
               </tgroup>

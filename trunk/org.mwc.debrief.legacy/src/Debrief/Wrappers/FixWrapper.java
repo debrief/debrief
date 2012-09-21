@@ -379,7 +379,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_theLabel.setFixedOffset(new java.awt.Dimension(4, 4));
 
 		// reset (recalculate) the name bit
-		resetName();
+//		resetName();
+		
 		// hide the name, by default
 		_showLabel = Boolean.FALSE;
 		// declare a duff track

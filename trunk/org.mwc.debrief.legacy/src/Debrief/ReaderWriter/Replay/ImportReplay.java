@@ -489,7 +489,11 @@ public class ImportReplay extends PlainImporterBase
 				Color thisColor = replayColorFor(rf.theSymbology);
 
 				// create the wrapper for this annotation
-				PlainWrapper thisWrapper = new FixWrapper(rf.theFix);
+				FixWrapper thisWrapper = new FixWrapper(rf.theFix);
+				
+				// overwrite the label, if there's one there
+				if(rf.label != null)
+					thisWrapper.setLabel(rf.label);
 
 				// keep track of the wrapper for this track
 				TrackWrapper trkWrapper = null;

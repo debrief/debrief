@@ -129,36 +129,40 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 						{
 							FixWrapper fw = (FixWrapper) item;
 
-							long thisTime = fw.getTime().getDate().getTime();
-
-							// update the time
-							worker.setTime(thisTime);
-
-							// is this the first element?
-							if (lastStamp == -1)
+							// does this fix already have a label? if so, we'll leave it
+							if (fw.getLabel().length() == 0)
 							{
-								// show the days anyway
-								thisLabel = dayFormat.format(worker);
+								long thisTime = fw.getTime().getDate().getTime();
 
-								// ok, done
-								lastStamp = thisTime / _day;
-							}
-							else
-							{
-								// find the last hour stamp before this time
-								long hour = thisTime / _day;
+								// update the time
+								worker.setTime(thisTime);
 
-								if (hour > lastStamp)
+								// is this the first element?
+								if (lastStamp == -1)
 								{
-									lastStamp = hour;
+									// show the days anyway
 									thisLabel = dayFormat.format(worker);
+
+									// ok, done
+									lastStamp = thisTime / _day;
 								}
 								else
 								{
-									thisLabel = normalFormat.format(worker);
+									// find the last hour stamp before this time
+									long hour = thisTime / _day;
+
+									if (hour > lastStamp)
+									{
+										lastStamp = hour;
+										thisLabel = dayFormat.format(worker);
+									}
+									else
+									{
+										thisLabel = normalFormat.format(worker);
+									}
 								}
+								fw.setLabel(thisLabel);
 							}
-							fw.setLabel(thisLabel);
 						} // whether this was a fix
 					}
 				}
@@ -167,7 +171,8 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 		}
 		catch (Exception e)
 		{
-			MWC.Utilities.Errors.Trace.trace(e,
+			MWC.Utilities.Errors.Trace.trace(
+					e,
 					"Failed whilst setting default formatting for track:"
 							+ track.getName());
 		}
