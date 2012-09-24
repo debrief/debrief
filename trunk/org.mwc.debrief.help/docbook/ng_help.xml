@@ -3214,7 +3214,8 @@ and so on....</programlisting></para>
           allow you to format how information is displayed on the menu, and
           perform other time-related activities.</para>
 
-          <sect3 xml:id="display_modes">
+        </sect2>
+          <sect2 xml:id="display_modes">
             <title>Display modes</title>
 
             <para>The first three icons on the Time Controller toolbar allow
@@ -3338,9 +3339,9 @@ and so on....</programlisting></para>
                   </listitem>
                 </varlistentry>
               </variablelist></para>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="relative_mode">
+          <sect2 xml:id="relative_mode">
             <title>Plotting modes</title>
 
             <para>The plotting mode affects the origin and orientation of the
@@ -3377,9 +3378,9 @@ and so on....</programlisting></para>
                   </screenshot>
                 </figure></para>
             </tip>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="highlight_modes">
+          <sect2 xml:id="highlight_modes">
             <title>Highlight modes</title>
 
             <para>Three highlight modes are provided:<variablelist>
@@ -3434,11 +3435,17 @@ and so on....</programlisting></para>
             <para>For range rings you are able to edit the following
             properties:<variablelist>
                 <varlistentry>
-                  <term>Arcs</term>
+                  <term>Arc Start</term>
 
                   <listitem>
-                    <para>The angle of arc that the spokes extend out to. The
-                    angle is measured either side of current heading.</para>
+                    <para>The start angle for the arc of coverage. The arc will be plotted relative
+                      to platform heading, with negative values plotted to the Port-Side.</para>
+                  </listitem>
+                </varlistentry>
+                <varlistentry>
+                  <term>Arc End</term>
+                  <listitem>
+                    <para>The ending angle for the arc of coverage, travelling clockwise</para>
                   </listitem>
                 </varlistentry>
 
@@ -3476,9 +3483,9 @@ and so on....</programlisting></para>
                   </listitem>
                 </varlistentry>
               </variablelist></para>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="time_display">
+          <sect2 xml:id="time_display">
             <title>Time display</title>
 
             <para>The green digits of the time display are tied closely to the
@@ -3492,9 +3499,9 @@ and so on....</programlisting></para>
             <para>A range of display formats are provided to make the
             displayed time more consistent with that in a supporting document,
             or of sufficient fidelity to support the current analysis.</para>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="time_slider">
+          <sect2 xml:id="time_slider">
             <title>Time slider</title>
 
             <para>Beneath the time-display is the time-slider, used to quickly
@@ -3505,9 +3512,9 @@ and so on....</programlisting></para>
             selecting the relevant increment from the <guibutton>Time slider
             increment</guibutton> list in the Time Controller's drop-down
             menu.</para>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="time_bookmarks">
+          <sect2 xml:id="time_bookmarks">
             <title>Bookmarking</title>
 
             <para>Debrief NG introduces the concept of <glossterm
@@ -3527,9 +3534,9 @@ and so on....</programlisting></para>
             when it is. The current DTG is used as a default remark - but
             you'll get most mileage our of the bookmarks by describing the
             event that you're bookmarking.</para>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="filter_to_time_period">
+          <sect2 xml:id="filter_to_time_period">
             <title>Manipulating according to time period</title>
 
             <para>The pair of sliders at the foot of the <guiicon>Time
@@ -3541,7 +3548,7 @@ and so on....</programlisting></para>
             period length but change its origin (again using the shift-key if
             appropriate).</para>
 
-            <sect4 xml:id="filter_time_period">
+            <sect3 xml:id="filter_time_period">
               <title>Filter to time period</title>
 
               <para>When the <guibutton><inlinemediaobject>
@@ -3558,9 +3565,9 @@ and so on....</programlisting></para>
               the period covered by the time-slider is also reduced. Drag out
               the start/end time-sliders to return to the original time
               period.</para>
-            </sect4>
+            </sect3>
 
-            <sect4 xml:id="ExportToFlatFile">
+            <sect3 xml:id="ExportToFlatFile">
               <title>Export to Flat File (SAM) format</title>
 
               <para>This control exports a data file of tab-separated
@@ -3571,7 +3578,7 @@ and so on....</programlisting></para>
               visible over that period. Debrief will remember the folder and
               sensor type specified in previous export operations.</para>
 
-              <sect5 xml:id="ExportToSamAlg">
+              <sect4 xml:id="ExportToSamAlg">
                 <title>SAM Export algorithm</title>
 
                 <para>This algorithm works as follows:<orderedlist>
@@ -3610,9 +3617,9 @@ and so on....</programlisting></para>
                         </orderedlist></para>
                     </listitem>
                   </orderedlist></para>
-              </sect5>
-            </sect4>
-            <sect4>
+              </sect4>
+            </sect3>
+            <sect3>
               <title>Updated Export to Flat File (SAM) format</title>
               <para>In Spring 2012 the <indexterm>
                   <primary>SAM export</primary>
@@ -3643,9 +3650,9 @@ and so on....</programlisting></para>
                     </mediaobject>
                   </screenshot>
                 </figure></para>
-            </sect4>
+            </sect3>
 
-            <sect4 xml:id="CopyToClip">
+            <sect3 xml:id="CopyToClip">
               <title>Copy to clipboard</title>
 
               <para>Another operation that relies on the selected time period
@@ -3736,10 +3743,10 @@ and so on....</programlisting></para>
                   time stamp: that-is the point in the primary track which has
                   been used for the calculated results.</para>
                 </note></para>
-            </sect4>
-          </sect3>
+            </sect3>
+          </sect2>
 
-          <sect3 xml:id="vcr_controls">
+          <sect2 xml:id="vcr_controls">
             <title xml:id="time_vcr_controls">VCR controls</title>
 
             <para>The VCR controls allow you to move forwards and backwards in
@@ -3756,9 +3763,9 @@ and so on....</programlisting></para>
             properties is the <guibutton>Step Interval</guibutton>; the time
             interval that Debrief waits before automatically moving
             forwards.</para>
-          </sect3>
+          </sect2>
 
-          <sect3 xml:id="other_ops">
+          <sect2 xml:id="other_ops">
             <title>Other time operations</title>
 
             <para>Beyond the operations available from the Time Controller,
@@ -3767,8 +3774,8 @@ and so on....</programlisting></para>
             variable plots (see <xref linkend="show_time_vars" />). The
             current time period settings dictate the extent of what
             information is calculated for these plots.</para>
-          </sect3>
-        </sect2>
+          </sect2>
+        
       </sect1>
 
       <sect1 xml:id="measure_range">
