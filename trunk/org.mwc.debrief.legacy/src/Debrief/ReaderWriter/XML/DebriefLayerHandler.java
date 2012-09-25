@@ -15,6 +15,7 @@ import Debrief.ReaderWriter.XML.Shapes.EllipseHandler;
 import Debrief.ReaderWriter.XML.Shapes.LabelHandler;
 import Debrief.ReaderWriter.XML.Shapes.LineHandler;
 import Debrief.ReaderWriter.XML.Shapes.PolygonHandler;
+import Debrief.ReaderWriter.XML.Shapes.RangeRingsHandler;
 import Debrief.ReaderWriter.XML.Shapes.RectangleHandler;
 import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
 import Debrief.Wrappers.ShapeWrapper;
@@ -85,6 +86,13 @@ public class DebriefLayerHandler extends
 				addThis(plottable);
 			}
 		});
+		addHandler(new RangeRingsHandler()
+		{
+			public void addPlottable(MWC.GUI.Plottable plottable)
+			{
+				addThis(plottable);
+			}
+		});
 		addHandler(new LabelHandler()
 		{
 			public void addPlottable(MWC.GUI.Plottable plottable)
@@ -100,7 +108,6 @@ public class DebriefLayerHandler extends
 	{
 		// get ready..
 		checkExporters();
-		
 
 		// definition of what parameter we are going to search for (since
 		// shapeWrappers are indexed by shape not actual class)
@@ -177,6 +184,13 @@ public class DebriefLayerHandler extends
 				{
 				}
 			});
+			_myExporters.put(MWC.GUI.Shapes.RangeRingShape.class,
+					new RangeRingsHandler()
+					{
+						public void addPlottable(MWC.GUI.Plottable plottable)
+						{
+						}
+					});
 
 			_myExporters.put(Debrief.Wrappers.LabelWrapper.class, new LabelHandler()
 			{

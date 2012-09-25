@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="Force Protection Scenario"  xmlns="http://www.mwc.org/asset" StartTime="2010-01-12T12:13:14Z" Created="2010-01-19T12:13:14Z">
+  <StepTime Units="seconds" Value="15"></StepTime>
+  <StepPause Value="500" Units="millis" ></StepPause>
+  <Environment Name="token"
+  	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
+	<VisualLookupEnvironment Name="Easy to see">
+		<VisualAttenuationDatum Haze="0.0000001" Mist="0.0000001" LightHaze="0.0000001"
+			VeryClear="0.0000001" Fog="0.0000001" Clear="0.0000001" ></VisualAttenuationDatum>
+		<TargetVisibilitySet>
+			<TargetVisibilityDatum Type="CARRIER" Visibility="2" /><TargetVisibilityDatum
+				Type="FRIGATE" Visibility="2" ></TargetVisibilityDatum>
+		</TargetVisibilitySet>
+		<TargetSeaStateSet>
+			<TargetSeaStateDatum Type="CARRIER" SeaState_5="1"
+				SeaState_4="1" SeaState_3="1" SeaState_2="1" SeaState_1="1"
+				SeaState_0="1" SeaState_6="1" /><TargetSeaStateDatum
+				Type="FRIGATE" SeaState_5="1" SeaState_4="1" SeaState_3="1"
+				SeaState_2="1" SeaState_1="1" SeaState_0="1" SeaState_6="1" />
+		</TargetSeaStateSet>
+		<LightLevelDatum Dusk="1" DarkNight="1" MoonlitNight="1"
+			Daylight="1" />
+	</VisualLookupEnvironment>
+</Environment>
+	<Participants>
+  	<Surface Name="SUBJECT">
+  		<Category Type="FISHING_VESSEL" Force="RED"
+  			Environment="SURFACE" />
+  		<SensorFit></SensorFit>
+  		<Status Course="270" Fuel="100">
+  			<Location>
+  				<longLocation LongMin="0" LongSec="00"
+  								LatMin="0" LongHem="W" LongDeg="30" LatSec="0.0" LatHem="N"
+  								LatDeg="0">
+  							</longLocation>
+  			</Location>
+  			<Speed Value="9" Units="kts" />
+  		</Status>
+  		<Waterfall Name="">
+  			<Move Name="" Course="270">
+  				<Vector Value="6" Units="nm" ></Vector>
+  			</Move>
+  			<Move Name="" Course="225">
+  				<Vector Value="6" Units="nm" ></Vector>
+  			</Move>
+  			</Waterfall>
+  		
+  		
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface>
+  	<Surface Name="SENSOR">
+  		<Category Type="FRIGATE" Force="BLUE"
+  			Environment="SURFACE" />
+  		<SensorFit>
+  			<TypedCookieSensor Working="true">
+  				<TypedRangeDoublet>
+  					<Type Name="RED" />
+  					<DetectionRange Value="25" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor></SensorFit>
+  		<Status Course="045" Fuel="100">
+  			<Location>
+  				<longLocation LongMin="0" LongSec="10"
+  								LatMin="4" LongHem="W" LongDeg="30" LatSec="0.0" LatHem="S"
+  								LatDeg="0">
+  							</longLocation>
+  			</Location>
+  			<Speed Value="12" Units="kts" />
+  		</Status>
+  		<Waterfall Name="ian drive">
+  			<UserControl Name="ian control" Speed="12" Depth="0.0" Course="270" /></Waterfall>
+  		
+  		
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="300" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface></Participants>
+</Scenario>

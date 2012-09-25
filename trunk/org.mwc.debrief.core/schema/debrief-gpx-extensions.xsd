@@ -89,11 +89,11 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="layerType">
-		<xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="textlabel" type="textlabelType" />
 			<xs:element name="line" type="lineType" />
 			<xs:element name="rectangle" type="rectangleType" />
-		</xs:sequence>
+		</xs:choice>
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
@@ -217,11 +217,11 @@
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="fixExtensionType">
-		<xs:attribute name="Course" use="required" type="xs:string" />
+		<xs:attribute name="Course" use="required" type="xs:double" />
 		<xs:attribute name="Label" use="required" type="xs:string" />
 		<xs:attribute name="LabelLocation" default="Left" type="labelLocationType" />
 		<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
-		<xs:attribute name="Speed" use="required" type="xs:string" />
+		<xs:attribute name="Speed" use="required" type="xs:double" />
 		<xs:attribute name="SymbolShowing" default="true" type="xs:boolean" />
 		<xs:attribute name="ArrowShowing" default="false" type="xs:boolean" />
 		<xs:attribute name="LineShowing" default="true" type="xs:boolean" />

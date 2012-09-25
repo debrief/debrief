@@ -57,6 +57,10 @@ public final class ReplayFix
   public Fix theFix;
   public String theTrackName;
   public String theSymbology;
+  /** the (optional) label
+   * 
+   */
+	public String label;
   
   //////////////////////////////////////////////////
   // constructor

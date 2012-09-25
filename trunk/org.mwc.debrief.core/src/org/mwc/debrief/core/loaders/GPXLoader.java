@@ -13,11 +13,11 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
+import Debrief.ReaderWriter.XML.GPX.ImportGPX;
 import MWC.GUI.Layers;
 
 /**
@@ -27,55 +27,6 @@ import MWC.GUI.Layers;
  */
 public class GPXLoader extends IPlotLoader.BaseLoader
 {
-
-	public static void main(String a[])
-	{
-		GPXLoader l = new GPXLoader();
-		l.doTheLoad(null, null, null, null, null);
-	}
-
-	public GPXLoader()
-	{
-	}
-
-	/**
-	 * load the data-file
-	 * 
-	 * @param destination
-	 * @param source
-	 * @param fileName
-	 */
-	public void doTheLoad(Layers destination, InputStream source, String fileName, IControllableViewport view, PlotEditor plot)
-	{
-
-		/*
-		 * External meta-data sample
-		 * 
-		 * Map<String, Object> props = new HashMap<String, Object>();
-		 * List<InputStream> bindings = new ArrayList<InputStream>();
-		 * bindings.add(this
-		 * .getClass().getResourceAsStream("Debrief.Wrappers.bindings.xml"));
-		 * bindings
-		 * .add(this.getClass().getResourceAsStream("MWC.GUI.bindings.xml"));
-		 * props.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindings);
-		 * 
-		 * try { jaxbContext =
-		 * JAXBContext.newInstance("Debrief.Wrappers:Debrief.Wrappers.Track",
-		 * TrackWrapper.class.getClassLoader(), props);
-		 * 
-		 * Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-		 * TrackWrapper tw = (TrackWrapper)
-		 * unmarshaller.unmarshal(this.getClass().getResourceAsStream
-		 * ("gpx-data.xml")); System.out.println(tw.getName());
-		 * 
-		 * TrackWrapper mtw = new TrackWrapper(); mtw.setName("ttt");
-		 * 
-		 * jaxbContext.createMarshaller().marshal(mtw, System.out); } catch
-		 * (JAXBException e) { e.printStackTrace(); }
-		 */
-
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -84,7 +35,8 @@ public class GPXLoader extends IPlotLoader.BaseLoader
 	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
 	 */
 	@Override
-	public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
+	public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
+			final String fileName)
 	{
 
 		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
@@ -109,20 +61,36 @@ public class GPXLoader extends IPlotLoader.BaseLoader
 
 						try
 						{
-							DebriefPlugin.logError(Status.INFO, "about to start loading:" + fileName, null);
+							DebriefPlugin.logError(Status.INFO, "about to start loading:"
+									+ fileName, null);
 
 							// ok - get loading going
 
-							doTheLoad(theLayers, inputStream, fileName, thePlot, thePlot);
+							// double check, is this a KMZ
+							if (fileName.endsWith(".gpx"))
+							{
+								// ok - get loading going
+								ImportGPX.doImport(theLayers, inputStream, fileName);
+							}
 
-							DebriefPlugin.logError(Status.INFO, "completed loading:" + fileName, null);
+							DebriefPlugin.logError(Status.INFO, "completed loading:"
+									+ fileName, null);
+
+							// and inform the plot editor
+							thePlot.loadingComplete(this);
+
+							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
+
+							DebriefPlugin.logError(Status.INFO, "completed loading:"
+									+ fileName, null);
 
 							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
 						}
 						catch (RuntimeException e)
 						{
-							DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
+							DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+									+ fileName, e);
 						}
 						finally
 						{
@@ -145,20 +113,20 @@ public class GPXLoader extends IPlotLoader.BaseLoader
 		}
 		catch (InvocationTargetException e)
 		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
+			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+					+ fileName, e);
 		}
 		catch (InterruptedException e)
 		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
+			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+					+ fileName, e);
 		}
 		catch (IOException e)
 		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
+			DebriefPlugin
+					.logError(Status.ERROR, "Problem loading GPX:" + fileName, e);
 		}
-		finally
-		{
-		}
-		// }
+
 		// ok, load the data...
 		DebriefPlugin.logError(Status.INFO, "Successfully loaded GPX file", null);
 	}

@@ -50,6 +50,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 	private static final String SPOKE_SEPARATION = "SpokeSeparation";
 
 	private static final String ARCS = "Arcs";
+	private static final String ARCS_FINISH = "Arc_Finish";
 
 	private static final String SHADE_ARCS = "ShadeArcs";
 
@@ -291,7 +292,11 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 			String arcs = (String) details.properties.get(ARCS);
 			if (arcs != null)
-				rr.setArcs(Integer.parseInt(arcs));
+				rr.setArcStart(Integer.parseInt(arcs));
+			
+			String arcs_end = (String) details.properties.get(ARCS_FINISH);
+			if (arcs_end != null)
+				rr.setArcEnd(Integer.parseInt(arcs_end));
 
 			String spokeSep = (String) details.properties.get(SPOKE_SEPARATION);
 			if (spokeSep != null)
@@ -468,7 +473,9 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 
 			details.addProperty(RADIUS, MWCXMLReader.writeThis(hi.getRadius()));
 			details.addProperty(ARCS,
-					MWCXMLReader.writeThis(hi.getArcs().getCurrent()));
+					MWCXMLReader.writeThis(hi.getArcStart()));
+			details.addProperty(ARCS_FINISH,
+					MWCXMLReader.writeThis(hi.getArcEnd()));
 			details.addProperty(SPOKE_SEPARATION,
 					MWCXMLReader.writeThis(hi.getSpokeSeparation()));
 			details.addProperty(NUM_RINGS,

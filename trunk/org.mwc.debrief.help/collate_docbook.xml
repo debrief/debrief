@@ -97,7 +97,7 @@
 		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
 		     folder in the help project.  Tell Ant all about it using Ant/Runtime
 		     preferences page -->
-		<ftp password="${ftpPassword}" depends="true" server="debrief.info" userid="${ftpUsername}" remotedir="/tutorial">
+		<ftp password="${ftpPassword}" depends="no" server="debrief.info" userid="${ftpUsername}" remotedir="/tutorial">
 			<fileset dir="html/legacy" />
 		</ftp>
 
