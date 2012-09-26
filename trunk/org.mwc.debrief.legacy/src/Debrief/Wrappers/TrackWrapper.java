@@ -65,7 +65,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * iteself, but the responsibility for the fixes within the track are demoted to
  * the FixWrapper
  */
-public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
+public class TrackWrapper extends MWC.GUI.PlainWrapper implements
+		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
 		HasDraggableComponents, ProvidesContiguousElements
 {
 
@@ -170,20 +171,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			final TrackWrapper tw = new TrackWrapper();
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1.add(new WorldVector(33, new WorldDistance(100,
-					WorldDistance.METRES), null)), 10, 110));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1.add(new WorldVector(33, new WorldDistance(200,
-					WorldDistance.METRES), null)), 20, 120));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1.add(new WorldVector(33, new WorldDistance(300,
-					WorldDistance.METRES), null)), 30, 130));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1.add(new WorldVector(33, new WorldDistance(400,
-					WorldDistance.METRES), null)), 40, 140));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1.add(new WorldVector(33, new WorldDistance(500,
-					WorldDistance.METRES), null)), 50, 150));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
 			tw.addFix(fw2);
@@ -192,34 +198,46 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			tw.addFix(fw5);
 			// also give it some sensor data
 			final SensorWrapper swa = new SensorWrapper("title one");
-			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa", new HiResDate(150, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb", new HiResDate(180, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc", new HiResDate(250, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+					new HiResDate(150, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
+					new HiResDate(180, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+					new HiResDate(250, 0), null, null, null, null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);
 			tw.add(swa);
 			final SensorWrapper sw = new SensorWrapper("title two");
-			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd", new HiResDate(260, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scw2 = new SensorContactWrapper("eee", new HiResDate(280, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scw3 = new SensorContactWrapper("fff", new HiResDate(350, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
+					new HiResDate(260, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
+					new HiResDate(280, 0), null, null, null, null, null, 0, null);
+			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
+					new HiResDate(350, 0), null, null, null, null, null, 0, null);
 			sw.add(scw1);
 			sw.add(scw2);
 			sw.add(scw3);
 			tw.add(sw);
 
 			final TMAWrapper mwa = new TMAWrapper("bb");
-			final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb", new HiResDate(130), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb", new HiResDate(190), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb", new HiResDate(230), null, 0, 0, 0, null, null, null, null);
+			final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
+					new HiResDate(130), null, 0, 0, 0, null, null, null, null);
+			final TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
+					new HiResDate(190), null, 0, 0, 0, null, null, null, null);
+			final TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
+					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
 			mwa.add(tcwa1);
 			mwa.add(tcwa2);
 			mwa.add(tcwa3);
 			tw.add(mwa);
 			final TMAWrapper mw = new TMAWrapper("cc");
-			final TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb", new HiResDate(230), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb", new HiResDate(330), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb", new HiResDate(390), null, 0, 0, 0, null, null, null, null);
+			final TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
+					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
+			final TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
+					new HiResDate(330), null, 0, 0, 0, null, null, null, null);
+			final TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
+					new HiResDate(390), null, 0, 0, 0, null, null, null, null);
 			mw.add(tcw1);
 			mw.add(tcw2);
 			mw.add(tcw3);
@@ -270,13 +288,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			final TrackWrapper tw = new TrackWrapper();
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 1), loc_1, 0, 0));
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 2), loc_1, 0, 0));
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 3), loc_1, 0, 0));
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 4), loc_1, 0, 0));
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(0, 5), loc_1, 0, 0));
-			final FixWrapper fw6 = new FixWrapper(new Fix(new HiResDate(0, 6), loc_1, 0, 0));
-			final FixWrapper fw7 = new FixWrapper(new Fix(new HiResDate(0, 7), loc_1, 0, 0));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 1), loc_1,
+					0, 0));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 2), loc_1,
+					0, 0));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 3), loc_1,
+					0, 0));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 4), loc_1,
+					0, 0));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(0, 5), loc_1,
+					0, 0));
+			final FixWrapper fw6 = new FixWrapper(new Fix(new HiResDate(0, 6), loc_1,
+					0, 0));
+			final FixWrapper fw7 = new FixWrapper(new Fix(new HiResDate(0, 7), loc_1,
+					0, 0));
 			tw.addFix(fw1);
 			tw.addFix(fw2);
 			tw.addFix(fw3);
@@ -292,7 +317,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			fw6.setLabelShowing(true);
 			fw7.setLabelShowing(true);
 
-			Collection<Editable> col = tw.getItemsBetween(new HiResDate(0, 3), new HiResDate(0, 5));
+			Collection<Editable> col = tw.getItemsBetween(new HiResDate(0, 3),
+					new HiResDate(0, 5));
 			assertEquals("found correct number of items", 3, col.size());
 
 			// make the fourth item not visible
@@ -318,13 +344,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final WorldLocation loc_2 = new WorldLocation(1, 1, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100), loc_1, 0, 0));
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300), loc_2, 0, 0));
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500), loc_2, 0, 0));
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700), loc_2, 0, 0));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100),
+					loc_1, 0, 0));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300),
+					loc_2, 0, 0));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500),
+					loc_2, 0, 0));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700),
+					loc_2, 0, 0));
 
 			// check returning empty data
-			Collection<Editable> coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
+			Collection<Editable> coll = tw.getItemsBetween(new HiResDate(0, 0),
+					new HiResDate(0, 40));
 			assertEquals("Return empty when empty", coll, null);
 
 			tw.addFix(fw1);
@@ -399,20 +430,25 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			final TrackWrapper tw = new TrackWrapper();
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1.add(new WorldVector(33, new WorldDistance(100,
-					WorldDistance.METRES), null)), 10, 110));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1.add(new WorldVector(33, new WorldDistance(200,
-					WorldDistance.METRES), null)), 20, 120));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1.add(new WorldVector(33, new WorldDistance(300,
-					WorldDistance.METRES), null)), 30, 130));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1.add(new WorldVector(33, new WorldDistance(400,
-					WorldDistance.METRES), null)), 40, 140));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1.add(new WorldVector(33, new WorldDistance(500,
-					WorldDistance.METRES), null)), 50, 150));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
 			tw.addFix(fw2);
@@ -421,7 +457,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			tw.addFix(fw5);
 
 			// check that we're not interpolating
-			assertFalse("interpolating switched off by default", tw.getInterpolatePoints());
+			assertFalse("interpolating switched off by default",
+					tw.getInterpolatePoints());
 
 			// ok, get on with it.
 			Watchable[] list = tw.getNearestTo(new HiResDate(200, 20000));
@@ -469,8 +506,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 			// have a look at them
 			final FixWrapper res = (FixWrapper) list[0];
-			final WorldVector rangeError = res.getFixLocation().subtract(fw3.getFixLocation());
-			assertEquals("right answer", 0, Conversions.Degs2m(rangeError.getRange()), 0.0001);
+			final WorldVector rangeError = res.getFixLocation().subtract(
+					fw3.getFixLocation());
+			assertEquals("right answer", 0,
+					Conversions.Degs2m(rangeError.getRange()), 0.0001);
 			// assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0);
 			// assertEquals("right course", res.getCourse(), fw3.getCourse(),
 			// 0);
@@ -499,24 +538,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			 */
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1.add(new WorldVector(33, new WorldDistance(100,
-					WorldDistance.METRES), null)), 10, 110));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
 			fw1.setColor(Color.red);
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1.add(new WorldVector(33, new WorldDistance(200,
-					WorldDistance.METRES), null)), 20, 120));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
 			fw2.setColor(Color.yellow);
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1.add(new WorldVector(33, new WorldDistance(300,
-					WorldDistance.METRES), null)), 30, 130));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
 			fw3.setColor(Color.green);
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1.add(new WorldVector(33, new WorldDistance(400,
-					WorldDistance.METRES), null)), 40, 140));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
 			fw4.setColor(Color.green);
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1.add(new WorldVector(33, new WorldDistance(500,
-					WorldDistance.METRES), null)), 50, 150));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			fw5.setColor(Color.green);
 			tw.addFix(fw1);
@@ -535,7 +579,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 			tw.paint(dummyDest);
 
-			assertEquals("our array has correct number of points", 10, tw._myPts.length);
+			assertEquals("our array has correct number of points", 10,
+					tw._myPts.length);
 			assertEquals("the pointer counter has been reset", 0, tw._ptCtr);
 
 			// check it got called the correct number of times
@@ -556,25 +601,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			 */
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1.add(new WorldVector(33, new WorldDistance(100,
-					WorldDistance.METRES), null)), 10, 110));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
 			fw1.setColor(Color.red);
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1.add(new WorldVector(33, new WorldDistance(200,
-					WorldDistance.METRES), null)), 20, 120));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
 			fw2.setColor(Color.red);
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1.add(new WorldVector(33, new WorldDistance(300,
-					WorldDistance.METRES), null)), 30, 130));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
 			fw3.setColor(Color.red);
 			fw3.setLineShowing(false);
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1.add(new WorldVector(33, new WorldDistance(400,
-					WorldDistance.METRES), null)), 40, 140));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
 			fw4.setColor(Color.red);
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1.add(new WorldVector(33, new WorldDistance(500,
-					WorldDistance.METRES), null)), 50, 150));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			fw5.setColor(Color.red);
 			tw.addFix(fw1);
@@ -593,7 +643,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 			tw.paint(dummyDest);
 
-			assertEquals("our array has correct number of points", 10, tw._myPts.length);
+			assertEquals("our array has correct number of points", 10,
+					tw._myPts.length);
 			assertEquals("the pointer counter has been reset", 0, tw._ptCtr);
 
 			// check it got called the correct number of times
@@ -614,25 +665,30 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			 */
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1.add(new WorldVector(33, new WorldDistance(100,
-					WorldDistance.METRES), null)), 10, 110));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
 			fw1.setColor(Color.red);
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1.add(new WorldVector(33, new WorldDistance(200,
-					WorldDistance.METRES), null)), 20, 120));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
 			fw2.setColor(Color.red);
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1.add(new WorldVector(33, new WorldDistance(300,
-					WorldDistance.METRES), null)), 30, 130));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
 			fw3.setColor(Color.red);
 			fw3.setVisible(false);
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1.add(new WorldVector(33, new WorldDistance(400,
-					WorldDistance.METRES), null)), 40, 140));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
 			fw4.setColor(Color.red);
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1.add(new WorldVector(33, new WorldDistance(500,
-					WorldDistance.METRES), null)), 50, 150));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			fw5.setColor(Color.red);
 			tw.addFix(fw1);
@@ -651,7 +707,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 			tw.paint(dummyDest);
 
-			assertEquals("our array has correct number of points", 10, tw._myPts.length);
+			assertEquals("our array has correct number of points", 10,
+					tw._myPts.length);
 			assertEquals("the pointer counter has been reset", 0, tw._ptCtr);
 
 			// check it got called the correct number of times
@@ -664,7 +721,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	/**
 	 * class containing editable details of a track
 	 */
-	public final class trackInfo extends Editable.EditorType implements Editable.DynamicDescriptors
+	public final class trackInfo extends Editable.EditorType implements
+			Editable.DynamicDescriptors
 	{
 
 		/**
@@ -685,7 +743,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			final Class<TrackWrapper> c = TrackWrapper.class;
 
 			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape"), method(c, "resetLabels", null, "Reset DTG Labels") };
+			{ method(c, "exportThis", null, "Export Shape"),
+					method(c, "resetLabels", null, "Reset DTG Labels") };
 
 			return mds;
 		}
@@ -702,26 +761,50 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			try
 			{
 				PropertyDescriptor[] res =
-				{ expertProp("SymbolType", "the type of symbol plotted for this label", FORMAT),
-						expertProp("LineThickness", "the width to draw this track", FORMAT), expertProp("Name", "the track name"),
-						expertProp("InterpolatePoints", "whether to interpolate points between known data points", SPATIAL),
-						expertProp("Color", "the track color", FORMAT), expertProp("SymbolColor", "the color of the symbol (when used)", FORMAT),
-						expertProp("PlotArrayCentre", "highlight the sensor array centre when non-zero array length provided", FORMAT),
-						expertProp("TrackFont", "the track label font", FORMAT), expertProp("NameVisible", "show the track label", VISIBILITY),
-						expertProp("PositionsVisible", "show individual Positions", VISIBILITY),
-						expertProp("NameAtStart", "whether to show the track name at the start (or end)", VISIBILITY),
-						expertProp("LinkPositions", "whether to join the track points", FORMAT),
+				{
+						expertProp("SymbolType",
+								"the type of symbol plotted for this label", FORMAT),
+						expertProp("LineThickness", "the width to draw this track", FORMAT),
+						expertProp("Name", "the track name"),
+						expertProp("InterpolatePoints",
+								"whether to interpolate points between known data points",
+								SPATIAL),
+						expertProp("Color", "the track color", FORMAT),
+						expertProp("SymbolColor", "the color of the symbol (when used)",
+								FORMAT),
+						expertProp(
+								"PlotArrayCentre",
+								"highlight the sensor array centre when non-zero array length provided",
+								FORMAT),
+						expertProp("TrackFont", "the track label font", FORMAT),
+						expertProp("NameVisible", "show the track label", VISIBILITY),
+						expertProp("PositionsVisible", "show individual Positions",
+								VISIBILITY),
+						expertProp("NameAtStart",
+								"whether to show the track name at the start (or end)",
+								VISIBILITY),
+						expertProp("LinkPositions", "whether to join the track points",
+								FORMAT),
 						expertProp("Visible", "whether the track is visible", VISIBILITY),
-						expertLongProp("NameLocation", "relative location of track label", MWC.GUI.Properties.LocationPropertyEditor.class),
-						expertLongProp("LabelFrequency", "the label frequency", MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("SymbolFrequency", "the symbol frequency", MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("ResampleDataAt", "the data sample rate", MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("ArrowFrequency", "the direction marker frequency", MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("LineStyle", "the line style used to join track points", MWC.GUI.Properties.LineStylePropertyEditor.class),
+						expertLongProp("NameLocation", "relative location of track label",
+								MWC.GUI.Properties.LocationPropertyEditor.class),
+						expertLongProp("LabelFrequency", "the label frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("SymbolFrequency", "the symbol frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("ResampleDataAt", "the data sample rate",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("ArrowFrequency", "the direction marker frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("LineStyle",
+								"the line style used to join track points",
+								MWC.GUI.Properties.LineStylePropertyEditor.class),
 
 				};
-				res[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
-				res[1].setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+				res[0]
+						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
+				res[1]
+						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
 
 				// SPECIAL CASE: if we have a world scaled symbol, provide
 				// editors for
@@ -769,7 +852,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 * @param subjects
 	 *          the items to insert.
 	 */
-	public static void groupTracks(TrackWrapper target, Layers theLayers, Layer[] parents, Editable[] subjects)
+	public static void groupTracks(TrackWrapper target, Layers theLayers,
+			Layer[] parents, Editable[] subjects)
 	{
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++)
@@ -800,7 +884,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 								// reset the name if we need to
 								if (ts.getName().startsWith("Posi"))
 								{
-									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate().getTime()));
+									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate()
+											.getTime()));
 								}
 
 								target.add(ts);
@@ -815,7 +900,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 								// reset the name if we need to
 								if (ts.getName().startsWith("Posi"))
 								{
-									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate().getTime()));
+									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate()
+											.getTime()));
 								}
 
 								// and remember it
@@ -863,7 +949,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 *          the actual selected items
 	 * @return sufficient information to undo the merge
 	 */
-	public static int mergeTracks(final Editable target, Layers theLayers, final Layer[] parents, final Editable[] subjects)
+	public static int mergeTracks(final Editable target, Layers theLayers,
+			final Layer[] parents, final Editable[] subjects)
 	{
 		// where we dump the new data points
 		Layer receiver = (Layer) target;
@@ -878,7 +965,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			if (editable instanceof TrackWrapper)
 			{
 				TrackWrapper tw = (TrackWrapper) editable;
-				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(), tw.getEndDTG());
+				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(),
+						tw.getEndDTG());
 			}
 			else if (editable instanceof TrackSegment)
 			{
@@ -900,7 +988,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 				{
 					if (timePeriod.overlaps(timePeriod2))
 					{
-						failedMsg = "'" + subjects[i].getName() + "' and '" + subjects[j].getName() + "'";
+						failedMsg = "'" + subjects[i].getName() + "' and '"
+								+ subjects[j].getName() + "'";
 						break;
 					}
 				}
@@ -912,7 +1001,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 		// how did we get on?
 		if (failedMsg != null)
 		{
-			MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg + " overlap in time. Please correct this and retry",
+			MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+					+ " overlap in time. Please correct this and retry",
 					MessageProvider.ERROR);
 			return MessageProvider.ERROR;
 		}
@@ -1016,13 +1106,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 */
 	private boolean _LabelAtStart = true;
 
-	private HiResDate _lastLabelFrequency = new HiResDate(0, TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastLabelFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
-	private HiResDate _lastSymbolFrequency = new HiResDate(0, TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastSymbolFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
-	private HiResDate _lastArrowFrequency = new HiResDate(0, TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastArrowFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
-	private HiResDate _lastDataFrequency = new HiResDate(0, TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	private HiResDate _lastDataFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	/**
 	 * the width of this track
@@ -1162,10 +1256,12 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 		_theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
 		// set an initial location for the label
-		_theLabel.setRelativeLocation(new Integer(MWC.GUI.Properties.LocationPropertyEditor.RIGHT));
+		_theLabel.setRelativeLocation(new Integer(
+				MWC.GUI.Properties.LocationPropertyEditor.RIGHT));
 
 		// initialise the symbol to use for plotting this track in snail mode
-		_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Submarine");
+		_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory
+				.createSymbol("Submarine");
 	}
 
 	/**
@@ -1242,8 +1338,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 		if (!done)
 		{
-			MWC.GUI.Dialogs.DialogFactory
-					.showMessage("Add point", "Sorry it is not possible to add:" + point.getName() + " to " + this.getName());
+			MWC.GUI.Dialogs.DialogFactory.showMessage(
+					"Add point",
+					"Sorry it is not possible to add:" + point.getName() + " to "
+							+ this.getName());
 		}
 	}
 
@@ -1274,7 +1372,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 		// and extend the start/end DTGs
 		if (_myTimePeriod == null)
 		{
-			_myTimePeriod = new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix.getDateTimeGroup());
+			_myTimePeriod = new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(),
+					theFix.getDateTimeGroup());
 		}
 		else
 		{
@@ -1573,13 +1672,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 		// do we have any property listeners?
 		if (getSupport() != null)
 		{
-			final Debrief.GUI.Tote.StepControl.somePeriod newPeriod = new Debrief.GUI.Tote.StepControl.somePeriod(start, end);
-			getSupport().firePropertyChange(WatchableList.FILTERED_PROPERTY, null, newPeriod);
+			final Debrief.GUI.Tote.StepControl.somePeriod newPeriod = new Debrief.GUI.Tote.StepControl.somePeriod(
+					start, end);
+			getSupport().firePropertyChange(WatchableList.FILTERED_PROPERTY, null,
+					newPeriod);
 		}
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+			ComponentConstruct currentNearest, Layer parentLayer)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
@@ -1617,8 +1719,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	}
 
 	@Override
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, LocationConstruct currentNearest, Layer parentLayer,
-			Layers theData)
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
@@ -1640,21 +1742,24 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 		}
 	}
 
-	public void findNearestSegmentHotspotFor(WorldLocation cursorLoc, Point cursorPt, LocationConstruct currentNearest)
+	public void findNearestSegmentHotspotFor(WorldLocation cursorLoc,
+			Point cursorPt, LocationConstruct currentNearest)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist;
 
 		// cycle through the track segments
 		final Collection<Editable> segments = _thePositions.getData();
-		for (final Iterator<Editable> iterator = segments.iterator(); iterator.hasNext();)
+		for (final Iterator<Editable> iterator = segments.iterator(); iterator
+				.hasNext();)
 		{
 			final TrackSegment thisSeg = (TrackSegment) iterator.next();
 			if (thisSeg.getVisible())
 			{
 				// how far away is it?
 
-				thisDist = new WorldDistance(thisSeg.rangeFrom(cursorLoc), WorldDistance.DEGS);
+				thisDist = new WorldDistance(thisSeg.rangeFrom(cursorLoc),
+						WorldDistance.DEGS);
 
 				// is it closer?
 				currentNearest.checkMe(thisSeg, thisDist, null, this);
@@ -1706,7 +1811,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 *          ownship
 	 * @return the location
 	 */
-	public FixWrapper getBacktraceTo(HiResDate searchTime, ArrayLength sensorOffset, boolean wormInHole)
+	public FixWrapper getBacktraceTo(HiResDate searchTime,
+			ArrayLength sensorOffset, boolean wormInHole)
 	{
 		FixWrapper res = null;
 
@@ -1896,7 +2002,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 *          the next point
 	 * @return and interpolated point
 	 */
-	private final FixWrapper getInterpolatedFix(final FixWrapper previous, final FixWrapper next, HiResDate requestedDTG)
+	private final FixWrapper getInterpolatedFix(final FixWrapper previous,
+			final FixWrapper next, HiResDate requestedDTG)
 	{
 		FixWrapper res = null;
 
@@ -1937,7 +2044,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 * @return series of fixes
 	 */
 	@Override
-	public final Collection<Editable> getItemsBetween(final HiResDate start, final HiResDate end)
+	public final Collection<Editable> getItemsBetween(final HiResDate start,
+			final HiResDate end)
 	{
 		//
 		SortedSet<Editable> set = null;
@@ -1964,7 +2072,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 				{
 					final long ourInterval = 1000 * 60; // one minute
 					set = new TreeSet<Editable>();
-					for (long newTime = start.getDate().getTime(); newTime < end.getDate().getTime(); newTime += ourInterval)
+					for (long newTime = start.getDate().getTime(); newTime < end
+							.getDate().getTime(); newTime += ourInterval)
 					{
 						final HiResDate newD = new HiResDate(newTime);
 						final Watchable[] nearestOnes = getNearestTo(newD);
@@ -1991,7 +2100,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 					if (finisher == null)
 					{
-						finisher = new FixWrapper(new Fix(new HiResDate(0, end.getMicros() + 1), _zeroLocation, 0.0, 0.0));
+						finisher = new FixWrapper(new Fix(new HiResDate(0,
+								end.getMicros() + 1), _zeroLocation, 0.0, 0.0));
 					}
 					else
 					{
@@ -2161,7 +2271,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 				final FixWrapper theFirst = (FixWrapper) firstSeg.first();
 				final FixWrapper theLast = (FixWrapper) lastSeg.last();
 
-				if ((srchDTG.greaterThan(theFirst.getTime())) && (srchDTG.lessThanOrEqualTo(theLast.getTime())))
+				if ((srchDTG.greaterThan(theFirst.getTime()))
+						&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
 				{
 					// yes it's inside our data range, find the first fix
 					// after the indicated point
@@ -2173,7 +2284,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 					// see if we have to create our local temporary fix
 					if (nearestFix == null)
 					{
-						nearestFix = new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0, 0.0));
+						nearestFix = new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0,
+								0.0));
 					}
 					else
 					{
@@ -2245,7 +2357,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 								// headSet operation is exclusive - so we need to
 								// find the one
 								// after the first
-								final SortedSet<Editable> otherSet = getRawPositions().headSet(nearestFix);
+								final SortedSet<Editable> otherSet = getRawPositions().headSet(
+										nearestFix);
 
 								FixWrapper previous = null;
 
@@ -2313,7 +2426,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
 
-	private SortedSet<Editable> getPositionsBetween(FixWrapper starter2, FixWrapper finisher2)
+	private SortedSet<Editable> getPositionsBetween(FixWrapper starter2,
+			FixWrapper finisher2)
 	{
 		// first get them all as one list
 		final SortedSet<Editable> pts = getRawPositions();
@@ -2529,7 +2643,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public final Collection<Editable> getUnfilteredItems(final HiResDate start, final HiResDate end)
+	public final Collection<Editable> getUnfilteredItems(final HiResDate start,
+			final HiResDate end)
 	{
 
 		// see if we have _any_ points in range
@@ -2680,7 +2795,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			FixWrapper lastFix = null;
 
 			// just check if we are drawing anything at all
-			if ((!getLinkPositions() || getLineStyle() == LineStylePropertyEditor.UNCONNECTED) && (!_showPositions))
+			if ((!getLinkPositions() || getLineStyle() == LineStylePropertyEditor.UNCONNECTED)
+					&& (!_showPositions))
 			{
 				return;
 			}
@@ -2788,7 +2904,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 								// use the value of depth as read in from the
 								// file
 								tmaLastLoc.setDepth(depthM);
-								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts, courseRads);
+								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+										courseRads);
 								tmaLastLoc.addToMe(thisVec);
 								lastLocation = tmaLastLoc;
 							}
@@ -2835,7 +2952,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 						}
 
 						// are we
-						if (getLinkPositions() && (getLineStyle() != LineStylePropertyEditor.UNCONNECTED))
+						if (getLinkPositions()
+								&& (getLineStyle() != LineStylePropertyEditor.UNCONNECTED))
 						{
 							// right, just check if we're a different colour to
 							// the
@@ -3020,7 +3138,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 * @param lastLocation
 	 * @param fw
 	 */
-	protected void paintThisFix(final CanvasType dest, WorldLocation lastLocation, final FixWrapper fw)
+	protected void paintThisFix(final CanvasType dest,
+			WorldLocation lastLocation, final FixWrapper fw)
 	{
 		fw.paintMe(dest, lastLocation, fw.getColor());
 	}
@@ -3033,7 +3152,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 * @param thisCol
 	 * @param lineStyle
 	 */
-	private void paintTrack(final CanvasType dest, final Color thisCol, int lineStyle)
+	private void paintTrack(final CanvasType dest, final Color thisCol,
+			int lineStyle)
 	{
 		if (_ptCtr > 0)
 		{
@@ -3168,7 +3288,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 				if (point instanceof FixWrapper)
 				{
 					FixWrapper fw = (FixWrapper) point;
-					fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _locationListener);
+					fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+							_locationListener);
 				}
 			}
 		}
@@ -3182,6 +3303,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	/**
 	 * pass through the track, resetting the labels back to their original DTG
 	 */
+	@FireReformatted
 	public void resetLabels()
 	{
 		FormatTracks.formatTrack(this);
@@ -3502,7 +3624,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			// start off with the sensor data
 			if (_mySensors != null)
 			{
-				for (Enumeration<Editable> iterator = _mySensors.elements(); iterator.hasMoreElements();)
+				for (Enumeration<Editable> iterator = _mySensors.elements(); iterator
+						.hasMoreElements();)
 				{
 					SensorWrapper thisS = (SensorWrapper) iterator.nextElement();
 					thisS.decimate(theVal, startTime);
@@ -3512,7 +3635,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			// now the solutions
 			if (_mySolutions != null)
 			{
-				for (Enumeration<Editable> iterator = _mySolutions.elements(); iterator.hasMoreElements();)
+				for (Enumeration<Editable> iterator = _mySolutions.elements(); iterator
+						.hasMoreElements();)
 				{
 					TMAWrapper thisT = (TMAWrapper) iterator.nextElement();
 					thisT.decimate(theVal, startTime);
@@ -3639,7 +3763,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration<Editable> theEnum, final WorldVector offset)
+	public final void shiftTrack(Enumeration<Editable> theEnum,
+			final WorldVector offset)
 	{
 		// keep track of if the track contains something that doesn't get
 		// dragged
@@ -3679,14 +3804,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 				final Enumeration<Editable> enumS = sw.elements();
 				while (enumS.hasMoreElements())
 				{
-					final SensorContactWrapper scw = (SensorContactWrapper) enumS.nextElement();
+					final SensorContactWrapper scw = (SensorContactWrapper) enumS
+							.nextElement();
 					// does this fix have it's own origin?
 					final WorldLocation sensorOrigin = scw.getOrigin();
 
 					if (sensorOrigin != null)
 					{
 						// create new object to contain the updated location
-						final WorldLocation newSensorLocation = new WorldLocation(sensorOrigin);
+						final WorldLocation newSensorLocation = new WorldLocation(
+								sensorOrigin);
 						newSensorLocation.addToMe(offset);
 
 						// so the contact did have an origin, change it
@@ -3775,7 +3902,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 							double depthM = lastFix.getDepth();
 							// use the value of depth as read in from the file
 							tmaLastLoc.setDepth(depthM);
-							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts, courseRads);
+							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+									courseRads);
 							tmaLastLoc.addToMe(thisVec);
 						}
 					}
@@ -3799,7 +3927,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 	 * @return a list of the new track segments (used for subsequent undo
 	 *         operations)
 	 */
-	public Vector<TrackSegment> splitTrack(FixWrapper splitPoint, boolean splitBeforePoint)
+	public Vector<TrackSegment> splitTrack(FixWrapper splitPoint,
+			boolean splitBeforePoint)
 	{
 		Vector<TrackSegment> res = null;
 		TrackSegment relevantSegment = null;
@@ -3830,7 +3959,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 
 		if (relevantSegment == null)
 		{
-			throw new RuntimeException("failed to provide relevant segment, alg will break");
+			throw new RuntimeException(
+					"failed to provide relevant segment, alg will break");
 		}
 
 		// hmm, if we're splitting after the point, we need to move along the
@@ -3882,16 +4012,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			// find out the offset at the split point, so we can initiate it for
 			// the
 			// second part of the track
-			WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(splitPoint.getDateTimeGroup())[0].getLocation();
+			WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
+					splitPoint.getDateTimeGroup())[0].getLocation();
 			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
-			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA.getOffset());
+			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1,
+					theTMA.getOffset());
 			RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
 
 			// update the freq's
-			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment).getBaseFrequency());
-			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment).getBaseFrequency());
+			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
+					.getBaseFrequency());
+			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
+					.getBaseFrequency());
 
 			// and store them
 			ts1 = tr1;
@@ -3913,12 +4047,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
 			FixWrapper t1Start = (FixWrapper) p1.first();
 
 			// put the lists back into plottable layers
-			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1, t1Start.getLocation(), null, null);
-			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null, null);
+			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
+					t1Start.getLocation(), null, null);
+			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null,
+					null);
 
 			// update the freq's
-			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment).getBaseFrequency());
-			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment).getBaseFrequency());
+			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
+					.getBaseFrequency());
+			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
+					.getBaseFrequency());
 
 			// and store them
 			ts1 = tr1;

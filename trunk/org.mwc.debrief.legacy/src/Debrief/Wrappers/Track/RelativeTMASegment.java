@@ -280,6 +280,10 @@ public class RelativeTMASegment extends CoreTMASegment
 		// and create a fix for this cut
 		FixWrapper newFix = createPointFor(thisS);
 		newFix.setSymbolShowing(true);
+		
+		// also, reset the name (fixes no longer do this by default at creation, in case the label has been set)
+		newFix.resetName();
+		
 		addFix(newFix);
 	}
 

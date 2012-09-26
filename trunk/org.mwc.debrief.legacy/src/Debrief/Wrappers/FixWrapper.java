@@ -274,7 +274,8 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * fix, tying the two together.
  */
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
-		DynamicPlottable, CanvasType.MultiLineTooltipProvider, TimeStampedDataItem, CreateEditorForParent
+		DynamicPlottable, CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
+		CreateEditorForParent
 {
 
 	// //////////////////////////////////////
@@ -356,6 +357,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	private boolean _lineShowing = true;
 
 	/**
+	 * whether a user label was supplied. if it wasn't, we allow the reset labels
+	 * to run
+	 * 
+	 */
+	private boolean _userLabelSupplied = false;
+
+	/**
 	 * take a static reference for the list of property descriptors for this
 	 * object, since we repeatedly retrieve them (each time we do a property
 	 * edit), yet they are identical across all objects of this type
@@ -379,8 +387,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_theLabel.setFixedOffset(new java.awt.Dimension(4, 4));
 
 		// reset (recalculate) the name bit
-//		resetName();
-		
+		// resetName();
+
 		// hide the name, by default
 		_showLabel = Boolean.FALSE;
 		// declare a duff track
@@ -726,6 +734,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		{
 			_theLabel.setString("Pending");
 		}
+
+		// forget if there was a user label supplied
+		this.setUserLabelSupplied(false);
 	}
 
 	@Override
@@ -1384,4 +1395,25 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return getTrackWrapper();
 	}
 
+	/**
+	 * indicate that the user has supplied a label for this position fix
+	 * 
+	 * @param yesNo
+	 *          whether a user label was supplied
+	 */
+	public void setUserLabelSupplied(boolean yesNo)
+	{
+		_userLabelSupplied = yesNo;
+	}
+
+	/**
+	 * indicate that the user has supplied a label for this position fix
+	 * 
+	 * @return whether a user label was supplied
+	 */
+	public boolean getUserLabelSupplied()
+	{
+		return _userLabelSupplied;
+
+	}
 }

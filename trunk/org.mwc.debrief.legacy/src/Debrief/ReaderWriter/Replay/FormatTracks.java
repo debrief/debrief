@@ -130,7 +130,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 							FixWrapper fw = (FixWrapper) item;
 
 							// does this fix already have a label? if so, we'll leave it
-							if (fw.getLabel().length() == 0)
+							if (!fw.getUserLabelSupplied())
 							{
 								long thisTime = fw.getTime().getDate().getTime();
 
