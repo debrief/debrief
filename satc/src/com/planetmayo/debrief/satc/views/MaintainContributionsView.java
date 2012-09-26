@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.views;
 
+import java.util.Date;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -8,6 +10,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -20,7 +24,10 @@ import org.eclipse.ui.part.ViewPart;
 import com.planetmayo.debrief.satc.Activator;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
+import com.planetmayo.debrief.satc.ui.contributions.AnalystContributionPanel;
+import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
 
 public class MaintainContributionsView extends ViewPart {
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
@@ -113,15 +120,18 @@ public class MaintainContributionsView extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 		
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginWidth = 5;
-		fillLayout.marginHeight = 5;
+		GridLayout fillLayout = new GridLayout(1, false);
 		group.setLayout(fillLayout);
 		group.setLayoutData(gridData);
 		group.setText("Analyst Contributions");
-		
-		// TODO: contributions viewer!
-		
+
+		SpeedForecastContribution contribution = new SpeedForecastContribution();
+		contribution.setActive(true);
+		contribution.setWeight(4);
+		contribution.setStartDate(new Date(111111000));
+		contribution.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
+		new SpeedContributionPanel(group, contribution)
+				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));		
 	}	
 	
 	private void initUI(Composite parent) {

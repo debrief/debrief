@@ -1,6 +1,6 @@
 package com.planetmayo.debrief.satc.model;
 
-public class VehicleType {
+public class VehicleType extends ModelObject {
 
 	/**
 	 * name of this vehicle type
