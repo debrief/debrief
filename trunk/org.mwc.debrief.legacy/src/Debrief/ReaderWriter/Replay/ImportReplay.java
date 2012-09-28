@@ -493,7 +493,10 @@ public class ImportReplay extends PlainImporterBase
 				
 				// overwrite the label, if there's one there
 				if(rf.label != null)
+				{
 					thisWrapper.setLabel(rf.label);
+					thisWrapper.setUserLabelSupplied(true);
+				}
 
 				// keep track of the wrapper for this track
 				TrackWrapper trkWrapper = null;

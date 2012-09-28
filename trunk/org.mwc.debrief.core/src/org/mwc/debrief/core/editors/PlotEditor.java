@@ -329,15 +329,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// stop listening to the time manager
 		_timeManager.removeListener(_timeListener,
 				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-		
+
 		_timeManager = null;
-		
-		if(_layerPainterManager != null)
+
+		if (_layerPainterManager != null)
 		{
 			_layerPainterManager.close();
 			_layerPainterManager = null;
 		}
-		
+
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -953,37 +953,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					public void doSupplementalRightClickProcessing(
 							MenuManager menuManager, Plottable selected, Layer theParentLayer)
 					{
-						if(selected instanceof CreateEditorForParent)
+						if (selected instanceof CreateEditorForParent)
 						{
 							// get the parent track
-							CreateEditorForParent editor =  (CreateEditorForParent) selected;
+							CreateEditorForParent editor = (CreateEditorForParent) selected;
 							Editable parent11 = editor.getParent();
 							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
 							{ parent11 }, new Layer[]
 							{ theParentLayer }, new Layer[]
 							{ theParentLayer }, getLayers(), true);
 						}
-//						// hmm, is it a fix. if it is, also flash up the track
-//						if (selected instanceof FixWrapper)
-//						{
-//							// get the parent track
-//							FixWrapper fix = (FixWrapper) selected;
-//							TrackWrapper parent11 = fix.getTrackWrapper();
-//							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
-//							{ parent11 }, new Layer[]
-//							{ theParentLayer }, new Layer[]
-//							{ theParentLayer }, getLayers(), true);
-//						}
-//						else if (selected instanceof PlanningSegment)
-//						{
-//							PlanningSegment ps = (PlanningSegment) selected;
-//							TrackWrapper parent11 = ps.getWrapper();
-//							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
-//							{ parent11 }, new Layer[]
-//							{ theParentLayer }, new Layer[]
-//							{ theParentLayer }, getLayers(), true);
-//						}
-						
 					}
 				};
 			}
@@ -1458,11 +1437,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				// also make this new file our input
 				IFileEditorInput newInput = new FileEditorInput(file);
 				setInputWithNotify(newInput);
+
+				// lastly, trigger a navigator refresh
+				IFile iff = newInput.getFile();
+				iff.refreshLocal(IResource.DEPTH_ONE, null);
+
 			}
 			catch (FileNotFoundException e)
 			{
 				CorePlugin
 						.logError(Status.ERROR, "Failed whilst performing Save As", e);
+			}
+			catch (CoreException e)
+			{
+				CorePlugin
+				.logError(Status.ERROR, "Refresh failed after saving new file", e);
 			}
 			finally
 			{
