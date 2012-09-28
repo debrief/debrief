@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd"
+	xmlns:p="http://www.topografix.com/GPX/1/0" creator="test" version="1.0">
+
+	<p:name>1285669575458</p:name>
+	<p:desc>Saved with Debrief version dated Fri Apr 27 09:31:37 BST 2012</p:desc>
+	<p:time>2012-04-27T16:29:38+01:00</p:time>
+
+	<p:trk>
+		<p:name>NELSON</p:name>
+		<p:trkseg>
+			<p:trkpt lat="22.1862861" lon="-21.6978806">
+				<p:ele>0.000</p:ele>
+				<p:time>2012-04-27T16:29:38+01:00</p:time>
+				<p:course>268.7</p:course>
+				<p:speed>4.5</p:speed>
+			</p:trkpt>
+			<p:trkpt lat="22.2862861" lon="-21.7978806">
+				<p:ele>0.000</p:ele>
+				<p:time>2012-04-27T16:30:38+01:00</p:time>
+				<p:course>264.7</p:course>
+				<p:speed>5.5</p:speed>
+			</p:trkpt>
+			<p:trkpt lat="22.4862861" lon="-21.2978806">
+				<p:ele>0.000</p:ele>
+				<p:time>2012-04-27T16:31:38+01:00</p:time>
+				<p:course>263.7</p:course>
+				<p:speed>7.5</p:speed>
+			</p:trkpt>
+			<p:trkpt lat="22.1862861" lon="-21.5978806">
+				<p:ele>0.000</p:ele>
+				<p:time>2012-04-27T16:32:38+01:00</p:time>
+				<p:course>262.7</p:course>
+				<p:speed>9.5</p:speed>
+			</p:trkpt>
+			<p:trkpt lat="22.3862861" lon="-21.1978806">
+				<p:ele>0.000</p:ele>
+				<p:time>2012-04-27T16:33:38+01:00</p:time>
+				<p:course>261.7</p:course>
+				<p:speed>3.5</p:speed>
+			</p:trkpt>
+		</p:trkseg>
+	</p:trk>
+</p:gpx>
