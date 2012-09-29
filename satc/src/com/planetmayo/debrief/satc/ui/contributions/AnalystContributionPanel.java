@@ -34,7 +34,16 @@ public abstract class AnalystContributionPanel {
 	protected DateTime startDate;
 	protected DateTime startTime;
 	protected DateTime endDate;
-	protected DateTime endTime;	
+	protected DateTime endTime;
+
+	protected Label limitLabel;
+	protected Label minLabel;
+	protected Label maxLabel;
+	protected Label estimateDetailsLabel;
+	
+	protected Scale minSlider;
+	protected Scale maxSlider;
+	protected Scale estimateSlider;
 
 	public AnalystContributionPanel(Composite parent) {
 		this.controlParent = parent;
@@ -44,7 +53,6 @@ public abstract class AnalystContributionPanel {
 		GridLayout layout = UIUtils.createGridLayoutWithoutMargins(1, false);
 		layout.verticalSpacing = 0;
 		mainGroup = new Group(controlParent, SWT.SHADOW_ETCHED_IN);
-		mainGroup.setText("sssss");
 		mainGroup.setLayout(layout);
 		
 		createHeader(mainGroup);		
@@ -80,13 +88,13 @@ public abstract class AnalystContributionPanel {
 		activeCheckBox = new Button(header, SWT.CHECK);
 		activeCheckBox.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_CENTER));
 		
-		hardConstraintLabel = new Label(header, SWT.NONE);
+		hardConstraintLabel = new Label(header, SWT.CENTER);
 		hardConstraintLabel.setText("Hard constraints");
-		hardConstraintLabel.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_CENTER));
+		hardConstraintLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		estimateLabel = new Label(header, SWT.NONE);
+		estimateLabel = new Label(header, SWT.CENTER);
 		estimateLabel.setText("Estimate");
-		estimateLabel.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_CENTER));
+		estimateLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		weightSpinner = new Spinner (header, SWT.BORDER);
 		weightSpinner.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
@@ -110,7 +118,7 @@ public abstract class AnalystContributionPanel {
 		bodyGroup.setText("Adjust");
 		bodyGroup.setLayout(new GridLayout(2, false));
 
-		UIUtils.createLabel(bodyGroup, "Start:", new GridData(100, SWT.DEFAULT));		
+		UIUtils.createLabel(bodyGroup, "Start:", new GridData(120, SWT.DEFAULT));		
 		Composite startDateGroup = UIUtils.createEmptyComposite(bodyGroup, 
 				new RowLayout(SWT.HORIZONTAL), new GridData());		
 		startDate = new DateTime(startDateGroup, SWT.DROP_DOWN | SWT.DATE);
@@ -124,27 +132,43 @@ public abstract class AnalystContributionPanel {
 	}	
 	
 	protected void createLimitAndEstimateSliders() {
-		UIUtils.createLabel(bodyGroup, "Limit:", new GridData());
-		Composite limitGroup = UIUtils.createEmptyComposite(bodyGroup, 
-				new FillLayout(SWT.VERTICAL), new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-		Scale slider = new Scale(limitGroup, SWT.HORIZONTAL);
-		slider.setMaximum(30);
-		slider.setMinimum(0);
-		slider.setPageIncrement(1);
-		slider.setIncrement(1);
-		slider = new Scale(limitGroup, SWT.HORIZONTAL);
-		slider.setMaximum(30);
-		slider.setMinimum(0);
-		slider.setPageIncrement(1);
-		slider.setIncrement(1);		
+		GridLayout limitsLayout = new GridLayout(2, false);
+		limitsLayout.horizontalSpacing = 15;
+		Composite limitsComposite = UIUtils.createEmptyComposite(
+				bodyGroup, 
+				limitsLayout,
+				new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL)				
+		);
+		GridData gridData = new GridData();
+		gridData.verticalSpan = 2;
+		gridData.grabExcessVerticalSpace = true;		
+		limitLabel = UIUtils.createLabel(limitsComposite, "Limit", gridData);
+		minLabel = UIUtils.createLabel(limitsComposite, "min:", new GridData(GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
+		maxLabel = UIUtils.createLabel(limitsComposite, "max:", new GridData(GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
 		
-		UIUtils.createLabel(bodyGroup, "Estimate:", new GridData());
-		slider = new Scale(bodyGroup, SWT.HORIZONTAL);
-		slider.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-		slider.setMaximum(30);
-		slider.setMinimum(0);
-		slider.setPageIncrement(1);
-		slider.setIncrement(1);		
+		Composite limitGroup = UIUtils.createEmptyComposite(
+				bodyGroup, 
+				new FillLayout(SWT.VERTICAL), 
+				new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL)				
+		);
+		minSlider = new Scale(limitGroup, SWT.HORIZONTAL);
+		minSlider.setPageIncrement(1);
+		minSlider.setIncrement(1);
+		maxSlider = new Scale(limitGroup, SWT.HORIZONTAL);
+		maxSlider.setPageIncrement(1);
+		maxSlider.setIncrement(1);		
+		
+		estimateDetailsLabel = UIUtils.createLabel(bodyGroup, "Estimate:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		estimateSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
+		estimateSlider.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+		estimateSlider.setPageIncrement(1);
+		estimateSlider.setIncrement(1);
+		
+		initializeListenersBetweenSliders();
+	}
+	
+	private void initializeListenersBetweenSliders() {
+		
 	}
 	
 	protected abstract void bindValues();

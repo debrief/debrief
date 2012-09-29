@@ -54,14 +54,52 @@ public class SpeedContributionPanel extends AnalystContributionPanel {
 		IObservableValue weightValue = BeansObservables.observeValue(contribution, "weight");
 		IObservableValue weightWidget = WidgetProperties.selection().observe(weightSpinner);
 		context.bindValue(weightWidget, weightValue);
+		
+		IObservableValue minSpeedValue = BeansObservables.observeValue(contribution, "minSpeed");
+		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(minSlider);
+		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
+		IObservableValue esimateSliderMin = WidgetProperties.minimum().observe(estimateSlider);
+		IObservableValue maxSliderMin = WidgetProperties.minimum().observe(maxSlider);
+		strategy = new UpdateValueStrategy();
+		strategy.setConverter(new KnotsConverter("min: ", double.class));
+		context.bindValue(minSpeedSlider, minSpeedValue);
+		context.bindValue(esimateSliderMin, minSpeedValue);
+		context.bindValue(maxSliderMin, minSpeedValue);
+		context.bindValue(minSpeedLabel, minSpeedValue, null, strategy);
+		
+		IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution, "maxSpeed");
+		IObservableValue maxSpeedSlider = WidgetProperties.selection().observe(maxSlider);
+		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
+		IObservableValue esimateSliderMax = WidgetProperties.maximum().observe(estimateSlider);
+		IObservableValue minSliderMax = WidgetProperties.maximum().observe(minSlider);
+		strategy = new UpdateValueStrategy();
+		strategy.setConverter(new KnotsConverter("max: ", double.class));
+		context.bindValue(maxSpeedSlider, maxSpeedValue);
+		context.bindValue(esimateSliderMax, maxSpeedValue);
+		context.bindValue(minSliderMax, maxSpeedValue);
+		context.bindValue(maxSpeedLabel, maxSpeedValue, null, strategy);
+		
+		IObservableValue estimateSliderValue = WidgetProperties.selection().observe(estimateSlider);
+		IObservableValue estimateSpeedDetailsLabel = WidgetProperties.text().observe(estimateDetailsLabel);
+		strategy = new UpdateValueStrategy();
+		strategy.setConverter(new KnotsConverter("Estimate: ", double.class));
+		context.bindValue(estimateSliderValue, estimateValue);
+		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, strategy);
 	}
 	
 	private static class KnotsConverter implements IConverter {
 		private Object fromType;
+		private String prefix;
+		
+		KnotsConverter(String prefix, Object fromType) {
+			this.fromType = fromType;
+			this.prefix = prefix;
+		}
 		
 		KnotsConverter(Object fromType) {
-			this.fromType = fromType;
+			this("", fromType);
 		}
+		
 		
 		@Override
 		public Object getToType() {			
@@ -78,7 +116,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel {
 			if (model instanceof Number) {
 				model = ((Number) model).intValue();
 			}
-			return "" +  model + " knots";
+			return prefix +  model + " kts";
 		}		
 	}
 }
