@@ -26,6 +26,7 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
 import com.planetmayo.debrief.satc.ui.contributions.CourseContributionPanel;
+import com.planetmayo.debrief.satc.ui.contributions.LocationContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
 
 public class MaintainContributionsView extends ViewPart {
@@ -141,7 +142,10 @@ public class MaintainContributionsView extends ViewPart {
 		courseContribution.setMaxCourse(60);
 		courseContribution.setEstimate(25);
 		new CourseContributionPanel(group, courseContribution)
-				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));		
+				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+		
+		new LocationContributionPanel(group, null)
+				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
 	}	
 	
 	private void initUI(Composite parent) {
