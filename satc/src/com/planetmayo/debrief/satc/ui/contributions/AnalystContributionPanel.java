@@ -58,6 +58,7 @@ public abstract class AnalystContributionPanel {
 		createHeader(mainGroup);		
 		createBody(mainGroup);
 		createLimitAndEstimateSliders();
+		initializeWidgets();
 		bindValues();
 	}
 	
@@ -163,14 +164,9 @@ public abstract class AnalystContributionPanel {
 		estimateSlider.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
 		estimateSlider.setPageIncrement(1);
 		estimateSlider.setIncrement(1);
-		
-		initializeListenersBetweenSliders();
 	}
 	
-	private void initializeListenersBetweenSliders() {
-		
-	}
-	
+	protected abstract void initializeWidgets();
 	protected abstract void bindValues();
 	
 	public void setLayoutData(Object data) {

@@ -7,25 +7,31 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
 
-import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc.ui.UIUtils;
 
-public class SpeedContributionPanel extends AnalystContributionPanel {
+public class CourseContributionPanel extends AnalystContributionPanel {
 	
-	private SpeedForecastContribution contribution;
+	private CourseForecastContribution contribution;
 	
-	public SpeedContributionPanel(Composite parent, SpeedForecastContribution contribution) {
+	public CourseContributionPanel(Composite parent, CourseForecastContribution contribution) {
 		super(parent);
 		this.contribution = contribution;
 		initUI();
-	}	
-
+	}
+	
 	@Override
 	protected void initializeWidgets() {
-		// min and max speed goes here		
-	}
+		minSlider.setMinimum(0);
+		minSlider.setMaximum(360);
+		maxSlider.setMinimum(0);
+		maxSlider.setMaximum(360);
+		estimateSlider.setMinimum(0);
+		estimateSlider.setMaximum(360);
+	}	
 
+	// don't use inheritance here, because of different nature and although code looks very similar it may be headache in future
 	@Override
 	protected void bindValues() {
 		DataBindingContext context = new DataBindingContext();
@@ -37,12 +43,12 @@ public class SpeedContributionPanel extends AnalystContributionPanel {
 		IObservableValue hardContraintValue = BeansObservables.observeValue(contribution, "hardConstraints");
 		IObservableValue hardContraintLabel = WidgetProperties.text().observe(hardConstraintLabel);
 		context.bindValue(hardContraintLabel, hardContraintValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(String.class, " kts")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(String.class, " degs")));
 		
 		IObservableValue estimateValue = BeansObservables.observeValue(contribution, "estimate");
 		IObservableValue estimateLabel = WidgetProperties.text().observe(this.estimateLabel);
 		context.bindValue(estimateLabel, estimateValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(double.class, " kts")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, " degs")));
 		
 		IObservableValue startDateValue = BeansObservables.observeValue(contribution, "startDate");
 		IObservableValue startDateWidget = WidgetProperties.selection().observe(startDate);
@@ -58,33 +64,34 @@ public class SpeedContributionPanel extends AnalystContributionPanel {
 		IObservableValue weightWidget = WidgetProperties.selection().observe(weightSpinner);
 		context.bindValue(weightWidget, weightValue);
 		
-		IObservableValue minSpeedValue = BeansObservables.observeValue(contribution, "minSpeed");
-		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(minSlider);
-		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
+		IObservableValue minCourseValue = BeansObservables.observeValue(contribution, "minCourse");
+		IObservableValue minCourseSlider = WidgetProperties.selection().observe(minSlider);
+		IObservableValue minCourseLabel = WidgetProperties.text().observe(minLabel);
 		IObservableValue esimateSliderMin = WidgetProperties.minimum().observe(estimateSlider);
 		IObservableValue maxSliderMin = WidgetProperties.minimum().observe(maxSlider);
-		context.bindValue(minSpeedSlider, minSpeedValue);
-		context.bindValue(esimateSliderMin, minSpeedValue);
-		context.bindValue(maxSliderMin, minSpeedValue);
-		context.bindValue(minSpeedLabel, minSpeedValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(double.class, "min: ", " kts")));
+		context.bindValue(minCourseSlider, minCourseValue);
+		context.bindValue(esimateSliderMin, minCourseValue);
+		context.bindValue(maxSliderMin, minCourseValue);
+		context.bindValue(minCourseLabel, minCourseValue, null, 
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, "min: ", " degs")));
 		
-		IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution, "maxSpeed");
-		IObservableValue maxSpeedSlider = WidgetProperties.selection().observe(maxSlider);
-		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
+		IObservableValue maxCourseValue = BeansObservables.observeValue(contribution, "maxCourse");
+		IObservableValue maxCourseSlider = WidgetProperties.selection().observe(maxSlider);
+		IObservableValue maxCourseLabel = WidgetProperties.text().observe(maxLabel);
 		IObservableValue esimateSliderMax = WidgetProperties.maximum().observe(estimateSlider);
 		IObservableValue minSliderMax = WidgetProperties.maximum().observe(minSlider);
-		context.bindValue(maxSpeedSlider, maxSpeedValue);
-		context.bindValue(esimateSliderMax, maxSpeedValue);
-		context.bindValue(minSliderMax, maxSpeedValue);
-		context.bindValue(maxSpeedLabel, maxSpeedValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(double.class, "max: ", " kts")));
+		context.bindValue(maxCourseSlider, maxCourseValue);
+		context.bindValue(esimateSliderMax, maxCourseValue);
+		context.bindValue(minSliderMax, maxCourseValue);
+		context.bindValue(maxCourseLabel, maxCourseValue, null, 
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, "max: ", " degs")));
 		
 		IObservableValue estimateSliderValue = WidgetProperties.selection().observe(estimateSlider);
-		IObservableValue estimateSpeedDetailsLabel = WidgetProperties.text().observe(estimateDetailsLabel);
+		IObservableValue estimateCourseDetailsLabel = WidgetProperties.text().observe(estimateDetailsLabel);
 
 		context.bindValue(estimateSliderValue, estimateValue);
-		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(double.class, "Estimate: ", " kts")));
+		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, 
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, "Estimate: ", " degs")));		
+		
 	}
 }

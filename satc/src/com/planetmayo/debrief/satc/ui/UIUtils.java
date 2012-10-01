@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.ui;
 
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -31,5 +33,11 @@ public class UIUtils {
 		composite.setLayoutData(layoutData);
 		composite.setLayout(layout);
 		return composite; 
+	}
+	
+	public static UpdateValueStrategy converterStrategy(IConverter converter) {
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setConverter(converter);
+		return strategy;
 	}
 }

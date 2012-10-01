@@ -6,7 +6,7 @@ public class CourseForecastContribution extends BaseContribution {
 	
 	protected int _maxCourse;
 	
-	protected int _estimation;
+	protected int _estimate;
 
 	public int getMinCourse() {
 		return _minCourse;
@@ -30,13 +30,13 @@ public class CourseForecastContribution extends BaseContribution {
 		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
 	}
 
-	public int getEstimation() {
-		return _estimation;
+	public int getEstimate() {
+		return _estimate;
 	}
 
-	public void setEstimation(int estimation) {
-		firePropertyChange("estimation", _estimation, estimation);
-		this._estimation = estimation;
+	public void setEstimate(int estimate) {
+		firePropertyChange("estimate", _estimate, estimate);
+		this._estimate = estimate;
 	}
 
 	@Override

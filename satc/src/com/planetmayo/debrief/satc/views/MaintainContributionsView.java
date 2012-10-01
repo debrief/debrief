@@ -10,8 +10,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -24,9 +22,10 @@ import org.eclipse.ui.part.ViewPart;
 import com.planetmayo.debrief.satc.Activator;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
-import com.planetmayo.debrief.satc.ui.contributions.AnalystContributionPanel;
+import com.planetmayo.debrief.satc.ui.contributions.CourseContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
 
 public class MaintainContributionsView extends ViewPart {
@@ -131,6 +130,17 @@ public class MaintainContributionsView extends ViewPart {
 		contribution.setStartDate(new Date(111111000));
 		contribution.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
 		new SpeedContributionPanel(group, contribution)
+				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+		
+		CourseForecastContribution courseContribution = new CourseForecastContribution();
+		courseContribution.setActive(true);
+		courseContribution.setWeight(7);
+		courseContribution.setStartDate(new Date(1111110033120L));
+		courseContribution.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
+		courseContribution.setMinCourse(10);
+		courseContribution.setMaxCourse(60);
+		courseContribution.setEstimate(25);
+		new CourseContributionPanel(group, courseContribution)
 				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));		
 	}	
 	
