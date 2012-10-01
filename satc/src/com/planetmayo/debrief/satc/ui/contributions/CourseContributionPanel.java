@@ -16,7 +16,7 @@ public class CourseContributionPanel extends AnalystContributionPanel {
 	private CourseForecastContribution contribution;
 	
 	public CourseContributionPanel(Composite parent, CourseForecastContribution contribution) {
-		super(parent);
+		super(parent, "Course Forecast");
 		this.contribution = contribution;
 		initUI();
 	}

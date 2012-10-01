@@ -17,7 +17,7 @@ public class LocationContributionPanel extends AnalystContributionPanel {
 	private Text estimateText;
 	
 	public LocationContributionPanel(Composite parent, LocationForecastContribution contribution) {
-		super(parent);
+		super(parent, "Location Forecast");
 		this.contribution = contribution;
 		initUI();
 	}

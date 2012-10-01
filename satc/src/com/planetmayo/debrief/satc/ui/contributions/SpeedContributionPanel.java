@@ -16,7 +16,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel {
 	private SpeedForecastContribution contribution;
 	
 	public SpeedContributionPanel(Composite parent, SpeedForecastContribution contribution) {
-		super(parent);
+		super(parent, "Speed Forecast");
 		this.contribution = contribution;
 		initUI();
 	}	

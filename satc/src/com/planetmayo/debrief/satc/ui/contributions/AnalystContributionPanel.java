@@ -45,8 +45,11 @@ public abstract class AnalystContributionPanel {
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
 
-	public AnalystContributionPanel(Composite parent) {
+	private final String contributionName;
+
+	public AnalystContributionPanel(final Composite parent, final String contributionName) {
 		this.controlParent = parent;
+		this.contributionName = contributionName;
 	}
 	
 	protected void initUI() {
@@ -55,6 +58,10 @@ public abstract class AnalystContributionPanel {
 		mainGroup = new Group(controlParent, SWT.SHADOW_ETCHED_IN);
 		mainGroup.setLayout(layout);
 		
+		// set the name
+		mainGroup.setText(contributionName);
+
+		// and the rest of the UI
 		createHeader(mainGroup);		
 		createBody(mainGroup);
 		createLimitAndEstimateSliders();
