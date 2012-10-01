@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.util.Date;
+
 public class SpeedForecastContribution extends BaseContribution {
 	
 	protected double _minSpeed;
@@ -42,5 +44,19 @@ public class SpeedForecastContribution extends BaseContribution {
 	@Override
 	public String getHardConstraints() {
 		return "" + ((int) _minSpeed) + " - " + ((int) _maxSpeed);
+	}
+	
+	/** utility method to create one of these contributions
+	 * 
+	 * @return
+	 */
+	public static SpeedForecastContribution getSample()
+	{
+		SpeedForecastContribution res = new SpeedForecastContribution();
+		res.setActive(true);
+		res.setWeight(4);
+		res.setStartDate(new Date(111111000));
+		res.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
+		return res;
 	}
 }

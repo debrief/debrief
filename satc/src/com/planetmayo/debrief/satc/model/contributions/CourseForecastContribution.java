@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.util.Date;
+
 public class CourseForecastContribution extends BaseContribution {
 	
 	protected int _minCourse;
@@ -42,5 +44,23 @@ public class CourseForecastContribution extends BaseContribution {
 	@Override
 	public String getHardConstraints() {		
 		return "" + _minCourse + " - " + _maxCourse;
+	}
+	
+	/** utility method to create one of these contributions
+	 * 
+	 * @return
+	 */
+	public static CourseForecastContribution getSample()
+	{
+		CourseForecastContribution res = new CourseForecastContribution();
+		res.setActive(true);
+		res.setWeight(7);
+		res.setStartDate(new Date(1111110033120L));
+		res.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
+		res.setMinCourse(10);
+		res.setMaxCourse(60);
+		res.setEstimate(25);
+		
+		return res;
 	}
 }
