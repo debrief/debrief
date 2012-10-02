@@ -12,6 +12,7 @@ package Debrief.ReaderWriter.XML;
 import Debrief.ReaderWriter.XML.Shapes.ArcHandler;
 import Debrief.ReaderWriter.XML.Shapes.CircleHandler;
 import Debrief.ReaderWriter.XML.Shapes.EllipseHandler;
+import Debrief.ReaderWriter.XML.Shapes.FurthestOnCircleHandler;
 import Debrief.ReaderWriter.XML.Shapes.LabelHandler;
 import Debrief.ReaderWriter.XML.Shapes.LineHandler;
 import Debrief.ReaderWriter.XML.Shapes.PolygonHandler;
@@ -20,6 +21,7 @@ import Debrief.ReaderWriter.XML.Shapes.RectangleHandler;
 import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 
@@ -88,6 +90,14 @@ public class DebriefLayerHandler extends
 		});
 		addHandler(new RangeRingsHandler()
 		{
+			public void addPlottable(MWC.GUI.Plottable plottable)
+			{
+				addThis(plottable);
+			}
+		});
+		addHandler(new FurthestOnCircleHandler()
+		{
+			@Override
 			public void addPlottable(MWC.GUI.Plottable plottable)
 			{
 				addThis(plottable);
@@ -184,6 +194,14 @@ public class DebriefLayerHandler extends
 				{
 				}
 			});
+			_myExporters.put(MWC.GUI.Shapes.FurthestOnCircleShape.class,
+					new FurthestOnCircleHandler()
+					{
+						@Override
+						public void addPlottable(MWC.GUI.Plottable plottable)
+						{
+						}
+					});
 			_myExporters.put(MWC.GUI.Shapes.RangeRingShape.class,
 					new RangeRingsHandler()
 					{
