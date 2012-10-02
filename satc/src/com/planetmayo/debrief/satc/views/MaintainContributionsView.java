@@ -5,13 +5,16 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -24,6 +27,7 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
+import com.planetmayo.debrief.satc.ui.UIUtils;
 import com.planetmayo.debrief.satc.ui.contributions.CourseContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.LocationContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
@@ -132,17 +136,51 @@ public class MaintainContributionsView extends ViewPart
 		gridData.grabExcessVerticalSpace = true;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		GridLayout fillLayout = new GridLayout(1, false);
-		group.setLayout(fillLayout);
+		group.setLayout(new FillLayout(SWT.VERTICAL));
 		group.setLayoutData(gridData);
 		group.setText("Analyst Contributions");
-
+		
+		final ScrolledComposite scrolled = new ScrolledComposite(group, SWT.V_SCROLL);
+		final Composite scrolledBody = UIUtils.createScrolledBody(scrolled, SWT.NONE);
+		scrolledBody.setLayout(new GridLayout(1, false));
+		
+		fillAnalystContributionsGroup(scrolledBody);		
+		scrolled.addListener(SWT.Resize, new Listener() {
+			
+			@Override
+			public void handleEvent(Event e) {				
+				scrolled.setMinSize(scrolledBody.computeSize(SWT.DEFAULT, SWT.DEFAULT));				
+			}
+		});
+		scrolled.setAlwaysShowScrollBars(true);
+		scrolled.setContent(scrolledBody);
+		scrolled.setMinSize(scrolledBody.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolled.setExpandHorizontal(true);
+		scrolled.setExpandVertical(true);			
+	}
+	
+	private void fillAnalystContributionsGroup(Composite parent) {
+		GridLayout layout = new GridLayout(3, false);
+		layout.marginHeight = 2;
+		layout.marginWidth = 2;
+		Composite header = UIUtils.createEmptyComposite(parent, layout, new GridData(GridData.FILL_HORIZONTAL));
+		UIUtils.createSpacer(header, new GridData(40, SWT.DEFAULT));
+		Composite headerNested = UIUtils.createEmptyComposite(
+				header, 
+				UIUtils.createGridLayoutWithoutMargins(3, true),
+				new GridData(GridData.FILL_HORIZONTAL)
+		);
+		UIUtils.createLabel(headerNested, SWT.CENTER, "Active", new GridData(GridData.FILL_HORIZONTAL));
+		UIUtils.createLabel(headerNested, SWT.CENTER, "Hard constraints", new GridData(GridData.FILL_HORIZONTAL));
+		UIUtils.createLabel(headerNested, SWT.CENTER, "Estimate", new GridData(GridData.FILL_HORIZONTAL));
+		UIUtils.createLabel(header, SWT.RIGHT, "Weight", new GridData(40, SWT.DEFAULT));
+		
 		// create a sample speed forecast contribution
 		SpeedForecastContribution speedContribution = SpeedForecastContribution
 				.getSample();
 
 		// and a UI to display it
-		new SpeedContributionPanel(group, speedContribution)
+		new SpeedContributionPanel(parent, speedContribution)
 				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 						| GridData.GRAB_HORIZONTAL));
 
@@ -151,7 +189,7 @@ public class MaintainContributionsView extends ViewPart
 				.getSample();
 
 		// and a UI to display it
-		new CourseContributionPanel(group, courseContribution)
+		new CourseContributionPanel(parent, courseContribution)
 				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 						| GridData.GRAB_HORIZONTAL));
 
@@ -160,7 +198,7 @@ public class MaintainContributionsView extends ViewPart
 				.getSample();
 		
 		// and a UI to display it
-		new LocationContributionPanel(group, locationContribution).setLayoutData(new GridData(
+		new LocationContributionPanel(parent, locationContribution).setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
 	}
 

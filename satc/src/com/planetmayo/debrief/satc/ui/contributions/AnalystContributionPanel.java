@@ -1,20 +1,31 @@
 package com.planetmayo.debrief.satc.ui.contributions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc.ui.UIUtils;
 import com.planetmayo.debrief.satc.ui.widgets.ExpandButton;
 
@@ -45,11 +56,8 @@ public abstract class AnalystContributionPanel {
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
 
-	private final String contributionName;
-
-	public AnalystContributionPanel(final Composite parent, final String contributionName) {
+	public AnalystContributionPanel(final Composite parent) {
 		this.controlParent = parent;
-		this.contributionName = contributionName;
 	}
 	
 	protected void initUI() {
@@ -57,11 +65,7 @@ public abstract class AnalystContributionPanel {
 		layout.verticalSpacing = 0;
 		mainGroup = new Group(controlParent, SWT.SHADOW_ETCHED_IN);
 		mainGroup.setLayout(layout);
-		
-		// set the name
-		mainGroup.setText(contributionName);
 
-		// and the rest of the UI
 		createHeader(mainGroup);		
 		createBody(mainGroup);
 		createLimitAndEstimateSliders();
@@ -72,40 +76,41 @@ public abstract class AnalystContributionPanel {
 	protected void createHeader(Composite parent) {
 		Composite header = new Composite(parent, SWT.NONE);
 		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-		header.setLayout(UIUtils.createGridLayoutWithoutMargins(5, false));
+		header.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
 		
 		expandButton = new ExpandButton(header);
-		expandButton.getControl().setLayoutData(new GridData());
-		expandButton.addSelectionListener(new SelectionListener() {
+		expandButton.getControl().setLayoutData(new GridData(40, SWT.DEFAULT));
+		expandButton.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				GridData data = (GridData) bodyGroup.getLayoutData();
 		        data.exclude = !expandButton.getSelection();
 		        bodyGroup.setVisible(!data.exclude);
-		        controlParent.layout(true, true);
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+		        controlParent.layout(new Control[] {mainGroup});
 			}
 		});
 		
-		activeCheckBox = new Button(header, SWT.CHECK);
+		Composite nested = UIUtils.createEmptyComposite(
+				header, 
+				UIUtils.createGridLayoutWithoutMargins(3, true), 
+				new GridData(GridData.FILL_HORIZONTAL)
+		);	
+		activeCheckBox = new Button(nested, SWT.CHECK);
 		activeCheckBox.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_CENTER));
 		
-		hardConstraintLabel = new Label(header, SWT.CENTER);
+		hardConstraintLabel = new Label(nested, SWT.CENTER);
 		hardConstraintLabel.setText("Hard constraints");
 		hardConstraintLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		estimateLabel = new Label(header, SWT.CENTER);
+		estimateLabel = new Label(nested, SWT.CENTER);
 		estimateLabel.setText("Estimate");
 		estimateLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		weightSpinner = new Spinner (header, SWT.BORDER);
-		weightSpinner.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		data.widthHint = 10;
+		weightSpinner.setLayoutData(data);
 		weightSpinner.setMinimum(0);
 		weightSpinner.setMaximum(10);
 		weightSpinner.setIncrement(1);
@@ -173,7 +178,70 @@ public abstract class AnalystContributionPanel {
 		estimateSlider.setIncrement(1);
 	}
 	
-	protected abstract void initializeWidgets();
+	/**
+	 * Utility base method which binds common header widgets:
+	 * "active" checkbox, hardconstrains label, estimate label, weight spinner.
+	 * Must be called if necessary from implementation of bindValues method in child class
+	 *  
+	 * @param context
+	 * @param contribution
+	 * @param labelsConverter
+	 */
+	protected final void bindCommonHeaderWidgets(DataBindingContext context, BaseContribution contribution, PrefixSuffixLabelConverter labelsConverter) {
+		IObservableValue activeValue = BeansObservables.observeValue(contribution, "active");
+		IObservableValue activeButton = WidgetProperties.selection().observe(activeCheckBox);
+		context.bindValue(activeButton, activeValue);
+		
+		IObservableValue hardContraintValue = BeansObservables.observeValue(contribution, "hardConstraints");
+		IObservableValue hardContraintLabel = WidgetProperties.text().observe(hardConstraintLabel);
+		context.bindValue(hardContraintLabel, hardContraintValue, null, UIUtils.converterStrategy(labelsConverter));
+		
+		IObservableValue estimateValue = BeansObservables.observeValue(contribution, "estimate");
+		IObservableValue estimateLabel = WidgetProperties.text().observe(this.estimateLabel);
+		context.bindValue(estimateLabel, estimateValue, null, UIUtils.converterStrategy(labelsConverter));
+		
+		IObservableValue weightValue = BeansObservables.observeValue(contribution, "weight");
+		IObservableValue weightWidget = WidgetProperties.selection().observe(weightSpinner);
+		context.bindValue(weightWidget, weightValue);		
+	}
+	
+	/**
+	 * Utility base method which makes common binding for date fields
+	 * Must be called if necessary from implementation of bindValues method in child class
+	 * 
+	 * @param context
+	 * @param contribution
+	 */
+	protected final void bindCommonDates(DataBindingContext context, BaseContribution contribution) {
+		IObservableValue startDateValue = BeansObservables.observeValue(contribution, "startDate");
+		IObservableValue startDateWidget = WidgetProperties.selection().observe(startDate);
+		IObservableValue startTimeWidget = WidgetProperties.selection().observe(startTime);
+		context.bindValue(new DateAndTimeObservableValue(startDateWidget, startTimeWidget), startDateValue);		
+
+		IObservableValue endDateValue = BeansObservables.observeValue(contribution, "finishDate");
+		IObservableValue endDateWidget = WidgetProperties.selection().observe(endDate);
+		IObservableValue endTimeWidget = WidgetProperties.selection().observe(endTime);
+		context.bindValue(new DateAndTimeObservableValue(endDateWidget, endTimeWidget), endDateValue);	
+	}
+	
+	public void dispose() {
+		
+	}
+	
+	protected PropertyChangeListener attachTitleChangeListener(BaseContribution contribution, final String titlePrefix) {
+		PropertyChangeListener listener = new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				mainGroup.setText(titlePrefix + evt.getNewValue());
+			}
+		};
+		listener.propertyChange(new PropertyChangeEvent(contribution, "name", null, contribution.getName()));
+		contribution.addPropertyChangeListener("name", listener);
+		return listener;
+	}
+	
+	protected abstract void initializeWidgets();	
 	protected abstract void bindValues();
 	
 	public void setLayoutData(Object data) {

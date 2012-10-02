@@ -48,6 +48,7 @@ public class LocationForecastContribution extends BaseContribution
 	public static LocationForecastContribution getSample()
 	{
 		LocationForecastContribution res = new LocationForecastContribution();
+		res.setName("From ships log");
 		GeoPoint geo = new GeoPoint();
 		geo.setLat(52.2);
 		geo.setLon(-5.12);

@@ -53,6 +53,7 @@ public class CourseForecastContribution extends BaseContribution {
 	public static CourseForecastContribution getSample()
 	{
 		CourseForecastContribution res = new CourseForecastContribution();
+		res.setName("Approaching Buoy");
 		res.setActive(true);
 		res.setWeight(7);
 		res.setStartDate(new Date(1111110033120L));

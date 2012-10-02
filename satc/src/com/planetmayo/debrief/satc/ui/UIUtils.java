@@ -3,8 +3,10 @@ package com.planetmayo.debrief.satc.ui;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 
@@ -18,7 +20,11 @@ public class UIUtils {
 	}
 	
 	public static Label createLabel(Composite parent, String text, Object layoutData) {
-		Label label = new Label(parent, SWT.NONE);
+		return createLabel(parent, SWT.NONE, text, layoutData);
+	}	
+	
+	public static Label createLabel(Composite parent, int style, String text, Object layoutData) {
+		Label label = new Label(parent, style);
 		label.setText(text);
 		label.setLayoutData(layoutData);
 		return label;
@@ -33,6 +39,23 @@ public class UIUtils {
 		composite.setLayoutData(layoutData);
 		composite.setLayout(layout);
 		return composite; 
+	}
+	
+	public static Composite createScrolledBody(final ScrolledComposite parent, int style) {
+		return new Composite(parent, style) {
+
+			@Override
+			public void layout(boolean changed, boolean all) {
+				super.layout(changed, all);
+				parent.setMinSize(computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			}
+
+			@Override
+			public void layout(Control[] changed, int flags) {
+				super.layout(changed, flags);
+				parent.setMinSize(computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			}
+		};
 	}
 	
 	public static UpdateValueStrategy converterStrategy(IConverter converter) {

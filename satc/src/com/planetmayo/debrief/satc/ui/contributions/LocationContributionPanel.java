@@ -1,5 +1,8 @@
 package com.planetmayo.debrief.satc.ui.contributions;
 
+import java.beans.PropertyChangeListener;
+
+import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -12,12 +15,14 @@ import com.planetmayo.debrief.satc.ui.UIUtils;
 public class LocationContributionPanel extends AnalystContributionPanel {
 
 	private LocationForecastContribution contribution;
+	private DataBindingContext context;
+	private PropertyChangeListener titleChangeListener;		
 	
 	private Scale limitSlider;
 	private Text estimateText;
 	
 	public LocationContributionPanel(Composite parent, LocationForecastContribution contribution) {
-		super(parent, "Location Forecast");
+		super(parent);
 		this.contribution = contribution;
 		initUI();
 	}
@@ -35,12 +40,19 @@ public class LocationContributionPanel extends AnalystContributionPanel {
 
 	@Override
 	protected void initializeWidgets() {
-		
+		titleChangeListener = attachTitleChangeListener(contribution, "Location Forecast - ");		
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		contribution.removePropertyChangeListener("name", titleChangeListener);
+		context.dispose();		
 	}
 
 	@Override
 	protected void bindValues() {
-		// TODO Auto-generated method stub
+		context = new DataBindingContext();
 		
 	}
 }

@@ -5,7 +5,8 @@ import java.util.Date;
 import com.planetmayo.debrief.satc.model.ModelObject;
 
 public abstract class BaseContribution extends ModelObject {
-	
+
+	protected String _name;
 	protected boolean _active;
 	protected int _weight;
 	protected Date _startDate;
@@ -45,6 +46,15 @@ public abstract class BaseContribution extends ModelObject {
 	public void setFinishDate(Date finishDate) {
 		firePropertyChange("finishDate", _finishDate, finishDate);		
 		this._finishDate = finishDate;
+	}
+	
+	public String getName() {
+		return _name;
+	}
+
+	public void setName(String name) {
+		firePropertyChange("name", _name, name);
+		_name = name;
 	}
 	
 	public abstract String getHardConstraints();

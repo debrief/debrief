@@ -1,8 +1,9 @@
 package com.planetmayo.debrief.satc.ui.contributions;
 
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
@@ -14,55 +15,41 @@ import com.planetmayo.debrief.satc.ui.UIUtils;
 public class CourseContributionPanel extends AnalystContributionPanel {
 	
 	private CourseForecastContribution contribution;
+	private DataBindingContext context;
+	private PropertyChangeListener titleChangeListener;
 	
 	public CourseContributionPanel(Composite parent, CourseForecastContribution contribution) {
-		super(parent, "Course Forecast");
+		super(parent);
 		this.contribution = contribution;
 		initUI();
 	}
 	
 	@Override
 	protected void initializeWidgets() {
+		titleChangeListener = attachTitleChangeListener(contribution, "Course Forecast - ");
+		
 		minSlider.setMinimum(0);
 		minSlider.setMaximum(360);
 		maxSlider.setMinimum(0);
 		maxSlider.setMaximum(360);
 		estimateSlider.setMinimum(0);
 		estimateSlider.setMaximum(360);
-	}	
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		contribution.removePropertyChangeListener("name", titleChangeListener);
+		context.dispose();
+	}
 
 	// don't use inheritance here, because of different nature and although code looks very similar it may be headache in future
 	@Override
 	protected void bindValues() {
-		DataBindingContext context = new DataBindingContext();
+		context = new DataBindingContext();
 		
-		IObservableValue activeValue = BeansObservables.observeValue(contribution, "active");
-		IObservableValue activeButton = WidgetProperties.selection().observe(activeCheckBox);
-		context.bindValue(activeButton, activeValue);
-		
-		IObservableValue hardContraintValue = BeansObservables.observeValue(contribution, "hardConstraints");
-		IObservableValue hardContraintLabel = WidgetProperties.text().observe(hardConstraintLabel);
-		context.bindValue(hardContraintLabel, hardContraintValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(String.class, " degs")));
-		
-		IObservableValue estimateValue = BeansObservables.observeValue(contribution, "estimate");
-		IObservableValue estimateLabel = WidgetProperties.text().observe(this.estimateLabel);
-		context.bindValue(estimateLabel, estimateValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, " degs")));
-		
-		IObservableValue startDateValue = BeansObservables.observeValue(contribution, "startDate");
-		IObservableValue startDateWidget = WidgetProperties.selection().observe(startDate);
-		IObservableValue startTimeWidget = WidgetProperties.selection().observe(startTime);
-		context.bindValue(new DateAndTimeObservableValue(startDateWidget, startTimeWidget), startDateValue);		
-
-		IObservableValue endDateValue = BeansObservables.observeValue(contribution, "finishDate");
-		IObservableValue endDateWidget = WidgetProperties.selection().observe(endDate);
-		IObservableValue endTimeWidget = WidgetProperties.selection().observe(endTime);
-		context.bindValue(new DateAndTimeObservableValue(endDateWidget, endTimeWidget), endDateValue);	
-		
-		IObservableValue weightValue = BeansObservables.observeValue(contribution, "weight");
-		IObservableValue weightWidget = WidgetProperties.selection().observe(weightSpinner);
-		context.bindValue(weightWidget, weightValue);
+		bindCommonHeaderWidgets(context, contribution, new PrefixSuffixLabelConverter(Object.class, " degs"));
+		bindCommonDates(context, contribution);
 		
 		IObservableValue minCourseValue = BeansObservables.observeValue(contribution, "minCourse");
 		IObservableValue minCourseSlider = WidgetProperties.selection().observe(minSlider);
@@ -88,7 +75,7 @@ public class CourseContributionPanel extends AnalystContributionPanel {
 		
 		IObservableValue estimateSliderValue = WidgetProperties.selection().observe(estimateSlider);
 		IObservableValue estimateCourseDetailsLabel = WidgetProperties.text().observe(estimateDetailsLabel);
-
+		IObservableValue estimateValue = BeansObservables.observeValue(contribution, "estimate");
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, 
 				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, "Estimate: ", " degs")));		

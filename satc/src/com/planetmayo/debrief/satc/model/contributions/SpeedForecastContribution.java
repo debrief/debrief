@@ -55,6 +55,7 @@ public class SpeedForecastContribution extends BaseContribution {
 		SpeedForecastContribution res = new SpeedForecastContribution();
 		res.setActive(true);
 		res.setWeight(4);
+		res.setName("Easterly Leg");
 		res.setStartDate(new Date(111111000));
 		res.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
 		return res;

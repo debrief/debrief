@@ -1,8 +1,9 @@
 package com.planetmayo.debrief.satc.ui.contributions;
 
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
@@ -14,49 +15,33 @@ import com.planetmayo.debrief.satc.ui.UIUtils;
 public class SpeedContributionPanel extends AnalystContributionPanel {
 	
 	private SpeedForecastContribution contribution;
+	private DataBindingContext context;
+	private PropertyChangeListener titleChangeListener;	
 	
 	public SpeedContributionPanel(Composite parent, SpeedForecastContribution contribution) {
-		super(parent, "Speed Forecast");
+		super(parent);
 		this.contribution = contribution;
 		initUI();
 	}	
 
 	@Override
 	protected void initializeWidgets() {
-		// min and max speed goes here		
+		titleChangeListener = attachTitleChangeListener(contribution, "Speed Forecast - ");
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		contribution.removePropertyChangeListener("name", titleChangeListener);
+		context.dispose();
 	}
 
 	@Override
 	protected void bindValues() {
-		DataBindingContext context = new DataBindingContext();
+		context = new DataBindingContext();
 		
-		IObservableValue activeValue = BeansObservables.observeValue(contribution, "active");
-		IObservableValue activeButton = WidgetProperties.selection().observe(activeCheckBox);
-		context.bindValue(activeButton, activeValue);
-		
-		IObservableValue hardContraintValue = BeansObservables.observeValue(contribution, "hardConstraints");
-		IObservableValue hardContraintLabel = WidgetProperties.text().observe(hardConstraintLabel);
-		context.bindValue(hardContraintLabel, hardContraintValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(String.class, " kts")));
-		
-		IObservableValue estimateValue = BeansObservables.observeValue(contribution, "estimate");
-		IObservableValue estimateLabel = WidgetProperties.text().observe(this.estimateLabel);
-		context.bindValue(estimateLabel, estimateValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(double.class, " kts")));
-		
-		IObservableValue startDateValue = BeansObservables.observeValue(contribution, "startDate");
-		IObservableValue startDateWidget = WidgetProperties.selection().observe(startDate);
-		IObservableValue startTimeWidget = WidgetProperties.selection().observe(startTime);
-		context.bindValue(new DateAndTimeObservableValue(startDateWidget, startTimeWidget), startDateValue);		
-
-		IObservableValue endDateValue = BeansObservables.observeValue(contribution, "finishDate");
-		IObservableValue endDateWidget = WidgetProperties.selection().observe(endDate);
-		IObservableValue endTimeWidget = WidgetProperties.selection().observe(endTime);
-		context.bindValue(new DateAndTimeObservableValue(endDateWidget, endTimeWidget), endDateValue);	
-		
-		IObservableValue weightValue = BeansObservables.observeValue(contribution, "weight");
-		IObservableValue weightWidget = WidgetProperties.selection().observe(weightSpinner);
-		context.bindValue(weightWidget, weightValue);
+		bindCommonHeaderWidgets(context, contribution, new PrefixSuffixLabelConverter(Object.class, " kts"));
+		bindCommonDates(context, contribution);
 		
 		IObservableValue minSpeedValue = BeansObservables.observeValue(contribution, "minSpeed");
 		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(minSlider);
@@ -82,7 +67,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel {
 		
 		IObservableValue estimateSliderValue = WidgetProperties.selection().observe(estimateSlider);
 		IObservableValue estimateSpeedDetailsLabel = WidgetProperties.text().observe(estimateDetailsLabel);
-
+		IObservableValue estimateValue = BeansObservables.observeValue(contribution, "estimate");
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, 
 				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(double.class, "Estimate: ", " kts")));
