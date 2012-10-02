@@ -787,6 +787,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 						myStartLocation), courseRads, speedYps);
 				FixWrapper newFix = new FixWrapper(theFix);
 				newFix.setSymbolShowing(true);
+				
+				// also give it a name
+				newFix.resetName();
+				
 				newItems.add(newFix);
 			}
 
