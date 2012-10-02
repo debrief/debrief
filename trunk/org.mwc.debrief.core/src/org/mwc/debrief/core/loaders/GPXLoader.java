@@ -15,9 +15,9 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
+import org.mwc.debrief.core.gpx.ImportGPX;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
-import Debrief.ReaderWriter.XML.GPX.ImportGPX;
 import MWC.GUI.Layers;
 
 /**
