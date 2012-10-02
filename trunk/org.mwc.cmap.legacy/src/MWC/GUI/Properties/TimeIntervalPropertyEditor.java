@@ -91,7 +91,12 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
         "1/2 Sec",
         "1 Sec",
         "5 Secs",
-        "10 Secs"};
+        "10 Secs",
+        "30 Secs",
+        "1 Minute",
+        "2 Minutes",
+        "5 Minutes",
+        "10 Minutes"};
   		
   		_freqs = new int[]
       {
@@ -101,7 +106,12 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
         500,
         1000,
         5000,
-        10000,
+        10 * 1000,
+        30 * 1000,
+        60 * 1000,
+        2 * 60 * 1000,
+        5 * 60 * 1000,
+        10 * 60 * 1000
       };  		
   	}
   }
