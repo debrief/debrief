@@ -395,7 +395,17 @@ public class RangeRingShape extends PlainShape implements Editable
 	@Override
 	public double rangeFrom(WorldLocation point)
 	{
-		double res = _theCentre.rangeFrom(point);
+		final double thisRes = _theCentre.rangeFrom(point);
+		double res = thisRes;
+		
+		// sort out the range from each radius
+		for(int i=0;i<_numRings;i++)
+		{
+			double thisR = i * _ringWidth.getValueIn(WorldDistance.DEGS);
+			
+			res = Math.min(Math.abs(thisR - thisRes) ,res);
+		}
+	
 
 		return res;
 	}
