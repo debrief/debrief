@@ -370,16 +370,16 @@ public class RangeRingShape extends PlainShape implements Editable
 			int strHeight = dest.getStringHeight(null);
 
 			if ((lLoc == ALL) || (lLoc == TOP))
-				dest.drawText(thisLabel, centre.x - strWidth / 2, (int) (centre.y
+				dest.drawText(thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
 						- thisRadius - strHeight * 0.4));
 			if ((lLoc == ALL) || (lLoc == BOTTOM))
-				dest.drawText(thisLabel, centre.x - strWidth / 2, (int) (centre.y
+				dest.drawText(thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
 						+ thisRadius + strHeight * 1.2));
 			if ((lLoc == ALL) || (lLoc == LEFT))
 				dest.drawText(thisLabel, centre.x - strWidth - thisRadius, centre.y
 						+ strHeight / 2);
 			if ((lLoc == ALL) || (lLoc == RIGHT))
-				dest.drawText(thisLabel, centre.x + thisRadius + strWidth / 10,
+				dest.drawText(thisLabel, (int)(centre.x + thisRadius + strWidth / 15d),
 						centre.y + strHeight / 2);
 
 			// move on to the next radius
