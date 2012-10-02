@@ -168,19 +168,18 @@ public class ColorPropertyEditor extends PropertyEditorSupport
 
       if (cl.color.equals(_theColor))
       {
+      	// cool, found it
         res = cl;
         break;
       }
     }
 
-    // are we working with a custom colour?  If so, we
-    // won't have found it while passing through the list -
-    // update it as the custom editor
-    if (res == null)
-      res = (NamedColor) _theColors.lastElement();
-
-    // but, also update the color of that item to the new custom colour
-    res.color = _theColor;
+    // are we still trying to find a color?
+    if(res == null)
+    {
+    	res = new NamedColor("Custom", _theColor);
+    }
+    
 
     return res;
   }
@@ -273,11 +272,11 @@ public class ColorPropertyEditor extends PropertyEditorSupport
     /**
      * name of this colour
      */
-    public String name;
+    final public String name;
     /**
      * colour of this colour
      */
-    Color color;
+    final Color color;
 
     /**
      * constructor, sets member values
