@@ -31,7 +31,7 @@ public class JaxbGpxHelperTest
 	@Test
 	public void unmarshallTrackWithAllData()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-data.xml"));
+		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track
@@ -98,7 +98,7 @@ public class JaxbGpxHelperTest
 	@Test
 	public void unmarshallShouldNotFailWhenOptionalDataMissing()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-missing-optional-data.xml"));
+		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-missing-optional-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track

@@ -19,9 +19,12 @@ public interface GpxHelper
 	/**
 	 * @param gpxStream
 	 *          stream representing the gpx xml.
+	 * @param theLayers
+	 *          layers to which the tracks are added. A new Layers object will be
+	 *          created if <code>theLayers</code> is null.
 	 * @return aggregate root
 	 */
-	Layers unmarshall(InputStream gpxStream);
+	Layers unmarshall(InputStream gpxStream, Layers theLayers);
 
 	/**
 	 * @param from

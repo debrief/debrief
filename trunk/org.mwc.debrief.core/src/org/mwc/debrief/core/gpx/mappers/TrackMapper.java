@@ -70,6 +70,11 @@ public class TrackMapper implements DebriefJaxbContextAware
 		return tracks;
 	}
 
+	public String toGpx(List<TrackWrapper> tracks)
+	{
+		return null;
+	}
+
 	private void mapGpxTrack(TrkType gpxTrack, TrackWrapper track)
 	{
 		track.setName(gpxTrack.getName());
