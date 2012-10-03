@@ -1,5 +1,6 @@
 package org.mwc.debrief.core.gpx;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.mwc.debrief.core.loaders.GpxHelper;
@@ -21,6 +22,12 @@ public class ImportGPX
 	{
 		GpxHelper helper = new JaxbGpxHelper();
 		helper.unmarshall(inputStream, theLayers);
+	}
+	
+	public static void doExport(Layers theLayers, File outputFile)
+	{
+		GpxHelper helper = new JaxbGpxHelper();
+		helper.marshall(theLayers, outputFile);
 	}
 
 }

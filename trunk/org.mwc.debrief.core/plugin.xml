@@ -247,7 +247,7 @@
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
 			<action class="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
-				icon="icons/range_rings.png" id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
+				icon="icons/furthest_circles.png" id="org.mwc.debrief.core.creators.shapes.InsertFurthestOnCircles"
 				label="&amp;Furthest On Circles" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
@@ -302,6 +302,10 @@
 			<action class="org.mwc.cmap.plotViewer.actions.ExportWMF"
 				icon="icons/photo_scenery.png" id="org.mwc.debrief.core.ExportWMF"
 				label="&amp;Export WMF" menubarPath="file/additions" style="push" />
+				
+			<action class="org.mwc.debrief.core.operations.ExportGPX"
+				icon="icons/export_gpx.png" id="org.mwc.debrief.core.ExportGPX"
+				label="&amp;Export to GPX" menubarPath="file/additions" style="push" />
 		</actionSet>
 	</extension>
 
