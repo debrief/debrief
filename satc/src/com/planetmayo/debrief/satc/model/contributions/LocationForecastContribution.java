@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoPoint;
 
 public class LocationForecastContribution extends BaseContribution
@@ -40,6 +41,14 @@ public class LocationForecastContribution extends BaseContribution
 		return "" + _limit;
 	}
 
+
+	@Override
+	public void actUpon(ProblemSpace space)
+	{
+		// TODO implement this
+		throw new RuntimeException("Not yet implemented");
+	}
+	
 	/**
 	 * create a sample, for testing
 	 * 

@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.ModelObject;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public abstract class BaseContribution extends ModelObject {
 
@@ -58,4 +59,10 @@ public abstract class BaseContribution extends ModelObject {
 	}
 	
 	public abstract String getHardConstraints();
+	
+	/** apply this contribution to the supplied Problem Space
+	 * 
+	 * @param space the object that we're going to bound
+	 */
+	public abstract void actUpon(ProblemSpace space);
 }

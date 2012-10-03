@@ -2,6 +2,8 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.Date;
 
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+
 public class CourseForecastContribution extends BaseContribution {
 	
 	protected int _minCourse;
@@ -44,6 +46,14 @@ public class CourseForecastContribution extends BaseContribution {
 	@Override
 	public String getHardConstraints() {		
 		return "" + _minCourse + " - " + _maxCourse;
+	}
+	
+
+	@Override
+	public void actUpon(ProblemSpace space)
+	{
+		// TODO implement this
+		throw new RuntimeException("Not yet implemented");
 	}
 	
 	/** utility method to create one of these contributions
