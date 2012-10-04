@@ -31,7 +31,7 @@ public class JaxbGpxHelperTest
 	@Test
 	public void unmarshallTrackWithAllData()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-data.xml"), null);
+		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-data_version_1.0.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track
