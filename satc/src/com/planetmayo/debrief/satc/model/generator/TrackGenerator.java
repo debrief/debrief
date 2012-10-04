@@ -8,6 +8,11 @@ import java.util.TreeSet;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
+/** the top level manager object that handles the generation of bounded constraints
+ * 
+ * @author ian
+ *
+ */
 public class TrackGenerator
 {
 	/**
@@ -19,14 +24,19 @@ public class TrackGenerator
 	 * the set of contributions we listen to. They are ordered, so that we have
 	 * data-producing contributions before those that purely perform analysis.
 	 * Because of BaseContribution.compareTo, the contribs will be in this order:
-	 * 1. Measurement
-	 * 2. Forecast
-	 * 3. Analysis
+	 * 1. Measurement 2. Forecast 3. Analysis
 	 * 
 	 * This is because we need some data before we start analysing it.
 	 * 
 	 */
-	private TreeSet<BaseContribution> _contribs = new TreeSet<BaseContribution>();
+	private final TreeSet<BaseContribution> _contribs = new TreeSet<BaseContribution>();
+
+	/** the set of contribution properties that we're interested in
+	 * 
+	 */
+	private final String[] _interestingProperties =
+	{ BaseContribution.ACTIVE, BaseContribution.HARD_CONSTRAINTS,
+			BaseContribution.START_DATE, BaseContribution.FINISH_DATE };
 
 	/**
 	 * property listener = so we know about contibutions changing
@@ -68,14 +78,12 @@ public class TrackGenerator
 		_contribs.add(contribution);
 
 		// start listening to it
-		contribution.addPropertyChangeListener(BaseContribution.ACTIVE,
-				_contribListener);
-		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
-				_contribListener);
-		contribution.addPropertyChangeListener(BaseContribution.START_DATE,
-				_contribListener);
-		contribution.addPropertyChangeListener(BaseContribution.FINISH_DATE,
-				_contribListener);
+		for (int i = 0; i < _interestingProperties.length; i++)
+		{
+			String thisProp = _interestingProperties[i];
+			contribution.addPropertyChangeListener(thisProp,
+					_contribListener);
+		}
 	}
 
 	/**
@@ -88,15 +96,13 @@ public class TrackGenerator
 		// remember it
 		_contribs.remove(contribution);
 
-		// start listening to it
-		contribution.removePropertyChangeListener(BaseContribution.ACTIVE,
-				_contribListener);
-		contribution.removePropertyChangeListener(
-				BaseContribution.HARD_CONSTRAINTS, _contribListener);
-		contribution.removePropertyChangeListener(BaseContribution.START_DATE,
-				_contribListener);
-		contribution.removePropertyChangeListener(BaseContribution.FINISH_DATE,
-				_contribListener);
+		// stop listening to it
+		for (int i = 0; i < _interestingProperties.length; i++)
+		{
+			String thisProp = _interestingProperties[i];
+			contribution.removePropertyChangeListener(thisProp,
+					_contribListener);
+		}
 	}
 
 }
