@@ -7,11 +7,13 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+
 public class ProblemSpaceTest extends TestCase
 {
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testMissingDate()
+	public void testMissingDate() throws IncompatibleStateException
 	{
 		ProblemSpace ps = new ProblemSpace();
 		BoundedState b1 = new BoundedState(new Date(2012, 4,4));
@@ -30,7 +32,7 @@ public class ProblemSpaceTest extends TestCase
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void testAddSort()
+	public void testAddSort() throws IncompatibleStateException
 	{
 		ProblemSpace ps = new ProblemSpace();
 		BoundedState b1 = new BoundedState(new Date(2012, 4,4));

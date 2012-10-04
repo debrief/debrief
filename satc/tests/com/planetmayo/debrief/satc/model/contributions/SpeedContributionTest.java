@@ -8,11 +8,12 @@ import junit.framework.TestCase;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 public class SpeedContributionTest extends TestCase
 {
 	@SuppressWarnings("deprecation")
-	public void testNullDateSingleState()
+	public void testNullDateSingleState() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
 		sc.setMinSpeed(12d);
@@ -34,7 +35,7 @@ public class SpeedContributionTest extends TestCase
 	}
 
 	@SuppressWarnings("deprecation")
-	public void testNullDateDoubleStates()
+	public void testNullDateDoubleStates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
 		sc.setMinSpeed(12d);
@@ -61,7 +62,7 @@ public class SpeedContributionTest extends TestCase
 	}
 
 	@SuppressWarnings("deprecation")
-	public void testWithDates()
+	public void testWithDates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
 		sc.setMinSpeed(12d);
@@ -91,7 +92,7 @@ public class SpeedContributionTest extends TestCase
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void testWithDateNotAlreadyPresent()
+	public void testWithDateNotAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
 		sc.setMinSpeed(12d);
@@ -131,7 +132,7 @@ public class SpeedContributionTest extends TestCase
 
 	}
 	@SuppressWarnings("deprecation")
-	public void testWithDateAlreadyPresent()
+	public void testWithDateAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
 		sc.setMinSpeed(12d);

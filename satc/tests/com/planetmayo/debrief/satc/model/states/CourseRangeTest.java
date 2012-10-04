@@ -15,7 +15,7 @@ public class CourseRangeTest extends TestCase
 		assertEquals("correct upper value", maxS, spdR.getMax());
 	}
 
-	public void testConstrain()
+	public void testConstrain() throws IncompatibleStateException
 	{
 		CourseRange sOne = new CourseRange(10d, 20d);
 		CourseRange sTwo = new CourseRange(12d, 40d);
@@ -29,7 +29,7 @@ public class CourseRangeTest extends TestCase
 		assertEquals("correct upper", 16d, sOne.getMax());
 	}
 
-	public void testConstrainThroughZeroA()
+	public void testConstrainThroughZeroA() throws IncompatibleStateException
 	{
 		CourseRange sOne = new CourseRange(350d, 20d);
 		CourseRange sTwo = new CourseRange(320d, 40d);
@@ -43,7 +43,7 @@ public class CourseRangeTest extends TestCase
 		assertEquals("correct upper", 16d, sOne.getMax());
 	}
 
-	public void testIncompatibleStatesA()
+	public void testIncompatibleStatesA() throws IncompatibleStateException
 	{
 		CourseRange sOne = new CourseRange(350d, 20d);
 		CourseRange sTwo = new CourseRange(320d, 330d);
@@ -76,7 +76,7 @@ public class CourseRangeTest extends TestCase
 		assertEquals("correct new range", sTwo, e.getNewRange());
 	}
 
-	public void testConstrainThroughZeroB()
+	public void testConstrainThroughZeroB() throws IncompatibleStateException
 	{
 		CourseRange sOne = new CourseRange(350d, 20d);
 		CourseRange sTwo = new CourseRange(320d, 358d);
