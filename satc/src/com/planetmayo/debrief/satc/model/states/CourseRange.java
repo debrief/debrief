@@ -1,12 +1,13 @@
 package com.planetmayo.debrief.satc.model.states;
 
+
 /**
  * class representing a set of Course bounds
  * 
  * @author ian
  * 
  */
-public class CourseRange extends BaseRange
+public class CourseRange extends BaseRange<CourseRange>
 {
 	private double _min;
 	private double _max;
@@ -39,7 +40,8 @@ public class CourseRange extends BaseRange
 		}
 	}
 
-	public void constrainTo(CourseRange sTwo)
+	@Override
+	public void constrainTo(CourseRange sTwo) throws IncompatibleStateException
 	{
 		// note: we're using _min and _max because our getter mangles the value to
 		// make it human readable

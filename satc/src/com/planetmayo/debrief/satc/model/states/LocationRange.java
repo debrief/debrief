@@ -8,7 +8,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author ian
  * 
  */
-public class LocationRange extends BaseRange
+public class LocationRange  extends BaseRange<LocationRange>
 {
 	/** the range of locations we allow
 	 * 
@@ -35,7 +35,8 @@ public class LocationRange extends BaseRange
 	 * 
 	 * @param sTwo
 	 */
-	public void constrainTo(LocationRange sTwo)
+	@Override
+	public void constrainTo(LocationRange sTwo) throws IncompatibleStateException
 	{
 		_myArea = (Polygon) _myArea.intersection(sTwo._myArea);
 	}

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.ModelObject;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 public abstract class BaseContribution extends ModelObject implements
 		Comparable<BaseContribution>
@@ -61,7 +62,7 @@ public abstract class BaseContribution extends ModelObject implements
 	 * @param space
 	 *          the object that we're going to bound
 	 */
-	public abstract void actUpon(ProblemSpace space);
+	public abstract void actUpon(ProblemSpace space) throws IncompatibleStateException;
 
 	public Date getFinishDate()
 	{

@@ -1,8 +1,11 @@
 package com.planetmayo.debrief.satc.model.states;
 
-public class BaseRange
+public abstract class BaseRange<T extends BaseRange<?>>
 {
 
+
+ abstract	public void constrainTo(T other) throws IncompatibleStateException;
+	
 	/**
 	 * exception for when constraints end up in an incompatible state. We
 	 * immediately terminate processing constraints when this happens, so we're
@@ -11,21 +14,22 @@ public class BaseRange
 	 * @author ian
 	 * 
 	 */
-	public static class IncompatibleStateException extends RuntimeException
+	public static class IncompatibleStateException extends Exception
 	{
 
 		private final String _message;
-		private final BaseRange _existingRange;
-		private final BaseRange _newRange;
+		private final BaseRange<?> _existingRange;
+		private final BaseRange<?> _newRange;
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public IncompatibleStateException(String message, BaseRange existingRange,
-				BaseRange newRange)
+		public IncompatibleStateException(String message, BaseRange<?> existingRange,
+				BaseRange<?> newRange)
 		{
+			super(message);
 			_message = message;
 			_existingRange = existingRange;
 			_newRange = newRange;
@@ -36,7 +40,7 @@ public class BaseRange
 		 * 
 		 * @return
 		 */
-		public BaseRange getExistingRange()
+		public BaseRange<?> getExistingRange()
 		{
 			return _existingRange;
 		}
@@ -52,7 +56,7 @@ public class BaseRange
 		 * 
 		 * @return
 		 */
-		public BaseRange getNewRange()
+		public BaseRange<?> getNewRange()
 		{
 			return _newRange;
 		}

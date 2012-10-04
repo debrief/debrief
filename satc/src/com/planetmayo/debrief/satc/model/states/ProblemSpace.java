@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+
 public class ProblemSpace
 {
 	private TreeSet<BoundedState> _boundedStates;
@@ -18,7 +20,7 @@ public class ProblemSpace
 	 * 
 	 * @param newState
 	 */
-	public void add(BoundedState newState)
+	public void add(BoundedState newState) throws IncompatibleStateException
 	{
 
 		// check if this has a date - if it doesn't we'll give it our start/end

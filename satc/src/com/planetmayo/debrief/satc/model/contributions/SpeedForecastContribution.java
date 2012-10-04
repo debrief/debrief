@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
@@ -37,7 +38,7 @@ public class SpeedForecastContribution extends BaseContribution implements BaseC
 	protected double _estimate;
 
 	@Override
-	public void actUpon(final ProblemSpace space)
+	public void actUpon(final ProblemSpace space) throws IncompatibleStateException
 	{
 		// create a bounded state representing our values
 		final SpeedRange myR = new SpeedRange(getMinSpeed(), getMaxSpeed());

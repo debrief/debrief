@@ -1,12 +1,13 @@
 package com.planetmayo.debrief.satc.model.states;
 
+
 /**
  * class representing a set of speed bounds
  * 
  * @author ian
  * 
  */
-public class SpeedRange extends BaseRange
+public class SpeedRange extends  BaseRange<SpeedRange>
 {
 	private double _min;
 	private double _max;
@@ -27,7 +28,8 @@ public class SpeedRange extends BaseRange
 		this(range.getMin(), range.getMax());
 	}
 
-	public void constrainTo(SpeedRange sTwo)
+	@Override
+	public void constrainTo(SpeedRange sTwo) throws IncompatibleStateException
 	{
 		_min = Math.max(getMin(), sTwo.getMin());
 		_max = Math.min(getMax(), sTwo.getMax());

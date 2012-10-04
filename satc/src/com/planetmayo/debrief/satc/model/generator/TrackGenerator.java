@@ -6,12 +6,15 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-/** the top level manager object that handles the generation of bounded constraints
+/**
+ * the top level manager object that handles the generation of bounded
+ * constraints
  * 
  * @author ian
- *
+ * 
  */
 public class TrackGenerator
 {
@@ -31,7 +34,8 @@ public class TrackGenerator
 	 */
 	private final TreeSet<BaseContribution> _contribs = new TreeSet<BaseContribution>();
 
-	/** the set of contribution properties that we're interested in
+	/**
+	 * the set of contribution properties that we're interested in
 	 * 
 	 */
 	private final String[] _interestingProperties =
@@ -55,15 +59,25 @@ public class TrackGenerator
 	/**
 	 * something has changed - rerun the scenario constraint management
 	 * 
+	 * @throws IncompatibleStateException
+	 * 
 	 */
 	protected void propChange()
 	{
-		// ok, re-run our constraint generation
-		Iterator<BaseContribution> iter = _contribs.iterator();
-		while (iter.hasNext())
+		try
 		{
-			BaseContribution bC = (BaseContribution) iter.next();
-			bC.actUpon(_space);
+			// ok, re-run our constraint generation
+			Iterator<BaseContribution> iter = _contribs.iterator();
+			while (iter.hasNext())
+			{
+				BaseContribution bC = (BaseContribution) iter.next();
+				bC.actUpon(_space);
+			}
+		}
+		catch (IncompatibleStateException e)
+		{
+			// TODO handle the incompatible state problem, see ticket 5:
+		  // 	https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
 		}
 	}
 
@@ -81,8 +95,7 @@ public class TrackGenerator
 		for (int i = 0; i < _interestingProperties.length; i++)
 		{
 			String thisProp = _interestingProperties[i];
-			contribution.addPropertyChangeListener(thisProp,
-					_contribListener);
+			contribution.addPropertyChangeListener(thisProp, _contribListener);
 		}
 	}
 
@@ -100,8 +113,7 @@ public class TrackGenerator
 		for (int i = 0; i < _interestingProperties.length; i++)
 		{
 			String thisProp = _interestingProperties[i];
-			contribution.removePropertyChangeListener(thisProp,
-					_contribListener);
+			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
 	}
 
