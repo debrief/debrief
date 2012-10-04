@@ -40,4 +40,9 @@ public class LocationRange  extends BaseRange<LocationRange>
 	{
 		_myArea = (Polygon) _myArea.intersection(sTwo._myArea);
 	}
+
+	public Polygon getPolygon()
+	{
+		return _myArea;
+	}
 }

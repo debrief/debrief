@@ -75,4 +75,28 @@ public class ProblemSpace
 	{
 		return _boundedStates.size();
 	}
+
+	/**
+	 * return the bounded state at this time (or null)
+	 * 
+	 * @param theTime the time we're searching for
+	 * @return
+	 */
+	public BoundedState getBoundedStateAt(Date theTime)
+	{
+		BoundedState res = null;
+		Iterator<BoundedState> iter = _boundedStates.iterator();
+		while (iter.hasNext())
+		{
+			BoundedState boundedState = (BoundedState) iter.next();
+			if (boundedState.getTime().equals(theTime))
+			{
+				res = boundedState;
+				break;
+			}
+		}
+
+		return res;
+	}
+
 }
