@@ -19,4 +19,9 @@ public class TestLocation extends TestCase
 		// TODO: create a couple of non-overlapping polygons. check that an exception is thrown
 	}
 	
+	public void testNullPolygonComparison()
+	{
+		// TODO: create a bounded state with a null polygon, check nothing falls over
+	}
+	
 }
