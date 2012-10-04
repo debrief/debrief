@@ -36,7 +36,13 @@ public class FixMapper implements DebriefJaxbContextAware
 	private JAXBContext debriefContext;
 	private static final BigDecimal MINUS_ONE = new BigDecimal("-1");
 
-	public FixWrapper fromGpx(WptType trackType)
+	/** extract a fix from the supplied data object
+	 * 
+	 * @param trackType an object read in from GPX
+	 * @param previousFix the value of the previously read-in fix, used to calc course and speed, when necessary
+	 * @return
+	 */
+	public FixWrapper fromGpx(WptType trackType, FixWrapper previousFix)
 	{
 		Fix fix = new Fix();
 
@@ -58,10 +64,13 @@ public class FixMapper implements DebriefJaxbContextAware
 		}
 		else
 		{
-			CorePlugin.logError(Status.WARNING, "GPX Data is missing time data. current date to be used", null);
+			CorePlugin.logError(Status.WARNING,
+					"GPX Data is missing time data. current date to be used", null);
 			theDate = new HiResDate();
 		}
 		fix.setTime(theDate);
+
+		// also have a go at the heaidng
 
 		FixWrapper trackPoint = new FixWrapper(fix);
 
@@ -97,6 +106,23 @@ public class FixMapper implements DebriefJaxbContextAware
 						e);
 			}
 		}
+
+		// have we managed to sort out the course & speed?
+		// have a go at the speed
+		// if(previousFix != null)
+		// {
+		// WorldVector fromLast = null;
+		// if(previousFix != null)
+		// fromLast = val.subtract(previousFix.getLocation());
+		//
+		// long timeDiffMillis = theDate.getDate().getTime() -
+		// previousFix.getTime().getDate().getTime();
+		// WorldDistance dist = new WorldDistance( fromLast.getRange(),
+		// WorldDistance.DEGS);
+		// double speedYps = (dist.getValueIn(WorldDistance.YARDS)) /
+		// (timeDiffMillis / 1000d);
+		// fix.setSpeed(speedYps);
+		// }
 
 		return trackPoint;
 	}
