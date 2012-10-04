@@ -4,59 +4,11 @@ import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public class CourseForecastContribution extends BaseContribution {
-	
-	protected int _minCourse;
-	
-	protected int _maxCourse;
-	
-	protected int _estimate;
+public class CourseForecastContribution extends BaseContribution
+{
 
-	public int getMinCourse() {
-		return _minCourse;
-	}
-
-	public void setMinCourse(int minCourse) {
-		firePropertyChange("minCourse", _minCourse, minCourse);
-		String oldConstraints = getHardConstraints();
-		this._minCourse = minCourse;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
-	}
-
-	public int getMaxCourse() {
-		return _maxCourse;
-	}
-
-	public void setMaxCourse(int maxCourse) {
-		firePropertyChange("maxCourse", _maxCourse, maxCourse);
-		String oldConstraints = getHardConstraints();
-		this._maxCourse = maxCourse;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
-	}
-
-	public int getEstimate() {
-		return _estimate;
-	}
-
-	public void setEstimate(int estimate) {
-		firePropertyChange("estimate", _estimate, estimate);
-		this._estimate = estimate;
-	}
-
-	@Override
-	public String getHardConstraints() {		
-		return "" + _minCourse + " - " + _maxCourse;
-	}
-	
-
-	@Override
-	public void actUpon(ProblemSpace space)
-	{
-		// TODO implement this
-		throw new RuntimeException("Not yet implemented");
-	}
-	
-	/** utility method to create one of these contributions
+	/**
+	 * utility method to create one of these contributions
 	 * 
 	 * @return
 	 */
@@ -71,7 +23,63 @@ public class CourseForecastContribution extends BaseContribution {
 		res.setMinCourse(10);
 		res.setMaxCourse(60);
 		res.setEstimate(25);
-		
+
 		return res;
+	}
+
+	protected int _minCourse;
+
+	protected int _maxCourse;
+
+	protected int _estimate;
+
+	@Override
+	public void actUpon(ProblemSpace space)
+	{
+		// TODO implement this
+		throw new RuntimeException("Not yet implemented");
+	}
+
+	public int getEstimate()
+	{
+		return _estimate;
+	}
+
+	@Override
+	public String getHardConstraints()
+	{
+		return "" + _minCourse + " - " + _maxCourse;
+	}
+
+	public int getMaxCourse()
+	{
+		return _maxCourse;
+	}
+
+	public int getMinCourse()
+	{
+		return _minCourse;
+	}
+
+	public void setEstimate(int estimate)
+	{
+		firePropertyChange("estimate", _estimate, estimate);
+		this._estimate = estimate;
+	}
+
+	public void setMaxCourse(int maxCourse)
+	{
+		firePropertyChange("maxCourse", _maxCourse, maxCourse);
+		String oldConstraints = getHardConstraints();
+		this._maxCourse = maxCourse;
+		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
+	}
+
+	public void setMinCourse(int minCourse)
+	{
+		firePropertyChange("minCourse", _minCourse, minCourse);
+		String oldConstraints = getHardConstraints();
+		this._minCourse = minCourse;
+		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
 	}
 }

@@ -12,19 +12,20 @@ public class BoundedState implements Comparable<BoundedState>
 		_time = time;
 	}
 
-	public void setTime(Date time)
+	@Override
+	public int compareTo(BoundedState o)
 	{
-		_time = time;
+		return getTime().compareTo(o.getTime());
 	}
 
-	public Date getTime()
+	/**
+	 * apply all of the supplied state's constraints to ourselves
+	 * 
+	 * @param newState
+	 */
+	public void constrainTo(BoundedState newState)
 	{
-		return _time;
-	}
-
-	public SpeedRange getSpeed()
-	{
-		return _speed;
+		this.constrainTo(newState._speed);
 	}
 
 	/**
@@ -46,19 +47,19 @@ public class BoundedState implements Comparable<BoundedState>
 		}
 	}
 
-	@Override
-	public int compareTo(BoundedState o)
+	public SpeedRange getSpeed()
 	{
-		return getTime().compareTo(o.getTime());
+		return _speed;
 	}
 
-	/** apply all of the supplied state's constraints to ourselves
-	 * 
-	 * @param newState
-	 */
-	public void constrainTo(BoundedState newState)
+	public Date getTime()
 	{
-		this.constrainTo(newState._speed);
+		return _time;
+	}
+
+	public void setTime(Date time)
+	{
+		_time = time;
 	}
 
 }

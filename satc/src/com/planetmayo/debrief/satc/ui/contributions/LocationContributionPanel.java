@@ -12,47 +12,56 @@ import org.eclipse.swt.widgets.Text;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.ui.UIUtils;
 
-public class LocationContributionPanel extends AnalystContributionPanel {
+public class LocationContributionPanel extends AnalystContributionPanel
+{
 
 	private LocationForecastContribution contribution;
 	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;		
-	
+	private PropertyChangeListener titleChangeListener;
+
 	private Scale limitSlider;
 	private Text estimateText;
-	
-	public LocationContributionPanel(Composite parent, LocationForecastContribution contribution) {
+
+	public LocationContributionPanel(Composite parent,
+			LocationForecastContribution contribution)
+	{
 		super(parent);
 		this.contribution = contribution;
 		initUI();
 	}
-	
+
 	@Override
-	protected void createLimitAndEstimateSliders() {
+	protected void bindValues()
+	{
+		context = new DataBindingContext();
+
+	}
+
+	@Override
+	protected void createLimitAndEstimateSliders()
+	{
 		limitLabel = UIUtils.createLabel(bodyGroup, "Limit:", new GridData());
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
-		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));		
-		
-		estimateDetailsLabel = UIUtils.createLabel(bodyGroup, "Estimate:", new GridData());
+		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		estimateDetailsLabel = UIUtils.createLabel(bodyGroup, "Estimate:",
+				new GridData());
 		estimateText = new Text(bodyGroup, SWT.BORDER);
 		estimateText.setLayoutData(new GridData());
 	}
 
 	@Override
-	protected void initializeWidgets() {
-		titleChangeListener = attachTitleChangeListener(contribution, "Location Forecast - ");		
-	}
-	
-	@Override
-	public void dispose() {
+	public void dispose()
+	{
 		super.dispose();
 		contribution.removePropertyChangeListener("name", titleChangeListener);
-		context.dispose();		
+		context.dispose();
 	}
 
 	@Override
-	protected void bindValues() {
-		context = new DataBindingContext();
-		
+	protected void initializeWidgets()
+	{
+		titleChangeListener = attachTitleChangeListener(contribution,
+				"Location Forecast - ");
 	}
 }

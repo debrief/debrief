@@ -11,6 +11,16 @@ public class CourseRange extends BaseRange
 	private double _min;
 	private double _max;
 
+	/**
+	 * copy constructor
+	 * 
+	 * @param range
+	 */
+	public CourseRange(CourseRange range)
+	{
+		this(range.getMin(), range.getMax());
+	}
+
 	public CourseRange(double minCrse, double maxCourse)
 	{
 		_min = minCrse;
@@ -29,29 +39,16 @@ public class CourseRange extends BaseRange
 		}
 	}
 
-	/**
-	 * copy constructor
-	 * 
-	 * @param range
-	 */
-	public CourseRange(CourseRange range)
+	public void constrainTo(CourseRange sTwo)
 	{
-		this(range.getMin(), range.getMax());
-	}
+		// note: we're using _min and _max because our getter mangles the value to
+		// make it human readable
+		_min = Math.max(_min, sTwo._min);
+		_max = Math.min(_max, sTwo._max);
 
-	public double getMin()
-	{
-		final double res;
-		if (_min < 0)
-			res = _min + 360;
-		else 
-			res = _min;
-		return res;
-	}
-
-	public void setMin(double minCourse)
-	{
-		_min = minCourse;
+		// aah, but what if we're now impossible?
+		if (_max < _min)
+			throw new IncompatibleStateException("Incompatible states", this, sTwo);
 	}
 
 	public double getMax()
@@ -59,8 +56,18 @@ public class CourseRange extends BaseRange
 		final double res;
 		if (_max < 0)
 			res = _max + 360;
-		else 
+		else
 			res = _max;
+		return res;
+	}
+
+	public double getMin()
+	{
+		final double res;
+		if (_min < 0)
+			res = _min + 360;
+		else
+			res = _min;
 		return res;
 	}
 
@@ -69,15 +76,9 @@ public class CourseRange extends BaseRange
 		_max = maxCourse;
 	}
 
-	public void constrainTo(CourseRange sTwo)
+	public void setMin(double minCourse)
 	{
-		// note: we're using _min and _max because our getter mangles the value to make it human readable
-		_min = Math.max(_min, sTwo._min);
-		_max = Math.min(_max, sTwo._max);
-		
-		// aah, but what if we're now impossible?
-		if(_max < _min)
-			throw new IncompatibleStateException("Incompatible states", this, sTwo);
+		_min = minCourse;
 	}
 
 }

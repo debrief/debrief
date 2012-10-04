@@ -10,57 +10,73 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 
-public class UIUtils {
-	
-	public static GridLayout createGridLayoutWithoutMargins(int numColumns, boolean makeColumnsEqualWidth) {
+public class UIUtils
+{
+
+	public static UpdateValueStrategy converterStrategy(IConverter converter)
+	{
+		UpdateValueStrategy strategy = new UpdateValueStrategy();
+		strategy.setConverter(converter);
+		return strategy;
+	}
+
+	public static Composite createEmptyComposite(Composite parent, Layout layout,
+			Object layoutData)
+	{
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayoutData(layoutData);
+		composite.setLayout(layout);
+		return composite;
+	}
+
+	public static GridLayout createGridLayoutWithoutMargins(int numColumns,
+			boolean makeColumnsEqualWidth)
+	{
 		GridLayout gridLayout = new GridLayout(numColumns, makeColumnsEqualWidth);
 		gridLayout.marginHeight = 0;
 		gridLayout.marginWidth = 0;
 		return gridLayout;
 	}
-	
-	public static Label createLabel(Composite parent, String text, Object layoutData) {
-		return createLabel(parent, SWT.NONE, text, layoutData);
-	}	
-	
-	public static Label createLabel(Composite parent, int style, String text, Object layoutData) {
+
+	public static Label createLabel(Composite parent, int style, String text,
+			Object layoutData)
+	{
 		Label label = new Label(parent, style);
 		label.setText(text);
 		label.setLayoutData(layoutData);
 		return label;
 	}
-	
-	public static Label createSpacer(Composite parent, Object layoutData) {
-		return createLabel(parent, "", layoutData);
+
+	public static Label createLabel(Composite parent, String text,
+			Object layoutData)
+	{
+		return createLabel(parent, SWT.NONE, text, layoutData);
 	}
-	
-	public static Composite createEmptyComposite(Composite parent, Layout layout, Object layoutData) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(layoutData);
-		composite.setLayout(layout);
-		return composite; 
-	}
-	
-	public static Composite createScrolledBody(final ScrolledComposite parent, int style) {
-		return new Composite(parent, style) {
+
+	public static Composite createScrolledBody(final ScrolledComposite parent,
+			int style)
+	{
+		return new Composite(parent, style)
+		{
 
 			@Override
-			public void layout(boolean changed, boolean all) {
+			public void layout(boolean changed, boolean all)
+			{
 				super.layout(changed, all);
 				parent.setMinSize(computeSize(SWT.DEFAULT, SWT.DEFAULT));
 			}
 
 			@Override
-			public void layout(Control[] changed, int flags) {
+			public void layout(Control[] changed, int flags)
+			{
 				super.layout(changed, flags);
 				parent.setMinSize(computeSize(SWT.DEFAULT, SWT.DEFAULT));
 			}
 		};
 	}
-	
-	public static UpdateValueStrategy converterStrategy(IConverter converter) {
-		UpdateValueStrategy strategy = new UpdateValueStrategy();
-		strategy.setConverter(converter);
-		return strategy;
+
+	public static Label createSpacer(Composite parent, Object layoutData)
+	{
+		return createLabel(parent, "", layoutData);
 	}
 }

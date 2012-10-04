@@ -13,49 +13,63 @@ import com.planetmayo.debrief.satc.services.mock.MockVehicleTypesRepository;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin
+{
 
 	public static final String PLUGIN_ID = "com.planetmayo.debrief.satc";
 
 	private static Activator plugin;
-	
-	private BundleContext context;
-	
-	public Activator() {
+
+	public static Activator getDefault()
+	{
+		return plugin;
 	}
 
-	public void start(BundleContext context) throws Exception {		
-		super.start(context);
-		this.context = context;		
-		plugin = this;
-		registerServices(context);
+	public static ImageDescriptor getImageDescriptor(String path)
+	{
+		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
-	
-	private void registerServices(BundleContext context) {
-		context.registerService(VehicleTypesRepository.class, new MockVehicleTypesRepository(), new Hashtable<String, Object>());
+
+	private BundleContext context;
+
+	public Activator()
+	{
 	}
-	
-	public <T> T getService(Class<T> serviceClass, boolean required) {
+
+	public <T> T getService(Class<T> serviceClass, boolean required)
+	{
 		ServiceReference<T> reference = context.getServiceReference(serviceClass);
-		if (reference == null && required) {
-			throw new IllegalStateException("Service " + serviceClass.getName() + " is required but isn't registered");
+		if (reference == null && required)
+		{
+			throw new IllegalStateException("Service " + serviceClass.getName()
+					+ " is required but isn't registered");
 		}
-		if (reference == null) {
+		if (reference == null)
+		{
 			return null;
 		}
 		return context.getService(reference);
 	}
 
-	public void stop(BundleContext context) throws Exception {
+	private void registerServices(BundleContext context)
+	{
+		context.registerService(VehicleTypesRepository.class,
+				new MockVehicleTypesRepository(), new Hashtable<String, Object>());
+	}
+
+	@Override
+	public void start(BundleContext context) throws Exception
+	{
+		super.start(context);
+		this.context = context;
+		plugin = this;
+		registerServices(context);
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception
+	{
 		plugin = null;
 		super.stop(context);
-	}
-
-	public static Activator getDefault() {
-		return plugin;
-	}
-
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 }

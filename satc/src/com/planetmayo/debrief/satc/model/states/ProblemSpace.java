@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-
-
 public class ProblemSpace
 {
 	private TreeSet<BoundedState> _boundedStates;
@@ -15,29 +13,54 @@ public class ProblemSpace
 		_boundedStates = new TreeSet<BoundedState>();
 	}
 
-	protected Date getStartDate()
+	/**
+	 * add a new bounded state
+	 * 
+	 * @param newState
+	 */
+	public void add(BoundedState newState)
 	{
-		Date res =  null;
-		if(size() > 0)
+
+		// check if this has a date - if it doesn't we'll give it our start/end
+		// times
+		if (newState.getTime() == null)
 		{
-			res = _boundedStates.first().getTime();
+			if (size() == 0)
+				throw new RuntimeException(
+						"we can't accept a null time state, since we don't know our period yet");
+
+			// ok, we'll just apply this state to our start and end times
+			_boundedStates.first().constrainTo(newState);
+			_boundedStates.last().constrainTo(newState);
 		}
-		
-		return res;
+		else
+			_boundedStates.add(newState);
 	}
-	
+
 	protected Date getFinishDate()
 	{
-		Date res =  null;
-		if(size() > 0)
+		Date res = null;
+		if (size() > 0)
 		{
 			res = _boundedStates.last().getTime();
 		}
-		
+
 		return res;
 	}
-	
-	/** iterator through the set of bounded states
+
+	protected Date getStartDate()
+	{
+		Date res = null;
+		if (size() > 0)
+		{
+			res = _boundedStates.first().getTime();
+		}
+
+		return res;
+	}
+
+	/**
+	 * iterator through the set of bounded states
 	 * 
 	 * @return
 	 */
@@ -46,28 +69,6 @@ public class ProblemSpace
 		return _boundedStates.iterator();
 	}
 
-	/**
-	 * add a new bounded state
-	 * 
-	 * @param newState
-	 */
-	public void add(BoundedState newState)
-	{
-		
-		// check if this has a date - if it doesn't we'll give it our start/end times
-		if(newState.getTime() == null)
-		{
-			if(size() == 0)
-				throw new RuntimeException("we can't accept a null time state, since we don't know our period yet");
-			
-			// ok, we'll just apply this state to our start and end times
-			_boundedStates.first().constrainTo(newState);
-			_boundedStates.last().constrainTo(newState);
-		}
-		else
-		_boundedStates.add(newState);
-	}
-	
 	public int size()
 	{
 		return _boundedStates.size();

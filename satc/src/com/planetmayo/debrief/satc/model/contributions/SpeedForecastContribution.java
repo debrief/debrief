@@ -3,62 +3,12 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.util.Date;
 import java.util.Iterator;
 
-
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 
 public class SpeedForecastContribution extends BaseContribution
 {
-
-	protected double _minSpeed;
-
-	protected double _maxSpeed;
-
-	protected double _estimate;
-
-	public double getMinSpeed()
-	{
-		return _minSpeed;
-	}
-
-	public void setMinSpeed(double minSpeed)
-	{
-		firePropertyChange("minSpeed", _minSpeed, minSpeed);
-		String oldConstraints = getHardConstraints();
-		this._minSpeed = minSpeed;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
-	}
-
-	public double getMaxSpeed()
-	{
-		return _maxSpeed;
-	}
-
-	public void setMaxSpeed(double maxSpeed)
-	{
-		firePropertyChange("maxSpeed", _maxSpeed, maxSpeed);
-		String oldConstraints = getHardConstraints();
-		this._maxSpeed = maxSpeed;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
-	}
-
-	public double getEstimate()
-	{
-		return _estimate;
-	}
-
-	public void setEstimate(double estimate)
-	{
-		firePropertyChange("estimate", _estimate, estimate);
-		this._estimate = estimate;
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		return "" + ((int) _minSpeed) + " - " + ((int) _maxSpeed);
-	}
 
 	/**
 	 * utility method to create one of these contributions
@@ -76,6 +26,12 @@ public class SpeedForecastContribution extends BaseContribution
 		return res;
 	}
 
+	protected double _minSpeed;
+
+	protected double _maxSpeed;
+
+	protected double _estimate;
+
 	@Override
 	public void actUpon(final ProblemSpace space)
 	{
@@ -85,20 +41,20 @@ public class SpeedForecastContribution extends BaseContribution
 		// remember if we've found items at our start/end times
 		boolean needToInjectStart = true;
 		boolean needToInjectFinish = true;
-		
+
 		// loop through the states
 		final Iterator<BoundedState> sIter = space.iterator();
 		while (sIter.hasNext())
 		{
 			// get the next state
-			final BoundedState state = (BoundedState) sIter.next();
+			final BoundedState state = sIter.next();
 
 			// apply our bounds
 			state.constrainTo(myR);
 
 			// is this one of our end-terms?
 			final Date thisT = state.getTime();
-			
+
 			// do we have a start time?
 			if (this.getStartDate() != null)
 			{
@@ -135,5 +91,48 @@ public class SpeedForecastContribution extends BaseContribution
 			space.add(endState);
 		}
 
+	}
+
+	public double getEstimate()
+	{
+		return _estimate;
+	}
+
+	@Override
+	public String getHardConstraints()
+	{
+		return "" + ((int) _minSpeed) + " - " + ((int) _maxSpeed);
+	}
+
+	public double getMaxSpeed()
+	{
+		return _maxSpeed;
+	}
+
+	public double getMinSpeed()
+	{
+		return _minSpeed;
+	}
+
+	public void setEstimate(double estimate)
+	{
+		firePropertyChange("estimate", _estimate, estimate);
+		this._estimate = estimate;
+	}
+
+	public void setMaxSpeed(double maxSpeed)
+	{
+		firePropertyChange("maxSpeed", _maxSpeed, maxSpeed);
+		String oldConstraints = getHardConstraints();
+		this._maxSpeed = maxSpeed;
+		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
+	}
+
+	public void setMinSpeed(double minSpeed)
+	{
+		firePropertyChange("minSpeed", _minSpeed, minSpeed);
+		String oldConstraints = getHardConstraints();
+		this._minSpeed = minSpeed;
+		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
 	}
 }

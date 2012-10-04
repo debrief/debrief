@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.model;
 
-public class VehicleType extends ModelObject {
+public class VehicleType extends ModelObject
+{
 
 	/**
 	 * name of this vehicle type
@@ -40,7 +41,8 @@ public class VehicleType extends ModelObject {
 
 	public VehicleType(String name, double minSpd, double maxSpd,
 			double minTurnCircle, double maxTurnCircle, double accelRate,
-			double decelRate) {
+			double decelRate)
+	{
 		_name = name;
 		_minSpd = minSpd;
 		_maxSpd = maxSpd;
@@ -50,53 +52,61 @@ public class VehicleType extends ModelObject {
 		_decelRate = decelRate;
 	}
 
-	/** name for this vehicle type
-	 * 
-	 */
-	public String getName() {
-		return _name;
-	}
-
-	/*
-	 * minimum speed for the vehicle type (m/sec)
-	 */
-	public double getMinSpd() {
-		return _minSpd;
-	}
-
-	/*
-	 * maximum speed for the vehicle type (m/sec)
-	 */
-	public double getMaxSpd() {
-		return _maxSpd;
-	}
-
-	/*
-	 * minimum turning circle for this vehicle type (m)
-	 */
-	public double getMinTurnCircle() {
-		return _minTurnCircle;
-	}
-
-	/*
-	 * maximum turning circle for this vehicle type (m)
-	 */
-	public double getMaxTurnCircle() {
-		return _maxTurnCircle;
-	}
-
 	/*
 	 * acceleration rate for the vehicle type (m/sec/sec)
 	 */
-	public double getAccelRate() {
+	public double getAccelRate()
+	{
 		return _accelRate;
 	}
 
 	/*
 	 * deceleration for the vehicle type (m/sec/sec)
 	 */
-	public double getDecelRate() {
+	public double getDecelRate()
+	{
 		return _decelRate;
+	}
+
+	/*
+	 * maximum speed for the vehicle type (m/sec)
+	 */
+	public double getMaxSpd()
+	{
+		return _maxSpd;
+	}
+
+	/*
+	 * maximum turning circle for this vehicle type (m)
+	 */
+	public double getMaxTurnCircle()
+	{
+		return _maxTurnCircle;
+	}
+
+	/*
+	 * minimum speed for the vehicle type (m/sec)
+	 */
+	public double getMinSpd()
+	{
+		return _minSpd;
+	}
+
+	/*
+	 * minimum turning circle for this vehicle type (m)
+	 */
+	public double getMinTurnCircle()
+	{
+		return _minTurnCircle;
+	}
+
+	/**
+	 * name for this vehicle type
+	 * 
+	 */
+	public String getName()
+	{
+		return _name;
 	}
 
 }
