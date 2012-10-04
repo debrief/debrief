@@ -9,9 +9,14 @@ public class TrackGeneratorTest extends TestCase
 		// TODO: test this. add a range of contribution types, check they are stored in the correct order
 	}
 	
-	public void testListening()
+	public void testListeningA()
 	{
 		// TODO: create some contributions, add them to generator, make some changes, check the re-generation happens
+	}
+	
+	public void testListeningB()
+	{
+		// TODO: create some contributions, add them to generator, make some changes, check we're listening to the correct events
 	}
 	
 	public void testRegeneration()
