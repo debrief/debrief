@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public class CourseForecastContribution extends BaseContribution
+public class CourseForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
 {
 
 	public static final String MIN_COURSE = "minCourse";

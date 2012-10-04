@@ -2,32 +2,48 @@ package com.planetmayo.debrief.satc.model.generator;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class TrackGenerator
 {
-	private ArrayList<BaseContribution> _contribs = new ArrayList<BaseContribution>();
-	private PropertyChangeListener contribChange;
-	private ProblemSpace _space;
-	
-	public TrackGenerator()
+	/**
+	 * the problem space we consider
+	 */
+	private final ProblemSpace _space = new ProblemSpace();
+
+	/**
+	 * the set of contributions we listen to. They are ordered, so that we have
+	 * data-producing contributions before those that purely perform analysis.
+	 * Because of BaseContribution.compareTo, the contribs will be in this order:
+	 * 1. Measurement
+	 * 2. Forecast
+	 * 3. Analysis
+	 * 
+	 * This is because we need some data before we start analysing it.
+	 * 
+	 */
+	private TreeSet<BaseContribution> _contribs = new TreeSet<BaseContribution>();
+
+	/**
+	 * property listener = so we know about contibutions changing
+	 * 
+	 */
+	private final PropertyChangeListener _contribListener = new PropertyChangeListener()
 	{
-		contribChange = new PropertyChangeListener()
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0)
 		{
-			@Override
-			public void propertyChange(PropertyChangeEvent arg0)
-			{
-				propChange();
-			}
-		};
-		_space = new ProblemSpace();
-	}
-	
-	/** something has changed - rerun the scenario constraint management
+			// let our custom method handle it
+			propChange();
+		}
+	};
+
+	/**
+	 * something has changed - rerun the scenario constraint management
 	 * 
 	 */
 	protected void propChange()
@@ -41,28 +57,46 @@ public class TrackGenerator
 		}
 	}
 
+	/**
+	 * store this new contribution
+	 * 
+	 * @param contribution
+	 */
 	public void addContribution(BaseContribution contribution)
 	{
 		// remember it
 		_contribs.add(contribution);
-		
+
 		// start listening to it
-		contribution.addPropertyChangeListener(BaseContribution.ACTIVE, contribChange);
-		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS, contribChange);
-		contribution.addPropertyChangeListener(BaseContribution.START_DATE, contribChange);
-		contribution.addPropertyChangeListener(BaseContribution.FINISH_DATE, contribChange);
+		contribution.addPropertyChangeListener(BaseContribution.ACTIVE,
+				_contribListener);
+		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
+				_contribListener);
+		contribution.addPropertyChangeListener(BaseContribution.START_DATE,
+				_contribListener);
+		contribution.addPropertyChangeListener(BaseContribution.FINISH_DATE,
+				_contribListener);
 	}
-	
+
+	/**
+	 * remove this contribution
+	 * 
+	 * @param contribution
+	 */
 	public void removeContribution(BaseContribution contribution)
 	{
 		// remember it
 		_contribs.remove(contribution);
-		
+
 		// start listening to it
-		contribution.removePropertyChangeListener(BaseContribution.ACTIVE, contribChange);
-		contribution.removePropertyChangeListener(BaseContribution.HARD_CONSTRAINTS, contribChange);
-		contribution.removePropertyChangeListener(BaseContribution.START_DATE, contribChange);
-		contribution.removePropertyChangeListener(BaseContribution.FINISH_DATE, contribChange);
+		contribution.removePropertyChangeListener(BaseContribution.ACTIVE,
+				_contribListener);
+		contribution.removePropertyChangeListener(
+				BaseContribution.HARD_CONSTRAINTS, _contribListener);
+		contribution.removePropertyChangeListener(BaseContribution.START_DATE,
+				_contribListener);
+		contribution.removePropertyChangeListener(BaseContribution.FINISH_DATE,
+				_contribListener);
 	}
 
 }

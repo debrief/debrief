@@ -3,7 +3,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoPoint;
 
-public class LocationForecastContribution extends BaseContribution
+public class LocationForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
 {
 
 	/**

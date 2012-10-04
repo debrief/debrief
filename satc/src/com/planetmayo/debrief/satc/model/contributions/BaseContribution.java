@@ -5,8 +5,41 @@ import java.util.Date;
 import com.planetmayo.debrief.satc.model.ModelObject;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public abstract class BaseContribution extends ModelObject
+public abstract class BaseContribution extends ModelObject implements
+		Comparable<BaseContribution>
 {
+	/**
+	 * marker interface for contributions that represent a forecast
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static interface ForecastMarker
+	{
+
+	}
+
+	/**
+	 * marker interface for contributions that perform data analysis
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static interface AnalysisMarker
+	{
+
+	}
+
+	/**
+	 * marker interface for contributions that represent measured data
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static interface MeasurementMarker
+	{
+
+	}
 
 	public static final String WEIGHT = "weight";
 	public static final String START_DATE = "startDate";
@@ -15,7 +48,7 @@ public abstract class BaseContribution extends ModelObject
 	public static final String ACTIVE = "active";
 	public static final String HARD_CONSTRAINTS = "hardConstraints";
 	public static final String ESTIMATE = "estimate";
-	
+
 	protected String _name;
 	protected boolean _active;
 	protected int _weight;
@@ -91,4 +124,34 @@ public abstract class BaseContribution extends ModelObject
 		firePropertyChange(WEIGHT, _weight, weight);
 		this._weight = weight;
 	}
+
+	@Override
+	public int compareTo(BaseContribution o)
+	{
+		// ok, what type am I?
+		int myScore = scoreFor(this);
+		int hisScore = scoreFor(o);
+		int res;
+		if(myScore < hisScore)
+			res = -1;
+		else if(myScore > hisScore)
+			res = 1;
+		else
+			res = 0;
+		
+		return res;
+	}
+
+	private int scoreFor(BaseContribution o)
+	{
+		int res;
+		if (o instanceof MeasurementMarker)
+			res = 0;
+		else if (o instanceof ForecastMarker)
+			res = 1;
+		else
+			res = 2;
+		return res;
+	}
+
 }

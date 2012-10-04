@@ -7,7 +7,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 
-public class SpeedForecastContribution extends BaseContribution
+public class SpeedForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
 {
 
 	public static final String MIN_SPEED = "minSpeed";
