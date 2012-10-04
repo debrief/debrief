@@ -8,6 +8,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc.ui.UIUtils;
@@ -15,12 +16,12 @@ import com.planetmayo.debrief.satc.ui.UIUtils;
 public class SpeedContributionPanel extends AnalystContributionPanel
 {
 
-	private SpeedForecastContribution contribution;
+	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
 	public SpeedContributionPanel(Composite parent,
-			SpeedForecastContribution contribution)
+			BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;
@@ -37,7 +38,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 		bindCommonDates(context, contribution);
 
 		IObservableValue minSpeedValue = BeansObservables.observeValue(
-				contribution, "minSpeed");
+				contribution, SpeedForecastContribution.MIN_SPEED);
 		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(
 				minSlider);
 		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
@@ -53,7 +54,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 						"min: ", " kts")));
 
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
-				contribution, "maxSpeed");
+				contribution, SpeedForecastContribution.MAX_SPEED);
 		IObservableValue maxSpeedSlider = WidgetProperties.selection().observe(
 				maxSlider);
 		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
@@ -73,7 +74,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 		IObservableValue estimateSpeedDetailsLabel = WidgetProperties.text()
 				.observe(estimateDetailsLabel);
 		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, "estimate");
+				contribution, BaseContribution.ESTIMATE);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
@@ -84,7 +85,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener("name", titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
 		context.dispose();
 	}
 

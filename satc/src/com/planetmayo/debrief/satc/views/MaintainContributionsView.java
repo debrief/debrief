@@ -23,6 +23,7 @@ import org.eclipse.ui.part.ViewPart;
 import com.planetmayo.debrief.satc.Activator;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
@@ -73,7 +74,7 @@ public class MaintainContributionsView extends ViewPart
 				SWT.DEFAULT));
 
 		// create a sample speed forecast contribution
-		SpeedForecastContribution speedContribution = SpeedForecastContribution
+		BaseContribution speedContribution = SpeedForecastContribution
 				.getSample();
 
 		// and a UI to display it

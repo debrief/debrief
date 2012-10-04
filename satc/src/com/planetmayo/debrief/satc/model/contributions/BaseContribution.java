@@ -8,6 +8,14 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 public abstract class BaseContribution extends ModelObject
 {
 
+	public static final String WEIGHT = "weight";
+	public static final String START_DATE = "startDate";
+	public static final String NAME = "name";
+	public static final String FINISH_DATE = "finishDate";
+	public static final String ACTIVE = "active";
+	public static final String HARD_CONSTRAINTS = "hardConstraints";
+	public static final String ESTIMATE = "estimate";
+	
 	protected String _name;
 	protected boolean _active;
 	protected int _weight;
@@ -56,31 +64,31 @@ public abstract class BaseContribution extends ModelObject
 
 	public void setActive(boolean active)
 	{
-		firePropertyChange("active", _active, active);
+		firePropertyChange(ACTIVE, _active, active);
 		this._active = active;
 	}
 
 	public void setFinishDate(Date finishDate)
 	{
-		firePropertyChange("finishDate", _finishDate, finishDate);
+		firePropertyChange(FINISH_DATE, _finishDate, finishDate);
 		this._finishDate = finishDate;
 	}
 
 	public void setName(String name)
 	{
-		firePropertyChange("name", _name, name);
+		firePropertyChange(NAME, _name, name);
 		_name = name;
 	}
 
 	public void setStartDate(Date startDate)
 	{
-		firePropertyChange("startDate", _startDate, startDate);
+		firePropertyChange(START_DATE, _startDate, startDate);
 		this._startDate = startDate;
 	}
 
 	public void setWeight(int weight)
 	{
-		firePropertyChange("weight", _weight, weight);
+		firePropertyChange(WEIGHT, _weight, weight);
 		this._weight = weight;
 	}
 }

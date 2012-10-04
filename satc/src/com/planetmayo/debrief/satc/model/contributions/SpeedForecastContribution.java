@@ -10,14 +10,18 @@ import com.planetmayo.debrief.satc.model.states.SpeedRange;
 public class SpeedForecastContribution extends BaseContribution
 {
 
+	public static final String MIN_SPEED = "minSpeed";
+
+	public static final String MAX_SPEED = "maxSpeed";
+
 	/**
 	 * utility method to create one of these contributions
 	 * 
 	 * @return
 	 */
-	public static SpeedForecastContribution getSample()
+	public static BaseContribution getSample()
 	{
-		SpeedForecastContribution res = new SpeedForecastContribution();
+		BaseContribution res = new SpeedForecastContribution();
 		res.setActive(true);
 		res.setWeight(4);
 		res.setName("Easterly Leg");
@@ -116,23 +120,23 @@ public class SpeedForecastContribution extends BaseContribution
 
 	public void setEstimate(double estimate)
 	{
-		firePropertyChange("estimate", _estimate, estimate);
+		firePropertyChange(ESTIMATE, _estimate, estimate);
 		this._estimate = estimate;
 	}
 
 	public void setMaxSpeed(double maxSpeed)
 	{
-		firePropertyChange("maxSpeed", _maxSpeed, maxSpeed);
+		firePropertyChange(MAX_SPEED, _maxSpeed, maxSpeed);
 		String oldConstraints = getHardConstraints();
 		this._maxSpeed = maxSpeed;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
+		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	public void setMinSpeed(double minSpeed)
 	{
-		firePropertyChange("minSpeed", _minSpeed, minSpeed);
+		firePropertyChange(MIN_SPEED, _minSpeed, minSpeed);
 		String oldConstraints = getHardConstraints();
 		this._minSpeed = minSpeed;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
+		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 }

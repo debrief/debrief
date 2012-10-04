@@ -74,9 +74,9 @@ public abstract class AnalystContributionPanel
 				mainGroup.setText(titlePrefix + evt.getNewValue());
 			}
 		};
-		listener.propertyChange(new PropertyChangeEvent(contribution, "name", null,
+		listener.propertyChange(new PropertyChangeEvent(contribution, BaseContribution.NAME, null,
 				contribution.getName()));
-		contribution.addPropertyChangeListener("name", listener);
+		contribution.addPropertyChangeListener(BaseContribution.NAME, listener);
 		return listener;
 	}
 
@@ -91,7 +91,7 @@ public abstract class AnalystContributionPanel
 			BaseContribution contribution)
 	{
 		IObservableValue startDateValue = BeansObservables.observeValue(
-				contribution, "startDate");
+				contribution, BaseContribution.START_DATE);
 		IObservableValue startDateWidget = WidgetProperties.selection().observe(
 				startDate);
 		IObservableValue startTimeWidget = WidgetProperties.selection().observe(
@@ -100,7 +100,7 @@ public abstract class AnalystContributionPanel
 				startTimeWidget), startDateValue);
 
 		IObservableValue endDateValue = BeansObservables.observeValue(contribution,
-				"finishDate");
+				BaseContribution.FINISH_DATE);
 		IObservableValue endDateWidget = WidgetProperties.selection().observe(
 				endDate);
 		IObservableValue endTimeWidget = WidgetProperties.selection().observe(
@@ -122,27 +122,27 @@ public abstract class AnalystContributionPanel
 			BaseContribution contribution, PrefixSuffixLabelConverter labelsConverter)
 	{
 		IObservableValue activeValue = BeansObservables.observeValue(contribution,
-				"active");
+				BaseContribution.ACTIVE);
 		IObservableValue activeButton = WidgetProperties.selection().observe(
 				activeCheckBox);
 		context.bindValue(activeButton, activeValue);
 
 		IObservableValue hardContraintValue = BeansObservables.observeValue(
-				contribution, "hardConstraints");
+				contribution, BaseContribution.HARD_CONSTRAINTS);
 		IObservableValue hardContraintLabel = WidgetProperties.text().observe(
 				hardConstraintLabel);
 		context.bindValue(hardContraintLabel, hardContraintValue, null,
 				UIUtils.converterStrategy(labelsConverter));
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, "estimate");
+				contribution, BaseContribution.HARD_CONSTRAINTS);
 		IObservableValue estimateLabel = WidgetProperties.text().observe(
 				this.estimateLabel);
 		context.bindValue(estimateLabel, estimateValue, null,
 				UIUtils.converterStrategy(labelsConverter));
 
 		IObservableValue weightValue = BeansObservables.observeValue(contribution,
-				"weight");
+				BaseContribution.WEIGHT);
 		IObservableValue weightWidget = WidgetProperties.selection().observe(
 				weightSpinner);
 		context.bindValue(weightWidget, weightValue);

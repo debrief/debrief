@@ -8,6 +8,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc.ui.UIUtils;
@@ -39,7 +40,7 @@ public class CourseContributionPanel extends AnalystContributionPanel
 		bindCommonDates(context, contribution);
 
 		IObservableValue minCourseValue = BeansObservables.observeValue(
-				contribution, "minCourse");
+				contribution, CourseForecastContribution.MIN_COURSE);
 		IObservableValue minCourseSlider = WidgetProperties.selection().observe(
 				minSlider);
 		IObservableValue minCourseLabel = WidgetProperties.text().observe(minLabel);
@@ -55,7 +56,7 @@ public class CourseContributionPanel extends AnalystContributionPanel
 						" degs")));
 
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
-				contribution, "maxCourse");
+				contribution, CourseForecastContribution.MAX_COURSE);
 		IObservableValue maxCourseSlider = WidgetProperties.selection().observe(
 				maxSlider);
 		IObservableValue maxCourseLabel = WidgetProperties.text().observe(maxLabel);
@@ -75,7 +76,7 @@ public class CourseContributionPanel extends AnalystContributionPanel
 		IObservableValue estimateCourseDetailsLabel = WidgetProperties.text()
 				.observe(estimateDetailsLabel);
 		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, "estimate");
+				contribution, BaseContribution.ESTIMATE);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(int.class,
@@ -87,7 +88,7 @@ public class CourseContributionPanel extends AnalystContributionPanel
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener("name", titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
 		context.dispose();
 	}
 

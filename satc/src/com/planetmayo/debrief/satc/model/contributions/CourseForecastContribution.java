@@ -7,6 +7,10 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 public class CourseForecastContribution extends BaseContribution
 {
 
+	public static final String MIN_COURSE = "minCourse";
+
+	public static final String MAX_COURSE = "maxCourse";
+
 	/**
 	 * utility method to create one of these contributions
 	 * 
@@ -63,23 +67,23 @@ public class CourseForecastContribution extends BaseContribution
 
 	public void setEstimate(int estimate)
 	{
-		firePropertyChange("estimate", _estimate, estimate);
+		firePropertyChange(ESTIMATE, _estimate, estimate);
 		this._estimate = estimate;
 	}
 
 	public void setMaxCourse(int maxCourse)
 	{
-		firePropertyChange("maxCourse", _maxCourse, maxCourse);
+		firePropertyChange(MAX_COURSE, _maxCourse, maxCourse);
 		String oldConstraints = getHardConstraints();
 		this._maxCourse = maxCourse;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
+		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	public void setMinCourse(int minCourse)
 	{
-		firePropertyChange("minCourse", _minCourse, minCourse);
+		firePropertyChange(MIN_COURSE, _minCourse, minCourse);
 		String oldConstraints = getHardConstraints();
 		this._minCourse = minCourse;
-		firePropertyChange("hardConstraints", oldConstraints, getHardConstraints());
+		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 }
