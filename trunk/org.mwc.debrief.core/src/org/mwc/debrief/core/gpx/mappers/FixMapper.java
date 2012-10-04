@@ -40,12 +40,28 @@ public class FixMapper implements DebriefJaxbContextAware
 	{
 		Fix fix = new Fix();
 
-		WorldLocation val = new WorldLocation(trackType.getLat(), trackType.getLon(), convertElevationToDepth(trackType.getEle()));
+		// we may not have a depth, better check
+		BigDecimal ele = trackType.getEle();
+		if (ele == null)
+			ele = new BigDecimal(0);
+
+		WorldLocation val = new WorldLocation(trackType.getLat(),
+				trackType.getLon(), convertElevationToDepth(ele));
 		fix.setLocation(val);
 
+		HiResDate theDate;
 		XMLGregorianCalendar time = trackType.getTime();
-		GregorianCalendar calendar = time.toGregorianCalendar();
-		fix.setTime(new HiResDate(calendar.getTime()));// TODO handle milli secs
+		if (time != null)
+		{
+			GregorianCalendar calendar = time.toGregorianCalendar();
+			theDate = new HiResDate(calendar.getTime());
+		}
+		else
+		{
+			CorePlugin.logError(Status.WARNING, "GPX Data is missing time data. current date to be used", null);
+			theDate = new HiResDate();
+		}
+		fix.setTime(theDate);
 
 		FixWrapper trackPoint = new FixWrapper(fix);
 
@@ -58,11 +74,14 @@ public class FixMapper implements DebriefJaxbContextAware
 			{
 				unmarshaller = debriefContext.createUnmarshaller();
 				Object object = unmarshaller.unmarshal((Node) any.get(0));
-				FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector.getValue(object);
+				FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector
+						.getValue(object);
 
-				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse()).doubleValue());
+				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse())
+						.doubleValue());
 				trackPoint.setLabel(fixExtension.getLabel());
-				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed()).doubleValue());
+				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed())
+						.doubleValue());
 				LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());
@@ -74,7 +93,8 @@ public class FixMapper implements DebriefJaxbContextAware
 			}
 			catch (JAXBException e)
 			{
-				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
+				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX",
+						e);
 			}
 		}
 
