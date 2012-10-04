@@ -1,7 +1,11 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.Date;
+import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class CourseForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
@@ -38,10 +42,64 @@ public class CourseForecastContribution extends BaseContribution implements Base
 	protected int _estimate;
 
 	@Override
-	public void actUpon(ProblemSpace space)
+	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// TODO implement this
-		throw new RuntimeException("Not yet implemented");
+		// create a bounded state representing our values
+		final CourseRange myR = new CourseRange(_minCourse, _maxCourse);
+
+		// remember if we've found items at our start/end times
+		boolean needToInjectStart = true;
+		boolean needToInjectFinish = true;
+
+		// loop through the states
+		final Iterator<BoundedState> sIter = space.states();
+		while (sIter.hasNext())
+		{
+			// get the next state
+			final BoundedState state = sIter.next();
+
+			// apply our bounds
+			state.constrainTo(myR);
+
+			// is this one of our end-terms?
+			final Date thisT = state.getTime();
+
+			// do we have a start time?
+			if (this.getStartDate() != null)
+			{
+				if (thisT.equals(this.getStartDate()))
+				{
+					// cool, store it
+					needToInjectStart = false;
+				}
+			}
+
+			// do we have an end time?
+			if (this.getFinishDate() != null)
+			{
+				if (thisT.equals(this.getFinishDate()))
+				{
+					needToInjectFinish = false;
+				}
+			}
+		}
+
+		// ok, did we find our end terms?
+		if (needToInjectStart)
+		{
+			final BoundedState startState = new BoundedState(this.getStartDate());
+			startState.constrainTo(myR);
+			space.add(startState);
+		}
+
+		// ok, did we find our end terms?
+		if (needToInjectFinish)
+		{
+			final BoundedState endState = new BoundedState(this.getFinishDate());
+			endState.constrainTo(myR);
+			space.add(endState);
+		}
+
 	}
 
 	public int getEstimate()

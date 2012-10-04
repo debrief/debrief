@@ -55,7 +55,7 @@ public abstract class BaseContribution extends ModelObject implements
 	protected int _weight;
 	protected Date _startDate;
 	protected Date _finishDate;
-
+	
 	/**
 	 * apply this contribution to the supplied Problem Space
 	 * 
@@ -138,7 +138,10 @@ public abstract class BaseContribution extends ModelObject implements
 		else if(myScore > hisScore)
 			res = 1;
 		else
-			res = 0;
+		{
+			// ha-they must be equal, compare the names
+			res = ("" + this.getClass().toString()).compareTo("" + o.getClass().toString());
+		}
 		
 		return res;
 	}

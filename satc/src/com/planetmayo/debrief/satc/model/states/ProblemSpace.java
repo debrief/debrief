@@ -66,7 +66,7 @@ public class ProblemSpace
 	 * 
 	 * @return
 	 */
-	public Iterator<BoundedState> iterator()
+	public Iterator<BoundedState> states()
 	{
 		return _boundedStates.iterator();
 	}

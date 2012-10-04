@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 public class BearingMeasurementContribution extends BaseContribution implements
 		BaseContribution.MeasurementMarker
 {
+
 	public static final String BEARING_ERROR = "bearing_error";
 
 	/**

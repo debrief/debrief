@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class BearingMeasurementContributionTest extends TestCase
 {
-	private static final String THE_PATH = "tests/com/planetmayo/debrief/satc/model/contributions/data/bearing_measurement_data.txt";
+	public static final String THE_PATH = "tests/com/planetmayo/debrief/satc/model/contributions/data/bearing_measurement_data.txt";
 
 	@SuppressWarnings("deprecation")
 	public void testNullDateSingleState() throws IncompatibleStateException
@@ -43,7 +43,7 @@ public class BearingMeasurementContributionTest extends TestCase
 		// go for it!
 		sc.actUpon(ps);
 		
-		Iterator<BoundedState> iter = ps.iterator();
+		Iterator<BoundedState> iter = ps.states();
 		int ctr = 0;
 		while (iter.hasNext())
 		{

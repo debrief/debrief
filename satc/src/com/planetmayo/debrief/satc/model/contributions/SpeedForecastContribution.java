@@ -48,7 +48,7 @@ public class SpeedForecastContribution extends BaseContribution implements BaseC
 		boolean needToInjectFinish = true;
 
 		// loop through the states
-		final Iterator<BoundedState> sIter = space.iterator();
+		final Iterator<BoundedState> sIter = space.states();
 		while (sIter.hasNext())
 		{
 			// get the next state
