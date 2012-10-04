@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import junit.framework.TestCase;
+
 
 public class ProblemSpace
 {
@@ -15,6 +15,28 @@ public class ProblemSpace
 		_boundedStates = new TreeSet<BoundedState>();
 	}
 
+	protected Date getStartDate()
+	{
+		Date res =  null;
+		if(size() > 0)
+		{
+			res = _boundedStates.first().getTime();
+		}
+		
+		return res;
+	}
+	
+	protected Date getFinishDate()
+	{
+		Date res =  null;
+		if(size() > 0)
+		{
+			res = _boundedStates.last().getTime();
+		}
+		
+		return res;
+	}
+	
 	/** iterator through the set of bounded states
 	 * 
 	 * @return
@@ -27,31 +49,27 @@ public class ProblemSpace
 	/**
 	 * add a new bounded state
 	 * 
-	 * @param startState
+	 * @param newState
 	 */
-	public void add(BoundedState startState)
+	public void add(BoundedState newState)
 	{
-		_boundedStates.add(startState);
+		
+		// check if this has a date - if it doesn't we'll give it our start/end times
+		if(newState.getTime() == null)
+		{
+			if(size() == 0)
+				throw new RuntimeException("we can't accept a null time state, since we don't know our period yet");
+			
+			// ok, we'll just apply this state to our start and end times
+			_boundedStates.first().constrainTo(newState);
+			_boundedStates.last().constrainTo(newState);
+		}
+		else
+		_boundedStates.add(newState);
 	}
 	
-	public static class SpaceTest extends TestCase
+	public int size()
 	{
-		@SuppressWarnings("deprecation")
-		public void testAddSort()
-		{
-			ProblemSpace ps = new ProblemSpace();
-			BoundedState b1 = new BoundedState(new Date(2012, 4,4));
-			BoundedState b2 = new BoundedState(new Date(2012, 5,4));
-			BoundedState b3 = new BoundedState(new Date(2012, 2,4));
-			
-			ps.add(b1);
-			ps.add(b2);
-			ps.add(b3);
-			
-			Iterator<BoundedState> iter = ps.iterator();
-			assertEquals("correct order", b3, iter.next());
-			assertEquals("correct order", b1, iter.next());
-			assertEquals("correct order", b2, iter.next());
-		}
+		return _boundedStates.size();
 	}
 }

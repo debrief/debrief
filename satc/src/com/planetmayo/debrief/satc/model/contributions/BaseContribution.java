@@ -58,6 +58,10 @@ public abstract class BaseContribution extends ModelObject {
 		_name = name;
 	}
 	
+	/** provide a formatted string representing the hard constraints
+	 * 
+	 * @return summary of constraints
+	 */
 	public abstract String getHardConstraints();
 	
 	/** apply this contribution to the supplied Problem Space

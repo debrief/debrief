@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.util.Date;
 import java.util.Iterator;
 
+
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
@@ -79,24 +80,24 @@ public class SpeedForecastContribution extends BaseContribution
 	public void actUpon(final ProblemSpace space)
 	{
 		// create a bounded state representing our values
-		SpeedRange myR = new SpeedRange(getMinSpeed(), getMaxSpeed());
+		final SpeedRange myR = new SpeedRange(getMinSpeed(), getMaxSpeed());
 
 		// remember if we've found items at our start/end times
-		boolean foundStart = false;
-		boolean foundEnd = false;
-
+		boolean needToInjectStart = true;
+		boolean needToInjectFinish = true;
+		
 		// loop through the states
-		Iterator<BoundedState> sIter = space.iterator();
+		final Iterator<BoundedState> sIter = space.iterator();
 		while (sIter.hasNext())
 		{
 			// get the next state
-			BoundedState state = (BoundedState) sIter.next();
+			final BoundedState state = (BoundedState) sIter.next();
 
 			// apply our bounds
-			state.getSpeed().constrainTo(myR);
+			state.constrainTo(myR);
 
 			// is this one of our end-terms?
-			Date thisT = state.getTime();
+			final Date thisT = state.getTime();
 			
 			// do we have a start time?
 			if (this.getStartDate() != null)
@@ -104,7 +105,7 @@ public class SpeedForecastContribution extends BaseContribution
 				if (thisT.equals(this.getStartDate()))
 				{
 					// cool, store it
-					foundStart = true;
+					needToInjectStart = false;
 				}
 			}
 
@@ -113,23 +114,23 @@ public class SpeedForecastContribution extends BaseContribution
 			{
 				if (thisT.equals(this.getFinishDate()))
 				{
-					foundEnd = true;
+					needToInjectFinish = false;
 				}
 			}
 		}
 
 		// ok, did we find our end terms?
-		if (!foundStart)
+		if (needToInjectStart)
 		{
-			BoundedState startState = new BoundedState(this.getStartDate());
+			final BoundedState startState = new BoundedState(this.getStartDate());
 			startState.constrainTo(myR);
 			space.add(startState);
 		}
 
 		// ok, did we find our end terms?
-		if (!foundEnd)
+		if (needToInjectFinish)
 		{
-			BoundedState endState = new BoundedState(this.getFinishDate());
+			final BoundedState endState = new BoundedState(this.getFinishDate());
 			endState.constrainTo(myR);
 			space.add(endState);
 		}

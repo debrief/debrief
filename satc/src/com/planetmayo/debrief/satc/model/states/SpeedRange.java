@@ -38,6 +38,15 @@ public class SpeedRange
 		_max = maxSpd;
 	}
 
+	/** copy constructor
+	 * 
+	 * @param range
+	 */
+	public SpeedRange(SpeedRange range)
+	{
+		this(range.getMin(), range.getMax());
+	}
+
 	public void constrainTo(SpeedRange sTwo)
 	{
 		_min = Math.max(getMin(), sTwo.getMin());
