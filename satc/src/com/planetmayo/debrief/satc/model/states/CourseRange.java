@@ -77,7 +77,7 @@ public class CourseRange extends BaseRange
 		
 		// aah, but what if we're now impossible?
 		if(_max < _min)
-			throw new IncompatibleStateException();
+			throw new IncompatibleStateException("Incompatible states", this, sTwo);
 	}
 
 }

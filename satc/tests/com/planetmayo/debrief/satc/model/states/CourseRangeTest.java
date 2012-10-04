@@ -72,6 +72,8 @@ public class CourseRangeTest extends TestCase
 			e = ie;
 		}
 		assertNotNull("incompatible exception thrown", e);
+		assertEquals("correct existing range", sOne, e.getExistingRange());
+		assertEquals("correct new range", sTwo, e.getNewRange());
 	}
 
 	public void testConstrainThroughZeroB()
