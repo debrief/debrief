@@ -3,9 +3,23 @@ package com.planetmayo.debrief.satc.model.states;
 public abstract class BaseRange<T extends BaseRange<?>>
 {
 
+	/**
+	 * apply another ranged constraint to this one
+	 * 
+	 * @param other the other ranged constraint (of the same type as this)
+	 * @throws IncompatibleStateException if the contraints are mutually exclusive
+	 */
+	abstract public void constrainTo(T other) throws IncompatibleStateException;
 
- abstract	public void constrainTo(T other) throws IncompatibleStateException;
-	
+
+	/** provide a textual summary of this constraint
+	 * 
+	 * @return summary of this constraint - hopefully under about 20 chars
+	 */
+	abstract public String getConstraintSummary();
+
+
+
 	/**
 	 * exception for when constraints end up in an incompatible state. We
 	 * immediately terminate processing constraints when this happens, so we're
@@ -26,8 +40,8 @@ public abstract class BaseRange<T extends BaseRange<?>>
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public IncompatibleStateException(String message, BaseRange<?> existingRange,
-				BaseRange<?> newRange)
+		public IncompatibleStateException(String message,
+				BaseRange<?> existingRange, BaseRange<?> newRange)
 		{
 			super(message);
 			_message = message;

@@ -83,4 +83,10 @@ public class CourseRange extends BaseRange<CourseRange>
 		_min = minCourse;
 	}
 
+	@Override
+	public String getConstraintSummary()
+	{
+		return "" + (int)_min + " - " + (int)_max;
+	}
+
 }

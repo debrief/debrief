@@ -1,5 +1,10 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -38,11 +43,38 @@ public class LocationRange  extends BaseRange<LocationRange>
 	@Override
 	public void constrainTo(LocationRange sTwo) throws IncompatibleStateException
 	{
-		_myArea = (Polygon) _myArea.intersection(sTwo._myArea);
+		Geometry collection = _myArea.intersection(sTwo._myArea);
+		if(collection instanceof GeometryCollection)
+		{
+			GeometryCollection geo = (GeometryCollection) collection;
+			if(geo.getLength() == 1)
+			{
+				_myArea = (Polygon) geo.getGeometryN(0);
+			}
+			else if(geo.getLength() == 0)
+			{
+				throw new IncompatibleStateException("Polygons do not overlap", this, sTwo);
+			}
+		}
 	}
 
 	public Polygon getPolygon()
 	{
 		return _myArea;
 	}
+
+	@Override
+	public String getConstraintSummary()
+	{
+		String res = "N/A";
+		if(_myArea != null)
+		{
+			NumberFormat df = new DecimalFormat("0.0000");
+			Geometry theBoundary = _myArea.convexHull();;
+			double theArea = theBoundary.getArea();
+			res = _myArea.getCoordinates().length + "pts " + df.format(theArea); 
+		}
+		return res;
+	}
+
 }

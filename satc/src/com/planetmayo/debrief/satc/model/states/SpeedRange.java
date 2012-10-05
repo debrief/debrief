@@ -55,4 +55,10 @@ public class SpeedRange extends  BaseRange<SpeedRange>
 		_min = minSpeed;
 	}
 
+	@Override
+	public String getConstraintSummary()
+	{
+		return "" + (int)_min + " - " + (int)_max;
+	}
+
 }
