@@ -10,6 +10,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -21,13 +22,13 @@ public class RangeForecastContributionTest extends TestCase
 	public void testPolygons() throws IncompatibleStateException
 	{
 		RangeForecastContribution sc = new RangeForecastContribution();
-		sc.setMinRange(300);
-		sc.setMaxRange(5000);
+		sc.setMinRange(GeoSupport.m2deg(300));
+		sc.setMaxRange(GeoSupport.m2deg(5000));
 
 		ProblemSpace ps = new ProblemSpace();
 		BoundedState newState = new BoundedState(new Date(2012, 3, 3));
 		Coordinate[] coordinates = new Coordinate[]
-		{ new Coordinate(0, 0), new Coordinate(10, 0), new Coordinate(10, 0), new Coordinate(0, 10),new Coordinate(0, 0) };
+		{ new Coordinate(0, 0), new Coordinate(10, 0), new Coordinate(10, 10), new Coordinate(0, 10),new Coordinate(0, 0) };
 		LinearRing g1 = new GeometryFactory().createLinearRing(coordinates);
 		Polygon poly = new GeometryFactory().createPolygon(g1, null);
 		newState.constrainTo(new LocationRange(poly));
@@ -41,8 +42,9 @@ public class RangeForecastContributionTest extends TestCase
 		// should be two states
 		assertEquals("still have one state", 1, ps.size());
 		final BoundedState theState = ps.states().next();
-		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
-		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
+		assertEquals("correct limits", 5, theState.getLocation().getPolygon().getNumPoints());
+		
+		assertEquals("correct speed constraint listing", "5pts 100.0000", theState.getLocation().getConstraintSummary());
 	}
 
 	@SuppressWarnings("deprecation")

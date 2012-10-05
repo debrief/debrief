@@ -32,6 +32,8 @@ public class SpeedContributionTest extends TestCase
 		final BoundedState theState = ps.states().next();
 		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
 		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
+		
+		assertEquals("correct description", "12 - 22", theState.getSpeed().getConstraintSummary());
 	}
 
 	@SuppressWarnings("deprecation")
