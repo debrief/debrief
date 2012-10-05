@@ -18,6 +18,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -247,7 +248,7 @@ public class BearingMeasurementContribution extends BaseContribution implements
 		double errorRads = _degError / 180 * Math.PI;
 
 		// sort out a geometry factory
-		GeometryFactory factory = new GeometryFactory();
+		GeometryFactory factory = GeoSupport.getFactory();
 
 		while (iter.hasNext())
 		{

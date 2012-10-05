@@ -3,7 +3,8 @@ package com.planetmayo.debrief.satc.model.contributions;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoPoint;
 
-public class LocationForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
+public class LocationForecastContribution extends BaseContribution implements
+		BaseContribution.ForecastMarker
 {
 
 	/**
@@ -15,9 +16,7 @@ public class LocationForecastContribution extends BaseContribution implements Ba
 	{
 		LocationForecastContribution res = new LocationForecastContribution();
 		res.setName("From ships log");
-		GeoPoint geo = new GeoPoint();
-		geo.setLat(52.2);
-		geo.setLon(-5.12);
+		GeoPoint geo = new GeoPoint(52.2, -5.12);
 		res.setEstimate(geo);
 		return res;
 	}
