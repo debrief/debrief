@@ -99,4 +99,12 @@ public class ProblemSpace
 		return res;
 	}
 
+	/** forget our set of bounded states
+	 * 
+	 */
+	public void clear()
+	{
+		_boundedStates.clear();
+	}
+
 }

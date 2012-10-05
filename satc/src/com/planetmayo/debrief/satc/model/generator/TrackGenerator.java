@@ -17,24 +17,32 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
  * @author ian
  * 
  */
-public class TrackGenerator
+public class TrackGenerator implements SteppingGenerator
 {
 	public static final String STATES_BOUNDED = "states_bounded";
 
-	/** bounded state listeners
+	/**
+	 * bounded state listeners
 	 * 
 	 */
-	private ArrayList<BoundedStatesListener> _boundedListeners;
-	
-	/** people interested in contributions
+	final private ArrayList<BoundedStatesListener> _boundedListeners = new ArrayList<BoundedStatesListener>();
+
+	/**
+	 * people interested in contributions
 	 * 
 	 */
-	private ArrayList<ContributionsChangedListener> _contributionListeners;
-	
+	final private ArrayList<ContributionsChangedListener> _contributionListeners = new ArrayList<ContributionsChangedListener>();
+
+	/**
+	 * people interested in us stepping
+	 * 
+	 */
+	final private ArrayList<SteppingListener> _steppingListeners = new ArrayList<SteppingListener>();
+
 	/**
 	 * the problem space we consider
 	 */
-	private final ProblemSpace _space = new ProblemSpace();
+	final private ProblemSpace _space = new ProblemSpace();
 
 	/**
 	 * the set of contributions we listen to. They are ordered, so that we have
@@ -65,28 +73,24 @@ public class TrackGenerator
 		public void propertyChange(PropertyChangeEvent arg0)
 		{
 			// let our custom method handle it
-			propChange();
+			restart();
 		}
 	};
 
 	/**
-	 * something has changed - rerun the scenario constraint management
-	 * 
-	 * @throws IncompatibleStateException
+	 * how far we've got to through the contributions
 	 * 
 	 */
-	protected void propChange()
+	private int _currentStep = 0;
+
+	protected void processThisStep(BaseContribution theContrib, int stepIndex)
 	{
 		try
 		{
-			// ok, re-run our constraint generation
-			Iterator<BaseContribution> iter = _contribs.iterator();
-			while (iter.hasNext())
-			{
-				BaseContribution bC = (BaseContribution) iter.next();
-				bC.actUpon(_space);
-			}
 
+			theContrib.actUpon(_space);
+
+			// now share the good news
 			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
 			while (iter2.hasNext())
 			{
@@ -94,10 +98,20 @@ public class TrackGenerator
 						.next();
 				boundedStatesListener.statesBounded(_space.states());
 			}
+
+			// and tell any step listeners
+			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+			while (iter3.hasNext())
+			{
+				SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
+						.next();
+				stepper.stepped(stepIndex, _contribs.size());
+			}
+
 		}
 		catch (IncompatibleStateException e)
 		{
-			
+			// ooh dear, suppose we should tell everybody
 			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
 			while (iter2.hasNext())
 			{
@@ -106,9 +120,9 @@ public class TrackGenerator
 				boundedStatesListener.incompatibleStatesIdentified(e);
 			}
 			// TODO handle the incompatible state problem, see ticket 5:
-		  // 	https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
+			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
 		}
-		
+
 	}
 
 	/**
@@ -127,11 +141,12 @@ public class TrackGenerator
 			String thisProp = _interestingProperties[i];
 			contribution.addPropertyChangeListener(thisProp, _contribListener);
 		}
-		
+
 		// ok, and tell the world
-		if(_contributionListeners != null)
+		if (_contributionListeners != null)
 		{
-			final Iterator<ContributionsChangedListener> iter = _contributionListeners.iterator();
+			final Iterator<ContributionsChangedListener> iter = _contributionListeners
+					.iterator();
 			while (iter.hasNext())
 			{
 				final ContributionsChangedListener listener = (ContributionsChangedListener) iter
@@ -157,11 +172,12 @@ public class TrackGenerator
 			String thisProp = _interestingProperties[i];
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
-		
+
 		// ok, and tell the world
-		if(_contributionListeners != null)
+		if (_contributionListeners != null)
 		{
-			final Iterator<ContributionsChangedListener> iter = _contributionListeners.iterator();
+			final Iterator<ContributionsChangedListener> iter = _contributionListeners
+					.iterator();
 			while (iter.hasNext())
 			{
 				final ContributionsChangedListener listener = (ContributionsChangedListener) iter
@@ -175,32 +191,94 @@ public class TrackGenerator
 	{
 		return _contribs.iterator();
 	}
-	
+
+	public void addSteppingListener(SteppingListener newListener)
+	{
+		_steppingListeners.add(newListener);
+	}
+
+	public void removeSteppingStateListener(SteppingListener newListener)
+	{
+		_steppingListeners.remove(newListener);
+	}
+
 	public void addBoundedStateListener(BoundedStatesListener newListener)
 	{
-		if(_boundedListeners == null)
-			_boundedListeners = new ArrayList<BoundedStatesListener>();
-		
 		_boundedListeners.add(newListener);
 	}
-	
+
 	public void removeBoundedStateListener(BoundedStatesListener newListener)
 	{
 		_boundedListeners.remove(newListener);
 	}
-	
+
 	public void addContributionsListener(ContributionsChangedListener newListener)
 	{
-		if(_contributionListeners == null)
-			_contributionListeners = new ArrayList<ContributionsChangedListener>();
-		
 		_contributionListeners.add(newListener);
 	}
-	
-	public void removeContributionsListener(ContributionsChangedListener newListener)
+
+	public void removeContributionsListener(
+			ContributionsChangedListener newListener)
 	{
 		_contributionListeners.remove(newListener);
 	}
 
-	
+	@Override
+	public void step()
+	{
+		if(_currentStep >= _contribs.size())
+			throw new RuntimeException("duh, have to reset before we can step again");
+		
+		// ok, get the next contribution
+		BaseContribution thisC = (BaseContribution) _contribs.toArray()[_currentStep];
+
+		// ok, go for it.
+		processThisStep(thisC, _currentStep);
+
+		// now increment the counter
+		_currentStep++;
+
+		// are we now complete?
+		if (_currentStep == _contribs.size())
+		{
+			// and tell any step listeners
+			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+			while (iter3.hasNext())
+			{
+				SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
+						.next();
+				stepper.complete();
+			}
+		}
+	}
+
+	@Override
+	public void restart()
+	{
+		// clear the states
+		_space.clear();
+
+		// ok, just clear the counter.
+		_currentStep = 0;
+
+		// and tell everybody we've restared
+		Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+		while (iter3.hasNext())
+		{
+			SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
+					.next();
+			stepper.restarted();
+		}
+	}
+
+	@Override
+	public void run()
+	{
+		// ok, keep stepping until we're done
+		while (_currentStep < _contribs.size())
+		{
+			step();
+		}
+	}
+
 }

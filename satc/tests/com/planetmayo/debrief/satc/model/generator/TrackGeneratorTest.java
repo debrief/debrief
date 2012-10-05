@@ -11,35 +11,39 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.generator.SteppingGenerator.SteppingListener;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 public class TrackGeneratorTest extends TestCase
 {
-	static protected IncompatibleStateException _e;
-	static int _ctr = 0;
-	
+	static protected IncompatibleStateException _ise;
+	static int _ctr1 = 0;
+	static int _ctr2 = 0;
+	static int _ctr3 = 0;
+	private RuntimeException _re;
+
 	public void testAddOrder()
 	{
 		TrackGenerator tg = new TrackGenerator();
-		
+
 		// sort out the listener
 		tg.addContributionsListener(new ContributionsChangedListener()
 		{
 			public void removed(BaseContribution contribution)
 			{
-				_ctr--;
+				_ctr1--;
 			}
-			
+
 			@Override
 			public void added(BaseContribution contribution)
 			{
-				_ctr++;
+				_ctr1++;
 			}
 		});
-		
+
 		// check the counter is zeroed
-		assertEquals("counter should be zero", 0, _ctr);
+		assertEquals("counter should be zero", 0, _ctr1);
 
 		tg.addContribution(new SpeedForecastContribution());
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
@@ -47,39 +51,39 @@ public class TrackGeneratorTest extends TestCase
 		tg.addContribution(new LocationForecastContribution());
 
 		// check the counter is zeroed
-		assertEquals("counter should have found some", 3, _ctr);
-		
+		assertEquals("counter should have found some", 3, _ctr1);
+
 		// hmm, but are they in the correct order?
 		Iterator<BaseContribution> iter = tg.contributions();
 		BaseContribution c1 = iter.next();
 		BaseContribution c2 = iter.next();
 		BaseContribution c3 = iter.next();
-		
-		assertEquals("measurement comes first", BearingMeasurementContribution.class, c1.getClass());
-		assertEquals("location comes second", LocationForecastContribution.class, c2.getClass());
-		assertEquals("speed comes third", SpeedForecastContribution.class, c3.getClass());
+
+		assertEquals("measurement comes first",
+				BearingMeasurementContribution.class, c1.getClass());
+		assertEquals("location comes second", LocationForecastContribution.class,
+				c2.getClass());
+		assertEquals("speed comes third", SpeedForecastContribution.class,
+				c3.getClass());
 
 		// ok, now try to remove one
 		tg.removeContribution(bmc);
-		
-		// check the counter is zeroed
-		assertEquals("counter should have heard about removal", 2, _ctr);
-		
-		
 
-		
+		// check the counter is zeroed
+		assertEquals("counter should have heard about removal", 2, _ctr1);
+
 	}
-	
-	public void testListeningA()
+
+	public void testRestartOnContribChange()
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
 		bearingM.loadFrom(new File(BearingMeasurementContributionTest.THE_PATH));
-		
+
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
 		courseF.setMaxCourse(31);
-		
+
 		SpeedForecastContribution speedF = new SpeedForecastContribution();
 		speedF.setMinSpeed(21);
 		speedF.setMaxSpeed(14);
@@ -89,60 +93,197 @@ public class TrackGeneratorTest extends TestCase
 		tg.addContribution(speedF);
 		tg.addContribution(bearingM);
 		tg.addContribution(courseF);
-		
+
 		// reset the change counter;
-		ctr = 0;
-		
+		_ctr1 = 0;
+		_ctr2 = 0;
+		_ctr3 = 0;
+
 		// listen out for track genny changes
+		tg.addSteppingListener(new SteppingListener()
+		{
+
+			@Override
+			public void stepped(int thisStep, int totalSteps)
+			{
+				_ctr2++;
+			}
+
+			@Override
+			public void restarted()
+			{
+				_ctr1++;
+			}
+
+			@Override
+			public void complete()
+			{
+				_ctr3++;
+			}
+		});
+
+		// ok, make some changes
+		courseF.setMinCourse(12);
+
+		// did we even see it?
+		assertEquals("we saw change", 1, _ctr1);
+
+		// chuck in a step
+		tg.step();
+
+		// did we even see it?
+		assertEquals("we saw step", 1, _ctr2);
+
+		// ok, lets get fancy
+		courseF.setMaxCourse(44);
+		courseF.setMinCourse(23);
+
+		// did we even see it?
+		assertEquals("we saw more changes", 3, _ctr1);
+
+		_ctr2 = 0;
+		_ctr3 = 0;
+		_re = null;
+
+		// try and run it
+		tg.restart();
+		tg.run();
+
+		// did we even see it?
+		assertEquals("we saw steps", 3, _ctr2);
+		assertEquals("we saw complete", 1, _ctr3);
+
+		// and a few steps?
+		_ctr2 = 0;
+		_ctr3 = 0;
+		try
+		{
+			tg.step();
+		}
+		catch (RuntimeException re)
+		{
+			_re = re;
+		}
+		
+		assertNotNull("should have thrown error when we step after end", _re);
+
+		tg.restart();
+
+		// chuck in 3 step s
+		tg.step();
+		tg.step();
+		tg.step();
+
+		// did we even see it?
+		assertEquals("we saw steps", 3, _ctr2);
+		assertEquals("we saw complete", 1, _ctr3);
+
+	}
+
+	public void testIncompatibleBounds()
+	{
+		// sort out our contributions
+		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
+		bearingM.loadFrom(new File(BearingMeasurementContributionTest.THE_PATH));
+
+		CourseForecastContribution courseF = new CourseForecastContribution();
+		courseF.setMinCourse(24);
+		courseF.setMaxCourse(31);
+
+		SpeedForecastContribution speedF = new SpeedForecastContribution();
+		speedF.setMinSpeed(21);
+		speedF.setMaxSpeed(14);
+
+		// and the track generator
+		TrackGenerator tg = new TrackGenerator();
+		tg.addContribution(speedF);
+		tg.addContribution(bearingM);
+		tg.addContribution(courseF);
+
+		// reset the change counter;
+		_ctr1 = 0;
+
+		// listen out for track genny changes
+		tg.addSteppingListener(new SteppingListener()
+		{
+
+			@Override
+			public void stepped(int thisStep, int totalSteps)
+			{
+
+			}
+
+			@Override
+			public void restarted()
+			{
+				_ctr1++;
+			}
+
+			@Override
+			public void complete()
+			{
+				// TODO Auto-generated method stub
+			}
+		});
 		tg.addBoundedStateListener(new BoundedStatesListener()
 		{
-			
+
 			@Override
 			public void statesBounded(Iterator<BoundedState> newStates)
 			{
-				ctr++;
+				_ctr1++;
 			}
 
 			@Override
 			public void incompatibleStatesIdentified(IncompatibleStateException e)
 			{
-				_e = e;
+				_ise = e;
 			}
 		});
-			
+
 		// ok, make some changes
 		courseF.setMinCourse(12);
-		
+
+		// hey, chuck in a step
+		tg.run();
+
 		// did we even see it?
-		assertEquals("we saw change",1, ctr);
-		
+		assertEquals("we saw change", 4, _ctr1);
+
 		// ok, lets get fancy
 		courseF.setMaxCourse(44);
 		courseF.setMinCourse(23);
-		
+
+		// hey, chuck in a step
+		tg.step();
+
 		// did we even see it?
-		assertEquals("we saw more changes",3, ctr);
-		
+		assertEquals("we saw more changes", 7, _ctr1);
+
 		// try an incompatible change, see what gets chucked!
-		assertNull("no exception yet", _e);
-		
+		assertNull("no exception yet", _ise);
+
 		// trigger the trouble
 		courseF.setMinCourse(100);
-		
-		assertNotNull("caught an exception", _e);
-		
+
+		// hey, chuck in a step
+		tg.run();
+
+		// hopefully something got triggered.
+		assertNotNull("caught an exception", _ise);
+
 	}
-	
-	static int ctr = 0;
-	
+
 	public void testListeningB()
 	{
-		// TODO: create some contributions, add them to generator, make some changes, check we're listening to the correct events
+		// TODO: create some contributions, add them to generator, make some
+		// changes, check we're listening to the correct events
 	}
-	
+
 	public void testRegeneration()
 	{
-		// TODO: create some contributions, include some constraints, check that contraint restriction is happening
+		// TODO: create some contributions, include some constraints, check that
+		// contraint restriction is happening
 	}
-	
+
 }
