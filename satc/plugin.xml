@@ -16,6 +16,20 @@
             id="com.planetmayo.debrief.satc.views.MaintainContributionsView">
       </view>
    </extension>
+      <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Debrief SATC"
+            id="com.planetmayo.debrief.satc">
+      </category>
+      <view
+            name="Track States"
+            icon="icons/sample.gif"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc.views.TrackStatesView"
+            id="com.planetmayo.debrief.satc.views.TrackStatesView">
+      </view>
+   </extension>
    <extension
          point="org.eclipse.ui.views">
       <category

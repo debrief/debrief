@@ -20,7 +20,7 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.Activator;
+import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -105,7 +105,7 @@ public class MaintainContributionsView extends ViewPart
 	public void init(IViewSite site, IMemento memento) throws PartInitException
 	{
 		super.init(site, memento);
-		vehiclesRepository = Activator.getDefault().getService(
+		vehiclesRepository = SATC_Activator.getDefault().getService(
 				VehicleTypesRepository.class, true);
 	}
 

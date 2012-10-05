@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.planetmayo.debrief.satc.Activator;
+import com.planetmayo.debrief.satc.SATC_Activator;
 
 public class ExpandButton
 {
@@ -31,8 +31,8 @@ public class ExpandButton
 
 	public ExpandButton(Composite parent)
 	{
-		expandImage = Activator.getImageDescriptor(EXPAND_ICON).createImage();
-		collapseImage = Activator.getImageDescriptor(COLLAPSE_ICON).createImage();
+		expandImage = SATC_Activator.getImageDescriptor(EXPAND_ICON).createImage();
+		collapseImage = SATC_Activator.getImageDescriptor(COLLAPSE_ICON).createImage();
 
 		toolBar = new ToolBar(parent, SWT.FLAT);
 		toolItem = new ToolItem(toolBar, SWT.PUSH);
