@@ -8,7 +8,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 
-public class SpeedForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
+public class SpeedForecastContribution extends BaseContribution
 {
 
 	public static final String MIN_SPEED = "minSpeed";
@@ -121,23 +121,34 @@ public class SpeedForecastContribution extends BaseContribution implements BaseC
 
 	public void setEstimate(double estimate)
 	{
-		firePropertyChange(ESTIMATE, _estimate, estimate);
+		double oldEstimate = _estimate;
 		this._estimate = estimate;
+		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
 	public void setMaxSpeed(double maxSpeed)
 	{
-		firePropertyChange(MAX_SPEED, _maxSpeed, maxSpeed);
 		String oldConstraints = getHardConstraints();
+		double oldMaxSpeed = _maxSpeed;
 		this._maxSpeed = maxSpeed;
+		firePropertyChange(MAX_SPEED, oldMaxSpeed, maxSpeed);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	public void setMinSpeed(double minSpeed)
 	{
-		firePropertyChange(MIN_SPEED, _minSpeed, minSpeed);
+		double oldMinSpeed = _minSpeed;
 		String oldConstraints = getHardConstraints();
 		this._minSpeed = minSpeed;
+		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+	
+	
 }

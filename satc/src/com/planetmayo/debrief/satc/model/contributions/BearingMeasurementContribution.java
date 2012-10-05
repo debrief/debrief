@@ -25,8 +25,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
-public class BearingMeasurementContribution extends BaseContribution implements
-		BaseContribution.MeasurementMarker
+public class BearingMeasurementContribution extends BaseContribution
 {
 
 	public static final String BEARING_ERROR = "bearing_error";
@@ -343,5 +342,9 @@ public class BearingMeasurementContribution extends BaseContribution implements
 		return _measurements.size() > 0;
 	}
 
-
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.MEASUREMENT;
+	}
 }

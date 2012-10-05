@@ -12,13 +12,12 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class RangeForecastContribution extends BaseContribution implements
-		BaseContribution.ForecastMarker
+public class RangeForecastContribution extends BaseContribution
 {
 
 	public static final String MIN_RANGE = "minRange";
 
-	public static final String MAX_RANGE = "maxSpeed";
+	public static final String MAX_RANGE = "maxRange";
 
 	@SuppressWarnings("unused")
 	private static double ABSOLUTELY_HUGE_RANGE_M = 500000;
@@ -148,23 +147,34 @@ public class RangeForecastContribution extends BaseContribution implements
 
 	public void setEstimate(double estimate)
 	{
-		firePropertyChange(ESTIMATE, _estimate, estimate);
+		double oldEstimate = _estimate;
 		this._estimate = estimate;
+		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
 	public void setMaxRange(double maxRngDegs)
 	{
-		firePropertyChange(MAX_RANGE, _maxRange, maxRngDegs);
+		double oldMaxRange = _maxRange;
 		String oldConstraints = getHardConstraints();
 		this._maxRange = maxRngDegs;
+		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngDegs);		
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	public void setMinRange(double minRngDegs)
 	{
-		firePropertyChange(MIN_RANGE, _minRange, minRngDegs);
+		double oldMinRange = _minRange;
 		String oldConstraints = getHardConstraints();
 		this._minRange = minRngDegs;
+		firePropertyChange(MIN_RANGE, oldMinRange, minRngDegs);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+	
+	
 }
