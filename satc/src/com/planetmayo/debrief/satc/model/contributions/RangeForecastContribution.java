@@ -62,7 +62,7 @@ public class RangeForecastContribution extends BaseContribution implements
 			{
 
 				// TODO: HOW DO WE GET THE ORIGIN IN?
-				GeoPoint gp = new GeoPoint(12,2);
+				GeoPoint gp = new GeoPoint(3,2);
 				Point pt = gp.asPoint();
 
 				// yes, ok we can centre our donut on that
@@ -152,19 +152,19 @@ public class RangeForecastContribution extends BaseContribution implements
 		this._estimate = estimate;
 	}
 
-	public void setMaxRange(double maxSpeed)
+	public void setMaxRange(double maxRngDegs)
 	{
-		firePropertyChange(MAX_RANGE, _maxRange, maxSpeed);
+		firePropertyChange(MAX_RANGE, _maxRange, maxRngDegs);
 		String oldConstraints = getHardConstraints();
-		this._maxRange = maxSpeed;
+		this._maxRange = maxRngDegs;
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinRange(double minSpeed)
+	public void setMinRange(double minRngDegs)
 	{
-		firePropertyChange(MIN_RANGE, _minRange, minSpeed);
+		firePropertyChange(MIN_RANGE, _minRange, minRngDegs);
 		String oldConstraints = getHardConstraints();
-		this._minRange = minSpeed;
+		this._minRange = minRngDegs;
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 }
