@@ -23,4 +23,14 @@ public class GeoSupport
 		return _factory;
 	}
 
+	public static double m2deg(double metres)
+	{
+		return metres / 111200d;
+	}
+	
+	public static double deg2m(double degs)
+	{
+		return degs * 111200d;
+	}
+	
 }
