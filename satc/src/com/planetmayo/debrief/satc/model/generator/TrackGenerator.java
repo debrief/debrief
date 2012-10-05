@@ -26,6 +26,11 @@ public class TrackGenerator
 	 */
 	private ArrayList<BoundedStatesListener> _boundedListeners;
 	
+	/** people interested in contributions
+	 * 
+	 */
+	private ArrayList<ContributionsChangedListener> _contributionListeners;
+	
 	/**
 	 * the problem space we consider
 	 */
@@ -122,6 +127,18 @@ public class TrackGenerator
 			String thisProp = _interestingProperties[i];
 			contribution.addPropertyChangeListener(thisProp, _contribListener);
 		}
+		
+		// ok, and tell the world
+		if(_contributionListeners != null)
+		{
+			final Iterator<ContributionsChangedListener> iter = _contributionListeners.iterator();
+			while (iter.hasNext())
+			{
+				final ContributionsChangedListener listener = (ContributionsChangedListener) iter
+						.next();
+				listener.added(contribution);
+			}
+		}
 	}
 
 	/**
@@ -139,6 +156,18 @@ public class TrackGenerator
 		{
 			String thisProp = _interestingProperties[i];
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
+		}
+		
+		// ok, and tell the world
+		if(_contributionListeners != null)
+		{
+			final Iterator<ContributionsChangedListener> iter = _contributionListeners.iterator();
+			while (iter.hasNext())
+			{
+				final ContributionsChangedListener listener = (ContributionsChangedListener) iter
+						.next();
+				listener.removed(contribution);
+			}
 		}
 	}
 
@@ -160,5 +189,18 @@ public class TrackGenerator
 		_boundedListeners.remove(newListener);
 	}
 	
+	public void addContributionsListener(ContributionsChangedListener newListener)
+	{
+		if(_contributionListeners == null)
+			_contributionListeners = new ArrayList<ContributionsChangedListener>();
 		
+		_contributionListeners.add(newListener);
+	}
+	
+	public void removeContributionsListener(ContributionsChangedListener newListener)
+	{
+		_contributionListeners.remove(newListener);
+	}
+
+	
 }

@@ -17,13 +17,37 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 public class TrackGeneratorTest extends TestCase
 {
 	static protected IncompatibleStateException _e;
-
+	static int _ctr = 0;
+	
 	public void testAddOrder()
 	{
 		TrackGenerator tg = new TrackGenerator();
+		
+		// sort out the listener
+		tg.addContributionsListener(new ContributionsChangedListener()
+		{
+			public void removed(BaseContribution contribution)
+			{
+				_ctr--;
+			}
+			
+			@Override
+			public void added(BaseContribution contribution)
+			{
+				_ctr++;
+			}
+		});
+		
+		// check the counter is zeroed
+		assertEquals("counter should be zero", 0, _ctr);
+
 		tg.addContribution(new SpeedForecastContribution());
-		tg.addContribution(new BearingMeasurementContribution());
+		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		tg.addContribution(bmc);
 		tg.addContribution(new LocationForecastContribution());
+
+		// check the counter is zeroed
+		assertEquals("counter should have found some", 3, _ctr);
 		
 		// hmm, but are they in the correct order?
 		Iterator<BaseContribution> iter = tg.contributions();
@@ -34,6 +58,16 @@ public class TrackGeneratorTest extends TestCase
 		assertEquals("measurement comes first", BearingMeasurementContribution.class, c1.getClass());
 		assertEquals("location comes second", LocationForecastContribution.class, c2.getClass());
 		assertEquals("speed comes third", SpeedForecastContribution.class, c3.getClass());
+
+		// ok, now try to remove one
+		tg.removeContribution(bmc);
+		
+		// check the counter is zeroed
+		assertEquals("counter should have heard about removal", 2, _ctr);
+		
+		
+
+		
 	}
 	
 	public void testListeningA()
