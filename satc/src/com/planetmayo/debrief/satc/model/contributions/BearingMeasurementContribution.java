@@ -2,9 +2,8 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -108,7 +107,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 	}
 
-	public void loadFrom(File source)
+	public void loadFrom(InputStream fstream)
 	{
 		// load from this source
 		// ;;IGNORE YYMMDD HHMMSS IGNORE IGNORE LAT_DEG LAT_MIN LAT_SEC LAT_HEM
@@ -117,12 +116,9 @@ public class BearingMeasurementContribution extends BaseContribution
 		try
 		{
 
-			// Open the file
-			FileInputStream fstream = new FileInputStream(source);
-
 			// Get the object of DataInputStream
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	//		DataInputStream in = new DataInputStream(fstream);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
 			String strLine;
 
@@ -197,7 +193,7 @@ public class BearingMeasurementContribution extends BaseContribution
 			this.setError(10d);
 
 			// Close the input stream
-			in.close();
+			fstream.close();
 
 		}
 		catch (IOException e)

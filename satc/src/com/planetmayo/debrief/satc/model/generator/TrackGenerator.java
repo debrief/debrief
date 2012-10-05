@@ -90,14 +90,8 @@ public class TrackGenerator implements SteppingGenerator
 
 			theContrib.actUpon(_space);
 
-			// now share the good news
-			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
-			while (iter2.hasNext())
-			{
-				BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
-						.next();
-				boundedStatesListener.statesBounded(_space.states());
-			}
+			// tell everybody the bounded states have changed
+			broadcastBoundedStates();
 
 			// and tell any step listeners
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
@@ -123,6 +117,18 @@ public class TrackGenerator implements SteppingGenerator
 			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
 		}
 
+	}
+
+	private void broadcastBoundedStates()
+	{
+		// now share the good news
+		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		while (iter2.hasNext())
+		{
+			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
+					.next();
+			boundedStatesListener.statesBounded(_space.states());
+		}
 	}
 
 	/**
@@ -269,6 +275,9 @@ public class TrackGenerator implements SteppingGenerator
 					.next();
 			stepper.restarted();
 		}
+		
+		// and tell them about the new bounded states
+		broadcastBoundedStates();
 	}
 
 	@Override

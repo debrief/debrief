@@ -4,11 +4,10 @@ import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 
 public class MockEngine
 {
-	private TrackGenerator _generator;
+	private final TrackGenerator _generator = new TrackGenerator();
 
 	public MockEngine()
 	{
-		
 	}
 	
 	public TrackGenerator getGenerator()

@@ -1,6 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import java.util.Iterator;
+import java.util.Collection;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -16,7 +16,7 @@ public interface BoundedStatesListener
 	 * 
 	 * @param newStates
 	 */
-	public void statesBounded(Iterator<BoundedState> newStates);
+	public void statesBounded(Collection<BoundedState> newStates);
 
 	/** an incompatible set of states have been identified
 	 * 

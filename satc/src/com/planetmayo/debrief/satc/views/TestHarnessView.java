@@ -1,19 +1,21 @@
 package com.planetmayo.debrief.satc.views;
 
-import java.util.Iterator;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -25,15 +27,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.osgi.framework.Bundle;
 
 import com.planetmayo.debrief.satc.SATC_Activator;
-import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
+import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -115,6 +117,7 @@ public class TestHarnessView extends ViewPart
 	private Action _restartAction;
 	private Action _stepAction;
 	private Action _playAction;
+	private Action _populateAction;
 
 	private TrackGenerator _generator;
 
@@ -155,10 +158,16 @@ public class TestHarnessView extends ViewPart
 		// hey, see if there's a track generator to listen to
 		_generator = SATC_Activator.getDefault().getMockEngine().getGenerator();
 
+		if (_generator == null)
+			SATC_Activator.log(Status.ERROR, "Failed to find generator", null);
+		else
+			SATC_Activator.log(Status.INFO, "Found generator:", null);
+
 		// did it work?
 		if (_generator != null)
 		{
 			// ok, we can enable our buttons
+			_populateAction.setEnabled(true);
 			_restartAction.setEnabled(true);
 			_stepAction.setEnabled(true);
 			_playAction.setEnabled(true);
@@ -175,6 +184,7 @@ public class TestHarnessView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_populateAction);
 		manager.add(_restartAction);
 		manager.add(_stepAction);
 		manager.add(_playAction);
@@ -199,6 +209,39 @@ public class TestHarnessView extends ViewPart
 
 	private void makeActions()
 	{
+		_populateAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+				Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
+				URL fileURL = bundle
+						.getEntry(BearingMeasurementContributionTest.THE_PATH);
+				FileInputStream input;
+				try
+				{
+					input = new FileInputStream(new File(FileLocator.resolve(fileURL)
+							.toURI()));
+					bmc.loadFrom(input);
+					_generator.addContribution(bmc);
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				SpeedForecastContribution speed = new SpeedForecastContribution();
+				speed.setMinSpeed(12);
+				speed.setMaxSpeed(43);
+				_generator.addContribution(speed);
+
+			}
+		};
+		_populateAction.setText("Populate");
+		_populateAction.setToolTipText("Action 1 tooltip");
+
 		_restartAction = new Action()
 		{
 			@Override
@@ -209,8 +252,6 @@ public class TestHarnessView extends ViewPart
 		};
 		_restartAction.setText("Restart");
 		_restartAction.setToolTipText("Action 1 tooltip");
-		_restartAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 		_stepAction = new Action()
 		{
@@ -222,8 +263,6 @@ public class TestHarnessView extends ViewPart
 		};
 		_stepAction.setText("Step");
 		_stepAction.setToolTipText("Action 2 tooltip");
-		_stepAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 		_playAction = new Action()
 		{
@@ -235,8 +274,6 @@ public class TestHarnessView extends ViewPart
 		};
 		_playAction.setText("Play");
 		_playAction.setToolTipText("Action 2 tooltip");
-		_playAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 	}
 

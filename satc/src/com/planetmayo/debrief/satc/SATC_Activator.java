@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc;
 
 import java.util.Hashtable;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -38,6 +39,11 @@ public class SATC_Activator extends AbstractUIPlugin
 	{
 	}
 
+	public static void log(int status, String message, Exception e)
+	{
+		getDefault().getLog().log(new Status(status,PLUGIN_ID, message, e));
+	}
+	
 	public MockEngine getMockEngine()
 	{
 		if (_mockEngine == null)

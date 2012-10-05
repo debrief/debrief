@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -66,9 +67,9 @@ public class ProblemSpace
 	 * 
 	 * @return
 	 */
-	public Iterator<BoundedState> states()
+	public Collection<BoundedState> states()
 	{
-		return _boundedStates.iterator();
+		return _boundedStates;
 	}
 
 	public int size()

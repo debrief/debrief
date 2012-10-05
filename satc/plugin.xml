@@ -30,6 +30,20 @@
             id="com.planetmayo.debrief.satc.views.TrackStatesView">
       </view>
    </extension>
+      <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Debrief SATC"
+            id="com.planetmayo.debrief.satc">
+      </category>
+      <view
+            name="Test Harness"
+            icon="icons/sample.gif"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc.views.TestHarnessView"
+            id="com.planetmayo.debrief.satc.views.TestHarnessView">
+      </view>
+   </extension>
    <extension
          point="org.eclipse.ui.views">
       <category

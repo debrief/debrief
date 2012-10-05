@@ -48,7 +48,7 @@ public class SpeedForecastContribution extends BaseContribution
 		boolean needToInjectFinish = true;
 
 		// loop through the states
-		final Iterator<BoundedState> sIter = space.states();
+		final Iterator<BoundedState> sIter = space.states().iterator();
 		while (sIter.hasNext())
 		{
 			// get the next state

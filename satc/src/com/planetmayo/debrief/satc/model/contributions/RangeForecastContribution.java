@@ -50,7 +50,7 @@ public class RangeForecastContribution extends BaseContribution
 	{
 		// ok, we can only act on data that already has an origin. So,
 		// start looping through
-		Iterator<BoundedState> iter = space.states();
+		Iterator<BoundedState> iter = space.states().iterator();
 
 		while (iter.hasNext())
 		{
