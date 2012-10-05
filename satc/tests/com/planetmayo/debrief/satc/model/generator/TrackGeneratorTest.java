@@ -1,6 +1,8 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
@@ -12,8 +14,8 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.SteppingGenerator.SteppingListener;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
 
 public class TrackGeneratorTest extends TestCase
 {
@@ -74,11 +76,11 @@ public class TrackGeneratorTest extends TestCase
 
 	}
 
-	public void testRestartOnContribChange()
+	public void testRestartOnContribChange() throws FileNotFoundException
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new File(BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(new FileInputStream(BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -180,11 +182,11 @@ public class TrackGeneratorTest extends TestCase
 
 	}
 
-	public void testIncompatibleBounds()
+	public void testIncompatibleBounds() throws FileNotFoundException
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new File(BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(new FileInputStream(BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -229,7 +231,7 @@ public class TrackGeneratorTest extends TestCase
 		{
 
 			@Override
-			public void statesBounded(Iterator<BoundedState> newStates)
+			public void statesBounded(Collection<BoundedState> newStates)
 			{
 				_ctr1++;
 			}

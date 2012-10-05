@@ -29,7 +29,7 @@ public class SpeedContributionTest extends TestCase
 
 		// should be two states
 		assertEquals("still have one state", 1, ps.size());
-		final BoundedState theState = ps.states().next();
+		final BoundedState theState = ps.states().iterator().next();
 		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
 		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
 		
@@ -54,7 +54,7 @@ public class SpeedContributionTest extends TestCase
 
 		// should be two states
 		assertEquals("still have two state", 2, ps.size());
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		final BoundedState first = iter.next();
 		final BoundedState second = iter.next();
 		assertEquals("correct limits", 12d, first.getSpeed().getMin());
@@ -82,7 +82,7 @@ public class SpeedContributionTest extends TestCase
 		// should be two states
 		assertEquals("now have two states", 2, ps.size());
 
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
@@ -110,7 +110,7 @@ public class SpeedContributionTest extends TestCase
 		// should be empty
 		assertEquals("just one state", 1, ps.size());
 
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
 		assertEquals("correct limits before new constraints", 15d, first.getSpeed().getMin());
 		assertEquals("correct limits before new constraints", 25d, first.getSpeed().getMax());
@@ -120,7 +120,7 @@ public class SpeedContributionTest extends TestCase
 		// should be three states
 		assertEquals("now have three states", 3, ps.size());
 
-		iter = ps.states();
+		iter = ps.states().iterator();
 		first = iter.next();
 		BoundedState second = iter.next();
 		BoundedState third = iter.next();
@@ -153,7 +153,7 @@ public class SpeedContributionTest extends TestCase
 		// should be two states
 		assertEquals("now have two states", 2, ps.size());
 
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 

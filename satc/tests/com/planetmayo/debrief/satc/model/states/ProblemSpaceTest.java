@@ -24,7 +24,7 @@ public class ProblemSpaceTest extends TestCase
 		ps.add(b2);
 		ps.add(b3);
 		
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		assertEquals("correct order", b3, iter.next());
 		assertEquals("correct order", b1, iter.next());
 		assertEquals("correct order", b2, iter.next());
@@ -43,7 +43,7 @@ public class ProblemSpaceTest extends TestCase
 		ps.add(b2);
 		ps.add(b3);
 		
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		assertEquals("correct order", b3, iter.next());
 		assertEquals("correct order", b1, iter.next());
 		assertEquals("correct order", b2, iter.next());

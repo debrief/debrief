@@ -1,6 +1,8 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -17,7 +19,7 @@ public class BearingMeasurementContributionTest extends TestCase
 	public static final String THE_PATH = "tests/com/planetmayo/debrief/satc/model/contributions/data/bearing_measurement_data.txt";
 
 	@SuppressWarnings("deprecation")
-	public void testNullDateSingleState() throws IncompatibleStateException
+	public void testNullDateSingleState() throws IncompatibleStateException, FileNotFoundException
 	{
 		BearingMeasurementContribution sc = new BearingMeasurementContribution();
 		
@@ -28,7 +30,7 @@ public class BearingMeasurementContributionTest extends TestCase
 		assertTrue("can see datafile",new File(THE_PATH).exists());
 		
 		// ok, load some data		
-		sc.loadFrom(new File(THE_PATH));
+		sc.loadFrom(new FileInputStream(THE_PATH));
 
 		// check it's as we expect it to be
 		assertTrue("should not be empty",sc.hasData() );
@@ -43,7 +45,7 @@ public class BearingMeasurementContributionTest extends TestCase
 		// go for it!
 		sc.actUpon(ps);
 		
-		Iterator<BoundedState> iter = ps.states();
+		Iterator<BoundedState> iter = ps.states().iterator();
 		int ctr = 0;
 		while (iter.hasNext())
 		{
