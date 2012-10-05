@@ -9,39 +9,6 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 public abstract class BaseContribution extends ModelObject implements
 		Comparable<BaseContribution>
 {
-	/**
-	 * marker interface for contributions that represent a forecast
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static interface ForecastMarker
-	{
-
-	}
-
-	/**
-	 * marker interface for contributions that perform data analysis
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static interface AnalysisMarker
-	{
-
-	}
-
-	/**
-	 * marker interface for contributions that represent measured data
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static interface MeasurementMarker
-	{
-
-	}
-
 	public static final String WEIGHT = "weight";
 	public static final String START_DATE = "startDate";
 	public static final String NAME = "name";
@@ -63,6 +30,7 @@ public abstract class BaseContribution extends ModelObject implements
 	 *          the object that we're going to bound
 	 */
 	public abstract void actUpon(ProblemSpace space) throws IncompatibleStateException;
+	public abstract ContributionDataType getDataType();
 
 	public Date getFinishDate()
 	{
@@ -97,65 +65,62 @@ public abstract class BaseContribution extends ModelObject implements
 	}
 
 	public void setActive(boolean active)
-	{
-		firePropertyChange(ACTIVE, _active, active);
+	{		
+		boolean oldActive = _active;
 		this._active = active;
+		firePropertyChange(ACTIVE, oldActive, active);
 	}
 
 	public void setFinishDate(Date finishDate)
-	{
-		firePropertyChange(FINISH_DATE, _finishDate, finishDate);
+	{		
+		Date oldFinishDate = _finishDate;
 		this._finishDate = finishDate;
+		firePropertyChange(FINISH_DATE, oldFinishDate, finishDate);
 	}
 
 	public void setName(String name)
-	{
-		firePropertyChange(NAME, _name, name);
+	{		
+		String oldName = name;
 		_name = name;
+		firePropertyChange(NAME, oldName, name);
 	}
 
 	public void setStartDate(Date startDate)
 	{
-		firePropertyChange(START_DATE, _startDate, startDate);
+		Date oldStartDate = _startDate;
 		this._startDate = startDate;
+		firePropertyChange(START_DATE, oldStartDate, startDate);
 	}
 
 	public void setWeight(int weight)
 	{
-		firePropertyChange(WEIGHT, _weight, weight);
+		int oldWeight = _weight;
 		this._weight = weight;
+		firePropertyChange(WEIGHT, oldWeight, weight);
 	}
 
 	@Override
 	public int compareTo(BaseContribution o)
 	{
 		// ok, what type am I?
-		int myScore = scoreFor(this);
-		int hisScore = scoreFor(o);
-		int res;
-		if(myScore < hisScore)
-			res = -1;
-		else if(myScore > hisScore)
-			res = 1;
-		else
-		{
+		int myScore = getScore();
+		int hisScore = o.getScore();
+		if(myScore == hisScore) {
 			// ha-they must be equal, compare the names
-			res = ("" + this.getClass().toString()).compareTo("" + o.getClass().toString());
+			return this.getClass().toString().compareTo(o.getClass().toString());
 		}
-		
-		return res;
+		return myScore - hisScore;
 	}
 
-	private int scoreFor(BaseContribution o)
+	private int getScore()
 	{
-		int res;
-		if (o instanceof MeasurementMarker)
-			res = 0;
-		else if (o instanceof ForecastMarker)
-			res = 1;
-		else
-			res = 2;
-		return res;
+		switch (getDataType()) {
+			case MEASUREMENT:
+				return 0;
+			case FORECAST:
+				return 1;
+			default:
+				return 2;
+		}
 	}
-
 }

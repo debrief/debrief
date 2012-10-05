@@ -3,8 +3,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoPoint;
 
-public class LocationForecastContribution extends BaseContribution implements
-		BaseContribution.ForecastMarker
+public class LocationForecastContribution extends BaseContribution
 {
 
 	/**
@@ -50,8 +49,9 @@ public class LocationForecastContribution extends BaseContribution implements
 
 	public void setEstimate(GeoPoint estimate)
 	{
-		firePropertyChange("estimate", _estimate, estimate);
+		GeoPoint oldEstimate = _estimate;
 		_estimate = estimate;
+		firePropertyChange("estimate", oldEstimate, estimate);
 	}
 
 	public void setLimit(int limit)
@@ -63,4 +63,10 @@ public class LocationForecastContribution extends BaseContribution implements
 		firePropertyChange("hardConstraints", oldHardConstraints,
 				getHardConstraints());
 	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}	
 }

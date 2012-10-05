@@ -8,7 +8,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public class CourseForecastContribution extends BaseContribution implements BaseContribution.ForecastMarker
+public class CourseForecastContribution extends BaseContribution
 {
 
 	public static final String MIN_COURSE = "minCourse";
@@ -125,23 +125,34 @@ public class CourseForecastContribution extends BaseContribution implements Base
 
 	public void setEstimate(int estimate)
 	{
-		firePropertyChange(ESTIMATE, _estimate, estimate);
+		int oldEstimate = _estimate;
 		this._estimate = estimate;
+		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
 	public void setMaxCourse(int maxCourse)
 	{
-		firePropertyChange(MAX_COURSE, _maxCourse, maxCourse);
+		int oldMaxCourse = _maxCourse;
 		String oldConstraints = getHardConstraints();
 		this._maxCourse = maxCourse;
+		firePropertyChange(MAX_COURSE, oldMaxCourse, maxCourse);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	public void setMinCourse(int minCourse)
 	{
-		firePropertyChange(MIN_COURSE, _minCourse, minCourse);
+		int oldMinCourse = _minCourse;
 		String oldConstraints = getHardConstraints();
 		this._minCourse = minCourse;
+		firePropertyChange(MIN_COURSE, oldMinCourse, minCourse);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+	
+	
 }
