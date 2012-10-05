@@ -2,10 +2,8 @@ package com.planetmayo.debrief.satc.views;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Date;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -34,6 +32,7 @@ import org.osgi.framework.Bundle;
 import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 
@@ -211,9 +210,11 @@ public class TestHarnessView extends ViewPart
 	{
 		_populateAction = new Action()
 		{
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run()
 			{
+				// clear the geneartor first
 				BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 				Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
 				URL fileURL = bundle
@@ -236,7 +237,15 @@ public class TestHarnessView extends ViewPart
 				speed.setMinSpeed(12);
 				speed.setMaxSpeed(43);
 				_generator.addContribution(speed);
-
+				
+				// hey, how about a time-bounded course constraint?
+				CourseForecastContribution course = new CourseForecastContribution();
+				course.setStartDate(new Date("2010/Jan/12 00:14:31"));
+				course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
+				course.setMinCourse(45);
+				course.setMaxCourse(81);
+				_generator.addContribution(course);
+				
 			}
 		};
 		_populateAction.setText("Populate");

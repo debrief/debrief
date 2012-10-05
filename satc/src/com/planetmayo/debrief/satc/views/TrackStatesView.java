@@ -145,7 +145,7 @@ public class TrackStatesView extends ViewPart
 			}
 		};
 
-		_df = new SimpleDateFormat("MMM/dd hh:mm:ss");
+		_df = new SimpleDateFormat("MMM/dd HH:mm:ss");
 
 	}
 

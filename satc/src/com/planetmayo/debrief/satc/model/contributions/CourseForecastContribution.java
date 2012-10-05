@@ -58,9 +58,8 @@ public class CourseForecastContribution extends BaseContribution
 			// get the next state
 			final BoundedState state = sIter.next();
 
-			// apply our bounds
-			state.constrainTo(myR);
-
+			boolean constrainIt = false;
+			
 			// is this one of our end-terms?
 			final Date thisT = state.getTime();
 
@@ -82,6 +81,30 @@ public class CourseForecastContribution extends BaseContribution
 					needToInjectFinish = false;
 				}
 			}
+
+			// ok, special in-range processing
+			if((this.getStartDate() != null)&& (this.getFinishDate() != null))
+			{
+				constrainIt = (thisT.after(this.getStartDate()) && (thisT.before(this.getFinishDate())));
+			}
+			else if((this.getStartDate() != null) && (this.getFinishDate() == null))
+			{
+				constrainIt = thisT.after(this.getStartDate());
+			}
+			else if((this.getStartDate() == null) && (this.getFinishDate() != null))
+			{
+				constrainIt = thisT.before(this.getFinishDate());
+			}
+			else
+			{
+				// no constriants, just constrain it anyway!
+				constrainIt = true;
+			}
+			
+			
+			if(constrainIt)
+				state.constrainTo(myR);
+
 		}
 
 		// ok, did we find our end terms?
