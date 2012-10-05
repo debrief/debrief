@@ -13,14 +13,14 @@ import com.planetmayo.debrief.satc.services.mock.MockVehicleTypesRepository;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin
+public class SATC_Activator extends AbstractUIPlugin
 {
 
 	public static final String PLUGIN_ID = "com.planetmayo.debrief.satc";
 
-	private static Activator plugin;
+	private static SATC_Activator plugin;
 
-	public static Activator getDefault()
+	public static SATC_Activator getDefault()
 	{
 		return plugin;
 	}
@@ -32,8 +32,18 @@ public class Activator extends AbstractUIPlugin
 
 	private BundleContext context;
 
-	public Activator()
+	private MockEngine _mockEngine;
+
+	public SATC_Activator()
 	{
+	}
+
+	public MockEngine getMockEngine()
+	{
+		if (_mockEngine == null)
+			_mockEngine = new MockEngine();
+
+		return _mockEngine;
 	}
 
 	public <T> T getService(Class<T> serviceClass, boolean required)
