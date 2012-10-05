@@ -187,7 +187,7 @@ public class BearingMeasurementContribution extends BaseContribution implements
 
 					Location theLoc = new Location(lat, lon);
 					BMeasurement measure = new BMeasurement(theLoc,
-							Double.valueOf(bearing), theDate, Double.valueOf(range)/1000);
+							Double.valueOf(bearing), theDate, GeoSupport.m2deg(Double.valueOf(range)));
 
 					addThis(measure);
 
