@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.views;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.TreeSet;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -53,7 +54,7 @@ public class TrackStatesView extends ViewPart
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
-		private Collection<BoundedState> _myData;
+		private TreeSet<BoundedState> _myData;
 
 		@Override
 		public void dispose()
@@ -64,8 +65,11 @@ public class TrackStatesView extends ViewPart
 		public Object[] getElements(Object parent)
 		{
 			Object[] res;
-			if (_myData != null)
+			if ((_myData != null) && (!_myData.isEmpty()))
+			{
+				// try getting it as a set
 				res = _myData.toArray();
+			}
 			else
 				res = null;
 			return res;
@@ -75,7 +79,7 @@ public class TrackStatesView extends ViewPart
 		@Override
 		public void inputChanged(Viewer v, Object oldInput, Object newInput)
 		{
-			_myData = (Collection<BoundedState>) newInput;
+			_myData = (TreeSet<BoundedState>) newInput;
 		}
 
 	}
@@ -127,7 +131,10 @@ public class TrackStatesView extends ViewPart
 			@Override
 			public void statesBounded(Collection<BoundedState> newStates)
 			{
-				viewer.setInput(newStates);
+				if ((newStates == null) || (newStates.isEmpty()))
+					viewer.setInput(null);
+				else
+					viewer.setInput(newStates);
 			}
 
 			@Override
@@ -138,7 +145,7 @@ public class TrackStatesView extends ViewPart
 			}
 		};
 
-		_df = new SimpleDateFormat("hh:mm:ss");
+		_df = new SimpleDateFormat("MMM/dd hh:mm:ss");
 
 	}
 
@@ -161,18 +168,30 @@ public class TrackStatesView extends ViewPart
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(null);
+		viewer.getTable().setHeaderVisible(true);
+		viewer.setSorter(new ViewerSorter(){
+
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2)
+			{
+				// TODO Auto-generated method stub
+				BoundedState c1 = (BoundedState) e1;
+				BoundedState c2 = (BoundedState) e2;
+				return c1.compareTo(c2);
+			}});
 
 		// ok, sort out the columns
 		TableViewerColumn col1 = new TableViewerColumn(viewer, SWT.NONE);
 		col1.getColumn().setText("Time");
-		col1.getColumn().setWidth(100);
+		col1.getColumn().setWidth(200);
 		col1.setLabelProvider(new ColumnLabelProvider()
 		{
 			@Override
 			public String getText(Object element)
 			{
 				BoundedState bs = (BoundedState) element;
-				return _df.format(bs.getTime());
+		//		return bs.getTime().toString();
+				 return _df.format(bs.getTime());
 			}
 		});
 
@@ -238,6 +257,8 @@ public class TrackStatesView extends ViewPart
 				return res;
 			}
 		});
+		
+		
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem()
