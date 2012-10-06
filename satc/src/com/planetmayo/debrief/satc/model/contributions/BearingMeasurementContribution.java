@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.Status;
+
+import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -197,14 +200,14 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			SATC_Activator.log(Status.ERROR, "File load problem", e);
 		}
 		catch (ParseException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			SATC_Activator.log(Status.ERROR, "File parse problem", e);
 		}
+		
+		// TODO: set the start/end times = just for tidiness
 	}
 
 	/**
