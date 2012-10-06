@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.generator;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -206,9 +207,9 @@ public class TrackGenerator implements SteppingGenerator
 		}
 	}
 
-	public Iterator<BaseContribution> contributions()
+	public Collection<BaseContribution> contributions()
 	{
-		return _contribs.iterator();
+		return _contribs;
 	}
 
 	public void addSteppingListener(SteppingListener newListener)

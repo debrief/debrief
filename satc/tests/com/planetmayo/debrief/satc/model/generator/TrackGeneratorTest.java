@@ -56,7 +56,7 @@ public class TrackGeneratorTest extends TestCase
 		assertEquals("counter should have found some", 3, _ctr1);
 
 		// hmm, but are they in the correct order?
-		Iterator<BaseContribution> iter = tg.contributions();
+		Iterator<BaseContribution> iter = tg.contributions().iterator();
 		BaseContribution c1 = iter.next();
 		BaseContribution c2 = iter.next();
 		BaseContribution c3 = iter.next();

@@ -283,8 +283,9 @@ public class TestHarnessView extends ViewPart
 	private void loadSampleData(boolean useLong)
 	{
 		// clear the geneartor first
+		_generator.contributions().clear();
 		
-		
+		// now load some data		
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
 		final String thePath;
