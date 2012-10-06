@@ -127,7 +127,7 @@ public class TrackGenerator implements SteppingGenerator
 		{
 			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
 					.next();
-			boundedStatesListener.statesBounded(_space.states());
+			boundedStatesListener.debugStatesBounded(_space.states());
 		}
 	}
 
@@ -254,6 +254,15 @@ public class TrackGenerator implements SteppingGenerator
 				SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
 						.next();
 				stepper.complete();
+			}
+			
+			// tell any listeners that the final bounds have been updated
+			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+			while (iter2.hasNext())
+			{
+				BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
+						.next();
+				boundedStatesListener.statesBounded(_space.states());
 			}
 		}
 	}

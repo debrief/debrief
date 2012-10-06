@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -31,21 +32,12 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 
 /**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
+ * view that monitors the current set of bounded states
+ * 
+ * @author ian
+ * 
  */
-
-public class TrackStatesView extends ViewPart
+public class TrackStatesView extends ViewPart implements BoundedStatesListener
 {
 
 	class NameSorter extends ViewerSorter
@@ -116,38 +108,12 @@ public class TrackStatesView extends ViewPart
 	public static final String ID = "com.planetmayo.debrief.satc.views.TrackStatesView";
 	private TableViewer viewer;
 	private TrackGenerator _generator;
-	private BoundedStatesListener _stateListener;
-	private SimpleDateFormat _df;
-
-	/**
-	 * The constructor.
+	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
+	
+	/** let user indicate whether we wish to display intermediate bounded states
+	 * 
 	 */
-	public TrackStatesView()
-	{
-		// ok, start listening
-		_stateListener = new BoundedStatesListener()
-		{
-
-			@Override
-			public void statesBounded(Collection<BoundedState> newStates)
-			{
-				if ((newStates == null) || (newStates.isEmpty()))
-					viewer.setInput(null);
-				else
-					viewer.setInput(newStates);
-			}
-
-			@Override
-			public void incompatibleStatesIdentified(IncompatibleStateException e)
-			{
-				MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-						"Bounding states", "Incompatible states found");
-			}
-		};
-
-		_df = new SimpleDateFormat("MMM/dd HH:mm:ss");
-
-	}
+	private Action _debugMode;
 
 	private void contributeToActionBars()
 	{
@@ -169,7 +135,8 @@ public class TrackStatesView extends ViewPart
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(null);
 		viewer.getTable().setHeaderVisible(true);
-		viewer.setSorter(new ViewerSorter(){
+		viewer.setSorter(new ViewerSorter()
+		{
 
 			@Override
 			public int compare(Viewer viewer, Object e1, Object e2)
@@ -178,7 +145,8 @@ public class TrackStatesView extends ViewPart
 				BoundedState c1 = (BoundedState) e1;
 				BoundedState c2 = (BoundedState) e2;
 				return c1.compareTo(c2);
-			}});
+			}
+		});
 
 		// ok, sort out the columns
 		TableViewerColumn col1 = new TableViewerColumn(viewer, SWT.NONE);
@@ -190,8 +158,8 @@ public class TrackStatesView extends ViewPart
 			public String getText(Object element)
 			{
 				BoundedState bs = (BoundedState) element;
-		//		return bs.getTime().toString();
-				 return _df.format(bs.getTime());
+				// return bs.getTime().toString();
+				return _df.format(bs.getTime());
 			}
 		});
 
@@ -257,8 +225,9 @@ public class TrackStatesView extends ViewPart
 				return res;
 			}
 		});
-		
-		
+
+		makeActions();
+		contributeToActionBars();
 
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem()
@@ -271,14 +240,25 @@ public class TrackStatesView extends ViewPart
 		// did it work?
 		if (_generator != null)
 		{
-			_generator.addBoundedStateListener(_stateListener);
+			_generator.addBoundedStateListener(this);
 		}
+	}
+
+	private void makeActions()
+	{
+		_debugMode = new Action("Debug Mode", SWT.TOGGLE)
+		{
+		};
+		_debugMode.setText("Debug Mode");
+		_debugMode.setChecked(true);
+		_debugMode
+				.setToolTipText("Track all states (including application of each Contribution)");
 	}
 
 	@Override
 	public void dispose()
 	{
-		_generator.removeBoundedStateListener(_stateListener);
+		_generator.removeBoundedStateListener(this);
 
 		super.dispose();
 	}
@@ -289,6 +269,7 @@ public class TrackStatesView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_debugMode);
 	}
 
 	/**
@@ -298,5 +279,40 @@ public class TrackStatesView extends ViewPart
 	public void setFocus()
 	{
 		viewer.getControl().setFocus();
+	}
+
+	@Override
+	public void statesBounded(Collection<BoundedState> newStates)
+	{
+			if ((newStates == null) || (newStates.isEmpty()))
+				viewer.setInput(null);
+			else
+				viewer.setInput(newStates);
+	}
+
+	@Override
+	public void incompatibleStatesIdentified(IncompatibleStateException e)
+	{
+		// TODO: switch UI to be a composite view, with a label above the table.
+		// the label is normally hidden , and shown when
+		// when we get incompatible states. Show the message in that label, and
+		// disable the table
+
+		MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+				"Bounding states", "Incompatible states found");
+	}
+
+	@Override
+	public void debugStatesBounded(Collection<BoundedState> newStates)
+	{
+		// are we tracking all states?
+		if (_debugMode.isChecked())
+		{
+			// yes - pass on the good news
+			if ((newStates == null) || (newStates.isEmpty()))
+				statesBounded(null);
+			else
+				statesBounded(newStates);
+		}
 	}
 }

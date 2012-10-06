@@ -204,6 +204,8 @@ public class TrackGeneratorTest extends TestCase
 
 		// reset the change counter;
 		_ctr1 = 0;
+		_ctr2 =0;
+		_ctr3 = 0;
 
 		// listen out for track genny changes
 		tg.addSteppingListener(new SteppingListener()
@@ -218,7 +220,7 @@ public class TrackGeneratorTest extends TestCase
 			@Override
 			public void restarted()
 			{
-				_ctr1++;
+				_ctr3++;
 			}
 
 			@Override
@@ -241,16 +243,26 @@ public class TrackGeneratorTest extends TestCase
 			{
 				_ise = e;
 			}
+
+			@Override
+			public void debugStatesBounded(Collection<BoundedState> newStates)
+			{
+				_ctr2++;
+			}
 		});
 
 		// ok, make some changes
 		courseF.setMinCourse(12);
+		
+		assertEquals("restart got fired", 1, _ctr3);
+		
 
 		// hey, chuck in a step
 		tg.run();
 
 		// did we even see it?
-		assertEquals("we saw change", 4, _ctr1);
+		assertEquals("we saw change", 1, _ctr1);
+		assertEquals("we saw debug steps", 4, _ctr2);
 
 		// ok, lets get fancy
 		courseF.setMaxCourse(44);
@@ -260,7 +272,7 @@ public class TrackGeneratorTest extends TestCase
 		tg.step();
 
 		// did we even see it?
-		assertEquals("we saw more changes", 7, _ctr1);
+		assertEquals("we saw more changes", 7, _ctr2);
 
 		// try an incompatible change, see what gets chucked!
 		assertNull("no exception yet", _ise);
