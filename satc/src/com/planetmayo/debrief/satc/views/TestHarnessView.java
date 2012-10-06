@@ -185,9 +185,9 @@ public class TestHarnessView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_restartAction);
 		manager.add(_populateShortAction);
 		manager.add(_populateLongAction);
-		manager.add(_restartAction);
 		manager.add(_stepAction);
 		manager.add(_playAction);
 	}
