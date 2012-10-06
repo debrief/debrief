@@ -91,7 +91,7 @@ public class TrackGenerator implements SteppingGenerator
 			theContrib.actUpon(_space);
 
 			// tell everybody the bounded states have changed
-			broadcastBoundedStates();
+			broadcastBoundedStatesDebug();
 
 			// and tell any step listeners
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
@@ -119,7 +119,7 @@ public class TrackGenerator implements SteppingGenerator
 
 	}
 
-	private void broadcastBoundedStates()
+	private void broadcastBoundedStatesDebug()
 	{
 		// now share the good news
 		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
@@ -128,6 +128,19 @@ public class TrackGenerator implements SteppingGenerator
 			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
 					.next();
 			boundedStatesListener.debugStatesBounded(_space.states());
+		}
+	}
+	
+
+	private void broadcastBoundedStates()
+	{
+		// now share the good news
+		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		while (iter2.hasNext())
+		{
+			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
+					.next();
+			boundedStatesListener.statesBounded(_space.states());
 		}
 	}
 
@@ -257,13 +270,7 @@ public class TrackGenerator implements SteppingGenerator
 			}
 			
 			// tell any listeners that the final bounds have been updated
-			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
-			while (iter2.hasNext())
-			{
-				BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
-						.next();
-				boundedStatesListener.statesBounded(_space.states());
-			}
+			broadcastBoundedStates();
 		}
 	}
 

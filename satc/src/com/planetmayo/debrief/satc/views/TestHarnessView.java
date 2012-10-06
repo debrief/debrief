@@ -210,46 +210,14 @@ public class TestHarnessView extends ViewPart
 	{
 		_populateAction = new Action()
 		{
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run()
 			{
-				// clear the geneartor first
-				BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-				Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
-				URL fileURL = bundle
-						.getEntry(BearingMeasurementContributionTest.THE_PATH);
-				FileInputStream input;
-				try
-				{
-					input = new FileInputStream(new File(FileLocator.resolve(fileURL)
-							.toURI()));
-					bmc.loadFrom(input);
-					_generator.addContribution(bmc);
-				}
-				catch (Exception e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				SpeedForecastContribution speed = new SpeedForecastContribution();
-				speed.setMinSpeed(12);
-				speed.setMaxSpeed(43);
-				_generator.addContribution(speed);
-				
-				// hey, how about a time-bounded course constraint?
-				CourseForecastContribution course = new CourseForecastContribution();
-				course.setStartDate(new Date("2010/Jan/12 00:14:31"));
-				course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
-				course.setMinCourse(45);
-				course.setMaxCourse(81);
-				_generator.addContribution(course);
-				
+				loadSampleData();	
 			}
 		};
 		_populateAction.setText("Populate");
-		_populateAction.setToolTipText("Action 1 tooltip");
+		_populateAction.setToolTipText("Load some sample data");
 
 		_restartAction = new Action()
 		{
@@ -260,7 +228,7 @@ public class TestHarnessView extends ViewPart
 			}
 		};
 		_restartAction.setText("Restart");
-		_restartAction.setToolTipText("Action 1 tooltip");
+		_restartAction.setToolTipText("Reset the track generator");
 
 		_stepAction = new Action()
 		{
@@ -271,18 +239,18 @@ public class TestHarnessView extends ViewPart
 			}
 		};
 		_stepAction.setText("Step");
-		_stepAction.setToolTipText("Action 2 tooltip");
+		_stepAction.setToolTipText("Process the next contribution");
 
 		_playAction = new Action()
 		{
 			@Override
 			public void run()
 			{
-				_generator.step();
+				_generator.run();
 			}
 		};
 		_playAction.setText("Play");
-		_playAction.setToolTipText("Action 2 tooltip");
+		_playAction.setToolTipText("Process all contributions");
 
 	}
 
@@ -293,6 +261,54 @@ public class TestHarnessView extends ViewPart
 	public void setFocus()
 	{
 		viewer.getControl().setFocus();
+	}
+	
+
+	@SuppressWarnings("deprecation")
+	private void loadSampleData()
+	{
+		// clear the geneartor first
+		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
+		URL fileURL = bundle
+				.getEntry(BearingMeasurementContributionTest.THE_PATH);
+		FileInputStream input;
+		try
+		{
+			input = new FileInputStream(new File(FileLocator.resolve(fileURL)
+					.toURI()));
+			bmc.loadFrom(input);
+			_generator.addContribution(bmc);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		SpeedForecastContribution speed = new SpeedForecastContribution();
+		speed.setMinSpeed(12);
+		speed.setMaxSpeed(43);
+		_generator.addContribution(speed);
+		
+		// hey, how about a time-bounded course constraint?
+		CourseForecastContribution course = new CourseForecastContribution();
+		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
+		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
+		course.setMinCourse(45);
+		course.setMaxCourse(81);
+		_generator.addContribution(course);
+		
+		// hey, how about a time-bounded course constraint?
+		SpeedForecastContribution speed2 = new SpeedForecastContribution();
+		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
+		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
+		speed2.setMinSpeed(8);
+		speed2.setMaxSpeed(27);
+		_generator.addContribution(course);
+
+		
+		
 	}
 
 }

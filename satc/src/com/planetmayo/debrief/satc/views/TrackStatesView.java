@@ -232,7 +232,6 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 		// Create the help context id for the viewer's control
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "com.planetmayo.debrief.satc.viewer");
-		contributeToActionBars();
 
 		// hey, see if there's a track generator to listen to
 		_generator = SATC_Activator.getDefault().getMockEngine().getGenerator();
