@@ -192,7 +192,7 @@ public class BearingMeasurementContribution extends BaseContribution
 			}
 			
 			// stick in a duff error measurement
-			this.setError(10d);
+			this.setError(3d);
 
 			// Close the input stream
 			fstream.close();
