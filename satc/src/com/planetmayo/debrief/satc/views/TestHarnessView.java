@@ -116,7 +116,8 @@ public class TestHarnessView extends ViewPart
 	private Action _restartAction;
 	private Action _stepAction;
 	private Action _playAction;
-	private Action _populateAction;
+	private Action _populateShortAction;
+	private Action _populateLongAction;
 
 	private TrackGenerator _generator;
 
@@ -166,7 +167,8 @@ public class TestHarnessView extends ViewPart
 		if (_generator != null)
 		{
 			// ok, we can enable our buttons
-			_populateAction.setEnabled(true);
+			_populateShortAction.setEnabled(true);
+			_populateLongAction.setEnabled(true);
 			_restartAction.setEnabled(true);
 			_stepAction.setEnabled(true);
 			_playAction.setEnabled(true);
@@ -183,7 +185,8 @@ public class TestHarnessView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(_populateAction);
+		manager.add(_populateShortAction);
+		manager.add(_populateLongAction);
 		manager.add(_restartAction);
 		manager.add(_stepAction);
 		manager.add(_playAction);
@@ -208,22 +211,34 @@ public class TestHarnessView extends ViewPart
 
 	private void makeActions()
 	{
-		_populateAction = new Action()
+		_populateShortAction = new Action()
 		{
 			@Override
 			public void run()
 			{
-				loadSampleData();	
+				loadSampleData(false);	
 			}
 		};
-		_populateAction.setText("Populate");
-		_populateAction.setToolTipText("Load some sample data");
+		_populateShortAction.setText("Populate Short");
+		_populateShortAction.setToolTipText("Load some sample data");
+
+		_populateLongAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				loadSampleData(true);	
+			}
+		};
+		_populateLongAction.setText("Populate");
+		_populateLongAction.setToolTipText("Load some sample data");
 
 		_restartAction = new Action()
 		{
 			@Override
 			public void run()
 			{
+				// clear the bounded states
 				_generator.restart();
 			}
 		};
@@ -265,13 +280,21 @@ public class TestHarnessView extends ViewPart
 	
 
 	@SuppressWarnings("deprecation")
-	private void loadSampleData()
+	private void loadSampleData(boolean useLong)
 	{
 		// clear the geneartor first
+		
+		
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
+		final String thePath;
+		if(useLong)
+			thePath= BearingMeasurementContributionTest.THE_PATH;
+		else
+			thePath= BearingMeasurementContributionTest.THE_SHORT_PATH;
+			
 		URL fileURL = bundle
-				.getEntry(BearingMeasurementContributionTest.THE_PATH);
+				.getEntry(thePath);
 		FileInputStream input;
 		try
 		{
