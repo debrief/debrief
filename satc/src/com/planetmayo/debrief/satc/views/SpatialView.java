@@ -131,26 +131,15 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
-		if ((newStates != null) && (newStates.size() > 0))
-		{
-			// hey, we've got data. show it
-			showData(newStates);
-		}
-		else
-		{
-			_myData.removeAllSeries();
-		}
+		if (_debugMode.isChecked())
+			statesBounded(newStates);
 	}
 
 	private void showData(Collection<BoundedState> newStates)
 	{
-		int ctr = 0;
-
 		Iterator<BoundedState> iter = newStates.iterator();
-		while (iter.hasNext() && ctr < 5)
+		while (iter.hasNext())
 		{
-			ctr++;
-
 			BoundedState thisS = (BoundedState) iter.next();
 			// get the poly
 			LocationRange loc = thisS.getLocation();
@@ -158,7 +147,7 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 			{
 				// ok, we've got a new series
 				XYSeries series = new XYSeries(thisS.getTime().toString() + "_"
-						+ _numCycles++);
+						+ _numCycles++, false);
 
 				// get the shape
 				Polygon poly = loc.getPolygon();
@@ -169,11 +158,6 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 					series.add(new XYDataItem(coordinate.y, coordinate.x));
 				}
 				_myData.addSeries(series);
-
-				// hey, put the start point on at the end
-				Coordinate coordinate = boundary[0];
-				series.add(new XYDataItem(coordinate.y, coordinate.x));
-
 			}
 		}
 	}
@@ -181,8 +165,15 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 	@Override
 	public void statesBounded(Collection<BoundedState> newStates)
 	{
-		// TODO Auto-generated method stub
-
+		if ((newStates != null) && (newStates.size() > 0))
+		{
+			// hey, we've got data. show it
+			showData(newStates);
+		}
+		else
+		{
+			_myData.removeAllSeries();
+		}
 	}
 
 	@Override
