@@ -272,12 +272,12 @@ public class BearingMeasurementContribution extends BaseContribution
 			coords[2] = new Coordinate(origin._lon + Math.sin(bearingRads) * range,
 					origin._lat + Math.cos(bearingRads) * range);
 
-			// now the top-left
+			// now the top-right
 			coords[3] = new Coordinate(origin._lon
 					+ Math.sin(bearingRads + errorRads) * range, origin._lat
 					+ Math.cos(bearingRads + errorRads) * range);
 			
-			// and back to the satrt
+			// and back to the start
 			coords[4] = new Coordinate(coords[0]);
 			
 			CoordinateArraySequence seq = new CoordinateArraySequence(coords);
