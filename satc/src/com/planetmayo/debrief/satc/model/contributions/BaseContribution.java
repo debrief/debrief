@@ -123,4 +123,46 @@ public abstract class BaseContribution extends ModelObject implements
 				return 2;
 		}
 	}
+	/** check if this specified time is between our start/finish times, if we have them
+	 * 
+	 * @param thisDate the date we're checking
+	 * @return
+	 */
+	protected boolean checkInDatePeriod(final Date thisDate)
+	{
+		final boolean constrainIt;
+		final Long startT, finishT;
+		final Long thisT = thisDate.getTime();
+		
+		// populate our working values
+		if(this.getStartDate() != null)
+			startT = this.getStartDate().getTime();
+		else
+			startT = null;
+		
+		if(this.getFinishDate() != null)
+			finishT = this.getFinishDate().getTime();
+		else
+			finishT = null;
+		
+		// see which time constraints we have 
+		if ((startT != null) && (finishT != null))
+		{
+			constrainIt = (thisT >= startT) && (thisT <= finishT);
+		}
+		else if ((startT != null) && (finishT == null))
+		{
+			constrainIt = thisT >= startT;
+		}
+		else if ((startT == null) && (finishT != null))
+		{
+			constrainIt = thisT <= finishT;
+		}
+		else
+		{
+			// no constriants, just constrain it anyway!
+			constrainIt = true;
+		}
+		return constrainIt;
+	}
 }
