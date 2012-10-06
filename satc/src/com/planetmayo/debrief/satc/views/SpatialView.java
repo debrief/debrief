@@ -31,6 +31,8 @@ import com.vividsolutions.jts.geom.Polygon;
 public class SpatialView extends ViewPart implements BoundedStatesListener
 {
 
+	private static XYPlot _plot;
+	private static XYLineAndShapeRenderer _renderer;
 	private Action _debugMode;
 	private Action _resizeButton;
 	private XYSeriesCollection _myData;
@@ -110,7 +112,7 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 	private static JFreeChart createChart(XYDataset _myData2)
 	{
 		// tell it to draw joined series
-		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true, false);
+		_renderer = new XYLineAndShapeRenderer(true, false);
 
 		// NumberAxis rangeAx = new NumberAxis("Title on Log");
 		// NumberAxis domainAx = new NumberAxis("Title on Lat");
@@ -121,9 +123,9 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 
 		JFreeChart chart = ChartFactory.createScatterPlot("States", "Lat", "Lon",
 				_myData2, PlotOrientation.HORIZONTAL, false, false, false);
-		XYPlot plot = (XYPlot) chart.getPlot();
-		plot.setNoDataMessage("No data available");
-		plot.setRenderer(renderer);
+		 _plot = (XYPlot) chart.getPlot();
+		_plot.setNoDataMessage("No data available");
+		_plot.setRenderer(_renderer);
 
 		return chart;
 	}
@@ -135,8 +137,24 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 			statesBounded(newStates);
 	}
 
+	private int _oldSeries = 0;
+
 	private void showData(Collection<BoundedState> newStates)
 	{
+		// ditch the old series
+		for (int i = 0; i < _oldSeries; i++)
+		{
+			_myData.removeSeries(i);
+		}
+		
+		// mark the remaining series as lapsed
+//		int len = _myData.getSeriesCount();
+//		for(int i=0;i<len;i++)
+//		{
+//			_renderer.setSeriesStroke(i, new DStroke())
+//		}
+
+		// do we need to demote any shapes?
 		Iterator<BoundedState> iter = newStates.iterator();
 		while (iter.hasNext())
 		{
