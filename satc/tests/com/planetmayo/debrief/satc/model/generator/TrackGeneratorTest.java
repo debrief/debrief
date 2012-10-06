@@ -256,13 +256,14 @@ public class TrackGeneratorTest extends TestCase
 		
 		assertEquals("restart got fired", 1, _ctr3);
 		
-
 		// hey, chuck in a step
 		tg.run();
 
 		// did we even see it?
-		assertEquals("we saw change", 1, _ctr1);
-		assertEquals("we saw debug steps", 4, _ctr2);
+		assertEquals("we saw two states bounded events (one for reset)", 2, _ctr1);
+		assertEquals("we saw debug steps", 3, _ctr2);
+		
+		_ctr1 = _ctr2 =  _ctr3 = 0;
 
 		// ok, lets get fancy
 		courseF.setMaxCourse(44);
@@ -272,10 +273,12 @@ public class TrackGeneratorTest extends TestCase
 		tg.step();
 
 		// did we even see it?
-		assertEquals("we saw more changes", 7, _ctr2);
+		assertEquals("we saw debug step", 1, _ctr2);
 
 		// try an incompatible change, see what gets chucked!
 		assertNull("no exception yet", _ise);
+
+		_ctr1 = _ctr2 =  _ctr3 = 0;
 
 		// trigger the trouble
 		courseF.setMinCourse(100);
@@ -284,6 +287,7 @@ public class TrackGeneratorTest extends TestCase
 		tg.run();
 
 		// hopefully something got triggered.
+		assertEquals("we saw debug steps before incompatible states got thrown", 2, _ctr2);
 		assertNotNull("caught an exception", _ise);
 
 	}
