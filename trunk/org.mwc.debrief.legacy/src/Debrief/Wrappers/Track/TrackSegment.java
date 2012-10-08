@@ -552,9 +552,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			// create the fix
 			Fix newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
 					theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
-
+			
 			FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
+			
+			// and sort out the time lable
+			fw.resetName();
 
 			// only add it if we're still in the time period. We generate one
 			// position

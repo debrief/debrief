@@ -216,7 +216,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	/**
 	 * the layer data
 	 */
-	private Vector<Editable> _theLayers;
+	private final Vector<Editable> _theLayers = new Vector<Editable>(0, 1);
 
 	/**
 	 * the set of callbacks for when data has been modified
@@ -265,8 +265,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
 	 */
 	public Layers()
 	{
-		_theLayers = new Vector<Editable>(0, 1);
-
 		_formatListener = new MyPropListener();
 
 		produceLists();
@@ -917,7 +915,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
 		// and now empty the object itself
 		_theLayers.removeAllElements();
-		_theLayers = null;
 
 		// also tidy up the listeners
 		_dataExtendedListeners.clear();
