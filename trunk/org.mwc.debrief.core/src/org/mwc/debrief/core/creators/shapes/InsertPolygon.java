@@ -54,8 +54,7 @@ public class InsertPolygon extends CoreInsertShape
 				newShape, PlainShape.DEFAULT_COLOR, null);
 
 		// store the new point
-		path2
-				.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
+		newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
 
 		return theWrapper;
 

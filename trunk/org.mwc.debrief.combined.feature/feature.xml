@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="Debrief-specific plugins"
-      version="1.0.228">
+      version="1.0.229">
 
    <description>
       Debrief-specific plugins used by the Debrief Maritime Analysis
@@ -238,13 +238,6 @@ Library.
 
    <plugin
          id="org.mwc.debrief.GNDManager"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.moxy"
          download-size="0"
          install-size="0"
          version="0.0.0"
