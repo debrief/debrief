@@ -31,6 +31,7 @@ import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
@@ -377,6 +378,9 @@ public class TestHarnessView extends CoreView
 		speed2.setMinSpeed(8);
 		speed2.setMaxSpeed(27);
 		getGenerator().addContribution(speed2);
+		
+		LocationAnalysisContribution lac = new LocationAnalysisContribution();
+		getGenerator().addContribution(lac);
 
 	}
 
