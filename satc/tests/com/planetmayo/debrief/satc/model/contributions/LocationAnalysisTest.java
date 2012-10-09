@@ -19,47 +19,50 @@ public class LocationAnalysisTest extends TestCase
 	public void testBoundary() throws IncompatibleStateException
 	{
 		// ok, create the state
-		Date oldDate= new Date(100000);
+		Date oldDate = new Date(100000);
 		Date newDate = new Date(160000);
 		BoundedState bs = new BoundedState(oldDate);
-		
-		
-		Coordinate[] coords = new Coordinate[]{new Coordinate(2,4),
-				new Coordinate(4,5), 
-				new Coordinate(5,2), 
-				new Coordinate(3,1), 
-				new Coordinate(1,2),
-				new Coordinate(2,4)};
-		LinearRing outer = GeoSupport.getFactory().createLinearRing(coords );
+
+		Coordinate[] coords = new Coordinate[]
+		{ new Coordinate(2, 4), new Coordinate(4, 5), new Coordinate(5, 2),
+				new Coordinate(3, 1), new Coordinate(1, 2), new Coordinate(2, 4) };
+		LinearRing outer = GeoSupport.getFactory().createLinearRing(coords);
 		Polygon area = GeoSupport.getFactory().createPolygon(outer, null);
 		// and the location
-		LocationRange lr = new LocationRange(area );
+		LocationRange lr = new LocationRange(area);
 		bs.constrainTo(lr);
 
 		// get ready to analyse
 		LocationAnalysisContribution lac = new LocationAnalysisContribution();
 
 		// give it a course
-		CourseRange cRange = new CourseRange(20,60);
+		CourseRange cRange = new CourseRange(20, 60);
 		bs.constrainTo(cRange);
-		
+
 		// and a speed
 		SpeedRange sRange = new SpeedRange(2, 12);
 		bs.constrainTo(sRange);
-		
+
 		// try the speed
-		LinearRing speedRegion = lac.getSpeedRing(sRange, newDate.getTime() - oldDate.getTime());
-//		assertNotNull("course not generated", speedRegion);
+		Polygon speedRegion = lac.getSpeedRing(sRange,
+				newDate.getTime() - oldDate.getTime());
+		assertNotNull("course not generated", speedRegion);
+//		GeoSupport.writeGeometry("Speed", speedRegion);
+
+		// ok, try the course
+		double maxRange = lac.getMaxRange(sRange,newDate.getTime() - oldDate.getTime() );
 		
-		// ok, try the off with the course
-		LinearRing courseRegion = lac.getCourseRing(cRange);
-//		assertNotNull("course not generated", courseRegion);
-		
-		
+		LinearRing courseRegion = lac.getCourseRing(cRange, maxRange);
+		assertNotNull("course not generated", courseRegion);
+		assertEquals("correct num of coords for arc", 4, courseRegion.getNumPoints());
+
 		//
 		LocationRange newB = lac.getRangeFor(bs, newDate);
+
+		GeoSupport.writeGeometry("Bounded location", newB.getPolygon());
+
 		
 		// did it work?
-	//	assertNotNull("Should have created location", newB);
+		assertNotNull("Should have created location", newB);
 	}
 }
