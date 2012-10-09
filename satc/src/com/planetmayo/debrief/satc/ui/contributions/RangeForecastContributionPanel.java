@@ -102,6 +102,6 @@ public class RangeForecastContributionPanel extends AnalystContributionPanel
 				"Range Forecast - ");
 		
 		// give a monster max range
-		maxSlider.setMaximum(10000);
+		maxSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 	}
 }
