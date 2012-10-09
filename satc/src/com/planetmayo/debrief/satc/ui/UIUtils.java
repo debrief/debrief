@@ -15,6 +15,9 @@ public class UIUtils
 
 	public static UpdateValueStrategy converterStrategy(IConverter converter)
 	{
+		if (converter == null) {
+			return null;
+		}
 		UpdateValueStrategy strategy = new UpdateValueStrategy();
 		strategy.setConverter(converter);
 		return strategy;

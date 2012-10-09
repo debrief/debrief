@@ -1,10 +1,11 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.util.GeoPoint;
 
 public class LocationForecastContribution extends BaseContribution
 {
+	public static final String LIMIT = "limit";
 
 	/**
 	 * create a sample, for testing
@@ -51,7 +52,7 @@ public class LocationForecastContribution extends BaseContribution
 	{
 		GeoPoint oldEstimate = _estimate;
 		_estimate = estimate;
-		firePropertyChange("estimate", oldEstimate, estimate);
+		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
 	public void setLimit(int limit)
@@ -59,8 +60,8 @@ public class LocationForecastContribution extends BaseContribution
 		String oldHardConstraints = getHardConstraints();
 		int oldLimit = _limit;
 		_limit = limit;
-		firePropertyChange("limit", oldLimit, limit);
-		firePropertyChange("hardConstraints", oldHardConstraints,
+		firePropertyChange(LIMIT, oldLimit, limit);
+		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints,
 				getHardConstraints());
 	}
 
