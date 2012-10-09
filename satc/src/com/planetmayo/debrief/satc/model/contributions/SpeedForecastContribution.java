@@ -115,7 +115,7 @@ public class SpeedForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minSpeed) + " - " + ((int) _maxSpeed);
+		return "" + ((int) GeoSupport.MSec2kts(_minSpeed)) + " - " + ((int) GeoSupport.MSec2kts(_maxSpeed));
 	}
 
 	public double getMaxSpeed()
