@@ -40,7 +40,7 @@ public class LocationAnalysisTest extends TestCase
 		bs.constrainTo(cRange);
 
 		// and a speed
-		SpeedRange sRange = new SpeedRange(2, 12);
+		SpeedRange sRange = new SpeedRange(6, 12);
 		bs.constrainTo(sRange);
 
 		// try the speed
@@ -50,19 +50,19 @@ public class LocationAnalysisTest extends TestCase
 //		GeoSupport.writeGeometry("Speed", speedRegion);
 
 		// ok, try the course
-		double maxRange = lac.getMaxRange(sRange,newDate.getTime() - oldDate.getTime() );
+		double maxRange = lac.getMaxRangeDegs(sRange,newDate.getTime() - oldDate.getTime() );
 		
 		LinearRing courseRegion = lac.getCourseRing(cRange, maxRange);
 		assertNotNull("course not generated", courseRegion);
-		assertEquals("correct num of coords for arc", 4, courseRegion.getNumPoints());
+		assertEquals("correct num of coords for arc", 5, courseRegion.getNumPoints());
+//	GeoSupport.writeGeometry("course region", courseRegion);
 
 		//
 		LocationRange newB = lac.getRangeFor(bs, newDate);
-
-		GeoSupport.writeGeometry("Bounded location", newB.getPolygon());
+		GeoSupport.writeGeometry("course region", newB.getPolygon());
 
 		
 		// did it work?
-		assertNotNull("Should have created location", newB);
+	//	assertNotNull("Should have created location", newB);
 	}
 }

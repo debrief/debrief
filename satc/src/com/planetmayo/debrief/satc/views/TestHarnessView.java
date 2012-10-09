@@ -31,9 +31,12 @@ import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -119,6 +122,7 @@ public class TestHarnessView extends CoreView
 	private Action _populateShortAction;
 	private Action _populateLongAction;
 	private Action _liveAction;
+	private Action _testOne;
 
 	/**
 	 * The constructor.
@@ -181,6 +185,7 @@ public class TestHarnessView extends CoreView
 		manager.add(_stepAction);
 		manager.add(_playAction);
 		manager.add(_liveAction);
+		manager.add(_testOne);
 	}
 
 	private void hookContextMenu()
@@ -236,6 +241,27 @@ public class TestHarnessView extends CoreView
 		_clearAction.setText("Clear");
 		_clearAction.setToolTipText("Clear the track generator contributions");
 
+		_testOne = new Action()
+		{
+			@Override
+			public void run()
+			{
+				// clear the bounded states
+				LocationAnalysisTest lat = new LocationAnalysisTest();
+				try
+				{
+					GeoSupport.clearOutput();
+					lat.testBoundary();
+				}
+				catch (IncompatibleStateException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		_testOne.setText("1");
+		
 		_liveAction = new Action("Live", SWT.TOGGLE)
 		{
 
