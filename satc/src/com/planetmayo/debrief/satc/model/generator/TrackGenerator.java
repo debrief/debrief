@@ -75,6 +75,10 @@ public class TrackGenerator implements SteppingGenerator
 		{
 			// let our custom method handle it
 			restart();
+			
+			// aah, but are we auto-running?
+			if(_liveRunning)
+				run();
 		}
 	};
 
@@ -83,6 +87,11 @@ public class TrackGenerator implements SteppingGenerator
 	 * 
 	 */
 	private int _currentStep = 0;
+
+	/** whether we auto=run after each contribution chagne
+	 * 
+	 */
+	private boolean _liveRunning;
 
 	protected void processThisStep(BaseContribution theContrib, int stepIndex)
 	{
@@ -326,6 +335,15 @@ public class TrackGenerator implements SteppingGenerator
 			BaseContribution contrib = safeList[i];
 			this.removeContribution(contrib);
 		}
+	}
+
+	/** specify whether we should do a 'run' after each contribution change
+	 * 
+	 * @param checked
+	 */
+	public void setLiveRunning(boolean checked)
+	{
+		_liveRunning = checked;
 	}
 
 }

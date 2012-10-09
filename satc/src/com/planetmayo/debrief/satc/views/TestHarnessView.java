@@ -117,6 +117,7 @@ public class TestHarnessView extends CoreView
 	private Action _playAction;
 	private Action _populateShortAction;
 	private Action _populateLongAction;
+	private Action _liveAction;
 
 	/**
 	 * The constructor.
@@ -178,6 +179,7 @@ public class TestHarnessView extends CoreView
 		manager.add(_populateLongAction);
 		manager.add(_stepAction);
 		manager.add(_playAction);
+		manager.add(_liveAction);
 	}
 
 	private void hookContextMenu()
@@ -232,6 +234,17 @@ public class TestHarnessView extends CoreView
 		};
 		_clearAction.setText("Clear");
 		_clearAction.setToolTipText("Clear the track generator contributions");
+
+		_liveAction = new Action("Live", SWT.TOGGLE)
+		{
+
+			@Override
+			public void run()
+			{
+				getGenerator().setLiveRunning(_liveAction.isChecked());
+			}
+		};
+		_liveAction.setChecked(false);
 
 		_restartAction = new Action()
 		{

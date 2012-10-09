@@ -288,8 +288,6 @@ public class MockMaintainContributionsView extends ViewPart implements
 			panel = new LocationContributionPanel(_contList, contribution);
 		else if (contribution instanceof SpeedForecastContribution)
 			panel = new SpeedContributionPanel(_contList, contribution);
-
-		System.out.println("created:" + panel + " from:" + contribution);
 		
 		// did we fail to find a panel?
 		if (panel == null)

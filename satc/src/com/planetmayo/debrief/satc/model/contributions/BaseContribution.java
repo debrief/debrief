@@ -36,6 +36,12 @@ public abstract class BaseContribution extends ModelObject implements
 	{
 		return _finishDate;
 	}
+	
+	protected BaseContribution()
+	{
+		// give a default name
+		setName("auto_id:" + new Date().getTime());
+	}
 
 	/**
 	 * provide a formatted string representing the hard constraints
@@ -107,7 +113,7 @@ public abstract class BaseContribution extends ModelObject implements
 		int hisScore = o.getScore();
 		if(myScore == hisScore) {
 			// ha-they must be equal, compare the names
-			return this.getClass().toString().compareTo(o.getClass().toString());
+			return this.getName().compareTo(o.getName());
 		}
 		return myScore - hisScore;
 	}
