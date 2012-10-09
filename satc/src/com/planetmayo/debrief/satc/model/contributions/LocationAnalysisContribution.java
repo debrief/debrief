@@ -58,32 +58,41 @@ public class LocationAnalysisContribution extends BaseContribution
 
 	public LinearRing getCourseRing(CourseRange course, double maxRng)
 	{
-		// double the max range = to be sure we cover the possible curved arc
+		LinearRing res = null;
 
-		// ok, produce the arcs
-		Coordinate[] coords = new Coordinate[5];
+		if (course != null)
+		{
+			// double the max range = to be sure we cover the possible curved arc
 
-		double minC = Angle.toRadians(course.getMin());
-		double maxC = Angle.toRadians(course.getMax());
-		double centreC = minC + (maxC - minC) / 2d;
+			// ok, produce the arcs
+			Coordinate[] coords = new Coordinate[5];
 
-		// start with the origin
-		coords[0] = new Coordinate(0, 0);
+			double minC = Angle.toRadians(course.getMin());
+			double maxC = Angle.toRadians(course.getMax());
+			double centreC = minC + (maxC - minC) / 2d;
 
-		// now the start course
-		coords[1] = new Coordinate(Math.sin(minC) * maxRng, Math.cos(minC) * maxRng);
+			// start with the origin
+			coords[0] = new Coordinate(0, 0);
 
-		// give us a centre course
-		coords[2] = new Coordinate(Math.sin(centreC) * (maxRng * 1.4),
-				Math.cos(centreC) * (maxRng * 1.4));
+			// now the start course
+			coords[1] = new Coordinate(Math.sin(minC) * maxRng, Math.cos(minC)
+					* maxRng);
 
-		// now the end course
-		coords[3] = new Coordinate(Math.sin(maxC) * maxRng, Math.cos(maxC) * maxRng);
+			// give us a centre course
+			coords[2] = new Coordinate(Math.sin(centreC) * (maxRng * 1.4),
+					Math.cos(centreC) * (maxRng * 1.4));
 
-		// back to the orgin
-		coords[4] = new Coordinate(0, 0);
+			// now the end course
+			coords[3] = new Coordinate(Math.sin(maxC) * maxRng, Math.cos(maxC)
+					* maxRng);
 
-		return GeoSupport.getFactory().createLinearRing(coords);
+			// back to the orgin
+			coords[4] = new Coordinate(0, 0);
+
+			res = GeoSupport.getFactory().createLinearRing(coords);
+		}
+
+		return res;
 	}
 
 	public LocationRange getRangeFor(BoundedState state, Date newDate)
@@ -95,35 +104,27 @@ public class LocationAnalysisContribution extends BaseContribution
 
 		// ok, generate the achievable bounds for the state
 		CourseRange course = state.getCourse();
-		LinearRing courseR = getCourseRing(course,
-				getMaxRangeDegs(state.getSpeed(), diff));
-
-		Polygon speedR = getSpeedRing(state.getSpeed(), diff);
-
-		GeoSupport.writeGeometry("course geometry", courseR);
-	//	GeoSupport.writeGeometry("speed geometry", speedR);
+		double maxRange = getMaxRangeDegs(state.getSpeed(), diff);
+		LinearRing courseR = getCourseRing(course, maxRange);
+		Polygon speedP = getSpeedRing(state.getSpeed(), diff);
 
 		// now combine the two
 		final LineString achievable;
-		if (speedR != null)
+		if (speedP != null)
 		{
 			if (courseR != null)
 			{
 				// ok, first we do the overlaps one at a time
-				LinearRing outer = (LinearRing) speedR.getExteriorRing();
-				GeoSupport.writeGeometry("outer", outer);
-				Geometry nextR = outer.intersection(courseR);
-				GeoSupport.writeGeometry("constrained outer", nextR);
-				
-				// TODO: nextR is just two points, I'm sure it should be a region
-				
-				Geometry multiL = courseR.intersection(speedR);
-		//		GeoSupport.writeGeometry("intersected speed", multiL);
-				achievable = (LineString) speedR.getGeometryN(0);
+				Polygon courseP = GeoSupport.getFactory().createPolygon(courseR, null);
+				Geometry trimmed = courseP.intersection(speedP);
+				// GeoSupport.writeGeometry("trimmed", trimmed);
+
+				achievable = (LineString) trimmed.getBoundary();
 			}
 			else
 			{
-				achievable = (LineString) speedR.clone();
+				// TODO: speedP is actually two circles = we probably need to process both circles
+				achievable = (LineString) speedP.getExteriorRing().clone();
 			}
 		}
 		else
@@ -138,14 +139,16 @@ public class LocationAnalysisContribution extends BaseContribution
 				achievable = null;
 			}
 		}
-		
-		GeoSupport.writeGeometry("Achievable", achievable);
+
+		// GeoSupport.writeGeometry("Achievable", achievable);
 
 		// did we construct a bounds?
 		if (achievable != null)
 		{
 			// ok, apply this to the pioints of the bounded state
 			LocationRange loc = state.getLocation();
+
+			// GeoSupport.writeGeometry("existing boundary", loc.getPolygon());
 
 			if (loc != null)
 			{
@@ -154,7 +157,7 @@ public class LocationAnalysisContribution extends BaseContribution
 				LinearRing ext = GeoSupport.getFactory().createLinearRing(
 						ls.getCoordinates());
 				Coordinate[] pts = ext.getCoordinates();
-				Coordinate[] newPts = new Coordinate[pts.length];
+				// Coordinate[] newPts = new Coordinate[pts.length];
 
 				for (int i = 0; i < pts.length; i++)
 				{
@@ -169,17 +172,31 @@ public class LocationAnalysisContribution extends BaseContribution
 					// actually do the move
 					Geometry translated = trans.transform(achievable);
 
+					// GeoSupport.writeGeometry("shape:" + i, translated);
+
+					if (res == null)
+					{
+						res = (LinearRing) translated;
+					}
+					else
+					{
+						// now we need to combine the two geometries
+						Geometry geom = res.union(translated);
+						Geometry geom2 = geom.convexHull();
+						res = (LinearRing) geom2.getBoundary();
+					}
+
 					// store the value
-					newPts[i] = translated.getCoordinate();
+					// newPts[i] = translated.getCoordinate();
 				}
 
 				// ok, create a shape from the new points
-				LinearRing after = GeoSupport.getFactory().createLinearRing(newPts);
+				// LinearRing after = GeoSupport.getFactory().createLinearRing(newPts);
 				// LinearRing after =
 				// GeoSupport.getFactory().createLinearRing(translated.getCoordinates());
 
 				// extend our bounds with this new geometry
-				res = (LinearRing) after;
+				// res = (LinearRing) after;
 			}
 		}
 
@@ -188,6 +205,7 @@ public class LocationAnalysisContribution extends BaseContribution
 		if (res != null)
 		{
 			Polygon tmpPoly = GeoSupport.getFactory().createPolygon(res, null);
+
 			answer = new LocationRange(tmpPoly);
 		}
 		else
