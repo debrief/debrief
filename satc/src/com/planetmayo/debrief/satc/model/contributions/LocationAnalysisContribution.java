@@ -100,15 +100,26 @@ public class LocationAnalysisContribution extends BaseContribution
 
 		Polygon speedR = getSpeedRing(state.getSpeed(), diff);
 
+		GeoSupport.writeGeometry("course geometry", courseR);
+	//	GeoSupport.writeGeometry("speed geometry", speedR);
+
 		// now combine the two
 		final LineString achievable;
 		if (speedR != null)
 		{
 			if (courseR != null)
 			{
-				Geometry multiL = speedR.intersection(courseR);
-				assert multiL.getNumGeometries() == 1;
-				achievable = (LineString) multiL.getGeometryN(0);
+				// ok, first we do the overlaps one at a time
+				LinearRing outer = (LinearRing) speedR.getExteriorRing();
+				GeoSupport.writeGeometry("outer", outer);
+				Geometry nextR = outer.intersection(courseR);
+				GeoSupport.writeGeometry("constrained outer", nextR);
+				
+				
+				
+				Geometry multiL = courseR.intersection(speedR);
+		//		GeoSupport.writeGeometry("intersected speed", multiL);
+				achievable = (LineString) speedR.getGeometryN(0);
 			}
 			else
 			{
@@ -127,6 +138,8 @@ public class LocationAnalysisContribution extends BaseContribution
 				achievable = null;
 			}
 		}
+		
+		GeoSupport.writeGeometry("Achievable", achievable);
 
 		// did we construct a bounds?
 		if (achievable != null)
@@ -141,7 +154,6 @@ public class LocationAnalysisContribution extends BaseContribution
 				LinearRing ext = GeoSupport.getFactory().createLinearRing(
 						ls.getCoordinates());
 				Coordinate[] pts = ext.getCoordinates();
-
 				Coordinate[] newPts = new Coordinate[pts.length];
 
 				for (int i = 0; i < pts.length; i++)
@@ -159,7 +171,6 @@ public class LocationAnalysisContribution extends BaseContribution
 
 					// store the value
 					newPts[i] = translated.getCoordinate();
-
 				}
 
 				// ok, create a shape from the new points
