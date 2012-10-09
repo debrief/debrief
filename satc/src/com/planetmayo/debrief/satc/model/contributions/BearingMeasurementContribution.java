@@ -19,6 +19,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.util.GeoPoint;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -29,7 +30,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 public class BearingMeasurementContribution extends BaseContribution
 {
 
-	public static final String BEARING_ERROR = "bearing_error";
+	public static final String BEARING_ERROR = "bearingError";
 
 	/**
 	 * the allowable bearing error (in degrees)
@@ -73,7 +74,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	private static class BMeasurement
 	{
-		private final Location _origin;
+		private final GeoPoint _origin;
 		private final double _bearingDegs;
 		private final Date _time;
 		/**
@@ -82,30 +83,12 @@ public class BearingMeasurementContribution extends BaseContribution
 		 */
 		private final Double _theRange;
 
-		public BMeasurement(Location loc, double bearing, Date time, Double theRange)
+		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
 			_origin = loc;
 			_bearingDegs = bearing;
 			_time = time;
 			_theRange = theRange;
-		}
-	}
-
-	/**
-	 * utility class for storing a 2-d location
-	 * 
-	 * @author ian
-	 * 
-	 */
-	private static class Location
-	{
-		private final double _lat;
-		private final double _lon;
-
-		public Location(double lat, double lon)
-		{
-			_lat = lat;
-			_lon = lon;
 		}
 	}
 
@@ -119,7 +102,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		{
 
 			// Get the object of DataInputStream
-	//		DataInputStream in = new DataInputStream(fstream);
+			// DataInputStream in = new DataInputStream(fstream);
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
 			String strLine;
@@ -182,17 +165,18 @@ public class BearingMeasurementContribution extends BaseContribution
 					if (lonHemi.toUpperCase().equals("S"))
 						lon = -lon;
 
-					Location theLoc = new Location(lat, lon);
+					GeoPoint theLoc = new GeoPoint(lat, lon);
 					BMeasurement measure = new BMeasurement(theLoc,
-							Double.valueOf(bearing), theDate, GeoSupport.m2deg(Double.valueOf(range)));
+							Double.valueOf(bearing), theDate, GeoSupport.m2deg(Double
+									.valueOf(range)));
 
 					addThis(measure);
 
 				}
 			}
-			
+
 			// stick in a duff error measurement
-			this.setError(3d);
+			this.setBearingError(3d);
 
 			// Close the input stream
 			fstream.close();
@@ -206,7 +190,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		{
 			SATC_Activator.log(Status.ERROR, "File parse problem", e);
 		}
-		
+
 		// TODO: set the start/end times = just for tidiness
 	}
 
@@ -252,7 +236,7 @@ public class BearingMeasurementContribution extends BaseContribution
 			BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
 					.next();
 			// ok, create the polygon for this measurement
-			Location origin = measurement._origin;
+			GeoPoint origin = measurement._origin;
 			double bearing = measurement._bearingDegs;
 			double bearingRads = bearing / 180 * Math.PI;
 			double range = measurement._theRange;
@@ -261,25 +245,28 @@ public class BearingMeasurementContribution extends BaseContribution
 			Coordinate[] coords = new Coordinate[5];
 
 			// start off with the origin
-			coords[0] = new Coordinate(origin._lon, origin._lat);
+			final double lon = origin.getLon();
+			final double lat = origin.getLat();
+			
+			coords[0] = new Coordinate(lon, lat);
 
 			// now the top-left
-			coords[1] = new Coordinate(origin._lon
-					+ Math.sin(bearingRads - errorRads) * range, origin._lat
+			coords[1] = new Coordinate(lon
+					+ Math.sin(bearingRads - errorRads) * range, lat
 					+ Math.cos(bearingRads - errorRads) * range);
 
 			// now the centre bearing
-			coords[2] = new Coordinate(origin._lon + Math.sin(bearingRads) * range,
-					origin._lat + Math.cos(bearingRads) * range);
+			coords[2] = new Coordinate(lon + Math.sin(bearingRads) * range,
+					lat + Math.cos(bearingRads) * range);
 
 			// now the top-right
-			coords[3] = new Coordinate(origin._lon
-					+ Math.sin(bearingRads + errorRads) * range, origin._lat
+			coords[3] = new Coordinate(lon
+					+ Math.sin(bearingRads + errorRads) * range,lat
 					+ Math.cos(bearingRads + errorRads) * range);
-			
+
 			// and back to the start
 			coords[4] = new Coordinate(coords[0]);
-			
+
 			CoordinateArraySequence seq = new CoordinateArraySequence(coords);
 
 			// and construct the bounded location object
@@ -308,7 +295,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		return "" + _measurements.size() + " measurements ";
 	}
 
-	public double getError()
+	public double getBearingError()
 	{
 		return _degError;
 	}
@@ -317,12 +304,12 @@ public class BearingMeasurementContribution extends BaseContribution
 			double range)
 	{
 		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
-		Location loc = new Location(lat, lon);
+		GeoPoint loc = new GeoPoint(lat, lon);
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
 		addThis(measure);
 	}
 
-	public void setError(double errorDegs)
+	public void setBearingError(double errorDegs)
 	{
 		firePropertyChange(BEARING_ERROR, errorDegs, errorDegs);
 		String oldConstraints = getHardConstraints();

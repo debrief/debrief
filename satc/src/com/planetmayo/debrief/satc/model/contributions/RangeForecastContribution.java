@@ -1,8 +1,20 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.Status;
+
+import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -21,6 +33,24 @@ public class RangeForecastContribution extends BaseContribution
 
 	@SuppressWarnings("unused")
 	private static double ABSOLUTELY_HUGE_RANGE_M = 500000;
+
+	/**
+	 * utility class for storing a measurement
+	 * 
+	 * @author ian
+	 * 
+	 */
+	private static class ROrigin
+	{
+		private final GeoPoint _origin;
+		private final Date _time;
+
+		public ROrigin(GeoPoint loc, Date time)
+		{
+			_origin = loc;
+			_time = time;
+		}
+	}
 
 	/**
 	 * utility method to create one of these contributions
@@ -44,45 +74,178 @@ public class RangeForecastContribution extends BaseContribution
 
 	protected double _estimate;
 
+	/**
+	 * the set of measurements we store
+	 * 
+	 */
+	private ArrayList<ROrigin> _measurements = new ArrayList<ROrigin>();
+
+	public void loadFrom(InputStream fstream)
+	{
+		// load from this source
+		// ;;IGNORE YYMMDD HHMMSS IGNORE IGNORE LAT_DEG LAT_MIN LAT_SEC LAT_HEM
+		// LONG_DEG LONG_MIN LONG_SEC LONG_HEM BEARING MAX_RNG
+		// ;SENSOR: 100112 121329 SENSOR @A 0 3 57.38 S 30 0 8.65 W 1.5 15000
+		try
+		{
+
+			// Get the object of DataInputStream
+			// DataInputStream in = new DataInputStream(fstream);
+			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+			String strLine;
+
+			// Read File Line By Line
+			while ((strLine = br.readLine()) != null)
+			{
+				// hey, is this a comment line?
+				if (strLine.startsWith(";;"))
+				{
+					// just ignore it
+				}
+				else
+				{
+					// ok, get parseing it
+					StringTokenizer st = new StringTokenizer(strLine, " \t");
+
+					// skip the read of the header
+					st.nextToken();
+
+					// now the date
+					String date = st.nextToken();
+
+					// and the time
+					String time = st.nextToken();
+
+					// ignore the next
+					st.nextElement();
+
+					// and the next
+					st.nextElement();
+
+					String latDegs = st.nextToken();
+					String latMins = st.nextToken();
+					String latSecs = st.nextToken();
+					String latHemi = st.nextToken();
+
+					String lonDegs = st.nextToken();
+					String lonMins = st.nextToken();
+					String lonSecs = st.nextToken();
+					String lonHemi = st.nextToken();
+
+					// and the beraing
+					@SuppressWarnings("unused")
+					String bearing = st.nextToken();
+
+					// and the range
+					@SuppressWarnings("unused")
+					String range = st.nextToken();
+
+					// ok,now construct the date=time
+					DateFormat df = new SimpleDateFormat("yyMMdd hhmmss");
+					Date theDate = df.parse(date + " " + time);
+
+					// and the location
+					double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
+							+ Double.valueOf(latSecs) / 60d / 60d;
+					if (latHemi.toUpperCase().equals("W"))
+						lat = -lat;
+					double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
+							+ Double.valueOf(lonSecs) / 60d / 60d;
+					if (lonHemi.toUpperCase().equals("S"))
+						lon = -lon;
+
+					GeoPoint theLoc = new GeoPoint(lat, lon);
+					ROrigin measure = new ROrigin(theLoc, theDate);
+
+					addThis(measure);
+
+				}
+			}
+
+			// Close the input stream
+			fstream.close();
+
+		}
+		catch (IOException e)
+		{
+			SATC_Activator.log(Status.ERROR, "File load problem", e);
+		}
+		catch (ParseException e)
+		{
+			SATC_Activator.log(Status.ERROR, "File parse problem", e);
+		}
+
+		// TODO: set the start/end times = just for tidiness
+	}
+
+	/**
+	 * store this new measurement
+	 * 
+	 * @param measure
+	 */
+	private void addThis(ROrigin measure)
+	{
+		// extend the time period accordingly
+		if (this.getStartDate() == null)
+		{
+			this.setStartDate(measure._time);
+			this.setFinishDate(measure._time);
+		}
+		else
+		{
+			long newTime = measure._time.getTime();
+			if (this.getStartDate().getTime() > newTime)
+				this.setStartDate(measure._time);
+			if (this.getFinishDate().getTime() < newTime)
+				this.setFinishDate(measure._time);
+		}
+
+		_measurements.add(measure);
+	}
+
 	@Override
 	public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException
 	{
-		// ok, we can only act on data that already has an origin. So,
-		// start looping through
-		Iterator<BoundedState> iter = space.states().iterator();
 
+		// loop through our measurements
+		Iterator<ROrigin> iter = _measurements.iterator();
 		while (iter.hasNext())
 		{
-			BoundedState boundedState = (BoundedState) iter.next();
+			RangeForecastContribution.ROrigin origin = (RangeForecastContribution.ROrigin) iter
+					.next();
 
-			// does this state have an origin?
-			if (true)
+			// TODO: HOW DO WE GET THE ORIGIN IN?
+			Point pt = origin._origin.asPoint();
+
+			// yes, ok we can centre our donut on that
+			Polygon thePolygon = getOuterRing(pt);
+			Polygon inner = getInnerRing(pt);
+
+			// did we generate an inner?
+			if (inner != null)
 			{
-
-				// TODO: HOW DO WE GET THE ORIGIN IN?
-				GeoPoint gp = new GeoPoint(3,2);
-				Point pt = gp.asPoint();
-
-				// yes, ok we can centre our donut on that
-				Polygon thePolygon = getOuterRing(pt);
-				Polygon inner = getInnerRing(pt);
-				
-				// did we generate an inner?
-				if (inner != null)
-				{
-					// yes, better delete it then
-					thePolygon = (Polygon) thePolygon.difference(inner);
-				}
-
-						
-				// create a LocationRange for the poly
-				// now define the polygon
-				final LocationRange myRa = new LocationRange(thePolygon);
-
-				// apply the range
-				boundedState.constrainTo(myRa);
+				// yes, better delete it then
+				thePolygon = (Polygon) thePolygon.difference(inner);
 			}
+
+			// create a LocationRange for the poly
+			// now define the polygon
+			final LocationRange myRa = new LocationRange(thePolygon);
+
+			// is there already a bounded state at this time?
+			BoundedState thisS = space.getBoundedStateAt(origin._time);
+
+			if (thisS == null)
+			{
+				// nope, better create it
+				thisS = new BoundedState(origin._time);
+				space.add(thisS);
+			}
+
+			// apply the range
+			thisS.constrainTo(myRa);
 		}
 	}
 
@@ -97,11 +260,11 @@ public class RangeForecastContribution extends BaseContribution
 		theRange = getMaxRange();
 
 		// no, ok, just choose an absolutely monster range
-//		theRange = ABSOLUTELY_HUGE_RANGE_M;
+		// theRange = ABSOLUTELY_HUGE_RANGE_M;
 
 		// ok, now we create the inner circle
 		Geometry res = pt.buffer(theRange);
-		
+
 		return (Polygon) res;
 	}
 
@@ -116,10 +279,10 @@ public class RangeForecastContribution extends BaseContribution
 		theRange = getMinRange();
 
 		// no, ok, just choose a zero range
-	//	theRange = 0;
-		
+		// theRange = 0;
+
 		// ok, now we create the inner circle
-		Geometry res = pt.buffer(theRange);		
+		Geometry res = pt.buffer(theRange);
 
 		return (Polygon) res;
 	}
@@ -157,7 +320,7 @@ public class RangeForecastContribution extends BaseContribution
 		double oldMaxRange = _maxRange;
 		String oldConstraints = getHardConstraints();
 		this._maxRange = maxRngDegs;
-		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngDegs);		
+		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngDegs);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
@@ -175,6 +338,5 @@ public class RangeForecastContribution extends BaseContribution
 	{
 		return ContributionDataType.FORECAST;
 	}
-	
-	
+
 }

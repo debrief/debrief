@@ -31,6 +31,7 @@ import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 
@@ -298,7 +299,6 @@ public class TestHarnessView extends CoreView
 		getGenerator().contributions().clear();
 
 		// now load some data
-		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
 		final String thePath;
 		if (useLong)
@@ -306,14 +306,24 @@ public class TestHarnessView extends CoreView
 		else
 			thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
 
+		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		RangeForecastContribution rangeF = new RangeForecastContribution();
 		URL fileURL = bundle.getEntry(thePath);
 		FileInputStream input;
 		try
 		{
+			// populate the bearing data
 			input = new FileInputStream(
 					new File(FileLocator.resolve(fileURL).toURI()));
 			bmc.loadFrom(input);
 			getGenerator().addContribution(bmc);
+
+			// and populate the range data
+			input = new FileInputStream(
+					new File(FileLocator.resolve(fileURL).toURI()));
+			rangeF.loadFrom(input);
+			getGenerator().addContribution(rangeF);
+
 		}
 		catch (Exception e)
 		{
@@ -355,6 +365,9 @@ public class TestHarnessView extends CoreView
 	protected void startListeningTo(TrackGenerator genny)
 	{
 		enableControls(true);
+
+		// sort out the 'live' setting
+		_liveAction.setChecked(genny.isLiveEnabled());
 	}
 
 	private void enableControls(boolean enabled)
@@ -365,6 +378,7 @@ public class TestHarnessView extends CoreView
 		_restartAction.setEnabled(enabled);
 		_stepAction.setEnabled(enabled);
 		_playAction.setEnabled(enabled);
+		_liveAction.setEnabled(enabled);
 
 	}
 

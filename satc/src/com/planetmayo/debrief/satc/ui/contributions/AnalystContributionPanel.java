@@ -134,13 +134,6 @@ public abstract class AnalystContributionPanel
 		context.bindValue(hardContraintLabel, hardContraintValue, null,
 				UIUtils.converterStrategy(labelsConverter));
 
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BaseContribution.HARD_CONSTRAINTS);
-		IObservableValue estimateLabel = WidgetProperties.text().observe(
-				this.estimateLabel);
-		context.bindValue(estimateLabel, estimateValue, null,
-				UIUtils.converterStrategy(labelsConverter));
-
 		IObservableValue weightValue = BeansObservables.observeValue(contribution,
 				BaseContribution.WEIGHT);
 		IObservableValue weightWidget = WidgetProperties.selection().observe(

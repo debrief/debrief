@@ -35,9 +35,18 @@ public class CourseContributionPanel extends AnalystContributionPanel
 	{
 		context = new DataBindingContext();
 
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " degs");
 		bindCommonHeaderWidgets(context, contribution,
-				new PrefixSuffixLabelConverter(Object.class, " degs"));
+				labelsConverter);
 		bindCommonDates(context, contribution);
+		
+
+		IObservableValue estimateValue = BeansObservables.observeValue(
+				contribution, BaseContribution.ESTIMATE);
+		IObservableValue estimateLabel = WidgetProperties.text().observe(
+				this.estimateLabel);
+		context.bindValue(estimateLabel, estimateValue, null,
+				UIUtils.converterStrategy(labelsConverter));
 
 		IObservableValue minCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MIN_COURSE);
@@ -75,8 +84,6 @@ public class CourseContributionPanel extends AnalystContributionPanel
 				.observe(estimateSlider);
 		IObservableValue estimateCourseDetailsLabel = WidgetProperties.text()
 				.observe(estimateDetailsLabel);
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BaseContribution.ESTIMATE);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(int.class,

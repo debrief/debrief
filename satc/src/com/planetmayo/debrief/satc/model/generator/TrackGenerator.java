@@ -346,4 +346,13 @@ public class TrackGenerator implements SteppingGenerator
 		_liveRunning = checked;
 	}
 
+	/** indicate whether we do 'run' after each contr change
+	 * 
+	 * @return
+	 */
+	public boolean isLiveEnabled()
+	{
+		return _liveRunning;
+	}
+
 }

@@ -33,9 +33,17 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 	{
 		context = new DataBindingContext();
 
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " kts");
 		bindCommonHeaderWidgets(context, contribution,
-				new PrefixSuffixLabelConverter(Object.class, " kts"));
+				labelsConverter);
 		bindCommonDates(context, contribution);
+		
+		IObservableValue estimateValue = BeansObservables.observeValue(
+				contribution, BaseContribution.ESTIMATE);
+		IObservableValue estimateLabel = WidgetProperties.text().observe(
+				this.estimateLabel);
+		context.bindValue(estimateLabel, estimateValue, null,
+				UIUtils.converterStrategy(labelsConverter));
 
 		IObservableValue minSpeedValue = BeansObservables.observeValue(
 				contribution, SpeedForecastContribution.MIN_SPEED);
@@ -73,8 +81,6 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 				.observe(estimateSlider);
 		IObservableValue estimateSpeedDetailsLabel = WidgetProperties.text()
 				.observe(estimateDetailsLabel);
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BaseContribution.ESTIMATE);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
