@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
@@ -36,7 +35,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
  * @author ian
  * 
  */
-public class TrackStatesView extends ViewPart implements BoundedStatesListener
+public class TrackStatesView extends CoreView implements BoundedStatesListener
 {
 
 	class NameSorter extends ViewerSorter
@@ -106,7 +105,6 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.TrackStatesView";
 	private TableViewer viewer;
-	private TrackGenerator _generator;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
 
 	/**
@@ -233,14 +231,10 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "com.planetmayo.debrief.satc.viewer");
 
-		// hey, see if there's a track generator to listen to
-		_generator = MockMaintainContributionsView.getGenerator();
-
-		// did it work?
-		if (_generator != null)
-		{
-			_generator.addBoundedStateListener(this);
-		}
+		/** and listen out for track generators
+		 * 
+		 */
+		setupMonitor();
 	}
 
 	private void makeActions()
@@ -252,14 +246,6 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 		_debugMode.setChecked(true);
 		_debugMode
 				.setToolTipText("Track all states (including application of each Contribution)");
-	}
-
-	@Override
-	public void dispose()
-	{
-		_generator.removeBoundedStateListener(this);
-
-		super.dispose();
 	}
 
 	private void fillLocalPullDown(IMenuManager manager)
@@ -313,5 +299,17 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 			else
 				statesBounded(newStates);
 		}
+	}
+
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
+	{
+		genny.removeBoundedStateListener(this);
+	}
+
+	@Override
+	protected void startListeningTo(TrackGenerator genny)
+	{
+		genny.removeBoundedStateListener(this);
 	}
 }

@@ -61,12 +61,11 @@ public class MockMaintainContributionsView extends ViewPart implements
 	private ComboViewer vehiclesCombo;
 
 	private Composite _contList;
-	
+
 	private MaintainContributions _manager;
 
-	private static MockMaintainContributionsView _default;
-	
-	/** remember which contributions we're displaying
+	/**
+	 * remember which contributions we're displaying
 	 * 
 	 */
 	private HashMap<BaseContribution, AnalystContributionPanel> _myControls = new HashMap<BaseContribution, AnalystContributionPanel>();
@@ -74,20 +73,22 @@ public class MockMaintainContributionsView extends ViewPart implements
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		// remember us as the default
-		_default = this;
 
 		// build the UI
 		initUI(parent);
-		
+
 		// create the manager
 		_manager = new MaintainContributions(this);
-		
+
 	}
-	
-	public static TrackGenerator getGenerator()
+
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
 	{
-		return _default._manager.getGenerator();
+		if (adapter.equals(TrackGenerator.class))
+			return _manager.getGenerator();
+		else
+			return super.getAdapter(adapter);
 	}
 
 	private void fillAnalystContributionsGroup(Composite parent)
@@ -110,31 +111,34 @@ public class MockMaintainContributionsView extends ViewPart implements
 		UIUtils.createLabel(header, SWT.RIGHT, "Weight", new GridData(40,
 				SWT.DEFAULT));
 
-//		// create a sample speed forecast contribution
-//		BaseContribution speedContribution = SpeedForecastContribution.getSample();
-//
-//		// and a UI to display it
-//		new SpeedContributionPanel(parent, speedContribution)
-//				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-//						| GridData.GRAB_HORIZONTAL));
-//
-//		// create a sample course forecast contribution
-//		CourseForecastContribution courseContribution = CourseForecastContribution
-//				.getSample();
-//
-//		// and a UI to display it
-//		new CourseContributionPanel(parent, courseContribution)
-//				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-//						| GridData.GRAB_HORIZONTAL));
-//
-//		// and a sample location
-//		LocationForecastContribution locationContribution = LocationForecastContribution
-//				.getSample();
-//
-//		// and a UI to display it
-//		new LocationContributionPanel(parent, locationContribution)
-//				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-//						| GridData.GRAB_HORIZONTAL));
+		// // create a sample speed forecast contribution
+		// BaseContribution speedContribution =
+		// SpeedForecastContribution.getSample();
+		//
+		// // and a UI to display it
+		// new SpeedContributionPanel(parent, speedContribution)
+		// .setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+		// | GridData.GRAB_HORIZONTAL));
+		//
+		// // create a sample course forecast contribution
+		// CourseForecastContribution courseContribution =
+		// CourseForecastContribution
+		// .getSample();
+		//
+		// // and a UI to display it
+		// new CourseContributionPanel(parent, courseContribution)
+		// .setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+		// | GridData.GRAB_HORIZONTAL));
+		//
+		// // and a sample location
+		// LocationForecastContribution locationContribution =
+		// LocationForecastContribution
+		// .getSample();
+		//
+		// // and a UI to display it
+		// new LocationContributionPanel(parent, locationContribution)
+		// .setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+		// | GridData.GRAB_HORIZONTAL));
 	}
 
 	@Override
@@ -290,17 +294,20 @@ public class MockMaintainContributionsView extends ViewPart implements
 		// did we fail to find a panel?
 		if (panel == null)
 		{
-			MessageDialog.openError(Display.getDefault().getActiveShell(),
-					"Add contribution", "Failed to find panel for " + contribution);
+			System.err.println("Failed to generate panel for " + contribution);
 		}
 		else
 		{
 			// sort out the layout
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-				| GridData.GRAB_HORIZONTAL));
-			
+					| GridData.GRAB_HORIZONTAL));
+
 			// and rememeber it
 			_myControls.put(contribution, panel);
+
+			// ok, redo the layout...
+			_contList.layout();
+
 		}
 
 	}
@@ -311,12 +318,19 @@ public class MockMaintainContributionsView extends ViewPart implements
 		// get the panel
 		AnalystContributionPanel panel = _myControls.get(contribution);
 
-		// and remove it
-		panel.getControl().dispose();
+		// did we find it?
+		if (panel != null)
+		{
+			// and remove it
+			panel.getControl().dispose();
 
-		// and forget it
-		_myControls.remove(contribution);
-
+			// and forget it
+			_myControls.remove(contribution);
+		}
+		else
+		{
+			System.err.println("failed to find UI for:" + contribution);
+		}
 	}
 
 	@Override
@@ -333,11 +347,11 @@ public class MockMaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void populatePrecisionsList(List<String> precisions)
+	public void populatePrecisionsList(Precision[] precisions)
 	{
 		precisionsCombo.setInput(precisions);
 		// and set an initial value
-		precisionsCombo.setSelection(new StructuredSelection(precisions.get(0)));
+		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
 	}
 
 	@Override

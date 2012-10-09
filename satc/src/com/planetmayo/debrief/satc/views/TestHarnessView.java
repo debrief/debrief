@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,7 +25,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 import org.osgi.framework.Bundle;
 
 import com.planetmayo.debrief.satc.SATC_Activator;
@@ -51,7 +49,7 @@ import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
  * <p>
  */
 
-public class TestHarnessView extends ViewPart
+public class TestHarnessView extends CoreView
 {
 
 	class NameSorter extends ViewerSorter
@@ -119,8 +117,6 @@ public class TestHarnessView extends ViewPart
 	private Action _populateShortAction;
 	private Action _populateLongAction;
 
-	private TrackGenerator _generator;
-
 	/**
 	 * The constructor.
 	 */
@@ -155,23 +151,14 @@ public class TestHarnessView extends ViewPart
 		hookContextMenu();
 		contributeToActionBars();
 
-		// hey, see if there's a track generator to listen to
-		_generator = MockMaintainContributionsView.getGenerator();
-		if (_generator == null)
-			SATC_Activator.log(Status.ERROR, "Failed to find generator", null);
-		else
-			SATC_Activator.log(Status.INFO, "Found generator:", null);
+		// disable our controls, until we find a genny
+		stopListeningTo(null);
 
-		// did it work?
-		if (_generator != null)
-		{
-			// ok, we can enable our buttons
-			_populateShortAction.setEnabled(true);
-			_populateLongAction.setEnabled(true);
-			_restartAction.setEnabled(true);
-			_stepAction.setEnabled(true);
-			_playAction.setEnabled(true);
-		}
+		/**
+		 * and listen out for track generators
+		 * 
+		 */
+		setupMonitor();
 	}
 
 	private void fillContextMenu(IMenuManager manager)
@@ -238,7 +225,7 @@ public class TestHarnessView extends ViewPart
 			public void run()
 			{
 				// clear the bounded states
-				_generator.restart();
+				getGenerator().restart();
 			}
 		};
 		_restartAction.setText("Restart");
@@ -249,7 +236,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				_generator.step();
+				getGenerator().step();
 			}
 		};
 		_stepAction.setText("Step");
@@ -260,7 +247,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				_generator.run();
+				getGenerator().run();
 			}
 		};
 		_playAction.setText("Play");
@@ -281,7 +268,7 @@ public class TestHarnessView extends ViewPart
 	private void loadSampleData(boolean useLong)
 	{
 		// clear the geneartor first
-		_generator.contributions().clear();
+		getGenerator().contributions().clear();
 
 		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
@@ -299,7 +286,7 @@ public class TestHarnessView extends ViewPart
 			input = new FileInputStream(
 					new File(FileLocator.resolve(fileURL).toURI()));
 			bmc.loadFrom(input);
-			_generator.addContribution(bmc);
+			getGenerator().addContribution(bmc);
 		}
 		catch (Exception e)
 		{
@@ -310,7 +297,7 @@ public class TestHarnessView extends ViewPart
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setMinSpeed(12);
 		speed.setMaxSpeed(43);
-		_generator.addContribution(speed);
+		getGenerator().addContribution(speed);
 
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
@@ -318,7 +305,7 @@ public class TestHarnessView extends ViewPart
 		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
 		course.setMinCourse(45);
 		course.setMaxCourse(81);
-		_generator.addContribution(course);
+		getGenerator().addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
 		SpeedForecastContribution speed2 = new SpeedForecastContribution();
@@ -326,8 +313,30 @@ public class TestHarnessView extends ViewPart
 		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
 		speed2.setMinSpeed(8);
 		speed2.setMaxSpeed(27);
-		_generator.addContribution(course);
+		getGenerator().addContribution(course);
 
+	}
+
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
+	{
+		// ok, we can disable our buttons
+		_populateShortAction.setEnabled(false);
+		_populateLongAction.setEnabled(false);
+		_restartAction.setEnabled(false);
+		_stepAction.setEnabled(false);
+		_playAction.setEnabled(false);
+	}
+
+	@Override
+	protected void startListeningTo(TrackGenerator genny)
+	{
+		// ok, we can enable our buttons
+		_populateShortAction.setEnabled(true);
+		_populateLongAction.setEnabled(true);
+		_restartAction.setEnabled(true);
+		_stepAction.setEnabled(true);
+		_playAction.setEnabled(true);
 	}
 
 }

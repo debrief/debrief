@@ -7,7 +7,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -27,7 +26,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class SpatialView extends ViewPart implements BoundedStatesListener
+public class SpatialView extends CoreView implements BoundedStatesListener
 {
 
 	private static XYPlot _plot;
@@ -41,8 +40,6 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 	 * 
 	 */
 	int _numCycles = 0;
-	private TrackGenerator _generator;
-
 	public void createPartControl(Composite parent)
 	{
 		// get the data ready
@@ -57,21 +54,23 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
 
-		// start listening to data
-		_generator = MockMaintainContributionsView.getGenerator();
-		if (_generator != null)
-		{
-			_generator.addBoundedStateListener(this);
-		}
+		/** and listen out for track generators
+		 * 
+		 */
+		setupMonitor();
 
 	}
 
 	@Override
-	public void dispose()
+	protected void startListeningTo(TrackGenerator genny)
 	{
-		if (_generator != null)
-			_generator.removeBoundedStateListener(this);
-		super.dispose();
+		genny.addBoundedStateListener(this);
+	}
+
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
+	{
+		genny.removeBoundedStateListener(this);
 	}
 
 	private void makeActions()
