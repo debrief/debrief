@@ -9,13 +9,13 @@ package com.planetmayo.debrief.satc.model.states;
  */
 public class SpeedRange extends  BaseRange<SpeedRange>
 {
-	private double _min;
-	private double _max;
+	private double _minMS;
+	private double _maxMS;
 
 	public SpeedRange(double minSpd, double maxSpd)
 	{
-		_min = minSpd;
-		_max = maxSpd;
+		_minMS = minSpd;
+		_maxMS = maxSpd;
 	}
 
 	/**
@@ -25,40 +25,40 @@ public class SpeedRange extends  BaseRange<SpeedRange>
 	 */
 	public SpeedRange(SpeedRange range)
 	{
-		this(range.getMin(), range.getMax());
+		this(range.getMinMS(), range.getMaxMS());
 	}
 
 	@Override
 	public void constrainTo(SpeedRange sTwo) throws IncompatibleStateException
 	{
-		_min = Math.max(getMin(), sTwo.getMin());
-		_max = Math.min(getMax(), sTwo.getMax());
+		_minMS = Math.max(getMinMS(), sTwo.getMinMS());
+		_maxMS = Math.min(getMaxMS(), sTwo.getMaxMS());
 	}
 
-	public double getMax()
+	public double getMaxMS()
 	{
-		return _max;
+		return _maxMS;
 	}
 
-	public double getMin()
+	public double getMinMS()
 	{
-		return _min;
+		return _minMS;
 	}
 
-	public void setMax(double maxSpeed)
+	public void setMaxMS(double maxSpeed)
 	{
-		_max = maxSpeed;
+		_maxMS = maxSpeed;
 	}
 
-	public void setMin(double minSpeed)
+	public void setMinMS(double minSpeed)
 	{
-		_min = minSpeed;
+		_minMS = minSpeed;
 	}
 
 	@Override
 	public String getConstraintSummary()
 	{
-		return "" + (int)_min + " - " + (int)_max;
+		return "" + (int)_minMS + " - " + (int)_maxMS;
 	}
 
 }
