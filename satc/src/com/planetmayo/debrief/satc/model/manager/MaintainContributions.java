@@ -7,6 +7,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.planetmayo.debrief.satc.SATC_Activator;
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -87,13 +88,9 @@ public class MaintainContributions
 
 	}
 
-	private List<String> getPrecisions()
+	private Precision[] getPrecisions()
 	{
-		List<String> precisions = new ArrayList<String>();
-		precisions.add("Fine");
-		precisions.add("Medium");
-		precisions.add("Coarse");
-		return precisions;
+		return Precision.values();
 	}
 
 	private ArrayList<Object> getContributions()
@@ -128,7 +125,7 @@ public class MaintainContributions
 		 * 
 		 * @param vehicles
 		 */
-		public void populatePrecisionsList(List<String> precisions);
+		public void populatePrecisionsList(Precision[] precisions);
 
 		/**
 		 * allow us to listen to user asking to remove a contribution
