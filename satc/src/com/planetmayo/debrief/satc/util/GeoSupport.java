@@ -93,7 +93,7 @@ public class GeoSupport
 		else if(geo instanceof Polygon)
 		{
 			Polygon poly = (Polygon) geo;
-			writeGeometry(title + " boundary " ,poly.getBoundary());
+			writeGeometry(title + " edge " ,poly.getBoundary());
 		}
 		else if(geo instanceof MultiLineString)
 		{
