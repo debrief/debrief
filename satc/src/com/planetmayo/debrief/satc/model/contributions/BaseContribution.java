@@ -18,7 +18,7 @@ public abstract class BaseContribution extends ModelObject implements
 	public static final String ESTIMATE = "estimate";
 
 	protected String _name;
-	protected boolean _active;
+	protected boolean _active = true;
 	protected int _weight;
 	protected Date _startDate;
 	protected Date _finishDate;

@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.swing.event.ChangeListener;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -18,7 +17,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -291,6 +289,8 @@ public class MockMaintainContributionsView extends ViewPart implements
 		else if (contribution instanceof SpeedForecastContribution)
 			panel = new SpeedContributionPanel(_contList, contribution);
 
+		System.out.println("created:" + panel + " from:" + contribution);
+		
 		// did we fail to find a panel?
 		if (panel == null)
 		{
@@ -307,9 +307,7 @@ public class MockMaintainContributionsView extends ViewPart implements
 
 			// ok, redo the layout...
 			_contList.layout();
-
 		}
-
 	}
 
 	@Override

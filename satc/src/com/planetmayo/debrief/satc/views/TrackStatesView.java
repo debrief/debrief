@@ -21,7 +21,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.PlatformUI;
 
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
@@ -227,10 +226,6 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 		makeActions();
 		contributeToActionBars();
 
-		// Create the help context id for the viewer's control
-		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(viewer.getControl(), "com.planetmayo.debrief.satc.viewer");
-
 		/** and listen out for track generators
 		 * 
 		 */
@@ -310,6 +305,6 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 	@Override
 	protected void startListeningTo(TrackGenerator genny)
 	{
-		genny.removeBoundedStateListener(this);
+		genny.addBoundedStateListener(this);
 	}
 }

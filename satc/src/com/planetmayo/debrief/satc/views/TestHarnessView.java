@@ -113,6 +113,7 @@ public class TestHarnessView extends CoreView
 
 	private Action _restartAction;
 	private Action _stepAction;
+	private Action _clearAction;
 	private Action _playAction;
 	private Action _populateShortAction;
 	private Action _populateLongAction;
@@ -171,6 +172,7 @@ public class TestHarnessView extends CoreView
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_clearAction);
 		manager.add(_restartAction);
 		manager.add(_populateShortAction);
 		manager.add(_populateLongAction);
@@ -218,6 +220,18 @@ public class TestHarnessView extends CoreView
 		};
 		_populateLongAction.setText("Populate");
 		_populateLongAction.setToolTipText("Load some sample data");
+
+		_clearAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				// clear the bounded states
+				getGenerator().clear();
+			}
+		};
+		_clearAction.setText("Clear");
+		_clearAction.setToolTipText("Clear the track generator contributions");
 
 		_restartAction = new Action()
 		{
@@ -313,7 +327,7 @@ public class TestHarnessView extends CoreView
 		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
 		speed2.setMinSpeed(8);
 		speed2.setMaxSpeed(27);
-		getGenerator().addContribution(course);
+		getGenerator().addContribution(speed2);
 
 	}
 
@@ -321,22 +335,24 @@ public class TestHarnessView extends CoreView
 	protected void stopListeningTo(TrackGenerator genny)
 	{
 		// ok, we can disable our buttons
-		_populateShortAction.setEnabled(false);
-		_populateLongAction.setEnabled(false);
-		_restartAction.setEnabled(false);
-		_stepAction.setEnabled(false);
-		_playAction.setEnabled(false);
+		enableControls(false);
 	}
 
 	@Override
 	protected void startListeningTo(TrackGenerator genny)
 	{
-		// ok, we can enable our buttons
-		_populateShortAction.setEnabled(true);
-		_populateLongAction.setEnabled(true);
-		_restartAction.setEnabled(true);
-		_stepAction.setEnabled(true);
-		_playAction.setEnabled(true);
+		enableControls(true);
+	}
+
+	private void enableControls(boolean enabled)
+	{
+		_clearAction.setEnabled(enabled);
+		_populateShortAction.setEnabled(enabled);
+		_populateLongAction.setEnabled(enabled);
+		_restartAction.setEnabled(enabled);
+		_stepAction.setEnabled(enabled);
+		_playAction.setEnabled(enabled);
+
 	}
 
 }

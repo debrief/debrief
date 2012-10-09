@@ -89,10 +89,13 @@ public class TrackGenerator implements SteppingGenerator
 		try
 		{
 
-			theContrib.actUpon(_space);
-
-			// tell everybody the bounded states have changed
-			broadcastBoundedStatesDebug();
+			if (theContrib.isActive())
+			{
+				theContrib.actUpon(_space);
+				
+				// tell everybody the bounded states have changed
+				broadcastBoundedStatesDebug();
+			}
 
 			// and tell any step listeners
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
@@ -131,7 +134,6 @@ public class TrackGenerator implements SteppingGenerator
 			boundedStatesListener.debugStatesBounded(_space.states());
 		}
 	}
-	
 
 	private void broadcastBoundedStates()
 	{
@@ -246,9 +248,9 @@ public class TrackGenerator implements SteppingGenerator
 	@Override
 	public void step()
 	{
-		if(_currentStep >= _contribs.size())
+		if (_currentStep >= _contribs.size())
 			throw new RuntimeException("duh, have to reset before we can step again");
-		
+
 		// ok, get the next contribution
 		BaseContribution thisC = (BaseContribution) _contribs.toArray()[_currentStep];
 
@@ -269,7 +271,7 @@ public class TrackGenerator implements SteppingGenerator
 						.next();
 				stepper.complete();
 			}
-			
+
 			// tell any listeners that the final bounds have been updated
 			broadcastBoundedStates();
 		}
@@ -292,7 +294,7 @@ public class TrackGenerator implements SteppingGenerator
 					.next();
 			stepper.restarted();
 		}
-		
+
 		// and tell them about the new bounded states
 		broadcastBoundedStates();
 	}
@@ -304,6 +306,25 @@ public class TrackGenerator implements SteppingGenerator
 		while (_currentStep < _contribs.size())
 		{
 			step();
+		}
+	}
+
+	/** ditch all of the contributions
+	 * 
+	 */
+	public void clear()
+	{
+		// ditch the bounded states first
+		this.restart();
+		
+		// clear out the contributions
+		// take a copy, since we're going to be modifying the list
+		BaseContribution[] safeList = _contribs.toArray(new BaseContribution[]{});
+		
+		for (int i = 0; i < safeList.length; i++)
+		{
+			BaseContribution contrib = safeList[i];
+			this.removeContribution(contrib);
 		}
 	}
 
