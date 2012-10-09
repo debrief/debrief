@@ -7,6 +7,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedForecastContribution extends BaseContribution
 {
@@ -42,7 +43,8 @@ public class SpeedForecastContribution extends BaseContribution
 			throws IncompatibleStateException
 	{
 		// create a bounded state representing our values
-		final SpeedRange myR = new SpeedRange(getMinSpeed(), getMaxSpeed());
+		final SpeedRange myR = new SpeedRange(GeoSupport.kts2MSec(getMinSpeed()),
+				GeoSupport.kts2MSec(getMaxSpeed()));
 
 		// remember if we've found items at our start/end times
 		boolean needToInjectStart = true;

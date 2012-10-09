@@ -34,8 +34,13 @@ public class GeoSupport
 		return degs * 111200d;
 	}
 	
-	public static void writeGeometry(Polygon poly)
+	public static double kts2MSec(double kts)
 	{
-		
+		return kts * 0.514444444;
+	}
+	
+	public static double MSec2kts(double m_sec)
+	{
+		return m_sec / 0.514444444;
 	}
 }
