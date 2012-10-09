@@ -154,10 +154,11 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	private void showData(Collection<BoundedState> newStates)
 	{
 		// ditch the old series
-		for (int i = 0; i < _oldSeries; i++)
-		{
-			_myData.removeSeries(i);
-		}
+//		for (int i = 0; i < _oldSeries; i++)
+//		{
+//			_myData.removeSeries(i);
+//		}
+		_myData.removeAllSeries();
 
 		// mark the remaining series as lapsed
 		// int len = _myData.getSeriesCount();
