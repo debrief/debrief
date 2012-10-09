@@ -115,7 +115,7 @@ public class LocationAnalysisContribution extends BaseContribution
 				Geometry nextR = outer.intersection(courseR);
 				GeoSupport.writeGeometry("constrained outer", nextR);
 				
-				
+				// TODO: nextR is just two points, I'm sure it should be a region
 				
 				Geometry multiL = courseR.intersection(speedR);
 		//		GeoSupport.writeGeometry("intersected speed", multiL);
