@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.views;
 
+import java.awt.Color;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -9,15 +10,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.ui.RectangleEdge;
+import org.jfree.ui.RectangleInsets;
 
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -26,11 +32,13 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class SpatialView extends CoreView implements BoundedStatesListener
+public class SpatialView extends CoreView implements BoundedStatesListener,
+		GeoSupport.GeoPlotter
 {
 
 	private static XYPlot _plot;
 	private static XYLineAndShapeRenderer _renderer;
+	private static JFreeChart _chart;
 	private Action _debugMode;
 	private Action _resizeButton;
 	private XYSeriesCollection _myData;
@@ -40,6 +48,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener
 	 * 
 	 */
 	int _numCycles = 0;
+
 	public void createPartControl(Composite parent)
 	{
 		// get the data ready
@@ -54,10 +63,14 @@ public class SpatialView extends CoreView implements BoundedStatesListener
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
 
-		/** and listen out for track generators
+		/**
+		 * and listen out for track generators
 		 * 
 		 */
 		setupMonitor();
+
+		// tell the GeoSupport about us
+		GeoSupport.setPlotter(this);
 
 	}
 
@@ -120,13 +133,13 @@ public class SpatialView extends CoreView implements BoundedStatesListener
 		// plot.setRenderer(renderer);
 		// JFreeChart chart = new JFreeChart(plot);
 
-		JFreeChart chart = ChartFactory.createScatterPlot("States", "Lat", "Lon",
-				_myData2, PlotOrientation.HORIZONTAL, false, false, false);
-		_plot = (XYPlot) chart.getPlot();
+		_chart = ChartFactory.createScatterPlot("States", "Lat", "Lon", _myData2,
+				PlotOrientation.HORIZONTAL, false, false, false);
+		_plot = (XYPlot) _chart.getPlot();
 		_plot.setNoDataMessage("No data available");
 		_plot.setRenderer(_renderer);
 
-		return chart;
+		return _chart;
 	}
 
 	@Override
@@ -189,7 +202,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener
 		}
 		else
 		{
-			_myData.removeAllSeries();
+			clear();
 		}
 	}
 
@@ -199,4 +212,36 @@ public class SpatialView extends CoreView implements BoundedStatesListener
 		_myData.removeAllSeries();
 	}
 
+	@Override
+	public void showGeometry(String title, Coordinate[] coords)
+	{
+		// switch the legend on
+		if (_chart.getSubtitleCount() == 0)
+		{
+			LegendTitle legend = new LegendTitle(_plot);
+			legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+			legend.setFrame(new LineBorder());
+			legend.setBackgroundPaint(Color.white);
+			legend.setPosition(RectangleEdge.BOTTOM);
+			_chart.addSubtitle(0, legend);
+		}
+
+		// ok, we've got a new series
+		XYSeries series = new XYSeries(title, false);
+
+		// get the shape
+		for (int i = 0; i < coords.length; i++)
+		{
+			Coordinate coordinate = coords[i];
+			series.add(new XYDataItem(coordinate.y, coordinate.x));
+		}
+		_myData.addSeries(series);
+	}
+
+	@Override
+	public void clear()
+	{
+		_myData.removeAllSeries();
+
+	}
 }

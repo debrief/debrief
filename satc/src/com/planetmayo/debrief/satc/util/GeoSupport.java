@@ -16,6 +16,30 @@ public class GeoSupport
 {
 	private static GeometryFactory _factory;
 
+	private static GeoPlotter _plotter;
+	
+	public static interface GeoPlotter
+	{
+
+		/** plot the indicated line
+		 * 
+		 * @param title title of the line
+		 * @param coords coords to plot
+		 */
+		void showGeometry(String title, Coordinate[] coords);
+
+		/** clear the plot
+		 * 
+		 */
+		void clear();
+		
+	}
+	
+	public static void setPlotter(GeoPlotter plotter)
+	{
+		_plotter = plotter;
+	}
+	
 	/** get our geometry factory
 	 * 
 	 * @return
@@ -48,6 +72,12 @@ public class GeoSupport
 		return m_sec / 0.514444444;
 	}
 	
+	public static void clearOutput()
+	{
+		if(_plotter != null)
+			_plotter.clear();
+		
+	}
 	public static void writeGeometry(String title, Geometry geo)
 	{
 		if(geo == null)
@@ -75,6 +105,14 @@ public class GeoSupport
 			}
 		}
 	}
+	
+	private static void showGeometry(String title, Coordinate[] coords)
+	{
+		if(_plotter != null)
+		{
+			_plotter.showGeometry(title, coords);
+		}
+	}
 
 	private static void writeGeometry(String title, Coordinate[] coords)
 	{
@@ -84,5 +122,8 @@ public class GeoSupport
 			Coordinate coordinate = coords[i];
 			System.out.println(coordinate.x + ", " + coordinate.y);
 		}
+		
+		// and try to show it
+		showGeometry(title, coords);
 	}
 }
