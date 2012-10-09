@@ -13,9 +13,10 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author ian
  * 
  */
-public class LocationRange  extends BaseRange<LocationRange>
+public class LocationRange extends BaseRange<LocationRange>
 {
-	/** the range of locations we allow
+	/**
+	 * the range of locations we allow
 	 * 
 	 */
 	private Polygon _myArea;
@@ -36,7 +37,8 @@ public class LocationRange  extends BaseRange<LocationRange>
 		this(range._myArea);
 	}
 
-	/** trim my area to the area provided
+	/**
+	 * trim my area to the area provided
 	 * 
 	 * @param sTwo
 	 */
@@ -44,17 +46,35 @@ public class LocationRange  extends BaseRange<LocationRange>
 	public void constrainTo(LocationRange sTwo) throws IncompatibleStateException
 	{
 		Geometry collection = _myArea.intersection(sTwo._myArea);
-		if(collection instanceof GeometryCollection)
+		if (collection instanceof Polygon)
 		{
-			GeometryCollection geo = (GeometryCollection) collection;
-			if(geo.getLength() == 1)
+			Polygon geo = (Polygon) collection;
+			// do we already have an area?
+			if (_myArea == null)
 			{
-				_myArea = (Polygon) geo.getGeometryN(0);
+				// take a copy of it
+				_myArea = (Polygon) geo.clone();
 			}
-			else if(geo.getLength() == 0)
+			else
 			{
-				throw new IncompatibleStateException("Polygons do not overlap", this, sTwo);
+				// ok, constrain myself
+				_myArea = (Polygon) _myArea.intersection(geo);
 			}
+		}
+
+		else if (collection instanceof GeometryCollection)
+		{
+			throw new RuntimeException("Not expecting geometry colletion!");
+//			GeometryCollection geo = (GeometryCollection) collection;
+//			if (geo.getLength() == 1)
+//			{
+//				_myArea = (Polygon) geo.getGeometryN(0);
+//			}
+//			else if (geo.getLength() == 0)
+//			{
+//				throw new IncompatibleStateException("Polygons do not overlap", this,
+//						sTwo);
+//			}
 		}
 	}
 
@@ -67,12 +87,13 @@ public class LocationRange  extends BaseRange<LocationRange>
 	public String getConstraintSummary()
 	{
 		String res = "N/A";
-		if(_myArea != null)
+		if (_myArea != null)
 		{
 			NumberFormat df = new DecimalFormat("0.0000");
-			Geometry theBoundary = _myArea.convexHull();;
+			Geometry theBoundary = _myArea.convexHull();
+			;
 			double theArea = theBoundary.getArea();
-			res = _myArea.getCoordinates().length + "pts " + df.format(theArea); 
+			res = _myArea.getCoordinates().length + "pts " + df.format(theArea);
 		}
 		return res;
 	}

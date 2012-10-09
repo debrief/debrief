@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.util;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 /** utility class providing geospatial support
  * 
@@ -33,4 +34,8 @@ public class GeoSupport
 		return degs * 111200d;
 	}
 	
+	public static void writeGeometry(Polygon poly)
+	{
+		
+	}
 }

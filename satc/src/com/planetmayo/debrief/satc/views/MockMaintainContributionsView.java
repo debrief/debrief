@@ -32,6 +32,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
@@ -40,6 +41,7 @@ import com.planetmayo.debrief.satc.ui.contributions.AnalystContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.BearingMeasurementContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.CourseContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.LocationContributionPanel;
+import com.planetmayo.debrief.satc.ui.contributions.RangeForecastContributionPanel;
 import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
 
 /**
@@ -292,6 +294,8 @@ public class MockMaintainContributionsView extends ViewPart implements
 			panel = new SpeedContributionPanel(_contList, contribution);
 		else if (contribution instanceof BearingMeasurementContribution)
 			panel = new BearingMeasurementContributionPanel(_contList, contribution);
+		else if (contribution instanceof RangeForecastContribution)
+			panel = new RangeForecastContributionPanel(_contList, contribution);
 
 		// did we fail to find a panel?
 		if (panel == null)

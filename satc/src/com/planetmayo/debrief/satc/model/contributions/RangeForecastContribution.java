@@ -20,7 +20,9 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoPoint;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -31,8 +33,12 @@ public class RangeForecastContribution extends BaseContribution
 
 	public static final String MAX_RANGE = "maxRange";
 
-	@SuppressWarnings("unused")
-	private static double ABSOLUTELY_HUGE_RANGE_M = 500000;
+	/** for UI components, this is the maximum range that a user can select
+	 * 
+	 */
+	public static final int MAX_SELECTABLE_RANGE_M = 20000;
+
+	private static double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
 
 	/**
 	 * utility class for storing a measurement
@@ -68,9 +74,9 @@ public class RangeForecastContribution extends BaseContribution
 		return res;
 	}
 
-	protected double _minRange;
+	protected double _minRangeM;
 
-	protected double _maxRange;
+	protected double _maxRangeM;
 
 	protected double _estimate;
 
@@ -176,6 +182,10 @@ public class RangeForecastContribution extends BaseContribution
 			SATC_Activator.log(Status.ERROR, "File parse problem", e);
 		}
 
+		// give us some max/min data
+		this.setMaxRange(3000);
+		this.setMinRange(500);
+		
 		// TODO: set the start/end times = just for tidiness
 	}
 
@@ -216,23 +226,27 @@ public class RangeForecastContribution extends BaseContribution
 			RangeForecastContribution.ROrigin origin = (RangeForecastContribution.ROrigin) iter
 					.next();
 
-			// TODO: HOW DO WE GET THE ORIGIN IN?
 			Point pt = origin._origin.asPoint();
 
 			// yes, ok we can centre our donut on that
-			Polygon thePolygon = getOuterRing(pt);
-			Polygon inner = getInnerRing(pt);
+			LinearRing outer = getOuterRing(pt);
+			LinearRing inner = getInnerRing(pt);
 
 			// did we generate an inner?
-			if (inner != null)
-			{
-				// yes, better delete it then
-				thePolygon = (Polygon) thePolygon.difference(inner);
-			}
+//			if (inner != null)
+//			{
+//				
+//				// yes, better delete it then
+//				Geometry res = thePolygon.difference(inner);
+//				thePolygon = (Polygon) res;
+//			}
+			
+			// and create a polygon for it.
+			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, new LinearRing[]{inner});
 
 			// create a LocationRange for the poly
 			// now define the polygon
-			final LocationRange myRa = new LocationRange(thePolygon);
+			final LocationRange myRa = new LocationRange(thePoly);
 
 			// is there already a bounded state at this time?
 			BoundedState thisS = space.getBoundedStateAt(origin._time);
@@ -249,7 +263,7 @@ public class RangeForecastContribution extends BaseContribution
 		}
 	}
 
-	private Polygon getOuterRing(Point pt)
+	private LinearRing getOuterRing(Point pt)
 	{
 		// TODO: handle case where range not provided
 
@@ -257,34 +271,42 @@ public class RangeForecastContribution extends BaseContribution
 		double theRange;
 
 		// yes, ok we have an outer ring
-		theRange = getMaxRange();
+		theRange = GeoSupport.m2deg(getMaxRange());
 
-		// no, ok, just choose an absolutely monster range
-		// theRange = ABSOLUTELY_HUGE_RANGE_M;
+		if (theRange == 0d)
+		{
+			// no, ok, just choose an absolutely monster range
+			theRange = ABSOLUTELY_HUGE_RANGE_DEGS;
+		}
 
 		// ok, now we create the inner circle
-		Geometry res = pt.buffer(theRange);
-
-		return (Polygon) res;
+		Geometry geom = pt.buffer(theRange);
+		LinearRing res = (LinearRing)geom.getBoundary();
+		return res;
 	}
 
-	private Polygon getInnerRing(Point pt)
+	private LinearRing getInnerRing(Point pt)
 	{
-		// TODO: handle case where range not provided
-
-		// do we have a min range?
+		final LinearRing res;
 		double theRange;
 
 		// yes, ok we have an inner ring
-		theRange = getMinRange();
+		theRange = GeoSupport.m2deg(getMinRange());
 
-		// no, ok, just choose a zero range
-		// theRange = 0;
+		// do we have an inner range?
+		if (theRange == 0d)
+		{
+			// no, ok, just choose an absolutely monster range
+			res = null;
+		}
+		else
+		{
+			// ok, now we create the inner circle
+			res = (LinearRing) pt.buffer(theRange).getBoundary();
 
-		// ok, now we create the inner circle
-		Geometry res = pt.buffer(theRange);
+		}
 
-		return (Polygon) res;
+		return res;
 	}
 
 	public double getEstimate()
@@ -295,17 +317,17 @@ public class RangeForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minRange) + " - " + ((int) _maxRange);
+		return "" + ((int) _minRangeM) + " - " + ((int) _maxRangeM);
 	}
 
 	public double getMaxRange()
 	{
-		return _maxRange;
+		return _maxRangeM;
 	}
 
 	public double getMinRange()
 	{
-		return _minRange;
+		return _minRangeM;
 	}
 
 	public void setEstimate(double estimate)
@@ -315,21 +337,21 @@ public class RangeForecastContribution extends BaseContribution
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxRange(double maxRngDegs)
+	public void setMaxRange(double maxRngM)
 	{
-		double oldMaxRange = _maxRange;
+		double oldMaxRange = _maxRangeM;
 		String oldConstraints = getHardConstraints();
-		this._maxRange = maxRngDegs;
-		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngDegs);
+		this._maxRangeM = maxRngM;
+		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinRange(double minRngDegs)
+	public void setMinRange(double minRngM)
 	{
-		double oldMinRange = _minRange;
+		double oldMinRange = _minRangeM;
 		String oldConstraints = getHardConstraints();
-		this._minRange = minRngDegs;
-		firePropertyChange(MIN_RANGE, oldMinRange, minRngDegs);
+		this._minRangeM = minRngM;
+		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 

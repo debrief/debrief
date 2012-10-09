@@ -261,7 +261,8 @@ public class TrackGenerator implements SteppingGenerator
 			throw new RuntimeException("duh, have to reset before we can step again");
 
 		// ok, get the next contribution
-		BaseContribution thisC = (BaseContribution) _contribs.toArray()[_currentStep];
+		Object[] theArr = _contribs.toArray();
+		BaseContribution thisC = (BaseContribution) theArr[_currentStep];
 
 		// ok, go for it.
 		processThisStep(thisC, _currentStep);
