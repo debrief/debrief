@@ -292,7 +292,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + _measurements.size() + " measurements ";
+		return "" + _measurements.size() + " measurements " + (int)_degError + " Margin";
 	}
 
 	public double getBearingError()
@@ -303,17 +303,17 @@ public class BearingMeasurementContribution extends BaseContribution
 	public void addEstimate(double lat, double lon, Date date, double brg,
 			double range)
 	{
-		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
 		GeoPoint loc = new GeoPoint(lat, lon);
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
 		addThis(measure);
+		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
 	}
 
 	public void setBearingError(double errorDegs)
 	{
-		firePropertyChange(BEARING_ERROR, errorDegs, errorDegs);
 		String oldConstraints = getHardConstraints();
 		this._degError = errorDegs;
+		firePropertyChange(BEARING_ERROR, errorDegs, errorDegs);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
