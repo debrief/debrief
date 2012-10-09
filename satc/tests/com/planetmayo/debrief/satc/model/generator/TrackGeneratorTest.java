@@ -80,7 +80,8 @@ public class TrackGeneratorTest extends TestCase
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new FileInputStream(BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(new FileInputStream(
+				BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -95,6 +96,9 @@ public class TrackGeneratorTest extends TestCase
 		tg.addContribution(speedF);
 		tg.addContribution(bearingM);
 		tg.addContribution(courseF);
+
+		// check they've all loaded
+		assertEquals("have 3 contribs", 3, tg.contributions().size());
 
 		// reset the change counter;
 		_ctr1 = 0;
@@ -166,7 +170,7 @@ public class TrackGeneratorTest extends TestCase
 		{
 			_re = re;
 		}
-		
+
 		assertNotNull("should have thrown error when we step after end", _re);
 
 		tg.restart();
@@ -186,7 +190,8 @@ public class TrackGeneratorTest extends TestCase
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new FileInputStream(BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(new FileInputStream(
+				BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -204,7 +209,7 @@ public class TrackGeneratorTest extends TestCase
 
 		// reset the change counter;
 		_ctr1 = 0;
-		_ctr2 =0;
+		_ctr2 = 0;
 		_ctr3 = 0;
 
 		// listen out for track genny changes
@@ -253,17 +258,17 @@ public class TrackGeneratorTest extends TestCase
 
 		// ok, make some changes
 		courseF.setMinCourse(12);
-		
+
 		assertEquals("restart got fired", 1, _ctr3);
-		
+
 		// hey, chuck in a step
 		tg.run();
 
 		// did we even see it?
 		assertEquals("we saw two states bounded events (one for reset)", 2, _ctr1);
 		assertEquals("we saw debug steps", 3, _ctr2);
-		
-		_ctr1 = _ctr2 =  _ctr3 = 0;
+
+		_ctr1 = _ctr2 = _ctr3 = 0;
 
 		// ok, lets get fancy
 		courseF.setMaxCourse(44);
@@ -278,7 +283,7 @@ public class TrackGeneratorTest extends TestCase
 		// try an incompatible change, see what gets chucked!
 		assertNull("no exception yet", _ise);
 
-		_ctr1 = _ctr2 =  _ctr3 = 0;
+		_ctr1 = _ctr2 = _ctr3 = 0;
 
 		// trigger the trouble
 		courseF.setMinCourse(100);
@@ -287,7 +292,8 @@ public class TrackGeneratorTest extends TestCase
 		tg.run();
 
 		// hopefully something got triggered.
-		assertEquals("we saw debug steps before incompatible states got thrown", 2, _ctr2);
+		assertEquals("we saw debug steps before incompatible states got thrown", 2,
+				_ctr2);
 		assertNotNull("caught an exception", _ise);
 
 	}
