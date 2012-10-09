@@ -19,9 +19,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
-import com.planetmayo.debrief.satc.MockEngine;
-import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
+import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -36,13 +35,13 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 	private Action _debugMode;
 	private Action _resizeButton;
 	private XYSeriesCollection _myData;
-	private MockEngine _mockEngine;
 
 	/**
 	 * keep track of how many sets of series that we've plotted
 	 * 
 	 */
 	int _numCycles = 0;
+	private TrackGenerator _generator;
 
 	public void createPartControl(Composite parent)
 	{
@@ -59,10 +58,10 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 		bars.getToolBarManager().add(_resizeButton);
 
 		// start listening to data
-		_mockEngine = SATC_Activator.getDefault().getMockEngine();
-		if (_mockEngine != null)
+		_generator = MockMaintainContributionsView.getGenerator();
+		if (_generator != null)
 		{
-			_mockEngine.getGenerator().addBoundedStateListener(this);
+			_generator.addBoundedStateListener(this);
 		}
 
 	}
@@ -70,7 +69,8 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 	@Override
 	public void dispose()
 	{
-		_mockEngine.getGenerator().removeBoundedStateListener(this);
+		if (_generator != null)
+			_generator.removeBoundedStateListener(this);
 		super.dispose();
 	}
 
@@ -123,7 +123,7 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 
 		JFreeChart chart = ChartFactory.createScatterPlot("States", "Lat", "Lon",
 				_myData2, PlotOrientation.HORIZONTAL, false, false, false);
-		 _plot = (XYPlot) chart.getPlot();
+		_plot = (XYPlot) chart.getPlot();
 		_plot.setNoDataMessage("No data available");
 		_plot.setRenderer(_renderer);
 
@@ -146,13 +146,13 @@ public class SpatialView extends ViewPart implements BoundedStatesListener
 		{
 			_myData.removeSeries(i);
 		}
-		
+
 		// mark the remaining series as lapsed
-//		int len = _myData.getSeriesCount();
-//		for(int i=0;i<len;i++)
-//		{
-//			_renderer.setSeriesStroke(i, new DStroke())
-//		}
+		// int len = _myData.getSeriesCount();
+		// for(int i=0;i<len;i++)
+		// {
+		// _renderer.setSeriesStroke(i, new DStroke())
+		// }
 
 		// do we need to demote any shapes?
 		Iterator<BoundedState> iter = newStates.iterator();

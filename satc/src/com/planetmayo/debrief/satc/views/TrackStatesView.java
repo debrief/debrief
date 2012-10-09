@@ -24,7 +24,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange;
@@ -109,8 +108,9 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 	private TableViewer viewer;
 	private TrackGenerator _generator;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
-	
-	/** let user indicate whether we wish to display intermediate bounded states
+
+	/**
+	 * let user indicate whether we wish to display intermediate bounded states
 	 * 
 	 */
 	private Action _debugMode;
@@ -234,7 +234,7 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 				.setHelp(viewer.getControl(), "com.planetmayo.debrief.satc.viewer");
 
 		// hey, see if there's a track generator to listen to
-		_generator = SATC_Activator.getDefault().getMockEngine().getGenerator();
+		_generator = MockMaintainContributionsView.getGenerator();
 
 		// did it work?
 		if (_generator != null)
@@ -283,10 +283,10 @@ public class TrackStatesView extends ViewPart implements BoundedStatesListener
 	@Override
 	public void statesBounded(Collection<BoundedState> newStates)
 	{
-			if ((newStates == null) || (newStates.isEmpty()))
-				viewer.setInput(null);
-			else
-				viewer.setInput(newStates);
+		if ((newStates == null) || (newStates.isEmpty()))
+			viewer.setInput(null);
+		else
+			viewer.setInput(newStates);
 	}
 
 	@Override

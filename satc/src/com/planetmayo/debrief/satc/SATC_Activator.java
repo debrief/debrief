@@ -33,8 +33,6 @@ public class SATC_Activator extends AbstractUIPlugin
 
 	private BundleContext context;
 
-	private MockEngine _mockEngine;
-
 	public SATC_Activator()
 	{
 	}
@@ -43,14 +41,7 @@ public class SATC_Activator extends AbstractUIPlugin
 	{
 		getDefault().getLog().log(new Status(status,PLUGIN_ID, message, e));
 	}
-	
-	public MockEngine getMockEngine()
-	{
-		if (_mockEngine == null)
-			_mockEngine = new MockEngine();
 
-		return _mockEngine;
-	}
 
 	public <T> T getService(Class<T> serviceClass, boolean required)
 	{

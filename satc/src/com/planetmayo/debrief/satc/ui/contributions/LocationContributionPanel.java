@@ -9,13 +9,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 
-import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.ui.UIUtils;
 
 public class LocationContributionPanel extends AnalystContributionPanel
 {
 
-	private LocationForecastContribution contribution;
+	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
@@ -23,7 +23,7 @@ public class LocationContributionPanel extends AnalystContributionPanel
 	private Text estimateText;
 
 	public LocationContributionPanel(Composite parent,
-			LocationForecastContribution contribution)
+			BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;

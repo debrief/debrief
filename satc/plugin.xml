@@ -9,6 +9,20 @@
             id="com.planetmayo.debrief.satc">
       </category>
       <view
+            name="Mock Maintain Contributions"
+            icon="icons/sample.gif"
+            category="com.planetmayo.debrief.satc"
+            class="com.planetmayo.debrief.satc.views.MockMaintainContributionsView"
+            id="com.planetmayo.debrief.satc.views.MockMaintainContributionsView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Debrief SATC"
+            id="com.planetmayo.debrief.satc">
+      </category>
+      <view
             name="Maintain Contributions"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"

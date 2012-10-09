@@ -156,8 +156,7 @@ public class TestHarnessView extends ViewPart
 		contributeToActionBars();
 
 		// hey, see if there's a track generator to listen to
-		_generator = SATC_Activator.getDefault().getMockEngine().getGenerator();
-
+		_generator = MockMaintainContributionsView.getGenerator();
 		if (_generator == null)
 			SATC_Activator.log(Status.ERROR, "Failed to find generator", null);
 		else
@@ -216,7 +215,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				loadSampleData(false);	
+				loadSampleData(false);
 			}
 		};
 		_populateShortAction.setText("Populate Short");
@@ -227,7 +226,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				loadSampleData(true);	
+				loadSampleData(true);
 			}
 		};
 		_populateLongAction.setText("Populate");
@@ -277,30 +276,28 @@ public class TestHarnessView extends ViewPart
 	{
 		viewer.getControl().setFocus();
 	}
-	
 
 	@SuppressWarnings("deprecation")
 	private void loadSampleData(boolean useLong)
 	{
 		// clear the geneartor first
 		_generator.contributions().clear();
-		
-		// now load some data		
+
+		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
 		final String thePath;
-		if(useLong)
-			thePath= BearingMeasurementContributionTest.THE_PATH;
+		if (useLong)
+			thePath = BearingMeasurementContributionTest.THE_PATH;
 		else
-			thePath= BearingMeasurementContributionTest.THE_SHORT_PATH;
-			
-		URL fileURL = bundle
-				.getEntry(thePath);
+			thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
+
+		URL fileURL = bundle.getEntry(thePath);
 		FileInputStream input;
 		try
 		{
-			input = new FileInputStream(new File(FileLocator.resolve(fileURL)
-					.toURI()));
+			input = new FileInputStream(
+					new File(FileLocator.resolve(fileURL).toURI()));
 			bmc.loadFrom(input);
 			_generator.addContribution(bmc);
 		}
@@ -314,7 +311,7 @@ public class TestHarnessView extends ViewPart
 		speed.setMinSpeed(12);
 		speed.setMaxSpeed(43);
 		_generator.addContribution(speed);
-		
+
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
 		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
@@ -322,7 +319,7 @@ public class TestHarnessView extends ViewPart
 		course.setMinCourse(45);
 		course.setMaxCourse(81);
 		_generator.addContribution(course);
-		
+
 		// hey, how about a time-bounded course constraint?
 		SpeedForecastContribution speed2 = new SpeedForecastContribution();
 		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
@@ -331,8 +328,6 @@ public class TestHarnessView extends ViewPart
 		speed2.setMaxSpeed(27);
 		_generator.addContribution(course);
 
-		
-		
 	}
 
 }

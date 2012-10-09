@@ -16,12 +16,12 @@ import com.planetmayo.debrief.satc.ui.UIUtils;
 public class CourseContributionPanel extends AnalystContributionPanel
 {
 
-	private CourseForecastContribution contribution;
+	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
 	public CourseContributionPanel(Composite parent,
-			CourseForecastContribution contribution)
+			BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;
