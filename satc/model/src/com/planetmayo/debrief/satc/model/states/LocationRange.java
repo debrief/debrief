@@ -89,11 +89,13 @@ public class LocationRange extends BaseRange<LocationRange>
 		String res = "N/A";
 		if (_myArea != null)
 		{
-			NumberFormat df = new DecimalFormat("0.0000");
+		//	NumberFormat df = new DecimalFormat("0.0000");
 			Geometry theBoundary = _myArea.convexHull();
 			;
 			double theArea = theBoundary.getArea();
-			res = _myArea.getCoordinates().length + "pts " + df.format(theArea);
+			
+			// TODO: the next line should have better formatting
+			res = _myArea.getCoordinates().length + "pts " + (int)(theArea * 100000);
 		}
 		return res;
 	}

@@ -11,7 +11,10 @@
   <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
-  <!-- Other module inherits                                      -->
+  <!-- Other module inherits     -->
+  <inherits name="com.planetmayo.debrief.satc" />                                 
+  <inherits name='net.sf.jts4gwt.JTS4GWT'/>
+  <inherits name="com.googlecode.gwtx.Java"/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.planetmayo.debrief.satc.gwt.client.Gwt'/>
