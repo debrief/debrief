@@ -92,7 +92,7 @@ public class RangeForecastContribution extends BaseContribution
 		{
 
 			// Get the object of DataInputStream
-			// DataInputStream in = new DataInputStream(fstream);
+			// TODO: we need UI-sensitive way of doing this
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
 			String strLine;
