@@ -6,7 +6,7 @@ import java.beans.PropertyChangeSupport;
 public abstract class ModelObject
 {
 
-	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+	private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
