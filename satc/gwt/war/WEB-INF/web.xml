@@ -6,15 +6,7 @@
          xmlns="http://java.sun.com/xml/ns/javaee">
 
   <!-- Servlets -->
-  <servlet>
-    <servlet-name>greetServlet</servlet-name>
-    <servlet-class>com.planetmayo.debrief.satc.gwt.server.GreetingServiceImpl</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>greetServlet</servlet-name>
-    <url-pattern>/gwt/greet</url-pattern>
-  </servlet-mapping>
+
   
   <!-- Default page to serve -->
   <welcome-file-list>
