@@ -15,6 +15,7 @@
   <inherits name="com.planetmayo.debrief.satc" />                                 
   <inherits name='net.sf.jts4gwt.JTS4GWT'/>
   <inherits name="com.googlecode.gwtx.Java"/>
+  <inherits name="com.google.gwt.junit.JUnit"/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.planetmayo.debrief.satc.gwt.client.Gwt'/>
