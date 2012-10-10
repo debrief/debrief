@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 public class LocationAnalysisContribution extends BaseContribution
 {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException

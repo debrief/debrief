@@ -8,6 +8,9 @@ import com.vividsolutions.jts.geom.Point;
 
 public class GeoPoint extends ModelObject
 {
+	
+	private static final long serialVersionUID = 1L;
+	
 	public static final String LAT = "lat";
 	public static final String LON = "lon";
 	

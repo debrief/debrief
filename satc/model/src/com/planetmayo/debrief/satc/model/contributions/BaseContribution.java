@@ -9,6 +9,8 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 public abstract class BaseContribution extends ModelObject implements
 		Comparable<BaseContribution>
 {
+	private static final long serialVersionUID = 1L;
+	
 	public static final String WEIGHT = "weight";
 	public static final String START_DATE = "startDate";
 	public static final String NAME = "name";

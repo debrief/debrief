@@ -2,10 +2,12 @@ package com.planetmayo.debrief.satc.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 
-public abstract class ModelObject
+public abstract class ModelObject implements Serializable
 {
-
+	private static final long serialVersionUID = 1L;
+	
 	private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener)

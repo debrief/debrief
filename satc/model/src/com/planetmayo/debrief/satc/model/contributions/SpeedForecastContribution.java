@@ -11,6 +11,7 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedForecastContribution extends BaseContribution
 {
+	private static final long serialVersionUID = 1L;
 
 	public static final String MIN_SPEED = "minSpeed";
 
