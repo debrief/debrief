@@ -88,7 +88,7 @@ public abstract class BaseContribution extends ModelObject implements
 
 	public void setName(String name)
 	{
-		String oldName = name;
+		String oldName = _name;
 		_name = name;
 		firePropertyChange(NAME, oldName, name);
 	}

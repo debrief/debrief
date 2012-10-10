@@ -1,10 +1,14 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.util.GeoPoint;
 
 public class LocationForecastContribution extends BaseContribution
 {
+	public static final String LIMIT = "limit";
 
 	/**
 	 * create a sample, for testing
@@ -23,6 +27,16 @@ public class LocationForecastContribution extends BaseContribution
 	private int _limit;
 
 	private GeoPoint _estimate;
+	
+	private PropertyChangeListener estimateDetailsListener = new PropertyChangeListener()
+	{
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _estimate);
+		}
+	};
 
 	@Override
 	public void actUpon(ProblemSpace space)
@@ -51,7 +65,13 @@ public class LocationForecastContribution extends BaseContribution
 	{
 		GeoPoint oldEstimate = _estimate;
 		_estimate = estimate;
-		firePropertyChange("estimate", oldEstimate, estimate);
+		if (oldEstimate != null) {
+			oldEstimate.removePropertyChangeListener(estimateDetailsListener);
+		}
+		if (estimate != null) {
+			estimate.addPropertyChangeListener(estimateDetailsListener);	
+		}		
+		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
 	public void setLimit(int limit)
@@ -59,8 +79,8 @@ public class LocationForecastContribution extends BaseContribution
 		String oldHardConstraints = getHardConstraints();
 		int oldLimit = _limit;
 		_limit = limit;
-		firePropertyChange("limit", oldLimit, limit);
-		firePropertyChange("hardConstraints", oldHardConstraints,
+		firePropertyChange(LIMIT, oldLimit, limit);
+		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints,
 				getHardConstraints());
 	}
 

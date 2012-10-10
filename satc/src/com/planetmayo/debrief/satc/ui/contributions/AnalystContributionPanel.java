@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -23,9 +24,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc.ui.UIUtils;
 import com.planetmayo.debrief.satc.ui.widgets.ExpandButton;
 
@@ -43,6 +44,7 @@ public abstract class AnalystContributionPanel
 	protected Label estimateLabel;
 	protected Spinner weightSpinner;
 
+	protected Text contributionNameText;
 	protected DateTime startDate;
 	protected DateTime startTime;
 	protected DateTime endDate;
@@ -107,6 +109,24 @@ public abstract class AnalystContributionPanel
 				endTime);
 		context.bindValue(new DateAndTimeObservableValue(endDateWidget,
 				endTimeWidget), endDateValue);
+		
+		IObservableValue nameValue = BeansObservables.observeValue(contribution, BaseContribution.NAME);
+		IObservableValue nameText = WidgetProperties.text(SWT.Modify).observe(contributionNameText);
+		context.bindValue(nameText, nameValue);
+	}
+	
+	/**
+	 * Utility base method which binds common header widgets: "active" checkbox,
+	 * hardconstrains label, estimate label, weight spinner. Must be called if
+	 * necessary from implementation of bindValues method in child class
+	 * 
+	 * @param context
+	 * @param contribution
+	 * @param labelsConverter
+	 */
+	protected final void bindCommonHeaderWidgets(DataBindingContext context,
+			BaseContribution contribution, IConverter labelConverter) {
+		bindCommonHeaderWidgets(context, contribution, labelConverter, labelConverter);
 	}
 
 	/**
@@ -119,7 +139,8 @@ public abstract class AnalystContributionPanel
 	 * @param labelsConverter
 	 */
 	protected final void bindCommonHeaderWidgets(DataBindingContext context,
-			BaseContribution contribution, PrefixSuffixLabelConverter labelsConverter)
+			BaseContribution contribution, IConverter estimateConverter,
+			IConverter hardConstraintsConverter)
 	{
 		IObservableValue activeValue = BeansObservables.observeValue(contribution,
 				BaseContribution.ACTIVE);
@@ -132,7 +153,14 @@ public abstract class AnalystContributionPanel
 		IObservableValue hardContraintLabel = WidgetProperties.text().observe(
 				hardConstraintLabel);
 		context.bindValue(hardContraintLabel, hardContraintValue, null,
-				UIUtils.converterStrategy(labelsConverter));
+				UIUtils.converterStrategy(hardConstraintsConverter));
+
+		IObservableValue estimateValue = BeansObservables.observeValue(
+				contribution, BaseContribution.ESTIMATE);
+		IObservableValue estimateLabel = WidgetProperties.text().observe(
+				this.estimateLabel);
+		context.bindValue(estimateLabel, estimateValue, null,
+				UIUtils.converterStrategy(estimateConverter));
 
 		IObservableValue weightValue = BeansObservables.observeValue(contribution,
 				BaseContribution.WEIGHT);
@@ -167,6 +195,10 @@ public abstract class AnalystContributionPanel
 		bodyGroup.setText("Adjust");
 		bodyGroup.setLayout(new GridLayout(2, false));
 
+		UIUtils.createLabel(bodyGroup, "Name:", new GridData(120, SWT.DEFAULT));
+		contributionNameText = new Text(bodyGroup, SWT.BORDER);
+		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
 		UIUtils.createLabel(bodyGroup, "Start:", new GridData(120, SWT.DEFAULT));
 		Composite startDateGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
