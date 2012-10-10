@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.views;
+package com.planetmayo.debrief.satc_rcp.views;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;

@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.views;
+package com.planetmayo.debrief.satc_rcp.views;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -20,7 +20,6 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -28,10 +27,11 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
-import com.planetmayo.debrief.satc.ui.UIUtils;
-import com.planetmayo.debrief.satc.ui.contributions.CourseContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.LocationContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
 
 public class MaintainContributionsView extends ViewPart
 {

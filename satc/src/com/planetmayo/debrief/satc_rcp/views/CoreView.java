@@ -1,10 +1,10 @@
-package com.planetmayo.debrief.satc.views;
+package com.planetmayo.debrief.satc_rcp.views;
 
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc.ui.PartMonitor;
+import com.planetmayo.debrief.satc_rcp.ui.PartMonitor;
 
 public abstract class CoreView extends ViewPart
 {

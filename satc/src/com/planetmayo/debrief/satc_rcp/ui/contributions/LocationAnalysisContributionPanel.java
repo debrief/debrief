@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.ui.contributions;
+package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.beans.PropertyChangeListener;
 
@@ -6,7 +6,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 
 public class LocationAnalysisContributionPanel extends AnalystContributionPanel
 {

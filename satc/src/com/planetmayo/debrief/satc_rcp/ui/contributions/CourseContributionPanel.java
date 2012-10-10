@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.ui.contributions;
+package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.beans.PropertyChangeListener;
 
@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
-import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class CourseContributionPanel extends AnalystContributionPanel
 {

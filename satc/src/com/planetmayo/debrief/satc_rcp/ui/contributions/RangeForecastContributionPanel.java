@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.ui.contributions;
+package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.beans.PropertyChangeListener;
 
@@ -9,18 +9,18 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc.ui.UIUtils;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class SpeedContributionPanel extends AnalystContributionPanel
+public class RangeForecastContributionPanel extends AnalystContributionPanel
 {
 
 	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public SpeedContributionPanel(Composite parent,
+	public RangeForecastContributionPanel(Composite parent,
 			BaseContribution contribution)
 	{
 		super(parent);
@@ -33,7 +33,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 	{
 		context = new DataBindingContext();
 
-		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " kts");
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " m");
 		bindCommonHeaderWidgets(context, contribution,
 				labelsConverter);
 		bindCommonDates(context, contribution);
@@ -46,7 +46,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 				UIUtils.converterStrategy(labelsConverter));
 
 		IObservableValue minSpeedValue = BeansObservables.observeValue(
-				contribution, SpeedForecastContribution.MIN_SPEED);
+				contribution, RangeForecastContribution.MIN_RANGE);
 		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(
 				minSlider);
 		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
@@ -59,10 +59,10 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 		context.bindValue(maxSliderMin, minSpeedValue);
 		context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"min: ", " kts")));
+						"min: ", " m")));
 
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
-				contribution, SpeedForecastContribution.MAX_SPEED);
+				contribution, RangeForecastContribution.MAX_RANGE);
 		IObservableValue maxSpeedSlider = WidgetProperties.selection().observe(
 				maxSlider);
 		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
@@ -75,7 +75,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 		context.bindValue(minSliderMax, maxSpeedValue);
 		context.bindValue(maxSpeedLabel, maxSpeedValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"max: ", " kts")));
+						"max: ", "m")));
 
 		IObservableValue estimateSliderValue = WidgetProperties.selection()
 				.observe(estimateSlider);
@@ -84,7 +84,7 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"Estimate: ", " kts")));
+						"Estimate: ", " m")));
 	}
 
 	@Override
@@ -99,6 +99,9 @@ public class SpeedContributionPanel extends AnalystContributionPanel
 	protected void initializeWidgets()
 	{
 		titleChangeListener = attachTitleChangeListener(contribution,
-				"Speed Forecast - ");
+				"Range Forecast - ");
+		
+		// give a monster max range
+		maxSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 	}
 }

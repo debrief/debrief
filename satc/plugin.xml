@@ -12,8 +12,8 @@
             name="Mock Maintain Contributions"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc.views.MockMaintainContributionsView"
-            id="com.planetmayo.debrief.satc.views.MockMaintainContributionsView">
+            class="com.planetmayo.debrief.satc_rcp.views.MockMaintainContributionsView"
+            id="com.planetmayo.debrief.satc_rcp.views.MockMaintainContributionsView">
       </view>
    </extension>
    <extension
@@ -26,8 +26,8 @@
             name="Maintain Contributions"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc.views.MaintainContributionsView"
-            id="com.planetmayo.debrief.satc.views.MaintainContributionsView">
+            class="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView"
+            id="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView">
       </view>
    </extension>
          <extension
@@ -40,8 +40,8 @@
             name="Spatial View"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc.views.SpatialView"
-            id="com.planetmayo.debrief.satc.views.SpatialView">
+            class="com.planetmayo.debrief.satc_rcp.views.SpatialView"
+            id="com.planetmayo.debrief.satc_rcp.views.SpatialView">
       </view>
    </extension>
       <extension
@@ -54,8 +54,8 @@
             name="Track States"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc.views.TrackStatesView"
-            id="com.planetmayo.debrief.satc.views.TrackStatesView">
+            class="com.planetmayo.debrief.satc_rcp.views.TrackStatesView"
+            id="com.planetmayo.debrief.satc_rcp.views.TrackStatesView">
       </view>
    </extension>
       <extension
@@ -68,8 +68,8 @@
             name="Test Harness"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc.views.TestHarnessView"
-            id="com.planetmayo.debrief.satc.views.TestHarnessView">
+            class="com.planetmayo.debrief.satc_rcp.views.TestHarnessView"
+            id="com.planetmayo.debrief.satc_rcp.views.TestHarnessView">
       </view>
    </extension>
    <extension
@@ -82,8 +82,8 @@
             name="Sample View"
             icon="icons/sample.gif"
             category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc.views.SampleView"
-            id="com.planetmayo.debrief.satc.views.SampleView">
+            class="com.planetmayo.debrief.satc_rcp.views.SampleView"
+            id="com.planetmayo.debrief.satc_rcp.views.SampleView">
       </view>
    </extension>   
    <extension

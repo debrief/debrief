@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.views;
+package com.planetmayo.debrief.satc_rcp.views;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +27,6 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 
-import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -38,6 +37,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view

@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc;
+package com.planetmayo.debrief.satc_rcp;
 
 import java.util.Hashtable;
 

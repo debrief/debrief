@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.views;
+package com.planetmayo.debrief.satc_rcp.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,14 +37,14 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
-import com.planetmayo.debrief.satc.ui.UIUtils;
-import com.planetmayo.debrief.satc.ui.contributions.AnalystContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.BearingMeasurementContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.CourseContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.LocationAnalysisContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.LocationContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.RangeForecastContributionPanel;
-import com.planetmayo.debrief.satc.ui.contributions.SpeedContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationAnalysisContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
 
 /**
  * mock class to test high level application flows

@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.ui.contributions;
+package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Scale;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
-import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class LocationContributionPanel extends AnalystContributionPanel
 {

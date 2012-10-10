@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.planetmayo.debrief.satc.ui;
+package com.planetmayo.debrief.satc_rcp.ui;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
 
-import com.planetmayo.debrief.satc.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class PartMonitor implements IPartListener
 {

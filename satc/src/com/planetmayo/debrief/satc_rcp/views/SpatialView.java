@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.views;
+package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.Color;
 import java.util.Collection;

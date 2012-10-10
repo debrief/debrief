@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.ui.widgets;
+package com.planetmayo.debrief.satc_rcp.ui.widgets;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.planetmayo.debrief.satc.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class ExpandButton
 {
