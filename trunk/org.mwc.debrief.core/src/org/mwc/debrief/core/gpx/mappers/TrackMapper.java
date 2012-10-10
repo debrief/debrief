@@ -1,6 +1,9 @@
 package org.mwc.debrief.core.gpx.mappers;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -17,10 +20,12 @@ import org.w3c.dom.Node;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.Editable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 
 import com.topografix.gpx.v11.ExtensionsType;
 import com.topografix.gpx.v11.GpxType;
+import com.topografix.gpx.v11.ObjectFactory;
 import com.topografix.gpx.v11.TrkType;
 import com.topografix.gpx.v11.TrksegType;
 import com.topografix.gpx.v11.WptType;
@@ -41,6 +46,7 @@ public class TrackMapper implements DebriefJaxbContextAware
 	private final TrackSegmentMapper segmentMapper = new TrackSegmentMapper();
 	private final FixMapper fixMapper = new FixMapper();
 	private JAXBContext debriefContext;
+	private static final ObjectFactory GPX_OBJ_FACTORY = new ObjectFactory();
 
 	public List<TrackWrapper> fromGpx(GpxType gpx)
 	{
@@ -70,9 +76,49 @@ public class TrackMapper implements DebriefJaxbContextAware
 		return tracks;
 	}
 
-	public String toGpx(List<TrackWrapper> tracks)
+	public List<TrkType> toGpx(List<TrackWrapper> tracks)
 	{
-		return null;
+		List<TrkType> gpxTracks = new ArrayList<TrkType>(tracks.size());
+		for (TrackWrapper track : tracks)
+		{
+			TrkType gpxTrack = GPX_OBJ_FACTORY.createTrkType();
+			gpxTrack.setName(track.getName());
+
+			Enumeration<Editable> segs = track.getSegments().elements();
+			while (segs.hasMoreElements())
+			{
+				Editable nextElement = segs.nextElement();
+
+				if (nextElement instanceof TrackSegment)
+				{
+					exportSegment(gpxTrack, nextElement);
+				}
+				else
+				{
+					CorePlugin.logError(Status.INFO, "Ignoring " + nextElement + " while marshalling Track GPX as it is not a Fix", null);
+				}
+			}
+			gpxTracks.add(gpxTrack);
+		}
+		return gpxTracks;
+	}
+
+	private void exportSegment(TrkType gpxTrack, Editable nextElement)
+	{
+		TrackSegment seg = (TrackSegment) nextElement;
+		TrksegType gpxSeg = GPX_OBJ_FACTORY.createTrksegType();
+		gpxTrack.getTrkseg().add(gpxSeg);
+		exportFixes(seg, gpxSeg);
+	}
+
+	private void exportFixes(TrackSegment seg, TrksegType gpxSeg)
+	{
+		Collection<Editable> pts = seg.getData();
+		for (Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
+		{
+			FixWrapper fix = (FixWrapper) iterator.next();
+			gpxSeg.getTrkpt().add(fixMapper.toGpx(fix));
+		}
 	}
 
 	private void mapGpxTrack(TrkType gpxTrack, TrackWrapper track)
@@ -112,7 +158,6 @@ public class TrackMapper implements DebriefJaxbContextAware
 		{
 			CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
 		}
-
 	}
 
 	@Override

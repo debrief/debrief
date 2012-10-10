@@ -2,11 +2,14 @@ package org.mwc.debrief.core.loaders;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBIntrospector;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -18,9 +21,14 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.gpx.mappers.TrackMapper;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 
 import com.topografix.gpx.v11.GpxType;
+import com.topografix.gpx.v11.MetadataType;
+import com.topografix.gpx.v11.ObjectFactory;
+import com.topografix.gpx.v11.PersonType;
+import com.topografix.gpx.v11.TrkType;
 
 /**
  * JAXB based implementation for marhsalling and unmarshalling. EclipseLink is
@@ -38,7 +46,8 @@ public class JaxbGpxHelper implements GpxHelper
 	private static JAXBContext DEBRIEF_EXTENSIONS_JAXB_CTX;
 
 	private final TrackMapper trackMapper = new TrackMapper();
-	private final XMLInputFactory xif = XMLInputFactory.newInstance();;
+	private final XMLInputFactory xif = XMLInputFactory.newInstance();
+	private static final ObjectFactory GPX_OBJ_FACTORY = new ObjectFactory();
 
 	static
 	{
@@ -49,7 +58,7 @@ public class JaxbGpxHelper implements GpxHelper
 		}
 		catch (JAXBException e)
 		{
-			e.printStackTrace();
+			throw new IllegalStateException("Exception while initialzing JAXB Context", e);
 		}
 	}
 
@@ -67,7 +76,6 @@ public class JaxbGpxHelper implements GpxHelper
 		}
 		try
 		{
-
 			XMLStreamReader xsr = xif.createXMLStreamReader(gpxStream);
 			xsr = new GpxNamespaceTransposingStreamReaderDelegate(xsr);
 
@@ -104,8 +112,54 @@ public class JaxbGpxHelper implements GpxHelper
 	@Override
 	public void marshall(Layers from, File saveToGpx)
 	{
-		// TODO Auto-generated method stub
+		try
+		{
+			List<TrackWrapper> tracks = getTracksToMarshall(from);
 
+			if (tracks.size() > 0)
+			{
+				CorePlugin.logError(Status.INFO, "Exporting " + tracks.size() + " tracks to gpx file " + saveToGpx.getAbsolutePath(), null);
+
+				GpxType gpxType = GPX_OBJ_FACTORY.createGpxType();
+
+				MetadataType metadataType = GPX_OBJ_FACTORY.createMetadataType();
+				gpxType.setMetadata(metadataType);
+
+				PersonType personType = GPX_OBJ_FACTORY.createPersonType();
+				personType.setName(System.getProperty("user.name"));
+				metadataType.setAuthor(personType);
+
+				List<TrkType> gpxTracks = trackMapper.toGpx(tracks);
+				gpxType.getTrk().addAll(gpxTracks);
+
+				Marshaller marshaller = GPX_JAXB_CTX.createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				marshaller.marshal(gpxType, saveToGpx);
+			}
+			else
+			{
+				CorePlugin.logError(Status.INFO, "No tracks vailable to export", null);
+			}
+		}
+		catch (JAXBException e)
+		{
+			CorePlugin.logError(Status.ERROR, "Error while marshalling to file GPX format: " + saveToGpx.getAbsolutePath(), e);
+		}
+	}
+
+	private List<TrackWrapper> getTracksToMarshall(Layers from)
+	{
+		Enumeration<Editable> allLayers = from.elements();
+		List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+		while (allLayers.hasMoreElements())
+		{
+			Editable element = allLayers.nextElement();
+			if (element instanceof TrackWrapper)
+			{
+				tracks.add((TrackWrapper) element);
+			}
+		}
+		return tracks;
 	}
 
 	public boolean isValid(InputStream gpxStream)
