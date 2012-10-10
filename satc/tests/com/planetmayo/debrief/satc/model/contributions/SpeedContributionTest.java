@@ -9,6 +9,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedContributionTest extends TestCase
 {
@@ -16,8 +17,8 @@ public class SpeedContributionTest extends TestCase
 	public void testNullDateSingleState() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(12d);
-		sc.setMaxSpeed(22d);
+		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
+		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
 
 		ProblemSpace ps = new ProblemSpace();
 		ps.add(new BoundedState(new Date(2012, 3, 3)));
@@ -30,8 +31,8 @@ public class SpeedContributionTest extends TestCase
 		// should be two states
 		assertEquals("still have one state", 1, ps.size());
 		final BoundedState theState = ps.states().iterator().next();
-		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
-		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
+		assertEquals("correct limits", 12d, theState.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, theState.getSpeed().getMaxMS());
 		
 		assertEquals("correct description", "12 - 22", theState.getSpeed().getConstraintSummary());
 	}
@@ -40,8 +41,8 @@ public class SpeedContributionTest extends TestCase
 	public void testNullDateDoubleStates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(12d);
-		sc.setMaxSpeed(22d);
+		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
+		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
 
 		ProblemSpace ps = new ProblemSpace();
 		ps.add(new BoundedState(new Date(2012, 3, 3)));
@@ -57,18 +58,18 @@ public class SpeedContributionTest extends TestCase
 		Iterator<BoundedState> iter = ps.states().iterator();
 		final BoundedState first = iter.next();
 		final BoundedState second = iter.next();
-		assertEquals("correct limits", 12d, first.getSpeed().getMin());
-		assertEquals("correct limits", 22d, first.getSpeed().getMax());
-		assertEquals("correct limits", 12d, second.getSpeed().getMin());
-		assertEquals("correct limits", 22d, second.getSpeed().getMax());
+		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
 	}
 
 	@SuppressWarnings("deprecation")
 	public void testWithDates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(12d);
-		sc.setMaxSpeed(22d);
+		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
+		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
@@ -86,10 +87,10 @@ public class SpeedContributionTest extends TestCase
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMin());
-		assertEquals("correct limits", 22d, first.getSpeed().getMax());
-		assertEquals("correct limits", 12d, second.getSpeed().getMin());
-		assertEquals("correct limits", 22d, second.getSpeed().getMax());
+		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
 
 	}
 	
@@ -97,8 +98,8 @@ public class SpeedContributionTest extends TestCase
 	public void testWithDateNotAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(12d);
-		sc.setMaxSpeed(22d);
+		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
+		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
@@ -112,8 +113,8 @@ public class SpeedContributionTest extends TestCase
 
 		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
-		assertEquals("correct limits before new constraints", 15d, first.getSpeed().getMin());
-		assertEquals("correct limits before new constraints", 25d, first.getSpeed().getMax());
+		assertEquals("correct limits before new constraints", 15d, first.getSpeed().getMinMS());
+		assertEquals("correct limits before new constraints", 25d, first.getSpeed().getMaxMS());
 
 		sc.actUpon(ps);
 
@@ -125,20 +126,20 @@ public class SpeedContributionTest extends TestCase
 		BoundedState second = iter.next();
 		BoundedState third = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMin());
-		assertEquals("correct limits", 22d, first.getSpeed().getMax());
-		assertEquals("correct limits (using existing constraint)", 15d, second.getSpeed().getMin());
-		assertEquals("correct limits", 22d, second.getSpeed().getMax());
-		assertEquals("correct limits", 12d, third.getSpeed().getMin());
-		assertEquals("correct limits", 22d, third.getSpeed().getMax());
+		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
+		assertEquals("correct limits (using existing constraint)", 15d, second.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, third.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, third.getSpeed().getMaxMS());
 
 	}
 	@SuppressWarnings("deprecation")
 	public void testWithDateAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(12d);
-		sc.setMaxSpeed(22d);
+		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
+		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
@@ -157,10 +158,10 @@ public class SpeedContributionTest extends TestCase
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMin());
-		assertEquals("correct limits", 22d, first.getSpeed().getMax());
-		assertEquals("correct limits", 12d, second.getSpeed().getMin());
-		assertEquals("correct limits", 22d, second.getSpeed().getMax());
+		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
+		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
 
 	}
 

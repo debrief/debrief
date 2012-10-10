@@ -12,6 +12,14 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
  */
 public interface BoundedStatesListener
 {
+	
+	/** a contribution has acted upon the set of bounded states,
+	 * this is mostly intended for a debug-mode style of operation
+	 * 
+	 * @param newStates
+	 */
+	public void debugStatesBounded(Collection<BoundedState> newStates);
+	
 	/** the set of states have been defined, and bounded
 	 * 
 	 * @param newStates

@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.generator;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -74,6 +75,10 @@ public class TrackGenerator implements SteppingGenerator
 		{
 			// let our custom method handle it
 			restart();
+			
+			// aah, but are we auto-running?
+			if(_liveRunning)
+				run();
 		}
 	};
 
@@ -83,15 +88,23 @@ public class TrackGenerator implements SteppingGenerator
 	 */
 	private int _currentStep = 0;
 
+	/** whether we auto=run after each contribution chagne
+	 * 
+	 */
+	private boolean _liveRunning;
+
 	protected void processThisStep(BaseContribution theContrib, int stepIndex)
 	{
 		try
 		{
 
-			theContrib.actUpon(_space);
-
-			// tell everybody the bounded states have changed
-			broadcastBoundedStates();
+			if (theContrib.isActive())
+			{
+				theContrib.actUpon(_space);
+				
+				// tell everybody the bounded states have changed
+				broadcastBoundedStatesDebug();
+			}
 
 			// and tell any step listeners
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
@@ -117,6 +130,18 @@ public class TrackGenerator implements SteppingGenerator
 			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
 		}
 
+	}
+
+	private void broadcastBoundedStatesDebug()
+	{
+		// now share the good news
+		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		while (iter2.hasNext())
+		{
+			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
+					.next();
+			boundedStatesListener.debugStatesBounded(_space.states());
+		}
 	}
 
 	private void broadcastBoundedStates()
@@ -193,9 +218,9 @@ public class TrackGenerator implements SteppingGenerator
 		}
 	}
 
-	public Iterator<BaseContribution> contributions()
+	public Collection<BaseContribution> contributions()
 	{
-		return _contribs.iterator();
+		return _contribs;
 	}
 
 	public void addSteppingListener(SteppingListener newListener)
@@ -232,11 +257,12 @@ public class TrackGenerator implements SteppingGenerator
 	@Override
 	public void step()
 	{
-		if(_currentStep >= _contribs.size())
+		if (_currentStep >= _contribs.size())
 			throw new RuntimeException("duh, have to reset before we can step again");
-		
+
 		// ok, get the next contribution
-		BaseContribution thisC = (BaseContribution) _contribs.toArray()[_currentStep];
+		Object[] theArr = _contribs.toArray();
+		BaseContribution thisC = (BaseContribution) theArr[_currentStep];
 
 		// ok, go for it.
 		processThisStep(thisC, _currentStep);
@@ -255,6 +281,9 @@ public class TrackGenerator implements SteppingGenerator
 						.next();
 				stepper.complete();
 			}
+
+			// tell any listeners that the final bounds have been updated
+			broadcastBoundedStates();
 		}
 	}
 
@@ -275,7 +304,7 @@ public class TrackGenerator implements SteppingGenerator
 					.next();
 			stepper.restarted();
 		}
-		
+
 		// and tell them about the new bounded states
 		broadcastBoundedStates();
 	}
@@ -288,6 +317,43 @@ public class TrackGenerator implements SteppingGenerator
 		{
 			step();
 		}
+	}
+
+	/** ditch all of the contributions
+	 * 
+	 */
+	public void clear()
+	{
+		// ditch the bounded states first
+		this.restart();
+		
+		// clear out the contributions
+		// take a copy, since we're going to be modifying the list
+		BaseContribution[] safeList = _contribs.toArray(new BaseContribution[]{});
+		
+		for (int i = 0; i < safeList.length; i++)
+		{
+			BaseContribution contrib = safeList[i];
+			this.removeContribution(contrib);
+		}
+	}
+
+	/** specify whether we should do a 'run' after each contribution change
+	 * 
+	 * @param checked
+	 */
+	public void setLiveRunning(boolean checked)
+	{
+		_liveRunning = checked;
+	}
+
+	/** indicate whether we do 'run' after each contr change
+	 * 
+	 * @return
+	 */
+	public boolean isLiveEnabled()
+	{
+		return _liveRunning;
 	}
 
 }

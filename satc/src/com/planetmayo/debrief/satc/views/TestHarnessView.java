@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,15 +25,19 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.ViewPart;
 import org.osgi.framework.Bundle;
 
 import com.planetmayo.debrief.satc.SATC_Activator;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -51,7 +54,7 @@ import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
  * <p>
  */
 
-public class TestHarnessView extends ViewPart
+public class TestHarnessView extends CoreView
 {
 
 	class NameSorter extends ViewerSorter
@@ -115,10 +118,12 @@ public class TestHarnessView extends ViewPart
 
 	private Action _restartAction;
 	private Action _stepAction;
+	private Action _clearAction;
 	private Action _playAction;
-	private Action _populateAction;
-
-	private TrackGenerator _generator;
+	private Action _populateShortAction;
+	private Action _populateLongAction;
+	private Action _liveAction;
+	private Action _testOne;
 
 	/**
 	 * The constructor.
@@ -154,23 +159,14 @@ public class TestHarnessView extends ViewPart
 		hookContextMenu();
 		contributeToActionBars();
 
-		// hey, see if there's a track generator to listen to
-		_generator = SATC_Activator.getDefault().getMockEngine().getGenerator();
+		// disable our controls, until we find a genny
+		stopListeningTo(null);
 
-		if (_generator == null)
-			SATC_Activator.log(Status.ERROR, "Failed to find generator", null);
-		else
-			SATC_Activator.log(Status.INFO, "Found generator:", null);
-
-		// did it work?
-		if (_generator != null)
-		{
-			// ok, we can enable our buttons
-			_populateAction.setEnabled(true);
-			_restartAction.setEnabled(true);
-			_stepAction.setEnabled(true);
-			_playAction.setEnabled(true);
-		}
+		/**
+		 * and listen out for track generators
+		 * 
+		 */
+		setupMonitor();
 	}
 
 	private void fillContextMenu(IMenuManager manager)
@@ -183,10 +179,14 @@ public class TestHarnessView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(_populateAction);
+		manager.add(_clearAction);
 		manager.add(_restartAction);
+		manager.add(_populateShortAction);
+		manager.add(_populateLongAction);
 		manager.add(_stepAction);
 		manager.add(_playAction);
+		manager.add(_liveAction);
+		manager.add(_testOne);
 	}
 
 	private void hookContextMenu()
@@ -208,81 +208,105 @@ public class TestHarnessView extends ViewPart
 
 	private void makeActions()
 	{
-		_populateAction = new Action()
+		_populateShortAction = new Action()
 		{
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run()
 			{
-				// clear the geneartor first
-				BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-				Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
-				URL fileURL = bundle
-						.getEntry(BearingMeasurementContributionTest.THE_PATH);
-				FileInputStream input;
+				loadSampleData(false);
+			}
+		};
+		_populateShortAction.setText("Populate Short");
+		_populateShortAction.setToolTipText("Load some sample data");
+
+		_populateLongAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				loadSampleData(true);
+			}
+		};
+		_populateLongAction.setText("Populate");
+		_populateLongAction.setToolTipText("Load some sample data");
+
+		_clearAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				// clear the bounded states
+				getGenerator().clear();
+			}
+		};
+		_clearAction.setText("Clear");
+		_clearAction.setToolTipText("Clear the track generator contributions");
+
+		_testOne = new Action()
+		{
+			@Override
+			public void run()
+			{
+				// clear the bounded states
+				LocationAnalysisTest lat = new LocationAnalysisTest();
 				try
 				{
-					input = new FileInputStream(new File(FileLocator.resolve(fileURL)
-							.toURI()));
-					bmc.loadFrom(input);
-					_generator.addContribution(bmc);
+					GeoSupport.clearOutput();
+					lat.testBoundary();
 				}
-				catch (Exception e)
+				catch (IncompatibleStateException e)
 				{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
-				SpeedForecastContribution speed = new SpeedForecastContribution();
-				speed.setMinSpeed(12);
-				speed.setMaxSpeed(43);
-				_generator.addContribution(speed);
-				
-				// hey, how about a time-bounded course constraint?
-				CourseForecastContribution course = new CourseForecastContribution();
-				course.setStartDate(new Date("2010/Jan/12 00:14:31"));
-				course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
-				course.setMinCourse(45);
-				course.setMaxCourse(81);
-				_generator.addContribution(course);
-				
 			}
 		};
-		_populateAction.setText("Populate");
-		_populateAction.setToolTipText("Action 1 tooltip");
+		_testOne.setText("1");
+		
+		_liveAction = new Action("Live", SWT.TOGGLE)
+		{
+
+			@Override
+			public void run()
+			{
+				getGenerator().setLiveRunning(_liveAction.isChecked());
+			}
+		};
+		_liveAction.setChecked(false);
 
 		_restartAction = new Action()
 		{
 			@Override
 			public void run()
 			{
-				_generator.restart();
+				// clear the bounded states
+				getGenerator().restart();
 			}
 		};
 		_restartAction.setText("Restart");
-		_restartAction.setToolTipText("Action 1 tooltip");
+		_restartAction.setToolTipText("Reset the track generator");
 
 		_stepAction = new Action()
 		{
 			@Override
 			public void run()
 			{
-				_generator.step();
+				getGenerator().step();
 			}
 		};
 		_stepAction.setText("Step");
-		_stepAction.setToolTipText("Action 2 tooltip");
+		_stepAction.setToolTipText("Process the next contribution");
 
 		_playAction = new Action()
 		{
 			@Override
 			public void run()
 			{
-				_generator.step();
+				getGenerator().run();
 			}
 		};
 		_playAction.setText("Play");
-		_playAction.setToolTipText("Action 2 tooltip");
+		_playAction.setToolTipText("Process all contributions");
 
 	}
 
@@ -293,6 +317,99 @@ public class TestHarnessView extends ViewPart
 	public void setFocus()
 	{
 		viewer.getControl().setFocus();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void loadSampleData(boolean useLong)
+	{
+		// clear the geneartor first
+		getGenerator().contributions().clear();
+
+		// now load some data
+		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
+		final String thePath;
+		if (useLong)
+			thePath = BearingMeasurementContributionTest.THE_PATH;
+		else
+			thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
+
+		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		RangeForecastContribution rangeF = new RangeForecastContribution();
+		URL fileURL = bundle.getEntry(thePath);
+		FileInputStream input;
+		try
+		{
+			// populate the bearing data
+			input = new FileInputStream(
+					new File(FileLocator.resolve(fileURL).toURI()));
+			bmc.loadFrom(input);
+			getGenerator().addContribution(bmc);
+
+			// and populate the range data
+			input = new FileInputStream(
+					new File(FileLocator.resolve(fileURL).toURI()));
+			rangeF.loadFrom(input);
+			getGenerator().addContribution(rangeF);
+
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		SpeedForecastContribution speed = new SpeedForecastContribution();
+		speed.setMinSpeed(12);
+		speed.setMaxSpeed(43);
+		getGenerator().addContribution(speed);
+
+		// hey, how about a time-bounded course constraint?
+		CourseForecastContribution course = new CourseForecastContribution();
+		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
+		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
+		course.setMinCourse(45);
+		course.setMaxCourse(81);
+		getGenerator().addContribution(course);
+
+		// hey, how about a time-bounded course constraint?
+		SpeedForecastContribution speed2 = new SpeedForecastContribution();
+		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
+		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
+		speed2.setMinSpeed(8);
+		speed2.setMaxSpeed(27);
+		getGenerator().addContribution(speed2);
+		
+		LocationAnalysisContribution lac = new LocationAnalysisContribution();
+		getGenerator().addContribution(lac);
+
+	}
+
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
+	{
+		// ok, we can disable our buttons
+		enableControls(false);
+	}
+
+	@Override
+	protected void startListeningTo(TrackGenerator genny)
+	{
+		enableControls(true);
+
+		// sort out the 'live' setting
+		_liveAction.setChecked(genny.isLiveEnabled());
+	}
+
+	private void enableControls(boolean enabled)
+	{
+		_clearAction.setEnabled(enabled);
+		_populateShortAction.setEnabled(enabled);
+		_populateLongAction.setEnabled(enabled);
+		_restartAction.setEnabled(enabled);
+		_stepAction.setEnabled(enabled);
+		_playAction.setEnabled(enabled);
+		_liveAction.setEnabled(enabled);
+
 	}
 
 }

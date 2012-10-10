@@ -7,6 +7,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedForecastContribution extends BaseContribution
 {
@@ -42,7 +43,8 @@ public class SpeedForecastContribution extends BaseContribution
 			throws IncompatibleStateException
 	{
 		// create a bounded state representing our values
-		final SpeedRange myR = new SpeedRange(getMinSpeed(), getMaxSpeed());
+		final SpeedRange myR = new SpeedRange(GeoSupport.kts2MSec(getMinSpeed()),
+				GeoSupport.kts2MSec(getMaxSpeed()));
 
 		// remember if we've found items at our start/end times
 		boolean needToInjectStart = true;
@@ -80,24 +82,7 @@ public class SpeedForecastContribution extends BaseContribution
 			}
 
 			// ok, special in-range processing
-			if ((this.getStartDate() != null) && (this.getFinishDate() != null))
-			{
-				constrainIt = (thisT.after(this.getStartDate()) && (thisT.before(this
-						.getFinishDate())));
-			}
-			else if ((this.getStartDate() != null) && (this.getFinishDate() == null))
-			{
-				constrainIt = thisT.after(this.getStartDate());
-			}
-			else if ((this.getStartDate() == null) && (this.getFinishDate() != null))
-			{
-				constrainIt = thisT.before(this.getFinishDate());
-			}
-			else
-			{
-				// no constriants, just constrain it anyway!
-				constrainIt = true;
-			}
+			constrainIt = checkInDatePeriod(thisT);
 
 			if (constrainIt)
 				state.constrainTo(myR);
@@ -130,7 +115,7 @@ public class SpeedForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minSpeed) + " - " + ((int) _maxSpeed);
+		return "" + ((int) GeoSupport.MSec2kts(_minSpeed)) + " - " + ((int) GeoSupport.MSec2kts(_maxSpeed));
 	}
 
 	public double getMaxSpeed()

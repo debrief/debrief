@@ -3,19 +3,15 @@ package com.planetmayo.debrief.satc.ui.contributions;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 
-import javax.swing.DefaultBoundedRangeModel;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
@@ -24,9 +20,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
-import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc.ui.UIUtils;
@@ -34,7 +30,7 @@ import com.planetmayo.debrief.satc.ui.UIUtils;
 public class LocationContributionPanel extends AnalystContributionPanel
 {
 
-	private LocationForecastContribution contribution;
+	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
@@ -42,8 +38,7 @@ public class LocationContributionPanel extends AnalystContributionPanel
 	private FormattedText latitude;
 	private FormattedText longitude;
 
-	public LocationContributionPanel(Composite parent,
-			LocationForecastContribution contribution)
+	public LocationContributionPanel(Composite parent, BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;
@@ -53,8 +48,6 @@ public class LocationContributionPanel extends AnalystContributionPanel
 	@Override
 	protected void bindValues()
 	{
-		final WritableValue latWriteable = new WritableValue();
-		final WritableValue lonWriteable = new WritableValue();
 		context = new DataBindingContext();
 		
 		bindCommonHeaderWidgets(context, contribution, null, new PrefixSuffixLabelConverter(String.class, " m"));
@@ -69,20 +62,31 @@ public class LocationContributionPanel extends AnalystContributionPanel
 		
 		IObservableValue latValue = BeansObservables.observeDetailValue(
 				BeansObservables.observeValue(contribution, LocationForecastContribution.ESTIMATE), GeoPoint.LAT, double.class);
-		context.bindValue(latWriteable, latValue);		
+		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
+		latitude.getControl().addListener(SWT.Modify, new Listener()
+		{			
+			@Override
+			public void handleEvent(Event event)
+			{
+				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
+				GeoPoint geoPoint = new GeoPoint((Double) latitude.getValue(), temp.getEstimate().getLon());
+				temp.setEstimate(geoPoint);
+			}
+		});
 		
 		IObservableValue lonValue = BeansObservables.observeDetailValue(
 				BeansObservables.observeValue(contribution, LocationForecastContribution.ESTIMATE), GeoPoint.LON, double.class);
-		context.bindValue(lonWriteable, lonValue);
-		latitude.getControl().addListener(SWT.Modify, new Listener()
-		{
-			
+		context.bindValue(PojoObservables.observeValue(longitude, "value"), lonValue);
+		longitude.getControl().addListener(SWT.Modify, new Listener()
+		{			
 			@Override
-			public void handleEvent(Event arg0)
+			public void handleEvent(Event event)
 			{
-				latWriteable.setValue(latitude.getValue());
+				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
+				GeoPoint geoPoint = new GeoPoint(temp.getEstimate().getLat(), (Double) longitude.getValue());
+				temp.setEstimate(geoPoint);
 			}
-		});
+		});		
 	}
 
 	@Override

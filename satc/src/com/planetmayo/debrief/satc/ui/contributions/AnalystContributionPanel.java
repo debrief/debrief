@@ -33,7 +33,7 @@ import com.planetmayo.debrief.satc.ui.widgets.ExpandButton;
 public abstract class AnalystContributionPanel
 {
 
-	protected Composite controlParent;
+	final protected Composite controlParent;
 
 	protected Group mainGroup;
 	protected Group bodyGroup;
@@ -170,7 +170,16 @@ public abstract class AnalystContributionPanel
 	}
 
 	protected abstract void bindValues();
-
+	
+	/** get the top level control that this panel uses
+	 * 
+	 * @return
+	 */
+	public Composite getControl()
+	{
+		return mainGroup;
+	}
+	
 	protected void createBody(Composite parent)
 	{
 		GridData layoutData = new GridData();

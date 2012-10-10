@@ -83,24 +83,7 @@ public class CourseForecastContribution extends BaseContribution
 			}
 
 			// ok, special in-range processing
-			if((this.getStartDate() != null)&& (this.getFinishDate() != null))
-			{
-				constrainIt = (thisT.after(this.getStartDate()) && (thisT.before(this.getFinishDate())));
-			}
-			else if((this.getStartDate() != null) && (this.getFinishDate() == null))
-			{
-				constrainIt = thisT.after(this.getStartDate());
-			}
-			else if((this.getStartDate() == null) && (this.getFinishDate() != null))
-			{
-				constrainIt = thisT.before(this.getFinishDate());
-			}
-			else
-			{
-				// no constriants, just constrain it anyway!
-				constrainIt = true;
-			}
-			
+			constrainIt = checkInDatePeriod(thisT);
 			
 			if(constrainIt)
 				state.constrainTo(myR);
