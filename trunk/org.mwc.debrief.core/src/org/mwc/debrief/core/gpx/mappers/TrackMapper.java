@@ -62,12 +62,17 @@ public class TrackMapper implements DebriefJaxbContextAware
 			{
 				TrackSegment segment = segmentMapper.fromGpx(gpxSegment);
 				track.add(segment);
+				
+				// keep track of the previous fix, in case we wish to calculate course and speed
+				FixWrapper previousFix = null;
 
 				for (WptType waypointType : gpxSegment.getTrkpt())
 				{
 					fixMapper.setJaxbContext(debriefContext);
-					FixWrapper fix = fixMapper.fromGpx(waypointType);
+					FixWrapper fix = fixMapper.fromGpx(waypointType, previousFix);
 					segment.add(fix);
+					
+					previousFix = fix;
 				}
 			}
 			tracks.add(track);

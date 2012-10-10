@@ -53,16 +53,41 @@ public class FixMapper implements DebriefJaxbContextAware
 		}
 	}
 
-	public FixWrapper fromGpx(WptType trackType)
+	/** extract a fix from the supplied data object
+	 * 
+	 * @param trackType an object read in from GPX
+	 * @param previousFix the value of the previously read-in fix, used to calc course and speed, when necessary
+	 * @return
+	 */
+	public FixWrapper fromGpx(WptType trackType, FixWrapper previousFix)
 	{
 		Fix fix = new Fix();
 
-		WorldLocation val = new WorldLocation(trackType.getLat(), trackType.getLon(), convertElevationToDepth(trackType.getEle()));
+		// we may not have a depth, better check
+		BigDecimal ele = trackType.getEle();
+		if (ele == null)
+			ele = new BigDecimal(0);
+
+		WorldLocation val = new WorldLocation(trackType.getLat(),
+				trackType.getLon(), convertElevationToDepth(ele));
 		fix.setLocation(val);
 
+		HiResDate theDate;
 		XMLGregorianCalendar time = trackType.getTime();
-		GregorianCalendar calendar = time.toGregorianCalendar();
-		fix.setTime(new HiResDate(calendar.getTime()));// TODO handle milli secs
+		if (time != null)
+		{
+			GregorianCalendar calendar = time.toGregorianCalendar();
+			theDate = new HiResDate(calendar.getTime());
+		}
+		else
+		{
+			CorePlugin.logError(Status.WARNING,
+					"GPX Data is missing time data. current date to be used", null);
+			theDate = new HiResDate();
+		}
+		fix.setTime(theDate);
+
+		// also have a go at the heaidng
 
 		FixWrapper trackPoint = new FixWrapper(fix);
 
@@ -75,11 +100,14 @@ public class FixMapper implements DebriefJaxbContextAware
 			{
 				unmarshaller = debriefContext.createUnmarshaller();
 				Object object = unmarshaller.unmarshal((Node) any.get(0));
-				FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector.getValue(object);
+				FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector
+						.getValue(object);
 
-				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse()).doubleValue());
+				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse())
+						.doubleValue());
 				trackPoint.setLabel(fixExtension.getLabel());
-				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed()).doubleValue());
+				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed())
+						.doubleValue());
 				LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());
@@ -91,9 +119,27 @@ public class FixMapper implements DebriefJaxbContextAware
 			}
 			catch (JAXBException e)
 			{
-				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
+				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX",
+						e);
 			}
 		}
+
+		// have we managed to sort out the course & speed?
+		// have a go at the speed
+		// if(previousFix != null)
+		// {
+		// WorldVector fromLast = null;
+		// if(previousFix != null)
+		// fromLast = val.subtract(previousFix.getLocation());
+		//
+		// long timeDiffMillis = theDate.getDate().getTime() -
+		// previousFix.getTime().getDate().getTime();
+		// WorldDistance dist = new WorldDistance( fromLast.getRange(),
+		// WorldDistance.DEGS);
+		// double speedYps = (dist.getValueIn(WorldDistance.YARDS)) /
+		// (timeDiffMillis / 1000d);
+		// fix.setSpeed(speedYps);
+		// }
 
 		return trackPoint;
 	}
