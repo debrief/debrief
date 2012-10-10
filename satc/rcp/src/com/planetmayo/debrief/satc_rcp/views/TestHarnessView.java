@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Date;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
@@ -342,13 +343,15 @@ public class TestHarnessView extends CoreView
 			// populate the bearing data
 			input = new FileInputStream(
 					new File(FileLocator.resolve(fileURL).toURI()));
-			bmc.loadFrom(input);
+			bmc.loadFrom(IOUtils.readLines(input));
+			input.close();
 			getGenerator().addContribution(bmc);
 
 			// and populate the range data
 			input = new FileInputStream(
 					new File(FileLocator.resolve(fileURL).toURI()));
-			rangeF.loadFrom(input);
+			rangeF.loadFrom(IOUtils.readLines(input));
+			input.close();
 			getGenerator().addContribution(rangeF);
 
 		}

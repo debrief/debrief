@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
@@ -17,6 +18,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -96,105 +98,68 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 	}
 
-	public void loadFrom(InputStream fstream)
+	public void loadFrom(List<String> lines)
 	{
 		// load from this source
 		// ;;IGNORE YYMMDD HHMMSS IGNORE IGNORE LAT_DEG LAT_MIN LAT_SEC LAT_HEM
 		// LONG_DEG LONG_MIN LONG_SEC LONG_HEM BEARING MAX_RNG
 		// ;SENSOR: 100112 121329 SENSOR @A 0 3 57.38 S 30 0 8.65 W 1.5 15000
-		try
+
+		// Read File Line By Line
+		for (String strLine : lines)
 		{
-
-			// Get the object of DataInputStream
-			// DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-
-			String strLine;
-
-			// Read File Line By Line
-			while ((strLine = br.readLine()) != null)
+			// hey, is this a comment line?
+			if (strLine.startsWith(";;"))
 			{
-				// hey, is this a comment line?
-				if (strLine.startsWith(";;"))
-				{
-					// just ignore it
-				}
-				else
-				{
-					// ok, get parseing it
-					StringTokenizer st = new StringTokenizer(strLine, " \t");
-
-					// skip the read of the header
-					st.nextToken();
-
-					// now the date
-					String date = st.nextToken();
-
-					// and the time
-					String time = st.nextToken();
-
-					// ignore the next
-					st.nextElement();
-
-					// and the next
-					st.nextElement();
-
-					String latDegs = st.nextToken();
-					String latMins = st.nextToken();
-					String latSecs = st.nextToken();
-					String latHemi = st.nextToken();
-
-					String lonDegs = st.nextToken();
-					String lonMins = st.nextToken();
-					String lonSecs = st.nextToken();
-					String lonHemi = st.nextToken();
-
-					// and the beraing
-					String bearing = st.nextToken();
-
-					// and the range
-					String range = st.nextToken();
-
-					// ok,now construct the date=time
-					DateFormat df = new SimpleDateFormat("yyMMdd hhmmss");
-					Date theDate = df.parse(date + " " + time);
-
-					// and the location
-					double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
-							+ Double.valueOf(latSecs) / 60d / 60d;
-					if (latHemi.toUpperCase().equals("W"))
-						lat = -lat;
-					double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
-							+ Double.valueOf(lonSecs) / 60d / 60d;
-					if (lonHemi.toUpperCase().equals("S"))
-						lon = -lon;
-
-					GeoPoint theLoc = new GeoPoint(lat, lon);
-					BMeasurement measure = new BMeasurement(theLoc,
-							Double.valueOf(bearing), theDate, GeoSupport.m2deg(Double
-									.valueOf(range)));
-
-					addThis(measure);
-
-				}
+				continue;
 			}
+			// ok, get parseing it
+			String[] elements = strLine.split("\\s+");
 
-			// stick in a duff error measurement
-			this.setBearingError(3d);
+			// now the date
+			String date = elements[1];
 
-			// Close the input stream
-			fstream.close();
+			// and the time
+			String time = elements[2];
+
+			String latDegs = elements[5];
+			String latMins = elements[6];
+			String latSecs = elements[7];
+			String latHemi = elements[8];
+
+			String lonDegs = elements[9];
+			String lonMins = elements[10];
+			String lonSecs = elements[11];
+			String lonHemi = elements[12];
+
+			// and the beraing
+			String bearing = elements[13];
+
+			// and the range
+			String range = elements[14];
+
+			// ok,now construct the date=time
+			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd hhmmss", date + " " + time);
+
+			// and the location
+			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
+					+ Double.valueOf(latSecs) / 60d / 60d;
+			if (latHemi.toUpperCase().equals("W"))
+				lat = -lat;
+			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
+					+ Double.valueOf(lonSecs) / 60d / 60d;
+			if (lonHemi.toUpperCase().equals("S"))
+				lon = -lon;
+
+			GeoPoint theLoc = new GeoPoint(lat, lon);
+			BMeasurement measure = new BMeasurement(theLoc,
+					Double.valueOf(bearing), theDate, GeoSupport.m2deg(Double
+							.valueOf(range)));
+
+			addThis(measure);
 
 		}
-		catch (IOException e)
-		{
-			// TODO: do logging!
-		}
-		catch (ParseException e)
-		{
-			// TODO: do logging!			
-		}
-
+		this.setBearingError(3d);	
 		// TODO: set the start/end times = just for tidiness
 	}
 

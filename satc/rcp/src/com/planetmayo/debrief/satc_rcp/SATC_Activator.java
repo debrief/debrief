@@ -8,6 +8,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
+import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 import com.planetmayo.debrief.satc_rcp.services.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.services.mock.MockVehicleTypesRepository;
 
@@ -67,6 +70,7 @@ public class SATC_Activator extends AbstractUIPlugin
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
+		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService());
 		super.start(context);
 		this.context = context;
 		plugin = this;

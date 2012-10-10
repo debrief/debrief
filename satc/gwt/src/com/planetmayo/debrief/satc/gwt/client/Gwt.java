@@ -10,10 +10,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.planetmayo.debrief.satc.gwt.client.services.GWTConverterService;
+import com.planetmayo.debrief.satc.gwt.client.services.GWTLogService;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.support.SupportServices;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -26,6 +29,8 @@ public class Gwt implements EntryPoint
 	 */
 	public void onModuleLoad()
 	{
+		SupportServices.INSTANCE.initialize(new GWTLogService(), new GWTConverterService());
+		
 		BaseContribution contribution = SpeedForecastContribution.getSample();
 		
 		final Button sendButton = new Button("Send");

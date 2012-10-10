@@ -17,4 +17,5 @@ Bundle-ClassPath: libs/jts-1.12.jar,
  .,
  libs/jcommon-1.0.16.jar,
  libs/jfreechart-1.0.14-swt.jar,
- libs/jfreechart-1.0.14.jar
+ libs/jfreechart-1.0.14.jar,
+ libs/commons-io-2.4.jar

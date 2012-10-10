@@ -1,12 +1,10 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
 import java.beans.PropertyChangeListener;
-import java.text.DecimalFormat;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
-import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
@@ -134,31 +132,5 @@ public class LocationContributionPanel extends AnalystContributionPanel
 	{
 		titleChangeListener = attachTitleChangeListener(contribution,
 				"Location Forecast - ");
-		}
-	
-	private static class DecimalConverter implements IConverter {
-
-		@Override
-		public Object convert(Object arg0)
-		{
-			DecimalFormat format = new DecimalFormat("000.00");
-			return "-" + format.format(Math.abs((Double) arg0));
-		}
-
-		@Override
-		public Object getFromType()
-		{
-			return double.class;
-		}
-
-		@Override
-		public Object getToType()
-		{
-			return String.class;
-		}
-		
-		
 	}
-	
-	
 }

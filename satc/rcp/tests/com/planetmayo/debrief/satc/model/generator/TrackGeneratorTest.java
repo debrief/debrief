@@ -1,9 +1,11 @@
 package com.planetmayo.debrief.satc.model.generator;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+
+import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
 
@@ -16,6 +18,9 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.generator.SteppingGenerator.SteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
+import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 
 public class TrackGeneratorTest extends TestCase
 {
@@ -24,6 +29,13 @@ public class TrackGeneratorTest extends TestCase
 	static int _ctr2 = 0;
 	static int _ctr3 = 0;
 	private RuntimeException _re;
+
+	@Override
+	protected void setUp() throws Exception
+	{
+		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService());
+		super.setUp();
+	}
 
 	public void testAddOrder()
 	{
@@ -76,12 +88,12 @@ public class TrackGeneratorTest extends TestCase
 
 	}
 
-	public void testRestartOnContribChange() throws FileNotFoundException
+	public void testRestartOnContribChange() throws IOException
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new FileInputStream(
-				BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(IOUtils.readLines(new FileInputStream(
+				BearingMeasurementContributionTest.THE_PATH)));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -186,12 +198,12 @@ public class TrackGeneratorTest extends TestCase
 
 	}
 
-	public void testIncompatibleBounds() throws FileNotFoundException
+	public void testIncompatibleBounds() throws IOException
 	{
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new FileInputStream(
-				BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(IOUtils.readLines(new FileInputStream(
+				BearingMeasurementContributionTest.THE_PATH)));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
