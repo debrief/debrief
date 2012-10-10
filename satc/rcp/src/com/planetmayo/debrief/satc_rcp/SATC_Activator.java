@@ -8,8 +8,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
-import com.planetmayo.debrief.satc.services.mock.MockVehicleTypesRepository;
+import com.planetmayo.debrief.satc_rcp.services.VehicleTypesRepository;
+import com.planetmayo.debrief.satc_rcp.services.mock.MockVehicleTypesRepository;
 
 /**
  * The activator class controls the plug-in life cycle

@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.model.manager;
+package com.planetmayo.debrief.satc_rcp.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +14,8 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.services.VehicleTypesRepository;
 
 public class MaintainContributions
 {
@@ -88,7 +88,7 @@ public class MaintainContributions
 
 	}
 
-	private Precision[] getPrecisions()
+	private com.planetmayo.debrief.satc.model.Precision[] getPrecisions()
 	{
 		return Precision.values();
 	}

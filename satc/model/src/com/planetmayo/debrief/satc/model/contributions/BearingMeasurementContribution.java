@@ -12,15 +12,12 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import org.eclipse.core.runtime.Status;
-
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -184,11 +181,11 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 		catch (IOException e)
 		{
-			SATC_Activator.log(Status.ERROR, "File load problem", e);
+			// TODO: do logging!
 		}
 		catch (ParseException e)
 		{
-			SATC_Activator.log(Status.ERROR, "File parse problem", e);
+			// TODO: do logging!			
 		}
 
 		// TODO: set the start/end times = just for tidiness

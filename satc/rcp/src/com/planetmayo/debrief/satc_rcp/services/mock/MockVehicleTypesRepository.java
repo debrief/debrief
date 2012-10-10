@@ -1,10 +1,11 @@
-package com.planetmayo.debrief.satc.services.mock;
+package com.planetmayo.debrief.satc_rcp.services.mock;
 
 import java.util.Arrays;
 import java.util.List;
 
+
 import com.planetmayo.debrief.satc.model.VehicleType;
-import com.planetmayo.debrief.satc.services.VehicleTypesRepository;
+import com.planetmayo.debrief.satc_rcp.services.VehicleTypesRepository;
 
 public class MockVehicleTypesRepository implements VehicleTypesRepository
 {
