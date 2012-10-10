@@ -178,7 +178,17 @@ public class LocationAnalysisContribution extends BaseContribution
 					AffineTransformation trans = aff.translate(thisC.x, thisC.y);
 
 					// actually do the move
-					Geometry translated = trans.transform(achievable);
+					Coordinate[] oldCoords = achievable.getCoordinates();
+					Coordinate[] newCoords = new Coordinate[oldCoords.length];
+					for (int j = 0; j < oldCoords.length; j++) {
+						Coordinate tmpC = oldCoords[j];
+						Coordinate newC = new Coordinate(0,0);
+						 newC = trans.transform(tmpC, newC);
+						newCoords[j] = newC;
+					}
+					
+					// and put it back into a linestring
+					Geometry translated = GeoSupport.getFactory().createLinearRing(newCoords);
 
 					// GeoSupport.writeGeometry("shape:" + i, translated);
 
