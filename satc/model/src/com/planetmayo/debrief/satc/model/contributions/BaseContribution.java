@@ -116,8 +116,8 @@ public abstract class BaseContribution extends ModelObject implements
 		if (myScore == hisScore)
 		{
 			// try the class names first, to group them
-			String myClass = this.getClass().toString();
-			String hisClass = o.getClass().toString();
+			String myClass = this.getClass().getName();
+			String hisClass = o.getClass().getName();
 			if (myClass.equals(hisClass))
 			{
 				// ha-they must be equal, compare the names
@@ -154,39 +154,13 @@ public abstract class BaseContribution extends ModelObject implements
 	 */
 	protected boolean checkInDatePeriod(final Date thisDate)
 	{
-		final boolean constrainIt;
-		final Long startT, finishT;
-		final Long thisT = thisDate.getTime();
-
-		// populate our working values
-		if (this.getStartDate() != null)
-			startT = this.getStartDate().getTime();
-		else
-			startT = null;
-
-		if (this.getFinishDate() != null)
-			finishT = this.getFinishDate().getTime();
-		else
-			finishT = null;
-
-		// see which time constraints we have
-		if ((startT != null) && (finishT != null))
-		{
-			constrainIt = (thisT >= startT) && (thisT <= finishT);
+		long millis = thisDate.getTime();
+		if (getStartDate() != null && millis < getStartDate().getTime()) {
+			return false;
 		}
-		else if ((startT != null) && (finishT == null))
-		{
-			constrainIt = thisT >= startT;
+		if (getFinishDate() != null && millis > getFinishDate().getTime()) {
+			return false;
 		}
-		else if ((startT == null) && (finishT != null))
-		{
-			constrainIt = thisT <= finishT;
-		}
-		else
-		{
-			// no constriants, just constrain it anyway!
-			constrainIt = true;
-		}
-		return constrainIt;
+		return true;
 	}
 }
