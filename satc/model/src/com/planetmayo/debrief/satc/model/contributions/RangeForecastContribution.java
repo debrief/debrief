@@ -1,11 +1,9 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -171,16 +169,12 @@ public class RangeForecastContribution extends BaseContribution
 			fstream.close();
 
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			// TODO: do logging!
 			//SATC_Activator.log(Status.ERROR, "File load problem", e);
 		}
-		catch (ParseException e)
-		{
-			// TODO: do logging!
-			//SATC_Activator.log(Status.ERROR, "File parse problem", e);
-		}
+
 
 		// give us some max/min data
 		this.setMaxRange(3000);
