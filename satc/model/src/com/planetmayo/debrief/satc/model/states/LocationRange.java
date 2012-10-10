@@ -1,8 +1,5 @@
 package com.planetmayo.debrief.satc.model.states;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Polygon;
