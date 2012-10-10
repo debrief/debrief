@@ -11,7 +11,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -64,13 +66,17 @@ public class Gwt implements EntryPoint
 		dialogBox.setWidget(dialogVPanel);
 
 		// Add a handler to close the DialogBox
-		closeButton.addClickHandler(new ClickHandler()
+		sendButton.addClickHandler(new ClickHandler()
 		{
 			public void onClick(ClickEvent event)
 			{
-				dialogBox.hide();
-				sendButton.setEnabled(true);
-				sendButton.setFocus(true);
+				LocationAnalysisTest tst = new LocationAnalysisTest();
+				try {
+					tst.testBoundary();
+				} catch (IncompatibleStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		});
 
