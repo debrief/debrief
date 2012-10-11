@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.event.ChangeListener;
@@ -12,6 +13,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,6 +26,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -57,6 +66,9 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
  */
 public class MockMaintainContributionsView extends ViewPart implements
 		MaintainContributionsView {
+	public MockMaintainContributionsView() {
+	}
+
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 
 	private Composite main;
@@ -65,7 +77,6 @@ public class MockMaintainContributionsView extends ViewPart implements
 	private Button displaySolutions;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
-
 	private Composite _contList;
 
 	private MaintainContributions _manager;
@@ -75,6 +86,8 @@ public class MockMaintainContributionsView extends ViewPart implements
 	 * 
 	 */
 	private HashMap<BaseContribution, AnalystContributionPanel> _myControls = new HashMap<BaseContribution, AnalystContributionPanel>();
+
+	private Menu _addContMenu;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -242,6 +255,39 @@ public class MockMaintainContributionsView extends ViewPart implements
 		initPreferencesGroup(main);
 		initVehicleGroup(main);
 		initAnalystContributionsGroup(main);
+		initAddContributionGroup(main);
+	}
+
+	private void initAddContributionGroup(Composite parent) {
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.marginWidth = 5;
+		fillLayout.marginHeight = 5;
+		group.setLayout(fillLayout);
+		group.setLayoutData(gridData);
+		group.setText("New Contribution");
+
+		 _addContMenu = new Menu(group);
+		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
+		toolBar.setBounds(50, 50, 50, 50);
+		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+		item.setText("Add...");
+		item.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				if (event.detail == SWT.ARROW) {
+					Rectangle rect = item.getBounds();
+					Point pt = new Point(rect.x, rect.y + rect.height);
+					pt = toolBar.toDisplay(pt);
+					_addContMenu.setLocation(pt.x, pt.y);
+					_addContMenu.setVisible(true);
+				}
+			}
+		});
+
 	}
 
 	private void initVehicleGroup(Composite parent) {
@@ -329,8 +375,18 @@ public class MockMaintainContributionsView extends ViewPart implements
 
 	@Override
 	public void populateContributionList(ArrayList<String> items) {
-		// TODO Auto-generated method stub
-
+		Iterator<String> iter = items.iterator();
+		while (iter.hasNext()) {
+			MenuItem item = new MenuItem(_addContMenu, SWT.PUSH);
+			final String thisCont = iter.next();
+			item.setText(thisCont);
+			item.addSelectionListener(new SelectionAdapter(){
+				@Override
+				public void widgetSelected(SelectionEvent arg0) {
+					_manager.addContribution(thisCont);
+				}
+			});
+		}
 	}
 
 	@Override
