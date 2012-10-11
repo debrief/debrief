@@ -1,11 +1,22 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -15,6 +26,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -23,18 +38,35 @@ import org.eclipse.ui.part.ViewPart;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionPanel;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationAnalysisContributionPanel;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionPanel;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
 
-public class MaintainContributionsView extends ViewPart
+/**
+ * mock class to test high level application flows
+ * 
+ * @author ian
+ * 
+ */
+public class MaintainContributionsView extends ViewPart implements
+		MaintainContributions.MyView
 {
+
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 
 	private Composite main;
@@ -43,14 +75,48 @@ public class MaintainContributionsView extends ViewPart
 	private Button displaySolutions;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
+	private Composite contList;
+	private Menu _addContMenu;
 
-	private VehicleTypesRepository vehiclesRepository;
+	private MaintainContributions _manager;
+
+	/**
+	 * remember which contributions we're displaying
+	 * 
+	 */
+	private HashMap<BaseContribution, AnalystContributionPanel> _myControls = new HashMap<BaseContribution, AnalystContributionPanel>();
+
+	private PropertyChangeListener _addContListener;
+
+	@SuppressWarnings("unused")
+	private PropertyChangeListener _vehicleChangeListener;
+
+	@SuppressWarnings("unused")
+	private PropertyChangeListener _precisionChangeListener;
+
+	@SuppressWarnings("unused")
+	private PropertyChangeListener _removeContListener;
 
 	@Override
 	public void createPartControl(Composite parent)
 	{
+
+		// build the UI
 		initUI(parent);
-		initValues();
+
+		// create the manager
+		_manager = new MaintainContributions(this, SATC_Activator.getDefault()
+				.getService(VehicleTypesRepository.class, true));
+
+	}
+
+	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
+	{
+		if (adapter.equals(TrackGenerator.class))
+			return _manager.getGenerator();
+		else
+			return super.getAdapter(adapter);
 	}
 
 	private void fillAnalystContributionsGroup(Composite parent)
@@ -72,41 +138,13 @@ public class MaintainContributionsView extends ViewPart
 				GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(header, SWT.RIGHT, "Weight", new GridData(40,
 				SWT.DEFAULT));
-
-		// create a sample speed forecast contribution
-		BaseContribution speedContribution = SpeedForecastContribution
-				.getSample();
-
-		// and a UI to display it
-		new SpeedContributionPanel(parent, speedContribution)
-				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-						| GridData.GRAB_HORIZONTAL));
-
-		// create a sample course forecast contribution
-		CourseForecastContribution courseContribution = CourseForecastContribution
-				.getSample();
-
-		// and a UI to display it
-		new CourseContributionPanel(parent, courseContribution)
-				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-						| GridData.GRAB_HORIZONTAL));
-
-		// and a sample location
-		LocationForecastContribution locationContribution = LocationForecastContribution
-				.getSample();
-
-		// and a UI to display it
-		new LocationContributionPanel(parent, locationContribution)
-				.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-						| GridData.GRAB_HORIZONTAL));
 	}
 
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException
 	{
 		super.init(site, memento);
-		vehiclesRepository = SATC_Activator.getDefault().getService(
-				VehicleTypesRepository.class, true);
+
 	}
 
 	private void initAnalystContributionsGroup(Composite parent)
@@ -124,23 +162,22 @@ public class MaintainContributionsView extends ViewPart
 
 		final ScrolledComposite scrolled = new ScrolledComposite(group,
 				SWT.V_SCROLL);
-		final Composite scrolledBody = UIUtils.createScrolledBody(scrolled,
-				SWT.NONE);
-		scrolledBody.setLayout(new GridLayout(1, false));
+		contList = UIUtils.createScrolledBody(scrolled, SWT.NONE);
+		contList.setLayout(new GridLayout(1, false));
 
-		fillAnalystContributionsGroup(scrolledBody);
+		fillAnalystContributionsGroup(contList);
 		scrolled.addListener(SWT.Resize, new Listener()
 		{
 
 			@Override
 			public void handleEvent(Event e)
 			{
-				scrolled.setMinSize(scrolledBody.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+				scrolled.setMinSize(contList.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 			}
 		});
 		scrolled.setAlwaysShowScrollBars(true);
-		scrolled.setContent(scrolledBody);
-		scrolled.setMinSize(scrolledBody.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolled.setContent(contList);
+		scrolled.setMinSize(contList.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		scrolled.setExpandHorizontal(true);
 		scrolled.setExpandVertical(true);
 	}
@@ -204,14 +241,43 @@ public class MaintainContributionsView extends ViewPart
 		initPreferencesGroup(main);
 		initVehicleGroup(main);
 		initAnalystContributionsGroup(main);
+		initAddContributionGroup(main);
 	}
 
-	private void initValues()
+	private void initAddContributionGroup(Composite parent)
 	{
-		precisionsCombo.setInput(Precision.values());
-		precisionsCombo.setSelection(new StructuredSelection(Precision.FINE));
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
 
-		vehiclesCombo.setInput(vehiclesRepository.getAllTypes().toArray());
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.marginWidth = 5;
+		fillLayout.marginHeight = 5;
+		group.setLayout(fillLayout);
+		group.setLayoutData(gridData);
+		group.setText("New Contribution");
+
+		_addContMenu = new Menu(group);
+		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
+		toolBar.setBounds(50, 50, 50, 50);
+		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+		item.setText("Add...");
+		item.addListener(SWT.Selection, new Listener()
+		{
+			public void handleEvent(Event event)
+			{
+				if (event.detail == SWT.ARROW)
+				{
+					Rectangle rect = item.getBounds();
+					Point pt = new Point(rect.x, rect.y + rect.height);
+					pt = toolBar.toDisplay(pt);
+					_addContMenu.setLocation(pt.x, pt.y);
+					_addContMenu.setVisible(true);
+				}
+			}
+		});
+
 	}
 
 	private void initVehicleGroup(Composite parent)
@@ -246,6 +312,127 @@ public class MaintainContributionsView extends ViewPart
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void added(BaseContribution contribution)
+	{
+		// ok, create a wrapper for this
+		AnalystContributionPanel panel = null;
+
+		if (contribution instanceof CourseForecastContribution)
+			panel = new CourseContributionPanel(contList, contribution);
+		else if (contribution instanceof LocationForecastContribution)
+			panel = new LocationContributionPanel(contList, contribution);
+		else if (contribution instanceof SpeedForecastContribution)
+			panel = new SpeedContributionPanel(contList, contribution);
+		else if (contribution instanceof BearingMeasurementContribution)
+			panel = new BearingMeasurementContributionPanel(contList, contribution);
+		else if (contribution instanceof RangeForecastContribution)
+			panel = new RangeForecastContributionPanel(contList, contribution);
+		else if (contribution instanceof LocationAnalysisContribution)
+			panel = new LocationAnalysisContributionPanel(contList, contribution);
+
+		// did we fail to find a panel?
+		if (panel == null)
+		{
+			System.err.println("Failed to generate panel for " + contribution);
+		}
+		else
+		{
+			// sort out the layout
+			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+					| GridData.GRAB_HORIZONTAL));
+
+			// and rememeber it
+			_myControls.put(contribution, panel);
+
+			// ok, redo the layout...
+			contList.layout();
+		}
+	}
+
+	@Override
+	public void removed(BaseContribution contribution)
+	{
+		// get the panel
+		AnalystContributionPanel panel = _myControls.get(contribution);
+
+		// did we find it?
+		if (panel != null)
+		{
+			// and remove it
+			panel.getControl().dispose();
+
+			// and forget it
+			_myControls.remove(contribution);
+		}
+		else
+		{
+			System.err.println("failed to find UI for:" + contribution);
+		}
+	}
+
+	@Override
+	public void populateContributionList(ArrayList<String> items)
+	{
+		Iterator<String> iter = items.iterator();
+		while (iter.hasNext())
+		{
+			MenuItem item = new MenuItem(_addContMenu, SWT.PUSH);
+			final String thisCont = iter.next();
+			item.setText(thisCont);
+			item.addSelectionListener(new SelectionAdapter()
+			{
+				@Override
+				public void widgetSelected(SelectionEvent arg0)
+				{
+					if (_addContListener != null)
+						_addContListener.propertyChange(new PropertyChangeEvent(thisCont,
+								null, null, thisCont));
+				}
+			});
+		}
+	}
+
+	@Override
+	public void populateVehicleTypesList(List<VehicleType> vehicles)
+	{
+		vehiclesCombo.setInput(vehicles);
+	}
+
+	@Override
+	public void populatePrecisionsList(Precision[] precisions)
+	{
+		precisionsCombo.setInput(precisions);
+		// and set an initial value
+		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
+	}
+
+	@Override
+	public void setRemoveContributionListener(PropertyChangeListener listener)
+	{
+		// TODO: support removing an item from the list
+		_removeContListener = listener;
+	}
+
+	@Override
+	public void setAddContributionListener(PropertyChangeListener listener)
+	{
+		_addContListener = listener;
+	}
+
+	@Override
+	public void setVehicleChangeListener(PropertyChangeListener listener)
+	{
+		// TODO: support vehicle change
+		_vehicleChangeListener = listener;
+	}
+
+	@Override
+	public void setPrecisionChangeListener(PropertyChangeListener listener)
+	{
+		_precisionChangeListener = listener;
 	}
 
 }

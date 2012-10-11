@@ -1,20 +1,81 @@
 package com.planetmayo.debrief.satc.model.manager;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.util.List;
 
 import com.planetmayo.debrief.satc.model.Precision;
+import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
 public class MaintainContributions
 {
+
+	public static interface MyView extends ContributionsChangedListener
+	{
+
+		/**
+		 * show the list of available contributions
+		 * 
+		 * @param items
+		 *          the types of contribution that the user may add
+		 */
+		public void populateContributionList(ArrayList<String> items);
+
+		/**
+		 * populate the list of vehicle types
+		 * 
+		 * @param vehicles
+		 */
+		public void populateVehicleTypesList(List<VehicleType> vehicles);
+
+		/**
+		 * populate the list of precisions
+		 * 
+		 * @param vehicles
+		 */
+		public void populatePrecisionsList(Precision[] precisions);
+
+		/**
+		 * allow us to listen to user asking to remove a contribution
+		 * 
+		 * @param listener
+		 */
+		public void setRemoveContributionListener(PropertyChangeListener listener);
+
+		/**
+		 * allow us to listen to user asking to remove a contribution
+		 * 
+		 * @param listener
+		 */
+		public void setAddContributionListener(PropertyChangeListener listener);
+
+		/**
+		 * allow us to listen to user asking to remove a contribution
+		 * 
+		 * @param listener
+		 */
+		public void setVehicleChangeListener(PropertyChangeListener listener);
+
+		/**
+		 * allow us to listen to user asking to remove a contribution
+		 * 
+		 * @param listener
+		 */
+		public void setPrecisionChangeListener(PropertyChangeListener listener);
+
+	}
 
 	/**
 	 * our track generator
@@ -22,7 +83,8 @@ public class MaintainContributions
 	 */
 	TrackGenerator _genny;
 
-	public MaintainContributions(MaintainContributionsView myView, VehicleTypesRepository vehiclesRepository)
+	public MaintainContributions(MyView myView,
+			VehicleTypesRepository vehiclesRepository)
 	{
 		// sort out our generator
 		_genny = new TrackGenerator();
@@ -31,50 +93,46 @@ public class MaintainContributions
 		_genny.addContributionsListener(myView);
 
 		// ok, config the view
-		myView.setRemoveContributionListener(new ChangeListener()
+		myView.setRemoveContributionListener(new PropertyChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent arg0)
+			public void propertyChange(PropertyChangeEvent evt)
 			{
-				BaseContribution theCont = (BaseContribution) arg0.getSource();
+				BaseContribution theCont = (BaseContribution) evt.getSource();
 				_genny.removeContribution(theCont);
 			}
 		});
 
 		// populate the dropdowns in the view
-		ArrayList<Class<? extends BaseContribution>> items = getContributions();
+		ArrayList<String> items = getContributions();
 		myView.populateContributionList(items);
 		myView.populatePrecisionsList(getPrecisions());
 		myView.populateVehicleTypesList(vehiclesRepository.getAllTypes());
 
 		// ok, now start listening to the view
-		myView.setAddContributionListener(new ChangeListener()
+		myView.setAddContributionListener(new PropertyChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent arg0)
+			public void propertyChange(PropertyChangeEvent arg0)
 			{
-				@SuppressWarnings("unused")
+				// get the string object that contains the name
 				String theCont = (String) arg0.getSource();
 
-				// TODO: find out how to create a new contribution from this name
-				CourseForecastContribution newCont = new CourseForecastContribution();
-
-				// ok, create a new one of these
-				_genny.addContribution(newCont);
+				addContribution(theCont);
 			}
 		});
-		myView.setPrecisionChangeListener(new ChangeListener()
+		myView.setPrecisionChangeListener(new PropertyChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void propertyChange(PropertyChangeEvent e)
 			{
 				// TODO support precision change
 			}
 		});
-		myView.setVehicleChangeListener(new ChangeListener()
+		myView.setVehicleChangeListener(new PropertyChangeListener()
 		{
 			@Override
-			public void stateChanged(ChangeEvent e)
+			public void propertyChange(PropertyChangeEvent e)
 			{
 				// TODO support vehicle change
 			}
@@ -87,12 +145,19 @@ public class MaintainContributions
 		return Precision.values();
 	}
 
-	private ArrayList<Class<? extends BaseContribution>> getContributions()
+	private ArrayList<String> getContributions()
 	{
-		ArrayList<Class<? extends BaseContribution>> res = new ArrayList<Class<? extends BaseContribution>>();
-		res.add(CourseForecastContribution.class);
-		res.add(SpeedForecastContribution.class);
-		res.add(BearingMeasurementContribution.class);
+		ArrayList<String> res = new ArrayList<String>();
+		res.add("Course Forecast");
+		res.add("Speed Forecast");
+		res.add("Location Forecast");
+		res.add("Location Analysis");
+
+		// note: the next two don't get added from the manage panel, since they
+		// require external data,
+		// so they are triggered from the UI that holds the data
+		// res.add("Range Forecast");
+		// res.add("Bearing Measurement");
 
 		return res;
 	}
@@ -100,5 +165,25 @@ public class MaintainContributions
 	public TrackGenerator getGenerator()
 	{
 		return _genny;
+	}
+
+	private void addContribution(final String thisCont)
+	{
+		// ok, what type is it?
+		if (thisCont.equals("Course Forecast"))
+			_genny.addContribution(new CourseForecastContribution());
+		else if (thisCont.equals("Speed Forecast"))
+			_genny.addContribution(new SpeedForecastContribution());
+		else if (thisCont.equals("Location Forecast"))
+			_genny.addContribution(new LocationForecastContribution());
+		else if (thisCont.equals("Range Forecast"))
+			_genny.addContribution(new RangeForecastContribution());
+		else if (thisCont.equals("Bearing Measurement"))
+			_genny.addContribution(new BearingMeasurementContribution());
+		else if (thisCont.equals("Location Analysis"))
+			_genny.addContribution(new LocationAnalysisContribution());
+		else
+			SupportServices.INSTANCE.getLog().info(
+					"Could not find contribution for:" + thisCont);
 	}
 }

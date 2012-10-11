@@ -1,15 +1,9 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -119,9 +113,11 @@ public class RangeForecastContribution extends BaseContribution
 			String lonHemi = elements[12];
 
 			// and the beraing
+			@SuppressWarnings("unused")
 			String bearing = elements[13];
 
 			// and the range
+			@SuppressWarnings("unused")
 			String range = elements[14];
 
 			// ok,now construct the date=time
