@@ -36,7 +36,9 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc_rcp.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionPanel;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionPanel;
@@ -53,8 +55,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
  * 
  */
 public class MockMaintainContributionsView extends ViewPart implements
-		MaintainContributions.MyView
-{
+		MaintainContributions.MaintainContributionsView {
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 
 	private Composite main;
@@ -75,28 +76,26 @@ public class MockMaintainContributionsView extends ViewPart implements
 	private HashMap<BaseContribution, AnalystContributionPanel> _myControls = new HashMap<BaseContribution, AnalystContributionPanel>();
 
 	@Override
-	public void createPartControl(Composite parent)
-	{
+	public void createPartControl(Composite parent) {
 
 		// build the UI
 		initUI(parent);
 
 		// create the manager
-		_manager = new MaintainContributions(this);
+		_manager = new MaintainContributions(this, SATC_Activator.getDefault()
+				.getService(VehicleTypesRepository.class, true));
 
 	}
 
 	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
-	{
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
 		if (adapter.equals(TrackGenerator.class))
 			return _manager.getGenerator();
 		else
 			return super.getAdapter(adapter);
 	}
 
-	private void fillAnalystContributionsGroup(Composite parent)
-	{
+	private void fillAnalystContributionsGroup(Composite parent) {
 		GridLayout layout = new GridLayout(3, false);
 		layout.marginHeight = 2;
 		layout.marginWidth = 2;
@@ -146,14 +145,12 @@ public class MockMaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
-	{
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
 
 	}
 
-	private void initAnalystContributionsGroup(Composite parent)
-	{
+	private void initAnalystContributionsGroup(Composite parent) {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.verticalAlignment = SWT.FILL;
@@ -171,13 +168,12 @@ public class MockMaintainContributionsView extends ViewPart implements
 		_contList.setLayout(new GridLayout(1, false));
 
 		fillAnalystContributionsGroup(_contList);
-		scrolled.addListener(SWT.Resize, new Listener()
-		{
+		scrolled.addListener(SWT.Resize, new Listener() {
 
 			@Override
-			public void handleEvent(Event e)
-			{
-				scrolled.setMinSize(_contList.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+			public void handleEvent(Event e) {
+				scrolled.setMinSize(_contList.computeSize(SWT.DEFAULT,
+						SWT.DEFAULT));
 			}
 		});
 		scrolled.setAlwaysShowScrollBars(true);
@@ -187,8 +183,7 @@ public class MockMaintainContributionsView extends ViewPart implements
 		scrolled.setExpandVertical(true);
 	}
 
-	private void initPreferencesGroup(Composite parent)
-	{
+	private void initPreferencesGroup(Composite parent) {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -202,7 +197,8 @@ public class MockMaintainContributionsView extends ViewPart implements
 		displayBoundedStates = new Button(group, SWT.CHECK);
 		displayBoundedStates.setText("Display Bounded States");
 		displayBoundedStates.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+				GridData.HORIZONTAL_ALIGN_BEGINNING
+						| GridData.VERTICAL_ALIGN_CENTER));
 
 		Composite precisionPanel = new Composite(group, SWT.NONE);
 		precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
@@ -214,16 +210,15 @@ public class MockMaintainContributionsView extends ViewPart implements
 
 		Label precisionLabel = new Label(precisionPanel, SWT.NONE);
 		precisionLabel.setText("Precision:");
-		precisionLabel.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_CENTER));
+		precisionLabel.setLayoutData(new GridData(
+				GridData.VERTICAL_ALIGN_CENTER));
 
 		precisionsCombo = new ComboViewer(precisionPanel);
 		precisionsCombo.setContentProvider(new ArrayContentProvider());
-		precisionsCombo.setLabelProvider(new LabelProvider()
-		{
+		precisionsCombo.setLabelProvider(new LabelProvider() {
 
 			@Override
-			public String getText(Object element)
-			{
+			public String getText(Object element) {
 				return ((Precision) element).getLabel();
 			}
 		});
@@ -231,11 +226,11 @@ public class MockMaintainContributionsView extends ViewPart implements
 		displaySolutions = new Button(group, SWT.CHECK);
 		displaySolutions.setText("Display Solutions");
 		displaySolutions.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+				GridData.HORIZONTAL_ALIGN_BEGINNING
+						| GridData.VERTICAL_ALIGN_CENTER));
 	}
 
-	private void initUI(Composite parent)
-	{
+	private void initUI(Composite parent) {
 		main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(1, true);
 		gridLayout.verticalSpacing = 2;
@@ -248,8 +243,7 @@ public class MockMaintainContributionsView extends ViewPart implements
 		initAnalystContributionsGroup(main);
 	}
 
-	private void initVehicleGroup(Composite parent)
-	{
+	private void initVehicleGroup(Composite parent) {
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -264,27 +258,23 @@ public class MockMaintainContributionsView extends ViewPart implements
 
 		vehiclesCombo = new ComboViewer(group);
 		vehiclesCombo.setContentProvider(new ArrayContentProvider());
-		vehiclesCombo.setLabelProvider(new LabelProvider()
-		{
+		vehiclesCombo.setLabelProvider(new LabelProvider() {
 
 			@Override
-			public String getText(Object element)
-			{
+			public String getText(Object element) {
 				return ((VehicleType) element).getName();
 			}
 		});
 	}
 
 	@Override
-	public void setFocus()
-	{
+	public void setFocus() {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void added(BaseContribution contribution)
-	{
+	public void added(BaseContribution contribution) {
 		// ok, create a wrapper for this
 		AnalystContributionPanel panel = null;
 
@@ -295,19 +285,18 @@ public class MockMaintainContributionsView extends ViewPart implements
 		else if (contribution instanceof SpeedForecastContribution)
 			panel = new SpeedContributionPanel(_contList, contribution);
 		else if (contribution instanceof BearingMeasurementContribution)
-			panel = new BearingMeasurementContributionPanel(_contList, contribution);
+			panel = new BearingMeasurementContributionPanel(_contList,
+					contribution);
 		else if (contribution instanceof RangeForecastContribution)
 			panel = new RangeForecastContributionPanel(_contList, contribution);
 		else if (contribution instanceof LocationAnalysisContribution)
-			panel = new LocationAnalysisContributionPanel(_contList, contribution);
+			panel = new LocationAnalysisContributionPanel(_contList,
+					contribution);
 
 		// did we fail to find a panel?
-		if (panel == null)
-		{
+		if (panel == null) {
 			System.err.println("Failed to generate panel for " + contribution);
-		}
-		else
-		{
+		} else {
 			// sort out the layout
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 					| GridData.GRAB_HORIZONTAL));
@@ -321,69 +310,58 @@ public class MockMaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void removed(BaseContribution contribution)
-	{
+	public void removed(BaseContribution contribution) {
 		// get the panel
 		AnalystContributionPanel panel = _myControls.get(contribution);
 
 		// did we find it?
-		if (panel != null)
-		{
+		if (panel != null) {
 			// and remove it
 			panel.getControl().dispose();
 
 			// and forget it
 			_myControls.remove(contribution);
-		}
-		else
-		{
+		} else {
 			System.err.println("failed to find UI for:" + contribution);
 		}
 	}
 
 	@Override
-	public void populateContributionList(ArrayList<Object> items)
-	{
+	public void populateContributionList(ArrayList<Object> items) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void populateVehicleTypesList(List<VehicleType> vehicles)
-	{
+	public void populateVehicleTypesList(List<VehicleType> vehicles) {
 		vehiclesCombo.setInput(vehicles);
 	}
 
 	@Override
-	public void populatePrecisionsList(Precision[] precisions)
-	{
+	public void populatePrecisionsList(Precision[] precisions) {
 		precisionsCombo.setInput(precisions);
 		// and set an initial value
 		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
 	}
 
 	@Override
-	public void setRemoveContributionListener(ChangeListener listener)
-	{
+	public void setRemoveContributionListener(ChangeListener listener) {
 		// TODO: support removing an item from the list
 	}
 
 	@Override
-	public void setAddContributionListener(ChangeListener listener)
-	{
+	public void setAddContributionListener(ChangeListener listener) {
 		// TODO: tie in the add button to this
 	}
 
 	@Override
-	public void setVehicleChangeListener(ChangeListener listener)
-	{
+	public void setVehicleChangeListener(ChangeListener listener) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void setPrecisionChangeListener(ChangeListener listener)
-	{
+	public void setPrecisionChangeListener(ChangeListener listener) {
 		// TODO Auto-generated method stub
 
 	}

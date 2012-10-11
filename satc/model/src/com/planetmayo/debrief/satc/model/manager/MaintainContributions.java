@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.manager;
+package com.planetmayo.debrief.satc.model.manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +14,7 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.planetmayo.debrief.satc_rcp.services.VehicleTypesRepository;
+import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
 public class MaintainContributions
 {
@@ -26,7 +25,7 @@ public class MaintainContributions
 	 */
 	TrackGenerator _genny;
 
-	public MaintainContributions(MyView myView)
+	public MaintainContributions(MaintainContributionsView myView, VehicleTypesRepository vehiclesRepository)
 	{
 		// sort out our generator
 		_genny = new TrackGenerator();
@@ -49,8 +48,6 @@ public class MaintainContributions
 		ArrayList<Object> items = getContributions();
 		myView.populateContributionList(items);
 		myView.populatePrecisionsList(getPrecisions());
-		VehicleTypesRepository vehiclesRepository = SATC_Activator.getDefault()
-				.getService(VehicleTypesRepository.class, true);
 		myView.populateVehicleTypesList(vehiclesRepository.getAllTypes());
 
 		// ok, now start listening to the view
@@ -103,7 +100,7 @@ public class MaintainContributions
 		return res;
 	}
 
-	public static interface MyView extends ContributionsChangedListener
+	public static interface MaintainContributionsView extends ContributionsChangedListener
 	{
 
 		/**

@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.services;
+package com.planetmayo.debrief.satc.support;
 
 import java.util.List;
 

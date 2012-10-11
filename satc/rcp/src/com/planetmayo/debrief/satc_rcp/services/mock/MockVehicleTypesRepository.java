@@ -5,7 +5,7 @@ import java.util.List;
 
 
 import com.planetmayo.debrief.satc.model.VehicleType;
-import com.planetmayo.debrief.satc_rcp.services.VehicleTypesRepository;
+import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
 public class MockVehicleTypesRepository implements VehicleTypesRepository
 {
