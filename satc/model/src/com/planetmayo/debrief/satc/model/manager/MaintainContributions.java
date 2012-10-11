@@ -45,7 +45,7 @@ public class MaintainContributions
 		});
 
 		// populate the dropdowns in the view
-		ArrayList<Object> items = getContributions();
+		ArrayList<Class<? extends BaseContribution>> items = getContributions();
 		myView.populateContributionList(items);
 		myView.populatePrecisionsList(getPrecisions());
 		myView.populateVehicleTypesList(vehiclesRepository.getAllTypes());
@@ -90,9 +90,9 @@ public class MaintainContributions
 		return Precision.values();
 	}
 
-	private ArrayList<Object> getContributions()
+	private ArrayList<Class<? extends BaseContribution>> getContributions()
 	{
-		ArrayList<Object> res = new ArrayList<Object>();
+		ArrayList<Class<? extends BaseContribution>> res = new ArrayList<Class<? extends BaseContribution>>();
 		res.add(CourseForecastContribution.class);
 		res.add(SpeedForecastContribution.class);
 		res.add(BearingMeasurementContribution.class);
@@ -106,9 +106,9 @@ public class MaintainContributions
 		/**
 		 * show the list of available contributions
 		 * 
-		 * @param _items
+		 * @param items the class names of what user must be able to create
 		 */
-		public void populateContributionList(ArrayList<Object> items);
+		public void populateContributionList(ArrayList<Class<? extends BaseContribution>> items);
 
 		/**
 		 * populate the list of vehicle types
