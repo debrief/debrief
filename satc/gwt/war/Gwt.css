@@ -1,34 +1,128 @@
-/** Add css rules here for your application. */
-
-
-/** Example rules used by the template application (remove for your app) */
-h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
+.gwt-VerticalSplitPanel .vsplitter,.gwt-HorizontalSplitPanel .hsplitter
+	{
+	background: #F7F7F7 !important;
 }
 
-.sendButton {
-  display: block;
-  font-size: 16pt;
+.spinner-buttons button {
+	display: block;
 }
 
-/** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
+.dp-spinner-upbutton {
+	margin-top: 3px;
+	background: url("img/up.gif") #FAFAFA no-repeat 3px 1px;
 }
 
-.dialogVPanel {
-  margin: 5px;
+.dp-spinner-downbutton {
+	margin-bottom: 3px;
+	background: url("img/down.gif") #FAFAFA no-repeat 3px 1px;
 }
 
-.serverResponseLabelError {
-  color: red;
+.spinner-buttons {
+	margin-left: 1px;
 }
 
-/** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
-  margin: 15px 6px 6px;
+.gwt-SliderBar-shell {
+	border-style: inset;
+	border-width: 1px;
+	background-color: white;
+}
+
+.gwt-SliderBar-line {
+	border-style: outset;
+	border-width: 1px;
+	background-color: #EEE;
+	overflow: hidden;
+}
+
+.gwt-SliderBar-knob {
+	z-index: 1;
+	cursor: pointer;
+}
+
+.gwt-SliderBar-label {
+	font-size: 8pt;
+	cursor: default;
+	font-weight: bold;
+}
+
+.gwt-SliderBar-label.dimm {
+	color: #CCC;
+	font-weight: normal;
+}
+
+.gwt-SliderBar-tick {
+	width: 1px;
+	height: 5px;
+	background: black;
+	overflow: hidden;
+}
+
+.gwt-SliderBar-tick.dimm {
+	width: 1px;
+	background: #CCC;
+}
+
+.gwt-SliderBar-line-sliding {
+	background-color: #A00;
+	cursor: pointer;
+}
+
+.header td {
+	vertical-align: middle !important;
+}
+
+.disclosurePanel-img {
+	width: 16px;
+	height: 16px;
+}
+
+.gwt-DisclosurePanel-open .disclosurePanel-img {
+	background: url("img/collapse.png") no-repeat;
+}
+
+.gwt-DisclosurePanel-closed .disclosurePanel-img {
+	background: url("img/expand.png") no-repeat;
+}
+
+fieldset {
+	display: block;
+	clear: both;
+}
+
+.detail-panel .gwt-Label {
+	float: left;
+	width: 60px;
+	line-height: 30px;
+}
+
+.detail-panel input {
+	width: 150px;
+	display: block;
+	margin: 5px;
+}
+
+.contextMenu {
+	position: absolute;
+	font-family: Tahoma, Arial, Sans-Serif;
+	font-size: 8pt;
+	border: 1px solid gray;
+	background-color: white;
+	cursor: default;
+}
+
+.contextMenu .gwt-Label {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	width: 120px;
+	padding-left: 2px;
+}
+
+.contextMenu .gwt-Label:HOVER {
+	background-image: url('img/left.png');
+	background-repeat: no-repeat;
+	background-position: -2px 0px;
 }

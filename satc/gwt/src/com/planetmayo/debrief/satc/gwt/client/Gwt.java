@@ -1,35 +1,17 @@
 package com.planetmayo.debrief.satc.gwt.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.planetmayo.debrief.satc.gwt.client.services.GWTConverterService;
-import com.planetmayo.debrief.satc.gwt.client.services.GWTIOService;
-import com.planetmayo.debrief.satc.gwt.client.services.GWTLogService;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
-import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.gwt.client.ui.RootLayout;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
 public class Gwt implements EntryPoint
 {
 
-	/**
-	 * This is the entry point method.
-	 */
 	public void onModuleLoad()
 	{
+		RootPanel.get().add(new RootLayout());
+
+		/*
 		SupportServices.INSTANCE.initialize(new GWTLogService(), new GWTConverterService(), new GWTIOService());
 		
 		BaseContribution contribution = SpeedForecastContribution.getSample();
@@ -85,5 +67,5 @@ public class Gwt implements EntryPoint
 			}
 		});
 
-	}
+	*/}
 }
