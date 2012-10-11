@@ -323,6 +323,10 @@ public class TestHarnessView extends CoreView
 	@SuppressWarnings("deprecation")
 	private void loadSampleData(boolean useLong)
 	{
+		
+		// TODO: replace this with deserializing an existing SteppingGenerator, once we have a strategy:
+		// https://bitbucket.org/ianmayo/deb_satc/issue/10
+		
 		// clear the geneartor first
 		getGenerator().contributions().clear();
 
@@ -357,7 +361,6 @@ public class TestHarnessView extends CoreView
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

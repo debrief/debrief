@@ -80,7 +80,6 @@ public class Gwt implements EntryPoint
 				try {
 					tst.testBoundary();
 				} catch (IncompatibleStateException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

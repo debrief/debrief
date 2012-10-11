@@ -30,8 +30,7 @@ public class LocationRange extends BaseRange<LocationRange>
 	 */
 	public LocationRange(LocationRange range)
 	{
-		// TODO: this should do a deep copy, not a shallow copy
-		this(range._myArea);
+		this((Polygon) range._myArea.clone());
 	}
 
 	/**
