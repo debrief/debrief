@@ -44,7 +44,7 @@ public class RangeForecastContributionTest extends TestCase
 		final BoundedState theState = ps.states().iterator().next();
 		assertEquals("correct limits", 5, theState.getLocation().getPolygon().getNumPoints());
 		
-		assertEquals("correct speed constraint listing", "5pts 100.0000", theState.getLocation().getConstraintSummary());
+		assertEquals("correct speed constraint listing", "5pts 10000000", theState.getLocation().getConstraintSummary());
 	}
 
 	@SuppressWarnings("deprecation")

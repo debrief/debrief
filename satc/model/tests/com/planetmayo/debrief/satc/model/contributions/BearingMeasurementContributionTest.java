@@ -1,8 +1,7 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -11,6 +10,7 @@ import junit.framework.TestCase;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -20,7 +20,7 @@ public class BearingMeasurementContributionTest extends TestCase
 	public static final String THE_SHORT_PATH = "tests/com/planetmayo/debrief/satc/model/contributions/data/short_bearing_measurement_data.txt";
 
 	@SuppressWarnings("deprecation")
-	public void testNullDateSingleState() throws IncompatibleStateException, FileNotFoundException
+	public void testNullDateSingleState() throws IncompatibleStateException, IOException
 	{
 		BearingMeasurementContribution sc = new BearingMeasurementContribution();
 		
@@ -31,7 +31,7 @@ public class BearingMeasurementContributionTest extends TestCase
 		assertTrue("can see datafile",new File(THE_PATH).exists());
 		
 		// ok, load some data		
-		sc.loadFrom(new FileInputStream(THE_PATH));
+		sc.loadFrom(SupportServices.INSTANCE.getIOService().readLinesFrom(THE_PATH));
 
 		// check it's as we expect it to be
 		assertTrue("should not be empty",sc.hasData() );

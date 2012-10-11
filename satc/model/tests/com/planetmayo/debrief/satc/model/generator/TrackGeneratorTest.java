@@ -1,7 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -16,30 +15,26 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.generator.SteppingGenerator.SteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.support.SupportServices;
 
-public class TrackGeneratorTest extends TestCase
-{
+public class TrackGeneratorTest extends TestCase {
 	static protected IncompatibleStateException _ise;
 	static int _ctr1 = 0;
 	static int _ctr2 = 0;
 	static int _ctr3 = 0;
 	private RuntimeException _re;
 
-	public void testAddOrder()
-	{
+	public void testAddOrder() {
 		TrackGenerator tg = new TrackGenerator();
 
 		// sort out the listener
-		tg.addContributionsListener(new ContributionsChangedListener()
-		{
-			public void removed(BaseContribution contribution)
-			{
+		tg.addContributionsListener(new ContributionsChangedListener() {
+			public void removed(BaseContribution contribution) {
 				_ctr1--;
 			}
 
 			@Override
-			public void added(BaseContribution contribution)
-			{
+			public void added(BaseContribution contribution) {
 				_ctr1++;
 			}
 		});
@@ -63,8 +58,8 @@ public class TrackGeneratorTest extends TestCase
 
 		assertEquals("measurement comes first",
 				BearingMeasurementContribution.class, c1.getClass());
-		assertEquals("location comes second", LocationForecastContribution.class,
-				c2.getClass());
+		assertEquals("location comes second",
+				LocationForecastContribution.class, c2.getClass());
 		assertEquals("speed comes third", SpeedForecastContribution.class,
 				c3.getClass());
 
@@ -76,12 +71,11 @@ public class TrackGeneratorTest extends TestCase
 
 	}
 
-	public void testRestartOnContribChange() throws FileNotFoundException
-	{
+	public void testRestartOnContribChange() throws IOException {
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new FileInputStream(
-				BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(SupportServices.INSTANCE.getIOService()
+				.readLinesFrom(BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -106,24 +100,20 @@ public class TrackGeneratorTest extends TestCase
 		_ctr3 = 0;
 
 		// listen out for track genny changes
-		tg.addSteppingListener(new SteppingListener()
-		{
+		tg.addSteppingListener(new SteppingListener() {
 
 			@Override
-			public void stepped(int thisStep, int totalSteps)
-			{
+			public void stepped(int thisStep, int totalSteps) {
 				_ctr2++;
 			}
 
 			@Override
-			public void restarted()
-			{
+			public void restarted() {
 				_ctr1++;
 			}
 
 			@Override
-			public void complete()
-			{
+			public void complete() {
 				_ctr3++;
 			}
 		});
@@ -162,12 +152,9 @@ public class TrackGeneratorTest extends TestCase
 		// and a few steps?
 		_ctr2 = 0;
 		_ctr3 = 0;
-		try
-		{
+		try {
 			tg.step();
-		}
-		catch (RuntimeException re)
-		{
+		} catch (RuntimeException re) {
 			_re = re;
 		}
 
@@ -186,12 +173,11 @@ public class TrackGeneratorTest extends TestCase
 
 	}
 
-	public void testIncompatibleBounds() throws FileNotFoundException
-	{
+	public void testIncompatibleBounds() throws IOException {
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(new FileInputStream(
-				BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(SupportServices.INSTANCE.getIOService()
+				.readLinesFrom(BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(24);
@@ -213,45 +199,38 @@ public class TrackGeneratorTest extends TestCase
 		_ctr3 = 0;
 
 		// listen out for track genny changes
-		tg.addSteppingListener(new SteppingListener()
-		{
+		tg.addSteppingListener(new SteppingListener() {
 
 			@Override
-			public void stepped(int thisStep, int totalSteps)
-			{
+			public void stepped(int thisStep, int totalSteps) {
 
 			}
 
 			@Override
-			public void restarted()
-			{
+			public void restarted() {
 				_ctr3++;
 			}
 
 			@Override
-			public void complete()
-			{
+			public void complete() {
 				// TODO Auto-generated method stub
 			}
 		});
-		tg.addBoundedStateListener(new BoundedStatesListener()
-		{
+		tg.addBoundedStateListener(new BoundedStatesListener() {
 
 			@Override
-			public void statesBounded(Collection<BoundedState> newStates)
-			{
+			public void statesBounded(Collection<BoundedState> newStates) {
 				_ctr1++;
 			}
 
 			@Override
-			public void incompatibleStatesIdentified(IncompatibleStateException e)
-			{
+			public void incompatibleStatesIdentified(
+					IncompatibleStateException e) {
 				_ise = e;
 			}
 
 			@Override
-			public void debugStatesBounded(Collection<BoundedState> newStates)
-			{
+			public void debugStatesBounded(Collection<BoundedState> newStates) {
 				_ctr2++;
 			}
 		});
@@ -265,7 +244,8 @@ public class TrackGeneratorTest extends TestCase
 		tg.run();
 
 		// did we even see it?
-		assertEquals("we saw two states bounded events (one for reset)", 2, _ctr1);
+		assertEquals("we saw two states bounded events (one for reset)", 2,
+				_ctr1);
 		assertEquals("we saw debug steps", 3, _ctr2);
 
 		_ctr1 = _ctr2 = _ctr3 = 0;
@@ -292,20 +272,19 @@ public class TrackGeneratorTest extends TestCase
 		tg.run();
 
 		// hopefully something got triggered.
-		assertEquals("we saw debug steps before incompatible states got thrown", 2,
+		assertEquals(
+				"we saw debug steps before incompatible states got thrown", 2,
 				_ctr2);
 		assertNotNull("caught an exception", _ise);
 
 	}
 
-	public void testListeningB()
-	{
+	public void testListeningB() {
 		// TODO: create some contributions, add them to generator, make some
 		// changes, check we're listening to the correct events
 	}
 
-	public void testRegeneration()
-	{
+	public void testRegeneration() {
 		// TODO: create some contributions, include some constraints, check that
 		// contraint restriction is happening
 	}

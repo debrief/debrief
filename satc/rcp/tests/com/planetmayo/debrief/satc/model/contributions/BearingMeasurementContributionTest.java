@@ -13,6 +13,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
+import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
@@ -27,7 +28,7 @@ public class BearingMeasurementContributionTest extends TestCase
 	@Override
 	protected void setUp() throws Exception
 	{
-		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService());
+		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService(), new RCPIOService());
 		super.setUp();
 	}
 

@@ -12,6 +12,7 @@ import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
+import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 
 /**
@@ -70,7 +71,7 @@ public class SATC_Activator extends AbstractUIPlugin
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
-		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService());
+		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService(), new RCPIOService());
 		super.start(context);
 		this.context = context;
 		plugin = this;

@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTConverterService;
+import com.planetmayo.debrief.satc.gwt.client.services.GWTIOService;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTLogService;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
@@ -29,7 +30,7 @@ public class Gwt implements EntryPoint
 	 */
 	public void onModuleLoad()
 	{
-		SupportServices.INSTANCE.initialize(new GWTLogService(), new GWTConverterService());
+		SupportServices.INSTANCE.initialize(new GWTLogService(), new GWTConverterService(), new GWTIOService());
 		
 		BaseContribution contribution = SpeedForecastContribution.getSample();
 		

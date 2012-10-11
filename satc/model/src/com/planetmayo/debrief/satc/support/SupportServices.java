@@ -9,11 +9,13 @@ public class SupportServices
 	private volatile boolean initialized = false;
 	private volatile LogService logService;
 	private volatile ConverterService converterService;
+	private volatile IOService ioService;
 	
-	public synchronized void initialize(LogService logService, ConverterService converterService) 
+	public synchronized void initialize(LogService logService, ConverterService converterService, IOService ioService) 
 	{
 		this.logService = logService;
 		this.converterService = converterService;
+		this.ioService = ioService;
 		initialized = true;
 	}
 	
@@ -36,7 +38,17 @@ public class SupportServices
 		}		
 		return converterService;
 	}
-	
+
+	public IOService getIOService()
+	{
+		if (! initialized) 
+		{
+			throw new IllegalStateException("Support services isn't initialized. Do you forget to call " +
+					"SupportServices.initialize in your RCP activator or GWT entry point?");
+		}		
+		return ioService;
+	}
+
 	public Date parseDate(String pattern, String text) 
 	{
 		return getConverterService().parseDate(pattern, text); 
