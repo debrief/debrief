@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.gwt.client.contributions.CourseForecastContribution;
 
 public class ManageSolutions extends Composite {
 
@@ -54,7 +55,7 @@ public class ManageSolutions extends Composite {
 	PopupPanel contextMenu;
 
 	@UiField
-	Label courseForecast;
+	Label courseForecastContribution;
 
 	@UiField
 	Label speedForecast;
@@ -70,11 +71,11 @@ public class ManageSolutions extends Composite {
 		contextMenu.showRelativeTo(add);
 	}
 
-	@UiHandler(value = { "courseForecast", "speedForecast", "locationForecast" })
+	@UiHandler(value = { "courseForecastContribution", "speedForecast", "locationForecast" })
 	void handleClick(ClickEvent e) {
 		contextMenu.hide();
-		if ((Label) e.getSource() == courseForecast) {
-			analystContributions.add(new CourseForecast());
+		if ((Label) e.getSource() == courseForecastContribution) {
+			analystContributions.add(new CourseForecastContribution());
 		} else if ((Label) e.getSource() == speedForecast) {
 			Window.alert(((Label) e.getSource()).getText());
 

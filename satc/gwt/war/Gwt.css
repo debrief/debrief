@@ -95,7 +95,7 @@ fieldset {
 	line-height: 30px;
 }
 
-.detail-panel input {
+.detail-panel input[type="text"] {
 	width: 150px;
 	display: block;
 	margin: 5px;
@@ -125,4 +125,17 @@ fieldset {
 	background-image: url('img/left.png');
 	background-repeat: no-repeat;
 	background-position: -2px 0px;
+}
+
+.slider-widget .gwt-Label {
+	width: auto;
+	padding-right: 5px;
+}
+
+.course-forecast .slider-label {
+	width: 55px;
+}
+
+.location-forecast .slider-label {
+	width: 60px;
 }
