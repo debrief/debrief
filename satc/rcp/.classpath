@@ -8,7 +8,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="src" path="model_src"/>
 	<classpathentry kind="lib" path="/model/libs/jts-1.12.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/model"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
