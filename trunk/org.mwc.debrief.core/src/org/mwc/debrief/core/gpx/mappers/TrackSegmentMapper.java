@@ -6,11 +6,9 @@ import com.topografix.gpx.v11.TrksegType;
 
 public class TrackSegmentMapper
 {
-
 	public TrackSegment fromGpx(TrksegType segmentType)
 	{
 		TrackSegment segment = new TrackSegment();
 		return segment;
 	}
-
 }

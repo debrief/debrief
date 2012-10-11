@@ -8,6 +8,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.core.runtime.Status;
@@ -23,6 +25,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
 import com.topografix.gpx.v11.ExtensionsType;
+import com.topografix.gpx.v11.ObjectFactory;
 import com.topografix.gpx.v11.WptType;
 
 /**
@@ -35,6 +38,20 @@ public class FixMapper implements DebriefJaxbContextAware
 {
 	private JAXBContext debriefContext;
 	private static final BigDecimal MINUS_ONE = new BigDecimal("-1");
+	private static final org.mwc.debrief.core.gpx.ObjectFactory DEBRIEF_OBJ_FACTORY = new org.mwc.debrief.core.gpx.ObjectFactory();
+	private static DatatypeFactory df;
+
+	static
+	{
+		try
+		{
+			df = DatatypeFactory.newInstance();
+		}
+		catch (DatatypeConfigurationException dce)
+		{
+			throw new IllegalStateException("Exception while obtaining DatatypeFactory instance", dce);
+		}
+	}
 
 	/** extract a fix from the supplied data object
 	 * 
@@ -127,6 +144,32 @@ public class FixMapper implements DebriefJaxbContextAware
 		return trackPoint;
 	}
 
+	public WptType toGpx(FixWrapper fixWrapper)
+	{
+		ObjectFactory objectFactory = new ObjectFactory();
+		WptType gpxPoint = objectFactory.createWptType();
+
+		gpxPoint.setLat(BigDecimal.valueOf(fixWrapper.getFix().getLocation().getLat()));
+		gpxPoint.setLon(BigDecimal.valueOf(fixWrapper.getFix().getLocation().getLong()));
+		gpxPoint.setEle(convertDepthToElevation(BigDecimal.valueOf(fixWrapper.getFix().getLocation().getDepth())));
+
+		HiResDate hiResDate = fixWrapper.getTime();
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTimeInMillis(hiResDate.getDate().getTime());
+		XMLGregorianCalendar gpxTime = df.newXMLGregorianCalendar(gc);
+		// gpxTime.setFractionalSecond(BigDecimal.valueOf(hiResDate.getMicros()));
+		// TODO map micro secs
+		gpxPoint.setTime(gpxTime.normalize());
+		//
+		// ExtensionsType extensionsType = objectFactory.createExtensionsType();
+		// List<Object> any = extensionsType.getAny();
+		//
+		// FixExtensionType fixExtensionType =
+		// DEBRIEF_OBJ_FACTORY.createFixExtensionType();
+		// any.add(DEBRIEF_OBJ_FACTORY.createFixExtension(fixExtensionType));
+		return gpxPoint;
+	}
+
 	/**
 	 * Debrief and its datasets currently represent the 'z' dimension as Depth.
 	 * GPX has elevation, so clearly we'll need to invert this data - positive
@@ -142,8 +185,9 @@ public class FixMapper implements DebriefJaxbContextAware
 	{
 		debriefContext = ctx;
 	}
-	/*
-	 * private BigDecimal convertDepthToElevation(BigDecimal depth) { return
-	 * depth.multiply(MINUS_ONE); }
-	 */
+
+	private BigDecimal convertDepthToElevation(BigDecimal depth)
+	{
+		return depth.multiply(MINUS_ONE);
+	}
 }
