@@ -37,6 +37,7 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.model.manager.MaintainContributionsView;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -55,7 +56,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
  * 
  */
 public class MockMaintainContributionsView extends ViewPart implements
-		MaintainContributions.MaintainContributionsView {
+		MaintainContributionsView {
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 
 	private Composite main;
