@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -87,8 +89,13 @@ public class MaintainContributionsView extends ViewPart implements
 	 */
 	private HashMap<BaseContribution, AnalystContributionPanel> _myControls = new HashMap<BaseContribution, AnalystContributionPanel>();
 
-	private ChangeListener _addContListener;
+	private PropertyChangeListener _addContListener;
 
+	private PropertyChangeListener _vehicleChangeListener;
+
+	private PropertyChangeListener _precisionChangeListener;
+
+	private PropertyChangeListener _removeContListener;
 
 	@Override
 	public void createPartControl(Composite parent)
@@ -380,7 +387,9 @@ public class MaintainContributionsView extends ViewPart implements
 				@Override
 				public void widgetSelected(SelectionEvent arg0)
 				{
-					_manager.addContribution(thisCont);
+					if (_addContListener != null)
+						_addContListener.propertyChange(new PropertyChangeEvent(thisCont,
+								null, null, thisCont));
 				}
 			});
 		}
@@ -401,30 +410,29 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void setRemoveContributionListener(ChangeListener listener)
+	public void setRemoveContributionListener(PropertyChangeListener listener)
 	{
 		// TODO: support removing an item from the list
+		_removeContListener = listener;
 	}
 
 	@Override
-	public void setAddContributionListener(ChangeListener listener)
+	public void setAddContributionListener(PropertyChangeListener listener)
 	{
 		_addContListener = listener;
-		
 	}
 
 	@Override
-	public void setVehicleChangeListener(ChangeListener listener)
+	public void setVehicleChangeListener(PropertyChangeListener listener)
 	{
-		// TODO Auto-generated method stub
-
+		// TODO: support vehicle change
+		_vehicleChangeListener = listener;
 	}
 
 	@Override
-	public void setPrecisionChangeListener(ChangeListener listener)
+	public void setPrecisionChangeListener(PropertyChangeListener listener)
 	{
-		// TODO Auto-generated method stub
-
+		_precisionChangeListener = listener;
 	}
 
 }

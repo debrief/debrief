@@ -1,10 +1,9 @@
 package com.planetmayo.debrief.satc.model.manager;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -20,7 +19,8 @@ import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
-public class MaintainContributions {
+public class MaintainContributions
+{
 
 	public static interface MyView extends ContributionsChangedListener
 	{
@@ -28,7 +28,8 @@ public class MaintainContributions {
 		/**
 		 * show the list of available contributions
 		 * 
-		 * @param items the types of contribution that the user may add
+		 * @param items
+		 *          the types of contribution that the user may add
 		 */
 		public void populateContributionList(ArrayList<String> items);
 
@@ -51,30 +52,31 @@ public class MaintainContributions {
 		 * 
 		 * @param listener
 		 */
-		public void setRemoveContributionListener(ChangeListener listener);
+		public void setRemoveContributionListener(PropertyChangeListener listener);
 
 		/**
 		 * allow us to listen to user asking to remove a contribution
 		 * 
 		 * @param listener
 		 */
-		public void setAddContributionListener(ChangeListener listener);
+		public void setAddContributionListener(PropertyChangeListener listener);
 
 		/**
 		 * allow us to listen to user asking to remove a contribution
 		 * 
 		 * @param listener
 		 */
-		public void setVehicleChangeListener(ChangeListener listener);
+		public void setVehicleChangeListener(PropertyChangeListener listener);
 
 		/**
 		 * allow us to listen to user asking to remove a contribution
 		 * 
 		 * @param listener
 		 */
-		public void setPrecisionChangeListener(ChangeListener listener);
+		public void setPrecisionChangeListener(PropertyChangeListener listener);
 
 	}
+
 	/**
 	 * our track generator
 	 * 
@@ -82,7 +84,8 @@ public class MaintainContributions {
 	TrackGenerator _genny;
 
 	public MaintainContributions(MyView myView,
-			VehicleTypesRepository vehiclesRepository) {
+			VehicleTypesRepository vehiclesRepository)
+	{
 		// sort out our generator
 		_genny = new TrackGenerator();
 
@@ -90,10 +93,12 @@ public class MaintainContributions {
 		_genny.addContributionsListener(myView);
 
 		// ok, config the view
-		myView.setRemoveContributionListener(new ChangeListener() {
+		myView.setRemoveContributionListener(new PropertyChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				BaseContribution theCont = (BaseContribution) arg0.getSource();
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				BaseContribution theCont = (BaseContribution) evt.getSource();
 				_genny.removeContribution(theCont);
 			}
 		});
@@ -105,40 +110,43 @@ public class MaintainContributions {
 		myView.populateVehicleTypesList(vehiclesRepository.getAllTypes());
 
 		// ok, now start listening to the view
-		myView.setAddContributionListener(new ChangeListener() {
+		myView.setAddContributionListener(new PropertyChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				@SuppressWarnings("unused")
+			public void propertyChange(PropertyChangeEvent arg0)
+			{
+				// get the string object that contains the name
 				String theCont = (String) arg0.getSource();
 
-				// TODO: find out how to create a new contribution from this
-				// name
-				CourseForecastContribution newCont = new CourseForecastContribution();
-
-				// ok, create a new one of these
-				_genny.addContribution(newCont);
+				addContribution(theCont);
 			}
 		});
-		myView.setPrecisionChangeListener(new ChangeListener() {
+		myView.setPrecisionChangeListener(new PropertyChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void propertyChange(PropertyChangeEvent e)
+			{
 				// TODO support precision change
 			}
 		});
-		myView.setVehicleChangeListener(new ChangeListener() {
+		myView.setVehicleChangeListener(new PropertyChangeListener()
+		{
 			@Override
-			public void stateChanged(ChangeEvent e) {
+			public void propertyChange(PropertyChangeEvent e)
+			{
 				// TODO support vehicle change
 			}
 		});
 
 	}
 
-	private com.planetmayo.debrief.satc.model.Precision[] getPrecisions() {
+	private com.planetmayo.debrief.satc.model.Precision[] getPrecisions()
+	{
 		return Precision.values();
 	}
 
-	private ArrayList<String> getContributions() {
+	private ArrayList<String> getContributions()
+	{
 		ArrayList<String> res = new ArrayList<String>();
 		res.add("Course Forecast");
 		res.add("Speed Forecast");
@@ -154,11 +162,13 @@ public class MaintainContributions {
 		return res;
 	}
 
-	public TrackGenerator getGenerator() {
+	public TrackGenerator getGenerator()
+	{
 		return _genny;
 	}
 
-	public void addContribution(final String thisCont) {
+	private void addContribution(final String thisCont)
+	{
 		// ok, what type is it?
 		if (thisCont.equals("Course Forecast"))
 			_genny.addContribution(new CourseForecastContribution());
