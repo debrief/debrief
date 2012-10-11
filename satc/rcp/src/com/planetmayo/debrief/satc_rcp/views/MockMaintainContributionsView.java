@@ -328,7 +328,7 @@ public class MockMaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void populateContributionList(ArrayList<Class<? extends BaseContribution>> items) {
+	public void populateContributionList(ArrayList<String> items) {
 		// TODO Auto-generated method stub
 
 	}

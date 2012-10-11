@@ -7,7 +7,6 @@ import javax.swing.event.ChangeListener;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 
 public interface MaintainContributionsView extends ContributionsChangedListener
@@ -16,9 +15,9 @@ public interface MaintainContributionsView extends ContributionsChangedListener
 	/**
 	 * show the list of available contributions
 	 * 
-	 * @param items the class names of what user must be able to create
+	 * @param items the types of contribution that the user may add
 	 */
-	public void populateContributionList(ArrayList<Class<? extends BaseContribution>> items);
+	public void populateContributionList(ArrayList<String> items);
 
 	/**
 	 * populate the list of vehicle types

@@ -42,7 +42,7 @@ public class MaintainContributions
 		});
 
 		// populate the dropdowns in the view
-		ArrayList<Class<? extends BaseContribution>> items = getContributions();
+		ArrayList<String> items = getContributions();
 		myView.populateContributionList(items);
 		myView.populatePrecisionsList(getPrecisions());
 		myView.populateVehicleTypesList(vehiclesRepository.getAllTypes());
@@ -87,12 +87,12 @@ public class MaintainContributions
 		return Precision.values();
 	}
 
-	private ArrayList<Class<? extends BaseContribution>> getContributions()
+	private ArrayList<String> getContributions()
 	{
-		ArrayList<Class<? extends BaseContribution>> res = new ArrayList<Class<? extends BaseContribution>>();
-		res.add(CourseForecastContribution.class);
-		res.add(SpeedForecastContribution.class);
-		res.add(BearingMeasurementContribution.class);
+		ArrayList<String> res = new ArrayList<String>();
+		res.add("CourseForecast");
+		res.add("SpeedForecast");
+		res.add("BearingMeasurement");
 
 		return res;
 	}
