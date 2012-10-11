@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.event.ChangeListener;
-
-import org.eclipse.core.databinding.observable.ChangeEvent;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -91,10 +88,13 @@ public class MaintainContributionsView extends ViewPart implements
 
 	private PropertyChangeListener _addContListener;
 
+	@SuppressWarnings("unused")
 	private PropertyChangeListener _vehicleChangeListener;
 
+	@SuppressWarnings("unused")
 	private PropertyChangeListener _precisionChangeListener;
 
+	@SuppressWarnings("unused")
 	private PropertyChangeListener _removeContListener;
 
 	@Override

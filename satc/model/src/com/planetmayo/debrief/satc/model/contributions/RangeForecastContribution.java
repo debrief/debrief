@@ -113,9 +113,11 @@ public class RangeForecastContribution extends BaseContribution
 			String lonHemi = elements[12];
 
 			// and the beraing
+			@SuppressWarnings("unused")
 			String bearing = elements[13];
 
 			// and the range
+			@SuppressWarnings("unused")
 			String range = elements[14];
 
 			// ok,now construct the date=time
