@@ -10,9 +10,9 @@ import org.osgi.framework.ServiceReference;
 
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
+import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
-import com.planetmayo.debrief.satc_rcp.services.mock.MockVehicleTypesRepository;
 
 /**
  * The activator class controls the plug-in life cycle

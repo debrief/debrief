@@ -23,12 +23,12 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -92,7 +92,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 		{
 		};
 		_debugMode.setText("Debug Mode");
-		_debugMode.setChecked(true);
+		_debugMode.setChecked(false);
 		_debugMode
 				.setToolTipText("Track all states (including application of each Contribution)");
 
@@ -149,25 +149,13 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 			statesBounded(newStates);
 	}
 
-	private int _oldSeries = 0;
 
 	private void showData(Collection<BoundedState> newStates)
 	{
-		// ditch the old series
-//		for (int i = 0; i < _oldSeries; i++)
-//		{
-//			_myData.removeSeries(i);
-//		}
+		// clear the data
 		_myData.removeAllSeries();
 
-		// mark the remaining series as lapsed
-		// int len = _myData.getSeriesCount();
-		// for(int i=0;i<len;i++)
-		// {
-		// _renderer.setSeriesStroke(i, new DStroke())
-		// }
-
-		// do we need to demote any shapes?
+		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
 		while (iter.hasNext())
 		{
@@ -203,7 +191,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 		}
 		else
 		{
-			clear();
+			clear(null);
 		}
 	}
 
@@ -240,9 +228,9 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	}
 
 	@Override
-	public void clear()
+	public void clear(String title)
 	{
 		_myData.removeAllSeries();
-
+		_chart.setTitle(title);
 	}
 }

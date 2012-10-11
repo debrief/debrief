@@ -252,7 +252,7 @@ public class TestHarnessView extends CoreView
 				LocationAnalysisTest lat = new LocationAnalysisTest();
 				try
 				{
-					GeoSupport.clearOutput();
+					GeoSupport.clearOutput("Location Analysis");
 					lat.testBoundary();
 				}
 				catch (IncompatibleStateException e)

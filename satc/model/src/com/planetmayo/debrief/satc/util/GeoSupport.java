@@ -27,12 +27,12 @@ public class GeoSupport
 		 * @param title title of the line
 		 * @param coords coords to plot
 		 */
-		void showGeometry(String title, Coordinate[] coords);
+		void showGeometry(String seriesName, Coordinate[] coords);
 
 		/** clear the plot
 		 * 
 		 */
-		void clear();
+		void clear(String title);
 		
 	}
 	
@@ -73,10 +73,10 @@ public class GeoSupport
 		return m_sec / 0.514444444;
 	}
 	
-	public static void clearOutput()
+	public static void clearOutput(String title)
 	{
 		if(_plotter != null)
-			_plotter.clear();
+			_plotter.clear(title);
 		
 	}
 	public static void writeGeometry(String title, Geometry geo)

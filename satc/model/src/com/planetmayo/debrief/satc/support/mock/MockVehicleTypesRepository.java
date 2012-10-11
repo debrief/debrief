@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.services.mock;
+package com.planetmayo.debrief.satc.support.mock;
 
 import java.util.Arrays;
 import java.util.List;

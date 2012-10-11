@@ -238,7 +238,7 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 		{
 		};
 		_debugMode.setText("Debug Mode");
-		_debugMode.setChecked(true);
+		_debugMode.setChecked(false);
 		_debugMode
 				.setToolTipText("Track all states (including application of each Contribution)");
 	}
