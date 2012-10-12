@@ -23,8 +23,8 @@
 			<g:VerticalSplitPanel width="100%" height="100%"
 				splitPosition="150px">
 
-				<my:TestHarness></my:TestHarness>
-				<my:ManageSolutionsView></my:ManageSolutionsView>
+				<my:TestHarness ui:field="testHarness"></my:TestHarness>
+				<my:ManageSolutionsView ui:field="manageSolutionsView"></my:ManageSolutionsView>
 
 			</g:VerticalSplitPanel>
 
