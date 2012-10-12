@@ -28,6 +28,7 @@ public class TestHarness extends Composite {
 	
 	@UiField Button populate;
 	
+	@SuppressWarnings("unused")
 	private TrackGenerator _generator;
 	private TestSupport _tester;
 
