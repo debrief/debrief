@@ -132,10 +132,18 @@ fieldset {
 	padding-right: 5px;
 }
 
+.aleteration-leg-forecast .course-forecast .slider-label {
+	width: 115px;
+}
+
 .course-forecast .slider-label {
 	width: 55px;
 }
 
 .location-forecast .slider-label {
 	width: 60px;
+}
+
+.date-label {
+	line-height: 30px;
 }

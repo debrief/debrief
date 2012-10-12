@@ -2,7 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:my="urn:import:com.planetmayo.debrief.satc.gwt.client.ui">
 	<ui:style>
-		
+
 	</ui:style>
 	<g:HTMLPanel>
 		<g:CaptionPanel captionText="Location Forecast - Ship Logs">
@@ -23,7 +23,7 @@
 							<my:NameWidget></my:NameWidget>
 							<my:StartFinishWidget></my:StartFinishWidget>
 
-							<my:Slider2BarWidget type="location"  text="Constraint :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget type="location" text="Constraint :" sliderWidth="190px"></my:Slider2BarWidget>
 							<my:NameWidget text="Estimate: "></my:NameWidget>
 
 						</g:HTMLPanel>

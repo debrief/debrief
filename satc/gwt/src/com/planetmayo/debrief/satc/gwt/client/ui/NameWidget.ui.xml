@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.important {
-			font-weight: bold;
+		font-weight: bold;
 		}
 	</ui:style>
 	<g:HTMLPanel>

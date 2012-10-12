@@ -3,17 +3,17 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:my="urn:import:com.planetmayo.debrief.satc.gwt.client.ui">
 	<ui:style>
 		/* Add CSS here. See the GWT docs on UI Binder for more
-				details */
+		details */
 		.important {
-			font-weight: bold;
+		font-weight: bold;
 		}
-		
+
 		.root-layout {
-			position: absolute;
-			left: 0px;
-			right: 0px;
-			bottom: 0px;
-			top: 0px;
+		position: absolute;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		top: 0px;
 		}
 	</ui:style>
 	<g:HTMLPanel styleName="{style.root-layout}">

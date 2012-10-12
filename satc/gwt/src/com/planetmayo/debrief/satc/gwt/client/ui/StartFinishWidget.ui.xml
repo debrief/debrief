@@ -3,16 +3,19 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:dp="urn:import:com.google.gwt.user.datepicker.client">
 	<ui:style>
 		.important {
-			font-weight: bold;
+		font-weight: bold;
 		}
 	</ui:style>
 	<g:HTMLPanel>
 		<g:Label text="Start:">
 		</g:Label>
-		<dp:DateBox />
+		<dp:DateBox ui:field="startDateBox" />
+		<g:Label ui:field="startDateLabel" visible="false" styleName="date-label"></g:Label>
 
 		<g:Label text="Finish:">
 		</g:Label>
-		<dp:DateBox />
+		<dp:DateBox ui:field="finishDateBox" />
+		<g:Label ui:field="finishDateLabel" visible="false" styleName="date-label"></g:Label>
+
 	</g:HTMLPanel>
 </ui:UiBinder> 

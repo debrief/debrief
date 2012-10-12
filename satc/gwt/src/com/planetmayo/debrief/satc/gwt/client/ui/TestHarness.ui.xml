@@ -10,16 +10,19 @@
 		left: 0px;
 		right: 0px;
 		bottom: 0px;
-		top: 0px;
+		top:
+		0px;
 		box-shadow: 2px 2px 2px #E4E4E4;
 		}
 
 		.header {
-		border-bottom: solid 1px #BDBDBD;
+		border-bottom: solid 1px
+		#BDBDBD;
 		padding: 2px;
 		color: #333;
 		background: whiteSmoke;
-		font-weight: bold;
+		font-weight:
+		bold;
 		border-top-left-radius: 10px;
 		border-top-right-radius: 10px;
 		}
@@ -30,7 +33,8 @@
 
 		.button-panel {
 		position: absolute;
-		bottom: 0px;
+		bottom:
+		0px;
 		left: 0px;
 		right: 0px;
 		padding: 5px;

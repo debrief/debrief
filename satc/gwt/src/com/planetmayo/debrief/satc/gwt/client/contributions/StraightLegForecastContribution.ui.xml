@@ -2,35 +2,26 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:my="urn:import:com.planetmayo.debrief.satc.gwt.client.ui">
 	<ui:style>
-		
+
 	</ui:style>
 	<g:HTMLPanel>
-		<g:CaptionPanel captionText="Bearing Measurement - Spherical BB">
+		<g:CaptionPanel captionText="Straight Leg Forecast - Back to start">
 
 			<g:DisclosurePanel animationEnabled="true" open="true"
 				width="100%">
 
 				<g:customHeader>
-					<g:HorizontalPanel horizontalAlignment="center"
-						ui:field="header" width="100%">
-						<g:FlowPanel styleName="disclosurePanel-img"></g:FlowPanel>
-						<g:CheckBox ui:field="active"></g:CheckBox>
-						<g:InlineLabel ui:field="hardConstraints" text="4 degs error"></g:InlineLabel>
-						<g:InlineLabel ui:field="estimate" text="45 Measurements"></g:InlineLabel>
-						<my:NumberSpinner ui:field="weighting"></my:NumberSpinner>
-					</g:HorizontalPanel>
+					<my:ContributionPanelHeader active="true"
+						weighting="0" hardConstraints="N/A" estimate="N/A"></my:ContributionPanelHeader>
 
 				</g:customHeader>
 
-				<g:HTMLPanel styleName="detail-panel">
+				<g:HTMLPanel styleName="detail-panel course-forecast">
 					<g:CaptionPanel captionText="Adjust">
 						<g:HTMLPanel>
 							<my:NameWidget></my:NameWidget>
-
 							<my:StartFinishWidget></my:StartFinishWidget>
 
-							<g:InlineLabel text="Limit: +/- 3 degs">
-							</g:InlineLabel>
 						</g:HTMLPanel>
 					</g:CaptionPanel>
 				</g:HTMLPanel>

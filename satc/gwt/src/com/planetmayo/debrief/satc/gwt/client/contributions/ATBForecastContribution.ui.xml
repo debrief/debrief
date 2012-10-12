@@ -5,14 +5,14 @@
 
 	</ui:style>
 	<g:HTMLPanel>
-		<g:CaptionPanel captionText="Speed Forecast - Easterly leg">
+		<g:CaptionPanel captionText="ATB Forecast - Held on Telescope">
 
 			<g:DisclosurePanel animationEnabled="true" open="true"
 				width="100%">
 
 				<g:customHeader>
 					<my:ContributionPanelHeader active="true"
-						weighting="9" hardConstraints="3-11 kts" estimate="6 kts"></my:ContributionPanelHeader>
+						weighting="9" hardConstraints="45&deg;-120&deg;" estimate="80&deg; "></my:ContributionPanelHeader>
 
 				</g:customHeader>
 
@@ -22,9 +22,9 @@
 							<my:NameWidget></my:NameWidget>
 							<my:StartFinishWidget></my:StartFinishWidget>
 
-							<my:Slider2BarWidget type="speed" text="Min :"></my:Slider2BarWidget>
-							<my:Slider2BarWidget type="speed" text="Max :"></my:Slider2BarWidget>
-							<my:Slider2BarWidget type="speed" text="Estimate :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget type="course" text="Min :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget type="course" text="Max :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget type="course" text="Estimate :"></my:Slider2BarWidget>
 						</g:HTMLPanel>
 					</g:CaptionPanel>
 				</g:HTMLPanel>
