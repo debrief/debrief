@@ -24,7 +24,7 @@
 				splitPosition="150px">
 
 				<my:TestHarness></my:TestHarness>
-				<my:ManageSolutions></my:ManageSolutions>
+				<my:ManageSolutionsView></my:ManageSolutionsView>
 
 			</g:VerticalSplitPanel>
 

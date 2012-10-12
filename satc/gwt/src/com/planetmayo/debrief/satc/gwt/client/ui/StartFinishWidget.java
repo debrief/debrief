@@ -35,6 +35,7 @@ public class StartFinishWidget extends Composite {
 	@UiField
 	Label finishDateLabel;
 	
+	@SuppressWarnings("deprecation")
 	public void setLoaded(boolean value) {
 		if(value)
 		{

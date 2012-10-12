@@ -62,6 +62,7 @@
 			<g:InlineLabel text="Data source: "></g:InlineLabel>
 			<g:FileUpload></g:FileUpload>
 			<g:Button text="Add Bearing Data"></g:Button>
+			<g:Button text="Populate" styleName="gwt-Button {style.play}"></g:Button>
 
 		</g:HTMLPanel>
 
