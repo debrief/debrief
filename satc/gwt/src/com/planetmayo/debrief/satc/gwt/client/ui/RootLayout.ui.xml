@@ -24,7 +24,7 @@
 				splitPosition="150px">
 
 				<my:TestHarness ui:field="testHarness"></my:TestHarness>
-				<my:ManageSolutionsView ui:field="manageSolutionsView"></my:ManageSolutionsView>
+				<my:MaintainContributionsView ui:field="manageSolutionsView"></my:MaintainContributionsView>
 
 			</g:VerticalSplitPanel>
 

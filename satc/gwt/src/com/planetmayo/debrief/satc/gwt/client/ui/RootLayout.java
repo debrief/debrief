@@ -23,7 +23,7 @@ public class RootLayout extends Composite {
 	TestHarness testHarness;
 	
 	@UiField
-	ManageSolutionsView manageSolutionsView;
+	MaintainContributionsView manageSolutionsView;
 
 	private static RootLayoutUiBinder uiBinder = GWT
 			.create(RootLayoutUiBinder.class);

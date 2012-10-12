@@ -37,14 +37,14 @@ import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
 import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
-public class ManageSolutionsView extends Composite implements MyView
+public class MaintainContributionsView extends Composite implements MyView
 {
 
 	private static ManageSolutionsViewUiBinder uiBinder = GWT
 			.create(ManageSolutionsViewUiBinder.class);
 
 	interface ManageSolutionsViewUiBinder extends
-			UiBinder<Widget, ManageSolutionsView>
+			UiBinder<Widget, MaintainContributionsView>
 	{
 	}
 
@@ -57,7 +57,7 @@ public class ManageSolutionsView extends Composite implements MyView
 		return _stepper;
 	}
 
-	public ManageSolutionsView()
+	public MaintainContributionsView()
 	{
 
 		initWidget(uiBinder.createAndBindUi(this));
