@@ -145,6 +145,8 @@
 					<contribution:RangeForecastContributionView></contribution:RangeForecastContributionView>
 					<contribution:BearingMeasurementContributionView></contribution:BearingMeasurementContributionView>
 					<contribution:FrequencyMeasurementContributionView></contribution:FrequencyMeasurementContributionView>
+					<contribution:ReferenceContributionView></contribution:ReferenceContributionView>
+					<contribution:AnalysisContributionView></contribution:AnalysisContributionView>
 
 				</g:HTMLPanel>
 
