@@ -1,44 +1,15 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.Date;
 
-import org.apache.commons.io.IOUtils;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.osgi.framework.Bundle;
 
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
-import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
-import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -57,58 +28,11 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class TestHarnessView extends CoreView
 {
-
-	class NameSorter extends ViewerSorter
-	{
-	}
-
-	class ViewContentProvider implements IStructuredContentProvider
-	{
-		@Override
-		public void dispose()
-		{
-		}
-
-		@Override
-		public Object[] getElements(Object parent)
-		{
-			return new String[]
-			{ "One", "Two", "Three" };
-		}
-
-		@Override
-		public void inputChanged(Viewer v, Object oldInput, Object newInput)
-		{
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
-	{
-		@Override
-		public Image getColumnImage(Object obj, int index)
-		{
-			return getImage(obj);
-		}
-
-		@Override
-		public String getColumnText(Object obj, int index)
-		{
-			return getText(obj);
-		}
-
-		@Override
-		public Image getImage(Object obj)
-		{
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
-
+	
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.SampleView";
-	private TableViewer viewer;
 
 	/*
 	 * The content provider class is responsible for providing objects to the
@@ -126,6 +50,8 @@ public class TestHarnessView extends CoreView
 	private Action _liveAction;
 	private Action _testOne;
 
+	private TestSupport _testSupport;
+
 	/**
 	 * The constructor.
 	 */
@@ -136,7 +62,6 @@ public class TestHarnessView extends CoreView
 	private void contributeToActionBars()
 	{
 		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
@@ -147,17 +72,11 @@ public class TestHarnessView extends CoreView
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setSorter(new NameSorter());
-		viewer.setInput(getViewSite());
+		new Label(parent, SWT.None);
 
-		// Create the help context id for the viewer's control
-		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(viewer.getControl(), "com.planetmayo.debrief.satc.viewer");
+		 _testSupport = new TestSupport();
+		
 		makeActions();
-		hookContextMenu();
 		contributeToActionBars();
 
 		// disable our controls, until we find a genny
@@ -170,13 +89,6 @@ public class TestHarnessView extends CoreView
 		setupMonitor();
 	}
 
-	private void fillContextMenu(IMenuManager manager)
-	{
-	}
-
-	private void fillLocalPullDown(IMenuManager manager)
-	{
-	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
@@ -190,22 +102,6 @@ public class TestHarnessView extends CoreView
 		manager.add(_testOne);
 	}
 
-	private void hookContextMenu()
-	{
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener()
-		{
-			@Override
-			public void menuAboutToShow(IMenuManager manager)
-			{
-				TestHarnessView.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
-	}
 
 	private void makeActions()
 	{
@@ -248,18 +144,7 @@ public class TestHarnessView extends CoreView
 			@Override
 			public void run()
 			{
-				// clear the bounded states
-				LocationAnalysisTest lat = new LocationAnalysisTest();
-				try
-				{
-					GeoSupport.clearOutput("Location Analysis");
-					lat.testBoundary();
-				}
-				catch (IncompatibleStateException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				_testSupport.nextTest();
 			}
 		};
 		_testOne.setText("1");
@@ -317,77 +202,11 @@ public class TestHarnessView extends CoreView
 	@Override
 	public void setFocus()
 	{
-		viewer.getControl().setFocus();
 	}
 
-	@SuppressWarnings("deprecation")
 	private void loadSampleData(boolean useLong)
 	{
-		
-		// TODO: replace this with deserializing an existing SteppingGenerator, once we have a strategy:
-		// https://bitbucket.org/ianmayo/deb_satc/issue/10
-		
-		// clear the geneartor first
-		getGenerator().contributions().clear();
-
-		// now load some data
-		Bundle bundle = Platform.getBundle(SATC_Activator.PLUGIN_ID);
-		final String thePath;
-		if (useLong)
-			thePath = BearingMeasurementContributionTest.THE_PATH;
-		else
-			thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
-
-		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-		RangeForecastContribution rangeF = new RangeForecastContribution();
-		URL fileURL = bundle.getEntry(thePath);
-		FileInputStream input;
-		try
-		{
-			// populate the bearing data
-			input = new FileInputStream(
-					new File(FileLocator.resolve(fileURL).toURI()));
-			bmc.loadFrom(IOUtils.readLines(input));
-			input.close();
-			getGenerator().addContribution(bmc);
-
-			// and populate the range data
-			input = new FileInputStream(
-					new File(FileLocator.resolve(fileURL).toURI()));
-			rangeF.loadFrom(IOUtils.readLines(input));
-			input.close();
-			getGenerator().addContribution(rangeF);
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setMinSpeed(12);
-		speed.setMaxSpeed(43);
-		getGenerator().addContribution(speed);
-
-		// hey, how about a time-bounded course constraint?
-		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
-		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
-		course.setMinCourse(45);
-		course.setMaxCourse(81);
-		getGenerator().addContribution(course);
-
-		// hey, how about a time-bounded course constraint?
-		SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
-		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
-		speed2.setMinSpeed(8);
-		speed2.setMaxSpeed(27);
-		getGenerator().addContribution(speed2);
-		
-		LocationAnalysisContribution lac = new LocationAnalysisContribution();
-		getGenerator().addContribution(lac);
-
+		_testSupport.loadSampleData(useLong);
 	}
 
 	@Override
@@ -395,12 +214,17 @@ public class TestHarnessView extends CoreView
 	{
 		// ok, we can disable our buttons
 		enableControls(false);
+		
+		_testSupport.setGenerator(genny);
+
 	}
 
 	@Override
 	protected void startListeningTo(TrackGenerator genny)
 	{
 		enableControls(true);
+		
+		_testSupport.setGenerator(genny);
 
 		// sort out the 'live' setting
 		_liveAction.setChecked(genny.isLiveEnabled());
