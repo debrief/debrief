@@ -31,6 +31,8 @@ public class RootLayout extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		//HERE YOU CAN PUT YOUR LOGIC
+		
+		// thanks ;-)
 	}
 
 }
