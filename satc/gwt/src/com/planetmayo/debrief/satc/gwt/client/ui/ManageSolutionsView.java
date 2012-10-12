@@ -18,7 +18,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.gwt.client.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.gwt.client.contributions.CourseForecastContributionView;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -107,7 +107,7 @@ public class ManageSolutionsView extends Composite implements MyView
 		contextMenu.hide();
 		if ((Label) e.getSource() == courseForecastContribution)
 		{
-			analystContributions.add(new CourseForecastContribution());
+			analystContributions.add(new CourseForecastContributionView());
 		}
 		else if ((Label) e.getSource() == speedForecast)
 		{
@@ -128,7 +128,7 @@ public class ManageSolutionsView extends Composite implements MyView
 				;
 		// what type is it?
 		if (contribution instanceof com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution)
-			res = new CourseForecastContribution();
+			res = new CourseForecastContributionView();
 
 		// did we find one?
 		if (res != null)

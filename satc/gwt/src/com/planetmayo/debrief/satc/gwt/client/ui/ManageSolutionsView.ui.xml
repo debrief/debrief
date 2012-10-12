@@ -5,92 +5,89 @@
 	xmlns:contribution="urn:import:com.planetmayo.debrief.satc.gwt.client.contributions">
 	<ui:style>
 		.grid {
-		border-color: white;
-		margin: 5px 0px;
-		background: #FAFAFA;
+			border-color: white;
+			margin: 5px 0px;
+			background: #FAFAFA;
 		}
-
+		
 		.grid-header {
-		color: white;
-		background: -moz-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
-		rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,
-		rgba(181,
-		189, 200, 1) ), color-stop(36%, rgba(130, 140, 149, 1) ),
-		color-stop(100%, rgba(40, 52, 59, 1) ) );
-		background: -webkit-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
-		rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-		background: -o-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
-		rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-		background: -ms-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
-		rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-		background: linear-gradient(to bottom, rgba(181, 189, 200, 1) 0%,
-		rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-		filter: progid : DXImageTransform.Microsoft.gradient (
-		startColorstr =
-		'#b5bdc8', endColorstr = '#28343b',
-		GradientType =
-
-		0 );
+			color: white;
+			background: -moz-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
+				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(181,
+				189, 200, 1) ), color-stop(36%, rgba(130, 140, 149, 1) ),
+				color-stop(100%, rgba(40, 52, 59, 1) ) );
+			background: -webkit-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
+				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
+			background: -o-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
+				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
+			background: -ms-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
+				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
+			background: linear-gradient(to bottom, rgba(181, 189, 200, 1) 0%,
+				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
+			filter: progid:  DXImageTransform.Microsoft.gradient( 
+				startColorstr= 
+				'#b5bdc8', endColorstr=  '#28343b', GradientType= 
+		
+				0 );
 		}
-
+		
 		.solutions-lo {
-		border: 1px solid #CCC;
-		border-radius: 10px;
-		margin: 5px;
-		position: absolute;
-		left: 0px;
-		right: 0px;
-		top: 0px;
-		box-shadow: 2px 2px 2px #E4E4E4;
+			border: 1px solid #CCC;
+			border-radius: 10px;
+			margin: 5px;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			top: 0px;
+			box-shadow: 2px 2px 2px #E4E4E4;
 		}
-
+		
 		.header {
-		border-bottom: solid 1px #BDBDBD;
-		padding: 2px;
-		color: #333;
-		background: whiteSmoke;
-		font-weight: bold;
-		border-top-left-radius: 10px;
-		border-top-right-radius: 10px;
+			border-bottom: solid 1px #BDBDBD;
+			padding: 2px;
+			color: #333;
+			background: whiteSmoke;
+			font-weight: bold;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
 		}
-
+		
 		.content {
-		padding: 10px;
+			padding: 10px;
 		}
-
+		
 		.checkbox-panel {
-		float: left;
+			float: left;
 		}
-
+		
 		.dropdown-panel {
-		float: right;
+			float: right;
 		}
-
+		
 		.checkBox {
-		display: block;
+			display: block;
 		}
-
+		
 		.gwt-Anchor {
-		color: black;
-		cursor: pointer;
+			color: black;
+			cursor: pointer;
 		}
-
+		
 		.gwt-Anchor:HOVER {
-		color: black;
+			color: black;
 		}
-
+		
 		.header-table {
-		padding-left: 30px;
+			padding-left: 30px;
 		}
-
+		
 		.add {
-		float: right;
-		display: block;
-		clear: both;
-		margin: 5px 0px;
+			float: right;
+			display: block;
+			clear: both;
+			margin: 5px 0px;
 		}
-
 	</ui:style>
 	<g:HTMLPanel styleName="{style.solutions-lo}">
 		<g:Label text="Manage Contributions" styleName="{style.header}"
@@ -139,15 +136,15 @@
 							styleName="{style.gwt-Anchor}"></g:Anchor>
 					</g:HorizontalPanel>
 
-					<contribution:CourseForecastContribution></contribution:CourseForecastContribution>
-					<contribution:LocationForecastContribution></contribution:LocationForecastContribution>
-					<contribution:SpeedForecastContribution></contribution:SpeedForecastContribution>
-					<contribution:StraightLegForecastContribution></contribution:StraightLegForecastContribution>
-					<contribution:AlterationLegForecastContribution></contribution:AlterationLegForecastContribution>
-					<contribution:ATBForecastContribution></contribution:ATBForecastContribution>
-					<contribution:RangeForecastContribution></contribution:RangeForecastContribution>
-					<contribution:BearingMeasurementContribution></contribution:BearingMeasurementContribution>
-					<contribution:FrequencyMeasurementContribution></contribution:FrequencyMeasurementContribution>
+					<contribution:CourseForecastContributionView></contribution:CourseForecastContributionView>
+					<contribution:LocationForecastContributionView></contribution:LocationForecastContributionView>
+					<contribution:SpeedForecastContributionView></contribution:SpeedForecastContributionView>
+					<contribution:StraightLegForecastContributionView></contribution:StraightLegForecastContributionView>
+					<contribution:AlterationLegForecastContributionView></contribution:AlterationLegForecastContributionView>
+					<contribution:ATBForecastContributionView></contribution:ATBForecastContributionView>
+					<contribution:RangeForecastContributionView></contribution:RangeForecastContributionView>
+					<contribution:BearingMeasurementContributionView></contribution:BearingMeasurementContributionView>
+					<contribution:FrequencyMeasurementContributionView></contribution:FrequencyMeasurementContributionView>
 
 				</g:HTMLPanel>
 
