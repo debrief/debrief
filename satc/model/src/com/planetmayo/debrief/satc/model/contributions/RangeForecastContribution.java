@@ -38,7 +38,7 @@ public class RangeForecastContribution extends BaseContribution
 	 * @author ian
 	 * 
 	 */
-	private static class ROrigin
+	public static class ROrigin
 	{
 		private final GeoPoint _origin;
 		private final Date _time;
@@ -151,7 +151,7 @@ public class RangeForecastContribution extends BaseContribution
 	 * 
 	 * @param measure
 	 */
-	private void addThis(ROrigin measure)
+	public void addThis(ROrigin measure)
 	{
 		// extend the time period accordingly
 		if (this.getStartDate() == null)

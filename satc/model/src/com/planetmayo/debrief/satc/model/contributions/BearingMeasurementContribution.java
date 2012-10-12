@@ -70,7 +70,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * @author ian
 	 * 
 	 */
-	private static class BMeasurement
+	public static class BMeasurement
 	{
 		private final GeoPoint _origin;
 		private final double _bearingDegs;
@@ -160,7 +160,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * 
 	 * @param measure
 	 */
-	private void addThis(BMeasurement measure)
+	public void addThis(BMeasurement measure)
 	{
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
