@@ -19,7 +19,8 @@
 				color-stop(100%, rgba(40, 52, 59, 1) ) );
 			background: -webkit-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
 				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-			background: -o-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
+			background: -o-linear-gra
+			dient(top, rgba(181, 189, 200, 1) 0%,
 				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
 			background: -ms-linear-gradient(top, rgba(181, 189, 200, 1) 0%,
 				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
@@ -135,22 +136,6 @@
 						<g:Anchor ui:field="weighting" text="Weighting"
 							styleName="{style.gwt-Anchor}"></g:Anchor>
 					</g:HorizontalPanel>
-
-<<<<<<< HEAD:gwt/src/com/planetmayo/debrief/satc/gwt/client/ui/MaintainContributionsView.ui.xml
-=======
-					<contribution:CourseForecastContributionView></contribution:CourseForecastContributionView>
-					<contribution:LocationForecastContributionView></contribution:LocationForecastContributionView>
-					<contribution:SpeedForecastContributionView></contribution:SpeedForecastContributionView>
-					<contribution:StraightLegForecastContributionView></contribution:StraightLegForecastContributionView>
-					<contribution:AlterationLegForecastContributionView></contribution:AlterationLegForecastContributionView>
-					<contribution:ATBForecastContributionView></contribution:ATBForecastContributionView>
-					<contribution:RangeForecastContributionView></contribution:RangeForecastContributionView>
-					<contribution:BearingMeasurementContributionView></contribution:BearingMeasurementContributionView>
-					<contribution:FrequencyMeasurementContributionView></contribution:FrequencyMeasurementContributionView>
-					<contribution:ReferenceContributionView></contribution:ReferenceContributionView>
-					<contribution:AnalysisContributionView></contribution:AnalysisContributionView>
-
->>>>>>> 3ff7bf4fa0bdf5cc3c25322a3d35672d747dbbd1:gwt/src/com/planetmayo/debrief/satc/gwt/client/ui/ManageSolutionsView.ui.xml
 				</g:HTMLPanel>
 
 			</g:CaptionPanel>
