@@ -25,7 +25,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class LocationContributionPanel extends AnalystContributionPanel
+public class LocationContributionView extends AnalystContributionView
 {
 
 	private BaseContribution contribution;
@@ -36,7 +36,7 @@ public class LocationContributionPanel extends AnalystContributionPanel
 	private FormattedText latitude;
 	private FormattedText longitude;
 
-	public LocationContributionPanel(Composite parent, BaseContribution contribution)
+	public LocationContributionView(Composite parent, BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;

@@ -30,7 +30,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.widgets.ExpandButton;
 
-public abstract class AnalystContributionPanel
+public abstract class AnalystContributionView
 {
 
 	final protected Composite controlParent;
@@ -59,7 +59,7 @@ public abstract class AnalystContributionPanel
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
 
-	public AnalystContributionPanel(final Composite parent)
+	public AnalystContributionView(final Composite parent)
 	{
 		this.controlParent = parent;
 	}

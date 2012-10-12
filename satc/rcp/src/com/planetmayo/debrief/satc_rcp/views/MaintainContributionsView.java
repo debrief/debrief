@@ -49,13 +49,13 @@ import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionPanel;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionPanel;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionPanel;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationAnalysisContributionPanel;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionPanel;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionPanel;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionPanel;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationAnalysisContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 
 /**
  * mock class to test high level application flows
@@ -84,7 +84,7 @@ public class MaintainContributionsView extends ViewPart implements
 	 * remember which contributions we're displaying
 	 * 
 	 */
-	private HashMap<BaseContribution, AnalystContributionPanel> _myControls = new HashMap<BaseContribution, AnalystContributionPanel>();
+	private HashMap<BaseContribution, AnalystContributionView> _myControls = new HashMap<BaseContribution, AnalystContributionView>();
 
 	private PropertyChangeListener _addContListener;
 
@@ -318,20 +318,20 @@ public class MaintainContributionsView extends ViewPart implements
 	public void added(BaseContribution contribution)
 	{
 		// ok, create a wrapper for this
-		AnalystContributionPanel panel = null;
+		AnalystContributionView panel = null;
 
 		if (contribution instanceof CourseForecastContribution)
-			panel = new CourseContributionPanel(contList, contribution);
+			panel = new CourseContributionView(contList, contribution);
 		else if (contribution instanceof LocationForecastContribution)
-			panel = new LocationContributionPanel(contList, contribution);
+			panel = new LocationContributionView(contList, contribution);
 		else if (contribution instanceof SpeedForecastContribution)
-			panel = new SpeedContributionPanel(contList, contribution);
+			panel = new SpeedContributionView(contList, contribution);
 		else if (contribution instanceof BearingMeasurementContribution)
-			panel = new BearingMeasurementContributionPanel(contList, contribution);
+			panel = new BearingMeasurementContributionView(contList, contribution);
 		else if (contribution instanceof RangeForecastContribution)
-			panel = new RangeForecastContributionPanel(contList, contribution);
+			panel = new RangeForecastContributionView(contList, contribution);
 		else if (contribution instanceof LocationAnalysisContribution)
-			panel = new LocationAnalysisContributionPanel(contList, contribution);
+			panel = new LocationAnalysisContributionView(contList, contribution);
 
 		// did we fail to find a panel?
 		if (panel == null)
@@ -356,7 +356,7 @@ public class MaintainContributionsView extends ViewPart implements
 	public void removed(BaseContribution contribution)
 	{
 		// get the panel
-		AnalystContributionPanel panel = _myControls.get(contribution);
+		AnalystContributionView panel = _myControls.get(contribution);
 
 		// did we find it?
 		if (panel != null)

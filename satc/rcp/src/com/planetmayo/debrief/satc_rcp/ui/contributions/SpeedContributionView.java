@@ -13,14 +13,14 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class SpeedContributionPanel extends AnalystContributionPanel
+public class SpeedContributionView extends AnalystContributionView
 {
 
 	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public SpeedContributionPanel(Composite parent,
+	public SpeedContributionView(Composite parent,
 			BaseContribution contribution)
 	{
 		super(parent);

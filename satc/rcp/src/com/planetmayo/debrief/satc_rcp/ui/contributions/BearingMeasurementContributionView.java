@@ -13,14 +13,14 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class BearingMeasurementContributionPanel extends AnalystContributionPanel
+public class BearingMeasurementContributionView extends AnalystContributionView
 {
 
 	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public BearingMeasurementContributionPanel(Composite parent,
+	public BearingMeasurementContributionView(Composite parent,
 			BaseContribution contribution)
 	{
 		super(parent);

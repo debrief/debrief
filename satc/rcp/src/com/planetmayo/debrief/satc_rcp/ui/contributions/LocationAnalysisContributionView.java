@@ -8,14 +8,14 @@ import org.eclipse.swt.widgets.Composite;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 
-public class LocationAnalysisContributionPanel extends AnalystContributionPanel
+public class LocationAnalysisContributionView extends AnalystContributionView
 {
 
 	private BaseContribution contribution;
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public LocationAnalysisContributionPanel(Composite parent,
+	public LocationAnalysisContributionView(Composite parent,
 			BaseContribution contribution)
 	{
 		super(parent);
