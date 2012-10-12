@@ -117,6 +117,8 @@ public class TestSupport
 				01, 12, 12, 17, 29), 15000d));
 		bmc.addThis(new BMeasurement(new GeoPoint(0.4, 30.3), 12.2, new Date(2010,
 				01, 12, 12, 19, 29), 15000d));
+		bmc.setBearingError(3d);
+		getGenerator().addContribution(bmc);
 
 		RangeForecastContribution rangeF = new RangeForecastContribution();
 		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(2010, 01, 12,
@@ -129,6 +131,9 @@ public class TestSupport
 				12, 17, 29)));
 		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(2010, 01, 12,
 				12, 19, 29)));
+		rangeF.setMaxRange(3000);
+		rangeF.setMinRange(500);
+		getGenerator().addContribution(rangeF);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setMinSpeed(12);
