@@ -136,16 +136,6 @@
 							styleName="{style.gwt-Anchor}"></g:Anchor>
 					</g:HorizontalPanel>
 
-					<contribution:CourseForecastContributionView></contribution:CourseForecastContributionView>
-					<contribution:LocationForecastContributionView></contribution:LocationForecastContributionView>
-					<contribution:SpeedForecastContributionView></contribution:SpeedForecastContributionView>
-					<contribution:StraightLegForecastContributionView></contribution:StraightLegForecastContributionView>
-					<contribution:AlterationLegForecastContributionView></contribution:AlterationLegForecastContributionView>
-					<contribution:ATBForecastContributionView></contribution:ATBForecastContributionView>
-					<contribution:RangeForecastContributionView></contribution:RangeForecastContributionView>
-					<contribution:BearingMeasurementContributionView></contribution:BearingMeasurementContributionView>
-					<contribution:FrequencyMeasurementContributionView></contribution:FrequencyMeasurementContributionView>
-
 				</g:HTMLPanel>
 
 			</g:CaptionPanel>

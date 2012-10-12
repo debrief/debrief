@@ -8,6 +8,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.model.generator.SteppingGenerator;
+import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
 /**
  * @author Akash-Gupta
@@ -31,8 +36,15 @@ public class RootLayout extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		
 		//HERE YOU CAN PUT YOUR LOGIC
+		MaintainContributions maintainP = new MaintainContributions(manageSolutionsView, new MockVehicleTypesRepository());
+		final TrackGenerator genny = maintainP.getGenerator();
+		TestSupport testP = new TestSupport();
+		testP.setGenerator(genny);
 		
-		// thanks ;-)
+		testHarness.setGenerator(genny);
+		testHarness.setTestSupport(testP);
+		
+		
 	}
 
 }
