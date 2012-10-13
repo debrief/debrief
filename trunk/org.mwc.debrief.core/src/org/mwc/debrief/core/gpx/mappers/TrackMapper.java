@@ -23,9 +23,12 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 
+import com.topografix.gpx.v10.Gpx;
+import com.topografix.gpx.v10.Gpx.Trk;
+import com.topografix.gpx.v10.Gpx.Trk.Trkseg;
+import com.topografix.gpx.v10.ObjectFactory;
 import com.topografix.gpx.v11.ExtensionsType;
 import com.topografix.gpx.v11.GpxType;
-import com.topografix.gpx.v11.ObjectFactory;
 import com.topografix.gpx.v11.TrkType;
 import com.topografix.gpx.v11.TrksegType;
 import com.topografix.gpx.v11.WptType;
@@ -46,8 +49,11 @@ public class TrackMapper implements DebriefJaxbContextAware
 	private final TrackSegmentMapper segmentMapper = new TrackSegmentMapper();
 	private final FixMapper fixMapper = new FixMapper();
 	private JAXBContext debriefContext;
-	private static final ObjectFactory GPX_OBJ_FACTORY = new ObjectFactory();
+	private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
 
+	/**
+	 * @category gpx11
+	 */
 	public List<TrackWrapper> fromGpx(GpxType gpx)
 	{
 		List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
@@ -62,8 +68,9 @@ public class TrackMapper implements DebriefJaxbContextAware
 			{
 				TrackSegment segment = segmentMapper.fromGpx(gpxSegment);
 				track.add(segment);
-				
-				// keep track of the previous fix, in case we wish to calculate course and speed
+
+				// keep track of the previous fix, in case we wish to calculate course
+				// and speed
 				FixWrapper previousFix = null;
 
 				for (WptType waypointType : gpxSegment.getTrkpt())
@@ -71,61 +78,54 @@ public class TrackMapper implements DebriefJaxbContextAware
 					fixMapper.setJaxbContext(debriefContext);
 					FixWrapper fix = fixMapper.fromGpx(waypointType, previousFix);
 					segment.add(fix);
-					
+
 					previousFix = fix;
 				}
 			}
 			tracks.add(track);
 		}
-
 		return tracks;
 	}
 
-	public List<TrkType> toGpx(List<TrackWrapper> tracks)
+	/**
+	 * @category gpx10
+	 */
+	public List<TrackWrapper> fromGpx10(Gpx gpx)
 	{
-		List<TrkType> gpxTracks = new ArrayList<TrkType>(tracks.size());
-		for (TrackWrapper track : tracks)
+		List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
+
+		for (Gpx.Trk gpxTrack : gpx.getTrk())
 		{
-			TrkType gpxTrack = GPX_OBJ_FACTORY.createTrkType();
-			gpxTrack.setName(track.getName());
+			TrackWrapper track = new TrackWrapper();
 
-			Enumeration<Editable> segs = track.getSegments().elements();
-			while (segs.hasMoreElements())
+			mapGpx10Track(gpxTrack, track);
+
+			for (Gpx.Trk.Trkseg gpxSegment : gpxTrack.getTrkseg())
 			{
-				Editable nextElement = segs.nextElement();
+				TrackSegment segment = segmentMapper.fromGpx10(gpxSegment);
+				track.add(segment);
 
-				if (nextElement instanceof TrackSegment)
+				// keep track of the previous fix, in case we wish to calculate course
+				// and speed
+				FixWrapper previousFix = null;
+
+				for (Gpx.Trk.Trkseg.Trkpt waypointType : gpxSegment.getTrkpt())
 				{
-					exportSegment(gpxTrack, nextElement);
-				}
-				else
-				{
-					CorePlugin.logError(Status.INFO, "Ignoring " + nextElement + " while marshalling Track GPX as it is not a Fix", null);
+					fixMapper.setJaxbContext(debriefContext);
+					FixWrapper fix = fixMapper.fromGpx10(waypointType, previousFix);
+					segment.add(fix);
+
+					previousFix = fix;
 				}
 			}
-			gpxTracks.add(gpxTrack);
+			tracks.add(track);
 		}
-		return gpxTracks;
+		return tracks;
 	}
 
-	private void exportSegment(TrkType gpxTrack, Editable nextElement)
-	{
-		TrackSegment seg = (TrackSegment) nextElement;
-		TrksegType gpxSeg = GPX_OBJ_FACTORY.createTrksegType();
-		gpxTrack.getTrkseg().add(gpxSeg);
-		exportFixes(seg, gpxSeg);
-	}
-
-	private void exportFixes(TrackSegment seg, TrksegType gpxSeg)
-	{
-		Collection<Editable> pts = seg.getData();
-		for (Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
-		{
-			FixWrapper fix = (FixWrapper) iterator.next();
-			gpxSeg.getTrkpt().add(fixMapper.toGpx(fix));
-		}
-	}
-
+	/**
+	 * @category gpx11
+	 */
 	private void mapGpxTrack(TrkType gpxTrack, TrackWrapper track)
 	{
 		track.setName(gpxTrack.getName());
@@ -162,6 +162,66 @@ public class TrackMapper implements DebriefJaxbContextAware
 		catch (JAXBException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
+		}
+	}
+
+	/**
+	 * @category gpx10
+	 */
+	private void mapGpx10Track(Trk gpxTrack, TrackWrapper track)
+	{
+		track.setName(gpxTrack.getName());
+		// Ignore handling of debrief extensions as they are not required for now
+	}
+
+	public List<Trk> toGpx10(List<TrackWrapper> tracks)
+	{
+		List<Trk> gpxTracks = new ArrayList<Trk>(tracks.size());
+		for (TrackWrapper track : tracks)
+		{
+			Trk gpxTrack = GPX_1_0_OBJ_FACTORY.createGpxTrk();
+			gpxTrack.setName(track.getName());
+
+			Enumeration<Editable> segs = track.getSegments().elements();
+			while (segs.hasMoreElements())
+			{
+				Editable nextElement = segs.nextElement();
+
+				if (nextElement instanceof TrackSegment)
+				{
+					exportSegment(gpxTrack, nextElement);
+				}
+				else
+				{
+					CorePlugin.logError(Status.INFO, "Ignoring " + nextElement + " while marshalling Track GPX as it is not a Fix", null);
+				}
+			}
+			gpxTracks.add(gpxTrack);
+		}
+		return gpxTracks;
+	}
+
+	/**
+	 * @category gpx10
+	 */
+	private void exportSegment(Trk gpxTrack, Editable nextElement)
+	{
+		TrackSegment seg = (TrackSegment) nextElement;
+		Trkseg gpxSeg = GPX_1_0_OBJ_FACTORY.createGpxTrkTrkseg();
+		gpxTrack.getTrkseg().add(gpxSeg);
+		exportFixes(seg, gpxSeg);
+	}
+
+	/**
+	 * @category gpx10
+	 */
+	private void exportFixes(TrackSegment seg, Trkseg gpxSeg)
+	{
+		Collection<Editable> pts = seg.getData();
+		for (Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
+		{
+			FixWrapper fix = (FixWrapper) iterator.next();
+			gpxSeg.getTrkpt().add(fixMapper.toGpx10(fix));
 		}
 	}
 

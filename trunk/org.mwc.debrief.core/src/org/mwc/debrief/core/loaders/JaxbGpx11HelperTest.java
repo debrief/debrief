@@ -1,9 +1,6 @@
 package org.mwc.debrief.core.loaders;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Enumeration;
 
@@ -19,19 +16,21 @@ import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldLocation;
 
 /**
+ * Tests the GPX 1.1 version
+ * 
  * @author Aravind R. Yarram <yaravind@gmail.com>
  * @date August 21, 2012
  * @category gpx
  * 
  */
-public class JaxbGpxHelperTest
+public class JaxbGpx11HelperTest
 {
 	private final JaxbGpxHelper helper = new JaxbGpxHelper();
 
 	@Test
 	public void unmarshallTrackWithAllData()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-data_version_1.0.xml"), null);
+		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track
@@ -98,7 +97,7 @@ public class JaxbGpxHelperTest
 	@Test
 	public void unmarshallShouldNotFailWhenOptionalDataMissing()
 	{
-		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-missing-optional-data.xml"), null);
+		Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx-1.1-missing-optional-data.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
 		// assert track

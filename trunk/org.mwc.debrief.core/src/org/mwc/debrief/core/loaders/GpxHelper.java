@@ -17,6 +17,8 @@ import MWC.GUI.Layers;
 public interface GpxHelper
 {
 	/**
+	 * Can unmarshall gpx 1.0 and 1.1 versions
+	 * 
 	 * @param gpxStream
 	 *          stream representing the gpx xml.
 	 * @param theLayers
@@ -27,6 +29,8 @@ public interface GpxHelper
 	Layers unmarshall(InputStream gpxStream, Layers theLayers);
 
 	/**
+	 * Will marshall in gpx 1.0 version only
+	 * 
 	 * @param from
 	 *          aggregate root
 	 * @param saveToGpx

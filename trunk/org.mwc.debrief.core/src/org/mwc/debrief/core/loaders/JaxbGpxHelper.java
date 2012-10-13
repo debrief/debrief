@@ -1,8 +1,11 @@
 package org.mwc.debrief.core.loaders;
 
+import static org.mwc.debrief.core.loaders.GpxUtil.*;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -11,12 +14,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.util.StreamReaderDelegate;
 
 import org.eclipse.core.runtime.Status;
+import org.jdom.Document;
+import org.jdom.output.DOMOutputter;
+import org.jdom.transform.JDOMSource;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.gpx.mappers.TrackMapper;
 
@@ -24,11 +28,10 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 
+import com.topografix.gpx.v10.Gpx;
+import com.topografix.gpx.v10.Gpx.Trk;
+import com.topografix.gpx.v10.ObjectFactory;
 import com.topografix.gpx.v11.GpxType;
-import com.topografix.gpx.v11.MetadataType;
-import com.topografix.gpx.v11.ObjectFactory;
-import com.topografix.gpx.v11.PersonType;
-import com.topografix.gpx.v11.TrkType;
 
 /**
  * JAXB based implementation for marhsalling and unmarshalling. EclipseLink is
@@ -42,18 +45,20 @@ import com.topografix.gpx.v11.TrkType;
  */
 public class JaxbGpxHelper implements GpxHelper
 {
-	private static JAXBContext GPX_JAXB_CTX;
+	private static JAXBContext GPX_1_1_JAXB_CTX;
+	private static JAXBContext GPX_1_0_JAXB_CTX;
 	private static JAXBContext DEBRIEF_EXTENSIONS_JAXB_CTX;
 
 	private final TrackMapper trackMapper = new TrackMapper();
-	private final XMLInputFactory xif = XMLInputFactory.newInstance();
-	private static final ObjectFactory GPX_OBJ_FACTORY = new ObjectFactory();
+	// private final XMLInputFactory xif = XMLInputFactory.newInstance();
+	private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
 
 	static
 	{
 		try
 		{
-			GPX_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v11");
+			GPX_1_1_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v11");
+			GPX_1_0_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v10");
 			DEBRIEF_EXTENSIONS_JAXB_CTX = JAXBContext.newInstance("org.mwc.debrief.core.gpx");
 		}
 		catch (JAXBException e)
@@ -76,31 +81,54 @@ public class JaxbGpxHelper implements GpxHelper
 		}
 		try
 		{
-			XMLStreamReader xsr = xif.createXMLStreamReader(gpxStream);
-			xsr = new GpxNamespaceTransposingStreamReaderDelegate(xsr);
+			JDOMSource source = (JDOMSource) getDocumentSource(gpxStream);
 
-			Unmarshaller unmarshaller = GPX_JAXB_CTX.createUnmarshaller();
+			boolean isGpx10 = isGpx10(source);
+			boolean xmlValid = isValid(source, isGpx10);
 
-			GpxType gpxType = (GpxType) JAXBIntrospector.getValue(unmarshaller.unmarshal(xsr));
-
-			/*
-			 * For our first trial I'm happy for the unmarshall method to return a
-			 * Layers object. It is expect that in our trial this object will have a
-			 * Track and a Layer containing a couple of shapes
-			 */
-			List<TrackWrapper> tracks = trackMapper.fromGpx(gpxType);
-
-			for (TrackWrapper track : tracks)
+			if (xmlValid)
 			{
-				theLayers.addThisLayer(track);
+				Document document = source.getDocument();
+				document.getRootElement();
+
+				/*
+				 * rootElement.removeAttribute("version");
+				 * rootElement.setAttribute("version", "1.0");
+				 */
+				// XMLStreamReader xsr = xif.createXMLStreamReader(new DOMSource(new
+				// DOMOutputter().output(document)));
+				// xsr = new GpxNamespaceTransposingStreamReaderDelegate(xsr);
+				Unmarshaller unmarshaller;
+				List<TrackWrapper> tracks = Collections.emptyList();
+
+				if (isGpx10)
+				{
+
+					unmarshaller = GPX_1_0_JAXB_CTX.createUnmarshaller();
+					com.topografix.gpx.v10.Gpx gpx10Type = (com.topografix.gpx.v10.Gpx) JAXBIntrospector.getValue(unmarshaller
+							.unmarshal(new DOMOutputter().output(document)));
+					tracks = trackMapper.fromGpx10(gpx10Type);
+				}
+				else
+				{
+					unmarshaller = GPX_1_1_JAXB_CTX.createUnmarshaller();
+					GpxType gpxType = (GpxType) JAXBIntrospector.getValue(unmarshaller.unmarshal(new DOMOutputter().output(document)));
+					tracks = trackMapper.fromGpx(gpxType);
+				}
+				for (TrackWrapper track : tracks)
+				{
+					theLayers.addThisLayer(track);
+				}
 			}
 		}
 		catch (JAXBException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Error while unmarshalling GPX", e);
+			// MessageDialog.openWarning(shell, "Load GPS File",
+			// "[description of problem in user speak, as below");
 			return null;
 		}
-		catch (XMLStreamException e)
+		catch (Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Error while unmarshalling GPX. The issue happened while creating the stax classes", e);
 			return null;
@@ -120,28 +148,28 @@ public class JaxbGpxHelper implements GpxHelper
 			{
 				CorePlugin.logError(Status.INFO, "Exporting " + tracks.size() + " tracks to gpx file " + saveToGpx.getAbsolutePath(), null);
 
-				GpxType gpxType = GPX_OBJ_FACTORY.createGpxType();
+				Gpx gpxType = GPX_1_0_OBJ_FACTORY.createGpx();
+				gpxType.setVersion("1.0");
+				gpxType.setName(System.getProperty("user.name"));
+				gpxType.setCreator("DebriefNG");
 
-				MetadataType metadataType = GPX_OBJ_FACTORY.createMetadataType();
-				gpxType.setMetadata(metadataType);
-
-				PersonType personType = GPX_OBJ_FACTORY.createPersonType();
-				personType.setName(System.getProperty("user.name"));
-				metadataType.setAuthor(personType);
-
-				List<TrkType> gpxTracks = trackMapper.toGpx(tracks);
+				List<Trk> gpxTracks = trackMapper.toGpx10(tracks);
 				gpxType.getTrk().addAll(gpxTracks);
 
-				Marshaller marshaller = GPX_JAXB_CTX.createMarshaller();
+				Marshaller marshaller = GPX_1_0_JAXB_CTX.createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 				marshaller.marshal(gpxType, saveToGpx);
+				if (!isValid(saveToGpx))
+				{
+					// TODO display dialog box
+				}
 			}
 			else
 			{
 				CorePlugin.logError(Status.INFO, "No tracks vailable to export", null);
 			}
 		}
-		catch (JAXBException e)
+		catch (Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Error while marshalling to file GPX format: " + saveToGpx.getAbsolutePath(), e);
 		}
@@ -160,11 +188,6 @@ public class JaxbGpxHelper implements GpxHelper
 			}
 		}
 		return tracks;
-	}
-
-	public boolean isValid(InputStream gpxStream)
-	{
-		return true;
 	}
 
 	/**
@@ -206,7 +229,7 @@ public class JaxbGpxHelper implements GpxHelper
 		{
 			if (super.getNamespaceURI().toLowerCase().contains("gpx"))
 			{
-				return "http://www.topografix.com/GPX/1/1";
+				return "http://www.topografix.com/GPX/1/0";
 			}
 			else
 			{
