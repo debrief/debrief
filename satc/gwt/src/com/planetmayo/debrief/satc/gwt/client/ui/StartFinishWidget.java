@@ -22,38 +22,40 @@ public class StartFinishWidget extends Composite {
 	public StartFinishWidget() {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
-	
+
 	@UiField
 	DateBox startDateBox;
-	
+
 	@UiField
 	DateBox finishDateBox;
-	
+
 	@UiField
 	Label startDateLabel;
-	
+
 	@UiField
 	Label finishDateLabel;
-	
+
 	@SuppressWarnings("deprecation")
 	public void setLoaded(boolean value) {
-		if(value)
-		{
+		if (value) {
 			startDateBox.setVisible(false);
 			finishDateBox.setVisible(false);
 			startDateLabel.setVisible(true);
 			finishDateLabel.setVisible(true);
-			//TODO remove when implementing backend
+			// TODO remove when implementing backend
 			startDateLabel.setText(new Date().toLocaleString());
 			finishDateLabel.setText(new Date().toLocaleString());
-		}
-		else
-		{
+		} else {
 			startDateBox.setVisible(true);
 			finishDateBox.setVisible(true);
 			startDateLabel.setVisible(false);
 			finishDateLabel.setVisible(false);
 		}
+	}
+
+	public void setData(Date startDate, Date finishDate) {
+		startDateBox.setValue(startDate);
+		finishDateBox.setValue(finishDate);
 	}
 
 }

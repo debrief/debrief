@@ -26,4 +26,9 @@ public class NameWidget extends Composite {
 		text.setText(value);
 	}
 
+	public void setData(String name) {
+		text.setText(name);
+
+	}
+
 }

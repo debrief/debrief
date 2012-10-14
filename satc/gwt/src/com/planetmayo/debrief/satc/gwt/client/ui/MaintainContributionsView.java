@@ -16,10 +16,12 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.gwt.client.contributions.BearingMeasurementContributionView;
+import com.planetmayo.debrief.satc.gwt.client.contributions.ContributionData;
 import com.planetmayo.debrief.satc.gwt.client.contributions.CourseForecastContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.LocationForecastContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.RangeForecastContributionView;
@@ -107,7 +109,7 @@ public class MaintainContributionsView extends Composite implements MyView
 	@SuppressWarnings("unused")
 	private PropertyChangeListener _addListener;
 
-	private HashMap<BaseContribution, Widget> _uiInstances = new HashMap<BaseContribution, Widget>();
+	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
 
 	@UiHandler("add")
 	void onClick(ClickEvent e)
@@ -144,7 +146,7 @@ public class MaintainContributionsView extends Composite implements MyView
 	@Override
 	public void added(BaseContribution contribution)
 	{
-		Composite res = null;
+		ContributionData res = null;
 
 		// what type is it?
 		if (contribution instanceof CourseForecastContribution)
@@ -162,7 +164,7 @@ public class MaintainContributionsView extends Composite implements MyView
 		if (res != null)
 		{
 			// give the contribution to the viewer
-//			res.setData(contribution)l
+			res.setData(contribution);
 	
 			// TODO refactor the contribution views, so that they have a setter for the contribution.
 			// in there, they show the cont's data values, and listen out for contribution changes.
@@ -183,7 +185,7 @@ public class MaintainContributionsView extends Composite implements MyView
 		// lookup the UI for this contribution, and delete it
 
 		// remember this UI with the contribution
-		Widget thisWidget = _uiInstances.get(contribution);
+		IsWidget thisWidget = _uiInstances.get(contribution);
 
 		// and display it
 		analystContributions.remove(thisWidget);

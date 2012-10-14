@@ -22,7 +22,6 @@ public class Slider2BarWidget extends HorizontalPanel {
 	private final static String COURSE = "COURSE";
 	private final static String BEARING = "BEARING";
 	private final static String FREQUENCY = "FREQUENCY";
-	
 
 	public Slider2BarWidget() {
 		addStyleName("slider-widget");
@@ -34,7 +33,8 @@ public class Slider2BarWidget extends HorizontalPanel {
 		sliderBarSimpleHorizontal
 				.addBarValueChangedHandler(new BarValueChangedHandler() {
 					public void onBarValueChanged(BarValueChangedEvent event) {
-						value.setHTML(unitLabelPrefix + event.getValue() + unitLabelSuffix);
+						value.setHTML(unitLabelPrefix + event.getValue()
+								+ unitLabelSuffix);
 					}
 				});
 
@@ -71,16 +71,19 @@ public class Slider2BarWidget extends HorizontalPanel {
 			unitLabelSuffix = "&deg;";
 			sliderBarSimpleHorizontal.setMaxValue(360);
 			value.setWidth("45px");
-		}
-		else if (type.equalsIgnoreCase(FREQUENCY)) {
+		} else if (type.equalsIgnoreCase(FREQUENCY)) {
 			unitLabelPrefix = "+/-";
 			unitLabelSuffix = "Hz";
 			sliderBarSimpleHorizontal.setMaxValue(360);
 			value.setWidth("50px");
 		}
 	}
-	
+
 	public void setSliderWidth(String width) {
 		sliderBarSimpleHorizontal.setWidth(width);
+	}
+
+	public void setData(int data) {
+		sliderBarSimpleHorizontal.setValue(data);
 	}
 }
