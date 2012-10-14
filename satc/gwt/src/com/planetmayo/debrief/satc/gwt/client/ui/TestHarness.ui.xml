@@ -57,6 +57,18 @@
 	<g:HTMLPanel styleName="{style.harness-lo}">
 		<g:Label text="Test Harness" horizontalAlignment="center"
 			styleName="{style.header}"></g:Label>
+			
+			<g:HorizontalPanel width="100%" styleName="anchors-panel">
+				<g:Anchor text="Clear"></g:Anchor>
+				<g:Anchor text="Restart"></g:Anchor>
+				<g:Anchor text="Populate short"></g:Anchor>
+				<g:Anchor text="Populate"></g:Anchor>
+				<g:Anchor text="Step"></g:Anchor>
+				<g:Anchor text="Play"></g:Anchor>
+				<g:Anchor text="Live"></g:Anchor>
+				<g:Anchor text="1"></g:Anchor>
+				
+			</g:HorizontalPanel>
 
 		<g:HTMLPanel styleName="{style.content}">
 			<g:InlineLabel text="Data source: "></g:InlineLabel>

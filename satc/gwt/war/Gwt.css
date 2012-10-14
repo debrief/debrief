@@ -147,3 +147,20 @@ fieldset {
 .date-label {
 	line-height: 30px;
 }
+
+.anchors-panel
+{
+	background: #818181;
+}
+
+.anchors-panel a
+{
+	color: #FFF;
+	padding: 4px 2px;
+	cursor: pointer;
+}
+
+.anchors-panel a:HOVER
+{
+	color: white;
+}
