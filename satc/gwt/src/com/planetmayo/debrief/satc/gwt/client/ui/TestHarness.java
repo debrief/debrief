@@ -11,7 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.SteppingGenerator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
@@ -29,14 +29,14 @@ public class TestHarness extends Composite {
 	@UiField Button populate;
 	
 	@SuppressWarnings("unused")
-	private TrackGenerator _generator;
+	private SteppingGenerator _generator;
 	private TestSupport _tester;
 
 	public TestHarness() {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	public void setGenerator(TrackGenerator genny)
+	public void setGenerator(SteppingGenerator genny)
 	{
 		_generator = genny;
 	}
