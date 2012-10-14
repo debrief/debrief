@@ -165,7 +165,7 @@ public class FixMapper implements DebriefJaxbContextAware
 		gpxTime.setFractionalSecond(null);
 		gpxPoint.setTime(gpxTime.normalize());
 		gpxPoint.setCourse(BigDecimal.valueOf(fixWrapper.getFix().getCourse()));
-		gpxPoint.setSpeed(BigDecimal.valueOf(fixWrapper.getSpeed()));
+		gpxPoint.setSpeed(BigDecimal.valueOf(fixWrapper.getSpeed()).setScale(4, BigDecimal.ROUND_CEILING));
 		//
 		// ExtensionsType extensionsType = objectFactory.createExtensionsType();
 		// List<Object> any = extensionsType.getAny();

@@ -12,6 +12,9 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -24,6 +27,33 @@ public final class GpxUtil
 	private static final SchemaFactory FACTORY = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 	private static Schema GPX_1_0_SCHEMA;
 	private static Schema GPX_1_1_SCHEMA;
+
+	private static final class DirectoryCollector implements Runnable
+	{
+		private String selectedFolder = null;
+
+		@Override
+		public void run()
+		{
+			DirectoryDialog dlg = new DirectoryDialog(Display.getDefault().getActiveShell());
+
+			// Change the title bar text
+			dlg.setText("Export to GPS");
+
+			// Customizable message displayed in the dialog
+			dlg.setMessage("Select a directory to save the exported GPS file");
+
+			// Calling open() will open and run the dialog.
+			// It will return the selected directory, or
+			// null if user cancels
+			selectedFolder = dlg.open();
+		}
+
+		public String getSelectedFolder()
+		{
+			return selectedFolder;
+		}
+	}
 
 	static
 	{
@@ -85,8 +115,53 @@ public final class GpxUtil
 		catch (SAXException ex)
 		{
 			CorePlugin.logError(Status.ERROR, "GPX file trying to import is not valid because " + ex.getMessage(), ex);
+			errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
 		}
 		return false;
+	}
+
+	public static String collectDirecotryPath()
+	{
+		DirectoryCollector collector = new DirectoryCollector();
+		Display.getDefault().syncExec(collector);
+
+		return collector.getSelectedFolder();
+	}
+
+	public static void infoDialog(final String title, final String msg)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openInformation(Display.getDefault().getActiveShell(), title, msg);
+			}
+		});
+	}
+
+	public static void errorDialog(final String title, final String msg)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openError(Display.getDefault().getActiveShell(), title, msg);
+			}
+		});
+	}
+
+	public static void warningDialog(final String title, final String msg)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openWarning(Display.getDefault().getActiveShell(), title, msg);
+			}
+		});
 	}
 
 	public static boolean isValid(File f) throws SAXException, IOException
@@ -104,9 +179,10 @@ public final class GpxUtil
 			validator.validate(new StreamSource(f));
 			return true;
 		}
-		catch (SAXException ex)
+		catch (final SAXException ex)
 		{
-			CorePlugin.logError(Status.ERROR, "GPX file trying to import is not valid because " + ex.getMessage(), ex);
+			CorePlugin.logError(Status.ERROR, "GPX failed validation. Reason: " + ex.getMessage(), ex);
+			errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
 		}
 		return false;
 	}
