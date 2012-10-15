@@ -138,6 +138,7 @@ public class TestSupport
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setMinSpeed(12);
 		speed.setMaxSpeed(43);
+		speed.setEstimate(21);
 		getGenerator().addContribution(speed);
 
 		// hey, how about a time-bounded course constraint?
@@ -146,6 +147,7 @@ public class TestSupport
 		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
 		course.setMinCourse(45);
 		course.setMaxCourse(81);
+		course.setEstimate(75);
 		getGenerator().addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
@@ -154,6 +156,7 @@ public class TestSupport
 		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
 		speed2.setMinSpeed(8);
 		speed2.setMaxSpeed(27);
+		speed2.setEstimate(15);
 		getGenerator().addContribution(speed2);
 
 		LocationAnalysisContribution lac = new LocationAnalysisContribution();
