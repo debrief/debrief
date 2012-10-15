@@ -107,29 +107,29 @@ public class TestSupport
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 
 		// and add some data
-		bmc.addThis(new BMeasurement(new GeoPoint(0.3, 30.1), 12.2, new Date(2010,
-				01, 12, 12, 13, 29), 15000d));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(2010,
-				01, 12, 12, 14, 29), 15000d));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.1, 30.3), 12.2, new Date(2010,
-				01, 12, 12, 16, 29), 15000d));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(2010,
-				01, 12, 12, 17, 29), 15000d));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.4, 30.3), 12.2, new Date(2010,
-				01, 12, 12, 19, 29), 15000d));
+		bmc.addThis(new BMeasurement(new GeoPoint(0.3, 30.1), 12.2, new Date(110,
+				00, 12, 12, 13, 29), 15000d));
+		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(110,
+				00, 12, 12, 14, 29), 15000d));
+		bmc.addThis(new BMeasurement(new GeoPoint(0.1, 30.3), 12.2, new Date(110,
+				00, 12, 12, 16, 29), 15000d));
+		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(110,
+				00, 12, 12, 17, 29), 15000d));
+		bmc.addThis(new BMeasurement(new GeoPoint(0.4, 30.3), 12.2, new Date(110,
+				00, 12, 12, 19, 29), 15000d));
 		bmc.setBearingError(3d);
 		getGenerator().addContribution(bmc);
 
 		RangeForecastContribution rangeF = new RangeForecastContribution();
-		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(2010, 01, 12,
+		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
 				12, 13, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.2, 30.2), new Date(2010, 01, 12,
+		rangeF.addThis(new ROrigin(new GeoPoint(0.2, 30.2), new Date(110, 00, 12,
 				12, 14, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.1, 30.3), new Date(2010, 01, 12,
+		rangeF.addThis(new ROrigin(new GeoPoint(0.1, 30.3), new Date(110, 00, 12,
 				12, 15, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(2010, 01, 12,
+		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
 				12, 17, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(2010, 01, 12,
+		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
 				12, 19, 29)));
 		rangeF.setMaxRange(3000);
 		rangeF.setMinRange(500);
