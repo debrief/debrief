@@ -21,7 +21,13 @@ public class RootLayout extends Composite {
 	
 	@UiField
 	TestHarness testHarness;
+
+	@UiField
+	TrackStates tabularStates;
 	
+	@UiField
+	SpatialView spatialStates;
+
 	@UiField
 	MaintainContributionsView manageSolutionsView;
 
@@ -42,6 +48,8 @@ public class RootLayout extends Composite {
 		
 		testHarness.setGenerator(genny);
 		testHarness.setTestSupport(testP);
+		
+		genny.addBoundedStateListener(tabularStates);
 		
 		
 	}

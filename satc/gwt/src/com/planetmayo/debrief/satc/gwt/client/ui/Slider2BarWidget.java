@@ -9,7 +9,8 @@ import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
 import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
 import com.kiouri.sliderbar.client.solution.simplehorizontal.SliderBarSimpleHorizontal;
 
-public class Slider2BarWidget extends HorizontalPanel {
+public class Slider2BarWidget extends HorizontalPanel
+{
 
 	SliderBarSimpleHorizontal sliderBarSimpleHorizontal;
 	HTML value = new HTML();
@@ -23,7 +24,8 @@ public class Slider2BarWidget extends HorizontalPanel {
 	private final static String BEARING = "BEARING";
 	private final static String FREQUENCY = "FREQUENCY";
 
-	public Slider2BarWidget() {
+	public Slider2BarWidget()
+	{
 		addStyleName("slider-widget");
 		setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
@@ -31,10 +33,11 @@ public class Slider2BarWidget extends HorizontalPanel {
 				true);
 
 		sliderBarSimpleHorizontal
-				.addBarValueChangedHandler(new BarValueChangedHandler() {
-					public void onBarValueChanged(BarValueChangedEvent event) {
-						value.setHTML(unitLabelPrefix + event.getValue()
-								+ unitLabelSuffix);
+				.addBarValueChangedHandler(new BarValueChangedHandler()
+				{
+					public void onBarValueChanged(BarValueChangedEvent event)
+					{
+						value.setHTML(unitLabelPrefix + event.getValue() + unitLabelSuffix);
 					}
 				});
 
@@ -49,29 +52,45 @@ public class Slider2BarWidget extends HorizontalPanel {
 
 	}
 
-	public void setText(String label) {
+	public void addBarValueChangedHandler(BarValueChangedHandler handler)
+	{
+		sliderBarSimpleHorizontal.addBarValueChangedHandler(handler);
+	}
+
+	public void setText(String label)
+	{
 		text.setText(label);
 	}
 
-	public void setType(String type) {
-		if (type.equalsIgnoreCase(SPEED)) {
+	public void setType(String type)
+	{
+		if (type.equalsIgnoreCase(SPEED))
+		{
 			unitLabelSuffix = "kts";
 			sliderBarSimpleHorizontal.setMaxValue(30);
 			value.setWidth("35px");
-		} else if (type.equalsIgnoreCase(LOCATION)) {
+		}
+		else if (type.equalsIgnoreCase(LOCATION))
+		{
 			unitLabelSuffix = "m";
 			sliderBarSimpleHorizontal.setMaxValue(10000);
 			value.setWidth("45px");
-		} else if (type.equalsIgnoreCase(COURSE)) {
+		}
+		else if (type.equalsIgnoreCase(COURSE))
+		{
 			unitLabelSuffix = "&deg;";
 			sliderBarSimpleHorizontal.setMaxValue(360);
 			value.setWidth("35px");
-		} else if (type.equalsIgnoreCase(BEARING)) {
+		}
+		else if (type.equalsIgnoreCase(BEARING))
+		{
 			unitLabelPrefix = "+/-";
 			unitLabelSuffix = "&deg;";
 			sliderBarSimpleHorizontal.setMaxValue(360);
 			value.setWidth("45px");
-		} else if (type.equalsIgnoreCase(FREQUENCY)) {
+		}
+		else if (type.equalsIgnoreCase(FREQUENCY))
+		{
 			unitLabelPrefix = "+/-";
 			unitLabelSuffix = "Hz";
 			sliderBarSimpleHorizontal.setMaxValue(360);
@@ -79,11 +98,13 @@ public class Slider2BarWidget extends HorizontalPanel {
 		}
 	}
 
-	public void setSliderWidth(String width) {
+	public void setSliderWidth(String width)
+	{
 		sliderBarSimpleHorizontal.setWidth(width);
 	}
 
-	public void setData(int data) {
+	public void setData(int data)
+	{
 		sliderBarSimpleHorizontal.setValue(data);
 	}
 }

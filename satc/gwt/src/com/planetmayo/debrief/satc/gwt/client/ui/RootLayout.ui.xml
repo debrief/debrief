@@ -30,8 +30,8 @@
 
 			<g:VerticalSplitPanel width="100%" height="100%"
 				splitPosition="50%">
-				<my:TrackStates></my:TrackStates>
-				<my:SpatialView></my:SpatialView>
+				<my:TrackStates ui:field="tabularStates"></my:TrackStates>
+				<my:SpatialView ui:field="spatialStates"></my:SpatialView>
 
 			</g:VerticalSplitPanel>
 

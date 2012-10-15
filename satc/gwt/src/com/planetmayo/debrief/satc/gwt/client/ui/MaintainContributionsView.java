@@ -34,12 +34,14 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
 import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
-public class MaintainContributionsView extends Composite implements MyView
+public class MaintainContributionsView extends Composite implements MyView,
+		ContributionsChangedListener
 {
 
 	private static ManageSolutionsViewUiBinder uiBinder = GWT
@@ -165,11 +167,14 @@ public class MaintainContributionsView extends Composite implements MyView
 		{
 			// give the contribution to the viewer
 			res.setData(contribution);
-	
-			// TODO refactor the contribution views, so that they have a setter for the contribution.
-			// in there, they show the cont's data values, and listen out for contribution changes.
-			// if you have a go at CourseContributionView - we can discuss the implementation
-			
+
+			// TODO refactor the contribution views, so that they have a setter for
+			// the contribution.
+			// in there, they show the cont's data values, and listen out for
+			// contribution changes.
+			// if you have a go at CourseContributionView - we can discuss the
+			// implementation
+
 			// remember this UI with the contribution
 			_uiInstances.put(contribution, res);
 
@@ -188,7 +193,10 @@ public class MaintainContributionsView extends Composite implements MyView
 		IsWidget thisWidget = _uiInstances.get(contribution);
 
 		// and display it
-		analystContributions.remove(thisWidget);
+		if (thisWidget != null)
+			analystContributions.remove(thisWidget);
+		else
+			System.err.println("failed to find contriubtion for:" + contribution);
 	}
 
 	@Override

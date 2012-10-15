@@ -9,6 +9,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
+import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
 import com.planetmayo.debrief.satc.gwt.client.ui.ContributionPanelHeader;
 import com.planetmayo.debrief.satc.gwt.client.ui.NameWidget;
 import com.planetmayo.debrief.satc.gwt.client.ui.Slider2BarWidget;
@@ -17,18 +19,33 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 
 public class CourseForecastContributionView extends Composite implements
-		ContributionView, PropertyChangeListener {
+		ContributionView, PropertyChangeListener
+{
 
 	private static CourseForecastContributionViewUiBinder uiBinder = GWT
 			.create(CourseForecastContributionViewUiBinder.class);
 
 	interface CourseForecastContributionViewUiBinder extends
-			UiBinder<Widget, CourseForecastContributionView> {
+			UiBinder<Widget, CourseForecastContributionView>
+	{
 	}
 
-	public CourseForecastContributionView() {
+	public CourseForecastContributionView()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 
+		// TODO: Akash - we need to respond to other UI changes aswell.
+		
+		// respond to the UI
+		max.addBarValueChangedHandler(new BarValueChangedHandler()
+		{			
+			@Override
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
+				_myData.setMaxCourse(event.getValue());
+			}
+		});
+		
 	}
 
 	@UiField
@@ -49,8 +66,13 @@ public class CourseForecastContributionView extends Composite implements
 	@UiField
 	ContributionPanelHeader header;
 
+	private CourseForecastContribution _myData;
+
 	@Override
 	public void setData(BaseContribution contribution) {
+		
+		_myData = (CourseForecastContribution) contribution;
+		
 		// initialise the UI components
 		min.setData(((CourseForecastContribution) contribution).getMinCourse());
 		max.setData(((CourseForecastContribution) contribution).getMaxCourse());
@@ -59,8 +81,9 @@ public class CourseForecastContributionView extends Composite implements
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
+		int estimate = ((CourseForecastContribution) contribution).getEstimate();
 		header.setData(contribution.isActive(),
-				contribution.getHardConstraints(), contribution.getWeight());
+				contribution.getHardConstraints(),"" + estimate, contribution.getWeight());
 
 		contribution.addPropertyChangeListener(
 				CourseForecastContribution.MIN_COURSE, this);
@@ -92,16 +115,19 @@ public class CourseForecastContributionView extends Composite implements
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(CourseForecastContribution.MIN_COURSE))
 			min.setData((Integer) arg0.getNewValue());
 		else if (attr.equals(CourseForecastContribution.MAX_COURSE))
 			max.setData((Integer) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.ESTIMATE)) {
+		else if (attr.equals(CourseForecastContribution.ESTIMATE))
+		{
 			estimate.setData((Integer) arg0.getNewValue());
 			header.setEstimateData((String) arg0.getNewValue());
-		} else if (attr.equals(CourseForecastContribution.NAME))
+		}
+		else if (attr.equals(CourseForecastContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(CourseForecastContribution.START_DATE))
 			startFinish.setStartData((Date) arg0.getNewValue());

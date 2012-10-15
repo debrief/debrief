@@ -35,6 +35,8 @@ public class TestHarness extends Composite {
 	@UiField
 	Anchor restart;
 	@UiField
+	Anchor populateTiny;
+	@UiField
 	Anchor populateShort;
 	@UiField
 	Anchor populateLink;
@@ -71,6 +73,11 @@ public class TestHarness extends Composite {
 	@UiHandler("restart")
 	void restartClick(ClickEvent e) {
 		_generator.restart();
+	}
+
+	@UiHandler("populateTiny")
+	void populateTinyClick(ClickEvent e) {
+		_tester.loadTinyData();
 	}
 
 	@UiHandler("populateShort")

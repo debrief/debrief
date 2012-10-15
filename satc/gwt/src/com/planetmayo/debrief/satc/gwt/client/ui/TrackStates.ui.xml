@@ -71,20 +71,6 @@
 					<g:Label>Course</g:Label>
 				</g:customCell>
 			</g:row>
-			<g:row>
-				<g:cell>
-					<div>Jan/12 00:13:29</div>
-				</g:cell>
-				<g:cell>
-					<div>7pts 0.000000</div>
-				</g:cell>
-				<g:cell>
-					<div>0-18</div>
-				</g:cell>
-				<g:cell>
-					<div>n/a</div>
-				</g:cell>
-			</g:row>
 		</g:Grid>
 
 	</g:HTMLPanel>

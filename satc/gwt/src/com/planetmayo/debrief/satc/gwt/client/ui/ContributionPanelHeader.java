@@ -64,10 +64,11 @@ public class ContributionPanelHeader extends Composite {
 		weighting.setValue(value);
 	}
 
-	public void setData(boolean active, String hardConstraints, int weight) {
-		this.active.setValue(active);
-		this.hardConstraints.setText(hardConstraints);
-		this.weighting.setValue(weight);
+	public void setData(boolean active, String hardConstraints, String estimateStr, int weight) {
+		setActive(active);
+		setHardConstraints(hardConstraints);
+		setWeighting(weight);
+		setEstimate(estimateStr);
 		
 	}
 
