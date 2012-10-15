@@ -26,7 +26,7 @@ public class ExportGPX extends CoreEditorAction
 		final Layers theLayers = theChart.getLayers();
 		
 		// retrieve the filename via a file-browser dialog
-		File someFile = new File("test.xml");
+		File someFile = new File("debrief_export.gpx");
 		
 		ImportGPX.doExport(theLayers, someFile);
 	}

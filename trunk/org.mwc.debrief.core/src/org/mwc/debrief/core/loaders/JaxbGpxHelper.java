@@ -142,7 +142,7 @@ public class JaxbGpxHelper implements GpxHelper
 
 				Gpx gpxType = GPX_1_0_OBJ_FACTORY.createGpx();
 				gpxType.setVersion("1.0");
-				gpxType.setName(System.getProperty("user.name"));
+				gpxType.setName("Exported DebriefNG tracks");
 				gpxType.setCreator("DebriefNG");
 
 				List<Trk> gpxTracks = trackMapper.toGpx10(tracks);
