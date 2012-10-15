@@ -73,9 +73,9 @@ public class TestHarness extends Composite
 
 	@UiHandler("live")
 	void liveClick(ClickEvent e)
-	{
-		// TODO TrackGenerator unavailable
-
+	{		
+		_generator.setLiveRunning(live.getText().equals("Live-"));
+		updateLiveLabel();
 	}
 
 	@UiHandler("one")
@@ -118,6 +118,15 @@ public class TestHarness extends Composite
 	public void setGenerator(TrackGenerator genny)
 	{
 		_generator = genny;
+		updateLiveLabel();
+	}
+
+	private void updateLiveLabel()
+	{
+		if(_generator.isLiveEnabled())
+			live.setText("Live+");
+		else
+			live.setText("Live-");
 	}
 
 	public void setTestSupport(TestSupport testP)
