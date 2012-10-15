@@ -87,8 +87,7 @@ public class TestHarness extends Composite
 	@UiHandler("play")
 	void playClick(ClickEvent e)
 	{
-		// TODO implement play
-
+		_generator.run();
 	}
 
 	@UiHandler("populateLink")
