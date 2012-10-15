@@ -93,6 +93,10 @@ public class ImportKML
 
 		FixWrapper newFix = new FixWrapper(new Fix(theDate, theLoc, courseRads,
 				speedYPS));
+		
+		// and reset the time value
+		newFix.resetName();
+		
 		lastLayer.addFix(newFix);
 	}
 
