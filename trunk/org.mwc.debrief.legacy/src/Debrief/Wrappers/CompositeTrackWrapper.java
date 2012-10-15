@@ -105,8 +105,6 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						expertLongProp("ArrowFrequency", "the direction marker frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-
-						expertProp("Color", "the track color", FORMAT),
 						expertProp("SymbolColor", "the color of the symbol (when used)",
 								FORMAT),
 						expertProp("TrackFont", "the track label font", FORMAT),
@@ -144,7 +142,9 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		_startDate = startDate;
 		if (centre != null)
 			_origin = new WorldLocation(centre);
-		this.setColor(Color.red);
+
+		// we don't store a track-level color, just at leg level, so set it to null
+		this.setColor(null);
 
 		// give us a neater set of intervals
 		this.setSymbolFrequency(new HiResDate(0,
@@ -152,6 +152,17 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		this.setLabelFrequency(new HiResDate(0,
 				TimeFrequencyPropertyEditor._15_MINS));
 	}
+
+	
+	
+	@Override
+	public Color getColor()
+	{
+		// TODO Auto-generated method stub
+		return super.getColor();
+	}
+
+
 
 	@Override
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
@@ -377,7 +388,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 			if (point.getName() != name)
 				((PlanningSegment) point).setName(name);
-
+			
 			// better do a recalc, aswell
 			recalculate();
 		}
@@ -495,19 +506,19 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 				// ok, do this fix
 				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
-						.getValueIn(WorldSpeed.ft_sec)/3);
-				
+						.getValueIn(WorldSpeed.ft_sec) / 3);
+
 				// override the depth
 				thisF.getLocation().setDepth(
 						seg.getDepth().getValueIn(WorldDistance.METRES));
 
 				FixWrapper fw = new FixWrapper(thisF);
-				
+
 				fw.setColor(seg.getColor());
 
-				// and store it				
+				// and store it
 				seg.add(fw);
-				
+
 				// reset the name, we're not going to use a human generated one
 				fw.resetName();
 
@@ -648,7 +659,8 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		double courseDegs = 45d;
 		WorldSpeed worldSpeed = new WorldSpeed(10, WorldSpeed.Kts);
 		WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
-		return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance, Color.RED);
+		return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance,
+				Color.RED);
 	}
 
 	@Override
@@ -679,7 +691,8 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	@Override
 	public void setLayers(Layers parent)
 	{
-		// ok, we've been pasted. just double check that our children know who is the boss
+		// ok, we've been pasted. just double check that our children know who is
+		// the boss
 		Enumeration<Editable> numer = getSegments().elements();
 		while (numer.hasMoreElements())
 		{
