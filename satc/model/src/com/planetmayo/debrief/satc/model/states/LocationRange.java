@@ -60,17 +60,16 @@ public class LocationRange extends BaseRange<LocationRange>
 
 		else if (collection instanceof GeometryCollection)
 		{
-			throw new RuntimeException("Not expecting geometry colletion!");
-//			GeometryCollection geo = (GeometryCollection) collection;
-//			if (geo.getLength() == 1)
-//			{
-//				_myArea = (Polygon) geo.getGeometryN(0);
-//			}
-//			else if (geo.getLength() == 0)
-//			{
-//				throw new IncompatibleStateException("Polygons do not overlap", this,
-//						sTwo);
-//			}
+			GeometryCollection geo = (GeometryCollection) collection;
+			if (geo.getLength() == 1)
+			{
+				_myArea = (Polygon) geo.getGeometryN(0);
+			}
+			else if (geo.getLength() == 0)
+			{
+				throw new IncompatibleStateException("Polygons do not overlap", this,
+						sTwo);
+			}
 		}
 	}
 
