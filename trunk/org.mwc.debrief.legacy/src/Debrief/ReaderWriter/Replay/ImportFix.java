@@ -134,6 +134,7 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -340,9 +341,13 @@ public final class ImportFix implements PlainLineImporter
 		line += " "
 				+ MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(Conversions.Rads2Degs(fix.getCourse()));
+		double theSpeedYPS = fix.getSpeed();
+		double theSpeedKts = Conversions.Yps2Kts(theSpeedYPS);
+		WorldSpeed wS = new WorldSpeed(fix.getSpeed()*3, WorldSpeed.ft_sec);
+		double otherSpeedKts = wS.getValueIn(WorldSpeed.Kts);
 		line += " "
 				+ MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(Conversions.Yps2Kts(fix.getSpeed()));
+						.formatOneDecimalPlace(theSpeedKts);
 
 		// special handling. check if we're actually storing a duff (NaN) depth
 		String depthText;

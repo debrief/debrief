@@ -3,6 +3,10 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
+import java.awt.Color;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -72,7 +76,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 			// get the results
 			String txt = inp.getValue();
 			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
-					new WorldDistance(5, WorldDistance.KM));
+					new WorldDistance(5, WorldDistance.KM), Color.RED);
 		}
 
 		return res;
@@ -143,10 +147,12 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						res = txt;
 						HiResDate startDate = null;
 
-						// ok, also get a start time
+//						 ok, also get a start time
+						DateFormat df = new SimpleDateFormat("yyMMdd HHmmss");
+						String dateToday = df.format(new Date());
 						inp = new InputDialog(Display.getCurrent().getActiveShell(),
-								"New track", "Enter start DTG  (yyMMdd hhmmss)",
-								"yyMMdd hhmmss", null);
+								"New track", "Enter start DTG  (yyMMdd HHmmss)",
+								dateToday, null);
 
 						// keep popping open the dialog until we get valid date, or user
 						// presses cancel

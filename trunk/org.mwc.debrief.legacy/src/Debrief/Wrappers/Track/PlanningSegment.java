@@ -1,5 +1,6 @@
 package Debrief.Wrappers.Track;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
@@ -35,9 +36,9 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	{
 
 		public ClosingSegment(String name, double courseDegs,
-				WorldSpeed worldSpeed, WorldDistance worldDistance)
+				WorldSpeed worldSpeed, WorldDistance worldDistance, Color myColor)
 		{
-			super(name, courseDegs, worldSpeed, worldDistance);
+			super(name, courseDegs, worldSpeed, worldDistance, myColor);
 			this.setCalculation(PlanningLegCalcModelPropertyEditor.RANGE_SPEED);
 		}
 
@@ -80,6 +81,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 						expertProp("Distance", "The distance travelled along this leg",
 								SPATIAL),
 						expertProp("Speed", "The speed travelled along this leg", SPATIAL),
+						expertProp("Color", "The color for this leg", FORMAT),
 						expertProp("Duration", "The duration of travel along this leg",
 								SPATIAL),
 						expertProp("Name", "Name of this track segment", FORMAT), };
@@ -155,6 +157,12 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	WorldSpeed _mySpeed;
 
 	/**
+	 * the color to use for this planning segment
+	 * 
+	 */
+	private Color _myColor = Color.GREEN;
+
+	/**
 	 * the date this segment was created - used to force sort order by the order
 	 * they were read in
 	 * 
@@ -193,18 +201,19 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		_myLength = new WorldDistance(other._myLength);
 		_myPeriod = new Duration(other._myPeriod);
 		_mySpeed = new WorldSpeed(other._mySpeed);
+		_myColor =	other.getColor();
 		_parent = other._parent;
 		this.setName(other.getName());
 	}
 
 	public PlanningSegment(String name, double courseDegs, WorldSpeed worldSpeed,
-			WorldDistance worldDistance)
+			WorldDistance worldDistance, Color color)
 	{
 		this.setName(name);
 		this.setCourse(courseDegs);
 		this.setSpeedSilent(worldSpeed);
 		this.setDistanceSilent(worldDistance);
-
+ 	  this.setColor(color);
 		this.recalc();
 	}
 
@@ -362,6 +371,28 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	public boolean hasEditor()
 	{
 		return true;
+	}
+
+	public Color getColor()
+	{
+		return _myColor;
+	}
+
+	public void setColor(Color color)
+	{
+		if(color == null)
+			return;
+		
+		_myColor = color;
+
+		// ok, loop through the elements and update the color
+		Enumeration<Editable> numer = elements();
+		while (numer.hasMoreElements())
+		{
+			Editable nextE = numer.nextElement();
+			FixWrapper fix = (FixWrapper) nextE;
+			fix.setColor(color);
+		}
 	}
 
 	private void recalc()

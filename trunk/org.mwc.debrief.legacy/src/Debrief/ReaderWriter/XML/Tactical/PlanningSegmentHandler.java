@@ -9,6 +9,8 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import java.awt.Color;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -20,6 +22,7 @@ import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
@@ -43,12 +46,13 @@ abstract public class PlanningSegmentHandler extends
 	private WorldDistance _length;
 	private double _course;
 	private int _calcModel;
+	private Color _color;
 
 	public PlanningSegmentHandler()
 	{
 		this(PLANNING_SEGMENT);
 	}
-	
+
 	public PlanningSegmentHandler(String segType)
 	{
 		// inform our parent what type of class we are
@@ -98,6 +102,14 @@ abstract public class PlanningSegmentHandler extends
 				_length = res;
 			}
 		});
+		addHandler(new ColourHandler()
+		{
+			@Override
+			public void setColour(Color res)
+			{
+				_color = res;
+			}
+		});
 		addHandler(new WorldSpeedHandler()
 		{
 			@Override
@@ -129,9 +141,10 @@ abstract public class PlanningSegmentHandler extends
 
 	}
 
-	protected TrackSegment createTrack()
+	protected PlanningSegment createTrack()
 	{
-		PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length);
+		PlanningSegment res = new PlanningSegment(_name, _course, _speed, _length,
+				_color);
 		res.setDuration(_duration);
 		res.setCalculation(_calcModel);
 		return res;
@@ -139,21 +152,23 @@ abstract public class PlanningSegmentHandler extends
 
 	public final void elementClosed()
 	{
-		TrackSegment segment = createTrack();
+		PlanningSegment segment = createTrack();
 		segment.setVisible(_visible);
 		segment.setName(_name);
 		segment.setLineStyle(_lineStyle);
+		segment.setColor(_color);
 		addSegment(segment);
 		segment = null;
 	}
 
-	public static Element exportThisSegment(org.w3c.dom.Document doc, Element trk,
-			PlanningSegment seg)
+	public static Element exportThisSegment(org.w3c.dom.Document doc,
+			Element trk, PlanningSegment seg)
 	{
 		return exportThisSegment(doc, trk, seg, PLANNING_SEGMENT);
 	}
-	public static Element exportThisSegment(org.w3c.dom.Document doc, Element trk,
-			PlanningSegment seg, String segName)
+
+	public static Element exportThisSegment(org.w3c.dom.Document doc,
+			Element trk, PlanningSegment seg, String segName)
 	{
 		PlanningSegment ps = (PlanningSegment) seg;
 		final Element segE = doc.createElement(segName);
@@ -166,16 +181,17 @@ abstract public class PlanningSegmentHandler extends
 		segE.setAttribute(VISIBLE, writeThis(seg.getVisible()));
 		segE.setAttribute(NAME, seg.getName());
 		segE.setAttribute(LINE_STYLE, ls.getAsText());
-		
+
 		PlanningLegCalcModelPropertyEditor ed = new PlanningLegCalcModelPropertyEditor();
 		ed.setValue(new Integer(ps.getCalculation()));
 		segE.setAttribute(CALC_MODEL, ed.getAsText());
-		
+
 		// and the planning items
 		WorldDistanceHandler.exportDistance(ps.getDistance(), segE, doc);
 		WorldSpeedHandler.exportSpeed(ps.getSpeed(), segE, doc);
+		ColourHandler.exportColour(ps.getColor(), segE, doc);
 		DurationHandler.exportDuration(ps.getDuration(), segE, doc);
-		segE.setAttribute(COURSE,writeThis(ps.getCourse()));
+		segE.setAttribute(COURSE, writeThis(ps.getCourse()));
 
 		return segE;
 	}
@@ -185,7 +201,7 @@ abstract public class PlanningSegmentHandler extends
 	public static Element exportThisClosingSegment(Document doc, Element trk,
 			PlanningSegment segment)
 	{
-			return exportThisSegment(doc, trk, segment, CLOSING_SEGMENT);
+		return exportThisSegment(doc, trk, segment, CLOSING_SEGMENT);
 	}
 
 }

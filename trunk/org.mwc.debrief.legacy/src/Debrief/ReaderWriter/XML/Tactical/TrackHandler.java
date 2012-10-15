@@ -24,6 +24,7 @@ import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
@@ -251,6 +252,7 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		{
 			public void addSegment(TrackSegment segment)
 			{
+				// store the parent
 				addThis(segment);
 			}
 		});
@@ -460,6 +462,12 @@ public class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 	void addThis(MWC.GUI.Plottable val)
 	{
+//		if(val instanceof BaseItemLayer)
+//		{
+//			BaseItemLayer bil = (BaseItemLayer) val;
+//			bil.setWrapper(_myTrack);
+//		}
+//		
 		_myTrack.add(val);
 	}
 

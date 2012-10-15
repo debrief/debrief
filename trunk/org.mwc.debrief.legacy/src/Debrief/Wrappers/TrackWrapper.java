@@ -23,6 +23,7 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -3118,6 +3119,17 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							WorldLocation theLoc = thisE.getTrackStart();
 							String oldTxt = _theLabel.getString();
 							_theLabel.setString(thisE.getName());
+							
+							// just see if this is a planning segment, with its own colors
+							if(thisE instanceof PlanningSegment)
+							{
+								PlanningSegment ps = (PlanningSegment) thisE;
+								_theLabel.setColor(ps.getColor());
+							}
+							else
+								_theLabel.setColor(getColor());
+							
+							
 							_theLabel.setLocation(theLoc);
 							_theLabel.paint(dest);
 							_theLabel.setString(oldTxt);

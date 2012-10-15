@@ -303,7 +303,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	public void addClosingLeg()
 	{
 		this.add(new ClosingSegment("Closing segment", 45, new WorldSpeed(12,
-				WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM)));
+				WorldSpeed.Kts), new WorldDistance(2, WorldDistance.NM), getColor()));
 	}
 
 	@FireExtended
@@ -495,14 +495,21 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 				// ok, do this fix
 				Fix thisF = new Fix(thisDtg, origin, courseRads, seg.getSpeed()
-						.getValueIn(WorldSpeed.ft_sec / 3));
-
+						.getValueIn(WorldSpeed.ft_sec)/3);
+				
 				// override the depth
 				thisF.getLocation().setDepth(
 						seg.getDepth().getValueIn(WorldDistance.METRES));
 
 				FixWrapper fw = new FixWrapper(thisF);
+				
+				fw.setColor(seg.getColor());
+
+				// and store it				
 				seg.add(fw);
+				
+				// reset the name, we're not going to use a human generated one
+				fw.resetName();
 
 				// produce a new position
 				origin = origin.add(vec);
@@ -641,7 +648,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 		double courseDegs = 45d;
 		WorldSpeed worldSpeed = new WorldSpeed(10, WorldSpeed.Kts);
 		WorldDistance worldDistance = new WorldDistance(5, WorldDistance.MINUTES);
-		return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance);
+		return new PlanningSegment(name, courseDegs, worldSpeed, worldDistance, Color.RED);
 	}
 
 	@Override
