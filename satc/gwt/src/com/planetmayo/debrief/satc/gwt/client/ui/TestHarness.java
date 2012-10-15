@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.generator.SteppingGenerator;
+import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
@@ -47,14 +47,14 @@ public class TestHarness extends Composite {
 	@UiField
 	Anchor one;
 
-	private SteppingGenerator _generator;
+	private TrackGenerator _generator;
 	private TestSupport _tester;
 
 	public TestHarness() {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	public void setGenerator(SteppingGenerator genny) {
+	public void setGenerator(TrackGenerator genny) {
 		_generator = genny;
 	}
 
@@ -65,7 +65,7 @@ public class TestHarness extends Composite {
 
 	@UiHandler("clear")
 	void clearClick(ClickEvent e) {
-		// TODO _generator.clear() ??
+		_generator.clear();
 	}
 
 	@UiHandler("restart")
@@ -91,11 +91,13 @@ public class TestHarness extends Composite {
 	@UiHandler("play")
 	void playClick(ClickEvent e) {
 		// TODO implement play
+
 	}
 
 	@UiHandler("live")
 	void liveClick(ClickEvent e) {
 		// TODO TrackGenerator unavailable
+
 	}
 
 	@UiHandler("one")
