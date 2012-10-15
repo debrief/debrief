@@ -143,8 +143,8 @@ public class TestSupport
 
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
-		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
+		course.setStartDate(new Date("2010/Jan/12 12:14:31"));
+		course.setFinishDate(new Date("2010/Jan/12 12:18:25"));
 		course.setMinCourse(45);
 		course.setMaxCourse(81);
 		course.setEstimate(75);
@@ -152,8 +152,8 @@ public class TestSupport
 
 		// hey, how about a time-bounded course constraint?
 		SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
-		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
+		speed2.setStartDate(new Date("2010/Jan/12 12:25:00"));
+		speed2.setFinishDate(new Date("2010/Jan/12 12:31:00"));
 		speed2.setMinSpeed(8);
 		speed2.setMaxSpeed(27);
 		speed2.setEstimate(15);
