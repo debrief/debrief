@@ -58,4 +58,12 @@ public class StartFinishWidget extends Composite {
 		finishDateBox.setValue(finishDate);
 	}
 
+	public void setStartData(Date startDate) {
+		startDateBox.setValue(startDate);
+	}
+
+	public void setFinishData(Date finishDate) {
+		finishDateBox.setValue(finishDate);
+	}
+
 }

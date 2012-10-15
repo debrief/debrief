@@ -59,14 +59,14 @@
 			styleName="{style.header}"></g:Label>
 			
 			<g:HorizontalPanel width="100%" styleName="anchors-panel">
-				<g:Anchor text="Clear"></g:Anchor>
-				<g:Anchor text="Restart"></g:Anchor>
-				<g:Anchor text="Populate short"></g:Anchor>
-				<g:Anchor text="Populate"></g:Anchor>
-				<g:Anchor text="Step"></g:Anchor>
-				<g:Anchor text="Play"></g:Anchor>
-				<g:Anchor text="Live"></g:Anchor>
-				<g:Anchor text="1"></g:Anchor>
+				<g:Anchor ui:field="clear" text="Clear"></g:Anchor>
+				<g:Anchor ui:field="restart" text="Restart"></g:Anchor>
+				<g:Anchor ui:field="populateShort" text="Populate short"></g:Anchor>
+				<g:Anchor ui:field="populateLink" text="Populate"></g:Anchor>
+				<g:Anchor ui:field="step" text="Step"></g:Anchor>
+				<g:Anchor ui:field="play" text="Play"></g:Anchor>
+				<g:Anchor ui:field="live" text="Live"></g:Anchor>
+				<g:Anchor ui:field="one" text="1"></g:Anchor>
 				
 			</g:HorizontalPanel>
 

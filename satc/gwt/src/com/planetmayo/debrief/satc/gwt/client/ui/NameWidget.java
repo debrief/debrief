@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class NameWidget extends Composite {
@@ -21,13 +22,15 @@ public class NameWidget extends Composite {
 
 	@UiField
 	Label text;
+	
+	@UiField TextBox box;
 
 	public void setText(String value) {
 		text.setText(value);
 	}
 
 	public void setData(String name) {
-		text.setText(name);
+		box.setText(name);
 
 	}
 

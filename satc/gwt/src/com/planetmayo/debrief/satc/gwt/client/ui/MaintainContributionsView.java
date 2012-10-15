@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.gwt.client.contributions.BearingMeasurementContributionView;
-import com.planetmayo.debrief.satc.gwt.client.contributions.ContributionData;
+import com.planetmayo.debrief.satc.gwt.client.contributions.ContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.CourseForecastContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.LocationForecastContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.RangeForecastContributionView;
@@ -146,7 +146,7 @@ public class MaintainContributionsView extends Composite implements MyView
 	@Override
 	public void added(BaseContribution contribution)
 	{
-		ContributionData res = null;
+		ContributionView res = null;
 
 		// what type is it?
 		if (contribution instanceof CourseForecastContribution)

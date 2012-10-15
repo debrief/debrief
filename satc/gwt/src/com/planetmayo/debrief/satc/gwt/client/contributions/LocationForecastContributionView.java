@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class LocationForecastContributionView extends Composite implements ContributionData {
+public class LocationForecastContributionView extends Composite implements ContributionView {
 
 	private static LocationForecastContributionViewUiBinder uiBinder = GWT
 			.create(LocationForecastContributionViewUiBinder.class);

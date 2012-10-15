@@ -70,4 +70,24 @@ public class ContributionPanelHeader extends Composite {
 		this.weighting.setValue(weight);
 		
 	}
+
+	public void setEstimateData(String value) {
+		estimate.setText(value);
+		
+	}
+
+	public void setWeightData(Integer weight) {
+		this.weighting.setValue(weight);
+		
+	}
+
+	public void setActiveData(boolean active) {
+		this.active.setValue(active);
+		
+	}
+
+	public void setHardConstraintsData(String hardConstraints) {
+		this.hardConstraints.setText(hardConstraints);
+		
+	}
 }

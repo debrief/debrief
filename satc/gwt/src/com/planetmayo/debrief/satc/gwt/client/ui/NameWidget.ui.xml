@@ -8,6 +8,6 @@
 	</ui:style>
 	<g:HTMLPanel>
 		<g:Label text="Name:" ui:field="text"></g:Label>
-		<g:TextBox></g:TextBox>
+		<g:TextBox ui:field="box"></g:TextBox>
 	</g:HTMLPanel>
 </ui:UiBinder> 

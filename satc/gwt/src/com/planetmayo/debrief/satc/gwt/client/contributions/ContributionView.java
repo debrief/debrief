@@ -10,6 +10,6 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
  * @author Akash-Gupta
  *
  */
-public interface ContributionData extends IsWidget{
+public interface ContributionView extends IsWidget{
 	void setData(BaseContribution contribution);
 }

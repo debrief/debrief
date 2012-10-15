@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class SpeedForecastContributionView extends Composite implements ContributionData {
+public class SpeedForecastContributionView extends Composite implements ContributionView {
 
 	private static SpeedForecastContributionViewUiBinder uiBinder = GWT
 			.create(SpeedForecastContributionViewUiBinder.class);

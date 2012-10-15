@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class RangeForecastContributionView extends Composite implements ContributionData {
+public class RangeForecastContributionView extends Composite implements ContributionView {
 
 	private static RangeForecastContributionViewUiBinder uiBinder = GWT
 			.create(RangeForecastContributionViewUiBinder.class);
