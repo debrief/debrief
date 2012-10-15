@@ -24,8 +24,9 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
+import com.topografix.gpx.v10.Gpx.Trk.Trkseg.Trkpt;
+import com.topografix.gpx.v10.ObjectFactory;
 import com.topografix.gpx.v11.ExtensionsType;
-import com.topografix.gpx.v11.ObjectFactory;
 import com.topografix.gpx.v11.WptType;
 
 /**
@@ -38,7 +39,7 @@ public class FixMapper implements DebriefJaxbContextAware
 {
 	private JAXBContext debriefContext;
 	private static final BigDecimal MINUS_ONE = new BigDecimal("-1");
-	private static final org.mwc.debrief.core.gpx.ObjectFactory DEBRIEF_OBJ_FACTORY = new org.mwc.debrief.core.gpx.ObjectFactory();
+	private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
 	private static DatatypeFactory df;
 
 	static
@@ -49,15 +50,20 @@ public class FixMapper implements DebriefJaxbContextAware
 		}
 		catch (DatatypeConfigurationException dce)
 		{
-			throw new IllegalStateException("Exception while obtaining DatatypeFactory instance", dce);
+			throw new IllegalStateException("Exception while obtaining DatatypeFactory instance. Can't marshall/unmarshall GPX documents.", dce);
 		}
 	}
 
-	/** extract a fix from the supplied data object
+	/**
+	 * Extract a fix from the supplied data object
 	 * 
-	 * @param trackType an object read in from GPX
-	 * @param previousFix the value of the previously read-in fix, used to calc course and speed, when necessary
-	 * @return
+	 * @param trackType
+	 *          an object read in from GPX
+	 * @param previousFix
+	 *          the value of the previously read-in fix, used to calc course and
+	 *          speed, when necessary
+	 * 
+	 * @category gpx11
 	 */
 	public FixWrapper fromGpx(WptType trackType, FixWrapper previousFix)
 	{
@@ -66,10 +72,11 @@ public class FixMapper implements DebriefJaxbContextAware
 		// we may not have a depth, better check
 		BigDecimal ele = trackType.getEle();
 		if (ele == null)
+		{
 			ele = new BigDecimal(0);
+		}
 
-		WorldLocation val = new WorldLocation(trackType.getLat(),
-				trackType.getLon(), convertElevationToDepth(ele));
+		WorldLocation val = new WorldLocation(trackType.getLat(), trackType.getLon(), convertElevationToDepth(ele));
 		fix.setLocation(val);
 
 		HiResDate theDate;
@@ -81,13 +88,12 @@ public class FixMapper implements DebriefJaxbContextAware
 		}
 		else
 		{
-			CorePlugin.logError(Status.WARNING,
-					"GPX Data is missing time data. current date to be used", null);
+			CorePlugin.logError(Status.WARNING, "GPX Data is missing time data. current date to be used", null);
 			theDate = new HiResDate();
 		}
 		fix.setTime(theDate);
 
-		// also have a go at the heaidng
+		// also have a go at the heading
 
 		FixWrapper trackPoint = new FixWrapper(fix);
 
@@ -100,14 +106,11 @@ public class FixMapper implements DebriefJaxbContextAware
 			{
 				unmarshaller = debriefContext.createUnmarshaller();
 				Object object = unmarshaller.unmarshal((Node) any.get(0));
-				FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector
-						.getValue(object);
+				FixExtensionType fixExtension = (FixExtensionType) JAXBIntrospector.getValue(object);
 
-				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse())
-						.doubleValue());
+				trackPoint.setCourse(Double.valueOf(fixExtension.getCourse()).doubleValue());
 				trackPoint.setLabel(fixExtension.getLabel());
-				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed())
-						.doubleValue());
+				trackPoint.setSpeed(Double.valueOf(fixExtension.getSpeed()).doubleValue());
 				LocationPropertyEditor locationConverter = new LocationPropertyEditor();
 				locationConverter.setAsText(fixExtension.getLabelLocation().value());
 				trackPoint.setLabelLocation((Integer) locationConverter.getValue());
@@ -119,8 +122,7 @@ public class FixMapper implements DebriefJaxbContextAware
 			}
 			catch (JAXBException e)
 			{
-				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX",
-						e);
+				CorePlugin.logError(Status.ERROR, "Error while mapping Track from GPX", e);
 			}
 		}
 
@@ -144,10 +146,12 @@ public class FixMapper implements DebriefJaxbContextAware
 		return trackPoint;
 	}
 
-	public WptType toGpx(FixWrapper fixWrapper)
+	/**
+	 * @category gpx10
+	 */
+	public Trkpt toGpx10(FixWrapper fixWrapper)
 	{
-		ObjectFactory objectFactory = new ObjectFactory();
-		WptType gpxPoint = objectFactory.createWptType();
+		Trkpt gpxPoint = GPX_1_0_OBJ_FACTORY.createGpxTrkTrksegTrkpt();
 
 		gpxPoint.setLat(BigDecimal.valueOf(fixWrapper.getFix().getLocation().getLat()));
 		gpxPoint.setLon(BigDecimal.valueOf(fixWrapper.getFix().getLocation().getLong()));
@@ -157,9 +161,11 @@ public class FixMapper implements DebriefJaxbContextAware
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTimeInMillis(hiResDate.getDate().getTime());
 		XMLGregorianCalendar gpxTime = df.newXMLGregorianCalendar(gc);
-		// gpxTime.setFractionalSecond(BigDecimal.valueOf(hiResDate.getMicros()));
-		// TODO map micro secs
+		// disable fractional second as this is never used
+		gpxTime.setFractionalSecond(null);
 		gpxPoint.setTime(gpxTime.normalize());
+		gpxPoint.setCourse(BigDecimal.valueOf(fixWrapper.getFix().getCourse()));
+		gpxPoint.setSpeed(BigDecimal.valueOf(fixWrapper.getSpeed()).setScale(4, BigDecimal.ROUND_CEILING));
 		//
 		// ExtensionsType extensionsType = objectFactory.createExtensionsType();
 		// List<Object> any = extensionsType.getAny();
@@ -189,5 +195,54 @@ public class FixMapper implements DebriefJaxbContextAware
 	private BigDecimal convertDepthToElevation(BigDecimal depth)
 	{
 		return depth.multiply(MINUS_ONE);
+	}
+
+	/**
+	 * Extract a fix from the gpx 1.0
+	 * 
+	 * @category gpx10
+	 */
+	public FixWrapper fromGpx10(Trkpt pointType, FixWrapper previousFix)
+	{
+		Fix fix = new Fix();
+
+		// we may not have a depth, better check
+		BigDecimal ele = pointType.getEle();
+		if (ele == null)
+		{
+			ele = new BigDecimal(0);
+		}
+
+		WorldLocation val = new WorldLocation(pointType.getLat(), pointType.getLon(), convertElevationToDepth(ele));
+		fix.setLocation(val);
+
+		HiResDate theDate;
+		XMLGregorianCalendar time = pointType.getTime();
+		if (time != null)
+		{
+			GregorianCalendar calendar = time.toGregorianCalendar();
+			theDate = new HiResDate(calendar.getTime());
+		}
+		else
+		{
+			CorePlugin.logError(Status.WARNING, "GPX Data is missing time data. current date to be used", null);
+			theDate = new HiResDate();
+		}
+		fix.setTime(theDate);
+
+		BigDecimal course = pointType.getCourse();
+		if (course != null)
+		{
+			fix.setCourse(course.doubleValue());
+		}
+
+		BigDecimal speed = pointType.getSpeed();
+		if (speed != null)
+		{
+			fix.setSpeed(speed.doubleValue());
+		}
+		FixWrapper trackPoint = new FixWrapper(fix);
+
+		return trackPoint;
 	}
 }
