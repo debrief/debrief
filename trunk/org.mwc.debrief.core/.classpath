@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry excluding="AbstractMiniSSEditor.java|MiniSSResourceEditor.java" kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/eclipselink.jar"/>
+	<classpathentry kind="lib" path="libs/jdom-1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="intro"/>
