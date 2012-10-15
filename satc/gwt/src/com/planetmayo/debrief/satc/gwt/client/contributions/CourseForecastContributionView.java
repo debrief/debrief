@@ -65,6 +65,8 @@ public class CourseForecastContributionView extends Composite implements
 				_myData.setMaxCourse(event.getValue());
 			}
 		});
+		
+		// TODO: Akash - we also need to listen for changes in the headerfor Active plus weighting
 
 	}
 
