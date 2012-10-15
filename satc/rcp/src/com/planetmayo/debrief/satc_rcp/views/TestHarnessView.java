@@ -45,6 +45,7 @@ public class TestHarnessView extends CoreView
 	private Action _stepAction;
 	private Action _clearAction;
 	private Action _playAction;
+	private Action _populateTinyAction;
 	private Action _populateShortAction;
 	private Action _populateLongAction;
 	private Action _liveAction;
@@ -94,6 +95,7 @@ public class TestHarnessView extends CoreView
 	{
 		manager.add(_clearAction);
 		manager.add(_restartAction);
+		manager.add(_populateTinyAction);
 		manager.add(_populateShortAction);
 		manager.add(_populateLongAction);
 		manager.add(_stepAction);
@@ -116,12 +118,23 @@ public class TestHarnessView extends CoreView
 		_populateShortAction.setText("Populate Short");
 		_populateShortAction.setToolTipText("Load some sample data");
 
+		_populateTinyAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				loadSampleData(false);
+			}
+		};
+		_populateTinyAction.setText("Pop Tiny");
+		_populateTinyAction.setToolTipText("Load a tiny amount of sample data");
+
 		_populateLongAction = new Action()
 		{
 			@Override
 			public void run()
 			{
-				loadSampleData(true);
+				loadTinyData();
 			}
 		};
 		_populateLongAction.setText("Populate");
@@ -196,6 +209,11 @@ public class TestHarnessView extends CoreView
 
 	}
 
+	protected void loadTinyData()
+	{
+		_testSupport.loadTinyData();
+	}
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -233,6 +251,7 @@ public class TestHarnessView extends CoreView
 	private void enableControls(boolean enabled)
 	{
 		_clearAction.setEnabled(enabled);
+		_populateTinyAction.setEnabled(enabled);
 		_populateShortAction.setEnabled(enabled);
 		_populateLongAction.setEnabled(enabled);
 		_restartAction.setEnabled(enabled);
