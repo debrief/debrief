@@ -19,13 +19,15 @@ import com.planetmayo.debrief.satc.support.TestSupport;
  * @author Akash-Gupta
  * 
  */
-public class TestHarness extends Composite {
+public class TestHarness extends Composite
+{
+
+	interface TestHarnessUiBinder extends UiBinder<Widget, TestHarness>
+	{
+	}
 
 	private static TestHarnessUiBinder uiBinder = GWT
 			.create(TestHarnessUiBinder.class);
-
-	interface TestHarnessUiBinder extends UiBinder<Widget, TestHarness> {
-	}
 
 	@UiField
 	Button populate;
@@ -52,68 +54,81 @@ public class TestHarness extends Composite {
 	private TrackGenerator _generator;
 	private TestSupport _tester;
 
-	public TestHarness() {
+	public TestHarness()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	public void setGenerator(TrackGenerator genny) {
-		_generator = genny;
-	}
-
-	@UiHandler("populate")
-	void handleClick(ClickEvent e) {
-		_tester.loadTinyData();
-	}
-
 	@UiHandler("clear")
-	void clearClick(ClickEvent e) {
+	void clearClick(ClickEvent e)
+	{
 		_generator.clear();
 	}
 
-	@UiHandler("restart")
-	void restartClick(ClickEvent e) {
-		_generator.restart();
-	}
-
-	@UiHandler("populateTiny")
-	void populateTinyClick(ClickEvent e) {
+	@UiHandler("populate")
+	void handleClick(ClickEvent e)
+	{
 		_tester.loadTinyData();
 	}
 
-	@UiHandler("populateShort")
-	void populateShortClick(ClickEvent e) {
-		_tester.loadSampleData(false);
-	}
-
-	@UiHandler("populateLink")
-	void populateLinkClick(ClickEvent e) {
-		_tester.loadSampleData(true);
-	}
-
-	@UiHandler("step")
-	void stepClick(ClickEvent e) {
-		_generator.step();
-	}
-
-	@UiHandler("play")
-	void playClick(ClickEvent e) {
-		// TODO implement play
-
-	}
-
 	@UiHandler("live")
-	void liveClick(ClickEvent e) {
+	void liveClick(ClickEvent e)
+	{
 		// TODO TrackGenerator unavailable
 
 	}
 
 	@UiHandler("one")
-	void oneClick(ClickEvent e) {
+	void oneClick(ClickEvent e)
+	{
 		_tester.nextTest();
 	}
 
-	public void setTestSupport(TestSupport testP) {
+	@UiHandler("play")
+	void playClick(ClickEvent e)
+	{
+		// TODO implement play
+
+	}
+
+	@UiHandler("populateLink")
+	void populateLinkClick(ClickEvent e)
+	{
+		_tester.loadSampleData(true);
+	}
+
+	@UiHandler("populateShort")
+	void populateShortClick(ClickEvent e)
+	{
+		_tester.loadSampleData(false);
+	}
+
+	@UiHandler("populateTiny")
+	void populateTinyClick(ClickEvent e)
+	{
+		_tester.loadTinyData();
+	}
+
+	@UiHandler("restart")
+	void restartClick(ClickEvent e)
+	{
+		_generator.restart();
+	}
+
+	public void setGenerator(TrackGenerator genny)
+	{
+		_generator = genny;
+	}
+
+	public void setTestSupport(TestSupport testP)
+	{
 		_tester = testP;
+	}
+
+	@UiHandler("step")
+	void stepClick(ClickEvent e)
+	{
+		_generator.step();
 	}
 
 }

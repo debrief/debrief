@@ -35,6 +35,7 @@ public class Slider2BarWidget extends HorizontalPanel
 		sliderBarSimpleHorizontal
 				.addBarValueChangedHandler(new BarValueChangedHandler()
 				{
+					@Override
 					public void onBarValueChanged(BarValueChangedEvent event)
 					{
 						value.setHTML(unitLabelPrefix + event.getValue() + unitLabelSuffix);
@@ -55,6 +56,16 @@ public class Slider2BarWidget extends HorizontalPanel
 	public void addBarValueChangedHandler(BarValueChangedHandler handler)
 	{
 		sliderBarSimpleHorizontal.addBarValueChangedHandler(handler);
+	}
+
+	public void setData(int data)
+	{
+		sliderBarSimpleHorizontal.setValue(data);
+	}
+
+	public void setSliderWidth(String width)
+	{
+		sliderBarSimpleHorizontal.setWidth(width);
 	}
 
 	public void setText(String label)
@@ -96,15 +107,5 @@ public class Slider2BarWidget extends HorizontalPanel
 			sliderBarSimpleHorizontal.setMaxValue(360);
 			value.setWidth("50px");
 		}
-	}
-
-	public void setSliderWidth(String width)
-	{
-		sliderBarSimpleHorizontal.setWidth(width);
-	}
-
-	public void setData(int data)
-	{
-		sliderBarSimpleHorizontal.setValue(data);
 	}
 }

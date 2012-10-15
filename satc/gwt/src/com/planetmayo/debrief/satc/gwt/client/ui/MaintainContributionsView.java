@@ -44,13 +44,13 @@ public class MaintainContributionsView extends Composite implements MyView,
 		ContributionsChangedListener
 {
 
-	private static ManageSolutionsViewUiBinder uiBinder = GWT
-			.create(ManageSolutionsViewUiBinder.class);
-
 	interface ManageSolutionsViewUiBinder extends
 			UiBinder<Widget, MaintainContributionsView>
 	{
 	}
+
+	private static ManageSolutionsViewUiBinder uiBinder = GWT
+			.create(ManageSolutionsViewUiBinder.class);
 
 	private MaintainContributions _manager;
 
@@ -59,20 +59,6 @@ public class MaintainContributionsView extends Composite implements MyView,
 	public static TrackGenerator getGenerator()
 	{
 		return _stepper;
-	}
-
-	public MaintainContributionsView()
-	{
-
-		initWidget(uiBinder.createAndBindUi(this));
-		header.setCellWidth(active, "20%");
-		header.setCellWidth(estimate, "30%");
-		header.setCellWidth(hardConstraints, "30%");
-		header.setCellWidth(weighting, "20%");
-
-		// now the the data object
-		_manager = new MaintainContributions(this, new MockVehicleTypesRepository());
-		_stepper = _manager.getGenerator();
 	}
 
 	@UiField
@@ -113,36 +99,18 @@ public class MaintainContributionsView extends Composite implements MyView,
 
 	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
 
-	@UiHandler("add")
-	void onClick(ClickEvent e)
+	public MaintainContributionsView()
 	{
-		contextMenu.showRelativeTo(add);
-	}
 
-	@UiHandler(value =
-	{ "courseForecastContribution", "speedForecast", "locationForecast" })
-	void handleClick(ClickEvent e)
-	{
-		// TODO: create custom handler for the 'add' dropdown menu. Handle it by
-		// passing
-		// the String to the _addListener as PropertyChangeEvent(theString, null,
-		// null, theString);
+		initWidget(uiBinder.createAndBindUi(this));
+		header.setCellWidth(active, "20%");
+		header.setCellWidth(estimate, "30%");
+		header.setCellWidth(hardConstraints, "30%");
+		header.setCellWidth(weighting, "20%");
 
-		contextMenu.hide();
-		if ((Label) e.getSource() == courseForecastContribution)
-		{
-			analystContributions.add(new CourseForecastContributionView());
-		}
-		else if ((Label) e.getSource() == speedForecast)
-		{
-			Window.alert(((Label) e.getSource()).getText());
-
-		}
-		else if ((Label) e.getSource() == locationForecast)
-		{
-			Window.alert(((Label) e.getSource()).getText());
-
-		}
+		// now the the data object
+		_manager = new MaintainContributions(this, new MockVehicleTypesRepository());
+		_stepper = _manager.getGenerator();
 	}
 
 	@Override
@@ -184,6 +152,60 @@ public class MaintainContributionsView extends Composite implements MyView,
 
 	}
 
+	@UiHandler(value =
+	{ "courseForecastContribution", "speedForecast", "locationForecast" })
+	void handleClick(ClickEvent e)
+	{
+		// TODO: create custom handler for the 'add' dropdown menu. Handle it by
+		// passing
+		// the String to the _addListener as PropertyChangeEvent(theString, null,
+		// null, theString);
+
+		contextMenu.hide();
+		if ((Label) e.getSource() == courseForecastContribution)
+		{
+			analystContributions.add(new CourseForecastContributionView());
+		}
+		else if ((Label) e.getSource() == speedForecast)
+		{
+			Window.alert(((Label) e.getSource()).getText());
+
+		}
+		else if ((Label) e.getSource() == locationForecast)
+		{
+			Window.alert(((Label) e.getSource()).getText());
+
+		}
+	}
+
+	@UiHandler("add")
+	void onClick(ClickEvent e)
+	{
+		contextMenu.showRelativeTo(add);
+	}
+
+	@Override
+	public void populateContributionList(ArrayList<String> items)
+	{
+		// TODO use these strings to populate the drop-down list of new contribution
+		// types
+
+	}
+
+	@Override
+	public void populatePrecisionsList(Precision[] precisions)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void populateVehicleTypesList(List<VehicleType> vehicles)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
 	@Override
 	public void removed(BaseContribution contribution)
 	{
@@ -200,22 +222,13 @@ public class MaintainContributionsView extends Composite implements MyView,
 	}
 
 	@Override
-	public void populateContributionList(ArrayList<String> items)
+	public void setAddContributionListener(PropertyChangeListener listener)
 	{
-		// TODO use these strings to populate the drop-down list of new contribution
-		// types
-
+		_addListener = listener;
 	}
 
 	@Override
-	public void populateVehicleTypesList(List<VehicleType> vehicles)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void populatePrecisionsList(Precision[] precisions)
+	public void setPrecisionChangeListener(PropertyChangeListener listener)
 	{
 		// TODO Auto-generated method stub
 
@@ -229,20 +242,7 @@ public class MaintainContributionsView extends Composite implements MyView,
 	}
 
 	@Override
-	public void setAddContributionListener(PropertyChangeListener listener)
-	{
-		_addListener = listener;
-	}
-
-	@Override
 	public void setVehicleChangeListener(PropertyChangeListener listener)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setPrecisionChangeListener(PropertyChangeListener listener)
 	{
 		// TODO Auto-generated method stub
 

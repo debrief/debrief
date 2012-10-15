@@ -17,14 +17,19 @@ import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
  * @author Akash-Gupta
  * 
  */
-public class RootLayout extends Composite {
-	
+public class RootLayout extends Composite
+{
+
+	interface RootLayoutUiBinder extends UiBinder<Widget, RootLayout>
+	{
+	}
+
 	@UiField
 	TestHarness testHarness;
 
 	@UiField
 	TrackStates tabularStates;
-	
+
 	@UiField
 	SpatialView spatialStates;
 
@@ -34,24 +39,22 @@ public class RootLayout extends Composite {
 	private static RootLayoutUiBinder uiBinder = GWT
 			.create(RootLayoutUiBinder.class);
 
-	interface RootLayoutUiBinder extends UiBinder<Widget, RootLayout> {
-	}
-
-	public RootLayout() {
+	public RootLayout()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
-		
-		//HERE YOU CAN PUT YOUR LOGIC
-		MaintainContributions maintainP = new MaintainContributions(manageSolutionsView, new MockVehicleTypesRepository());
+
+		// HERE YOU CAN PUT YOUR LOGIC
+		MaintainContributions maintainP = new MaintainContributions(
+				manageSolutionsView, new MockVehicleTypesRepository());
 		final TrackGenerator genny = maintainP.getGenerator();
 		TestSupport testP = new TestSupport();
 		testP.setGenerator(genny);
-		
+
 		testHarness.setGenerator(genny);
 		testHarness.setTestSupport(testP);
-		
+
 		genny.addBoundedStateListener(tabularStates);
-		
-		
+
 	}
 
 }

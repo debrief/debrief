@@ -11,22 +11,16 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ContributionPanelHeader extends Composite {
+public class ContributionPanelHeader extends Composite
+{
+
+	interface ContributionPanelHeaderUiBinder extends
+			UiBinder<Widget, ContributionPanelHeader>
+	{
+	}
 
 	private static ContributionPanelHeaderUiBinder uiBinder = GWT
 			.create(ContributionPanelHeaderUiBinder.class);
-
-	interface ContributionPanelHeaderUiBinder extends
-			UiBinder<Widget, ContributionPanelHeader> {
-	}
-
-	public ContributionPanelHeader() {
-		initWidget(uiBinder.createAndBindUi(this));
-		header.setCellWidth(active, "20%");
-		header.setCellWidth(estimate, "30%");
-		header.setCellWidth(hardConstraints, "30%");
-		header.setCellWidth(weighting, "20%");
-	}
 
 	@UiField
 	HorizontalPanel header;
@@ -43,52 +37,72 @@ public class ContributionPanelHeader extends Composite {
 	@UiField
 	NumberSpinner weighting;
 
+	public ContributionPanelHeader()
+	{
+		initWidget(uiBinder.createAndBindUi(this));
+		header.setCellWidth(active, "20%");
+		header.setCellWidth(estimate, "30%");
+		header.setCellWidth(hardConstraints, "30%");
+		header.setCellWidth(weighting, "20%");
+	}
+
 	@UiHandler("active")
-	void onClick(ClickEvent e) {
+	void onClick(ClickEvent e)
+	{
 		e.stopPropagation();
 	}
 
-	public void setActive(boolean value) {
+	public void setActive(boolean value)
+	{
 		active.setValue(value);
 	}
 
-	public void setEstimate(String value) {
-		estimate.setText(value);
+	public void setActiveData(boolean active)
+	{
+		this.active.setValue(active);
+
 	}
 
-	public void setHardConstraints(String value) {
-		hardConstraints.setText(value);
-	}
-
-	public void setWeighting(int value) {
-		weighting.setValue(value);
-	}
-
-	public void setData(boolean active, String hardConstraints, String estimateStr, int weight) {
+	public void setData(boolean active, String hardConstraints,
+			String estimateStr, int weight)
+	{
 		setActive(active);
 		setHardConstraints(hardConstraints);
 		setWeighting(weight);
 		setEstimate(estimateStr);
-		
+
 	}
 
-	public void setEstimateData(String value) {
+	public void setEstimate(String value)
+	{
 		estimate.setText(value);
-		
 	}
 
-	public void setWeightData(Integer weight) {
-		this.weighting.setValue(weight);
-		
+	public void setEstimateData(String value)
+	{
+		estimate.setText(value);
+
 	}
 
-	public void setActiveData(boolean active) {
-		this.active.setValue(active);
-		
+	public void setHardConstraints(String value)
+	{
+		hardConstraints.setText(value);
 	}
 
-	public void setHardConstraintsData(String hardConstraints) {
+	public void setHardConstraintsData(String hardConstraints)
+	{
 		this.hardConstraints.setText(hardConstraints);
-		
+
+	}
+
+	public void setWeightData(Integer weight)
+	{
+		this.weighting.setValue(weight);
+
+	}
+
+	public void setWeighting(int value)
+	{
+		weighting.setValue(value);
 	}
 }

@@ -9,15 +9,15 @@ public class GWTConverterService implements ConverterService
 {
 
 	@Override
+	public String formatDate(String pattern, Date date)
+	{
+		return DateTimeFormat.getFormat(pattern).format(date);
+	}
+
+	@Override
 	public Date parseDate(String pattern, String text)
 	{
 		return DateTimeFormat.getFormat(pattern).parse(text);
 	}
 
-	@Override
-	public String formatDate(String pattern, Date date)
-	{
-		return DateTimeFormat.getFormat(pattern).format(date);
-	}
-	
 }

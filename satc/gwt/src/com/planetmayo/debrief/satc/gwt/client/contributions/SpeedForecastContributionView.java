@@ -6,24 +6,29 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class SpeedForecastContributionView extends Composite implements ContributionView {
+public class SpeedForecastContributionView extends Composite implements
+		ContributionView
+{
+
+	interface SpeedForecastContributionViewUiBinder extends
+			UiBinder<Widget, SpeedForecastContributionView>
+	{
+	}
 
 	private static SpeedForecastContributionViewUiBinder uiBinder = GWT
 			.create(SpeedForecastContributionViewUiBinder.class);
 
-	interface SpeedForecastContributionViewUiBinder extends
-			UiBinder<Widget, SpeedForecastContributionView> {
-	}
-
-	public SpeedForecastContributionView() {
+	public SpeedForecastContributionView()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
+	public void setData(BaseContribution contribution)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

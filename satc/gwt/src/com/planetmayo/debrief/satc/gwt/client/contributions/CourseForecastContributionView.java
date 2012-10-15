@@ -22,31 +22,13 @@ public class CourseForecastContributionView extends Composite implements
 		ContributionView, PropertyChangeListener
 {
 
-	private static CourseForecastContributionViewUiBinder uiBinder = GWT
-			.create(CourseForecastContributionViewUiBinder.class);
-
 	interface CourseForecastContributionViewUiBinder extends
 			UiBinder<Widget, CourseForecastContributionView>
 	{
 	}
 
-	public CourseForecastContributionView()
-	{
-		initWidget(uiBinder.createAndBindUi(this));
-
-		// TODO: Akash - we need to respond to other UI changes aswell.
-		
-		// respond to the UI
-		max.addBarValueChangedHandler(new BarValueChangedHandler()
-		{			
-			@Override
-			public void onBarValueChanged(BarValueChangedEvent event)
-			{
-				_myData.setMaxCourse(event.getValue());
-			}
-		});
-		
-	}
+	private static CourseForecastContributionViewUiBinder uiBinder = GWT
+			.create(CourseForecastContributionViewUiBinder.class);
 
 	@UiField
 	Slider2BarWidget min;
@@ -68,49 +50,21 @@ public class CourseForecastContributionView extends Composite implements
 
 	private CourseForecastContribution _myData;
 
-	@Override
-	public void setData(BaseContribution contribution) {
-		
-		_myData = (CourseForecastContribution) contribution;
-		
-		// initialise the UI components
-		min.setData(((CourseForecastContribution) contribution).getMinCourse());
-		max.setData(((CourseForecastContribution) contribution).getMaxCourse());
-		estimate.setData(((CourseForecastContribution) contribution)
-				.getEstimate());
-		name.setData(contribution.getName());
-		startFinish.setData(contribution.getStartDate(),
-				contribution.getFinishDate());
-		int estimate = ((CourseForecastContribution) contribution).getEstimate();
-		header.setData(contribution.isActive(),
-				contribution.getHardConstraints(),"" + estimate, contribution.getWeight());
+	public CourseForecastContributionView()
+	{
+		initWidget(uiBinder.createAndBindUi(this));
 
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.MIN_COURSE, this);
+		// TODO: Akash - we need to respond to other UI changes aswell.
 
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.MAX_COURSE, this);
-
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.ESTIMATE, this);
-
-		contribution.addPropertyChangeListener(CourseForecastContribution.NAME,
-				this);
-
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.START_DATE, this);
-
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.FINISH_DATE, this);
-
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.WEIGHT, this);
-
-		contribution.addPropertyChangeListener(
-				CourseForecastContribution.ACTIVE, this);
-
-		contribution.addPropertyChangeListener(
-				BaseContribution.HARD_CONSTRAINTS, this);
+		// respond to the UI
+		max.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
+			@Override
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
+				_myData.setMaxCourse(event.getValue());
+			}
+		});
 
 	}
 
@@ -122,23 +76,63 @@ public class CourseForecastContributionView extends Composite implements
 			min.setData((Integer) arg0.getNewValue());
 		else if (attr.equals(CourseForecastContribution.MAX_COURSE))
 			max.setData((Integer) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.ESTIMATE))
+		else if (attr.equals(BaseContribution.ESTIMATE))
 		{
 			estimate.setData((Integer) arg0.getNewValue());
 			header.setEstimateData((String) arg0.getNewValue());
 		}
-		else if (attr.equals(CourseForecastContribution.NAME))
+		else if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.START_DATE))
+		else if (attr.equals(BaseContribution.START_DATE))
 			startFinish.setStartData((Date) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.FINISH_DATE))
+		else if (attr.equals(BaseContribution.FINISH_DATE))
 			startFinish.setFinishData((Date) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.WEIGHT))
+		else if (attr.equals(BaseContribution.WEIGHT))
 			header.setWeightData((Integer) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.ACTIVE))
+		else if (attr.equals(BaseContribution.ACTIVE))
 			header.setActiveData((Boolean) arg0.getNewValue());
-		else if (attr.equals(CourseForecastContribution.HARD_CONSTRAINTS))
+		else if (attr.equals(BaseContribution.HARD_CONSTRAINTS))
 			header.setHardConstraintsData((String) arg0.getNewValue());
+	}
+
+	@Override
+	public void setData(BaseContribution contribution)
+	{
+
+		_myData = (CourseForecastContribution) contribution;
+
+		// initialise the UI components
+		min.setData(((CourseForecastContribution) contribution).getMinCourse());
+		max.setData(((CourseForecastContribution) contribution).getMaxCourse());
+		estimate.setData(((CourseForecastContribution) contribution).getEstimate());
+		name.setData(contribution.getName());
+		startFinish.setData(contribution.getStartDate(),
+				contribution.getFinishDate());
+		int estimate = ((CourseForecastContribution) contribution).getEstimate();
+		header.setData(contribution.isActive(), contribution.getHardConstraints(),
+				"" + estimate, contribution.getWeight());
+
+		contribution.addPropertyChangeListener(
+				CourseForecastContribution.MIN_COURSE, this);
+
+		contribution.addPropertyChangeListener(
+				CourseForecastContribution.MAX_COURSE, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.ESTIMATE, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.NAME, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.START_DATE, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.FINISH_DATE, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.WEIGHT, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.ACTIVE, this);
+
+		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
+				this);
+
 	}
 
 }

@@ -8,30 +8,36 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class NameWidget extends Composite {
+public class NameWidget extends Composite
+{
+
+	interface NameWidgetUiBinder extends UiBinder<Widget, NameWidget>
+	{
+	}
 
 	private static NameWidgetUiBinder uiBinder = GWT
 			.create(NameWidgetUiBinder.class);
 
-	interface NameWidgetUiBinder extends UiBinder<Widget, NameWidget> {
-	}
+	@UiField
+	Label text;
 
-	public NameWidget() {
+	@UiField
+	TextBox box;
+
+	public NameWidget()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	@UiField
-	Label text;
-	
-	@UiField TextBox box;
-
-	public void setText(String value) {
-		text.setText(value);
-	}
-
-	public void setData(String name) {
+	public void setData(String name)
+	{
 		box.setText(name);
 
+	}
+
+	public void setText(String value)
+	{
+		text.setText(value);
 	}
 
 }

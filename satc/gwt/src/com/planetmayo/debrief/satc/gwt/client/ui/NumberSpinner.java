@@ -8,19 +8,23 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IntegerBox;
 
-public class NumberSpinner extends Composite {
+public class NumberSpinner extends Composite
+{
 
 	private int RATE = 1;
 	private IntegerBox integerBox;
 
-	public NumberSpinner() {
+	HorizontalPanel horizontalPanel;
+
+	FlowPanel buttonsPanel;
+
+	public NumberSpinner()
+	{
 		this(1);
 	}
 
-	HorizontalPanel horizontalPanel;
-	FlowPanel buttonsPanel;
-
-	public NumberSpinner(int defaultValue) {
+	public NumberSpinner(int defaultValue)
+	{
 		horizontalPanel = new HorizontalPanel();
 		initWidget(horizontalPanel);
 
@@ -35,8 +39,11 @@ public class NumberSpinner extends Composite {
 		integerBox.setValue(defaultValue);
 
 		Button upButton = new Button();
-		upButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
+		upButton.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
 				setValue(getValue() + RATE);
 				event.stopPropagation();
 				event.preventDefault();
@@ -48,9 +55,13 @@ public class NumberSpinner extends Composite {
 		upButton.setSize("12px", "10px");
 
 		Button downButton = new Button();
-		downButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				if (getValue() == 0) {
+		downButton.addClickHandler(new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				if (getValue() == 0)
+				{
 					event.stopPropagation();
 					event.preventDefault();
 					return;
@@ -72,18 +83,9 @@ public class NumberSpinner extends Composite {
 	 * 
 	 * @return
 	 */
-	public int getValue() {
+	public int getValue()
+	{
 		return integerBox.getValue() == null ? 0 : integerBox.getValue();
-	}
-
-	/**
-	 * Sets the value to the control
-	 * 
-	 * @param value
-	 *            Value to be set
-	 */
-	public void setValue(int value) {
-		integerBox.setValue(value);
 	}
 
 	/**
@@ -91,7 +93,19 @@ public class NumberSpinner extends Composite {
 	 * 
 	 * @param rate
 	 */
-	public void setRate(int rate) {
+	public void setRate(int rate)
+	{
 		this.RATE = rate;
+	}
+
+	/**
+	 * Sets the value to the control
+	 * 
+	 * @param value
+	 *          Value to be set
+	 */
+	public void setValue(int value)
+	{
+		integerBox.setValue(value);
 	}
 }

@@ -7,6 +7,18 @@ public class GWTLogService implements LogService
 {
 
 	@Override
+	public void error(String message)
+	{
+		GWT.log("ERROR!!! " + message, null);
+	}
+
+	@Override
+	public void error(String message, Exception ex)
+	{
+		GWT.log("ERROR!!! " + message, ex);
+	}
+
+	@Override
 	public void info(String message)
 	{
 		GWT.log(message);
@@ -15,31 +27,19 @@ public class GWTLogService implements LogService
 	@Override
 	public void info(String message, Exception ex)
 	{
-		GWT.log(message, ex);		
+		GWT.log(message, ex);
 	}
 
 	@Override
 	public void warn(String message)
 	{
-		GWT.log("WARN! " + message);		
+		GWT.log("WARN! " + message);
 	}
 
 	@Override
 	public void warn(String message, Exception ex)
 	{
-		GWT.log("WARN! " + message, ex);		
+		GWT.log("WARN! " + message, ex);
 	}
 
-	@Override
-	public void error(String message)
-	{
-		GWT.log("ERROR!!! " + message, null);		
-	}
-
-	@Override
-	public void error(String message, Exception ex)
-	{
-		GWT.log("ERROR!!! " + message, ex);		
-	}
-	
 }

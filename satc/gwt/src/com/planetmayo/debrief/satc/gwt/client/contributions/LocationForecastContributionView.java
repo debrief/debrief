@@ -6,23 +6,28 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class LocationForecastContributionView extends Composite implements ContributionView {
+public class LocationForecastContributionView extends Composite implements
+		ContributionView
+{
+
+	interface LocationForecastContributionViewUiBinder extends
+			UiBinder<Widget, LocationForecastContributionView>
+	{
+	}
 
 	private static LocationForecastContributionViewUiBinder uiBinder = GWT
 			.create(LocationForecastContributionViewUiBinder.class);
 
-	interface LocationForecastContributionViewUiBinder extends
-			UiBinder<Widget, LocationForecastContributionView> {
-	}
-
-	public LocationForecastContributionView() {
+	public LocationForecastContributionView()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
+	public void setData(BaseContribution contribution)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
