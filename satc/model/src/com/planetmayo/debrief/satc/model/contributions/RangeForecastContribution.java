@@ -126,11 +126,11 @@ public class RangeForecastContribution extends BaseContribution
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
 					+ Double.valueOf(latSecs) / 60d / 60d;
-			if (latHemi.toUpperCase().equals("W"))
+			if (latHemi.toUpperCase().equals("S"))
 				lat = -lat;
 			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
 					+ Double.valueOf(lonSecs) / 60d / 60d;
-			if (lonHemi.toUpperCase().equals("S"))
+			if (lonHemi.toUpperCase().equals("W"))
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
@@ -140,8 +140,8 @@ public class RangeForecastContribution extends BaseContribution
 		}
 
 		// give us some max/min data
-		this.setMaxRange(3000);
-		this.setMinRange(500);
+		this.setMaxRange(9000);
+		this.setMinRange(5);
 		
 		// TODO: set the start/end times = just for tidiness
 	}

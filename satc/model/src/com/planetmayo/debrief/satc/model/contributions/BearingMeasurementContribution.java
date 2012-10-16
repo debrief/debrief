@@ -136,11 +136,11 @@ public class BearingMeasurementContribution extends BaseContribution
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
 					+ Double.valueOf(latSecs) / 60d / 60d;
-			if (latHemi.toUpperCase().equals("W"))
+			if (latHemi.toUpperCase().equals("S"))
 				lat = -lat;
 			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
 					+ Double.valueOf(lonSecs) / 60d / 60d;
-			if (lonHemi.toUpperCase().equals("S"))
+			if (lonHemi.toUpperCase().equals("W"))
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
