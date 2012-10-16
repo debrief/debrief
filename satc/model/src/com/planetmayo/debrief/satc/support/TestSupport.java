@@ -131,8 +131,9 @@ public class TestSupport
 				12, 17, 29)));
 		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
 				12, 19, 29)));
-		rangeF.setMaxRange(3000);
+		rangeF.setMaxRange(9000);
 		rangeF.setMinRange(500);
+		rangeF.setActive(false);
 		getGenerator().addContribution(rangeF);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
