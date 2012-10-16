@@ -278,8 +278,10 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 		// when we get incompatible states. Show the message in that label, and
 		// disable the table
 
-		MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-				"Bounding states", "Incompatible states found");
+		viewer.setInput(null);
+//		
+//		MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+//				"Bounding states", "Incompatible states found");
 	}
 
 	@Override
