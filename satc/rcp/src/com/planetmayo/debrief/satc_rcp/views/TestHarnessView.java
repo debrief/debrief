@@ -123,7 +123,7 @@ public class TestHarnessView extends CoreView
 			@Override
 			public void run()
 			{
-				loadSampleData(false);
+				loadTinyData();
 			}
 		};
 		_populateTinyAction.setText("Pop Tiny");
@@ -134,7 +134,7 @@ public class TestHarnessView extends CoreView
 			@Override
 			public void run()
 			{
-				loadTinyData();
+				loadSampleData(true);
 			}
 		};
 		_populateLongAction.setText("Populate");
