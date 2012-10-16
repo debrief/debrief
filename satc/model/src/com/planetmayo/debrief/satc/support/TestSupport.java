@@ -108,15 +108,15 @@ public class TestSupport
 
 		// and add some data
 		bmc.addThis(new BMeasurement(new GeoPoint(0.3, 30.1), 12.2, new Date(110,
-				00, 12, 12, 13, 29), 15000d));
+				00, 12, 12, 13, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
 		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(110,
-				00, 12, 12, 14, 29), 15000d));
+				00, 12, 12, 14, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
 		bmc.addThis(new BMeasurement(new GeoPoint(0.1, 30.3), 12.2, new Date(110,
-				00, 12, 12, 16, 29), 15000d));
+				00, 12, 12, 16, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
 		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(110,
-				00, 12, 12, 17, 29), 15000d));
+				00, 12, 12, 17, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
 		bmc.addThis(new BMeasurement(new GeoPoint(0.4, 30.3), 12.2, new Date(110,
-				00, 12, 12, 19, 29), 15000d));
+				00, 12, 12, 19, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
 		bmc.setBearingError(3d);
 		getGenerator().addContribution(bmc);
 
@@ -133,13 +133,14 @@ public class TestSupport
 				12, 19, 29)));
 		rangeF.setMaxRange(9000);
 		rangeF.setMinRange(500);
-		rangeF.setActive(false);
+		rangeF.setActive(true);
 		getGenerator().addContribution(rangeF);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setMinSpeed(12);
 		speed.setMaxSpeed(43);
 		speed.setEstimate(21);
+		speed.setActive(true);
 		getGenerator().addContribution(speed);
 
 		// hey, how about a time-bounded course constraint?
@@ -149,6 +150,7 @@ public class TestSupport
 		course.setMinCourse(45);
 		course.setMaxCourse(81);
 		course.setEstimate(75);
+		course.setActive(true);
 		getGenerator().addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
@@ -158,9 +160,11 @@ public class TestSupport
 		speed2.setMinSpeed(8);
 		speed2.setMaxSpeed(27);
 		speed2.setEstimate(15);
+		speed2.setActive(true);
 		getGenerator().addContribution(speed2);
 
 		LocationAnalysisContribution lac = new LocationAnalysisContribution();
+		lac.setActive(true);
 		getGenerator().addContribution(lac);
 	}
 
