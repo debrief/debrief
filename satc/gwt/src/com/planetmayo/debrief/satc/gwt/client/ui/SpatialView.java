@@ -106,7 +106,7 @@ public class SpatialView extends Composite implements BoundedStatesListener
 				double[][] coords = GeoSupport.getCoordsFor(loc);
 				for (int i = 0; i < coords.length; i++)
 				{
-					DataPoint dp = new DataPoint(coords[i][1], coords[i][0]);
+					DataPoint dp = new DataPoint(coords[i][0], coords[i][1]);
 					ser.add(dp);
 				}
 			}
