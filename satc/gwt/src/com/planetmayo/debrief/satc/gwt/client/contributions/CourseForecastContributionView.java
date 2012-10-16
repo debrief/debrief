@@ -140,7 +140,11 @@ public class CourseForecastContributionView extends BaseContributionView {
 
 	@Override
 	public void setData(BaseContribution contribution) {
+
+		// let the parent register with the contribution
 		super.setData(contribution);
+
+		// and store the type-casted contribution
 		_myData = (CourseForecastContribution) contribution;
 
 		// TODO: Akash this method should listen out for the course-specific 

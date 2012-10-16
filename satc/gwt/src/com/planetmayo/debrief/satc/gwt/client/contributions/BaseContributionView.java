@@ -43,7 +43,7 @@ abstract public class BaseContributionView extends Composite implements
 	public void setData(BaseContribution contribution) {
 
 		// initialise the UI components
-		Object estimate = getData().getEstimate();
+		Object estimate = contribution.getEstimate();
 		header.setData(contribution.isActive(),
 				contribution.getHardConstraints(), "" + estimate,
 				contribution.getWeight());
