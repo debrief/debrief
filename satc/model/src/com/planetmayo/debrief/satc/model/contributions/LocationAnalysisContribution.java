@@ -15,8 +15,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.TopologyException;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 public class LocationAnalysisContribution extends BaseContribution
@@ -56,8 +58,7 @@ public class LocationAnalysisContribution extends BaseContribution
 
 		}
 	}
-	
-	
+
 	// TODO: remove this method once the RCP UI doesn't depend on it
 	public double getEstimate()
 	{
@@ -77,6 +78,12 @@ public class LocationAnalysisContribution extends BaseContribution
 
 			double minC = Angle.toRadians(course.getMin());
 			double maxC = Angle.toRadians(course.getMax());
+
+			// minor idiot check. if the two courses are the same, the geometry falls
+			// over. so, if they are the same, trim one slightly
+			if (minC == maxC)
+				maxC += 0.0000001;
+
 			double centreC = minC + (maxC - minC) / 2d;
 
 			// start with the origin
@@ -127,11 +134,22 @@ public class LocationAnalysisContribution extends BaseContribution
 				Geometry trimmed = courseP.intersection(speedP);
 				// GeoSupport.writeGeometry("trimmed", trimmed);
 
-				achievable = (LineString) trimmed.getBoundary();
+				Geometry geom = trimmed.getBoundary();
+				if (!(geom instanceof LineString))
+				{
+					// is it a multi-point?
+					if (geom instanceof MultiPoint)
+					{
+						@SuppressWarnings("unused")
+						MultiPoint mp = (MultiPoint) geom;
+					}
+				}
+				achievable = (LineString) geom;
 			}
 			else
 			{
-				// TODO: speedP is actually two circles = we probably need to process both circles
+				// TODO: speedP is actually two circles = we probably need to process
+				// both circles
 				achievable = (LineString) speedP.getExteriorRing().clone();
 			}
 		}
@@ -180,15 +198,17 @@ public class LocationAnalysisContribution extends BaseContribution
 					// actually do the move
 					Coordinate[] oldCoords = achievable.getCoordinates();
 					Coordinate[] newCoords = new Coordinate[oldCoords.length];
-					for (int j = 0; j < oldCoords.length; j++) {
+					for (int j = 0; j < oldCoords.length; j++)
+					{
 						Coordinate tmpC = oldCoords[j];
-						Coordinate newC = new Coordinate(0,0);
-						 newC = trans.transform(tmpC, newC);
+						Coordinate newC = new Coordinate(0, 0);
+						newC = trans.transform(tmpC, newC);
 						newCoords[j] = newC;
 					}
-					
+
 					// and put it back into a linestring
-					Geometry translated = GeoSupport.getFactory().createLinearRing(newCoords);
+					Geometry translated = GeoSupport.getFactory().createLinearRing(
+							newCoords);
 
 					// GeoSupport.writeGeometry("shape:" + i, translated);
 
@@ -261,17 +281,31 @@ public class LocationAnalysisContribution extends BaseContribution
 
 		// ok, what's the maximum value?
 		double maxR = getMaxRangeDegs(sRange, timeMillis);
-		// ok, and the minimum
-		double minR = sRange.getMinMS() * timeMillis / 1000d;
 
-		// convert to degs
-		minR = GeoSupport.m2deg(minR);
-
+		// and create an outer ring to represent it
 		LinearRing outer = (LinearRing) pt.buffer(maxR).getBoundary();
-		LinearRing inner = (LinearRing) pt.buffer(minR).getBoundary();
 
-		Polygon res = GeoSupport.getFactory().createPolygon(outer, new LinearRing[]
-		{ inner });
+		// ok, and the minimum
+		final LinearRing[] inner;
+
+		// do we have a speed val?
+		if (sRange != null)
+		{
+			// yes, get calculating
+			double minR = sRange.getMinMS() * timeMillis / 1000d;
+			// convert to degs
+			minR = GeoSupport.m2deg(minR);
+			inner = new LinearRing[]
+			{ (LinearRing) pt.buffer(minR).getBoundary() };
+		}
+		else
+		{
+			// with a zero min speed, we don't have any holes
+			inner = null;
+		}
+
+		// and now a polygon to represent them both
+		Polygon res = GeoSupport.getFactory().createPolygon(outer, inner);
 
 		return res;
 	}
