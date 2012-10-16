@@ -59,12 +59,6 @@ public class LocationAnalysisContribution extends BaseContribution
 		}
 	}
 
-	// TODO: remove this method once the RCP UI doesn't depend on it
-	public Object getEstimate()
-	{
-		return -1.0;
-	}
-
 	public LinearRing getCourseRing(CourseRange course, double maxRng)
 	{
 		LinearRing res = null;
