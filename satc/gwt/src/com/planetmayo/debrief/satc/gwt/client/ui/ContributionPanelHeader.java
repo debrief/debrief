@@ -107,7 +107,7 @@ public class ContributionPanelHeader extends Composite
 		weighting.setValue(value);
 	}
 
-	public void addHandler(ValueChangeHandler<Boolean> activeValueChangeHandler, ValueChangeHandler<Integer> weightingValueChangeHandler) {
+	public void setHandlers(ValueChangeHandler<Boolean> activeValueChangeHandler, ValueChangeHandler<Integer> weightingValueChangeHandler) {
 		active.addValueChangeHandler(activeValueChangeHandler);
 		weighting.addValueChangeHandler(weightingValueChangeHandler);
 	}
