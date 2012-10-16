@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -104,5 +105,10 @@ public class ContributionPanelHeader extends Composite
 	public void setWeighting(int value)
 	{
 		weighting.setValue(value);
+	}
+
+	public void addHandler(ValueChangeHandler<Boolean> activeValueChangeHandler, ValueChangeHandler<Integer> weightingValueChangeHandler) {
+		active.addValueChangeHandler(activeValueChangeHandler);
+		weighting.addValueChangeHandler(weightingValueChangeHandler);
 	}
 }

@@ -59,7 +59,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	}
 	
 	// TODO: remove this method once the RCP UI doesn't depend on it
-	public double getEstimate()
+	public Object getEstimate()
 	{
 		return -1.0;
 	}

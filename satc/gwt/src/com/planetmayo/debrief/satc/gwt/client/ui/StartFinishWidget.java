@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.gwt.client.ui;
 import java.util.Date;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -74,6 +75,11 @@ public class StartFinishWidget extends Composite
 	public void setStartData(Date startDate)
 	{
 		startDateBox.setValue(startDate);
+	}
+
+	public void addValueChangeHandler(ValueChangeHandler<Date> startValueChangeHandler, ValueChangeHandler<Date> finishValueChangeHandler) {
+		startDateBox.addValueChangeHandler(startValueChangeHandler);
+		finishDateBox.addValueChangeHandler(finishValueChangeHandler);
 	}
 
 }

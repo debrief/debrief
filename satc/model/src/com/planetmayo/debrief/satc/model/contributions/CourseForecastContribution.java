@@ -109,7 +109,7 @@ public class CourseForecastContribution extends BaseContribution
 
 	}
 
-	public int getEstimate()
+	public Object getEstimate()
 	{
 		return _estimate;
 	}

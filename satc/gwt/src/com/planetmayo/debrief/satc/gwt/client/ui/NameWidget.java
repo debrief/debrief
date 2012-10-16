@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.gwt.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -38,6 +39,11 @@ public class NameWidget extends Composite
 	public void setText(String value)
 	{
 		text.setText(value);
+	}
+	
+	public void addValueChangeHandler(ValueChangeHandler<String> handler)
+	{
+		box.addValueChangeHandler(handler);
 	}
 
 }

@@ -108,7 +108,7 @@ public class SpeedForecastContribution extends BaseContribution
 
 	}
 
-	public double getEstimate()
+	public Object getEstimate()
 	{
 		return _estimate;
 	}

@@ -266,7 +266,7 @@ public class RangeForecastContribution extends BaseContribution
 		return res;
 	}
 
-	public double getEstimate()
+	public Object getEstimate()
 	{
 		return _estimate;
 	}

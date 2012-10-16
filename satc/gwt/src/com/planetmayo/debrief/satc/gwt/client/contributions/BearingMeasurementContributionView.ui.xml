@@ -11,7 +11,7 @@
 				width="100%">
 
 				<g:customHeader>
-					<my:ContributionPanelHeader active="true"
+					<my:ContributionPanelHeader active="true" ui:field="header"
 						weighting="9" hardConstraints="+/- 3&deg;" estimate="45 Measurements"></my:ContributionPanelHeader>
 
 				</g:customHeader>
