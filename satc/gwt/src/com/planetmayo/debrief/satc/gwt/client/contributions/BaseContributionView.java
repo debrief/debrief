@@ -47,6 +47,10 @@ public class BaseContributionView extends Composite implements
 		header.setData(contribution.isActive(),
 				contribution.getHardConstraints(), "" + estimate,
 				contribution.getWeight());
+		
+		// TODO: Akash - this method should only register listeners for the 
+		// BaseContribution attributes that it knows about.  The course-specific
+		// ones should be declared in CourseForecastContribution
 
 		contribution.addPropertyChangeListener(
 				CourseForecastContribution.MIN_COURSE, this);
@@ -74,7 +78,7 @@ public class BaseContributionView extends Composite implements
 
 	@Override
 	public void initHandlers() {
-		header.addHandler(new ValueChangeHandler<Boolean>() {
+		header.setHandlers(new ValueChangeHandler<Boolean>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {

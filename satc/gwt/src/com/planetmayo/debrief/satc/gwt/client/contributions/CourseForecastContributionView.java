@@ -134,6 +134,9 @@ public class CourseForecastContributionView extends BaseContributionView {
 		super.setData(contribution);
 		_myData = (CourseForecastContribution) contribution;
 
+		// TODO: Akash this method should listen out for the course-specific 
+		// property changes
+		
 		// initialise the UI components
 		min.setData(_myData.getMinCourse());
 		max.setData(_myData.getMaxCourse());
