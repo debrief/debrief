@@ -60,7 +60,7 @@ public class CourseForecastContribution extends BaseContribution
 			final BoundedState state = sIter.next();
 
 			boolean constrainIt = false;
-			
+
 			// is this one of our end-terms?
 			final Date thisT = state.getTime();
 
@@ -85,8 +85,8 @@ public class CourseForecastContribution extends BaseContribution
 
 			// ok, special in-range processing
 			constrainIt = checkInDatePeriod(thisT);
-			
-			if(constrainIt)
+
+			if (constrainIt)
 				state.constrainTo(myR);
 
 		}
@@ -109,6 +109,13 @@ public class CourseForecastContribution extends BaseContribution
 
 	}
 
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+
+	@Override
 	public Object getEstimate()
 	{
 		return _estimate;
@@ -155,11 +162,4 @@ public class CourseForecastContribution extends BaseContribution
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.FORECAST;
-	}
-	
-	
 }

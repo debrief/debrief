@@ -19,19 +19,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class RangeForecastContribution extends BaseContribution
 {
-  private static final long serialVersionUID = 1L;
-
-	public static final String MIN_RANGE = "minRange";
-
-	public static final String MAX_RANGE = "maxRange";
-
-	/** for UI components, this is the maximum range that a user can select
-	 * 
-	 */
-	public static final int MAX_SELECTABLE_RANGE_M = 10000;
-
-	private static double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
-
 	/**
 	 * utility class for storing a measurement
 	 * 
@@ -49,6 +36,20 @@ public class RangeForecastContribution extends BaseContribution
 			_time = time;
 		}
 	}
+
+	private static final long serialVersionUID = 1L;
+
+	public static final String MIN_RANGE = "minRange";
+
+	public static final String MAX_RANGE = "maxRange";
+
+	/**
+	 * for UI components, this is the maximum range that a user can select
+	 * 
+	 */
+	public static final int MAX_SELECTABLE_RANGE_M = 10000;
+
+	private static double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
 
 	/**
 	 * utility method to create one of these contributions
@@ -77,6 +78,155 @@ public class RangeForecastContribution extends BaseContribution
 	 * 
 	 */
 	private ArrayList<ROrigin> _measurements = new ArrayList<ROrigin>();
+
+	@Override
+	public void actUpon(final ProblemSpace space)
+			throws IncompatibleStateException
+	{
+
+		// loop through our measurements
+		Iterator<ROrigin> iter = _measurements.iterator();
+		while (iter.hasNext())
+		{
+			RangeForecastContribution.ROrigin origin = iter.next();
+
+			Point pt = origin._origin.asPoint();
+
+			// yes, ok we can centre our donut on that
+			LinearRing outer = getOuterRing(pt);
+			LinearRing inner = getInnerRing(pt);
+
+			// did we generate an inner?
+			// if (inner != null)
+			// {
+			//
+			// // yes, better delete it then
+			// Geometry res = thePolygon.difference(inner);
+			// thePolygon = (Polygon) res;
+			// }
+
+			// and create a polygon for it.
+			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer,
+					new LinearRing[]
+					{ inner });
+
+			// create a LocationRange for the poly
+			// now define the polygon
+			final LocationRange myRa = new LocationRange(thePoly);
+
+			// is there already a bounded state at this time?
+			BoundedState thisS = space.getBoundedStateAt(origin._time);
+
+			if (thisS == null)
+			{
+				// nope, better create it
+				thisS = new BoundedState(origin._time);
+				space.add(thisS);
+			}
+
+			// apply the range
+			thisS.constrainTo(myRa);
+		}
+	}
+
+	/**
+	 * store this new measurement
+	 * 
+	 * @param measure
+	 */
+	public void addThis(ROrigin measure)
+	{
+		// extend the time period accordingly
+		if (this.getStartDate() == null)
+		{
+			this.setStartDate(measure._time);
+			this.setFinishDate(measure._time);
+		}
+		else
+		{
+			long newTime = measure._time.getTime();
+			if (this.getStartDate().getTime() > newTime)
+				this.setStartDate(measure._time);
+			if (this.getFinishDate().getTime() < newTime)
+				this.setFinishDate(measure._time);
+		}
+
+		_measurements.add(measure);
+	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+
+	@Override
+	public Object getEstimate()
+	{
+		return _estimate;
+	}
+
+	@Override
+	public String getHardConstraints()
+	{
+		return "" + ((int) _minRangeM) + " - " + ((int) _maxRangeM);
+	}
+
+	private LinearRing getInnerRing(Point pt)
+	{
+		final LinearRing res;
+		double theRange;
+
+		// yes, ok we have an inner ring
+		theRange = GeoSupport.m2deg(getMinRange());
+
+		// do we have an inner range?
+		if (theRange == 0d)
+		{
+			// no, ok, just choose an absolutely monster range
+			res = null;
+		}
+		else
+		{
+			// ok, now we create the inner circle
+			res = (LinearRing) pt.buffer(theRange).getBoundary();
+
+		}
+
+		return res;
+	}
+
+	public double getMaxRange()
+	{
+		return _maxRangeM;
+	}
+
+	public double getMinRange()
+	{
+		return _minRangeM;
+	}
+
+	private LinearRing getOuterRing(Point pt)
+	{
+		// TODO: handle case where range not provided
+
+		// do we have a max range?
+		double theRange;
+
+		// yes, ok we have an outer ring
+		theRange = GeoSupport.m2deg(getMaxRange());
+
+		if (theRange == 0d)
+		{
+			// no, ok, just choose an absolutely monster range
+			theRange = ABSOLUTELY_HUGE_RANGE_DEGS;
+		}
+
+		// ok, now we create the inner circle
+		Geometry geom = pt.buffer(theRange);
+		LinearRing res = (LinearRing) geom.getBoundary();
+		return res;
+	}
 
 	public void loadFrom(List<String> lines)
 	{
@@ -121,7 +271,8 @@ public class RangeForecastContribution extends BaseContribution
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd hhmmss", date + " " + time);
+			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd hhmmss", date
+					+ " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -142,149 +293,8 @@ public class RangeForecastContribution extends BaseContribution
 		// give us some max/min data
 		this.setMaxRange(9000);
 		this.setMinRange(5);
-		
+
 		// TODO: set the start/end times = just for tidiness
-	}
-
-	/**
-	 * store this new measurement
-	 * 
-	 * @param measure
-	 */
-	public void addThis(ROrigin measure)
-	{
-		// extend the time period accordingly
-		if (this.getStartDate() == null)
-		{
-			this.setStartDate(measure._time);
-			this.setFinishDate(measure._time);
-		}
-		else
-		{
-			long newTime = measure._time.getTime();
-			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure._time);
-			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure._time);
-		}
-
-		_measurements.add(measure);
-	}
-
-	@Override
-	public void actUpon(final ProblemSpace space)
-			throws IncompatibleStateException
-	{
-
-		// loop through our measurements
-		Iterator<ROrigin> iter = _measurements.iterator();
-		while (iter.hasNext())
-		{
-			RangeForecastContribution.ROrigin origin = (RangeForecastContribution.ROrigin) iter
-					.next();
-
-			Point pt = origin._origin.asPoint();
-
-			// yes, ok we can centre our donut on that
-			LinearRing outer = getOuterRing(pt);
-			LinearRing inner = getInnerRing(pt);
-
-			// did we generate an inner?
-//			if (inner != null)
-//			{
-//				
-//				// yes, better delete it then
-//				Geometry res = thePolygon.difference(inner);
-//				thePolygon = (Polygon) res;
-//			}
-			
-			// and create a polygon for it.
-			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, new LinearRing[]{inner});
-
-			// create a LocationRange for the poly
-			// now define the polygon
-			final LocationRange myRa = new LocationRange(thePoly);
-
-			// is there already a bounded state at this time?
-			BoundedState thisS = space.getBoundedStateAt(origin._time);
-
-			if (thisS == null)
-			{
-				// nope, better create it
-				thisS = new BoundedState(origin._time);
-				space.add(thisS);
-			}
-
-			// apply the range
-			thisS.constrainTo(myRa);
-		}
-	}
-
-	private LinearRing getOuterRing(Point pt)
-	{
-		// TODO: handle case where range not provided
-
-		// do we have a max range?
-		double theRange;
-
-		// yes, ok we have an outer ring
-		theRange = GeoSupport.m2deg(getMaxRange());
-
-		if (theRange == 0d)
-		{
-			// no, ok, just choose an absolutely monster range
-			theRange = ABSOLUTELY_HUGE_RANGE_DEGS;
-		}
-
-		// ok, now we create the inner circle
-		Geometry geom = pt.buffer(theRange);
-		LinearRing res = (LinearRing)geom.getBoundary();
-		return res;
-	}
-
-	private LinearRing getInnerRing(Point pt)
-	{
-		final LinearRing res;
-		double theRange;
-
-		// yes, ok we have an inner ring
-		theRange = GeoSupport.m2deg(getMinRange());
-
-		// do we have an inner range?
-		if (theRange == 0d)
-		{
-			// no, ok, just choose an absolutely monster range
-			res = null;
-		}
-		else
-		{
-			// ok, now we create the inner circle
-			res = (LinearRing) pt.buffer(theRange).getBoundary();
-
-		}
-
-		return res;
-	}
-
-	public Object getEstimate()
-	{
-		return _estimate;
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		return "" + ((int) _minRangeM) + " - " + ((int) _maxRangeM);
-	}
-
-	public double getMaxRange()
-	{
-		return _maxRangeM;
-	}
-
-	public double getMinRange()
-	{
-		return _minRangeM;
 	}
 
 	public void setEstimate(double estimate)
@@ -310,12 +320,6 @@ public class RangeForecastContribution extends BaseContribution
 		this._minRangeM = minRngM;
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
-	}
-
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.FORECAST;
 	}
 
 }

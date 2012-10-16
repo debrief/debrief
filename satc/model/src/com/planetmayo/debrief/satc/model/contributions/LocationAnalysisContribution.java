@@ -18,7 +18,6 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.TopologyException;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 public class LocationAnalysisContribution extends BaseContribution
@@ -35,7 +34,7 @@ public class LocationAnalysisContribution extends BaseContribution
 		Iterator<BoundedState> iter = space.states().iterator();
 		while (iter.hasNext())
 		{
-			BoundedState thisS = (BoundedState) iter.next();
+			BoundedState thisS = iter.next();
 
 			// does it have a location?
 			LocationRange loc = thisS.getLocation();
@@ -100,6 +99,29 @@ public class LocationAnalysisContribution extends BaseContribution
 
 			res = GeoSupport.getFactory().createLinearRing(coords);
 		}
+
+		return res;
+	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.ANALYSIS;
+	}
+
+	@Override
+	public String getHardConstraints()
+	{
+		return "n/a";
+	}
+
+	public double getMaxRangeDegs(SpeedRange sRange, long timeMillis)
+	{
+		final double res;
+		if (sRange != null)
+			res = GeoSupport.m2deg(sRange.getMaxMS() * timeMillis / 1000d);
+		else
+			res = RangeForecastContribution.MAX_SELECTABLE_RANGE_M;
 
 		return res;
 	}
@@ -173,7 +195,7 @@ public class LocationAnalysisContribution extends BaseContribution
 			if (loc != null)
 			{
 				// move around the outer points
-				LineString ls = (LineString) loc.getPolygon().getExteriorRing();
+				LineString ls = loc.getPolygon().getExteriorRing();
 				LinearRing ext = GeoSupport.getFactory().createLinearRing(
 						ls.getCoordinates());
 				Coordinate[] pts = ext.getCoordinates();
@@ -246,18 +268,6 @@ public class LocationAnalysisContribution extends BaseContribution
 		return answer;
 	}
 
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.ANALYSIS;
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		return "n/a";
-	}
-
 	/**
 	 * calculate the speed boundary
 	 * 
@@ -300,17 +310,6 @@ public class LocationAnalysisContribution extends BaseContribution
 
 		// and now a polygon to represent them both
 		Polygon res = GeoSupport.getFactory().createPolygon(outer, inner);
-
-		return res;
-	}
-
-	public double getMaxRangeDegs(SpeedRange sRange, long timeMillis)
-	{
-		final double res;
-		if (sRange != null)
-			res = GeoSupport.m2deg(sRange.getMaxMS() * timeMillis / 1000d);
-		else
-			res = RangeForecastContribution.MAX_SELECTABLE_RANGE_M;
 
 		return res;
 	}

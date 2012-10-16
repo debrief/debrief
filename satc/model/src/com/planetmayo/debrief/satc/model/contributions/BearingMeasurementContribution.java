@@ -20,44 +20,6 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 public class BearingMeasurementContribution extends BaseContribution
 {
-	private static final long serialVersionUID = 1L;
-
-	public static final String BEARING_ERROR = "bearingError";
-
-	/**
-	 * the allowable bearing error (in degrees)
-	 * 
-	 */
-	private double _degError = 0;
-
-	/**
-	 * the set of measurements we store
-	 * 
-	 */
-	private ArrayList<BMeasurement> _measurements = new ArrayList<BMeasurement>();
-
-	/**
-	 * utility method to create one of these contributions
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("deprecation")
-	public static BearingMeasurementContribution getSample()
-	{
-		BearingMeasurementContribution res = new BearingMeasurementContribution();
-		res.setName("Approaching Buoy");
-		res.setActive(true);
-		res.setWeight(7);
-
-		// add a couple of bearings
-		res.addEstimate(12.2, 12.3, new Date(2012, 3, 3, 12, 2, 2), 55, 1200);
-		res.addEstimate(12.3, 12.32, new Date(2012, 3, 3, 12, 3, 2), 58, 1200);
-		res.addEstimate(12.3, 12.33, new Date(2012, 3, 3, 12, 4, 2), 60, 1200);
-		res.addEstimate(12.4, 12.34, new Date(2012, 3, 3, 12, 5, 2), 62, 1200);
-
-		return res;
-	}
-
 	/**
 	 * utility class for storing a measurement
 	 * 
@@ -82,6 +44,173 @@ public class BearingMeasurementContribution extends BaseContribution
 			_time = time;
 			_theRange = theRange;
 		}
+	}
+
+	private static final long serialVersionUID = 1L;
+
+	public static final String BEARING_ERROR = "bearingError";
+
+	/**
+	 * utility method to create one of these contributions
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static BearingMeasurementContribution getSample()
+	{
+		BearingMeasurementContribution res = new BearingMeasurementContribution();
+		res.setName("Approaching Buoy");
+		res.setActive(true);
+		res.setWeight(7);
+
+		// add a couple of bearings
+		res.addEstimate(12.2, 12.3, new Date(2012, 3, 3, 12, 2, 2), 55, 1200);
+		res.addEstimate(12.3, 12.32, new Date(2012, 3, 3, 12, 3, 2), 58, 1200);
+		res.addEstimate(12.3, 12.33, new Date(2012, 3, 3, 12, 4, 2), 60, 1200);
+		res.addEstimate(12.4, 12.34, new Date(2012, 3, 3, 12, 5, 2), 62, 1200);
+
+		return res;
+	}
+
+	/**
+	 * the allowable bearing error (in degrees)
+	 * 
+	 */
+	private double _degError = 0;
+
+	/**
+	 * the set of measurements we store
+	 * 
+	 */
+	private ArrayList<BMeasurement> _measurements = new ArrayList<BMeasurement>();
+
+	@Override
+	public void actUpon(ProblemSpace space) throws IncompatibleStateException
+	{
+		// ok, here we really go for it!
+		Iterator<BMeasurement> iter = _measurements.iterator();
+
+		// sort out the bearing error
+		double errorRads = _degError / 180 * Math.PI;
+
+		// sort out a geometry factory
+		GeometryFactory factory = GeoSupport.getFactory();
+
+		while (iter.hasNext())
+		{
+			BearingMeasurementContribution.BMeasurement measurement = iter.next();
+			// ok, create the polygon for this measurement
+			GeoPoint origin = measurement._origin;
+			double bearing = measurement._bearingDegs;
+			double bearingRads = bearing / 180 * Math.PI;
+			double range = measurement._theRange;
+
+			// ok, generate the polygon
+			Coordinate[] coords = new Coordinate[5];
+
+			// start off with the origin
+			final double lon = origin.getLon();
+			final double lat = origin.getLat();
+
+			coords[0] = new Coordinate(lon, lat);
+
+			// now the top-left
+			coords[1] = new Coordinate(lon + Math.sin(bearingRads - errorRads)
+					* range, lat + Math.cos(bearingRads - errorRads) * range);
+
+			// now the centre bearing
+			coords[2] = new Coordinate(lon + Math.sin(bearingRads) * range, lat
+					+ Math.cos(bearingRads) * range);
+
+			// now the top-right
+			coords[3] = new Coordinate(lon + Math.sin(bearingRads + errorRads)
+					* range, lat + Math.cos(bearingRads + errorRads) * range);
+
+			// and back to the start
+			coords[4] = new Coordinate(coords[0]);
+
+			CoordinateArraySequence seq = new CoordinateArraySequence(coords);
+
+			// and construct the bounded location object
+			LinearRing ls = new LinearRing(seq, factory);
+			Polygon poly = new Polygon(ls, null, factory);
+			LocationRange lr = new LocationRange(poly);
+
+			// do we have a bounds at this time?
+			BoundedState thisState = space.getBoundedStateAt(measurement._time);
+			if (thisState == null)
+			{
+				// ok, do the bounds
+				thisState = new BoundedState(measurement._time);
+				// and store it
+				space.add(thisState);
+			}
+
+			// well, if we didn't - we do now! Apply it!
+			thisState.constrainTo(lr);
+		}
+	}
+
+	public void addEstimate(double lat, double lon, Date date, double brg,
+			double range)
+	{
+		GeoPoint loc = new GeoPoint(lat, lon);
+		BMeasurement measure = new BMeasurement(loc, brg, date, range);
+		addThis(measure);
+		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
+	}
+
+	/**
+	 * store this new measurement
+	 * 
+	 * @param measure
+	 */
+	public void addThis(BMeasurement measure)
+	{
+		// extend the time period accordingly
+		if (this.getStartDate() == null)
+		{
+			this.setStartDate(measure._time);
+			this.setFinishDate(measure._time);
+		}
+		else
+		{
+			long newTime = measure._time.getTime();
+			if (this.getStartDate().getTime() > newTime)
+				this.setStartDate(measure._time);
+			if (this.getFinishDate().getTime() < newTime)
+				this.setFinishDate(measure._time);
+		}
+
+		_measurements.add(measure);
+	}
+
+	public double getBearingError()
+	{
+		return _degError;
+	}
+
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.MEASUREMENT;
+	}
+
+	@Override
+	public String getHardConstraints()
+	{
+		return "" + _measurements.size() + " measurements " + (int) _degError
+				+ " Margin";
+	}
+
+	/**
+	 * whether this contribution has any measurements yet
+	 * 
+	 * @return
+	 */
+	public boolean hasData()
+	{
+		return _measurements.size() > 0;
 	}
 
 	public void loadFrom(List<String> lines)
@@ -125,7 +254,8 @@ public class BearingMeasurementContribution extends BaseContribution
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd hhmmss", date + " " + time);
+			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd hhmmss", date
+					+ " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -138,130 +268,14 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			BMeasurement measure = new BMeasurement(theLoc,
-					Double.valueOf(bearing), theDate, GeoSupport.m2deg(Double
-							.valueOf(range)));
+			BMeasurement measure = new BMeasurement(theLoc, Double.valueOf(bearing),
+					theDate, GeoSupport.m2deg(Double.valueOf(range)));
 
 			addThis(measure);
 
 		}
-		this.setBearingError(3d);	
+		this.setBearingError(3d);
 		// TODO: set the start/end times = just for tidiness
-	}
-
-	/**
-	 * store this new measurement
-	 * 
-	 * @param measure
-	 */
-	public void addThis(BMeasurement measure)
-	{
-		// extend the time period accordingly
-		if (this.getStartDate() == null)
-		{
-			this.setStartDate(measure._time);
-			this.setFinishDate(measure._time);
-		}
-		else
-		{
-			long newTime = measure._time.getTime();
-			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure._time);
-			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure._time);
-		}
-
-		_measurements.add(measure);
-	}
-
-	@Override
-	public void actUpon(ProblemSpace space) throws IncompatibleStateException
-	{
-		// ok, here we really go for it!
-		Iterator<BMeasurement> iter = _measurements.iterator();
-
-		// sort out the bearing error
-		double errorRads = _degError / 180 * Math.PI;
-
-		// sort out a geometry factory
-		GeometryFactory factory = GeoSupport.getFactory();
-
-		while (iter.hasNext())
-		{
-			BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
-					.next();
-			// ok, create the polygon for this measurement
-			GeoPoint origin = measurement._origin;
-			double bearing = measurement._bearingDegs;
-			double bearingRads = bearing / 180 * Math.PI;
-			double range = measurement._theRange;
-
-			// ok, generate the polygon
-			Coordinate[] coords = new Coordinate[5];
-
-			// start off with the origin
-			final double lon = origin.getLon();
-			final double lat = origin.getLat();
-			
-			coords[0] = new Coordinate(lon, lat);
-
-			// now the top-left
-			coords[1] = new Coordinate(lon
-					+ Math.sin(bearingRads - errorRads) * range, lat
-					+ Math.cos(bearingRads - errorRads) * range);
-
-			// now the centre bearing
-			coords[2] = new Coordinate(lon + Math.sin(bearingRads) * range,
-					lat + Math.cos(bearingRads) * range);
-
-			// now the top-right
-			coords[3] = new Coordinate(lon
-					+ Math.sin(bearingRads + errorRads) * range,lat
-					+ Math.cos(bearingRads + errorRads) * range);
-
-			// and back to the start
-			coords[4] = new Coordinate(coords[0]);
-
-			CoordinateArraySequence seq = new CoordinateArraySequence(coords);
-
-			// and construct the bounded location object
-			LinearRing ls = new LinearRing(seq, factory);
-			Polygon poly = new Polygon(ls, null, factory);
-			LocationRange lr = new LocationRange(poly);
-
-			// do we have a bounds at this time?
-			BoundedState thisState = space.getBoundedStateAt(measurement._time);
-			if (thisState == null)
-			{
-				// ok, do the bounds
-				thisState = new BoundedState(measurement._time);
-				// and store it
-				space.add(thisState);
-			}
-
-			// well, if we didn't - we do now! Apply it!
-			thisState.constrainTo(lr);
-		}
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		return "" + _measurements.size() + " measurements " + (int)_degError + " Margin";
-	}
-
-	public double getBearingError()
-	{
-		return _degError;
-	}
-
-	public void addEstimate(double lat, double lon, Date date, double brg,
-			double range)
-	{
-		GeoPoint loc = new GeoPoint(lat, lon);
-		BMeasurement measure = new BMeasurement(loc, brg, date, range);
-		addThis(measure);
-		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
 	}
 
 	public void setBearingError(double errorDegs)
@@ -270,21 +284,5 @@ public class BearingMeasurementContribution extends BaseContribution
 		this._degError = errorDegs;
 		firePropertyChange(BEARING_ERROR, errorDegs, errorDegs);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
-	}
-
-	/**
-	 * whether this contribution has any measurements yet
-	 * 
-	 * @return
-	 */
-	public boolean hasData()
-	{
-		return _measurements.size() > 0;
-	}
-
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.MEASUREMENT;
 	}
 }

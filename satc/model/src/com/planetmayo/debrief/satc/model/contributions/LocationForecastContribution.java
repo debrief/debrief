@@ -29,10 +29,10 @@ public class LocationForecastContribution extends BaseContribution
 	private int _limit;
 
 	private GeoPoint _estimate;
-	
+
 	private PropertyChangeListener estimateDetailsListener = new PropertyChangeListener()
 	{
-		
+
 		@Override
 		public void propertyChange(PropertyChangeEvent evt)
 		{
@@ -47,6 +47,13 @@ public class LocationForecastContribution extends BaseContribution
 		throw new RuntimeException("Not yet implemented");
 	}
 
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+
+	@Override
 	public GeoPoint getEstimate()
 	{
 		return _estimate;
@@ -67,12 +74,14 @@ public class LocationForecastContribution extends BaseContribution
 	{
 		GeoPoint oldEstimate = _estimate;
 		_estimate = estimate;
-		if (oldEstimate != null) {
+		if (oldEstimate != null)
+		{
 			oldEstimate.removePropertyChangeListener(estimateDetailsListener);
 		}
-		if (estimate != null) {
-			estimate.addPropertyChangeListener(estimateDetailsListener);	
-		}		
+		if (estimate != null)
+		{
+			estimate.addPropertyChangeListener(estimateDetailsListener);
+		}
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
@@ -85,10 +94,4 @@ public class LocationForecastContribution extends BaseContribution
 		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints,
 				getHardConstraints());
 	}
-
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.FORECAST;
-	}	
 }

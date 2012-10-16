@@ -108,6 +108,13 @@ public class SpeedForecastContribution extends BaseContribution
 
 	}
 
+	@Override
+	public ContributionDataType getDataType()
+	{
+		return ContributionDataType.FORECAST;
+	}
+
+	@Override
 	public Object getEstimate()
 	{
 		return _estimate;
@@ -116,7 +123,8 @@ public class SpeedForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) GeoSupport.MSec2kts(_minSpeed)) + " - " + ((int) GeoSupport.MSec2kts(_maxSpeed));
+		return "" + ((int) GeoSupport.MSec2kts(_minSpeed)) + " - "
+				+ ((int) GeoSupport.MSec2kts(_maxSpeed));
 	}
 
 	public double getMaxSpeed()
@@ -152,12 +160,6 @@ public class SpeedForecastContribution extends BaseContribution
 		this._minSpeed = minSpeed;
 		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
-	}
-
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.FORECAST;
 	}
 
 }
