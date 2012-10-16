@@ -1,6 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -28,7 +27,7 @@ import com.planetmayo.debrief.satc.support.TestSupport;
 
 public class TestHarnessView extends CoreView
 {
-	
+
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
@@ -45,7 +44,6 @@ public class TestHarnessView extends CoreView
 	private Action _stepAction;
 	private Action _clearAction;
 	private Action _playAction;
-	private Action _populateTinyAction;
 	private Action _populateShortAction;
 	private Action _populateLongAction;
 	private Action _liveAction;
@@ -75,8 +73,8 @@ public class TestHarnessView extends CoreView
 	{
 		new Label(parent, SWT.None);
 
-		 _testSupport = new TestSupport();
-		
+		_testSupport = new TestSupport();
+
 		makeActions();
 		contributeToActionBars();
 
@@ -90,12 +88,10 @@ public class TestHarnessView extends CoreView
 		setupMonitor();
 	}
 
-
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
 		manager.add(_clearAction);
 		manager.add(_restartAction);
-		manager.add(_populateTinyAction);
 		manager.add(_populateShortAction);
 		manager.add(_populateLongAction);
 		manager.add(_stepAction);
@@ -103,7 +99,6 @@ public class TestHarnessView extends CoreView
 		manager.add(_liveAction);
 		manager.add(_testOne);
 	}
-
 
 	private void makeActions()
 	{
@@ -117,17 +112,6 @@ public class TestHarnessView extends CoreView
 		};
 		_populateShortAction.setText("Populate Short");
 		_populateShortAction.setToolTipText("Load some sample data");
-
-		_populateTinyAction = new Action()
-		{
-			@Override
-			public void run()
-			{
-				loadTinyData();
-			}
-		};
-		_populateTinyAction.setText("Pop Tiny");
-		_populateTinyAction.setToolTipText("Load a tiny amount of sample data");
 
 		_populateLongAction = new Action()
 		{
@@ -161,7 +145,7 @@ public class TestHarnessView extends CoreView
 			}
 		};
 		_testOne.setText("1");
-		
+
 		_liveAction = new Action("Live", SWT.TOGGLE)
 		{
 
@@ -209,11 +193,6 @@ public class TestHarnessView extends CoreView
 
 	}
 
-	protected void loadTinyData()
-	{
-		_testSupport.loadTinyData();
-	}
-
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -232,7 +211,7 @@ public class TestHarnessView extends CoreView
 	{
 		// ok, we can disable our buttons
 		enableControls(false);
-		
+
 		_testSupport.setGenerator(genny);
 
 	}
@@ -241,7 +220,7 @@ public class TestHarnessView extends CoreView
 	protected void startListeningTo(TrackGenerator genny)
 	{
 		enableControls(true);
-		
+
 		_testSupport.setGenerator(genny);
 
 		// sort out the 'live' setting
@@ -251,7 +230,6 @@ public class TestHarnessView extends CoreView
 	private void enableControls(boolean enabled)
 	{
 		_clearAction.setEnabled(enabled);
-		_populateTinyAction.setEnabled(enabled);
 		_populateShortAction.setEnabled(enabled);
 		_populateLongAction.setEnabled(enabled);
 		_restartAction.setEnabled(enabled);

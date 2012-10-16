@@ -1,16 +1,13 @@
 package com.planetmayo.debrief.satc.support;
 
+import java.util.ArrayList;
 import java.util.Date;
 
-import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -44,24 +41,23 @@ public class TestSupport
 		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		RangeForecastContribution rangeF = new RangeForecastContribution();
-		final String thePath;
+		ArrayList<String> rows;
 		if (useLong)
-			thePath = BearingMeasurementContributionTest.THE_PATH;
+			rows = getLongData();
+		// thePath = BearingMeasurementContributionTest.THE_PATH;
 		else
-			thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
+			rows = getShortData();
+		// thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
 
 		try
 		{
 			// populate the bearing data
-			bmc.loadFrom(SupportServices.INSTANCE.getIOService().readLinesFrom(
-					thePath));
+			bmc.loadFrom(rows);
 			getGenerator().addContribution(bmc);
 
 			// and populate the range data
-			rangeF.loadFrom(SupportServices.INSTANCE.getIOService().readLinesFrom(
-					thePath));
+			rangeF.loadFrom(rows);
 			getGenerator().addContribution(rangeF);
-
 		}
 		catch (Exception e)
 		{
@@ -93,79 +89,98 @@ public class TestSupport
 		getGenerator().addContribution(lac);
 	}
 
-	@SuppressWarnings("deprecation")
-	public void loadTinyData()
+	private ArrayList<String> getShortData()
 	{
-		// TODO: replace this with deserializing an existing SteppingGenerator, once
-		// we have a strategy:
-		// https://bitbucket.org/ianmayo/deb_satc/issue/10
+		// declare the input strings
+		final String data1 = ";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG";
+		final String data2 = ";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000";
+		final String data3 = ";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000";
+		final String data4 = ";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000";
+		final String data5 = ";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000";
+		final String data6 = ";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000";
+		final String data7 = ";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000";
+		final String data8 = ";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000";
+		final String data9 = ";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000";
 
-		// clear the geneartor first
-		getGenerator().contributions().clear();
+		// and put them into an array list
+		final ArrayList<String> rows = new ArrayList<String>();
+		rows.add(data1);
+		rows.add(data2);
+		rows.add(data3);
+		rows.add(data4);
+		rows.add(data5);
+		rows.add(data6);
+		rows.add(data7);
+		rows.add(data8);
+		rows.add(data9);
+		
+		return rows;
+	}
 
-		// now load some data
-		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+	private ArrayList<String> getLongData()
+	{
+		final ArrayList<String> rows = new ArrayList<String>();
 
-		// and add some data
-		bmc.addThis(new BMeasurement(new GeoPoint(0.3, 30.1), 12.2, new Date(110,
-				00, 12, 12, 13, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(110,
-				00, 12, 12, 14, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.1, 30.3), 12.2, new Date(110,
-				00, 12, 12, 16, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.2, 30.2), 12.2, new Date(110,
-				00, 12, 12, 17, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
-		bmc.addThis(new BMeasurement(new GeoPoint(0.4, 30.3), 12.2, new Date(110,
-				00, 12, 12, 19, 29), GeoSupport.m2deg(Double.valueOf(15000d))));
-		bmc.setBearingError(3d);
-		getGenerator().addContribution(bmc);
+		rows.add(";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG");
+		rows.add(";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000");
+		rows.add(";SENSOR:	100112	121359	SENSOR	@A	0	3	52.31	S	30	0	11.09	W	1.1	15000");
+		rows.add(";SENSOR:	100112	121429	SENSOR	@A	0	3	51.7	S	30	0	16.99	W	1.4	15000");
+		rows.add(";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000");
+		rows.add(";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000");
+		rows.add(";SENSOR:	100112	121559	SENSOR	@A	0	3	51.7	S	30	0	34.99	W	2.5	15000");
+		rows.add(";SENSOR:	100112	121629	SENSOR	@A	0	3	51.7	S	30	0	40.99	W	2.9	15000");
+		rows.add(";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000");
+		rows.add(";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000");
+		rows.add(";SENSOR:	100112	121814	SENSOR	@A	0	3	51.7	S	30	1	1.99	W	4.2	15000");
+		rows.add(";SENSOR:	100112	121929	SENSOR	@A	0	3	42.55	S	30	1	10.68	W	3.7	15000");
+		rows.add(";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000");
+		rows.add(";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000");
+		rows.add(";SENSOR:	100112	122229	SENSOR	@A	0	3	3.18	S	30	1	17.62	W	-1.8	15000");
+		rows.add(";SENSOR:	100112	122329	SENSOR	@A	0	2	49.39	S	30	1	20.05	W	-4.1	15000");
+		rows.add(";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000");
+		rows.add(";SENSOR:	100112	122529	SENSOR	@A	0	2	21.82	S	30	1	24.91	W	-10.1	15000");
+		rows.add(";SENSOR:	100112	122629	SENSOR	@A	0	2	8.03	S	30	1	27.34	W	-14	15000");
+		rows.add(";SENSOR:	100112	122729	SENSOR	@A	0	1	54.24	S	30	1	29.78	W	-18.6	15000");
+		rows.add(";SENSOR:	100112	122829	SENSOR	@A	0	1	40.45	S	30	1	32.21	W	-24.2	15000");
+		rows.add(";SENSOR:	100112	122929	SENSOR	@A	0	1	26.46	S	30	1	32.28	W	-32	15000");
+		rows.add(";SENSOR:	100112	123029	SENSOR	@A	0	1	12.46	S	30	1	32.28	W	-41	15000");
+		rows.add(";SENSOR:	100112	123129	SENSOR	@A	0	1	0.29	S	30	1	36.37	W	-48.4	15000");
+		rows.add(";SENSOR:	100112	123229	SENSOR	@A	0	0	53.29	S	30	1	48.49	W	-50.6	15000");
+		rows.add(";SENSOR:	100112	123329	SENSOR	@A	0	0	46.29	S	30	2	0.61	W	-55.3	15000");
+		rows.add(";SENSOR:	100112	123429	SENSOR	@A	0	0	39.29	S	30	2	12.74	W	-62.5	15000");
+		rows.add(";SENSOR:	100112	123529	SENSOR	@A	0	0	32.29	S	30	2	24.86	W	-73	15000");
+		rows.add(";SENSOR:	100112	123629	SENSOR	@A	0	0	25.29	S	30	2	36.99	W	-88.1	15000");
+		rows.add(";SENSOR:	100112	123729	SENSOR	@A	0	0	18.29	S	30	2	49.11	W	-108	15000");
+		rows.add(";SENSOR:	100112	123829	SENSOR	@A	0	0	11.29	S	30	3	1.24	W	-129.2	15000");
+		rows.add(";SENSOR:	100112	123929	SENSOR	@A	0	0	5.39	S	30	3	13.71	W	-146.5	15000");
+		rows.add(";SENSOR:	100112	124029	SENSOR	@A	0	0	5.39	S	30	3	27.71	W	-158.7	15000");
+		rows.add(";SENSOR:	100112	124129	SENSOR	@A	0	0	5.39	S	30	3	41.71	W	-169.3	15000");
+		rows.add(";SENSOR:	100112	124229	SENSOR	@A	0	0	5.39	S	30	3	49.87	W	-172.3	15000");
+		rows.add(";SENSOR:	100112	124329	SENSOR	@A	0	0	5.39	S	30	3	57.87	W	-174.6	15000");
+		rows.add(";SENSOR:	100112	124429	SENSOR	@A	0	0	8.65	S	30	4	4.46	W	-175.1	15000");
+		rows.add(";SENSOR:	100112	124529	SENSOR	@A	0	0	16.62	S	30	4	4.73	W	-169.8	15000");
+		rows.add(";SENSOR:	100112	124629	SENSOR	@A	0	0	24.62	S	30	4	4.73	W	-164.2	15000");
+		rows.add(";SENSOR:	100112	124729	SENSOR	@A	0	0	36.96	S	30	4	4.73	W	-157.1	15000");
+		rows.add(";SENSOR:	100112	124829	SENSOR	@A	0	0	50.96	S	30	4	4.73	W	-148.6	15000");
+		rows.add(";SENSOR:	100112	124929	SENSOR	@A	0	1	4.96	S	30	4	4.73	W	-139	15000");
+		rows.add(";SENSOR:	100112	125029	SENSOR	@A	0	1	18.96	S	30	4	4.73	W	-129	15000");
+		rows.add(";SENSOR:	100112	125129	SENSOR	@A	0	1	32.96	S	30	4	4.73	W	-119	15000");
+		rows.add(";SENSOR:	100112	125229	SENSOR	@A	0	1	46.96	S	30	4	4.73	W	-109.6	15000");
+		rows.add(";SENSOR:	100112	125329	SENSOR	@A	0	2	0.96	S	30	4	4.73	W	-101.2	15000");
+		rows.add(";SENSOR:	100112	125429	SENSOR	@A	0	2	12.21	S	30	4	12.68	W	-97	15000");
+		rows.add(";SENSOR:	100112	125529	SENSOR	@A	0	2	22.94	S	30	4	21.68	W	-93.1	15000");
+		rows.add(";SENSOR:	100112	125629	SENSOR	@A	0	2	33.66	S	30	4	30.68	W	-88.8	15000");
+		rows.add(";SENSOR:	100112	125744	SENSOR	@A	0	2	49.98	S	30	4	36.93	W	-80.5	15000");
+		rows.add(";SENSOR:	100112	125829	SENSOR	@A	0	2	59.84	S	30	4	40.52	W	-75.9	15000");
+		rows.add(";SENSOR:	100112	125914	SENSOR	@A	0	3	9.71	S	30	4	44.11	W	-71.7	15000");
+		rows.add(";SENSOR:	100112	130014	SENSOR	@A	0	3	22.42	S	30	4	49.71	W	-66.6	15000");
+		rows.add(";SENSOR:	100112	130129	SENSOR	@A	0	3	35.82	S	30	5	0.96	W	-61	15000");
+		rows.add(";SENSOR:	100112	130229	SENSOR	@A	0	3	46.55	S	30	5	9.96	W	-56.5	15000");
+		rows.add(";SENSOR:	100112	130329	SENSOR	@A	0	3	57.27	S	30	5	18.95	W	-52	15000");
+		rows.add(";SENSOR:	100112	130429	SENSOR	@A	0	4	8	S	30	5	27.95	W	-47.5	15000");
+		rows.add(";SENSOR:	100112	130529	SENSOR	@A	0	4	18.72	S	30	5	36.95	W	-43.2	15000");
 
-		RangeForecastContribution rangeF = new RangeForecastContribution();
-		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
-				12, 13, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.2, 30.2), new Date(110, 00, 12,
-				12, 14, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.1, 30.3), new Date(110, 00, 12,
-				12, 15, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
-				12, 17, 29)));
-		rangeF.addThis(new ROrigin(new GeoPoint(0.3, 30.2), new Date(110, 00, 12,
-				12, 19, 29)));
-		rangeF.setMaxRange(9000);
-		rangeF.setMinRange(500);
-		rangeF.setActive(true);
-		getGenerator().addContribution(rangeF);
-
-		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setMinSpeed(12);
-		speed.setMaxSpeed(43);
-		speed.setEstimate(21);
-		speed.setActive(true);
-		getGenerator().addContribution(speed);
-
-		// hey, how about a time-bounded course constraint?
-		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(new Date("2010/Jan/12 12:14:31"));
-		course.setFinishDate(new Date("2010/Jan/12 12:18:25"));
-		course.setMinCourse(45);
-		course.setMaxCourse(81);
-		course.setEstimate(75);
-		course.setActive(true);
-		getGenerator().addContribution(course);
-
-		// hey, how about a time-bounded course constraint?
-		SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		speed2.setStartDate(new Date("2010/Jan/12 12:25:00"));
-		speed2.setFinishDate(new Date("2010/Jan/12 12:31:00"));
-		speed2.setMinSpeed(8);
-		speed2.setMaxSpeed(27);
-		speed2.setEstimate(15);
-		speed2.setActive(true);
-		getGenerator().addContribution(speed2);
-
-		LocationAnalysisContribution lac = new LocationAnalysisContribution();
-		lac.setActive(true);
-		getGenerator().addContribution(lac);
+		return rows;
 	}
 
 	public void nextTest()

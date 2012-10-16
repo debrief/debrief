@@ -37,8 +37,6 @@ public class TestHarness extends Composite
 	@UiField
 	Anchor restart;
 	@UiField
-	Anchor populateTiny;
-	@UiField
 	Anchor populateShort;
 	@UiField
 	Anchor populateLink;
@@ -63,12 +61,6 @@ public class TestHarness extends Composite
 	void clearClick(ClickEvent e)
 	{
 		_generator.clear();
-	}
-
-	@UiHandler("populate")
-	void handleClick(ClickEvent e)
-	{
-		_tester.loadTinyData();
 	}
 
 	@UiHandler("live")
@@ -100,12 +92,6 @@ public class TestHarness extends Composite
 	void populateShortClick(ClickEvent e)
 	{
 		_tester.loadSampleData(false);
-	}
-
-	@UiHandler("populateTiny")
-	void populateTinyClick(ClickEvent e)
-	{
-		_tester.loadTinyData();
 	}
 
 	@UiHandler("restart")

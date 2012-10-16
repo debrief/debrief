@@ -61,7 +61,6 @@
 			<g:HorizontalPanel width="100%" styleName="anchors-panel">
 				<g:Anchor ui:field="clear" text="Clear"></g:Anchor>
 				<g:Anchor ui:field="restart" text="Restart"></g:Anchor>
-				<g:Anchor ui:field="populateTiny" text="Tiny"></g:Anchor>
 				<g:Anchor ui:field="populateShort" text="Populate short"></g:Anchor>
 				<g:Anchor ui:field="populateLink" text="Populate"></g:Anchor>
 				<g:Anchor ui:field="step" text="Step"></g:Anchor>
