@@ -5,8 +5,9 @@
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/model"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jts4gwt-1.10.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="war/WEB-INF/lib/jts4gwt-1.10.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwtx-1.5.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-slider-bar-1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gflot-2.4.3.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

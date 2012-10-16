@@ -1,6 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" 
+	xmlns:p="urn:import:ca.nanometrics.gflot.client">
 	<ui:style>
 		.grid {
 			border-color: white;
@@ -53,8 +54,6 @@
 		}
 	</ui:style>
 	<g:HTMLPanel styleName="{style.harness-lo}">
-		<g:Label text="Spatial View" horizontalAlignment="center"
-			styleName="{style.header}"></g:Label>
-
+			<p:SimplePlot ui:field="plot" />
 	</g:HTMLPanel>
 </ui:UiBinder> 

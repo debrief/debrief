@@ -54,6 +54,7 @@ public class RootLayout extends Composite
 		testHarness.setTestSupport(testP);
 
 		genny.addBoundedStateListener(tabularStates);
+		genny.addBoundedStateListener(spatialStates);
 
 	}
 
