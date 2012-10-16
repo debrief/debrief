@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.util;
 
+import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -39,6 +40,21 @@ public class GeoSupport
 	public static void setPlotter(GeoPlotter plotter)
 	{
 		_plotter = plotter;
+	}
+	
+	public static double[][] getCoordsFor(LocationRange loc)
+	{
+		Polygon poly = loc.getPolygon();
+		Coordinate[] coords = poly.getCoordinates();
+		double[][] res = new double[coords.length][2];
+		for(int i=0;i<coords.length;i++)
+		{
+			Coordinate thisC = coords[i];
+			res[i][0] = thisC.x;
+			res[i][1] = thisC.y;
+		}
+		
+		return res;
 	}
 	
 	/** get our geometry factory
