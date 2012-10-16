@@ -19,12 +19,20 @@ public class BearingMeasurementContributionView extends BaseContributionView {
 	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
+	
+	private BaseContribution _myData;
 
 	@Override
 	public void setData(BaseContribution contribution)
 	{
-		// TODO Auto-generated method stub
-
+		_myData = contribution;
 	}
+	
+	@Override
+	protected BaseContribution getData()
+	{
+		return _myData;
+	}
+	
 
 }

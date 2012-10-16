@@ -41,6 +41,9 @@ public class CourseForecastContributionView extends BaseContributionView {
 	@UiField
 	StartFinishWidget startFinish;
 
+	// TODO: Akash. It seems a little dodgy having this attribute declared twice,
+	// both with the same name.  The compiler makes it work, but it feels dodgy.
+	// 
 	private CourseForecastContribution _myData;
 
 	public CourseForecastContributionView() {
@@ -50,6 +53,12 @@ public class CourseForecastContributionView extends BaseContributionView {
 
 	}
 
+	@Override
+	protected BaseContribution getData()
+	{
+		return _myData;
+	}
+	
 	@Override
 	public void initHandlers() {
 		// DONE: Akash - we need to respond to other UI changes aswell.

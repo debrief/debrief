@@ -18,10 +18,20 @@ public class LocationForecastContributionView extends BaseContributionView {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	@Override
-	public void setData(BaseContribution contribution) {
-		// TODO Auto-generated method stub
+	private BaseContribution _myData;
 
+	@Override
+	public void setData(BaseContribution contribution)
+	{
+		_myData = contribution;
 	}
+	
+	@Override
+	protected BaseContribution getData()
+	{
+		return _myData;
+	}
+	
+
 
 }

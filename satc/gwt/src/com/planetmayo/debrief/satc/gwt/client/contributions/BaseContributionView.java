@@ -11,16 +11,17 @@ import com.planetmayo.debrief.satc.gwt.client.ui.ContributionPanelHeader;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 
-public class BaseContributionView extends Composite implements
+abstract public class BaseContributionView extends Composite implements
 		ContributionView, PropertyChangeListener {
 
 	@UiField
 	public ContributionPanelHeader header;
-	private BaseContribution _myData;
 
 	public BaseContributionView() {
 
 	}
+	
+	abstract protected BaseContribution getData();
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
@@ -40,10 +41,9 @@ public class BaseContributionView extends Composite implements
 
 	@Override
 	public void setData(BaseContribution contribution) {
-		_myData = contribution;
 
 		// initialise the UI components
-		Object estimate = _myData.getEstimate();
+		Object estimate = getData().getEstimate();
 		header.setData(contribution.isActive(),
 				contribution.getHardConstraints(), "" + estimate,
 				contribution.getWeight());
@@ -82,14 +82,14 @@ public class BaseContributionView extends Composite implements
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
-				_myData.setActive(event.getValue());
+				getData().setActive(event.getValue());
 
 			}
 		}, new ValueChangeHandler<Integer>() {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Integer> event) {
-				_myData.setWeight(event.getValue());
+				getData().setWeight(event.getValue());
 
 			}
 		});
