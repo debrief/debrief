@@ -1,7 +1,9 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -54,7 +56,25 @@ public class LocationRange extends BaseRange<LocationRange>
 			else
 			{
 				// ok, constrain myself
-				_myArea = (Polygon) _myArea.intersection(geo);
+				Geometry intersect =  _myArea.intersection(geo);
+				
+				// is this just a geometry collection?
+				if(intersect instanceof GeometryCollection)
+				{
+					GeometryCollection gc = (GeometryCollection) intersect;
+					
+					// TODO: the intersect above isn't working as expected - see below
+					// on occasion it returns a linestring followed by a polygon. The
+					// LineString is contained inside the polygon, and shouldn't be there.
+					if(gc.getNumGeometries() == 2)
+					{
+						Geometry outer = gc.getGeometryN(1);
+						if(outer instanceof Polygon)
+							intersect = (Polygon)outer;
+					}
+				}
+				
+				_myArea = (Polygon)intersect;
 			}
 		}
 

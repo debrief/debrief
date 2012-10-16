@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.support.SupportServices;
 
 /**
  * the top level manager object that handles the generation of bounded
@@ -118,6 +119,8 @@ public class TrackGenerator implements SteppingGenerator
 		}
 		catch (IncompatibleStateException e)
 		{
+			SupportServices.INSTANCE.getLog().error("Failed applying bounds:" + theContrib.getName(), e);
+			
 			// ooh dear, suppose we should tell everybody
 			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
 			while (iter2.hasNext())
@@ -126,6 +129,17 @@ public class TrackGenerator implements SteppingGenerator
 						.next();
 				boundedStatesListener.incompatibleStatesIdentified(e);
 			}
+			
+			// clear the bounded states = they're invalid
+			_space.clear();
+			
+
+			// TODO handle the incompatible state problem, see ticket 5:
+			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
+		}
+		catch (Exception re)
+		{
+			SupportServices.INSTANCE.getLog().error("unknown error:" + theContrib.getName(), re);
 			// TODO handle the incompatible state problem, see ticket 5:
 			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
 		}

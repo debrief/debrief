@@ -76,9 +76,9 @@ public class TestSupport
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
 		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
-		course.setFinishDate(new Date("2010/Jan/12 00:18:25"));
-		course.setMinCourse(45);
-		course.setMaxCourse(81);
+		course.setFinishDate(new Date("2010/Jan/12 00:25:25"));
+		course.setMinCourse(225);
+		course.setMaxCourse(315);
 		getGenerator().addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
