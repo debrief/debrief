@@ -7,36 +7,42 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
-public class AnalysisContributionView extends BaseContributionView {
+public class AnalysisContributionView extends BaseContributionView
+{
 
 	interface AnalysisContributionViewUiBinder extends
-			UiBinder<Widget, AnalysisContributionView> {
+			UiBinder<Widget, AnalysisContributionView>
+	{
 	}
 
 	private static AnalysisContributionViewUiBinder uiBinder = GWT
 			.create(AnalysisContributionViewUiBinder.class);
 
-	public AnalysisContributionView() {
+	private BaseContribution _myData;
+
+	public AnalysisContributionView()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 		initHandlers();
 	}
 
-	private BaseContribution _myData;
-
 	@Override
-	protected BaseContribution getData() {
+	protected BaseContribution getData()
+	{
 		return _myData;
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
-		super.setData(contribution);
-		_myData = contribution;
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
+		super.propertyChange(arg0);
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
-		super.propertyChange(arg0);
+	public void setData(BaseContribution contribution)
+	{
+		super.setData(contribution);
+		_myData = contribution;
 	}
 
 }

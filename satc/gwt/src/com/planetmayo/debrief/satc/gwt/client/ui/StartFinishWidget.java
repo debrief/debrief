@@ -39,15 +39,23 @@ public class StartFinishWidget extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
+	public void addValueChangeHandler(
+			ValueChangeHandler<Date> startValueChangeHandler,
+			ValueChangeHandler<Date> finishValueChangeHandler)
+	{
+		startDateBox.addValueChangeHandler(startValueChangeHandler);
+		finishDateBox.addValueChangeHandler(finishValueChangeHandler);
+	}
+
 	@SuppressWarnings("deprecation")
 	public void setData(Date startDate, Date finishDate)
 	{
 		startDateBox.setValue(startDate);
 		finishDateBox.setValue(finishDate);
-		if(startDate!=null)
-		startDateLabel.setText(startDate.toGMTString());
-		if(finishDate!=null)
-		finishDateLabel.setText(finishDate.toGMTString());
+		if (startDate != null)
+			startDateLabel.setText(startDate.toGMTString());
+		if (finishDate != null)
+			finishDateLabel.setText(finishDate.toGMTString());
 	}
 
 	public void setFinishData(Date finishDate)
@@ -76,11 +84,6 @@ public class StartFinishWidget extends Composite
 	public void setStartData(Date startDate)
 	{
 		startDateBox.setValue(startDate);
-	}
-
-	public void addValueChangeHandler(ValueChangeHandler<Date> startValueChangeHandler, ValueChangeHandler<Date> finishValueChangeHandler) {
-		startDateBox.addValueChangeHandler(startValueChangeHandler);
-		finishDateBox.addValueChangeHandler(finishValueChangeHandler);
 	}
 
 }

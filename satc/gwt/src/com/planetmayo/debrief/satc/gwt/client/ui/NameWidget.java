@@ -30,6 +30,11 @@ public class NameWidget extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
+	public void addValueChangeHandler(ValueChangeHandler<String> handler)
+	{
+		box.addValueChangeHandler(handler);
+	}
+
 	public void setData(String name)
 	{
 		box.setText(name);
@@ -39,11 +44,6 @@ public class NameWidget extends Composite
 	public void setText(String value)
 	{
 		text.setText(value);
-	}
-	
-	public void addValueChangeHandler(ValueChangeHandler<String> handler)
-	{
-		box.addValueChangeHandler(handler);
 	}
 
 }

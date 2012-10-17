@@ -26,6 +26,30 @@ abstract public class BaseContributionView extends Composite implements
 	abstract protected BaseContribution getData();
 
 	@Override
+	public void initHandlers()
+	{
+		header.setHandlers(new ValueChangeHandler<Boolean>()
+		{
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event)
+			{
+				getData().setActive(event.getValue());
+
+			}
+		}, new ValueChangeHandler<Integer>()
+		{
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Integer> event)
+			{
+				getData().setWeight(event.getValue());
+
+			}
+		});
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 
@@ -76,30 +100,6 @@ abstract public class BaseContributionView extends Composite implements
 
 		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
 				this);
-	}
-
-	@Override
-	public void initHandlers()
-	{
-		header.setHandlers(new ValueChangeHandler<Boolean>()
-		{
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event)
-			{
-				getData().setActive(event.getValue());
-
-			}
-		}, new ValueChangeHandler<Integer>()
-		{
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Integer> event)
-			{
-				getData().setWeight(event.getValue());
-
-			}
-		});
 	}
 
 }

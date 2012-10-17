@@ -65,7 +65,7 @@ public class TestHarness extends Composite
 
 	@UiHandler("live")
 	void liveClick(ClickEvent e)
-	{		
+	{
 		_generator.setLiveRunning(live.getText().equals("Live-"));
 		updateLiveLabel();
 	}
@@ -106,14 +106,6 @@ public class TestHarness extends Composite
 		updateLiveLabel();
 	}
 
-	private void updateLiveLabel()
-	{
-		if(_generator.isLiveEnabled())
-			live.setText("Live+");
-		else
-			live.setText("Live-");
-	}
-
 	public void setTestSupport(TestSupport testP)
 	{
 		_tester = testP;
@@ -123,6 +115,14 @@ public class TestHarness extends Composite
 	void stepClick(ClickEvent e)
 	{
 		_generator.step();
+	}
+
+	private void updateLiveLabel()
+	{
+		if (_generator.isLiveEnabled())
+			live.setText("Live+");
+		else
+			live.setText("Live-");
 	}
 
 }

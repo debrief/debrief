@@ -17,24 +17,22 @@ import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 
-public class LocationForecastContributionView extends BaseContributionView {
+public class LocationForecastContributionView extends BaseContributionView
+{
 
 	interface LocationForecastContributionViewUiBinder extends
-			UiBinder<Widget, LocationForecastContributionView> {
+			UiBinder<Widget, LocationForecastContributionView>
+	{
 	}
 
 	private static LocationForecastContributionViewUiBinder uiBinder = GWT
 			.create(LocationForecastContributionViewUiBinder.class);
 
-	public LocationForecastContributionView() {
-		initWidget(uiBinder.createAndBindUi(this));
-		initHandlers();
-	}
-
 	private LocationForecastContribution _myData;
 
 	@UiField
 	Slider2BarWidget limit;
+
 	@UiField
 	StartFinishWidget startFinish;
 	@UiField
@@ -42,79 +40,57 @@ public class LocationForecastContributionView extends BaseContributionView {
 	@UiField
 	NameWidget estimate;
 
-	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
-		super.propertyChange(arg0);
-		final String attr = arg0.getPropertyName();
-		if (attr.equals(BaseContribution.NAME))
-			name.setData((String) arg0.getNewValue());
-		else if (attr.equals(LocationForecastContribution.LIMIT))
-			limit.setData((Integer) arg0.getNewValue());
-		else if (attr.equals(BaseContribution.START_DATE))
-			startFinish.setStartData((Date) arg0.getNewValue());
-		else if (attr.equals(BaseContribution.FINISH_DATE))
-			startFinish.setFinishData((Date) arg0.getNewValue());
-		if (attr.equals(BaseContribution.ESTIMATE))
-			estimate.setData((String) arg0.getNewValue());
-
+	public LocationForecastContributionView()
+	{
+		initWidget(uiBinder.createAndBindUi(this));
+		initHandlers();
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
-
-		super.setData(contribution);
-
-		// and store the type-casted contribution
-		_myData = (LocationForecastContribution) contribution;
-
-		// property changes
-		// initialise the UI components
-		limit.setData((int) _myData.getLimit());
-		name.setData(contribution.getName());
-		startFinish.setData(contribution.getStartDate(),
-				contribution.getFinishDate());
-		estimate.setData(_myData.getEstimate().toString());
-
-		contribution.addPropertyChangeListener(
-				LocationForecastContribution.LIMIT, this);
-
-	}
-
-	@Override
-	protected BaseContribution getData() {
+	protected BaseContribution getData()
+	{
 		return _myData;
 	}
 
 	@Override
-	public void initHandlers() {
+	public void initHandlers()
+	{
 		super.initHandlers();
 
-		limit.addBarValueChangedHandler(new BarValueChangedHandler() {
+		limit.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setLimit(event.getValue());
 			}
 		});
-		name.addValueChangeHandler(new ValueChangeHandler<String>() {
+		name.addValueChangeHandler(new ValueChangeHandler<String>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
+			public void onValueChange(ValueChangeEvent<String> event)
+			{
 				_myData.setName(event.getValue());
 
 			}
 		});
 
-		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
+			public void onValueChange(ValueChangeEvent<Date> event)
+			{
 				_myData.setStartDate(event.getValue());
 
 			}
-		}, new ValueChangeHandler<Date>() {
+		}, new ValueChangeHandler<Date>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
+			public void onValueChange(ValueChangeEvent<Date> event)
+			{
 				_myData.setFinishDate(event.getValue());
 
 			}
@@ -131,6 +107,46 @@ public class LocationForecastContributionView extends BaseContributionView {
 		 * 
 		 * } });
 		 */
+
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
+		super.propertyChange(arg0);
+		final String attr = arg0.getPropertyName();
+		if (attr.equals(BaseContribution.NAME))
+			name.setData((String) arg0.getNewValue());
+		else if (attr.equals(LocationForecastContribution.LIMIT))
+			limit.setData((Integer) arg0.getNewValue());
+		else if (attr.equals(BaseContribution.START_DATE))
+			startFinish.setStartData((Date) arg0.getNewValue());
+		else if (attr.equals(BaseContribution.FINISH_DATE))
+			startFinish.setFinishData((Date) arg0.getNewValue());
+		if (attr.equals(BaseContribution.ESTIMATE))
+			estimate.setData((String) arg0.getNewValue());
+
+	}
+
+	@Override
+	public void setData(BaseContribution contribution)
+	{
+
+		super.setData(contribution);
+
+		// and store the type-casted contribution
+		_myData = (LocationForecastContribution) contribution;
+
+		// property changes
+		// initialise the UI components
+		limit.setData(_myData.getLimit());
+		name.setData(contribution.getName());
+		startFinish.setData(contribution.getStartDate(),
+				contribution.getFinishDate());
+		estimate.setData(_myData.getEstimate().toString());
+
+		contribution.addPropertyChangeListener(LocationForecastContribution.LIMIT,
+				this);
 
 	}
 

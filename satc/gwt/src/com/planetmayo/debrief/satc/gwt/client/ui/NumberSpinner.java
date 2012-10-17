@@ -79,6 +79,12 @@ public class NumberSpinner extends Composite
 
 	}
 
+	public void addValueChangeHandler(ValueChangeHandler<Integer> handler)
+	{
+		integerBox.addValueChangeHandler(handler);
+
+	}
+
 	/**
 	 * Returns the value being held.
 	 * 
@@ -108,10 +114,5 @@ public class NumberSpinner extends Composite
 	public void setValue(int value)
 	{
 		integerBox.setValue(value);
-	}
-	
-	public void addValueChangeHandler(ValueChangeHandler<Integer> handler) {
-		integerBox.addValueChangeHandler(handler);
-
 	}
 }

@@ -32,12 +32,12 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 public class SpatialView extends Composite implements BoundedStatesListener
 {
 
-	@UiField(provided = true)
-	SimplePlot plot = new SimplePlot(new PlotModel(), new PlotOptions());
-
 	interface SpatialViewUiBinder extends UiBinder<Widget, SpatialView>
 	{
 	}
+
+	@UiField(provided = true)
+	SimplePlot plot = new SimplePlot(new PlotModel(), new PlotOptions());
 
 	private static SpatialViewUiBinder uiBinder = GWT
 			.create(SpatialViewUiBinder.class);
@@ -75,8 +75,21 @@ public class SpatialView extends Composite implements BoundedStatesListener
 
 	}
 
+	private void clearPlot()
+	{
+		plot.getModel().removeAllSeries();
+	}
+
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void incompatibleStatesIdentified(BaseContribution contribution,
+			IncompatibleStateException e)
 	{
 		// TODO Auto-generated method stub
 
@@ -95,7 +108,7 @@ public class SpatialView extends Composite implements BoundedStatesListener
 		Iterator<BoundedState> iter = newStates.iterator();
 		while (iter.hasNext())
 		{
-			BoundedState boundedState = (BoundedState) iter.next();
+			BoundedState boundedState = iter.next();
 			LocationRange loc = boundedState.getLocation();
 			if (loc != null)
 			{
@@ -114,18 +127,6 @@ public class SpatialView extends Composite implements BoundedStatesListener
 		}
 
 		plot.redraw();
-	}
-
-	private void clearPlot()
-	{
-		plot.getModel().removeAllSeries();
-	}
-
-	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
-	{
-		// TODO Auto-generated method stub
-
 	}
 
 }

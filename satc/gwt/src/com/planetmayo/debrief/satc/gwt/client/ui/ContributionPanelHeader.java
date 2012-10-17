@@ -85,6 +85,13 @@ public class ContributionPanelHeader extends Composite
 
 	}
 
+	public void setHandlers(ValueChangeHandler<Boolean> activeValueChangeHandler,
+			ValueChangeHandler<Integer> weightingValueChangeHandler)
+	{
+		active.addValueChangeHandler(activeValueChangeHandler);
+		weighting.addValueChangeHandler(weightingValueChangeHandler);
+	}
+
 	public void setHardConstraints(String value)
 	{
 		hardConstraints.setText(value);
@@ -105,10 +112,5 @@ public class ContributionPanelHeader extends Composite
 	public void setWeighting(int value)
 	{
 		weighting.setValue(value);
-	}
-
-	public void setHandlers(ValueChangeHandler<Boolean> activeValueChangeHandler, ValueChangeHandler<Integer> weightingValueChangeHandler) {
-		active.addValueChangeHandler(activeValueChangeHandler);
-		weighting.addValueChangeHandler(weightingValueChangeHandler);
 	}
 }

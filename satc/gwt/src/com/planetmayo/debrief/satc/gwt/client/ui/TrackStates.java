@@ -52,7 +52,7 @@ public class TrackStates extends Composite implements BoundedStatesListener
 	{
 		while (grid.getRowCount() > 1)
 			grid.removeRow(1);
-		
+
 		// TODO: Akash, check the warning label is hidden
 	}
 
@@ -63,14 +63,18 @@ public class TrackStates extends Composite implements BoundedStatesListener
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
+	public void incompatibleStatesIdentified(BaseContribution contribution,
+			IncompatibleStateException e)
 	{
-		String message1 = "Incompatible States. Contribution: " + contribution.toString() ;
-		String message2 = "Adding:" + e.getNewRange().getConstraintSummary() + " to " + e.getExistingRange().getConstraintSummary();
+		String message1 = "Incompatible States. Contribution: "
+				+ contribution.toString();
+		String message2 = "Adding:" + e.getNewRange().getConstraintSummary()
+				+ " to " + e.getExistingRange().getConstraintSummary();
 		System.err.println(message1);
 		System.err.println(message2);
-		
-		// TODO: Akash, make the label visible, put the text into it.  It may need a multi-line message
+
+		// TODO: Akash, make the label visible, put the text into it. It may need a
+		// multi-line message
 	}
 
 	@Override

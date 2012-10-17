@@ -17,10 +17,12 @@ import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 
-public class CourseForecastContributionView extends BaseContributionView {
+public class CourseForecastContributionView extends BaseContributionView
+{
 
 	interface CourseForecastContributionViewUiBinder extends
-			UiBinder<Widget, CourseForecastContributionView> {
+			UiBinder<Widget, CourseForecastContributionView>
+	{
 	}
 
 	private static CourseForecastContributionViewUiBinder uiBinder = GWT
@@ -43,7 +45,8 @@ public class CourseForecastContributionView extends BaseContributionView {
 
 	private CourseForecastContribution _myData;
 
-	public CourseForecastContributionView() {
+	public CourseForecastContributionView()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 
 		initHandlers();
@@ -55,55 +58,68 @@ public class CourseForecastContributionView extends BaseContributionView {
 	{
 		return _myData;
 	}
-	
+
 	@Override
-	public void initHandlers() {
+	public void initHandlers()
+	{
 		// DONE: Akash - we need to respond to other UI changes aswell.
 		// respond to the UI
 
 		// ADDED BY AKASH - Component specific handlers are here.
 		super.initHandlers();
 
-		max.addBarValueChangedHandler(new BarValueChangedHandler() {
+		max.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setMaxCourse(event.getValue());
 			}
 		});
 
-		min.addBarValueChangedHandler(new BarValueChangedHandler() {
+		min.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setMinCourse(event.getValue());
 			}
 		});
 
-		estimate.addBarValueChangedHandler(new BarValueChangedHandler() {
+		estimate.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setEstimate(event.getValue());
 			}
 		});
-		name.addValueChangeHandler(new ValueChangeHandler<String>() {
+		name.addValueChangeHandler(new ValueChangeHandler<String>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
+			public void onValueChange(ValueChangeEvent<String> event)
+			{
 				_myData.setName(event.getValue());
 
 			}
 		});
 
-		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
+			public void onValueChange(ValueChangeEvent<Date> event)
+			{
 				_myData.setStartDate(event.getValue());
 
 			}
-		}, new ValueChangeHandler<Date>() {
+		}, new ValueChangeHandler<Date>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
+			public void onValueChange(ValueChangeEvent<Date> event)
+			{
 				_myData.setFinishDate(event.getValue());
 
 			}
@@ -117,7 +133,8 @@ public class CourseForecastContributionView extends BaseContributionView {
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
 		super.propertyChange(arg0);
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(CourseForecastContribution.MIN_COURSE))
@@ -136,7 +153,8 @@ public class CourseForecastContributionView extends BaseContributionView {
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
+	public void setData(BaseContribution contribution)
+	{
 
 		// let the parent register with the contribution
 		super.setData(contribution);
@@ -148,7 +166,7 @@ public class CourseForecastContributionView extends BaseContributionView {
 		// initialise the UI components
 		min.setData(_myData.getMinCourse());
 		max.setData(_myData.getMaxCourse());
-		estimate.setData((Integer) _myData.getEstimate());
+		estimate.setData(_myData.getEstimate());
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());

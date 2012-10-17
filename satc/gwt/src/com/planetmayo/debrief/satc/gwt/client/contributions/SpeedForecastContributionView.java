@@ -17,19 +17,16 @@ import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 
-public class SpeedForecastContributionView extends BaseContributionView {
+public class SpeedForecastContributionView extends BaseContributionView
+{
 
 	interface SpeedForecastContributionViewUiBinder extends
-			UiBinder<Widget, SpeedForecastContributionView> {
+			UiBinder<Widget, SpeedForecastContributionView>
+	{
 	}
 
 	private static SpeedForecastContributionViewUiBinder uiBinder = GWT
 			.create(SpeedForecastContributionViewUiBinder.class);
-
-	public SpeedForecastContributionView() {
-		initWidget(uiBinder.createAndBindUi(this));
-		initHandlers();
-	}
 
 	@UiField
 	Slider2BarWidget min;
@@ -48,54 +45,79 @@ public class SpeedForecastContributionView extends BaseContributionView {
 
 	private SpeedForecastContribution _myData;
 
+	public SpeedForecastContributionView()
+	{
+		initWidget(uiBinder.createAndBindUi(this));
+		initHandlers();
+	}
+
 	@Override
-	public void initHandlers() {
+	protected BaseContribution getData()
+	{
+		return _myData;
+	}
+
+	@Override
+	public void initHandlers()
+	{
 		// DONE: Akash - we need to respond to other UI changes aswell.
 		// respond to the UI
 
 		// ADDED BY AKASH - Component specific handlers are here.
 		super.initHandlers();
 
-		max.addBarValueChangedHandler(new BarValueChangedHandler() {
+		max.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setMaxSpeed(event.getValue());
 			}
 		});
 
-		min.addBarValueChangedHandler(new BarValueChangedHandler() {
+		min.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setMinSpeed(event.getValue());
 			}
 		});
 
-		estimate.addBarValueChangedHandler(new BarValueChangedHandler() {
+		estimate.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
 			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
 				_myData.setEstimate(event.getValue());
 			}
 		});
-		name.addValueChangeHandler(new ValueChangeHandler<String>() {
+		name.addValueChangeHandler(new ValueChangeHandler<String>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
+			public void onValueChange(ValueChangeEvent<String> event)
+			{
 				_myData.setName(event.getValue());
 
 			}
 		});
 
-		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>() {
+		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
+			public void onValueChange(ValueChangeEvent<Date> event)
+			{
 				_myData.setStartDate(event.getValue());
 
 			}
-		}, new ValueChangeHandler<Date>() {
+		}, new ValueChangeHandler<Date>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
+			public void onValueChange(ValueChangeEvent<Date> event)
+			{
 				_myData.setFinishDate(event.getValue());
 
 			}
@@ -109,7 +131,8 @@ public class SpeedForecastContributionView extends BaseContributionView {
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
 		super.propertyChange(arg0);
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(SpeedForecastContribution.MIN_SPEED))
@@ -117,7 +140,7 @@ public class SpeedForecastContributionView extends BaseContributionView {
 		else if (attr.equals(SpeedForecastContribution.MAX_SPEED))
 			max.setData((Integer) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.ESTIMATE))
-			estimate.setData((int)Math.round((Double) arg0.getNewValue()));
+			estimate.setData((int) Math.round((Double) arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.START_DATE))
@@ -128,7 +151,8 @@ public class SpeedForecastContributionView extends BaseContributionView {
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
+	public void setData(BaseContribution contribution)
+	{
 
 		// let the parent register with the contribution
 		super.setData(contribution);
@@ -140,15 +164,10 @@ public class SpeedForecastContributionView extends BaseContributionView {
 		// initialise the UI components
 		min.setData((int) _myData.getMinSpeed());
 		max.setData((int) _myData.getMaxSpeed());
-		estimate.setData((int)Math.round(_myData.getEstimate()));
+		estimate.setData((int) Math.round(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
-	}
-
-	@Override
-	protected BaseContribution getData() {
-		return _myData;
 	}
 
 }

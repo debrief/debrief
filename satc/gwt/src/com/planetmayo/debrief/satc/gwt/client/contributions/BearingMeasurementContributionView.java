@@ -16,31 +16,67 @@ import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 
-public class BearingMeasurementContributionView extends BaseContributionView {
+public class BearingMeasurementContributionView extends BaseContributionView
+{
 
 	interface BearingMeasurementContributionViewUiBinder extends
-			UiBinder<Widget, BearingMeasurementContributionView> {
+			UiBinder<Widget, BearingMeasurementContributionView>
+	{
 	}
 
 	private static BearingMeasurementContributionViewUiBinder uiBinder = GWT
 			.create(BearingMeasurementContributionViewUiBinder.class);
 
-	public BearingMeasurementContributionView() {
-		initWidget(uiBinder.createAndBindUi(this));
-		initHandlers();
-	}
-
 	@UiField
 	Slider2BarWidget bearing;
+
 	@UiField
 	StartFinishWidget startFinish;
 	@UiField
 	NameWidget name;
-
 	private BearingMeasurementContribution _myData;
 
+	public BearingMeasurementContributionView()
+	{
+		initWidget(uiBinder.createAndBindUi(this));
+		initHandlers();
+	}
+
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
+	protected BaseContribution getData()
+	{
+		return _myData;
+	}
+
+	@Override
+	public void initHandlers()
+	{
+		super.initHandlers();
+
+		bearing.addBarValueChangedHandler(new BarValueChangedHandler()
+		{
+			@Override
+			public void onBarValueChanged(BarValueChangedEvent event)
+			{
+				_myData.setBearingError(event.getValue());
+			}
+		});
+		name.addValueChangeHandler(new ValueChangeHandler<String>()
+		{
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event)
+			{
+				_myData.setName(event.getValue());
+
+			}
+		});
+
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
 		super.propertyChange(arg0);
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(BaseContribution.NAME))
@@ -51,7 +87,8 @@ public class BearingMeasurementContributionView extends BaseContributionView {
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
+	public void setData(BaseContribution contribution)
+	{
 
 		super.setData(contribution);
 
@@ -67,32 +104,6 @@ public class BearingMeasurementContributionView extends BaseContributionView {
 
 		contribution.addPropertyChangeListener(
 				BearingMeasurementContribution.BEARING_ERROR, this);
-	}
-
-	@Override
-	protected BaseContribution getData() {
-		return _myData;
-	}
-
-	@Override
-	public void initHandlers() {
-		super.initHandlers();
-
-		bearing.addBarValueChangedHandler(new BarValueChangedHandler() {
-			@Override
-			public void onBarValueChanged(BarValueChangedEvent event) {
-				_myData.setBearingError(event.getValue());
-			}
-		});
-		name.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				_myData.setName(event.getValue());
-
-			}
-		});
-
 	}
 
 }
