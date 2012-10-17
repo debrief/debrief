@@ -34,13 +34,6 @@ public class MaintainContributions
 		public void populateContributionList(ArrayList<String> items);
 
 		/**
-		 * populate the list of vehicle types
-		 * 
-		 * @param vehicles
-		 */
-		public void populateVehicleTypesList(List<VehicleType> vehicles);
-
-		/**
 		 * populate the list of precisions
 		 * 
 		 * @param vehicles
@@ -48,11 +41,11 @@ public class MaintainContributions
 		public void populatePrecisionsList(Precision[] precisions);
 
 		/**
-		 * allow us to listen to user asking to remove a contribution
+		 * populate the list of vehicle types
 		 * 
-		 * @param listener
+		 * @param vehicles
 		 */
-		public void setRemoveContributionListener(PropertyChangeListener listener);
+		public void populateVehicleTypesList(List<VehicleType> vehicles);
 
 		/**
 		 * allow us to listen to user asking to remove a contribution
@@ -66,14 +59,21 @@ public class MaintainContributions
 		 * 
 		 * @param listener
 		 */
-		public void setVehicleChangeListener(PropertyChangeListener listener);
+		public void setPrecisionChangeListener(PropertyChangeListener listener);
 
 		/**
 		 * allow us to listen to user asking to remove a contribution
 		 * 
 		 * @param listener
 		 */
-		public void setPrecisionChangeListener(PropertyChangeListener listener);
+		public void setRemoveContributionListener(PropertyChangeListener listener);
+
+		/**
+		 * allow us to listen to user asking to remove a contribution
+		 * 
+		 * @param listener
+		 */
+		public void setVehicleChangeListener(PropertyChangeListener listener);
 
 	}
 
@@ -140,9 +140,24 @@ public class MaintainContributions
 
 	}
 
-	private com.planetmayo.debrief.satc.model.Precision[] getPrecisions()
+	private void addContribution(final String thisCont)
 	{
-		return Precision.values();
+		// ok, what type is it?
+		if (thisCont.equals("Course Forecast"))
+			_genny.addContribution(new CourseForecastContribution());
+		else if (thisCont.equals("Speed Forecast"))
+			_genny.addContribution(new SpeedForecastContribution());
+		else if (thisCont.equals("Location Forecast"))
+			_genny.addContribution(new LocationForecastContribution());
+		else if (thisCont.equals("Range Forecast"))
+			_genny.addContribution(new RangeForecastContribution());
+		else if (thisCont.equals("Bearing Measurement"))
+			_genny.addContribution(new BearingMeasurementContribution());
+		else if (thisCont.equals("Location Analysis"))
+			_genny.addContribution(new LocationAnalysisContribution());
+		else
+			SupportServices.INSTANCE.getLog().info(
+					"Could not find contribution for:" + thisCont);
 	}
 
 	private ArrayList<String> getContributions()
@@ -167,23 +182,8 @@ public class MaintainContributions
 		return _genny;
 	}
 
-	private void addContribution(final String thisCont)
+	private com.planetmayo.debrief.satc.model.Precision[] getPrecisions()
 	{
-		// ok, what type is it?
-		if (thisCont.equals("Course Forecast"))
-			_genny.addContribution(new CourseForecastContribution());
-		else if (thisCont.equals("Speed Forecast"))
-			_genny.addContribution(new SpeedForecastContribution());
-		else if (thisCont.equals("Location Forecast"))
-			_genny.addContribution(new LocationForecastContribution());
-		else if (thisCont.equals("Range Forecast"))
-			_genny.addContribution(new RangeForecastContribution());
-		else if (thisCont.equals("Bearing Measurement"))
-			_genny.addContribution(new BearingMeasurementContribution());
-		else if (thisCont.equals("Location Analysis"))
-			_genny.addContribution(new LocationAnalysisContribution());
-		else
-			SupportServices.INSTANCE.getLog().info(
-					"Could not find contribution for:" + thisCont);
+		return Precision.values();
 	}
 }

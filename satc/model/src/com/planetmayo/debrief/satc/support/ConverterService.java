@@ -5,7 +5,7 @@ import java.util.Date;
 public interface ConverterService
 {
 
-	 Date parseDate(String pattern, String text);
-	 
-	 String formatDate(String pattern, Date date);
+	String formatDate(String pattern, Date date);
+
+	Date parseDate(String pattern, String text);
 }

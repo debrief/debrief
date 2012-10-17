@@ -57,12 +57,12 @@ public class LocationForecastContribution extends BaseContribution
 	{
 		return _estimate;
 	}
-	
+
+	@Override
 	public String getEstimateStr()
 	{
 		return _estimate.toString();
 	}
-
 
 	@Override
 	public String getHardConstraints()

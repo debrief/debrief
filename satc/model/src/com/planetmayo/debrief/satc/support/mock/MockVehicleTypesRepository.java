@@ -3,7 +3,6 @@ package com.planetmayo.debrief.satc.support.mock;
 import java.util.Arrays;
 import java.util.List;
 
-
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 

@@ -40,6 +40,39 @@ public class ProblemSpace
 			_boundedStates.add(newState);
 	}
 
+	/**
+	 * forget our set of bounded states
+	 * 
+	 */
+	public void clear()
+	{
+		_boundedStates.clear();
+	}
+
+	/**
+	 * return the bounded state at this time (or null)
+	 * 
+	 * @param theTime
+	 *          the time we're searching for
+	 * @return
+	 */
+	public BoundedState getBoundedStateAt(Date theTime)
+	{
+		BoundedState res = null;
+		Iterator<BoundedState> iter = _boundedStates.iterator();
+		while (iter.hasNext())
+		{
+			BoundedState boundedState = iter.next();
+			if (boundedState.getTime().equals(theTime))
+			{
+				res = boundedState;
+				break;
+			}
+		}
+
+		return res;
+	}
+
 	protected Date getFinishDate()
 	{
 		Date res = null;
@@ -62,6 +95,11 @@ public class ProblemSpace
 		return res;
 	}
 
+	public int size()
+	{
+		return _boundedStates.size();
+	}
+
 	/**
 	 * iterator through the set of bounded states
 	 * 
@@ -70,42 +108,6 @@ public class ProblemSpace
 	public Collection<BoundedState> states()
 	{
 		return _boundedStates;
-	}
-
-	public int size()
-	{
-		return _boundedStates.size();
-	}
-
-	/**
-	 * return the bounded state at this time (or null)
-	 * 
-	 * @param theTime the time we're searching for
-	 * @return
-	 */
-	public BoundedState getBoundedStateAt(Date theTime)
-	{
-		BoundedState res = null;
-		Iterator<BoundedState> iter = _boundedStates.iterator();
-		while (iter.hasNext())
-		{
-			BoundedState boundedState = (BoundedState) iter.next();
-			if (boundedState.getTime().equals(theTime))
-			{
-				res = boundedState;
-				break;
-			}
-		}
-
-		return res;
-	}
-
-	/** forget our set of bounded states
-	 * 
-	 */
-	public void clear()
-	{
-		_boundedStates.clear();
 	}
 
 }

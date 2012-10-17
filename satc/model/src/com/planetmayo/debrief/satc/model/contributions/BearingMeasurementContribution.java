@@ -196,18 +196,16 @@ public class BearingMeasurementContribution extends BaseContribution
 		return ContributionDataType.MEASUREMENT;
 	}
 
+	public Object getEstimate()
+	{
+		return null;
+	}
+
 	@Override
 	public String getHardConstraints()
 	{
 		return "" + _measurements.size() + " measurements " + (int) _degError
 				+ " Margin";
-	}
-	
-	
-
-	public Object getEstimate()
-	{
-		return null;
 	}
 
 	/**

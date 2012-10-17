@@ -109,6 +109,11 @@ public class LocationAnalysisContribution extends BaseContribution
 		return ContributionDataType.ANALYSIS;
 	}
 
+	public Object getEstimate()
+	{
+		return null;
+	}
+
 	@Override
 	public String getHardConstraints()
 	{
@@ -126,13 +131,6 @@ public class LocationAnalysisContribution extends BaseContribution
 		return res;
 	}
 
-
-	public Object getEstimate()
-	{
-		return null;
-	}
-	
-	
 	public LocationRange getRangeFor(BoundedState state, Date newDate)
 	{
 		LinearRing res = null;

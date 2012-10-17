@@ -18,103 +18,9 @@ public class TestSupport
 
 	private TrackGenerator _genny;
 
-	public void setGenerator(TrackGenerator genny)
-	{
-		_genny = genny;
-	}
-
 	private TrackGenerator getGenerator()
 	{
 		return _genny;
-	}
-
-	@SuppressWarnings("deprecation")
-	public void loadSampleData(boolean useLong)
-	{
-		// TODO: replace this with deserializing an existing SteppingGenerator, once
-		// we have a strategy:
-		// https://bitbucket.org/ianmayo/deb_satc/issue/10
-
-		// clear the geneartor first
-		getGenerator().contributions().clear();
-
-		// now load some data
-		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-		RangeForecastContribution rangeF = new RangeForecastContribution();
-		ArrayList<String> rows;
-		if (useLong)
-			rows = getLongData();
-		// thePath = BearingMeasurementContributionTest.THE_PATH;
-		else
-			rows = getShortData();
-		// thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
-
-		try
-		{
-			// populate the bearing data
-			bmc.loadFrom(rows);
-			getGenerator().addContribution(bmc);
-
-			// and populate the range data
-			rangeF.loadFrom(rows);
-			getGenerator().addContribution(rangeF);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setMinSpeed(12);
-		speed.setMaxSpeed(43);
-		getGenerator().addContribution(speed);
-
-		// hey, how about a time-bounded course constraint?
-		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
-		course.setFinishDate(new Date("2010/Jan/12 00:25:25"));
-		course.setMinCourse(225);
-		course.setMaxCourse(315);
-		getGenerator().addContribution(course);
-
-		// hey, how about a time-bounded course constraint?
-		SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
-		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
-		speed2.setMinSpeed(8);
-		speed2.setMaxSpeed(27);
-		getGenerator().addContribution(speed2);
-
-		LocationAnalysisContribution lac = new LocationAnalysisContribution();
-		getGenerator().addContribution(lac);
-	}
-
-	private ArrayList<String> getShortData()
-	{
-		// declare the input strings
-		final String data1 = ";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG";
-		final String data2 = ";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000";
-		final String data3 = ";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000";
-		final String data4 = ";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000";
-		final String data5 = ";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000";
-		final String data6 = ";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000";
-		final String data7 = ";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000";
-		final String data8 = ";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000";
-		final String data9 = ";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000";
-
-		// and put them into an array list
-		final ArrayList<String> rows = new ArrayList<String>();
-		rows.add(data1);
-		rows.add(data2);
-		rows.add(data3);
-		rows.add(data4);
-		rows.add(data5);
-		rows.add(data6);
-		rows.add(data7);
-		rows.add(data8);
-		rows.add(data9);
-		
-		return rows;
 	}
 
 	private ArrayList<String> getLongData()
@@ -183,6 +89,95 @@ public class TestSupport
 		return rows;
 	}
 
+	private ArrayList<String> getShortData()
+	{
+		// declare the input strings
+		final String data1 = ";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG";
+		final String data2 = ";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000";
+		final String data3 = ";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000";
+		final String data4 = ";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000";
+		final String data5 = ";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000";
+		final String data6 = ";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000";
+		final String data7 = ";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000";
+		final String data8 = ";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000";
+		final String data9 = ";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000";
+
+		// and put them into an array list
+		final ArrayList<String> rows = new ArrayList<String>();
+		rows.add(data1);
+		rows.add(data2);
+		rows.add(data3);
+		rows.add(data4);
+		rows.add(data5);
+		rows.add(data6);
+		rows.add(data7);
+		rows.add(data8);
+		rows.add(data9);
+
+		return rows;
+	}
+
+	@SuppressWarnings("deprecation")
+	public void loadSampleData(boolean useLong)
+	{
+		// TODO: replace this with deserializing an existing SteppingGenerator, once
+		// we have a strategy:
+		// https://bitbucket.org/ianmayo/deb_satc/issue/10
+
+		// clear the geneartor first
+		getGenerator().contributions().clear();
+
+		// now load some data
+		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		RangeForecastContribution rangeF = new RangeForecastContribution();
+		ArrayList<String> rows;
+		if (useLong)
+			rows = getLongData();
+		// thePath = BearingMeasurementContributionTest.THE_PATH;
+		else
+			rows = getShortData();
+		// thePath = BearingMeasurementContributionTest.THE_SHORT_PATH;
+
+		try
+		{
+			// populate the bearing data
+			bmc.loadFrom(rows);
+			getGenerator().addContribution(bmc);
+
+			// and populate the range data
+			rangeF.loadFrom(rows);
+			getGenerator().addContribution(rangeF);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		SpeedForecastContribution speed = new SpeedForecastContribution();
+		speed.setMinSpeed(12);
+		speed.setMaxSpeed(43);
+		getGenerator().addContribution(speed);
+
+		// hey, how about a time-bounded course constraint?
+		CourseForecastContribution course = new CourseForecastContribution();
+		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
+		course.setFinishDate(new Date("2010/Jan/12 00:25:25"));
+		course.setMinCourse(225);
+		course.setMaxCourse(315);
+		getGenerator().addContribution(course);
+
+		// hey, how about a time-bounded course constraint?
+		SpeedForecastContribution speed2 = new SpeedForecastContribution();
+		speed2.setStartDate(new Date("2010/Jan/12 00:25:00"));
+		speed2.setFinishDate(new Date("2010/Jan/12 00:31:00"));
+		speed2.setMinSpeed(8);
+		speed2.setMaxSpeed(27);
+		getGenerator().addContribution(speed2);
+
+		LocationAnalysisContribution lac = new LocationAnalysisContribution();
+		getGenerator().addContribution(lac);
+	}
+
 	public void nextTest()
 	{
 		// clear the bounded states
@@ -197,6 +192,11 @@ public class TestSupport
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void setGenerator(TrackGenerator genny)
+	{
+		_genny = genny;
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.planetmayo.debrief.satc.model.states;
 
-
 /**
  * class representing a set of Course bounds
  * 
@@ -53,6 +52,12 @@ public class CourseRange extends BaseRange<CourseRange>
 			throw new IncompatibleStateException("Incompatible states", this, sTwo);
 	}
 
+	@Override
+	public String getConstraintSummary()
+	{
+		return "" + (int) _min + " - " + (int) _max;
+	}
+
 	public double getMax()
 	{
 		final double res;
@@ -81,12 +86,6 @@ public class CourseRange extends BaseRange<CourseRange>
 	public void setMin(double minCourse)
 	{
 		_min = minCourse;
-	}
-
-	@Override
-	public String getConstraintSummary()
-	{
-		return "" + (int)_min + " - " + (int)_max;
 	}
 
 }

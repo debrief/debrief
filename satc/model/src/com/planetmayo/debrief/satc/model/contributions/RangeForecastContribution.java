@@ -94,24 +94,24 @@ public class RangeForecastContribution extends BaseContribution
 
 			boolean useIt = true;
 			// is it in time?
-			if(super.getStartDate() != null)
+			if (super.getStartDate() != null)
 			{
-				if(super.getStartDate().after(thisT))
+				if (super.getStartDate().after(thisT))
 				{
 					useIt = false;
 				}
 			}
-			if(super.getFinishDate() != null)
+			if (super.getFinishDate() != null)
 			{
-				if(super.getFinishDate().before(thisT))
+				if (super.getFinishDate().before(thisT))
 				{
 					useIt = false;
 				}
 			}
-			
-			if(!useIt)
+
+			if (!useIt)
 				continue;
-			
+
 			Point pt = origin._origin.asPoint();
 
 			// yes, ok we can centre our donut on that
@@ -189,6 +189,7 @@ public class RangeForecastContribution extends BaseContribution
 		return _estimate;
 	}
 
+	@Override
 	public String getEstimateStr()
 	{
 		return "" + (int) _estimate;

@@ -2,7 +2,7 @@ package com.planetmayo.debrief.satc.model;
 
 public class VehicleType extends ModelObject
 {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	/**

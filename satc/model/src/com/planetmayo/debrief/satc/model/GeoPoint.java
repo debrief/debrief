@@ -8,20 +8,27 @@ import com.vividsolutions.jts.geom.Point;
 
 public class GeoPoint extends ModelObject
 {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final String LAT = "lat";
 	public static final String LON = "lon";
-	
+
 	private double _lat;
 	private double _lon;
+
 	public GeoPoint(final double lat, final double lon)
 	{
 		setLat(lat);
 		setLon(lon);
 	}
-	
+
+	public Point asPoint()
+	{
+		Coordinate coord = new Coordinate(_lon, _lat);
+		return GeoSupport.getFactory().createPoint(coord);
+	}
+
 	public double getLat()
 	{
 		return _lat;
@@ -46,17 +53,13 @@ public class GeoPoint extends ModelObject
 		firePropertyChange(LON, oldLon, lon);
 	}
 
-	public Point asPoint()
-	{
-		Coordinate coord = new Coordinate(_lon, _lat);
-		return GeoSupport.getFactory().createPoint(coord);
-	}
-
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		DecimalFormat format = new DecimalFormat("0.00");
 		String latitudeStr = format.format(Math.abs(_lat)) + (_lat < 0 ? "S" : "N");
-		String longitudeStr = format.format(Math.abs(_lon)) + (_lon < 0 ? "W" : "E");
+		String longitudeStr = format.format(Math.abs(_lon))
+				+ (_lon < 0 ? "W" : "E");
 		return latitudeStr + " " + longitudeStr;
 	}
 }

@@ -38,36 +38,6 @@ public class BoundedState implements Comparable<BoundedState>
 			this.constrainTo(newState._location);
 	}
 
-
-	public CourseRange getCourse()
-	{
-		return _course;
-	}
-
-	public LocationRange getLocation()
-	{
-		return _location;
-	}
-
-	/**
-	 * apply the specified constraint to ourselves
-	 * 
-	 * @param range
-	 */
-	public void constrainTo(SpeedRange range) throws IncompatibleStateException
-	{
-		// do we have any speed constraints?
-		if (_speed == null)
-		{
-			// no, better create some
-			_speed = new SpeedRange(range);
-		}
-		else
-		{ // yes, further constrain to this set
-			_speed.constrainTo(range);
-		}
-	}
-
 	/**
 	 * apply the specified constraint to ourselves
 	 * 
@@ -105,6 +75,35 @@ public class BoundedState implements Comparable<BoundedState>
 		{ // yes, further constrain to this set
 			_location.constrainTo(range);
 		}
+	}
+
+	/**
+	 * apply the specified constraint to ourselves
+	 * 
+	 * @param range
+	 */
+	public void constrainTo(SpeedRange range) throws IncompatibleStateException
+	{
+		// do we have any speed constraints?
+		if (_speed == null)
+		{
+			// no, better create some
+			_speed = new SpeedRange(range);
+		}
+		else
+		{ // yes, further constrain to this set
+			_speed.constrainTo(range);
+		}
+	}
+
+	public CourseRange getCourse()
+	{
+		return _course;
+	}
+
+	public LocationRange getLocation()
+	{
+		return _location;
 	}
 
 	public SpeedRange getSpeed()

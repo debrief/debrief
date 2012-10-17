@@ -18,11 +18,6 @@ public class LocationRange extends BaseRange<LocationRange>
 	 */
 	private Polygon _myArea;
 
-	public LocationRange(Polygon area)
-	{
-		_myArea = area;
-	}
-
 	/**
 	 * copy constructor
 	 * 
@@ -32,7 +27,12 @@ public class LocationRange extends BaseRange<LocationRange>
 	{
 		this((Polygon) range._myArea.clone());
 	}
-	
+
+	public LocationRange(Polygon area)
+	{
+		_myArea = area;
+	}
+
 	/**
 	 * trim my area to the area provided
 	 * 
@@ -54,25 +54,25 @@ public class LocationRange extends BaseRange<LocationRange>
 			else
 			{
 				// ok, constrain myself
-				Geometry intersect =  _myArea.intersection(geo);
-				
+				Geometry intersect = _myArea.intersection(geo);
+
 				// is this just a geometry collection?
-				if(intersect instanceof GeometryCollection)
+				if (intersect instanceof GeometryCollection)
 				{
 					GeometryCollection gc = (GeometryCollection) intersect;
-					
+
 					// TODO: the intersect above isn't working as expected - see below
 					// on occasion it returns a linestring followed by a polygon. The
 					// LineString is contained inside the polygon, and shouldn't be there.
-					if(gc.getNumGeometries() == 2)
+					if (gc.getNumGeometries() == 2)
 					{
 						Geometry outer = gc.getGeometryN(1);
-						if(outer instanceof Polygon)
-							intersect = (Polygon)outer;
+						if (outer instanceof Polygon)
+							intersect = outer;
 					}
 				}
-				
-				_myArea = (Polygon)intersect;
+
+				_myArea = (Polygon) intersect;
 			}
 		}
 
@@ -91,26 +91,26 @@ public class LocationRange extends BaseRange<LocationRange>
 		}
 	}
 
-	public Polygon getPolygon()
-	{
-		return _myArea;
-	}
-
 	@Override
 	public String getConstraintSummary()
 	{
 		String res = "N/A";
 		if (_myArea != null)
 		{
-		//	NumberFormat df = new DecimalFormat("0.0000");
+			// NumberFormat df = new DecimalFormat("0.0000");
 			Geometry theBoundary = _myArea.convexHull();
 			;
 			double theArea = theBoundary.getArea();
-			
+
 			// TODO: the next line should have better formatting
-			res = _myArea.getCoordinates().length + "pts " + (int)(theArea * 100000);
+			res = _myArea.getCoordinates().length + "pts " + (int) (theArea * 100000);
 		}
 		return res;
+	}
+
+	public Polygon getPolygon()
+	{
+		return _myArea;
 	}
 
 }

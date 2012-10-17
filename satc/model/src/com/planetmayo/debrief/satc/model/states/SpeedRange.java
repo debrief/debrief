@@ -1,13 +1,12 @@
 package com.planetmayo.debrief.satc.model.states;
 
-
 /**
  * class representing a set of speed bounds
  * 
  * @author ian
  * 
  */
-public class SpeedRange extends  BaseRange<SpeedRange>
+public class SpeedRange extends BaseRange<SpeedRange>
 {
 	private double _minMS;
 	private double _maxMS;
@@ -35,6 +34,12 @@ public class SpeedRange extends  BaseRange<SpeedRange>
 		_maxMS = Math.min(getMaxMS(), sTwo.getMaxMS());
 	}
 
+	@Override
+	public String getConstraintSummary()
+	{
+		return "" + (int) _minMS + " - " + (int) _maxMS;
+	}
+
 	public double getMaxMS()
 	{
 		return _maxMS;
@@ -53,12 +58,6 @@ public class SpeedRange extends  BaseRange<SpeedRange>
 	public void setMinMS(double minSpeed)
 	{
 		_minMS = minSpeed;
-	}
-
-	@Override
-	public String getConstraintSummary()
-	{
-		return "" + (int)_minMS + " - " + (int)_maxMS;
 	}
 
 }

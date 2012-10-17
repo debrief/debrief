@@ -118,13 +118,12 @@ public class SpeedForecastContribution extends BaseContribution
 	{
 		return _estimate;
 	}
-	
+
+	@Override
 	public String getEstimateStr()
 	{
 		return "" + (int) _estimate;
 	}
-
-
 
 	@Override
 	public String getHardConstraints()

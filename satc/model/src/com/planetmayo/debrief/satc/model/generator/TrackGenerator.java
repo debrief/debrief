@@ -76,9 +76,9 @@ public class TrackGenerator implements SteppingGenerator
 		{
 			// let our custom method handle it
 			restart();
-			
+
 			// aah, but are we auto-running?
-			if(_liveRunning)
+			if (_liveRunning)
 				run();
 		}
 	};
@@ -89,83 +89,15 @@ public class TrackGenerator implements SteppingGenerator
 	 */
 	private int _currentStep = 0;
 
-	/** whether we auto=run after each contribution chagne
+	/**
+	 * whether we auto=run after each contribution chagne
 	 * 
 	 */
 	private boolean _liveRunning;
 
-	protected void processThisStep(final BaseContribution theContrib,final int stepIndex)
+	public void addBoundedStateListener(BoundedStatesListener newListener)
 	{
-		try
-		{
-
-			if (theContrib.isActive())
-			{
-				theContrib.actUpon(_space);
-				
-				// tell everybody the bounded states have changed
-				broadcastBoundedStatesDebug();
-			}
-
-			// and tell any step listeners
-			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
-			while (iter3.hasNext())
-			{
-				SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
-						.next();
-				stepper.stepped(stepIndex, _contribs.size());
-			}
-
-		}
-		catch (IncompatibleStateException e)
-		{
-			SupportServices.INSTANCE.getLog().error("Failed applying bounds:" + theContrib.getName(), e);
-			
-			// ooh dear, suppose we should tell everybody
-			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
-			while (iter2.hasNext())
-			{
-				BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
-						.next();
-				boundedStatesListener.incompatibleStatesIdentified(theContrib, e);
-			}
-			
-			// clear the bounded states = they're invalid
-			_space.clear();
-			// TODO handle the incompatible state problem, see ticket 5:
-			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
-		}
-		catch (Exception re)
-		{
-			SupportServices.INSTANCE.getLog().error("unknown error:" + theContrib.getName(), re);
-			// TODO handle the incompatible state problem, see ticket 5:
-			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
-		}
-
-	}
-
-	private void broadcastBoundedStatesDebug()
-	{
-		// now share the good news
-		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
-		while (iter2.hasNext())
-		{
-			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
-					.next();
-			boundedStatesListener.debugStatesBounded(_space.states());
-		}
-	}
-
-	private void broadcastBoundedStates()
-	{
-		// now share the good news
-		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
-		while (iter2.hasNext())
-		{
-			BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
-					.next();
-			boundedStatesListener.statesBounded(_space.states());
-		}
+		_boundedListeners.add(newListener);
 	}
 
 	/**
@@ -192,11 +124,134 @@ public class TrackGenerator implements SteppingGenerator
 					.iterator();
 			while (iter.hasNext())
 			{
-				final ContributionsChangedListener listener = (ContributionsChangedListener) iter
-						.next();
+				final ContributionsChangedListener listener = iter.next();
 				listener.added(contribution);
 			}
 		}
+	}
+
+	public void addContributionsListener(ContributionsChangedListener newListener)
+	{
+		_contributionListeners.add(newListener);
+	}
+
+	public void addSteppingListener(SteppingListener newListener)
+	{
+		_steppingListeners.add(newListener);
+	}
+
+	private void broadcastBoundedStates()
+	{
+		// now share the good news
+		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		while (iter2.hasNext())
+		{
+			BoundedStatesListener boundedStatesListener = iter2.next();
+			boundedStatesListener.statesBounded(_space.states());
+		}
+	}
+
+	private void broadcastBoundedStatesDebug()
+	{
+		// now share the good news
+		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		while (iter2.hasNext())
+		{
+			BoundedStatesListener boundedStatesListener = iter2.next();
+			boundedStatesListener.debugStatesBounded(_space.states());
+		}
+	}
+
+	/**
+	 * ditch all of the contributions
+	 * 
+	 */
+	public void clear()
+	{
+		// ditch the bounded states first
+		this.restart();
+
+		// clear out the contributions
+		// take a copy, since we're going to be modifying the list
+		BaseContribution[] safeList = _contribs.toArray(new BaseContribution[]
+		{});
+
+		for (int i = 0; i < safeList.length; i++)
+		{
+			BaseContribution contrib = safeList[i];
+			this.removeContribution(contrib);
+		}
+	}
+
+	public Collection<BaseContribution> contributions()
+	{
+		return _contribs;
+	}
+
+	/**
+	 * indicate whether we do 'run' after each contr change
+	 * 
+	 * @return
+	 */
+	public boolean isLiveEnabled()
+	{
+		return _liveRunning;
+	}
+
+	protected void processThisStep(final BaseContribution theContrib,
+			final int stepIndex)
+	{
+		try
+		{
+
+			if (theContrib.isActive())
+			{
+				theContrib.actUpon(_space);
+
+				// tell everybody the bounded states have changed
+				broadcastBoundedStatesDebug();
+			}
+
+			// and tell any step listeners
+			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+			while (iter3.hasNext())
+			{
+				SteppingGenerator.SteppingListener stepper = iter3.next();
+				stepper.stepped(stepIndex, _contribs.size());
+			}
+
+		}
+		catch (IncompatibleStateException e)
+		{
+			SupportServices.INSTANCE.getLog().error(
+					"Failed applying bounds:" + theContrib.getName(), e);
+
+			// ooh dear, suppose we should tell everybody
+			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+			while (iter2.hasNext())
+			{
+				BoundedStatesListener boundedStatesListener = iter2.next();
+				boundedStatesListener.incompatibleStatesIdentified(theContrib, e);
+			}
+
+			// clear the bounded states = they're invalid
+			_space.clear();
+			// TODO handle the incompatible state problem, see ticket 5:
+			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
+		}
+		catch (Exception re)
+		{
+			SupportServices.INSTANCE.getLog().error(
+					"unknown error:" + theContrib.getName(), re);
+			// TODO handle the incompatible state problem, see ticket 5:
+			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
+		}
+
+	}
+
+	public void removeBoundedStateListener(BoundedStatesListener newListener)
+	{
+		_boundedListeners.remove(newListener);
 	}
 
 	/**
@@ -223,21 +278,16 @@ public class TrackGenerator implements SteppingGenerator
 					.iterator();
 			while (iter.hasNext())
 			{
-				final ContributionsChangedListener listener = (ContributionsChangedListener) iter
-						.next();
+				final ContributionsChangedListener listener = iter.next();
 				listener.removed(contribution);
 			}
 		}
 	}
 
-	public Collection<BaseContribution> contributions()
+	public void removeContributionsListener(
+			ContributionsChangedListener newListener)
 	{
-		return _contribs;
-	}
-
-	public void addSteppingListener(SteppingListener newListener)
-	{
-		_steppingListeners.add(newListener);
+		_contributionListeners.remove(newListener);
 	}
 
 	public void removeSteppingStateListener(SteppingListener newListener)
@@ -245,25 +295,45 @@ public class TrackGenerator implements SteppingGenerator
 		_steppingListeners.remove(newListener);
 	}
 
-	public void addBoundedStateListener(BoundedStatesListener newListener)
+	@Override
+	public void restart()
 	{
-		_boundedListeners.add(newListener);
+		// clear the states
+		_space.clear();
+
+		// ok, just clear the counter.
+		_currentStep = 0;
+
+		// and tell everybody we've restared
+		Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+		while (iter3.hasNext())
+		{
+			SteppingGenerator.SteppingListener stepper = iter3.next();
+			stepper.restarted();
+		}
+
+		// and tell them about the new bounded states
+		broadcastBoundedStates();
 	}
 
-	public void removeBoundedStateListener(BoundedStatesListener newListener)
+	@Override
+	public void run()
 	{
-		_boundedListeners.remove(newListener);
+		// ok, keep stepping until we're done
+		while (_currentStep < _contribs.size())
+		{
+			step();
+		}
 	}
 
-	public void addContributionsListener(ContributionsChangedListener newListener)
+	/**
+	 * specify whether we should do a 'run' after each contribution change
+	 * 
+	 * @param checked
+	 */
+	public void setLiveRunning(boolean checked)
 	{
-		_contributionListeners.add(newListener);
-	}
-
-	public void removeContributionsListener(
-			ContributionsChangedListener newListener)
-	{
-		_contributionListeners.remove(newListener);
+		_liveRunning = checked;
 	}
 
 	@Override
@@ -289,83 +359,13 @@ public class TrackGenerator implements SteppingGenerator
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
 			while (iter3.hasNext())
 			{
-				SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
-						.next();
+				SteppingGenerator.SteppingListener stepper = iter3.next();
 				stepper.complete();
 			}
 
 			// tell any listeners that the final bounds have been updated
 			broadcastBoundedStates();
 		}
-	}
-
-	@Override
-	public void restart()
-	{
-		// clear the states
-		_space.clear();
-
-		// ok, just clear the counter.
-		_currentStep = 0;
-
-		// and tell everybody we've restared
-		Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
-		while (iter3.hasNext())
-		{
-			SteppingGenerator.SteppingListener stepper = (SteppingGenerator.SteppingListener) iter3
-					.next();
-			stepper.restarted();
-		}
-
-		// and tell them about the new bounded states
-		broadcastBoundedStates();
-	}
-
-	@Override
-	public void run()
-	{
-		// ok, keep stepping until we're done
-		while (_currentStep < _contribs.size())
-		{
-			step();
-		}
-	}
-
-	/** ditch all of the contributions
-	 * 
-	 */
-	public void clear()
-	{
-		// ditch the bounded states first
-		this.restart();
-		
-		// clear out the contributions
-		// take a copy, since we're going to be modifying the list
-		BaseContribution[] safeList = _contribs.toArray(new BaseContribution[]{});
-		
-		for (int i = 0; i < safeList.length; i++)
-		{
-			BaseContribution contrib = safeList[i];
-			this.removeContribution(contrib);
-		}
-	}
-
-	/** specify whether we should do a 'run' after each contribution change
-	 * 
-	 * @param checked
-	 */
-	public void setLiveRunning(boolean checked)
-	{
-		_liveRunning = checked;
-	}
-
-	/** indicate whether we do 'run' after each contr change
-	 * 
-	 * @return
-	 */
-	public boolean isLiveEnabled()
-	{
-		return _liveRunning;
 	}
 
 }
