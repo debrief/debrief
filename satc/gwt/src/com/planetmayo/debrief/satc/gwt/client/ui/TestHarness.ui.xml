@@ -66,7 +66,7 @@
 				<g:Anchor ui:field="step" text="Step"></g:Anchor>
 				<g:Anchor ui:field="play" text="Play"></g:Anchor>
 				<g:Anchor ui:field="live" text="Live"></g:Anchor>
-				<g:Anchor ui:field="one" text="1"></g:Anchor>
+				<g:Anchor ui:field="nextTest" text="1"></g:Anchor>
 				
 			</g:HorizontalPanel>
 

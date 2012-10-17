@@ -47,7 +47,7 @@ public class TestHarness extends Composite
 	@UiField
 	Anchor live;
 	@UiField
-	Anchor one;
+	Anchor nextTest;
 
 	private TrackGenerator _generator;
 	private TestSupport _tester;
@@ -70,8 +70,8 @@ public class TestHarness extends Composite
 		updateLiveLabel();
 	}
 
-	@UiHandler("one")
-	void oneClick(ClickEvent e)
+	@UiHandler("nextTest")
+	void nextTestClick(ClickEvent e)
 	{
 		_tester.nextTest();
 	}
