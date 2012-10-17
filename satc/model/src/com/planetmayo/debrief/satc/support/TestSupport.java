@@ -91,28 +91,17 @@ public class TestSupport
 
 	private ArrayList<String> getShortData()
 	{
-		// declare the input strings
-		final String data1 = ";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG";
-		final String data2 = ";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000";
-		final String data3 = ";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000";
-		final String data4 = ";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000";
-		final String data5 = ";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000";
-		final String data6 = ";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000";
-		final String data7 = ";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000";
-		final String data8 = ";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000";
-		final String data9 = ";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000";
-
 		// and put them into an array list
 		final ArrayList<String> rows = new ArrayList<String>();
-		rows.add(data1);
-		rows.add(data2);
-		rows.add(data3);
-		rows.add(data4);
-		rows.add(data5);
-		rows.add(data6);
-		rows.add(data7);
-		rows.add(data8);
-		rows.add(data9);
+		rows.add(";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG");
+		rows.add(";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000");
+//		rows.add(";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000");
+		rows.add(";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000");
+//		rows.add(";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000");
+		rows.add(";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000");
+//		rows.add(";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000");
+		rows.add(";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000");
+		rows.add(";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000");
 
 		return rows;
 	}
@@ -160,7 +149,7 @@ public class TestSupport
 
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(new Date("2010/Jan/12 00:14:31"));
+		course.setStartDate(new Date("2010/Jan/12 00:12:31"));
 		course.setFinishDate(new Date("2010/Jan/12 00:25:25"));
 		course.setMinCourse(225);
 		course.setMaxCourse(315);
