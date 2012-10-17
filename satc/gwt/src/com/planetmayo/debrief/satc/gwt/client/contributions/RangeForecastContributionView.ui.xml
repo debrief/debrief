@@ -19,12 +19,12 @@
 				<g:HTMLPanel styleName="detail-panel course-forecast">
 					<g:CaptionPanel captionText="Adjust">
 						<g:HTMLPanel>
-							<my:NameWidget></my:NameWidget>
-							<my:StartFinishWidget></my:StartFinishWidget>
+							<my:NameWidget ui:field="name"></my:NameWidget>
+							<my:StartFinishWidget ui:field="startFinish"></my:StartFinishWidget>
 
-							<my:Slider2BarWidget type="location" text="Min :"></my:Slider2BarWidget>
-							<my:Slider2BarWidget type="location" text="Max :"></my:Slider2BarWidget>
-							<my:Slider2BarWidget type="location" text="Estimate :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget ui:field="min" type="location" text="Min :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget ui:field="max" type="location" text="Max :"></my:Slider2BarWidget>
+							<my:Slider2BarWidget ui:field="estimate" type="location" text="Estimate :"></my:Slider2BarWidget>
 						</g:HTMLPanel>
 					</g:CaptionPanel>
 				</g:HTMLPanel>

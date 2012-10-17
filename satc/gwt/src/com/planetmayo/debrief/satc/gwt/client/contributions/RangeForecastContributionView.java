@@ -1,9 +1,22 @@
 package com.planetmayo.debrief.satc.gwt.client.contributions;
 
+import java.beans.PropertyChangeEvent;
+import java.util.Date;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Widget;
+import com.kiouri.sliderbar.client.event.BarValueChangedEvent;
+import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
+import com.planetmayo.debrief.satc.gwt.client.ui.NameWidget;
+import com.planetmayo.debrief.satc.gwt.client.ui.Slider2BarWidget;
+import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 
 public class RangeForecastContributionView extends BaseContributionView {
 
@@ -16,20 +29,122 @@ public class RangeForecastContributionView extends BaseContributionView {
 
 	public RangeForecastContributionView() {
 		initWidget(uiBinder.createAndBindUi(this));
+		initHandlers();
 
 	}
 
-	private BaseContribution _myData;
+	private RangeForecastContribution _myData;
+
+	@UiField
+	Slider2BarWidget min;
+
+	@UiField
+	Slider2BarWidget max;
+
+	@UiField
+	Slider2BarWidget estimate;
+
+	@UiField
+	NameWidget name;
+
+	@UiField
+	StartFinishWidget startFinish;
 
 	@Override
-	public void setData(BaseContribution contribution)
-	{
-		_myData = contribution;
+	public void setData(BaseContribution contribution) {
+
+
+		// let the parent register with the contribution
+		super.setData(contribution);
+
+		// and store the type-casted contribution
+		_myData = (RangeForecastContribution) contribution;
+
+		// property changes
+		// initialise the UI components
+		min.setData((int) _myData.getMinRange());
+		max.setData((int) _myData.getMaxRange());
+		estimate.setData((int)Math.round(Double.valueOf(_myData.getEstimate().toString())));
+		name.setData(contribution.getName());
+		startFinish.setData(contribution.getStartDate(),
+				contribution.getFinishDate());
+	
+	}
+
+	@Override
+	public void initHandlers() {
+		super.initHandlers();
+
+		max.addBarValueChangedHandler(new BarValueChangedHandler() {
+			@Override
+			public void onBarValueChanged(BarValueChangedEvent event) {
+				_myData.setMaxRange(event.getValue());
+			}
+		});
+
+		min.addBarValueChangedHandler(new BarValueChangedHandler() {
+			@Override
+			public void onBarValueChanged(BarValueChangedEvent event) {
+				_myData.setMinRange(event.getValue());
+			}
+		});
+
+		estimate.addBarValueChangedHandler(new BarValueChangedHandler() {
+			@Override
+			public void onBarValueChanged(BarValueChangedEvent event) {
+				_myData.setEstimate(event.getValue());
+			}
+		});
+		name.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				_myData.setName(event.getValue());
+
+			}
+		});
+
+		startFinish.addValueChangeHandler(new ValueChangeHandler<Date>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Date> event) {
+				_myData.setStartDate(event.getValue());
+
+			}
+		}, new ValueChangeHandler<Date>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Date> event) {
+				_myData.setFinishDate(event.getValue());
+
+			}
+		});
+
 	}
 	
+
 	@Override
-	protected BaseContribution getData()
-	{
+	public void propertyChange(PropertyChangeEvent arg0) {
+		super.propertyChange(arg0);
+		final String attr = arg0.getPropertyName();
+		if (attr.equals(CourseForecastContribution.MIN_COURSE))
+			min.setData((Integer) arg0.getNewValue());
+		else if (attr.equals(CourseForecastContribution.MAX_COURSE))
+			max.setData((Integer) arg0.getNewValue());
+		else if (attr.equals(BaseContribution.ESTIMATE))
+			estimate.setData((Integer) arg0.getNewValue());
+		else if (attr.equals(BaseContribution.NAME))
+			name.setData((String) arg0.getNewValue());
+		else if (attr.equals(BaseContribution.START_DATE))
+			startFinish.setStartData((Date) arg0.getNewValue());
+		else if (attr.equals(BaseContribution.FINISH_DATE))
+			startFinish.setFinishData((Date) arg0.getNewValue());
+
+	}
+
+
+	@Override
+	protected BaseContribution getData() {
 		return _myData;
 	}
 	
