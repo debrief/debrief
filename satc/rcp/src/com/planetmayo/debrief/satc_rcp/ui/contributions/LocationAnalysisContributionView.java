@@ -32,22 +32,24 @@ public class LocationAnalysisContributionView extends AnalystContributionView
 				new PrefixSuffixLabelConverter(Object.class, " "));
 		bindCommonDates(context, contribution);
 
-//		IObservableValue minSpeedValue = BeansObservables.observeValue(
-//				contribution, BearingMeasurementContribution.BEARING_ERROR);
-//		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(
-//				minSlider);
-//		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
-//		context.bindValue(minSpeedSlider, minSpeedValue);
-//		context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
-//				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-//						"error: ", " degs")));
+		// IObservableValue minSpeedValue = BeansObservables.observeValue(
+		// contribution, BearingMeasurementContribution.BEARING_ERROR);
+		// IObservableValue minSpeedSlider = WidgetProperties.selection().observe(
+		// minSlider);
+		// IObservableValue minSpeedLabel =
+		// WidgetProperties.text().observe(minLabel);
+		// context.bindValue(minSpeedSlider, minSpeedValue);
+		// context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
+		// .converterStrategy(new PrefixSuffixLabelConverter(double.class,
+		// "error: ", " degs")));
 	}
 
 	@Override
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME,
+				titleChangeListener);
 		context.dispose();
 	}
 

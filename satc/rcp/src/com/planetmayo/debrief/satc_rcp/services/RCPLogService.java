@@ -9,7 +9,19 @@ public class RCPLogService implements LogService
 {
 
 	@Override
-	public void info(String message)	
+	public void error(String message)
+	{
+		SATC_Activator.log(IStatus.ERROR, message, null);
+	}
+
+	@Override
+	public void error(String message, Exception ex)
+	{
+		SATC_Activator.log(IStatus.ERROR, message, ex);
+	}
+
+	@Override
+	public void info(String message)
 	{
 		SATC_Activator.log(IStatus.INFO, message, null);
 	}
@@ -30,17 +42,5 @@ public class RCPLogService implements LogService
 	public void warn(String message, Exception ex)
 	{
 		SATC_Activator.log(IStatus.WARNING, message, ex);
-	}
-
-	@Override
-	public void error(String message)
-	{
-		SATC_Activator.log(IStatus.ERROR, message, null);
-	}
-
-	@Override
-	public void error(String message, Exception ex)
-	{
-		SATC_Activator.log(IStatus.ERROR, message, ex);
 	}
 }

@@ -225,62 +225,11 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 		makeActions();
 		contributeToActionBars();
 
-		/** and listen out for track generators
+		/**
+		 * and listen out for track generators
 		 * 
 		 */
 		setupMonitor();
-	}
-
-	private void makeActions()
-	{
-		_debugMode = new Action("Debug Mode", SWT.TOGGLE)
-		{
-		};
-		_debugMode.setText("Debug Mode");
-		_debugMode.setChecked(false);
-		_debugMode
-				.setToolTipText("Track all states (including application of each Contribution)");
-	}
-
-	private void fillLocalPullDown(IMenuManager manager)
-	{
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager)
-	{
-		manager.add(_debugMode);
-	}
-
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	@Override
-	public void setFocus()
-	{
-		viewer.getControl().setFocus();
-	}
-
-	@Override
-	public void statesBounded(Collection<BoundedState> newStates)
-	{
-		if ((newStates == null) || (newStates.isEmpty()))
-			viewer.setInput(null);
-		else
-			viewer.setInput(newStates);
-	}
-
-	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
-	{
-		// TODO: switch UI to be a composite view, with a label above the table.
-		// the label is normally hidden , and shown when
-		// when we get incompatible states. Show the message in that label, and
-		// disable the table
-
-		viewer.setInput(null);
-//		
-//		MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-//				"Bounding states", "Incompatible states found");
 	}
 
 	@Override
@@ -297,15 +246,68 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 		}
 	}
 
-	@Override
-	protected void stopListeningTo(TrackGenerator genny)
+	private void fillLocalPullDown(IMenuManager manager)
 	{
-		genny.removeBoundedStateListener(this);
+	}
+
+	private void fillLocalToolBar(IToolBarManager manager)
+	{
+		manager.add(_debugMode);
+	}
+
+	@Override
+	public void incompatibleStatesIdentified(BaseContribution contribution,
+			IncompatibleStateException e)
+	{
+		// TODO: switch UI to be a composite view, with a label above the table.
+		// the label is normally hidden , and shown when
+		// when we get incompatible states. Show the message in that label, and
+		// disable the table
+
+		viewer.setInput(null);
+		//
+		// MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+		// "Bounding states", "Incompatible states found");
+	}
+
+	private void makeActions()
+	{
+		_debugMode = new Action("Debug Mode", SWT.TOGGLE)
+		{
+		};
+		_debugMode.setText("Debug Mode");
+		_debugMode.setChecked(false);
+		_debugMode
+				.setToolTipText("Track all states (including application of each Contribution)");
+	}
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
+	@Override
+	public void setFocus()
+	{
+		viewer.getControl().setFocus();
 	}
 
 	@Override
 	protected void startListeningTo(TrackGenerator genny)
 	{
 		genny.addBoundedStateListener(this);
+	}
+
+	@Override
+	public void statesBounded(Collection<BoundedState> newStates)
+	{
+		if ((newStates == null) || (newStates.isEmpty()))
+			viewer.setInput(null);
+		else
+			viewer.setInput(newStates);
+	}
+
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
+	{
+		genny.removeBoundedStateListener(this);
 	}
 }

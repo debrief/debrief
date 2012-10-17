@@ -32,7 +32,8 @@ public class ExpandButton
 	public ExpandButton(Composite parent)
 	{
 		expandImage = SATC_Activator.getImageDescriptor(EXPAND_ICON).createImage();
-		collapseImage = SATC_Activator.getImageDescriptor(COLLAPSE_ICON).createImage();
+		collapseImage = SATC_Activator.getImageDescriptor(COLLAPSE_ICON)
+				.createImage();
 
 		toolBar = new ToolBar(parent, SWT.FLAT);
 		toolItem = new ToolItem(toolBar, SWT.PUSH);

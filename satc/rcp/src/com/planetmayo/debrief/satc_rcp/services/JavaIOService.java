@@ -11,7 +11,8 @@ import com.planetmayo.debrief.satc.support.IOService;
 public class JavaIOService implements IOService
 {
 	@Override
-	public List<String> readLinesFrom(String url) throws IOException {
+	public List<String> readLinesFrom(String url) throws IOException
+	{
 		return IOUtils.readLines(new FileInputStream(url));
 	}
 }

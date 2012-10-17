@@ -76,8 +76,8 @@ public abstract class AnalystContributionView
 				mainGroup.setText(titlePrefix + evt.getNewValue());
 			}
 		};
-		listener.propertyChange(new PropertyChangeEvent(contribution, BaseContribution.NAME, null,
-				contribution.getName()));
+		listener.propertyChange(new PropertyChangeEvent(contribution,
+				BaseContribution.NAME, null, contribution.getName()));
 		contribution.addPropertyChangeListener(BaseContribution.NAME, listener);
 		return listener;
 	}
@@ -109,12 +109,14 @@ public abstract class AnalystContributionView
 				endTime);
 		context.bindValue(new DateAndTimeObservableValue(endDateWidget,
 				endTimeWidget), endDateValue);
-		
-		IObservableValue nameValue = BeansObservables.observeValue(contribution, BaseContribution.NAME);
-		IObservableValue nameText = WidgetProperties.text(SWT.Modify).observe(contributionNameText);
+
+		IObservableValue nameValue = BeansObservables.observeValue(contribution,
+				BaseContribution.NAME);
+		IObservableValue nameText = WidgetProperties.text(SWT.Modify).observe(
+				contributionNameText);
 		context.bindValue(nameText, nameValue);
 	}
-	
+
 	/**
 	 * Utility base method which binds common header widgets: "active" checkbox,
 	 * hardconstrains label, estimate label, weight spinner. Must be called if
@@ -125,8 +127,10 @@ public abstract class AnalystContributionView
 	 * @param labelsConverter
 	 */
 	protected final void bindCommonHeaderWidgets(DataBindingContext context,
-			BaseContribution contribution, IConverter labelConverter) {
-		bindCommonHeaderWidgets(context, contribution, labelConverter, labelConverter);
+			BaseContribution contribution, IConverter labelConverter)
+	{
+		bindCommonHeaderWidgets(context, contribution, labelConverter,
+				labelConverter);
 	}
 
 	/**
@@ -170,16 +174,7 @@ public abstract class AnalystContributionView
 	}
 
 	protected abstract void bindValues();
-	
-	/** get the top level control that this panel uses
-	 * 
-	 * @return
-	 */
-	public Composite getControl()
-	{
-		return mainGroup;
-	}
-	
+
 	protected void createBody(Composite parent)
 	{
 		GridData layoutData = new GridData();
@@ -198,7 +193,7 @@ public abstract class AnalystContributionView
 		UIUtils.createLabel(bodyGroup, "Name:", new GridData(120, SWT.DEFAULT));
 		contributionNameText = new Text(bodyGroup, SWT.BORDER);
 		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		UIUtils.createLabel(bodyGroup, "Start:", new GridData(120, SWT.DEFAULT));
 		Composite startDateGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
@@ -298,6 +293,16 @@ public abstract class AnalystContributionView
 	public void dispose()
 	{
 
+	}
+
+	/**
+	 * get the top level control that this panel uses
+	 * 
+	 * @return
+	 */
+	public Composite getControl()
+	{
+		return mainGroup;
 	}
 
 	protected abstract void initializeWidgets();

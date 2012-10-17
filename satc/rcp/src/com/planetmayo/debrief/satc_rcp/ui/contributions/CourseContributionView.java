@@ -20,8 +20,7 @@ public class CourseContributionView extends AnalystContributionView
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public CourseContributionView(Composite parent,
-			BaseContribution contribution)
+	public CourseContributionView(Composite parent, BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;
@@ -35,11 +34,10 @@ public class CourseContributionView extends AnalystContributionView
 	{
 		context = new DataBindingContext();
 
-		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " degs");
-		bindCommonHeaderWidgets(context, contribution,
-				labelsConverter);
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
+				Object.class, " degs");
+		bindCommonHeaderWidgets(context, contribution, labelsConverter);
 		bindCommonDates(context, contribution);
-		
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
@@ -95,7 +93,8 @@ public class CourseContributionView extends AnalystContributionView
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME,
+				titleChangeListener);
 		context.dispose();
 	}
 

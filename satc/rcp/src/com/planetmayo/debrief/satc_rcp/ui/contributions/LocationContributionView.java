@@ -36,7 +36,8 @@ public class LocationContributionView extends AnalystContributionView
 	private FormattedText latitude;
 	private FormattedText longitude;
 
-	public LocationContributionView(Composite parent, BaseContribution contribution)
+	public LocationContributionView(Composite parent,
+			BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;
@@ -47,50 +48,62 @@ public class LocationContributionView extends AnalystContributionView
 	protected void bindValues()
 	{
 		context = new DataBindingContext();
-		
-		bindCommonHeaderWidgets(context, contribution, null, new PrefixSuffixLabelConverter(String.class, " m"));
+
+		bindCommonHeaderWidgets(context, contribution, null,
+				new PrefixSuffixLabelConverter(String.class, " m"));
 		bindCommonDates(context, contribution);
-		
-		IObservableValue limitSliderValue = WidgetProperties.selection().observe(limitSlider);
-		IObservableValue limitLabelValue = WidgetProperties.text().observe(limitLabel);
-		IObservableValue limitValue = BeansObservables.observeValue(contribution, LocationForecastContribution.LIMIT);
+
+		IObservableValue limitSliderValue = WidgetProperties.selection().observe(
+				limitSlider);
+		IObservableValue limitLabelValue = WidgetProperties.text().observe(
+				limitLabel);
+		IObservableValue limitValue = BeansObservables.observeValue(contribution,
+				LocationForecastContribution.LIMIT);
 		context.bindValue(limitSliderValue, limitValue);
-		context.bindValue(limitLabelValue, limitValue, null,
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(int.class, "Limit: ", " m")));
-		
+		context.bindValue(limitLabelValue, limitValue, null, UIUtils
+				.converterStrategy(new PrefixSuffixLabelConverter(int.class, "Limit: ",
+						" m")));
+
 		IObservableValue latValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.ESTIMATE), GeoPoint.LAT, double.class);
-		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
+				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),
+				GeoPoint.LAT, double.class);
+		context
+				.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
 		latitude.getControl().addListener(SWT.Modify, new Listener()
-		{			
+		{
 			@Override
 			public void handleEvent(Event event)
 			{
 				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
-				GeoPoint geoPoint = new GeoPoint((Double) latitude.getValue(), temp.getEstimate().getLon());
+				GeoPoint geoPoint = new GeoPoint((Double) latitude.getValue(), temp
+						.getEstimate().getLon());
 				temp.setEstimate(geoPoint);
 			}
 		});
-		
+
 		IObservableValue lonValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.ESTIMATE), GeoPoint.LON, double.class);
-		context.bindValue(PojoObservables.observeValue(longitude, "value"), lonValue);
+				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),
+				GeoPoint.LON, double.class);
+		context.bindValue(PojoObservables.observeValue(longitude, "value"),
+				lonValue);
 		longitude.getControl().addListener(SWT.Modify, new Listener()
-		{			
+		{
 			@Override
 			public void handleEvent(Event event)
 			{
 				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
-				GeoPoint geoPoint = new GeoPoint(temp.getEstimate().getLat(), (Double) longitude.getValue());
+				GeoPoint geoPoint = new GeoPoint(temp.getEstimate().getLat(),
+						(Double) longitude.getValue());
 				temp.setEstimate(geoPoint);
 			}
-		});		
+		});
 	}
 
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
-		limitLabel = UIUtils.createLabel(bodyGroup, "Limit:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		limitLabel = UIUtils.createLabel(bodyGroup, "Limit:", new GridData(
+				GridData.HORIZONTAL_ALIGN_FILL));
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 

@@ -20,8 +20,7 @@ public class SpeedContributionView extends AnalystContributionView
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public SpeedContributionView(Composite parent,
-			BaseContribution contribution)
+	public SpeedContributionView(Composite parent, BaseContribution contribution)
 	{
 		super(parent);
 		this.contribution = contribution;
@@ -33,11 +32,11 @@ public class SpeedContributionView extends AnalystContributionView
 	{
 		context = new DataBindingContext();
 
-		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " kts");
-		bindCommonHeaderWidgets(context, contribution,
-				labelsConverter);
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
+				Object.class, " kts");
+		bindCommonHeaderWidgets(context, contribution, labelsConverter);
 		bindCommonDates(context, contribution);
-		
+
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
 		IObservableValue estimateLabel = WidgetProperties.text().observe(
@@ -91,7 +90,8 @@ public class SpeedContributionView extends AnalystContributionView
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME,
+				titleChangeListener);
 		context.dispose();
 	}
 

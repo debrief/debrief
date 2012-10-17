@@ -11,10 +11,6 @@ public abstract class CoreView extends ViewPart
 
 	private TrackGenerator _generator;
 
-	protected abstract void stopListeningTo(TrackGenerator genny);
-
-	protected abstract void startListeningTo(TrackGenerator genny);
-
 	private PartMonitor _myPartMonitor;
 
 	public CoreView()
@@ -23,10 +19,11 @@ public abstract class CoreView extends ViewPart
 	}
 
 	@Override
-	public void setFocus()
+	public void dispose()
 	{
-		// TODO Auto-generated method stub
-		
+		if (_generator != null)
+			stopListeningTo(_generator);
+		super.dispose();
 	}
 
 	protected TrackGenerator getGenerator()
@@ -34,6 +31,12 @@ public abstract class CoreView extends ViewPart
 		return _generator;
 	}
 
+	@Override
+	public void setFocus()
+	{
+		// TODO Auto-generated method stub
+
+	}
 
 	protected void setupMonitor()
 	{
@@ -60,7 +63,7 @@ public abstract class CoreView extends ViewPart
 						if (newGenerator != _generator)
 						{
 							// yes
-							
+
 							// do we already have a generator?
 							if (_generator != null)
 								stopListeningTo(_generator);
@@ -97,16 +100,12 @@ public abstract class CoreView extends ViewPart
 						}
 					}
 				});
-		
+
 		// just see if there's anything of interest
 	}
 
-	@Override
-	public void dispose()
-	{
-		if (_generator != null)
-			stopListeningTo(_generator);
-		super.dispose();
-	}
+	protected abstract void startListeningTo(TrackGenerator genny);
+
+	protected abstract void stopListeningTo(TrackGenerator genny);
 
 }

@@ -33,11 +33,11 @@ public class RangeForecastContributionView extends AnalystContributionView
 	{
 		context = new DataBindingContext();
 
-		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " m");
-		bindCommonHeaderWidgets(context, contribution,
-				labelsConverter);
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
+				Object.class, " m");
+		bindCommonHeaderWidgets(context, contribution, labelsConverter);
 		bindCommonDates(context, contribution);
-		
+
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
 		IObservableValue estimateLabel = WidgetProperties.text().observe(
@@ -91,7 +91,8 @@ public class RangeForecastContributionView extends AnalystContributionView
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME,
+				titleChangeListener);
 		context.dispose();
 	}
 
@@ -100,7 +101,7 @@ public class RangeForecastContributionView extends AnalystContributionView
 	{
 		titleChangeListener = attachTitleChangeListener(contribution,
 				"Range Forecast - ");
-		
+
 		// give a monster max range
 		maxSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 	}

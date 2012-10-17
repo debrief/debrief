@@ -52,7 +52,8 @@ public class BearingMeasurementContributionView extends AnalystContributionView
 	public void dispose()
 	{
 		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME, titleChangeListener);
+		contribution.removePropertyChangeListener(BaseContribution.NAME,
+				titleChangeListener);
 		context.dispose();
 	}
 

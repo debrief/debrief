@@ -88,6 +88,18 @@ public class TestHarnessView extends CoreView
 		setupMonitor();
 	}
 
+	private void enableControls(boolean enabled)
+	{
+		_clearAction.setEnabled(enabled);
+		_populateShortAction.setEnabled(enabled);
+		_populateLongAction.setEnabled(enabled);
+		_restartAction.setEnabled(enabled);
+		_stepAction.setEnabled(enabled);
+		_playAction.setEnabled(enabled);
+		_liveAction.setEnabled(enabled);
+
+	}
+
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
 		manager.add(_clearAction);
@@ -98,6 +110,11 @@ public class TestHarnessView extends CoreView
 		manager.add(_playAction);
 		manager.add(_liveAction);
 		manager.add(_testOne);
+	}
+
+	private void loadSampleData(boolean useLong)
+	{
+		_testSupport.loadSampleData(useLong);
 	}
 
 	private void makeActions()
@@ -201,21 +218,6 @@ public class TestHarnessView extends CoreView
 	{
 	}
 
-	private void loadSampleData(boolean useLong)
-	{
-		_testSupport.loadSampleData(useLong);
-	}
-
-	@Override
-	protected void stopListeningTo(TrackGenerator genny)
-	{
-		// ok, we can disable our buttons
-		enableControls(false);
-
-		_testSupport.setGenerator(genny);
-
-	}
-
 	@Override
 	protected void startListeningTo(TrackGenerator genny)
 	{
@@ -227,15 +229,13 @@ public class TestHarnessView extends CoreView
 		_liveAction.setChecked(genny.isLiveEnabled());
 	}
 
-	private void enableControls(boolean enabled)
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
 	{
-		_clearAction.setEnabled(enabled);
-		_populateShortAction.setEnabled(enabled);
-		_populateLongAction.setEnabled(enabled);
-		_restartAction.setEnabled(enabled);
-		_stepAction.setEnabled(enabled);
-		_playAction.setEnabled(enabled);
-		_liveAction.setEnabled(enabled);
+		// ok, we can disable our buttons
+		enableControls(false);
+
+		_testSupport.setGenerator(genny);
 
 	}
 

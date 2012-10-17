@@ -40,81 +40,6 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	private static XYPlot _plot;
 	private static XYLineAndShapeRenderer _renderer;
 	private static JFreeChart _chart;
-	private Action _debugMode;
-	private Action _resizeButton;
-	private XYSeriesCollection _myData;
-
-	/**
-	 * keep track of how many sets of series that we've plotted
-	 * 
-	 */
-	int _numCycles = 0;
-
-	public void createPartControl(Composite parent)
-	{
-		// get the data ready
-		_myData = new XYSeriesCollection();
-
-		JFreeChart chart = createChart(_myData);
-		new ChartComposite(parent, SWT.NONE, chart, true);
-
-		makeActions();
-
-		IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(_debugMode);
-		bars.getToolBarManager().add(_resizeButton);
-
-		/**
-		 * and listen out for track generators
-		 * 
-		 */
-		setupMonitor();
-
-		// tell the GeoSupport about us
-		GeoSupport.setPlotter(this);
-
-	}
-
-	@Override
-	protected void startListeningTo(TrackGenerator genny)
-	{
-		genny.addBoundedStateListener(this);
-	}
-
-	@Override
-	protected void stopListeningTo(TrackGenerator genny)
-	{
-		genny.removeBoundedStateListener(this);
-	}
-
-	private void makeActions()
-	{
-		_debugMode = new Action("Debug Mode", SWT.TOGGLE)
-		{
-		};
-		_debugMode.setText("Debug Mode");
-		_debugMode.setChecked(false);
-		_debugMode
-				.setToolTipText("Track all states (including application of each Contribution)");
-
-		_resizeButton = new Action("Resize", SWT.NONE)
-		{
-
-			@Override
-			public void run()
-			{
-
-				// TODO: resize the plot
-			}
-
-		};
-		_resizeButton
-				.setToolTipText("Track all states (including application of each Contribution)");
-	}
-
-	public void setFocus()
-	{
-	}
 
 	/**
 	 * Creates the Chart based on a dataset
@@ -143,6 +68,50 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 		return _chart;
 	}
 
+	private Action _debugMode;
+	private Action _resizeButton;
+
+	private XYSeriesCollection _myData;
+
+	/**
+	 * keep track of how many sets of series that we've plotted
+	 * 
+	 */
+	int _numCycles = 0;
+
+	@Override
+	public void clear(String title)
+	{
+		_myData.removeAllSeries();
+		_chart.setTitle(title);
+	}
+
+	@Override
+	public void createPartControl(Composite parent)
+	{
+		// get the data ready
+		_myData = new XYSeriesCollection();
+
+		JFreeChart chart = createChart(_myData);
+		new ChartComposite(parent, SWT.NONE, chart, true);
+
+		makeActions();
+
+		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(_debugMode);
+		bars.getToolBarManager().add(_resizeButton);
+
+		/**
+		 * and listen out for track generators
+		 * 
+		 */
+		setupMonitor();
+
+		// tell the GeoSupport about us
+		GeoSupport.setPlotter(this);
+
+	}
+
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
@@ -150,6 +119,42 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 			statesBounded(newStates);
 	}
 
+	@Override
+	public void incompatibleStatesIdentified(BaseContribution contribution,
+			IncompatibleStateException e)
+	{
+		_myData.removeAllSeries();
+	}
+
+	private void makeActions()
+	{
+		_debugMode = new Action("Debug Mode", SWT.TOGGLE)
+		{
+		};
+		_debugMode.setText("Debug Mode");
+		_debugMode.setChecked(false);
+		_debugMode
+				.setToolTipText("Track all states (including application of each Contribution)");
+
+		_resizeButton = new Action("Resize", SWT.NONE)
+		{
+
+			@Override
+			public void run()
+			{
+
+				// TODO: resize the plot
+			}
+
+		};
+		_resizeButton
+				.setToolTipText("Track all states (including application of each Contribution)");
+	}
+
+	@Override
+	public void setFocus()
+	{
+	}
 
 	private void showData(Collection<BoundedState> newStates)
 	{
@@ -160,7 +165,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 		Iterator<BoundedState> iter = newStates.iterator();
 		while (iter.hasNext())
 		{
-			BoundedState thisS = (BoundedState) iter.next();
+			BoundedState thisS = iter.next();
 			// get the poly
 			LocationRange loc = thisS.getLocation();
 			if (loc != null)
@@ -180,26 +185,6 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 				_myData.addSeries(series);
 			}
 		}
-	}
-
-	@Override
-	public void statesBounded(Collection<BoundedState> newStates)
-	{
-		if ((newStates != null) && (newStates.size() > 0))
-		{
-			// hey, we've got data. show it
-			showData(newStates);
-		}
-		else
-		{
-			clear(null);
-		}
-	}
-
-	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
-	{
-		_myData.removeAllSeries();
 	}
 
 	@Override
@@ -229,9 +214,28 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	}
 
 	@Override
-	public void clear(String title)
+	protected void startListeningTo(TrackGenerator genny)
 	{
-		_myData.removeAllSeries();
-		_chart.setTitle(title);
+		genny.addBoundedStateListener(this);
+	}
+
+	@Override
+	public void statesBounded(Collection<BoundedState> newStates)
+	{
+		if ((newStates != null) && (newStates.size() > 0))
+		{
+			// hey, we've got data. show it
+			showData(newStates);
+		}
+		else
+		{
+			clear(null);
+		}
+	}
+
+	@Override
+	protected void stopListeningTo(TrackGenerator genny)
+	{
+		genny.removeBoundedStateListener(this);
 	}
 }

@@ -35,17 +35,16 @@ public class SATC_Activator extends AbstractUIPlugin
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
+	public static void log(int status, String message, Exception e)
+	{
+		getDefault().getLog().log(new Status(status, PLUGIN_ID, message, e));
+	}
+
 	private BundleContext context;
 
 	public SATC_Activator()
 	{
 	}
-
-	public static void log(int status, String message, Exception e)
-	{
-		getDefault().getLog().log(new Status(status,PLUGIN_ID, message, e));
-	}
-
 
 	public <T> T getService(Class<T> serviceClass, boolean required)
 	{
@@ -71,7 +70,8 @@ public class SATC_Activator extends AbstractUIPlugin
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
-		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService(), new RCPIOService());
+		SupportServices.INSTANCE.initialize(new RCPLogService(),
+				new RCPConverterService(), new RCPIOService());
 		super.start(context);
 		this.context = context;
 		plugin = this;

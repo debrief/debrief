@@ -98,6 +98,44 @@ public class MaintainContributionsView extends ViewPart implements
 	private PropertyChangeListener _removeContListener;
 
 	@Override
+	public void added(BaseContribution contribution)
+	{
+		// ok, create a wrapper for this
+		AnalystContributionView panel = null;
+
+		if (contribution instanceof CourseForecastContribution)
+			panel = new CourseContributionView(contList, contribution);
+		else if (contribution instanceof LocationForecastContribution)
+			panel = new LocationContributionView(contList, contribution);
+		else if (contribution instanceof SpeedForecastContribution)
+			panel = new SpeedContributionView(contList, contribution);
+		else if (contribution instanceof BearingMeasurementContribution)
+			panel = new BearingMeasurementContributionView(contList, contribution);
+		else if (contribution instanceof RangeForecastContribution)
+			panel = new RangeForecastContributionView(contList, contribution);
+		else if (contribution instanceof LocationAnalysisContribution)
+			panel = new LocationAnalysisContributionView(contList, contribution);
+
+		// did we fail to find a panel?
+		if (panel == null)
+		{
+			System.err.println("Failed to generate panel for " + contribution);
+		}
+		else
+		{
+			// sort out the layout
+			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+					| GridData.GRAB_HORIZONTAL));
+
+			// and rememeber it
+			_myControls.put(contribution, panel);
+
+			// ok, redo the layout...
+			contList.layout();
+		}
+	}
+
+	@Override
 	public void createPartControl(Composite parent)
 	{
 
@@ -108,15 +146,6 @@ public class MaintainContributionsView extends ViewPart implements
 		_manager = new MaintainContributions(this, SATC_Activator.getDefault()
 				.getService(VehicleTypesRepository.class, true));
 
-	}
-
-	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
-	{
-		if (adapter.equals(TrackGenerator.class))
-			return _manager.getGenerator();
-		else
-			return super.getAdapter(adapter);
 	}
 
 	private void fillAnalystContributionsGroup(Composite parent)
@@ -141,9 +170,55 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
+	{
+		if (adapter.equals(TrackGenerator.class))
+			return _manager.getGenerator();
+		else
+			return super.getAdapter(adapter);
+	}
+
+	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException
 	{
 		super.init(site, memento);
+
+	}
+
+	private void initAddContributionGroup(Composite parent)
+	{
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
+		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.marginWidth = 5;
+		fillLayout.marginHeight = 5;
+		group.setLayout(fillLayout);
+		group.setLayoutData(gridData);
+		group.setText("New Contribution");
+
+		_addContMenu = new Menu(group);
+		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
+		toolBar.setBounds(50, 50, 50, 50);
+		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+		item.setText("Add...");
+		item.addListener(SWT.Selection, new Listener()
+		{
+			@Override
+			public void handleEvent(Event event)
+			{
+				if (event.detail == SWT.ARROW)
+				{
+					Rectangle rect = item.getBounds();
+					Point pt = new Point(rect.x, rect.y + rect.height);
+					pt = toolBar.toDisplay(pt);
+					_addContMenu.setLocation(pt.x, pt.y);
+					_addContMenu.setVisible(true);
+				}
+			}
+		});
 
 	}
 
@@ -244,42 +319,6 @@ public class MaintainContributionsView extends ViewPart implements
 		initAddContributionGroup(main);
 	}
 
-	private void initAddContributionGroup(Composite parent)
-	{
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginWidth = 5;
-		fillLayout.marginHeight = 5;
-		group.setLayout(fillLayout);
-		group.setLayoutData(gridData);
-		group.setText("New Contribution");
-
-		_addContMenu = new Menu(group);
-		final ToolBar toolBar = new ToolBar(group, SWT.NONE);
-		toolBar.setBounds(50, 50, 50, 50);
-		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-		item.setText("Add...");
-		item.addListener(SWT.Selection, new Listener()
-		{
-			public void handleEvent(Event event)
-			{
-				if (event.detail == SWT.ARROW)
-				{
-					Rectangle rect = item.getBounds();
-					Point pt = new Point(rect.x, rect.y + rect.height);
-					pt = toolBar.toDisplay(pt);
-					_addContMenu.setLocation(pt.x, pt.y);
-					_addContMenu.setVisible(true);
-				}
-			}
-		});
-
-	}
-
 	private void initVehicleGroup(Composite parent)
 	{
 		GridData gridData = new GridData();
@@ -308,48 +347,39 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void setFocus()
+	public void populateContributionList(ArrayList<String> items)
 	{
-		// TODO Auto-generated method stub
-
+		Iterator<String> iter = items.iterator();
+		while (iter.hasNext())
+		{
+			MenuItem item = new MenuItem(_addContMenu, SWT.PUSH);
+			final String thisCont = iter.next();
+			item.setText(thisCont);
+			item.addSelectionListener(new SelectionAdapter()
+			{
+				@Override
+				public void widgetSelected(SelectionEvent arg0)
+				{
+					if (_addContListener != null)
+						_addContListener.propertyChange(new PropertyChangeEvent(thisCont,
+								null, null, thisCont));
+				}
+			});
+		}
 	}
 
 	@Override
-	public void added(BaseContribution contribution)
+	public void populatePrecisionsList(Precision[] precisions)
 	{
-		// ok, create a wrapper for this
-		AnalystContributionView panel = null;
+		precisionsCombo.setInput(precisions);
+		// and set an initial value
+		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
+	}
 
-		if (contribution instanceof CourseForecastContribution)
-			panel = new CourseContributionView(contList, contribution);
-		else if (contribution instanceof LocationForecastContribution)
-			panel = new LocationContributionView(contList, contribution);
-		else if (contribution instanceof SpeedForecastContribution)
-			panel = new SpeedContributionView(contList, contribution);
-		else if (contribution instanceof BearingMeasurementContribution)
-			panel = new BearingMeasurementContributionView(contList, contribution);
-		else if (contribution instanceof RangeForecastContribution)
-			panel = new RangeForecastContributionView(contList, contribution);
-		else if (contribution instanceof LocationAnalysisContribution)
-			panel = new LocationAnalysisContributionView(contList, contribution);
-
-		// did we fail to find a panel?
-		if (panel == null)
-		{
-			System.err.println("Failed to generate panel for " + contribution);
-		}
-		else
-		{
-			// sort out the layout
-			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
-					| GridData.GRAB_HORIZONTAL));
-
-			// and rememeber it
-			_myControls.put(contribution, panel);
-
-			// ok, redo the layout...
-			contList.layout();
-		}
+	@Override
+	public void populateVehicleTypesList(List<VehicleType> vehicles)
+	{
+		vehiclesCombo.setInput(vehicles);
 	}
 
 	@Override
@@ -374,39 +404,22 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void populateContributionList(ArrayList<String> items)
+	public void setAddContributionListener(PropertyChangeListener listener)
 	{
-		Iterator<String> iter = items.iterator();
-		while (iter.hasNext())
-		{
-			MenuItem item = new MenuItem(_addContMenu, SWT.PUSH);
-			final String thisCont = iter.next();
-			item.setText(thisCont);
-			item.addSelectionListener(new SelectionAdapter()
-			{
-				@Override
-				public void widgetSelected(SelectionEvent arg0)
-				{
-					if (_addContListener != null)
-						_addContListener.propertyChange(new PropertyChangeEvent(thisCont,
-								null, null, thisCont));
-				}
-			});
-		}
+		_addContListener = listener;
 	}
 
 	@Override
-	public void populateVehicleTypesList(List<VehicleType> vehicles)
+	public void setFocus()
 	{
-		vehiclesCombo.setInput(vehicles);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public void populatePrecisionsList(Precision[] precisions)
+	public void setPrecisionChangeListener(PropertyChangeListener listener)
 	{
-		precisionsCombo.setInput(precisions);
-		// and set an initial value
-		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
+		_precisionChangeListener = listener;
 	}
 
 	@Override
@@ -417,22 +430,10 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void setAddContributionListener(PropertyChangeListener listener)
-	{
-		_addContListener = listener;
-	}
-
-	@Override
 	public void setVehicleChangeListener(PropertyChangeListener listener)
 	{
 		// TODO: support vehicle change
 		_vehicleChangeListener = listener;
-	}
-
-	@Override
-	public void setPrecisionChangeListener(PropertyChangeListener listener)
-	{
-		_precisionChangeListener = listener;
 	}
 
 }

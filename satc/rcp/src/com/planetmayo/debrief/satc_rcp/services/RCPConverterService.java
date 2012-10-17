@@ -11,23 +11,23 @@ public class RCPConverterService implements ConverterService
 {
 
 	@Override
+	public String formatDate(String pattern, Date date)
+	{
+		return new SimpleDateFormat(pattern).format(date);
+	}
+
+	@Override
 	public Date parseDate(String pattern, String text)
 	{
-		try 
+		try
 		{
 			return new SimpleDateFormat(pattern).parse(text);
-		} catch (ParseException ex) 
+		}
+		catch (ParseException ex)
 		{
 			SupportServices.INSTANCE.getLog().warn("Can't parse date", ex);
 			return null;
 		}
 	}
 
-	@Override
-	public String formatDate(String pattern, Date date)
-	{
-		return new SimpleDateFormat(pattern).format(date);
-	}
-	
-	
 }
