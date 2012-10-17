@@ -43,8 +43,10 @@ public class StartFinishWidget extends Composite
 	{
 		startDateBox.setValue(startDate);
 		finishDateBox.setValue(finishDate);
+		if(startDate!=null)
 		startDateLabel.setText(startDate.toGMTString());
-		finishDateLabel.setText(startDate.toGMTString());
+		if(finishDate!=null)
+		finishDateLabel.setText(finishDate.toGMTString());
 	}
 
 	public void setFinishData(Date finishDate)
