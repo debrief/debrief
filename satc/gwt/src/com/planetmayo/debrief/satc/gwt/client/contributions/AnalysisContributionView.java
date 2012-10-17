@@ -31,6 +31,7 @@ public class AnalysisContributionView extends BaseContributionView {
 	@Override
 	public void setData(BaseContribution contribution) {
 		super.setData(contribution);
+		_myData = contribution;
 	}
 
 	@Override
