@@ -41,9 +41,6 @@ public class CourseForecastContributionView extends BaseContributionView {
 	@UiField
 	StartFinishWidget startFinish;
 
-	// TODO: Akash. It seems a little dodgy having this attribute declared twice,
-	// both with the same name.  The compiler makes it work, but it feels dodgy.
-	// 
 	private CourseForecastContribution _myData;
 
 	public CourseForecastContributionView() {
@@ -147,9 +144,7 @@ public class CourseForecastContributionView extends BaseContributionView {
 		// and store the type-casted contribution
 		_myData = (CourseForecastContribution) contribution;
 
-		// TODO: Akash this method should listen out for the course-specific 
 		// property changes
-		
 		// initialise the UI components
 		min.setData(_myData.getMinCourse());
 		max.setData(_myData.getMaxCourse());

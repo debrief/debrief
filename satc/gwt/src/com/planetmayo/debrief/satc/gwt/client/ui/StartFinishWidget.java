@@ -43,6 +43,8 @@ public class StartFinishWidget extends Composite
 	{
 		startDateBox.setValue(startDate);
 		finishDateBox.setValue(finishDate);
+		startDateLabel.setText(startDate.toGMTString());
+		finishDateLabel.setText(startDate.toGMTString());
 	}
 
 	public void setFinishData(Date finishDate)
@@ -59,9 +61,6 @@ public class StartFinishWidget extends Composite
 			finishDateBox.setVisible(false);
 			startDateLabel.setVisible(true);
 			finishDateLabel.setVisible(true);
-			// TODO remove when implementing backend
-			startDateLabel.setText(new Date().toLocaleString());
-			finishDateLabel.setText(new Date().toLocaleString());
 		}
 		else
 		{
