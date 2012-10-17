@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -51,6 +52,8 @@ public class TrackStates extends Composite implements BoundedStatesListener
 	{
 		while (grid.getRowCount() > 1)
 			grid.removeRow(1);
+		
+		// TODO: Akash, check the warning label is hidden
 	}
 
 	@Override
@@ -60,10 +63,14 @@ public class TrackStates extends Composite implements BoundedStatesListener
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(IncompatibleStateException e)
+	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
 	{
-		// TODO Auto-generated method stub
-
+		String message1 = "Incompatible States. Contribution: " + contribution.toString() ;
+		String message2 = "Adding:" + e.getNewRange().getConstraintSummary() + " to " + e.getExistingRange().getConstraintSummary();
+		System.err.println(message1);
+		System.err.println(message2);
+		
+		// TODO: Akash, make the label visible, put the text into it.  It may need a multi-line message
 	}
 
 	@Override
