@@ -90,6 +90,28 @@ public class RangeForecastContribution extends BaseContribution
 		{
 			RangeForecastContribution.ROrigin origin = iter.next();
 
+			Date thisT = origin._time;
+
+			boolean useIt = true;
+			// is it in time?
+			if(super.getStartDate() != null)
+			{
+				if(super.getStartDate().after(thisT))
+				{
+					useIt = false;
+				}
+			}
+			if(super.getFinishDate() != null)
+			{
+				if(super.getFinishDate().before(thisT))
+				{
+					useIt = false;
+				}
+			}
+			
+			if(!useIt)
+				continue;
+			
 			Point pt = origin._origin.asPoint();
 
 			// yes, ok we can centre our donut on that
