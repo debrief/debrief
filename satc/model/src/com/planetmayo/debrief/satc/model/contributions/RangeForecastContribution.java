@@ -95,20 +95,22 @@ public class RangeForecastContribution extends BaseContribution
 			// yes, ok we can centre our donut on that
 			LinearRing outer = getOuterRing(pt);
 			LinearRing inner = getInnerRing(pt);
+			LinearRing[] holes;
 
 			// did we generate an inner?
-			// if (inner != null)
-			// {
-			//
-			// // yes, better delete it then
-			// Geometry res = thePolygon.difference(inner);
-			// thePolygon = (Polygon) res;
-			// }
+			if (inner == null)
+			{
+				// nope = provide empty inner
+				holes = null;
+			}
+			else
+			{
+				holes = new LinearRing[]
+				{ inner };
+			}
 
 			// and create a polygon for it.
-			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer,
-					new LinearRing[]
-					{ inner });
+			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
 
 			// create a LocationRange for the poly
 			// now define the polygon
@@ -160,10 +162,14 @@ public class RangeForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	@Override
-	public Object getEstimate()
+	public Double getEstimate()
 	{
 		return _estimate;
+	}
+
+	public String getEstimateStr()
+	{
+		return "" + (int) _estimate;
 	}
 
 	@Override
