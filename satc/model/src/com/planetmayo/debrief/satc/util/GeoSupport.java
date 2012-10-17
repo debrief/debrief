@@ -42,6 +42,8 @@ public class GeoSupport
 
 	private static GeoPlotter _plotter;
 
+	private static boolean _writeToConsole = false;
+
 	public static void clearOutput(String title)
 	{
 		if (_plotter != null)
@@ -102,6 +104,11 @@ public class GeoSupport
 		_plotter = plotter;
 	}
 
+	public static void setToConsole(boolean writeToConsole)
+	{
+		_writeToConsole = writeToConsole;
+	}
+
 	private static void showGeometry(String title, Coordinate[] coords)
 	{
 		if (_plotter != null)
@@ -112,11 +119,14 @@ public class GeoSupport
 
 	private static void writeGeometry(String title, Coordinate[] coords)
 	{
-		System.out.println("== " + title + " ==");
-		for (int i = 0; i < coords.length; i++)
+		if (_writeToConsole)
 		{
-			Coordinate coordinate = coords[i];
-			System.out.println(coordinate.x + ", " + coordinate.y);
+			System.out.println("== " + title + " ==");
+			for (int i = 0; i < coords.length; i++)
+			{
+				Coordinate coordinate = coords[i];
+				System.out.println(coordinate.x + ", " + coordinate.y);
+			}
 		}
 
 		// and try to show it
