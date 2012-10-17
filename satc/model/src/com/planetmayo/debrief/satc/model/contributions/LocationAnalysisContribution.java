@@ -46,6 +46,9 @@ public class LocationAnalysisContribution extends BaseContribution
 
 					// ok. sort out the constraints from the last state
 					LocationRange newConstraint = getRangeFor(_lastState, thisS.getTime());
+					
+					// ok, display what is being shown
+		//			GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
 
 					// now apply those constraints to me
 					loc.constrainTo(newConstraint);
@@ -126,7 +129,7 @@ public class LocationAnalysisContribution extends BaseContribution
 		if (sRange != null)
 			res = GeoSupport.m2deg(sRange.getMaxMS() * timeMillis / 1000d);
 		else
-			res = RangeForecastContribution.MAX_SELECTABLE_RANGE_M;
+			res = GeoSupport.m2deg(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 
 		return res;
 	}
@@ -187,7 +190,7 @@ public class LocationAnalysisContribution extends BaseContribution
 			}
 		}
 
-		// GeoSupport.writeGeometry("Achievable", achievable);
+//		 GeoSupport.writeGeometry("Achievable_" + newDate, achievable);
 
 		// did we construct a bounds?
 		if (achievable != null)
