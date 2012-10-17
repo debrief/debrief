@@ -340,7 +340,7 @@ public class TrackGenerator implements SteppingGenerator
 	public void step()
 	{
 		if (_currentStep >= _contribs.size())
-			throw new RuntimeException("duh, have to reset before we can step again");
+			return;
 
 		// ok, get the next contribution
 		Object[] theArr = _contribs.toArray();
