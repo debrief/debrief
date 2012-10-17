@@ -1,6 +1,8 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Paint;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -62,6 +64,9 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 		_chart = ChartFactory.createScatterPlot("States", "Lat", "Lon", _myData2,
 				PlotOrientation.HORIZONTAL, false, false, false);
 		_plot = (XYPlot) _chart.getPlot();
+		_plot.setBackgroundPaint(Color.WHITE);
+		_plot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
+		_plot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
 		_plot.setNoDataMessage("No data available");
 		_plot.setRenderer(_renderer);
 
@@ -159,7 +164,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	private void showData(Collection<BoundedState> newStates)
 	{
 		// clear the data
-		_myData.removeAllSeries();
+		// _myData.removeAllSeries();
 
 		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
@@ -191,15 +196,17 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	public void showGeometry(String title, Coordinate[] coords)
 	{
 		// switch the legend on
-		if (_chart.getSubtitleCount() == 0)
-		{
-			LegendTitle legend = new LegendTitle(_plot);
-			legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-			legend.setFrame(new LineBorder());
-			legend.setBackgroundPaint(Color.white);
-			legend.setPosition(RectangleEdge.BOTTOM);
-			_chart.addSubtitle(0, legend);
-		}
+//		if (_chart.getSubtitleCount() == 0)
+//		{
+//			LegendTitle legend = new LegendTitle(_plot);
+//			legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+//			legend.setFrame(new LineBorder());
+//			legend.setBackgroundPaint(Color.white);
+//			legend.setPosition(RectangleEdge.BOTTOM);
+//			_chart.addSubtitle(0, legend);
+//		}
+
+		// does this series already exist?
 
 		// ok, we've got a new series
 		XYSeries series = new XYSeries(title, false);
@@ -211,6 +218,14 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 			series.add(new XYDataItem(coordinate.y, coordinate.x));
 		}
 		_myData.addSeries(series);
+
+		// get the series num
+		int num = _myData.getSeriesCount();
+
+		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND, 1.0f, new float[]
+				{ 10.0f, 6.0f }, 0.0f));
+
 	}
 
 	@Override
