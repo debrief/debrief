@@ -149,6 +149,10 @@ public class MaintainContributionsView extends Composite implements MyView,
 			// and display it
 			analystContributions.add(res);
 		}
+		else
+		{
+			System.err.println("Contribution view missing for:" + contribution);
+		}
 
 	}
 
