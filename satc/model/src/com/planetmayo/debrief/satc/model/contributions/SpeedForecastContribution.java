@@ -114,11 +114,17 @@ public class SpeedForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	@Override
-	public Object getEstimate()
+	public double getEstimate()
 	{
 		return _estimate;
 	}
+	
+	public String getEstimateStr()
+	{
+		return "" + (int) _estimate;
+	}
+
+
 
 	@Override
 	public String getHardConstraints()

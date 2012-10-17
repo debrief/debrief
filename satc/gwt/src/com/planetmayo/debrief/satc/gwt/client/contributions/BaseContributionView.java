@@ -12,25 +12,30 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 
 abstract public class BaseContributionView extends Composite implements
-		ContributionView, PropertyChangeListener {
+		ContributionView, PropertyChangeListener
+{
 
 	@UiField
 	public ContributionPanelHeader header;
 
-	public BaseContributionView() {
+	public BaseContributionView()
+	{
 
 	}
-	
+
 	abstract protected BaseContribution getData();
 
 	@Override
-	public void propertyChange(PropertyChangeEvent arg0) {
+	public void propertyChange(PropertyChangeEvent arg0)
+	{
 
 		final String attr = arg0.getPropertyName();
 
-		if (attr.equals(BaseContribution.ESTIMATE)) {
-			header.setEstimateData((String) arg0.getNewValue());
-		} else if (attr.equals(BaseContribution.WEIGHT))
+		if (attr.equals(BaseContribution.ESTIMATE))
+		{
+			header.setEstimateData(getData().getEstimateStr());
+		}
+		else if (attr.equals(BaseContribution.WEIGHT))
 			header.setWeightData((Integer) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.ACTIVE))
 			header.setActiveData((Boolean) arg0.getNewValue());
@@ -40,16 +45,15 @@ abstract public class BaseContributionView extends Composite implements
 	}
 
 	@Override
-	public void setData(BaseContribution contribution) {
+	public void setData(BaseContribution contribution)
+	{
 
 		// initialise the UI components
-		Object estimate = contribution.getEstimate();
-		header.setData(contribution.isActive(),
-				contribution.getHardConstraints(), "" + estimate,
-				contribution.getWeight());
-		
-		// TODO: Akash - this method should only register listeners for the 
-		// BaseContribution attributes that it knows about.  The course-specific
+		header.setData(contribution.isActive(), contribution.getHardConstraints(),
+				contribution.getEstimateStr(), contribution.getWeight());
+
+		// TODO: Akash - this method should only register listeners for the
+		// BaseContribution attributes that it knows about. The course-specific
 		// ones should be declared in CourseForecastContribution
 
 		contribution.addPropertyChangeListener(
@@ -62,33 +66,36 @@ abstract public class BaseContributionView extends Composite implements
 
 		contribution.addPropertyChangeListener(BaseContribution.NAME, this);
 
-		contribution.addPropertyChangeListener(BaseContribution.START_DATE,
-				this);
+		contribution.addPropertyChangeListener(BaseContribution.START_DATE, this);
 
-		contribution.addPropertyChangeListener(BaseContribution.FINISH_DATE,
-				this);
+		contribution.addPropertyChangeListener(BaseContribution.FINISH_DATE, this);
 
 		contribution.addPropertyChangeListener(BaseContribution.WEIGHT, this);
 
 		contribution.addPropertyChangeListener(BaseContribution.ACTIVE, this);
 
-		contribution.addPropertyChangeListener(
-				BaseContribution.HARD_CONSTRAINTS, this);
+		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
+				this);
 	}
 
 	@Override
-	public void initHandlers() {
-		header.setHandlers(new ValueChangeHandler<Boolean>() {
+	public void initHandlers()
+	{
+		header.setHandlers(new ValueChangeHandler<Boolean>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Boolean> event) {
+			public void onValueChange(ValueChangeEvent<Boolean> event)
+			{
 				getData().setActive(event.getValue());
 
 			}
-		}, new ValueChangeHandler<Integer>() {
+		}, new ValueChangeHandler<Integer>()
+		{
 
 			@Override
-			public void onValueChange(ValueChangeEvent<Integer> event) {
+			public void onValueChange(ValueChangeEvent<Integer> event)
+			{
 				getData().setWeight(event.getValue());
 
 			}

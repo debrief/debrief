@@ -202,6 +202,13 @@ public class BearingMeasurementContribution extends BaseContribution
 		return "" + _measurements.size() + " measurements " + (int) _degError
 				+ " Margin";
 	}
+	
+	
+
+	public Object getEstimate()
+	{
+		return null;
+	}
 
 	/**
 	 * whether this contribution has any measurements yet

@@ -114,9 +114,14 @@ public class CourseForecastContribution extends BaseContribution
 	{
 		return ContributionDataType.FORECAST;
 	}
+	
+	public String getEstimateStr()
+	{
+		return "" + _estimate;
+	}
 
-	@Override
-	public Object getEstimate()
+
+	public int getEstimate()
 	{
 		return _estimate;
 	}

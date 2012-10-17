@@ -88,9 +88,10 @@ public abstract class BaseContribution extends ModelObject implements
 
 	public abstract ContributionDataType getDataType();
 
-	public Object getEstimate()
+	/** provide a string representation of the estimate */
+	public String getEstimateStr()
 	{
-		return null;
+		return "n/a";
 	}
 
 	public Date getFinishDate()

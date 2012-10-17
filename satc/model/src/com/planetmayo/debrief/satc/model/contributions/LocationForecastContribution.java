@@ -53,11 +53,16 @@ public class LocationForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	@Override
 	public GeoPoint getEstimate()
 	{
 		return _estimate;
 	}
+	
+	public String getEstimateStr()
+	{
+		return _estimate.toString();
+	}
+
 
 	@Override
 	public String getHardConstraints()
