@@ -1,9 +1,7 @@
 package com.planetmayo.debrief.satc.model.states;
 
-import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -34,7 +32,7 @@ public class LocationRange extends BaseRange<LocationRange>
 	{
 		this((Polygon) range._myArea.clone());
 	}
-
+	
 	/**
 	 * trim my area to the area provided
 	 * 

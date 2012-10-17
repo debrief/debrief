@@ -94,7 +94,7 @@ public class TrackGenerator implements SteppingGenerator
 	 */
 	private boolean _liveRunning;
 
-	protected void processThisStep(BaseContribution theContrib, int stepIndex)
+	protected void processThisStep(final BaseContribution theContrib,final int stepIndex)
 	{
 		try
 		{
@@ -127,13 +127,11 @@ public class TrackGenerator implements SteppingGenerator
 			{
 				BoundedStatesListener boundedStatesListener = (BoundedStatesListener) iter2
 						.next();
-				boundedStatesListener.incompatibleStatesIdentified(e);
+				boundedStatesListener.incompatibleStatesIdentified(theContrib, e);
 			}
 			
 			// clear the bounded states = they're invalid
 			_space.clear();
-			
-
 			// TODO handle the incompatible state problem, see ticket 5:
 			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
 		}

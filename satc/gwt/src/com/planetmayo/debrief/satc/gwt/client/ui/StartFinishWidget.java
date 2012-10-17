@@ -39,6 +39,7 @@ public class StartFinishWidget extends Composite
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setData(Date startDate, Date finishDate)
 	{
 		startDateBox.setValue(startDate);
@@ -54,7 +55,6 @@ public class StartFinishWidget extends Composite
 		finishDateBox.setValue(finishDate);
 	}
 
-	@SuppressWarnings("deprecation")
 	public void setLoaded(boolean value)
 	{
 		if (value)

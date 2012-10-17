@@ -22,6 +22,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -121,7 +122,7 @@ public class SpatialView extends Composite implements BoundedStatesListener
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(IncompatibleStateException e)
+	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
 	{
 		// TODO Auto-generated method stub
 

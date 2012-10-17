@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.gwt.client.contributions.AnalysisContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.ContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.CourseForecastContributionView;
@@ -31,6 +32,7 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
@@ -129,6 +131,8 @@ public class MaintainContributionsView extends Composite implements MyView,
 			res = new RangeForecastContributionView();
 		else if (contribution instanceof BearingMeasurementContribution)
 			res = new BearingMeasurementContributionView();
+		else if (contribution instanceof LocationAnalysisContribution)
+			res = new AnalysisContributionView();
 
 		// did we find one?
 		if (res != null)

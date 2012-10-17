@@ -224,7 +224,7 @@ public class TrackGeneratorTest extends TestCase {
 			}
 
 			@Override
-			public void incompatibleStatesIdentified(
+			public void incompatibleStatesIdentified(BaseContribution contribution, 
 					IncompatibleStateException e) {
 				_ise = e;
 			}

@@ -7,7 +7,6 @@ import java.util.TreeSet;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -19,9 +18,9 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange;
@@ -271,7 +270,7 @@ public class TrackStatesView extends CoreView implements BoundedStatesListener
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(IncompatibleStateException e)
+	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
 	{
 		// TODO: switch UI to be a composite view, with a label above the table.
 		// the label is normally hidden , and shown when

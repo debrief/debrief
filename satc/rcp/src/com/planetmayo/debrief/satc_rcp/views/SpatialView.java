@@ -23,6 +23,7 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -196,7 +197,7 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(IncompatibleStateException e)
+	public void incompatibleStatesIdentified(BaseContribution contribution, IncompatibleStateException e)
 	{
 		_myData.removeAllSeries();
 	}
