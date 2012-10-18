@@ -69,7 +69,6 @@ public class TrackStates extends Composite implements BoundedStatesListener
 		grid.setWidget(index, 1, new Label(location));
 		grid.setWidget(index, 2, new Label(speed));
 		grid.setWidget(index, 3, new Label(course));
-
 	}
 
 	/**
@@ -81,21 +80,26 @@ public class TrackStates extends Composite implements BoundedStatesListener
 		while (grid.getRowCount() > 1)
 			grid.removeRow(1);
 
-		// TODO: Akash, check the warning label is hidden
-		errorPanel.setText(""); // This clears the error label
 
+	}
+	
+	private void clearMessage()
+	{
+		errorPanel.setText(""); // This clears the error label
 	}
 
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
-		// statesBounded(newStates);
 	}
 
 	@Override
 	public void incompatibleStatesIdentified(BaseContribution contribution,
 			IncompatibleStateException e)
 	{
+		// get rid of any existing message
+		clearMessage();
+		
 		// empty the table
 		clearGrid();
 
@@ -107,21 +111,18 @@ public class TrackStates extends Composite implements BoundedStatesListener
 		System.err.println(message2);
 
 		errorPanel.setHTML(message1 + "<BR>" + message2);
-		// TODO: Akash, make the label visible, put the text into it. It may
-		// need a
-		// multi-line message
-
-		// clearGrid();
 	}
 
 	@Override
 	public void statesBounded(Collection<BoundedState> newStates)
 	{
+		clearGrid();
 
 		// do we have states?
 		if ((newStates != null) && newStates.size() > 0)
 		{
-			clearGrid();
+			// have data, check the error message is clear
+			clearMessage();
 
 			Iterator<BoundedState> iter = newStates.iterator();
 			while (iter.hasNext())
