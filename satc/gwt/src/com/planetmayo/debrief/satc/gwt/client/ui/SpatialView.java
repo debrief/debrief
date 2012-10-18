@@ -18,9 +18,12 @@ import ca.nanometrics.gflot.client.options.PointsSeriesOptions;
 import ca.nanometrics.gflot.client.options.ZoomOptions;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
@@ -39,6 +42,31 @@ public class SpatialView extends Composite implements BoundedStatesListener
 	@UiField(provided = true)
 	SimplePlot plot = new SimplePlot(new PlotModel(), new PlotOptions());
 
+	@UiField InlineLabel debug;
+	@UiField InlineLabel clear;
+	
+	@UiHandler("clear")
+	void clearClick(ClickEvent e)
+	{
+
+	}
+	
+	@UiHandler("debug")
+	void clearDebug(ClickEvent e)
+	{
+		if(debug.getStyleName().contains("clicked"))
+		{
+			_inDebug = false;
+			debug.removeStyleName("clicked");
+		}
+		else
+		{
+			_inDebug = true;
+			debug.addStyleName("clicked");
+		}
+	}
+	
+	
 	// TODO: Akash - this will actually be a GWT uiField, a toggle button
 	Boolean _inDebug = false;
 
@@ -66,6 +94,7 @@ public class SpatialView extends Composite implements BoundedStatesListener
 
 		// plotOptions.getGridOptions().clearMinBorderMargin();
 		plotOptions.getGridOptions().setBorderWidth(1);
+		plotOptions.getGridOptions().setBorderColor("#CCC");
 		plotOptions.getGridOptions().setMinBorderMargin(5);
 
 		// support for zoom
@@ -73,7 +102,7 @@ public class SpatialView extends Composite implements BoundedStatesListener
 				.setPanOptions(new PanOptions().setInteractive(true));
 
 		// format xAxis date display
-		plot.setHeight("300px");
+		plot.setHeight("30em");
 		plot.setWidth("100%");
 
 	}
