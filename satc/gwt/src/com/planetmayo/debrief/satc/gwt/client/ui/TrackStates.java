@@ -4,11 +4,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -31,6 +34,27 @@ public class TrackStates extends Composite implements BoundedStatesListener
 
 	@UiField
 	HTML errorPanel;
+
+	@UiField
+	InlineLabel debug;
+
+	@UiHandler("debug")
+	void clearDebug(ClickEvent e)
+	{
+		if (debug.getStyleName().contains("clicked"))
+		{
+			_inDebug = false;
+			debug.removeStyleName("clicked");
+		}
+		else
+		{
+			_inDebug = true;
+			debug.addStyleName("clicked");
+		}
+	}
+
+	// TODO: Akash - this will actually be a GWT uiField, a toggle button
+	Boolean _inDebug = false;
 
 	public TrackStates()
 	{
@@ -74,7 +98,7 @@ public class TrackStates extends Composite implements BoundedStatesListener
 	{
 		// empty the table
 		clearGrid();
-		
+
 		String message1 = "Incompatible States. Contribution: "
 				+ contribution.toString();
 		String message2 = "Adding:" + e.getNewRange().getConstraintSummary()
