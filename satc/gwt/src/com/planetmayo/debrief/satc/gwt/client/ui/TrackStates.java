@@ -81,6 +81,8 @@ public class TrackStates extends Composite implements BoundedStatesListener
 
 		// TODO: Akash, make the label visible, put the text into it. It may need a
 		// multi-line message
+		
+		clearGrid();
 	}
 
 	@Override
