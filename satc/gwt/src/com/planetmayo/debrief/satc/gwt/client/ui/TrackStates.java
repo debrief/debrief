@@ -10,6 +10,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.gwt.client.Gwt;
+import com.planetmayo.debrief.satc.gwt.client.event.ErrorEvent;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -54,6 +56,8 @@ public class TrackStates extends Composite implements BoundedStatesListener
 			grid.removeRow(1);
 
 		// TODO: Akash, check the warning label is hidden
+		Gwt.eventBus.fireEvent(new ErrorEvent(null));
+
 	}
 
 	@Override
@@ -72,6 +76,8 @@ public class TrackStates extends Composite implements BoundedStatesListener
 				+ " to " + e.getExistingRange().getConstraintSummary();
 		System.err.println(message1);
 		System.err.println(message2);
+		
+		Gwt.eventBus.fireEvent(new ErrorEvent(message1,message2));
 
 		// TODO: Akash, make the label visible, put the text into it. It may need a
 		// multi-line message
