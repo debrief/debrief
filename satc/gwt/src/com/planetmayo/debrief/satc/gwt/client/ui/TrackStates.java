@@ -56,14 +56,14 @@ public class TrackStates extends Composite implements BoundedStatesListener
 			grid.removeRow(1);
 
 		// TODO: Akash, check the warning label is hidden
-		Gwt.eventBus.fireEvent(new ErrorEvent(null));
+	//	Gwt.eventBus.fireEvent(new ErrorEvent(null));
 
 	}
 
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
-		statesBounded(newStates);
+//		statesBounded(newStates);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class TrackStates extends Composite implements BoundedStatesListener
 		// TODO: Akash, make the label visible, put the text into it. It may need a
 		// multi-line message
 		
-		clearGrid();
+//		clearGrid();
 	}
 
 	@Override
