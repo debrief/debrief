@@ -1,6 +1,6 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:my="urn:import:com.planetmayo.debrief.satc.gwt.client.ui">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
 		.grid {
 			border-color: white;
@@ -23,12 +23,11 @@
 				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
 			background: linear-gradient(to bottom, rgba(181, 189, 200, 1) 0%,
 				rgba(130, 140, 149, 1) 36%, rgba(40, 52, 59, 1) 100% );
-			filter: progid:        DXImageTransform.Microsoft.gradient(       
-																startColorstr=       
-																'#b5bdc8', endColorstr=        '#28343b', GradientType=
-				      
-														
-																0 );
+			filter: progid:     DXImageTransform.Microsoft.gradient(    
+										startColorstr=    
+										'#b5bdc8', endColorstr=     '#28343b', GradientType=    
+								
+										0 );
 		}
 		
 		.harness-lo {
@@ -53,36 +52,35 @@
 			border-top-right-radius: 10px;
 		}
 		
-		.relative {
-			position: relative;
-			height: 100%;
+		.errorPanel {
+			margin: 5px 5px 0px 5px;
 		}
 	</ui:style>
-	<g:HTMLPanel height="100%">
-		<my:ErrorPanelView></my:ErrorPanelView>
-		<g:HTMLPanel styleName="{style.relative}">
-			<g:HTMLPanel styleName="{style.harness-lo}">
-				<g:Label text="Track States" horizontalAlignment="center"
-					styleName="{style.header}"></g:Label>
-				<g:Grid ui:field="grid" styleName="{style.grid}" borderWidth="1"
-					cellPadding="4" cellSpacing="0" width="100%">
-					<g:row styleName="{style.grid-header}">
-						<g:customCell styleName="header">
-							<g:Label>Time</g:Label>
-						</g:customCell>
-						<g:customCell styleName="header">
-							<g:Label>Location</g:Label>
-						</g:customCell>
-						<g:customCell styleName="header">
-							<g:Label>Speed</g:Label>
-						</g:customCell>
-						<g:customCell styleName="header">
-							<g:Label>Course</g:Label>
-						</g:customCell>
-					</g:row>
-				</g:Grid>
+	<g:HTMLPanel styleName="{style.harness-lo}">
 
-			</g:HTMLPanel>
-		</g:HTMLPanel>
+
+		<g:Label text="Track States" horizontalAlignment="center"
+			styleName="{style.header}"></g:Label>
+
+		<g:HTML ui:field="errorPanel" styleName="{style.errorPanel}"></g:HTML>
+
+		<g:Grid ui:field="grid" styleName="{style.grid}" borderWidth="1"
+			cellPadding="4" cellSpacing="0" width="100%">
+			<g:row styleName="{style.grid-header}">
+				<g:customCell styleName="header">
+					<g:Label>Time</g:Label>
+				</g:customCell>
+				<g:customCell styleName="header">
+					<g:Label>Location</g:Label>
+				</g:customCell>
+				<g:customCell styleName="header">
+					<g:Label>Speed</g:Label>
+				</g:customCell>
+				<g:customCell styleName="header">
+					<g:Label>Course</g:Label>
+				</g:customCell>
+			</g:row>
+		</g:Grid>
+
 	</g:HTMLPanel>
 </ui:UiBinder> 

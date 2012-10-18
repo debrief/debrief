@@ -7,7 +7,7 @@
 	<g:HTMLPanel>
 		<g:CaptionPanel captionText="Course Forecast - Starting course">
 
-			<g:DisclosurePanel animationEnabled="true" open="false"
+			<g:DisclosurePanel animationEnabled="true" open="true"
 				width="100%">
 
 				<g:customHeader>
