@@ -54,6 +54,7 @@
 		
 		.errorPanel {
 			margin: 5px 5px 0px 5px;
+			color: #EE1212;
 		}
 	</ui:style>
 	<g:HTMLPanel styleName="{style.harness-lo}">
