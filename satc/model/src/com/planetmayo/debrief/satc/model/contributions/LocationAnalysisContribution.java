@@ -31,9 +31,11 @@ public class LocationAnalysisContribution extends BaseContribution
 		BoundedState _lastState = null;
 
 		// ok, loop through the states
+		int ctr = 0;
 		Iterator<BoundedState> iter = space.states().iterator();
 		while (iter.hasNext())
 		{
+			ctr++;
 			BoundedState thisS = iter.next();
 
 			// does it have a location?
@@ -48,7 +50,7 @@ public class LocationAnalysisContribution extends BaseContribution
 					LocationRange newConstraint = getRangeFor(_lastState, thisS.getTime());
 					
 					// ok, display what is being shown
-		//			GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
+					GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
 
 					// now apply those constraints to me
 					loc.constrainTo(newConstraint);

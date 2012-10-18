@@ -86,8 +86,10 @@ public class RangeForecastContribution extends BaseContribution
 
 		// loop through our measurements
 		Iterator<ROrigin> iter = _measurements.iterator();
+		int ctr = 0;
 		while (iter.hasNext())
 		{
+			ctr++;
 			RangeForecastContribution.ROrigin origin = iter.next();
 
 			Date thisT = origin._time;
@@ -134,6 +136,8 @@ public class RangeForecastContribution extends BaseContribution
 			// and create a polygon for it.
 			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
 
+			GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+			
 			// create a LocationRange for the poly
 			// now define the polygon
 			final LocationRange myRa = new LocationRange(thePoly);
