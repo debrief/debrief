@@ -23,7 +23,7 @@
 
 							<my:StartFinishWidget ui:field="startFinish" loaded="true"></my:StartFinishWidget>
 
-							<my:Slider2BarWidget ui:field="bearing" type="bearing" text="Limit:"></my:Slider2BarWidget>
+							<my:Slider2BarWidget ui:field="bearing" type="bearing_error" text="Limit:"></my:Slider2BarWidget>
 
 						</g:HTMLPanel>
 					</g:CaptionPanel>
