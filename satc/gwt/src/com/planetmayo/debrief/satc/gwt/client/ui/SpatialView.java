@@ -39,6 +39,9 @@ public class SpatialView extends Composite implements BoundedStatesListener
 	@UiField(provided = true)
 	SimplePlot plot = new SimplePlot(new PlotModel(), new PlotOptions());
 
+	// TODO: Akash - this will actually be a GWT uiField, a toggle button
+	Boolean _inDebug = false;
+
 	private static SpatialViewUiBinder uiBinder = GWT
 			.create(SpatialViewUiBinder.class);
 
@@ -83,16 +86,15 @@ public class SpatialView extends Composite implements BoundedStatesListener
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
-		// TODO Auto-generated method stub
-
+		if (_inDebug)
+			statesBounded(newStates);
 	}
 
 	@Override
 	public void incompatibleStatesIdentified(BaseContribution contribution,
 			IncompatibleStateException e)
 	{
-		// TODO Auto-generated method stub
-
+		clearPlot();
 	}
 
 	@Override
@@ -102,7 +104,10 @@ public class SpatialView extends Composite implements BoundedStatesListener
 		clearPlot();
 
 		if (newStates == null)
+		{
+			clearPlot();
 			return;
+		}
 
 		// ok, go for it. display the states
 		Iterator<BoundedState> iter = newStates.iterator();

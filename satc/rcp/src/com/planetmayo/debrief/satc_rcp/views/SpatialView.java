@@ -190,6 +190,11 @@ public class SpatialView extends CoreView implements BoundedStatesListener,
 	@Override
 	public void showGeometry(String title, Coordinate[] coords)
 	{
+		
+		// are we in debug mode?
+		if(! _debugMode.isChecked())
+			return;
+		
 		// switch the legend on
 //		if (_chart.getSubtitleCount() == 0)
 //		{

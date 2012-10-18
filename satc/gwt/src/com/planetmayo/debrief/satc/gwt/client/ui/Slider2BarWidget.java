@@ -22,6 +22,7 @@ public class Slider2BarWidget extends HorizontalPanel
 	private final static String LOCATION = "LOCATION";
 	private final static String COURSE = "COURSE";
 	private final static String BEARING = "BEARING";
+	private final static String BEARING_ERROR = "BEARING_ERROR";
 	private final static String FREQUENCY = "FREQUENCY";
 
 	public Slider2BarWidget()
@@ -98,6 +99,13 @@ public class Slider2BarWidget extends HorizontalPanel
 			unitLabelPrefix = "+/-";
 			unitLabelSuffix = "&deg;";
 			sliderBarSimpleHorizontal.setMaxValue(360);
+			value.setWidth("45px");
+		}
+		else if (type.equalsIgnoreCase(BEARING_ERROR))
+		{
+			unitLabelPrefix = "+/-";
+			unitLabelSuffix = "&deg;";
+			sliderBarSimpleHorizontal.setMaxValue(30);
 			value.setWidth("45px");
 		}
 		else if (type.equalsIgnoreCase(FREQUENCY))
