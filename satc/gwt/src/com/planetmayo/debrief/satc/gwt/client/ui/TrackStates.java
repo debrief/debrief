@@ -16,9 +16,11 @@ import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 
-public class TrackStates extends Composite implements BoundedStatesListener {
+public class TrackStates extends Composite implements BoundedStatesListener
+{
 
-	interface TrackStatesUiBinder extends UiBinder<Widget, TrackStates> {
+	interface TrackStatesUiBinder extends UiBinder<Widget, TrackStates>
+	{
 	}
 
 	private static TrackStatesUiBinder uiBinder = GWT
@@ -30,12 +32,14 @@ public class TrackStates extends Composite implements BoundedStatesListener {
 	@UiField
 	HTML errorPanel;
 
-	public TrackStates() {
+	public TrackStates()
+	{
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
 	public void addStates(String time, String location, String speed,
-			String course) {
+			String course)
+	{
 		int index = grid.insertRow(grid.getRowCount());
 		grid.setWidget(index, 0, new Label(time));
 		grid.setWidget(index, 1, new Label(location));
@@ -48,24 +52,29 @@ public class TrackStates extends Composite implements BoundedStatesListener {
 	 * remove all rows
 	 * 
 	 */
-	private void clearGrid() {
+	private void clearGrid()
+	{
 		while (grid.getRowCount() > 1)
 			grid.removeRow(1);
 
 		// TODO: Akash, check the warning label is hidden
-		errorPanel.setText(""); //This clears the error label
+		errorPanel.setText(""); // This clears the error label
 
 	}
 
 	@Override
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
-//		statesBounded(newStates);
+		// statesBounded(newStates);
 	}
 
 	@Override
 	public void incompatibleStatesIdentified(BaseContribution contribution,
-			IncompatibleStateException e) {
+			IncompatibleStateException e)
+	{
+		// empty the table
+		clearGrid();
+		
 		String message1 = "Incompatible States. Contribution: "
 				+ contribution.toString();
 		String message2 = "Adding:" + e.getNewRange().getConstraintSummary()
@@ -77,32 +86,40 @@ public class TrackStates extends Composite implements BoundedStatesListener {
 		// TODO: Akash, make the label visible, put the text into it. It may
 		// need a
 		// multi-line message
-		
-//		clearGrid();
+
+		// clearGrid();
 	}
 
 	@Override
-	public void statesBounded(Collection<BoundedState> newStates) {
-		clearGrid();
+	public void statesBounded(Collection<BoundedState> newStates)
+	{
 
-		Iterator<BoundedState> iter = newStates.iterator();
-		while (iter.hasNext()) {
-			BoundedState state = iter.next();
-			@SuppressWarnings("deprecation")
-			String dateStr = state.getTime().toGMTString();
-			String locStr = "n/a";
-			String speedStr = "n/a";
-			String courseStr = "n/a";
+		// do we have states?
+		if ((newStates != null) && newStates.size() > 0)
+		{
+			clearGrid();
 
-			if (state.getLocation() != null)
-				locStr = state.getLocation().getConstraintSummary();
-			if (state.getSpeed() != null)
-				speedStr = state.getSpeed().getConstraintSummary();
-			if (state.getCourse() != null)
-				courseStr = state.getCourse().getConstraintSummary();
+			Iterator<BoundedState> iter = newStates.iterator();
+			while (iter.hasNext())
+			{
+				BoundedState state = iter.next();
+				@SuppressWarnings("deprecation")
+				String dateStr = state.getTime().toGMTString();
+				String locStr = "n/a";
+				String speedStr = "n/a";
+				String courseStr = "n/a";
 
-			addStates(dateStr, locStr, speedStr, courseStr);
+				if (state.getLocation() != null)
+					locStr = state.getLocation().getConstraintSummary();
+				if (state.getSpeed() != null)
+					speedStr = state.getSpeed().getConstraintSummary();
+				if (state.getCourse() != null)
+					courseStr = state.getCourse().getConstraintSummary();
+
+				addStates(dateStr, locStr, speedStr, courseStr);
+			}
 		}
+
 	}
 
 }
