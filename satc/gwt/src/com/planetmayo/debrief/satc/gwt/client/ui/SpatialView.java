@@ -116,7 +116,7 @@ public class SpatialView extends Composite implements BoundedStatesListener
 	public void debugStatesBounded(Collection<BoundedState> newStates)
 	{
 		if (_inDebug)
-			statesBounded(newStates);
+			plotThis(newStates);
 	}
 
 	@Override
@@ -132,6 +132,11 @@ public class SpatialView extends Composite implements BoundedStatesListener
 		// clear the plot
 		clearPlot();
 
+		plotThis(newStates);
+	}
+
+	private void plotThis(Collection<BoundedState> newStates)
+	{
 		if (newStates == null)
 		{
 			clearPlot();
