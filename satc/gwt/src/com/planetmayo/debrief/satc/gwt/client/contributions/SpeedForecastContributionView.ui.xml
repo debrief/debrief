@@ -7,7 +7,7 @@
 	<g:HTMLPanel>
 		<g:CaptionPanel captionText="Speed Forecast - Easterly leg">
 
-			<g:DisclosurePanel animationEnabled="true" open="true"
+			<g:DisclosurePanel ui:field="disclosurePanel" animationEnabled="true" open="true"
 				width="100%">
 
 				<g:customHeader>

@@ -7,20 +7,26 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.planetmayo.debrief.satc.gwt.client.Gwt;
+import com.planetmayo.debrief.satc.gwt.client.event.CollapseDisclosurePanelsEvent;
+import com.planetmayo.debrief.satc.gwt.client.event.CollapseDisclosurePanelsHandler;
 import com.planetmayo.debrief.satc.gwt.client.ui.ContributionPanelHeader;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 
 abstract public class BaseContributionView extends Composite implements
-		ContributionView, PropertyChangeListener
+		ContributionView, PropertyChangeListener, CollapseDisclosurePanelsHandler
 {
 
 	@UiField
 	public ContributionPanelHeader header;
+	
+	@UiField DisclosurePanel disclosurePanel;
 
 	public BaseContributionView()
 	{
-
+		Gwt.eventBus.addHandler(CollapseDisclosurePanelsEvent.TYPE , this);
 	}
 
 	abstract protected BaseContribution getData();
@@ -100,6 +106,12 @@ abstract public class BaseContributionView extends Composite implements
 
 		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
 				this);
+	}
+	
+	@Override
+	public void close(CollapseDisclosurePanelsEvent event)
+	{
+			disclosurePanel.setOpen(false);
 	}
 
 }
