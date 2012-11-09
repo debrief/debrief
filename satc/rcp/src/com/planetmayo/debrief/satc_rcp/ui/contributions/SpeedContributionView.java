@@ -70,9 +70,9 @@ public class SpeedContributionView extends AnalystContributionView<SpeedForecast
 	@Override
 	protected void initializeWidgets()
 	{
-		maxSlider.setMaximum(200);
-		minSlider.setMaximum(200);
-		estimateSlider.setMaximum(200);
+		maxSlider.setMaximum((int)SpeedForecastContribution.MAX_SPEED_VALUE_KTS);
+		minSlider.setMaximum((int)SpeedForecastContribution.MAX_SPEED_VALUE_KTS);
+		estimateSlider.setMaximum((int)SpeedForecastContribution.MAX_SPEED_VALUE_KTS);
 	}
 
 	@Override

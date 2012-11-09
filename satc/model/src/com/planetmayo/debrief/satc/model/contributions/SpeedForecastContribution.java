@@ -18,8 +18,10 @@ public class SpeedForecastContribution extends BaseContribution
 	public static final String MAX_SPEED = "maxSpeed";
 
 	protected double _minSpeedKts;
+	
+	public static final double MAX_SPEED_VALUE_KTS = 40.0;
 
-	protected double _maxSpeedKts = 200.0;
+	protected double _maxSpeedKts = MAX_SPEED_VALUE_KTS;
 
 	protected double _estimateKts;
 

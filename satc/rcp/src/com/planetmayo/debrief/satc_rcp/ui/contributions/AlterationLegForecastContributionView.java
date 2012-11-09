@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
@@ -48,7 +49,7 @@ public class AlterationLegForecastContributionView extends AnalystContributionVi
 		maxCourseSlider.setMaximum(360);
 		
 		maxSpeedSlider.setMinimum(0);
-		maxSpeedSlider.setMaximum(200);
+		maxSpeedSlider.setMaximum((int)SpeedForecastContribution.MAX_SPEED_VALUE_KTS);
 	}
 
 	@Override
