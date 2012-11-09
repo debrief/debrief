@@ -31,6 +31,7 @@ public class LocationAnalysisContribution extends BaseContribution
 		BoundedState _lastState = null;
 
 		// ok, loop through the states
+		@SuppressWarnings("unused")
 		int ctr = 0;
 		Iterator<BoundedState> iter = space.states().iterator();
 		while (iter.hasNext())
@@ -48,9 +49,9 @@ public class LocationAnalysisContribution extends BaseContribution
 
 					// ok. sort out the constraints from the last state
 					LocationRange newConstraint = getRangeFor(_lastState, thisS.getTime());
-					
+
 					// ok, display what is being shown
-					GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
+		//			GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
 
 					// now apply those constraints to me
 					loc.constrainTo(newConstraint);
@@ -166,8 +167,10 @@ public class LocationAnalysisContribution extends BaseContribution
 					// is it a multi-point?
 					if (geom instanceof MultiPoint)
 					{
-						@SuppressWarnings("unused")
 						MultiPoint mp = (MultiPoint) geom;
+						// get a line string from the coordinates
+						geom = GeoSupport.getFactory()
+								.createLineString(mp.getCoordinates());
 					}
 				}
 				achievable = (LineString) geom;
@@ -192,7 +195,7 @@ public class LocationAnalysisContribution extends BaseContribution
 			}
 		}
 
-//		 GeoSupport.writeGeometry("Achievable_" + newDate, achievable);
+		// GeoSupport.writeGeometry("Achievable_" + newDate, achievable);
 
 		// did we construct a bounds?
 		if (achievable != null)
@@ -309,6 +312,13 @@ public class LocationAnalysisContribution extends BaseContribution
 			double minR = sRange.getMinMS() * timeMillis / 1000d;
 			// convert to degs
 			minR = GeoSupport.m2deg(minR);
+			
+			// aaah, just double check the two ranges aren't equal - it causes trouble
+			if(minR == maxR)
+			{
+				minR = maxR - GeoSupport.m2deg(10);
+			}
+			
 			inner = new LinearRing[]
 			{ (LinearRing) pt.buffer(minR).getBoundary() };
 		}
