@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
@@ -25,33 +23,26 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class LocationContributionView extends AnalystContributionView
+public class LocationContributionView extends AnalystContributionView<LocationForecastContribution>
 {
-
-	private BaseContribution contribution;
-	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;
 
 	private Scale limitSlider;
 	private FormattedText latitude;
 	private FormattedText longitude;
 
 	public LocationContributionView(Composite parent,
-			BaseContribution contribution)
+			LocationForecastContribution contribution)
 	{
-		super(parent);
-		this.contribution = contribution;
+		super(parent, contribution);
 		initUI();
 	}
 
 	@Override
-	protected void bindValues()
+	protected void bindValues(DataBindingContext context)
 	{
-		context = new DataBindingContext();
-
-		bindCommonHeaderWidgets(context, contribution, null,
+		bindCommonHeaderWidgets(context, null,
 				new PrefixSuffixLabelConverter(String.class, " m"));
-		bindCommonDates(context, contribution);
+		bindCommonDates(context);
 
 		IObservableValue limitSliderValue = WidgetProperties.selection().observe(
 				limitSlider);
@@ -133,17 +124,8 @@ public class LocationContributionView extends AnalystContributionView
 	}
 
 	@Override
-	public void dispose()
+	protected String getTitlePrefix()
 	{
-		super.dispose();
-		contribution.removePropertyChangeListener("name", titleChangeListener);
-		context.dispose();
-	}
-
-	@Override
-	protected void initializeWidgets()
-	{
-		titleChangeListener = attachTitleChangeListener(contribution,
-				"Location Forecast - ");
+		return "Location Forecast - ";
 	}
 }

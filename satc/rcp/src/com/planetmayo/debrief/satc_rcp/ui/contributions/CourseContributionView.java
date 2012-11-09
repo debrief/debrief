@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -13,31 +11,23 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class CourseContributionView extends AnalystContributionView
+public class CourseContributionView extends AnalystContributionView<CourseForecastContribution>
 {
-
-	private BaseContribution contribution;
-	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;
-
-	public CourseContributionView(Composite parent, BaseContribution contribution)
+	public CourseContributionView(Composite parent, CourseForecastContribution contribution)
 	{
-		super(parent);
-		this.contribution = contribution;
+		super(parent, contribution);
 		initUI();
 	}
 
 	// don't use inheritance here, because of different nature and although code
 	// looks very similar it may be headache in future
 	@Override
-	protected void bindValues()
+	protected void bindValues(DataBindingContext context)
 	{
-		context = new DataBindingContext();
-
 		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
-				Object.class, " degs");
-		bindCommonHeaderWidgets(context, contribution, labelsConverter);
-		bindCommonDates(context, contribution);
+				Object.class, " \u00B0");
+		bindCommonHeaderWidgets(context, labelsConverter);
+		bindCommonDates(context);
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
@@ -51,32 +41,20 @@ public class CourseContributionView extends AnalystContributionView
 		IObservableValue minCourseSlider = WidgetProperties.selection().observe(
 				minSlider);
 		IObservableValue minCourseLabel = WidgetProperties.text().observe(minLabel);
-		IObservableValue esimateSliderMin = WidgetProperties.minimum().observe(
-				estimateSlider);
-		IObservableValue maxSliderMin = WidgetProperties.minimum().observe(
-				maxSlider);
 		context.bindValue(minCourseSlider, minCourseValue);
-		context.bindValue(esimateSliderMin, minCourseValue);
-		context.bindValue(maxSliderMin, minCourseValue);
 		context.bindValue(minCourseLabel, minCourseValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(int.class, "min: ",
-						" degs")));
+						" \u00B0")));
 
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MAX_COURSE);
 		IObservableValue maxCourseSlider = WidgetProperties.selection().observe(
 				maxSlider);
 		IObservableValue maxCourseLabel = WidgetProperties.text().observe(maxLabel);
-		IObservableValue esimateSliderMax = WidgetProperties.maximum().observe(
-				estimateSlider);
-		IObservableValue minSliderMax = WidgetProperties.maximum().observe(
-				minSlider);
 		context.bindValue(maxCourseSlider, maxCourseValue);
-		context.bindValue(esimateSliderMax, maxCourseValue);
-		context.bindValue(minSliderMax, maxCourseValue);
 		context.bindValue(maxCourseLabel, maxCourseValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(int.class, "max: ",
-						" degs")));
+						" \u00B0")));
 
 		IObservableValue estimateSliderValue = WidgetProperties.selection()
 				.observe(estimateSlider);
@@ -85,30 +63,25 @@ public class CourseContributionView extends AnalystContributionView
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(int.class,
-						"Estimate: ", " degs")));
-
-	}
-
-	@Override
-	public void dispose()
-	{
-		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME,
-				titleChangeListener);
-		context.dispose();
+						"Estimate: ", " \u00B0")));
+		
+		bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
 	}
 
 	@Override
 	protected void initializeWidgets()
 	{
-		titleChangeListener = attachTitleChangeListener(contribution,
-				"Course Forecast - ");
-
 		minSlider.setMinimum(0);
 		minSlider.setMaximum(360);
 		maxSlider.setMinimum(0);
 		maxSlider.setMaximum(360);
 		estimateSlider.setMinimum(0);
 		estimateSlider.setMaximum(360);
+	}
+
+	@Override
+	protected String getTitlePrefix()
+	{
+		return "Course Forecast - ";
 	}
 }

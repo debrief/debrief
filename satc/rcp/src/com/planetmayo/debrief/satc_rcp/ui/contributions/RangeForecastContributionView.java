@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -13,30 +11,23 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class RangeForecastContributionView extends AnalystContributionView
+public class RangeForecastContributionView extends AnalystContributionView<RangeForecastContribution>
 {
 
-	private BaseContribution contribution;
-	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;
-
 	public RangeForecastContributionView(Composite parent,
-			BaseContribution contribution)
+			RangeForecastContribution contribution)
 	{
-		super(parent);
-		this.contribution = contribution;
+		super(parent, contribution);
 		initUI();
 	}
 
 	@Override
-	protected void bindValues()
+	protected void bindValues(DataBindingContext context)
 	{
-		context = new DataBindingContext();
-
 		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
 				Object.class, " m");
-		bindCommonHeaderWidgets(context, contribution, labelsConverter);
-		bindCommonDates(context, contribution);
+		bindCommonHeaderWidgets(context, labelsConverter);
+		bindCommonDates(context);
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
@@ -50,13 +41,7 @@ public class RangeForecastContributionView extends AnalystContributionView
 		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(
 				minSlider);
 		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
-		IObservableValue esimateSliderMin = WidgetProperties.minimum().observe(
-				estimateSlider);
-		IObservableValue maxSliderMin = WidgetProperties.minimum().observe(
-				maxSlider);
 		context.bindValue(minSpeedSlider, minSpeedValue);
-		context.bindValue(esimateSliderMin, minSpeedValue);
-		context.bindValue(maxSliderMin, minSpeedValue);
 		context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
 						"min: ", " m")));
@@ -66,13 +51,7 @@ public class RangeForecastContributionView extends AnalystContributionView
 		IObservableValue maxSpeedSlider = WidgetProperties.selection().observe(
 				maxSlider);
 		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
-		IObservableValue esimateSliderMax = WidgetProperties.maximum().observe(
-				estimateSlider);
-		IObservableValue minSliderMax = WidgetProperties.maximum().observe(
-				minSlider);
 		context.bindValue(maxSpeedSlider, maxSpeedValue);
-		context.bindValue(esimateSliderMax, maxSpeedValue);
-		context.bindValue(minSliderMax, maxSpeedValue);
 		context.bindValue(maxSpeedLabel, maxSpeedValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
 						"max: ", "m")));
@@ -85,24 +64,23 @@ public class RangeForecastContributionView extends AnalystContributionView
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
 						"Estimate: ", " m")));
+		
+		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}
 
-	@Override
-	public void dispose()
-	{
-		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME,
-				titleChangeListener);
-		context.dispose();
-	}
 
 	@Override
 	protected void initializeWidgets()
 	{
-		titleChangeListener = attachTitleChangeListener(contribution,
-				"Range Forecast - ");
-
 		// give a monster max range
 		maxSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+		minSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+		estimateSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+	}
+
+	@Override
+	protected String getTitlePrefix()
+	{
+		return "Range Forecast - ";
 	}
 }

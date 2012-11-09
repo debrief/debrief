@@ -38,7 +38,7 @@ public class CourseForecastContribution extends BaseContribution
 
 	protected int _minCourse;
 
-	protected int _maxCourse;
+	protected int _maxCourse = 360;
 
 	protected int _estimate;
 

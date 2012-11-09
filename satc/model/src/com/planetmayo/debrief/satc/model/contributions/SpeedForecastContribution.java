@@ -19,7 +19,7 @@ public class SpeedForecastContribution extends BaseContribution
 
 	protected double _minSpeedKts;
 
-	protected double _maxSpeedKts;
+	protected double _maxSpeedKts = 200.0;
 
 	protected double _estimateKts;
 

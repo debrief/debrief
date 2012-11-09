@@ -37,6 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -44,11 +45,13 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
@@ -56,6 +59,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationAnalysisContribu
 import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
 
 /**
  * mock class to test high level application flows
@@ -84,7 +88,7 @@ public class MaintainContributionsView extends ViewPart implements
 	 * remember which contributions we're displaying
 	 * 
 	 */
-	private HashMap<BaseContribution, AnalystContributionView> _myControls = new HashMap<BaseContribution, AnalystContributionView>();
+	private HashMap<BaseContribution, AnalystContributionView<?>> _myControls = new HashMap<BaseContribution, AnalystContributionView<?>>();
 
 	private PropertyChangeListener _addContListener;
 
@@ -101,20 +105,24 @@ public class MaintainContributionsView extends ViewPart implements
 	public void added(BaseContribution contribution)
 	{
 		// ok, create a wrapper for this
-		AnalystContributionView panel = null;
+		AnalystContributionView<?> panel = null;
 
 		if (contribution instanceof CourseForecastContribution)
-			panel = new CourseContributionView(contList, contribution);
+			panel = new CourseContributionView(contList, (CourseForecastContribution) contribution);
 		else if (contribution instanceof LocationForecastContribution)
-			panel = new LocationContributionView(contList, contribution);
+			panel = new LocationContributionView(contList, (LocationForecastContribution) contribution);
 		else if (contribution instanceof SpeedForecastContribution)
-			panel = new SpeedContributionView(contList, contribution);
+			panel = new SpeedContributionView(contList, (SpeedForecastContribution) contribution);
 		else if (contribution instanceof BearingMeasurementContribution)
-			panel = new BearingMeasurementContributionView(contList, contribution);
+			panel = new BearingMeasurementContributionView(contList, (BearingMeasurementContribution) contribution);
 		else if (contribution instanceof RangeForecastContribution)
-			panel = new RangeForecastContributionView(contList, contribution);
+			panel = new RangeForecastContributionView(contList, (RangeForecastContribution) contribution);
 		else if (contribution instanceof LocationAnalysisContribution)
-			panel = new LocationAnalysisContributionView(contList, contribution);
+			panel = new LocationAnalysisContributionView(contList, (LocationAnalysisContribution) contribution);
+		else if (contribution instanceof StraightLegForecastContribution)
+			panel = new StraightLegForecastContributionView(contList, (StraightLegForecastContribution) contribution);
+		else if (contribution instanceof AlterationLegForecastContribution)
+			panel = new AlterationLegForecastContributionView(contList, (AlterationLegForecastContribution) contribution);		
 
 		// did we fail to find a panel?
 		if (panel == null)
@@ -386,7 +394,7 @@ public class MaintainContributionsView extends ViewPart implements
 	public void removed(BaseContribution contribution)
 	{
 		// get the panel
-		AnalystContributionView panel = _myControls.get(contribution);
+		AnalystContributionView<?> panel = _myControls.get(contribution);
 
 		// did we find it?
 		if (panel != null)

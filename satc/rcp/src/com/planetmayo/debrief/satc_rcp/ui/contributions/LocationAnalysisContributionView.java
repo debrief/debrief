@@ -1,36 +1,27 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.beans.PropertyChangeListener;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.swt.widgets.Composite;
 
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 
-public class LocationAnalysisContributionView extends AnalystContributionView
+public class LocationAnalysisContributionView extends AnalystContributionView<LocationAnalysisContribution>
 {
 
-	private BaseContribution contribution;
-	private DataBindingContext context;
-	private PropertyChangeListener titleChangeListener;
-
 	public LocationAnalysisContributionView(Composite parent,
-			BaseContribution contribution)
+			LocationAnalysisContribution contribution)
 	{
-		super(parent);
-		this.contribution = contribution;
+		super(parent, contribution);
 		initUI();
 	}
 
 	@Override
-	protected void bindValues()
+	protected void bindValues(DataBindingContext context)
 	{
-		context = new DataBindingContext();
-
-		bindCommonHeaderWidgets(context, contribution,
+		bindCommonHeaderWidgets(context, 
 				new PrefixSuffixLabelConverter(Object.class, " "));
-		bindCommonDates(context, contribution);
+		bindCommonDates(context);
 
 		// IObservableValue minSpeedValue = BeansObservables.observeValue(
 		// contribution, BearingMeasurementContribution.BEARING_ERROR);
@@ -45,18 +36,8 @@ public class LocationAnalysisContributionView extends AnalystContributionView
 	}
 
 	@Override
-	public void dispose()
+	protected String getTitlePrefix()
 	{
-		super.dispose();
-		contribution.removePropertyChangeListener(BaseContribution.NAME,
-				titleChangeListener);
-		context.dispose();
-	}
-
-	@Override
-	protected void initializeWidgets()
-	{
-		titleChangeListener = attachTitleChangeListener(contribution,
-				"Location Analysis - ");
+		return "Location Analysis - ";
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -14,6 +15,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.support.SupportServices;
@@ -155,6 +157,10 @@ public class MaintainContributions
 			_genny.addContribution(new BearingMeasurementContribution());
 		else if (thisCont.equals("Location Analysis"))
 			_genny.addContribution(new LocationAnalysisContribution());
+		else if (thisCont.equals("Straight Leg Forecast"))
+		  _genny.addContribution(new StraightLegForecastContribution());
+		else if (thisCont.equals("Alteration Leg Forecast"))
+		  _genny.addContribution(new AlterationLegForecastContribution());
 		else
 			SupportServices.INSTANCE.getLog().info(
 					"Could not find contribution for:" + thisCont);
@@ -167,6 +173,8 @@ public class MaintainContributions
 		res.add("Speed Forecast");
 		res.add("Location Forecast");
 		res.add("Location Analysis");
+		res.add("Straight Leg Forecast");
+		res.add("Alteration Leg Forecast");				
 
 		// note: the next two don't get added from the manage panel, since they
 		// require external data,

@@ -8,6 +8,8 @@ import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -30,9 +32,10 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.widgets.ExpandButton;
 
-public abstract class AnalystContributionView
+public abstract class AnalystContributionView<T extends BaseContribution>
 {
 
+	final protected T contribution;
 	final protected Composite controlParent;
 
 	protected Group mainGroup;
@@ -58,10 +61,14 @@ public abstract class AnalystContributionView
 	protected Scale minSlider;
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
+	
+	private DataBindingContext context;
+	private PropertyChangeListener titleChangeListener;
 
-	public AnalystContributionView(final Composite parent)
+	public AnalystContributionView(final Composite parent, final T contribution)
 	{
 		this.controlParent = parent;
+		this.contribution = contribution;
 	}
 
 	protected PropertyChangeListener attachTitleChangeListener(
@@ -81,16 +88,89 @@ public abstract class AnalystContributionView
 		contribution.addPropertyChangeListener(BaseContribution.NAME, listener);
 		return listener;
 	}
+	
+	protected void bindMaxMinEstimate(final IObservableValue estimate, final IObservableValue min, final IObservableValue max) {
+		estimate.addValueChangeListener(new IValueChangeListener()
+		{
+			
+			@Override
+			public void handleValueChange(ValueChangeEvent e)
+			{
+				final Number newValue = (Number) e.diff.getNewValue();
+				final Number oldValue = (Number) e.diff.getOldValue();
+				final Number minValue = (Number) min.getValue();
+				final Number maxValue = (Number) max.getValue();
+				if (newValue.longValue() < minValue.longValue() || newValue.longValue() > maxValue.longValue()) 
+				{
+					controlParent.getDisplay().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							estimate.setValue(oldValue);
+						}
+					});					
+				}
+			}
+		});
+		min.addValueChangeListener(new IValueChangeListener()
+		{
+			
+			@Override
+			public void handleValueChange(ValueChangeEvent e)
+			{
+				final Number newValue = (Number) e.diff.getNewValue();
+				final Number oldValue = (Number) e.diff.getOldValue();
+				final Number estimateValue = (Number) estimate.getValue();
+				final Number maxValue = (Number) max.getValue();
+				if (newValue.longValue() > maxValue.longValue()) {
+					controlParent.getDisplay().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							min.setValue(oldValue);
+						}
+					});
+				} else {
+					if (estimateValue.longValue() < newValue.longValue()) {
+						estimate.setValue(newValue);
+					}
+				}
+			}
+		});
+		max.addValueChangeListener(new IValueChangeListener()
+		{
+			
+			@Override
+			public void handleValueChange(ValueChangeEvent e)
+			{
+				final Number newValue = (Number) e.diff.getNewValue();
+				final Number oldValue = (Number) e.diff.getOldValue();
+				final Number estimateValue = (Number) estimate.getValue();
+				final Number minValue = (Number) min.getValue();
+				if (newValue.longValue() < minValue.longValue()) {					
+					controlParent.getDisplay().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							max.setValue(oldValue);
+						}
+					});
+				} else {
+					if (estimateValue.longValue() > newValue.longValue()) {
+						estimate.setValue(newValue);
+					}
+				}
+			}
+		});
+	}
 
 	/**
 	 * Utility base method which makes common binding for date fields Must be
 	 * called if necessary from implementation of bindValues method in child class
 	 * 
 	 * @param context
-	 * @param contribution
 	 */
-	protected final void bindCommonDates(DataBindingContext context,
-			BaseContribution contribution)
+	protected final void bindCommonDates(DataBindingContext context)
 	{
 		IObservableValue startDateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.START_DATE);
@@ -123,13 +203,11 @@ public abstract class AnalystContributionView
 	 * necessary from implementation of bindValues method in child class
 	 * 
 	 * @param context
-	 * @param contribution
 	 * @param labelsConverter
 	 */
-	protected final void bindCommonHeaderWidgets(DataBindingContext context,
-			BaseContribution contribution, IConverter labelConverter)
+	protected final void bindCommonHeaderWidgets(DataBindingContext context, IConverter labelConverter)
 	{
-		bindCommonHeaderWidgets(context, contribution, labelConverter,
+		bindCommonHeaderWidgets(context, labelConverter,
 				labelConverter);
 	}
 
@@ -142,8 +220,7 @@ public abstract class AnalystContributionView
 	 * @param contribution
 	 * @param labelsConverter
 	 */
-	protected final void bindCommonHeaderWidgets(DataBindingContext context,
-			BaseContribution contribution, IConverter estimateConverter,
+	protected final void bindCommonHeaderWidgets(DataBindingContext context, IConverter estimateConverter,
 			IConverter hardConstraintsConverter)
 	{
 		IObservableValue activeValue = BeansObservables.observeValue(contribution,
@@ -173,7 +250,7 @@ public abstract class AnalystContributionView
 		context.bindValue(weightWidget, weightValue);
 	}
 
-	protected abstract void bindValues();
+	protected abstract void bindValues(DataBindingContext context);
 
 	protected void createBody(Composite parent)
 	{
@@ -190,11 +267,11 @@ public abstract class AnalystContributionView
 		bodyGroup.setText("Adjust");
 		bodyGroup.setLayout(new GridLayout(2, false));
 
-		UIUtils.createLabel(bodyGroup, "Name:", new GridData(120, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Name:", new GridData(145, SWT.DEFAULT));
 		contributionNameText = new Text(bodyGroup, SWT.BORDER);
 		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		UIUtils.createLabel(bodyGroup, "Start:", new GridData(120, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Start:", new GridData(145, SWT.DEFAULT));
 		Composite startDateGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
 		startDate = new DateTime(startDateGroup, SWT.DROP_DOWN | SWT.DATE);
@@ -292,7 +369,15 @@ public abstract class AnalystContributionView
 
 	public void dispose()
 	{
-
+		if (titleChangeListener != null) 
+		{
+			contribution.removePropertyChangeListener(BaseContribution.NAME,
+					titleChangeListener);
+		}
+		if (context != null) 
+		{
+			context.dispose();
+		}
 	}
 
 	/**
@@ -305,7 +390,15 @@ public abstract class AnalystContributionView
 		return mainGroup;
 	}
 
-	protected abstract void initializeWidgets();
+	protected void initializeWidgets() 
+	{
+		
+	}
+	
+	protected String getTitlePrefix() 
+	{
+		return "";
+	}
 
 	protected void initUI()
 	{
@@ -317,8 +410,12 @@ public abstract class AnalystContributionView
 		createHeader(mainGroup);
 		createBody(mainGroup);
 		createLimitAndEstimateSliders();
+		
+		titleChangeListener = attachTitleChangeListener(contribution, getTitlePrefix());
 		initializeWidgets();
-		bindValues();
+		
+		context = new DataBindingContext();
+		bindValues(context);
 	}
 
 	public void setLayoutData(Object data)
