@@ -68,7 +68,7 @@ public class LocationAnalysisTest extends TestCase
 
 		//
 		LocationRange newB = lac.getRangeFor(bs, newDate);
-		GeoSupport.writeGeometry("location region", newB.getPolygon());
+	//	GeoSupport.writeGeometry("location region", newB.getPolygon());
 
 		// did it work?
 		// assertNotNull("Should have created location", newB);
