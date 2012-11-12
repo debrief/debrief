@@ -18,7 +18,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.LabelLocationPropertyEditor;
-import MWC.GUI.Properties.TimeIntervalPropertyEditor;
+import MWC.GUI.Properties.TacticalFrequencyPropertyEditor;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -53,17 +53,18 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 			{
 				PropertyDescriptor[] res =
 				{
-						prop("NumRings", "the number of rings to plot"),
-						prop("ArcCentre",
-								"the orientation for which to plot the arcs (degs)"),
-						prop("Centre", "the centre of the furthest on circles"),
 						prop("RangeLabelLocation", "where to position the labels"),
 						prop("TimeInterval", "the Interval between the rings"),
+						prop("NumRings", "the number of rings to plot"),
 						prop("Speed", "the speed for which the circles are calculated"),
-						prop("ArcWidth", "the overall width of fan to plot (degs)") };
+					prop("Centre", "the centre of the furthest on circles")
+//						prop("ArcCentre",
+//								"the orientation for which to plot the arcs (degs)"),
+//						prop("ArcWidth", "the overall width of fan to plot (degs)")
+						};
 
-				res[3].setPropertyEditorClass(LabelLocationPropertyEditor.class);
-				res[4].setPropertyEditorClass(TimeIntervalPropertyEditor.class);
+				res[0].setPropertyEditorClass(LabelLocationPropertyEditor.class);
+				res[1].setPropertyEditorClass(TacticalFrequencyPropertyEditor.class);
 
 				return res;
 
@@ -139,7 +140,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	 * the time interval to use between the rings
 	 * 
 	 */
-	private int _intervalMillis;
+	private long _intervalMillis;
 
 	/**
 	 * the centre bearing for the arcs
@@ -294,7 +295,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		return _speed;
 	}
 
-	public int getTimeInterval()
+	public long getTimeInterval()
 	{
 		return _intervalMillis;
 	}
@@ -461,7 +462,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		this._speed = _Speed;
 	}
 
-	public void setTimeInterval(int millis)
+	public void setTimeInterval(long millis)
 	{
 		_intervalMillis = millis;
 
