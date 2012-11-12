@@ -223,35 +223,21 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 	}
 
 	/**
-	 * sort out how far each ring covers
-	 * 
-	 * @return
-	 */
-	private WorldDistance getRingWidth()
-	{
-		// calculate the distance travelled at this speed, in this time interval
-		double degsPerHour = _speed.getValueIn(WorldSpeed.Kts) / 60;
-		double hours = _intervalMillis / 1000d / 60d / 60d;
-		double degs = degsPerHour * hours;
-		return new WorldDistance(degs, WorldDistance.DEGS);
-	}
-
-	public WorldSpeed getSpeed()
-	{
-		return _speed;
-	}
-
-	public void setSpeed(WorldSpeed _Speed)
-	{
-		this._speed = _Speed;
-	}
-
-	/**
 	 * get the 'anchor point' for any labels attached to this shape
 	 */
 	public MWC.GenericData.WorldLocation getAnchor()
 	{
 		return _theCentre;
+	}
+
+	public BoundedInteger getArcCentre()
+	{
+		return new BoundedInteger(_arcCentre, 0, 360);
+	}
+
+	public BoundedInteger getArcWidth()
+	{
+		return new BoundedInteger(_arcWidth, 0, 360);
 	}
 
 	@Override
@@ -270,6 +256,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		return _theCentre;
 	}
 
+	@Override
 	public Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)
@@ -278,11 +265,46 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		return _myEditor;
 	}
 
+	public BoundedInteger getNumRings()
+	{
+		return new BoundedInteger(_numRings, 1, 10);
+	}
+
+	public int getRangeLabelLocation()
+	{
+		return _rangeLabelLocation;
+	}
+
+	/**
+	 * sort out how far each ring covers
+	 * 
+	 * @return
+	 */
+	private WorldDistance getRingWidth()
+	{
+		// calculate the distance travelled at this speed, in this time interval
+		double degsPerHour = _speed.getValueIn(WorldSpeed.Kts) / 60;
+		double hours = _intervalMillis / 1000d / 60d / 60d;
+		double degs = degsPerHour * hours;
+		return new WorldDistance(degs, WorldDistance.DEGS);
+	}
+
+	public WorldSpeed getSpeed()
+	{
+		return _speed;
+	}
+
+	public int getTimeInterval()
+	{
+		return _intervalMillis;
+	}
+
 	public Color getWheelColor()
 	{
 		return super.getColor();
 	}
 
+	@Override
 	public boolean hasEditor()
 	{
 		return true;
@@ -391,6 +413,16 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		return res;
 	}
 
+	public void setArcCentre(BoundedInteger centre)
+	{
+		_arcCentre = centre.getCurrent();
+	}
+
+	public void setArcWidth(BoundedInteger width)
+	{
+		_arcWidth = width.getCurrent();
+	}
+
 	/**
 	 * set the centre location of the Wheel
 	 */
@@ -408,24 +440,9 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 	}
 
-	public int getRangeLabelLocation()
+	public void setNumRings(BoundedInteger numRings)
 	{
-		return _rangeLabelLocation;
-	}
-
-	public void setRangeLabelLocation(int rangeLabelLocation)
-	{
-		_rangeLabelLocation = rangeLabelLocation;
-	}
-
-	public int getTimeInterval()
-	{
-		return _intervalMillis;
-	}
-
-	public void setTimeInterval(int millis)
-	{
-		_intervalMillis = millis;
+		_numRings = numRings.getCurrent();
 
 		// and calc the new summary data
 		calcPoints();
@@ -434,34 +451,19 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
-	public BoundedInteger getArcWidth()
+	public void setRangeLabelLocation(int rangeLabelLocation)
 	{
-		return new BoundedInteger(_arcWidth, 0, 360);
+		_rangeLabelLocation = rangeLabelLocation;
 	}
 
-	public void setArcWidth(BoundedInteger width)
+	public void setSpeed(WorldSpeed _Speed)
 	{
-		_arcWidth = width.getCurrent();
+		this._speed = _Speed;
 	}
 
-	public BoundedInteger getArcCentre()
+	public void setTimeInterval(int millis)
 	{
-		return new BoundedInteger(_arcCentre, 0, 360);
-	}
-
-	public void setArcCentre(BoundedInteger centre)
-	{
-		_arcCentre = centre.getCurrent();
-	}
-
-	public BoundedInteger getNumRings()
-	{
-		return new BoundedInteger(_numRings, 1, 10);
-	}
-
-	public void setNumRings(BoundedInteger numRings)
-	{
-		_numRings = numRings.getCurrent();
+		_intervalMillis = millis;
 
 		// and calc the new summary data
 		calcPoints();
@@ -478,6 +480,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		super.setColor(val);
 	}
 
+	@Override
 	public void shift(WorldVector vector)
 	{
 		WorldLocation oldCentre = getCentre();
