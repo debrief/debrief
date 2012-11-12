@@ -1,4 +1,3 @@
-
 package MWC.GUI.Shapes;
 
 import static MWC.GUI.Properties.LabelLocationPropertyEditor.ALL;
@@ -11,6 +10,8 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -25,7 +26,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
 /**
- * Class representing a furthest on circle 
+ * Class representing a furthest on circle
  */
 public class FurthestOnCircleShape extends PlainShape implements Editable
 {
@@ -93,11 +94,12 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
-		
+
 		public void testWidthCalc()
 		{
-			FurthestOnCircleShape ed = new FurthestOnCircleShape(new WorldLocation(2d, 2d,
-					2d), 3, new WorldSpeed(60, WorldSpeed.Kts), 60 * 60 * 1000, 45, 180);	
+			FurthestOnCircleShape ed = new FurthestOnCircleShape(new WorldLocation(
+					2d, 2d, 2d), 3, new WorldSpeed(60, WorldSpeed.Kts), 60 * 60 * 1000,
+					45, 180);
 			WorldDistance dist = ed.getRingWidth();
 			assertEquals("the width", 1d, dist.getValueIn(WorldDistance.DEGS));
 		}
@@ -234,8 +236,6 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 		return new WorldDistance(degs, WorldDistance.DEGS);
 	}
 
-	
-	
 	public WorldSpeed getSpeed()
 	{
 		return _speed;
@@ -327,6 +327,9 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 		final int lLoc = _rangeLabelLocation;
 
+		// create a number format
+		NumberFormat nf = new DecimalFormat("0.## Nm");
+
 		// draw the ovals
 		for (int i = 0; i < _numRings; i++)
 		{
@@ -339,9 +342,9 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
 
 			// sort out the labels
-			String thisLabel = ""
-					+ (getRingWidth().getValue() + getRingWidth().getValue() * i);
-			thisLabel += " " + getRingWidth().getUnitsLabel();
+			double thisWidthNM = +(getRingWidth().getValueIn(WorldDistance.NM) + getRingWidth()
+					.getValueIn(WorldDistance.NM) * i);
+			String thisLabel = nf.format(thisWidthNM);
 
 			int strWidth = dest.getStringWidth(null, thisLabel);
 			int strHeight = dest.getStringHeight(null);
