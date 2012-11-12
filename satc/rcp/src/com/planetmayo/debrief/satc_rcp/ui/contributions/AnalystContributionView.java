@@ -102,13 +102,21 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 				final Number maxValue = (Number) max.getValue();
 				if (newValue.longValue() < minValue.longValue() || newValue.longValue() > maxValue.longValue()) 
 				{
-					controlParent.getDisplay().asyncExec(new Runnable()
+					if (minValue.longValue() == maxValue.longValue()) 
 					{
-						public void run()
+						max.setValue(newValue);
+						min.setValue(newValue);
+					} 
+					else 
+					{
+						controlParent.getDisplay().asyncExec(new Runnable()
 						{
-							estimate.setValue(oldValue);
-						}
-					});					
+							public void run()
+							{
+								estimate.setValue(oldValue);
+							}
+						});						
+					}				
 				}
 			}
 		});
@@ -119,21 +127,15 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 			public void handleValueChange(ValueChangeEvent e)
 			{
 				final Number newValue = (Number) e.diff.getNewValue();
-				final Number oldValue = (Number) e.diff.getOldValue();
 				final Number estimateValue = (Number) estimate.getValue();
 				final Number maxValue = (Number) max.getValue();
-				if (newValue.longValue() > maxValue.longValue()) {
-					controlParent.getDisplay().asyncExec(new Runnable()
-					{
-						public void run()
-						{
-							min.setValue(oldValue);
-						}
-					});
-				} else {
-					if (estimateValue.longValue() < newValue.longValue()) {
-						estimate.setValue(newValue);
-					}
+				if (newValue.longValue() > maxValue.longValue()) 
+				{
+					max.setValue(newValue);
+				} 
+				if (estimateValue.longValue() < newValue.longValue()) 
+				{
+					estimate.setValue(newValue);
 				}
 			}
 		});
@@ -144,21 +146,15 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 			public void handleValueChange(ValueChangeEvent e)
 			{
 				final Number newValue = (Number) e.diff.getNewValue();
-				final Number oldValue = (Number) e.diff.getOldValue();
 				final Number estimateValue = (Number) estimate.getValue();
 				final Number minValue = (Number) min.getValue();
-				if (newValue.longValue() < minValue.longValue()) {					
-					controlParent.getDisplay().asyncExec(new Runnable()
-					{
-						public void run()
-						{
-							max.setValue(oldValue);
-						}
-					});
-				} else {
-					if (estimateValue.longValue() > newValue.longValue()) {
-						estimate.setValue(newValue);
-					}
+				if (newValue.longValue() < minValue.longValue()) 
+				{
+					min.setValue(newValue);										
+				}
+				if (estimateValue.longValue() > newValue.longValue()) 
+				{
+					estimate.setValue(newValue);
 				}
 			}
 		});

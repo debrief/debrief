@@ -202,7 +202,7 @@ public class RangeForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minRangeM) + " - " + ((int) _maxRangeM);
+		return "" + ((int) _minRangeM) + (_maxRangeM == _minRangeM ? "" : " - " + ((int) _maxRangeM));
 	}
 
 	private LinearRing getInnerRing(Point pt)

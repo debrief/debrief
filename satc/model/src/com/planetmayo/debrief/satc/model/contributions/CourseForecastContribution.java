@@ -129,7 +129,7 @@ public class CourseForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + _minCourse + " - " + _maxCourse;
+		return "" + _minCourse + (_minCourse == _maxCourse ? "" : " - " + _maxCourse);
 	}
 
 	public int getMaxCourse()

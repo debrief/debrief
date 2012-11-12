@@ -130,7 +130,7 @@ public class SpeedForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minSpeedKts) + " - " + ((int) _maxSpeedKts);
+		return "" + ((int) _minSpeedKts) + (_maxSpeedKts == _minSpeedKts ? "" : " - " + ((int) _maxSpeedKts));
 	}
 
 	public double getMaxSpeed()
