@@ -3,6 +3,7 @@ package org.mwc.cmap.gt2plot.data;
 import java.io.File;
 
 import org.eclipse.core.runtime.Status;
+import org.geotools.data.DataSourceException;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.mwc.cmap.core.CorePlugin;

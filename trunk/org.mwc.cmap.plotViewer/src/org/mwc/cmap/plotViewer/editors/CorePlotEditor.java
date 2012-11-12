@@ -138,11 +138,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public CorePlotEditor()
 	{
 		super();
-		
-		// create the projection, we're going to need it to load the data, before we have the chart created
+
+		// create the projection, we're going to need it to load the data, before we
+		// have the chart created
 		_myGeoHandler = new GtProjection();
 
-		_myLayers = new Layers(){
+		_myLayers = new Layers()
+		{
 
 			/**
 			 * 
@@ -157,13 +159,19 @@ public abstract class CorePlotEditor extends EditorPart implements
 				// ok, if this is an externally managed layer (and we're doing
 				// GT-plotting, we will wrap it, and actually add the wrapped layer
 				if (theLayer instanceof ExternallyManagedDataLayer)
-				{			  
-				  ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
+				{
+					ExternallyManagedDataLayer dl = (ExternallyManagedDataLayer) theLayer;
 					if (dl.getDataType().equals(
 							MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
 					{
-						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
-								dl.getFilename());
+						GeoToolsLayer gt = null;
+
+						if (dl.getFilename().endsWith("1785_NORTH_MINCH_NORTHERN_PA.tif"))
+							gt = new WorldImageLayer("Gebco",
+									"/Volumes/Sys_Slow/NoBackup/gebco/gebco_08.tif");
+						else
+							gt = new WorldImageLayer(dl.getName(), dl.getFilename());
+
 						gt.setVisible(dl.getVisible());
 						_myGeoHandler.addGeoToolsLayer(gt);
 						wrappedLayer = gt;
@@ -205,7 +213,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 					GeoToolsLayer gt = (GeoToolsLayer) theLayer;
 					gt.clearMap();
 
-					if(gp.numLayers() == 0)
+					if (gp.numLayers() == 0)
 					{
 						// ok - we've got to force the data rea
 						WorldArea area = _myChart.getCanvas().getProjection().getDataArea();
@@ -274,7 +282,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// ok, tell the chart to self-destruct (And dispose/release of any objects)
 		_myChart.close();
 		_myChart = null;
-		
+
 		super.dispose();
 
 		// empty the part monitor
@@ -283,11 +291,11 @@ public abstract class CorePlotEditor extends EditorPart implements
 			_myPartMonitor.ditch();
 			_myPartMonitor = null;
 		}
-		
+
 		// and the layers
 		_myLayers.close();
 		_myLayers = null;
-		
+
 		// some other items
 		_timeListener = null;
 	}

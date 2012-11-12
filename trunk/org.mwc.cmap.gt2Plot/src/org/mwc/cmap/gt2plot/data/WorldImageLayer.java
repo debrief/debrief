@@ -7,13 +7,18 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridFormatFinder;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.image.WorldImageFormat;
+import org.geotools.gce.image.WorldImageReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.RasterSymbolizer;
@@ -47,8 +52,33 @@ public class WorldImageLayer extends GeoToolsLayer
 	protected Layer loadLayer(File openFile)
 	{
 		Layer res = null;
-		WorldImageFormat format = new WorldImageFormat();
-		AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
+		AbstractGridCoverage2DReader tiffReader = null;
+		try
+		{
+
+			String nameWithoutExtention = FileUtilities
+					.getNameWithoutExtention(openFile);
+			File twfFile = new File(openFile.getParentFile(), nameWithoutExtention
+					+ ".tfw");
+			if (twfFile.exists())
+			{
+				tiffReader = new WorldImageReader(openFile);
+			}
+			else
+			{
+				tiffReader = new GeoTiffReader(openFile);
+			}
+
+		}
+		catch (DataSourceException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// WorldImageFormat format = new WorldImageFormat();
+		// AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
+		// AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
 		if (tiffReader != null)
 		{
 			StyleFactoryImpl sf = new StyleFactoryImpl();
@@ -68,30 +98,30 @@ public class WorldImageLayer extends GeoToolsLayer
 	 */
 	private static final long serialVersionUID = 1L;
 
-//	public static MWC.GUI.Layer read(String fileName)
-//	{
-//
-//		MWC.GUI.Layer res = null;
-//		File openFile = new File(fileName);
-//		if (openFile != null && openFile.exists())
-//		{
-//			// sort out the name of the map
-//			String coverageName = fileName;
-//			final int dotIndex = coverageName.lastIndexOf(".");
-//			coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(
-//					0, dotIndex);
-//			final int pathIndex = coverageName.lastIndexOf(File.separator);
-//			if (pathIndex > 0)
-//				coverageName = coverageName.substring(pathIndex + 1,
-//						coverageName.length());
-//
-//			// also create a layer wrapper
-//			res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
-//					coverageName, fileName);
-//		}
-//		return res;
-//
-//	}
+	// public static MWC.GUI.Layer read(String fileName)
+	// {
+	//
+	// MWC.GUI.Layer res = null;
+	// File openFile = new File(fileName);
+	// if (openFile != null && openFile.exists())
+	// {
+	// // sort out the name of the map
+	// String coverageName = fileName;
+	// final int dotIndex = coverageName.lastIndexOf(".");
+	// coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(
+	// 0, dotIndex);
+	// final int pathIndex = coverageName.lastIndexOf(File.separator);
+	// if (pathIndex > 0)
+	// coverageName = coverageName.substring(pathIndex + 1,
+	// coverageName.length());
+	//
+	// // also create a layer wrapper
+	// res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
+	// coverageName, fileName);
+	// }
+	// return res;
+	//
+	// }
 
 	public static class RasterExtentHelper
 	{
