@@ -11,7 +11,7 @@ public class ATBForecastContribution extends BaseContribution
 	public static final String MAX_ANGLE = "maxAngle";
 	
 	private int _minAngle;
-	private int _maxAngle;
+	private int _maxAngle = 360;
 	private int _estimate;
 
 	@Override
