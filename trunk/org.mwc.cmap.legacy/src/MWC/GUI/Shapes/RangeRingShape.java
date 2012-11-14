@@ -399,7 +399,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		double res = thisRes;
 		
 		// sort out the range from each radius
-		for(int i=0;i<_numRings;i++)
+		for(int i=0;i<=_numRings;i++)
 		{
 			double thisR = i * _ringWidth.getValueIn(WorldDistance.DEGS);
 			
