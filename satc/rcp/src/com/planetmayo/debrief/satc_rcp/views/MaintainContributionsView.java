@@ -37,6 +37,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -51,6 +52,7 @@ import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
@@ -122,7 +124,9 @@ public class MaintainContributionsView extends ViewPart implements
 		else if (contribution instanceof StraightLegForecastContribution)
 			panel = new StraightLegForecastContributionView(contList, (StraightLegForecastContribution) contribution);
 		else if (contribution instanceof AlterationLegForecastContribution)
-			panel = new AlterationLegForecastContributionView(contList, (AlterationLegForecastContribution) contribution);		
+			panel = new AlterationLegForecastContributionView(contList, (AlterationLegForecastContribution) contribution);
+		else if (contribution instanceof ATBForecastContribution)
+			panel = new ATBForecastContributionView(contList, (ATBForecastContribution) contribution);		
 
 		// did we fail to find a panel?
 		if (panel == null)

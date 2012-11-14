@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -161,6 +162,8 @@ public class MaintainContributions
 		  _genny.addContribution(new StraightLegForecastContribution());
 		else if (thisCont.equals("Alteration Leg Forecast"))
 		  _genny.addContribution(new AlterationLegForecastContribution());
+		else if (thisCont.equals("ATB Forecast"))
+		  _genny.addContribution(new ATBForecastContribution());		
 		else
 			SupportServices.INSTANCE.getLog().info(
 					"Could not find contribution for:" + thisCont);
@@ -174,7 +177,8 @@ public class MaintainContributions
 		res.add("Location Forecast");
 		res.add("Location Analysis");
 		res.add("Straight Leg Forecast");
-		res.add("Alteration Leg Forecast");				
+		res.add("Alteration Leg Forecast");
+		res.add("ATB Forecast");		
 
 		// note: the next two don't get added from the manage panel, since they
 		// require external data,
