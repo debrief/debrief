@@ -23,15 +23,13 @@ public class TacticalFrequencyPropertyEditor extends PropertyEditorSupport
 	 * the list of tags shown in the drop-down list
 	 */
 	private String _stringTags[] =
-	{ "1 Min", "10 Mins", "30 Mins", "1 Hour", "6 Hours", "12 Hours", "24 Hours",
-			"48 Hours" };
+	{ "1 Min", "10 Mins", "30 Mins", "1 Hour", "6 Hours"};
 
 	/**
 	 * the values to use for the tags in the list
 	 */
 	private long _freqs[] =
-	{ 1 * 60 * 1000l, _10_MINS, _30_MINS, _60_MINS, 6 * _60_MINS, 12 * _60_MINS,
-			24 * _60_MINS, 48 * _60_MINS };
+	{ 1 * 60 * 1000l, _10_MINS, _30_MINS, _60_MINS, 6 * _60_MINS};
 
 	public String[] getTags()
 	{

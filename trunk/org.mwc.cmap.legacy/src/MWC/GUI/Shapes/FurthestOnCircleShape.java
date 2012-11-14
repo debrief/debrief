@@ -404,7 +404,7 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 		// sort out the range from each radius
 		final double ringWidthDegs = getRingWidth().getValueIn(WorldDistance.DEGS);
-		for (int i = 0; i < _numRings; i++)
+		for (int i = 0; i <= _numRings; i++)
 		{
 			double thisR = i * ringWidthDegs;
 
