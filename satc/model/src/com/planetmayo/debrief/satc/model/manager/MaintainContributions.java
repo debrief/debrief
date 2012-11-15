@@ -10,16 +10,14 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
 public class MaintainContributions
@@ -34,7 +32,7 @@ public class MaintainContributions
 		 * @param items
 		 *          the types of contribution that the user may add
 		 */
-		public void populateContributionList(ArrayList<String> items);
+		public void populateContributionList(List<ContributionBuilder> items);
 
 		/**
 		 * populate the list of precisions
@@ -107,7 +105,7 @@ public class MaintainContributions
 		});
 
 		// populate the dropdowns in the view
-		ArrayList<String> items = getContributions();
+		ArrayList<ContributionBuilder> items = getContributions();
 		myView.populateContributionList(items);
 		myView.populatePrecisionsList(getPrecisions());
 		myView.populateVehicleTypesList(vehiclesRepository.getAllTypes());
@@ -116,12 +114,10 @@ public class MaintainContributions
 		myView.setAddContributionListener(new PropertyChangeListener()
 		{
 			@Override
-			public void propertyChange(PropertyChangeEvent arg0)
+			public void propertyChange(PropertyChangeEvent event)
 			{
-				// get the string object that contains the name
-				String theCont = (String) arg0.getSource();
-
-				addContribution(theCont);
+				ContributionBuilder builder = (ContributionBuilder) event.getSource();
+				_genny.addContribution(builder.create());
 			}
 		});
 		myView.setPrecisionChangeListener(new PropertyChangeListener()
@@ -143,50 +139,67 @@ public class MaintainContributions
 
 	}
 
-	private void addContribution(final String thisCont)
+	private ArrayList<ContributionBuilder> getContributions()
 	{
-		// ok, what type is it?
-		if (thisCont.equals("Course Forecast"))
-			_genny.addContribution(new CourseForecastContribution());
-		else if (thisCont.equals("Speed Forecast"))
-			_genny.addContribution(new SpeedForecastContribution());
-		else if (thisCont.equals("Location Forecast"))
-			_genny.addContribution(new LocationForecastContribution());
-		else if (thisCont.equals("Range Forecast"))
-			_genny.addContribution(new RangeForecastContribution());
-		else if (thisCont.equals("Bearing Measurement"))
-			_genny.addContribution(new BearingMeasurementContribution());
-		else if (thisCont.equals("Location Analysis"))
-			_genny.addContribution(new LocationAnalysisContribution());
-		else if (thisCont.equals("Straight Leg Forecast"))
-		  _genny.addContribution(new StraightLegForecastContribution());
-		else if (thisCont.equals("Alteration Leg Forecast"))
-		  _genny.addContribution(new AlterationLegForecastContribution());
-		else if (thisCont.equals("ATB Forecast"))
-		  _genny.addContribution(new ATBForecastContribution());		
-		else
-			SupportServices.INSTANCE.getLog().info(
-					"Could not find contribution for:" + thisCont);
-	}
-
-	private ArrayList<String> getContributions()
-	{
-		ArrayList<String> res = new ArrayList<String>();
-		res.add("Course Forecast");
-		res.add("Speed Forecast");
-		res.add("Location Forecast");
-		res.add("Location Analysis");
-		res.add("Straight Leg Forecast");
-		res.add("Alteration Leg Forecast");
-		res.add("ATB Forecast");		
-
-		// note: the next two don't get added from the manage panel, since they
-		// require external data,
-		// so they are triggered from the UI that holds the data
-		// res.add("Range Forecast");
-		// res.add("Bearing Measurement");
-
-		return res;
+		ArrayList<ContributionBuilder> result = new ArrayList<ContributionBuilder>();
+		result.add(new ContributionBuilder("Course Forecast")
+		{
+			
+			@Override
+			public BaseContribution create()
+			{
+				return new CourseForecastContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Speed Forecast")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new SpeedForecastContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Location Forecast")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new LocationForecastContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Location Analysis")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new LocationAnalysisContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Straight Leg Forecast")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new StraightLegForecastContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Alteration Leg Forecast")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new AlterationLegForecastContribution();
+			}
+		});
+		result.add(new ContributionBuilder("ATB Forecast")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new ATBForecastContribution();
+			}
+		});	
+		return result;
 	}
 
 	public TrackGenerator getGenerator()

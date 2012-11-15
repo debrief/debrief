@@ -278,6 +278,8 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 				new RowLayout(SWT.HORIZONTAL), new GridData());
 		endDate = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.DATE);
 		endTime = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.TIME);
+		
+		createLimitAndEstimateSliders();
 	}
 
 	protected void createHeader(Composite parent)
@@ -405,7 +407,6 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 
 		createHeader(mainGroup);
 		createBody(mainGroup);
-		createLimitAndEstimateSliders();
 		
 		titleChangeListener = attachTitleChangeListener(contribution, getTitlePrefix());
 		initializeWidgets();

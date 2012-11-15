@@ -2,10 +2,9 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -41,6 +40,7 @@ import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
@@ -49,6 +49,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -57,7 +58,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastCon
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationAnalysisContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalysisContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
@@ -74,6 +75,20 @@ public class MaintainContributionsView extends ViewPart implements
 {
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
+	
+	private static final Map<Class<? extends BaseContribution>, Class<? extends AnalystContributionView<?>>> CONTRIBUTION_PANELS;
+	static {
+		CONTRIBUTION_PANELS = new HashMap<Class<? extends BaseContribution>, Class<? extends AnalystContributionView<?>>>();
+		CONTRIBUTION_PANELS.put(AlterationLegForecastContribution.class, AlterationLegForecastContributionView.class);
+		CONTRIBUTION_PANELS.put(ATBForecastContribution.class, ATBForecastContributionView.class);
+		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class, BearingMeasurementContributionView.class);
+		CONTRIBUTION_PANELS.put(CourseForecastContribution.class, CourseContributionView.class);
+		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class, AnalysisContributionView.class);
+		CONTRIBUTION_PANELS.put(LocationForecastContribution.class, LocationContributionView.class);
+		CONTRIBUTION_PANELS.put(RangeForecastContribution.class, RangeForecastContributionView.class);
+		CONTRIBUTION_PANELS.put(SpeedForecastContribution.class, SpeedContributionView.class);
+		CONTRIBUTION_PANELS.put(StraightLegForecastContribution.class, StraightLegForecastContributionView.class);		
+	}
 
 	private Composite main;
 
@@ -108,34 +123,16 @@ public class MaintainContributionsView extends ViewPart implements
 	{
 		// ok, create a wrapper for this
 		AnalystContributionView<?> panel = null;
-
-		if (contribution instanceof CourseForecastContribution)
-			panel = new CourseContributionView(contList, (CourseForecastContribution) contribution);
-		else if (contribution instanceof LocationForecastContribution)
-			panel = new LocationContributionView(contList, (LocationForecastContribution) contribution);
-		else if (contribution instanceof SpeedForecastContribution)
-			panel = new SpeedContributionView(contList, (SpeedForecastContribution) contribution);
-		else if (contribution instanceof BearingMeasurementContribution)
-			panel = new BearingMeasurementContributionView(contList, (BearingMeasurementContribution) contribution);
-		else if (contribution instanceof RangeForecastContribution)
-			panel = new RangeForecastContributionView(contList, (RangeForecastContribution) contribution);
-		else if (contribution instanceof LocationAnalysisContribution)
-			panel = new LocationAnalysisContributionView(contList, (LocationAnalysisContribution) contribution);
-		else if (contribution instanceof StraightLegForecastContribution)
-			panel = new StraightLegForecastContributionView(contList, (StraightLegForecastContribution) contribution);
-		else if (contribution instanceof AlterationLegForecastContribution)
-			panel = new AlterationLegForecastContributionView(contList, (AlterationLegForecastContribution) contribution);
-		else if (contribution instanceof ATBForecastContribution)
-			panel = new ATBForecastContributionView(contList, (ATBForecastContribution) contribution);		
-
-		// did we fail to find a panel?
-		if (panel == null)
+		if (! CONTRIBUTION_PANELS.containsKey(contribution.getClass())) 
 		{
-			System.err.println("Failed to generate panel for " + contribution);
+			SupportServices.INSTANCE.getLog().error("Failed to generate panel for " + contribution);
+			return;
 		}
-		else
+		try 
 		{
-			// sort out the layout
+			Class<?> viewClass = CONTRIBUTION_PANELS.get(contribution.getClass());
+			panel = (AnalystContributionView<?>) viewClass.getConstructor(Composite.class, 
+					contribution.getClass()).newInstance(contList, contribution);
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 					| GridData.GRAB_HORIZONTAL));
 
@@ -144,6 +141,10 @@ public class MaintainContributionsView extends ViewPart implements
 
 			// ok, redo the layout...
 			contList.layout();
+		} 
+		catch (Exception ex) 
+		{
+			SupportServices.INSTANCE.getLog().error("Failed to generate panel for " + contribution);
 		}
 	}
 
@@ -359,22 +360,20 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void populateContributionList(ArrayList<String> items)
+	public void populateContributionList(List<ContributionBuilder> items)
 	{
-		Iterator<String> iter = items.iterator();
-		while (iter.hasNext())
+		for (final ContributionBuilder item : items)
 		{
-			MenuItem item = new MenuItem(_addContMenu, SWT.PUSH);
-			final String thisCont = iter.next();
-			item.setText(thisCont);
-			item.addSelectionListener(new SelectionAdapter()
+			MenuItem menuItem = new MenuItem(_addContMenu, SWT.PUSH);
+			menuItem.setText(item.getDescription());
+			menuItem.addSelectionListener(new SelectionAdapter()
 			{
 				@Override
 				public void widgetSelected(SelectionEvent arg0)
 				{
 					if (_addContListener != null)
-						_addContListener.propertyChange(new PropertyChangeEvent(thisCont,
-								null, null, thisCont));
+						_addContListener.propertyChange(new PropertyChangeEvent(item,
+								null, null, item));
 				}
 			});
 		}

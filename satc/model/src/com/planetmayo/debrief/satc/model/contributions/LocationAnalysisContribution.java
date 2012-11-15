@@ -114,12 +114,6 @@ public class LocationAnalysisContribution extends BaseContribution
 	{
 		return ContributionDataType.ANALYSIS;
 	}
-
-	public Object getEstimate()
-	{
-		return null;
-	}
-
 	@Override
 	public String getHardConstraints()
 	{

@@ -56,6 +56,10 @@ public class ATBForecastContributionView extends AnalystContributionView<ATBFore
 		maxSlider.setMaximum(360);
 		estimateSlider.setMaximum(360);
 	}
-	
-	
+
+	@Override
+	protected String getTitlePrefix()
+	{
+		return "ATB Forecast - ";
+	}	
 }
