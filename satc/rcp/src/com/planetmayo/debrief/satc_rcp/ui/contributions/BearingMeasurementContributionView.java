@@ -57,6 +57,15 @@ public class BearingMeasurementContributionView extends AnalystContributionView<
 	}
 	
 	@Override
+	protected void initializeWidgets()
+	{
+		startDate.setEnabled(false);
+		startTime.setEnabled(false);
+		endDate.setEnabled(false);
+		endTime.setEnabled(false);
+	}
+
+	@Override
 	protected String getTitlePrefix()
 	{
 		return "Bearing Forecast - ";

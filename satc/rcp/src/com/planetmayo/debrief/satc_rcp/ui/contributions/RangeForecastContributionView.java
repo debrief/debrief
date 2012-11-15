@@ -76,6 +76,11 @@ public class RangeForecastContributionView extends AnalystContributionView<Range
 		maxSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 		minSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 		estimateSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+
+		startDate.setEnabled(false);
+		startTime.setEnabled(false);
+		endDate.setEnabled(false);
+		endTime.setEnabled(false);
 	}
 
 	@Override
