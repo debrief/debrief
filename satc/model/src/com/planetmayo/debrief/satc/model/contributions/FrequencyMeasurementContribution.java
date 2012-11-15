@@ -2,112 +2,43 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
-public class BearingMeasurementContribution extends BaseContribution
+public class FrequencyMeasurementContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final String BEARING_ERROR = "bearingError";
+	public static final String FREQUENCY_ERROR = "frequencyError";
 
 	/**
 	 * the allowable bearing error (in degrees)
 	 * 
 	 */
-	private double _degError = 0;
+	private double _frequencyError = 0;
 
 	/**
 	 * the set of measurements we store
 	 * 
 	 */
-	private ArrayList<BMeasurement> _measurements = new ArrayList<BMeasurement>();
+	private ArrayList<FMeasurement> _measurements = new ArrayList<FMeasurement>();
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// ok, here we really go for it!
-		Iterator<BMeasurement> iter = _measurements.iterator();
-
-		// sort out the bearing error
-		double errorRads = _degError / 180 * Math.PI;
-
-		// sort out a geometry factory
-		GeometryFactory factory = GeoSupport.getFactory();
-
-		while (iter.hasNext())
-		{
-			BearingMeasurementContribution.BMeasurement measurement = iter.next();
-			// ok, create the polygon for this measurement
-			GeoPoint origin = measurement._origin;
-			double bearing = measurement._bearingDegs;
-			double bearingRads = bearing / 180 * Math.PI;
-			double range = measurement._theRange;
-
-			// ok, generate the polygon
-			Coordinate[] coords = new Coordinate[5];
-
-			// start off with the origin
-			final double lon = origin.getLon();
-			final double lat = origin.getLat();
-
-			coords[0] = new Coordinate(lon, lat);
-
-			// now the top-left
-			coords[1] = new Coordinate(lon + Math.sin(bearingRads - errorRads)
-					* range, lat + Math.cos(bearingRads - errorRads) * range);
-
-			// now the centre bearing
-			coords[2] = new Coordinate(lon + Math.sin(bearingRads) * range, lat
-					+ Math.cos(bearingRads) * range);
-
-			// now the top-right
-			coords[3] = new Coordinate(lon + Math.sin(bearingRads + errorRads)
-					* range, lat + Math.cos(bearingRads + errorRads) * range);
-
-			// and back to the start
-			coords[4] = new Coordinate(coords[0]);
-
-			CoordinateArraySequence seq = new CoordinateArraySequence(coords);
-
-			// and construct the bounded location object
-			LinearRing ls = new LinearRing(seq, factory);
-			Polygon poly = new Polygon(ls, null, factory);
-			LocationRange lr = new LocationRange(poly);
-
-			// do we have a bounds at this time?
-			BoundedState thisState = space.getBoundedStateAt(measurement._time);
-			if (thisState == null)
-			{
-				// ok, do the bounds
-				thisState = new BoundedState(measurement._time);
-				// and store it
-				space.add(thisState);
-			}
-
-			// well, if we didn't - we do now! Apply it!
-			thisState.constrainTo(lr);
-		}
+		// do something...
 	}
 
 	public void addEstimate(double lat, double lon, Date date, double brg,
 			double range)
 	{
 		GeoPoint loc = new GeoPoint(lat, lon);
-		BMeasurement measure = new BMeasurement(loc, brg, date, range);
+		FMeasurement measure = new FMeasurement(loc, brg, date, range);
 		addThis(measure);
 		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
 	}
@@ -117,7 +48,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * 
 	 * @param measure
 	 */
-	public void addThis(BMeasurement measure)
+	public void addThis(FMeasurement measure)
 	{
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
@@ -137,9 +68,9 @@ public class BearingMeasurementContribution extends BaseContribution
 		_measurements.add(measure);
 	}
 
-	public double getBearingError()
+	public double getFrequencyError()
 	{
-		return _degError;
+		return _frequencyError;
 	}
 
 	@Override
@@ -156,7 +87,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + (int) _degError;
+		return "" + (int) _frequencyError;
 	}
 
 	/**
@@ -224,22 +155,22 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			BMeasurement measure = new BMeasurement(theLoc, Double.valueOf(bearing),
+			FMeasurement measure = new FMeasurement(theLoc, Double.valueOf(bearing),
 					theDate, GeoSupport.m2deg(Double.valueOf(range)));
 
 			addThis(measure);
 
 		}
-		this.setBearingError(3d);
+		this.setFrequencyError(2d);
 		// TODO: set the start/end times = just for tidiness
 	}
 
-	public void setBearingError(double errorDegs)
+	public void setFrequencyError(double frequencyError)
 	{
 		String oldConstraints = getHardConstraints();
-		double old = _degError;
-		this._degError = errorDegs;
-		firePropertyChange(BEARING_ERROR, old, errorDegs);
+		double old = _frequencyError;
+		this._frequencyError = frequencyError;
+		firePropertyChange(FREQUENCY_ERROR, old, frequencyError);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 	
@@ -249,7 +180,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * @author ian
 	 * 
 	 */
-	public static class BMeasurement
+	public static class FMeasurement
 	{
 		private final GeoPoint _origin;
 		private final double _bearingDegs;
@@ -260,7 +191,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		 */
 		private final Double _theRange;
 
-		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
+		public FMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
 			_origin = loc;
 			_bearingDegs = bearing;

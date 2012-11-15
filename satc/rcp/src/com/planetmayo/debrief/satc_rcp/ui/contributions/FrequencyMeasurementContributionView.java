@@ -10,17 +10,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class BearingMeasurementContributionView extends AnalystContributionView<BearingMeasurementContribution>
+public class FrequencyMeasurementContributionView extends AnalystContributionView<FrequencyMeasurementContribution>
 {
 	private Scale errorSlider;
 	private Label errorLabel;
 
-	public BearingMeasurementContributionView(Composite parent,
-			BearingMeasurementContribution contribution)
+	public FrequencyMeasurementContributionView(Composite parent,
+			FrequencyMeasurementContribution contribution)
 	{
 		super(parent, contribution);
 		initUI();
@@ -31,11 +31,11 @@ public class BearingMeasurementContributionView extends AnalystContributionView<
 	{
 		bindCommonHeaderWidgets(context, 
 				new PrefixSuffixLabelConverter(Object.class, " Measurements"),
-				new PrefixSuffixLabelConverter(Object.class, "+/- ", " degs"));
+				new PrefixSuffixLabelConverter(Object.class, "+/- ", " Hz"));
 		bindCommonDates(context);
 
 		IObservableValue errorValue = BeansObservables.observeValue(
-				contribution, BearingMeasurementContribution.BEARING_ERROR);
+				contribution, FrequencyMeasurementContribution.FREQUENCY_ERROR);
 		IObservableValue errorLabelValue = WidgetProperties.text().observe(
 				errorLabel);		
 		IObservableValue errorSliderValue = WidgetProperties.selection().observe(
@@ -43,7 +43,7 @@ public class BearingMeasurementContributionView extends AnalystContributionView<
 		context.bindValue(errorSliderValue, errorValue);
 		context.bindValue(errorLabelValue, errorValue, null, UIUtils
 				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"Error: +/- ", " degs")));
+						"Error: +/- ", " Hz")));
 	}
 	
 	@Override
@@ -68,6 +68,6 @@ public class BearingMeasurementContributionView extends AnalystContributionView<
 	@Override
 	protected String getTitlePrefix()
 	{
-		return "Bearing Measurement - ";
-	}
+		return "Frequency Measurement - ";
+	}	
 }
