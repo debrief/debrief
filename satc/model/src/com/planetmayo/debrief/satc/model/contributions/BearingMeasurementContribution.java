@@ -20,57 +20,9 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 public class BearingMeasurementContribution extends BaseContribution
 {
-	/**
-	 * utility class for storing a measurement
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static class BMeasurement
-	{
-		private final GeoPoint _origin;
-		private final double _bearingDegs;
-		private final Date _time;
-		/**
-		 * the (optional) maximum range for this measurement
-		 * 
-		 */
-		private final Double _theRange;
-
-		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
-		{
-			_origin = loc;
-			_bearingDegs = bearing;
-			_time = time;
-			_theRange = theRange;
-		}
-	}
-
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
-
-	/**
-	 * utility method to create one of these contributions
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("deprecation")
-	public static BearingMeasurementContribution getSample()
-	{
-		BearingMeasurementContribution res = new BearingMeasurementContribution();
-		res.setName("Approaching Buoy");
-		res.setActive(true);
-		res.setWeight(7);
-
-		// add a couple of bearings
-		res.addEstimate(12.2, 12.3, new Date(2012, 3, 3, 12, 2, 2), 55, 1200);
-		res.addEstimate(12.3, 12.32, new Date(2012, 3, 3, 12, 3, 2), 58, 1200);
-		res.addEstimate(12.3, 12.33, new Date(2012, 3, 3, 12, 4, 2), 60, 1200);
-		res.addEstimate(12.4, 12.34, new Date(2012, 3, 3, 12, 5, 2), 62, 1200);
-
-		return res;
-	}
 
 	/**
 	 * the allowable bearing error (in degrees)
@@ -289,4 +241,30 @@ public class BearingMeasurementContribution extends BaseContribution
 		firePropertyChange(BEARING_ERROR, errorDegs, errorDegs);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
+	
+	/**
+	 * utility class for storing a measurement
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static class BMeasurement
+	{
+		private final GeoPoint _origin;
+		private final double _bearingDegs;
+		private final Date _time;
+		/**
+		 * the (optional) maximum range for this measurement
+		 * 
+		 */
+		private final Double _theRange;
+
+		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
+		{
+			_origin = loc;
+			_bearingDegs = bearing;
+			_time = time;
+			_theRange = theRange;
+		}
+	}	
 }

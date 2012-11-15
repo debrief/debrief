@@ -25,22 +25,6 @@ public class SpeedForecastContribution extends BaseContribution
 
 	protected double _estimateKts;
 
-	/**
-	 * utility method to create one of these contributions
-	 * 
-	 * @return
-	 */
-	public static BaseContribution getSample()
-	{
-		BaseContribution res = new SpeedForecastContribution();
-		res.setActive(true);
-		res.setWeight(4);
-		res.setName("Easterly Leg");
-		res.setStartDate(new Date(111111000));
-		res.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
-		return res;
-	}
-
 	@Override
 	public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException

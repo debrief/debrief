@@ -19,23 +19,6 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class RangeForecastContribution extends BaseContribution
 {
-	/**
-	 * utility class for storing a measurement
-	 * 
-	 * @author ian
-	 * 
-	 */
-	public static class ROrigin
-	{
-		private final GeoPoint _origin;
-		private final Date _time;
-
-		public ROrigin(GeoPoint loc, Date time)
-		{
-			_origin = loc;
-			_time = time;
-		}
-	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -49,23 +32,7 @@ public class RangeForecastContribution extends BaseContribution
 	 */
 	public static final int MAX_SELECTABLE_RANGE_M = 10000;
 
-	private static double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
-
-	/**
-	 * utility method to create one of these contributions
-	 * 
-	 * @return
-	 */
-	public static BaseContribution getSample()
-	{
-		BaseContribution res = new RangeForecastContribution();
-		res.setActive(true);
-		res.setWeight(4);
-		res.setName("Easterly Leg");
-		res.setStartDate(new Date(111111000));
-		res.setFinishDate(new Date(System.currentTimeMillis() - 111111000));
-		return res;
-	}
+	private static final double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
 
 	protected double _minRangeM;
 
@@ -86,10 +53,8 @@ public class RangeForecastContribution extends BaseContribution
 
 		// loop through our measurements
 		Iterator<ROrigin> iter = _measurements.iterator();
-		int ctr = 0;
 		while (iter.hasNext())
 		{
-			ctr++;
 			RangeForecastContribution.ROrigin origin = iter.next();
 
 			Date thisT = origin._time;
@@ -354,5 +319,22 @@ public class RangeForecastContribution extends BaseContribution
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
+	
+	/**
+	 * utility class for storing a measurement
+	 * 
+	 * @author ian
+	 * 
+	 */
+	public static class ROrigin
+	{
+		private final GeoPoint _origin;
+		private final Date _time;
 
+		public ROrigin(GeoPoint loc, Date time)
+		{
+			_origin = loc;
+			_time = time;
+		}
+	}
 }

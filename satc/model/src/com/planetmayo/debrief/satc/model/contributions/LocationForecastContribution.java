@@ -12,20 +12,6 @@ public class LocationForecastContribution extends BaseContribution
 
 	public static final String LIMIT = "limit";
 
-	/**
-	 * create a sample, for testing
-	 * 
-	 * @return
-	 */
-	public static LocationForecastContribution getSample()
-	{
-		LocationForecastContribution res = new LocationForecastContribution();
-		res.setName("From ships log");
-		GeoPoint geo = new GeoPoint(52.2, -5.12);
-		res.setEstimate(geo);
-		return res;
-	}
-
 	private int _limit;
 
 	private GeoPoint _estimate;
