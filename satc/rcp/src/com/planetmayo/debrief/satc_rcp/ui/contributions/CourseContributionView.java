@@ -11,7 +11,7 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class CourseContributionView extends AnalystContributionView<CourseForecastContribution>
+public class CourseContributionView extends BaseContributionView<CourseForecastContribution>
 {
 	public CourseContributionView(Composite parent, CourseForecastContribution contribution)
 	{
@@ -43,8 +43,7 @@ public class CourseContributionView extends AnalystContributionView<CourseForeca
 		IObservableValue minCourseLabel = WidgetProperties.text().observe(minLabel);
 		context.bindValue(minCourseSlider, minCourseValue);
 		context.bindValue(minCourseLabel, minCourseValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, "min: ",
-						" \u00B0")));
+				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " \u00B0")));
 
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MAX_COURSE);
@@ -53,8 +52,7 @@ public class CourseContributionView extends AnalystContributionView<CourseForeca
 		IObservableValue maxCourseLabel = WidgetProperties.text().observe(maxLabel);
 		context.bindValue(maxCourseSlider, maxCourseValue);
 		context.bindValue(maxCourseLabel, maxCourseValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, "max: ",
-						" \u00B0")));
+				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " \u00B0")));
 
 		IObservableValue estimateSliderValue = WidgetProperties.selection()
 				.observe(estimateSlider);
@@ -62,8 +60,7 @@ public class CourseContributionView extends AnalystContributionView<CourseForeca
 				.observe(estimateDetailsLabel);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class,
-						"Estimate: ", " \u00B0")));
+				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " \u00B0")));
 		
 		bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
 	}

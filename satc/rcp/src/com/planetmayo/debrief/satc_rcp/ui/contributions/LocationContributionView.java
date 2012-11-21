@@ -12,8 +12,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 
@@ -23,9 +25,11 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class LocationContributionView extends AnalystContributionView<LocationForecastContribution>
+public class LocationContributionView extends BaseContributionView<LocationForecastContribution>
 {
 
+	private Label limitLabel;
+	private Button limitActiveButton;
 	private Scale limitSlider;
 	private FormattedText latitude;
 	private FormattedText longitude;
@@ -52,8 +56,7 @@ public class LocationContributionView extends AnalystContributionView<LocationFo
 				LocationForecastContribution.LIMIT);
 		context.bindValue(limitSliderValue, limitValue);
 		context.bindValue(limitLabelValue, limitValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, "Limit: ",
-						" m")));
+				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " m")));
 
 		IObservableValue latValue = BeansObservables.observeDetailValue(
 				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),
@@ -93,20 +96,21 @@ public class LocationContributionView extends AnalystContributionView<LocationFo
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
-		limitLabel = UIUtils.createLabel(bodyGroup, "Limit:", new GridData(
-				GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Constraint:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		Composite composite = new Composite(bodyGroup, SWT.NONE);
+		composite.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
+		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		limitActiveButton = new Button(composite, SWT.CHECK);		
+		limitLabel = UIUtils.createSpacer(composite, new GridData(GridData.FILL_HORIZONTAL));
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		GridLayout estimateLayout = new GridLayout(2, false);
+		UIUtils.createLabel(bodyGroup, "Estimate", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		GridLayout estimateLayout = new GridLayout(1, false);
 		estimateLayout.horizontalSpacing = 15;
 		Composite estimateComposite = UIUtils.createEmptyComposite(bodyGroup,
 				estimateLayout, new GridData(GridData.VERTICAL_ALIGN_FILL
 						| GridData.HORIZONTAL_ALIGN_FILL));
-		GridData gridData = new GridData();
-		gridData.verticalSpan = 2;
-		gridData.grabExcessVerticalSpace = true;
-		UIUtils.createLabel(estimateComposite, "Estimate", gridData);
 		UIUtils.createLabel(estimateComposite, "lat:", new GridData(
 				GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(estimateComposite, "lon:", new GridData(

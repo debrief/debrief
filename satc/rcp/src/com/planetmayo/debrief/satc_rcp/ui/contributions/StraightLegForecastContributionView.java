@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 
-public class StraightLegForecastContributionView extends AnalystContributionView<StraightLegForecastContribution>
+public class StraightLegForecastContributionView extends BaseContributionView<StraightLegForecastContribution>
 {
 	
 	public StraightLegForecastContributionView(Composite parent, StraightLegForecastContribution contribution)

@@ -11,7 +11,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class SpeedContributionView extends AnalystContributionView<SpeedForecastContribution>
+public class SpeedContributionView extends BaseContributionView<SpeedForecastContribution>
 {
 
 	public SpeedContributionView(Composite parent, SpeedForecastContribution contribution)
@@ -42,8 +42,7 @@ public class SpeedContributionView extends AnalystContributionView<SpeedForecast
 		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
 		context.bindValue(minSpeedSlider, minSpeedValue);
 		context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"min: ", " kts")));
+				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " kts")));
 
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
 				contribution, SpeedForecastContribution.MAX_SPEED);
@@ -52,8 +51,7 @@ public class SpeedContributionView extends AnalystContributionView<SpeedForecast
 		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
 		context.bindValue(maxSpeedSlider, maxSpeedValue);
 		context.bindValue(maxSpeedLabel, maxSpeedValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"max: ", " kts")));
+				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " kts")));
 
 		IObservableValue estimateSliderValue = WidgetProperties.selection()
 				.observe(estimateSlider);
@@ -61,8 +59,7 @@ public class SpeedContributionView extends AnalystContributionView<SpeedForecast
 				.observe(estimateDetailsLabel);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"Estimate: ", " kts")));
+				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " kts")));
 		
 		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}

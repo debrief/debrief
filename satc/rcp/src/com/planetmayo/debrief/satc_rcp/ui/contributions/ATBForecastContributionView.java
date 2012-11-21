@@ -10,7 +10,7 @@ import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class ATBForecastContributionView extends AnalystContributionView<ATBForecastContribution>
+public class ATBForecastContributionView extends BaseContributionView<ATBForecastContribution>
 {
 
 	public ATBForecastContributionView(Composite parent, ATBForecastContribution contribution)
@@ -29,21 +29,21 @@ public class ATBForecastContributionView extends AnalystContributionView<ATBFore
 		IObservableValue minLabelValue = WidgetProperties.text().observe(minLabel);
 		IObservableValue minSliderValue = WidgetProperties.selection().observe(minSlider);
 		context.bindValue(minLabelValue, minValue, null,
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, "min: ", " \u00B0")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, " \u00B0")));
 		context.bindValue(minSliderValue, minValue);
 		
 		IObservableValue maxValue = BeansObservables.observeValue(contribution, ATBForecastContribution.MAX_ANGLE);
 		IObservableValue maxLabelValue = WidgetProperties.text().observe(maxLabel);
 		IObservableValue maxSliderValue = WidgetProperties.selection().observe(maxSlider);
 		context.bindValue(maxLabelValue, maxValue, null,
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, "max: ", " \u00B0")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, " \u00B0")));
 		context.bindValue(maxSliderValue, maxValue);
 		
 		IObservableValue estimateValue = BeansObservables.observeValue(contribution, ATBForecastContribution.ESTIMATE);
 		IObservableValue estimateLabelValue = WidgetProperties.text().observe(estimateDetailsLabel);
 		IObservableValue estimateSliderValue = WidgetProperties.selection().observe(estimateSlider);
 		context.bindValue(estimateLabelValue, estimateValue, null,
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, "Estimate: ", " \u00B0")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, " \u00B0")));
 		context.bindValue(estimateSliderValue, estimateValue);
 		
 		bindMaxMinEstimate(estimateValue, minValue, maxValue);

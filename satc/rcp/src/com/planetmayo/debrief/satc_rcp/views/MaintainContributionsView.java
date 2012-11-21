@@ -55,7 +55,7 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastContributionView;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalystContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.BaseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalysisContributionView;
@@ -76,9 +76,9 @@ public class MaintainContributionsView extends ViewPart implements
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
 	
-	private static final Map<Class<? extends BaseContribution>, Class<? extends AnalystContributionView<?>>> CONTRIBUTION_PANELS;
+	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
 	static {
-		CONTRIBUTION_PANELS = new HashMap<Class<? extends BaseContribution>, Class<? extends AnalystContributionView<?>>>();
+		CONTRIBUTION_PANELS = new HashMap<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>>();
 		CONTRIBUTION_PANELS.put(AlterationLegForecastContribution.class, AlterationLegForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(ATBForecastContribution.class, ATBForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class, BearingMeasurementContributionView.class);
@@ -105,7 +105,7 @@ public class MaintainContributionsView extends ViewPart implements
 	 * remember which contributions we're displaying
 	 * 
 	 */
-	private HashMap<BaseContribution, AnalystContributionView<?>> _myControls = new HashMap<BaseContribution, AnalystContributionView<?>>();
+	private HashMap<BaseContribution, BaseContributionView<?>> _myControls = new HashMap<BaseContribution, BaseContributionView<?>>();
 
 	private PropertyChangeListener _addContListener;
 
@@ -122,7 +122,7 @@ public class MaintainContributionsView extends ViewPart implements
 	public void added(BaseContribution contribution)
 	{
 		// ok, create a wrapper for this
-		AnalystContributionView<?> panel = null;
+		BaseContributionView<?> panel = null;
 		if (! CONTRIBUTION_PANELS.containsKey(contribution.getClass())) 
 		{
 			SupportServices.INSTANCE.getLog().error("Failed to generate panel for " + contribution);
@@ -131,7 +131,7 @@ public class MaintainContributionsView extends ViewPart implements
 		try 
 		{
 			Class<?> viewClass = CONTRIBUTION_PANELS.get(contribution.getClass());
-			panel = (AnalystContributionView<?>) viewClass.getConstructor(Composite.class, 
+			panel = (BaseContributionView<?>) viewClass.getConstructor(Composite.class, 
 					contribution.getClass()).newInstance(contList, contribution);
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 					| GridData.GRAB_HORIZONTAL));
@@ -397,7 +397,7 @@ public class MaintainContributionsView extends ViewPart implements
 	public void removed(BaseContribution contribution)
 	{
 		// get the panel
-		AnalystContributionView<?> panel = _myControls.get(contribution);
+		BaseContributionView<?> panel = _myControls.get(contribution);
 
 		// did we find it?
 		if (panel != null)

@@ -11,7 +11,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class AnalysisContributionView extends AnalystContributionView<BaseContribution>
+public class AnalysisContributionView extends BaseContributionView<BaseContribution>
 {
 
 	private String title;

@@ -6,6 +6,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
@@ -15,11 +16,14 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class AlterationLegForecastContributionView extends AnalystContributionView<AlterationLegForecastContribution>
+public class AlterationLegForecastContributionView extends BaseContributionView<AlterationLegForecastContribution>
 {
 	
 	private Label maxCourseLabel;
 	private Label maxSpeedLabel;
+	
+	private Button maxCourseActiveCheckbox;
+	private Button maxSpeedActiveCheckbox;
 	
 	private Scale maxCourseSlider;
 	private Scale maxSpeedSlider;
@@ -33,13 +37,28 @@ public class AlterationLegForecastContributionView extends AnalystContributionVi
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
-		maxCourseLabel = UIUtils.createLabel(bodyGroup, "Max Course Change: ", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		GridData data = new GridData();		
+		data.horizontalSpan = 2;
+		data.horizontalAlignment = GridData.FILL;
+		Composite composite = new Composite(bodyGroup, SWT.NONE);
+		composite.setLayoutData(data);
+		composite.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
+		UIUtils.createLabel(composite, "Max Course Change: ", new GridData(115, SWT.DEFAULT));
+		maxCourseActiveCheckbox = new Button(composite, SWT.CHECK);
+		maxCourseLabel = UIUtils.createLabel(composite, "", new GridData(GridData.FILL_HORIZONTAL));
+
 		maxCourseSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		maxCourseSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		maxSpeedLabel = UIUtils.createLabel(bodyGroup, "Max Speed Change: ", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		composite = new Composite(bodyGroup, SWT.NONE);
+		composite.setLayoutData(data);
+		composite.setLayout(UIUtils.createGridLayoutWithoutMargins(3, false));
+		UIUtils.createLabel(composite, "Max Speed Change: ", new GridData(115, SWT.DEFAULT));
+		maxSpeedActiveCheckbox = new Button(composite, SWT.CHECK);
+		maxSpeedLabel = UIUtils.createLabel(composite, "", new GridData(GridData.FILL_HORIZONTAL));
+
 		maxSpeedSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
-		maxSpeedSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		maxSpeedSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));		
 	}
 	
 	@Override
@@ -64,7 +83,7 @@ public class AlterationLegForecastContributionView extends AnalystContributionVi
 		IObservableValue maxCourseSliderValue = WidgetProperties.selection().observe(maxCourseSlider);
 		context.bindValue(maxCourseSliderValue, maxCourseValue);
 		context.bindValue(maxCourseLabelValue, maxCourseValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, "Max Course Change: ", " \u00b0")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, " \u00b0")));
 		
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution, 
 				AlterationLegForecastContribution.MAX_SPEED_CHANGE);
@@ -72,7 +91,7 @@ public class AlterationLegForecastContributionView extends AnalystContributionVi
 		IObservableValue maxSpeedSliderValue = WidgetProperties.selection().observe(maxSpeedSlider);
 		context.bindValue(maxSpeedSliderValue, maxSpeedValue);
 		context.bindValue(maxSpeedLabelValue, maxSpeedValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Double.class, "Max Speed Change: ", " kts")));
+				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Double.class, " kts")));
 	}
 
 	@Override

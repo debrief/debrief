@@ -14,7 +14,6 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -32,7 +31,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.widgets.ExpandButton;
 
-public abstract class AnalystContributionView<T extends BaseContribution>
+public abstract class BaseContributionView<T extends BaseContribution>
 {
 
 	final protected T contribution;
@@ -53,10 +52,13 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 	protected DateTime endDate;
 	protected DateTime endTime;
 
-	protected Label limitLabel;
 	protected Label minLabel;
 	protected Label maxLabel;
 	protected Label estimateDetailsLabel;
+	
+	protected Button minActiveCheckbox;
+	protected Button maxActiveCheckbox;
+	protected Button estimateActiveCheckbox;
 
 	protected Scale minSlider;
 	protected Scale maxSlider;
@@ -65,7 +67,7 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 
-	public AnalystContributionView(final Composite parent, final T contribution)
+	public BaseContributionView(final Composite parent, final T contribution)
 	{
 		this.controlParent = parent;
 		this.contribution = contribution;
@@ -261,19 +263,22 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 		bodyGroup = new Group(parent, SWT.SHADOW_ETCHED_IN);
 		bodyGroup.setLayoutData(layoutData);
 		bodyGroup.setText("Adjust");
-		bodyGroup.setLayout(new GridLayout(2, false));
+		bodyGroup.setLayout(new GridLayout(3, false));
 
-		UIUtils.createLabel(bodyGroup, "Name:", new GridData(145, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Name:", new GridData(70, SWT.DEFAULT));
+		UIUtils.createSpacer(bodyGroup, new GridData(95, SWT.DEFAULT));
 		contributionNameText = new Text(bodyGroup, SWT.BORDER);
 		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		UIUtils.createLabel(bodyGroup, "Start:", new GridData(145, SWT.DEFAULT));
+		UIUtils.createLabel(bodyGroup, "Start:", new GridData());
+		UIUtils.createSpacer(bodyGroup, new GridData());
 		Composite startDateGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
 		startDate = new DateTime(startDateGroup, SWT.DROP_DOWN | SWT.DATE);
 		startTime = new DateTime(startDateGroup, SWT.DROP_DOWN | SWT.TIME);
 
 		UIUtils.createLabel(bodyGroup, "Finish:", new GridData());
+		UIUtils.createSpacer(bodyGroup, new GridData());
 		Composite endDateGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
 		endDate = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.DATE);
@@ -332,32 +337,36 @@ public abstract class AnalystContributionView<T extends BaseContribution>
 
 	protected void createLimitAndEstimateSliders()
 	{
-		GridLayout limitsLayout = new GridLayout(2, false);
-		limitsLayout.horizontalSpacing = 15;
-		Composite limitsComposite = UIUtils.createEmptyComposite(bodyGroup,
-				limitsLayout, new GridData(GridData.VERTICAL_ALIGN_FILL
-						| GridData.HORIZONTAL_ALIGN_FILL));
-		GridData gridData = new GridData();
-		gridData.verticalSpan = 2;
-		gridData.grabExcessVerticalSpace = true;
-		limitLabel = UIUtils.createLabel(limitsComposite, "Limit", gridData);
-		minLabel = UIUtils.createLabel(limitsComposite, "min:", new GridData(
-				GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
-		maxLabel = UIUtils.createLabel(limitsComposite, "max:", new GridData(
-				GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
-
-		Composite limitGroup = UIUtils.createEmptyComposite(bodyGroup,
-				new FillLayout(SWT.VERTICAL), new GridData(
-						GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-		minSlider = new Scale(limitGroup, SWT.HORIZONTAL);
+		Composite group;
+		
+		UIUtils.createLabel(bodyGroup, "Min:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));		
+		group = new Composite(bodyGroup, SWT.NONE);
+		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));		
+		minActiveCheckbox = new Button(group, SWT.CHECK);
+		minLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		minSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
+		minSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		minSlider.setPageIncrement(1);
 		minSlider.setIncrement(1);
-		maxSlider = new Scale(limitGroup, SWT.HORIZONTAL);
+		
+		UIUtils.createLabel(bodyGroup, "Max:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		group = new Composite(bodyGroup, SWT.NONE);
+		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));			
+		maxActiveCheckbox = new Button(group, SWT.CHECK);
+		maxLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		maxSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
+		maxSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		maxSlider.setPageIncrement(1);
 		maxSlider.setIncrement(1);
 
-		estimateDetailsLabel = UIUtils.createLabel(bodyGroup, "Estimate:",
-				new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Estimate:",	new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		group = new Composite(bodyGroup, SWT.NONE);
+		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));			
+		estimateActiveCheckbox = new Button(group, SWT.CHECK);
+		estimateDetailsLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
 		estimateSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		estimateSlider.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.GRAB_HORIZONTAL));

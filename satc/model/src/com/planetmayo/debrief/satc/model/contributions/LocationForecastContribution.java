@@ -14,7 +14,7 @@ public class LocationForecastContribution extends BaseContribution
 
 	private int _limit;
 
-	private GeoPoint _estimate;
+	private GeoPoint _estimate = new GeoPoint(0, 0);
 
 	private PropertyChangeListener estimateDetailsListener = new PropertyChangeListener()
 	{

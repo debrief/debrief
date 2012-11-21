@@ -11,7 +11,7 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
-public class RangeForecastContributionView extends AnalystContributionView<RangeForecastContribution>
+public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
 
 	public RangeForecastContributionView(Composite parent,
@@ -43,8 +43,7 @@ public class RangeForecastContributionView extends AnalystContributionView<Range
 		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
 		context.bindValue(minSpeedSlider, minSpeedValue);
 		context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"min: ", " m")));
+				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " m")));
 
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
@@ -53,8 +52,7 @@ public class RangeForecastContributionView extends AnalystContributionView<Range
 		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
 		context.bindValue(maxSpeedSlider, maxSpeedValue);
 		context.bindValue(maxSpeedLabel, maxSpeedValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"max: ", "m")));
+				.converterStrategy(new PrefixSuffixLabelConverter(double.class, "m")));
 
 		IObservableValue estimateSliderValue = WidgetProperties.selection()
 				.observe(estimateSlider);
@@ -62,8 +60,7 @@ public class RangeForecastContributionView extends AnalystContributionView<Range
 				.observe(estimateDetailsLabel);
 		context.bindValue(estimateSliderValue, estimateValue);
 		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class,
-						"Estimate: ", " m")));
+				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " m")));
 		
 		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}
