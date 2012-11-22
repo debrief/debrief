@@ -38,7 +38,7 @@ public class SpeedContributionView extends BaseContributionView<SpeedForecastCon
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, 
 				estimateActiveCheckbox, labelsConverter, new BooleanToNullConverter<Double>(0d));		
 		
-		//bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
+		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}
 	
 	@Override

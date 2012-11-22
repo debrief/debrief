@@ -12,7 +12,7 @@ public class LocationForecastContribution extends BaseContribution
 
 	public static final String LIMIT = "limit";
 
-	private int _limit;
+	private Integer _limit;
 
 	private GeoPoint _estimate = new GeoPoint(0, 0);
 
@@ -53,10 +53,10 @@ public class LocationForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + _limit;
+		return "" + (_limit == null ? "" : _limit.intValue());
 	}
 
-	public int getLimit()
+	public Integer getLimit()
 	{
 		return _limit;
 	}
@@ -76,10 +76,10 @@ public class LocationForecastContribution extends BaseContribution
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setLimit(int limit)
+	public void setLimit(Integer limit)
 	{
 		String oldHardConstraints = getHardConstraints();
-		int oldLimit = _limit;
+		Integer oldLimit = _limit;
 		_limit = limit;
 		firePropertyChange(LIMIT, oldLimit, limit);
 		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints,

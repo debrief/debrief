@@ -41,7 +41,7 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 				labelsConverter, new BooleanToNullConverter<Double>(RangeForecastContribution.MAX_SELECTABLE_RANGE_M));
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
 				labelsConverter, new BooleanToNullConverter<Double>(0d));		
-		//bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
+		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}
 
 

@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
-import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
@@ -124,9 +123,15 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				final Number oldValue = (Number) e.diff.getOldValue();
 				final Number minValue = (Number) min.getValue();
 				final Number maxValue = (Number) max.getValue();
-				if (newValue.longValue() < minValue.longValue() || newValue.longValue() > maxValue.longValue()) 
+				
+				if (newValue == null) {
+					return;
+				}
+				long minT = minValue == null ? Long.MIN_VALUE : minValue.longValue();
+				long maxT = maxValue == null ? Long.MAX_VALUE : maxValue.longValue();
+				if (newValue.longValue() < minT || newValue.longValue() > maxT) 
 				{
-					if (minValue.longValue() == maxValue.longValue()) 
+					if (minT == maxT) 
 					{
 						max.setValue(newValue);
 						min.setValue(newValue);
@@ -137,7 +142,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 						{
 							public void run()
 							{
-								estimate.setValue(oldValue);
+								if (oldValue == null) {
+									estimate.setValue(minValue == null ? maxValue : minValue); 
+								} else {
+									estimate.setValue(oldValue);
+								}
 							}
 						});						
 					}				
@@ -153,6 +162,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				final Number newValue = (Number) e.diff.getNewValue();
 				final Number estimateValue = (Number) estimate.getValue();
 				final Number maxValue = (Number) max.getValue();
+				if (newValue == null) {
+					return;
+				}
 				if (newValue.longValue() > maxValue.longValue()) 
 				{
 					max.setValue(newValue);
@@ -172,6 +184,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				final Number newValue = (Number) e.diff.getNewValue();
 				final Number estimateValue = (Number) estimate.getValue();
 				final Number minValue = (Number) min.getValue();
+				if (newValue == null) {
+					return;
+				}				
 				if (newValue.longValue() < minValue.longValue()) 
 				{
 					min.setValue(newValue);										

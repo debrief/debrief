@@ -4,7 +4,6 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
@@ -22,12 +21,12 @@ import org.eclipse.swt.widgets.Scale;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class LocationContributionView extends BaseContributionView<LocationForecastContribution>
 {
-
 	private Label limitLabel;
 	private Button limitActiveButton;
 	private Scale limitSlider;
@@ -44,19 +43,15 @@ public class LocationContributionView extends BaseContributionView<LocationForec
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		bindCommonHeaderWidgets(context, null,
-				new PrefixSuffixLabelConverter(String.class, " m"));
+		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
+				Object.class, " m");		
+		bindCommonHeaderWidgets(context, null, labelsConverter);
 		bindCommonDates(context);
 
-		IObservableValue limitSliderValue = WidgetProperties.selection().observe(
-				limitSlider);
-		IObservableValue limitLabelValue = WidgetProperties.text().observe(
-				limitLabel);
 		IObservableValue limitValue = BeansObservables.observeValue(contribution,
 				LocationForecastContribution.LIMIT);
-		context.bindValue(limitSliderValue, limitValue);
-		context.bindValue(limitLabelValue, limitValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " m")));
+		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, 
+				labelsConverter, new BooleanToNullConverter<Integer>(0));
 
 		IObservableValue latValue = BeansObservables.observeDetailValue(
 				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),

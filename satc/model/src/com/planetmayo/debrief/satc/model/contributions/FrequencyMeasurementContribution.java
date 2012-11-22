@@ -20,7 +20,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	 * the allowable bearing error (in degrees)
 	 * 
 	 */
-	private double _frequencyError = 0;
+	private Double _frequencyError = 0d;
 
 	/**
 	 * the set of measurements we store
@@ -87,7 +87,11 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + (int) _frequencyError;
+		if (_frequencyError == null) 
+		{
+			return null;
+		}
+		return "" + _frequencyError.intValue();
 	}
 
 	/**

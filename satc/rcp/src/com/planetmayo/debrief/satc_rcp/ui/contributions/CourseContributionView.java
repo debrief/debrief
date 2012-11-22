@@ -42,7 +42,7 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
 				labelConverter, new BooleanToNullConverter<Integer>(0));		
 		
-		//bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
+		bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
 	}
 
 	@Override

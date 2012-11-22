@@ -36,7 +36,7 @@ public class ATBForecastContributionView extends BaseContributionView<ATBForecas
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
 				labelConverter, new BooleanToNullConverter<Integer>(0));
 		
-		//bindMaxMinEstimate(estimateValue, minValue, maxValue);
+		bindMaxMinEstimate(estimateValue, minValue, maxValue);
 	}
 
 	@Override

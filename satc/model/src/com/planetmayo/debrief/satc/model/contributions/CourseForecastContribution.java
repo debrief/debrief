@@ -95,7 +95,7 @@ public class CourseForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	public int getEstimate()
+	public Integer getEstimate()
 	{
 		return _estimate;
 	}
