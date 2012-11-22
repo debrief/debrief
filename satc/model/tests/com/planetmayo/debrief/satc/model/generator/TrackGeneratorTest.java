@@ -82,8 +82,8 @@ public class TrackGeneratorTest extends TestCase {
 		courseF.setMaxCourse(31);
 
 		SpeedForecastContribution speedF = new SpeedForecastContribution();
-		speedF.setMinSpeed(21);
-		speedF.setMaxSpeed(14);
+		speedF.setMinSpeed(21d);
+		speedF.setMaxSpeed(14d);
 
 		// and the track generator
 		TrackGenerator tg = new TrackGenerator();
@@ -184,8 +184,8 @@ public class TrackGeneratorTest extends TestCase {
 		courseF.setMaxCourse(31);
 
 		SpeedForecastContribution speedF = new SpeedForecastContribution();
-		speedF.setMinSpeed(21);
-		speedF.setMaxSpeed(14);
+		speedF.setMinSpeed(21d);
+		speedF.setMaxSpeed(14d);
 
 		// and the track generator
 		TrackGenerator tg = new TrackGenerator();

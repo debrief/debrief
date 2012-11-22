@@ -12,19 +12,17 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 public class SpeedForecastContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
+	
+	public static final double MAX_SPEED_VALUE_KTS = 40.0;	
 
 	public static final String MIN_SPEED = "minSpeed";
 
 	public static final String MAX_SPEED = "maxSpeed";
 
-	protected double _minSpeedKts;
+	protected Double _minSpeedKts = 0d;
+	protected Double _maxSpeedKts = MAX_SPEED_VALUE_KTS;
+	protected Double _estimateKts;
 	
-	public static final double MAX_SPEED_VALUE_KTS = 40.0;
-
-	protected double _maxSpeedKts = MAX_SPEED_VALUE_KTS;
-
-	protected double _estimateKts;
-
 	@Override
 	public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException
@@ -100,7 +98,7 @@ public class SpeedForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	public double getEstimate()
+	public Double getEstimate()
 	{
 		return _estimateKts;
 	}
@@ -108,44 +106,46 @@ public class SpeedForecastContribution extends BaseContribution
 	@Override
 	public String getEstimateStr()
 	{
-		return "" + (int) _estimateKts;
+		return _estimateKts == null ? "" : "" + _estimateKts.intValue();
 	}
 
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minSpeedKts) + (_maxSpeedKts == _minSpeedKts ? "" : " - " + ((int) _maxSpeedKts));
+		String min = _minSpeedKts == null ? "-\u221E" : "" + _minSpeedKts.intValue();
+		String max = _maxSpeedKts == null ? "+\u221E" : "" + _maxSpeedKts.intValue();
+		return min + (min.equals(max) ? "" : " - " + max);
 	}
 
-	public double getMaxSpeed()
+	public Double getMaxSpeed()
 	{
 		return _maxSpeedKts;
 	}
 
-	public double getMinSpeed()
+	public Double getMinSpeed()
 	{
 		return _minSpeedKts;
 	}
 
-	public void setEstimate(double estimate)
+	public void setEstimate(Double estimate)
 	{
-		double oldEstimate = _estimateKts;
+		Double oldEstimate = _estimateKts;
 		this._estimateKts = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxSpeed(double maxSpeed)
+	public void setMaxSpeed(Double maxSpeed)
 	{
 		String oldConstraints = getHardConstraints();
-		double oldMaxSpeed = _maxSpeedKts;
+		Double oldMaxSpeed = _maxSpeedKts;
 		this._maxSpeedKts = maxSpeed;
 		firePropertyChange(MAX_SPEED, oldMaxSpeed, maxSpeed);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinSpeed(double minSpeed)
+	public void setMinSpeed(Double minSpeed)
 	{
-		double oldMinSpeed = _minSpeedKts;
+		Double oldMinSpeed = _minSpeedKts;
 		String oldConstraints = getHardConstraints();
 		this._minSpeedKts = minSpeed;
 		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);

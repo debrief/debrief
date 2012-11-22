@@ -30,6 +30,9 @@ public class PrefixSuffixLabelConverter implements IConverter
 	@Override
 	public Object convert(Object from)
 	{
+		if (from == null) {
+			return "";
+		}
 		if (from instanceof Number)
 		{
 			from = ((Number) from).intValue();

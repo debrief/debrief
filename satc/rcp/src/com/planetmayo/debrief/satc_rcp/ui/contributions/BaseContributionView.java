@@ -24,10 +24,14 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Slider;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.NullToBooleanConverter;
+import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.widgets.ExpandButton;
 
@@ -89,6 +93,24 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				BaseContribution.NAME, null, contribution.getName()));
 		contribution.addPropertyChangeListener(BaseContribution.NAME, listener);
 		return listener;
+	}
+	
+	protected void bindSliderLabelCheckbox(DataBindingContext context, IObservableValue modelValue,
+			Scale slider, Label label, Button checkBox, PrefixSuffixLabelConverter labelValueConverter, 
+			BooleanToNullConverter<?> checkBoxValueConverter) 
+	{
+		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
+		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
+		IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
+		IObservableValue labelValue = WidgetProperties.text().observe(label);
+		context.bindValue(sliderValue, modelValue);
+		context.bindValue(sliderEnabled, modelValue, null, 
+				UIUtils.converterStrategy(new NullToBooleanConverter()));
+		context.bindValue(checkBoxValue, modelValue, 
+				UIUtils.converterStrategy(checkBoxValueConverter),
+				UIUtils.converterStrategy(new NullToBooleanConverter()));
+		context.bindValue(labelValue, modelValue, null,
+				UIUtils.converterStrategy(labelValueConverter));	
 	}
 	
 	protected void bindMaxMinEstimate(final IObservableValue estimate, final IObservableValue min, final IObservableValue max) {

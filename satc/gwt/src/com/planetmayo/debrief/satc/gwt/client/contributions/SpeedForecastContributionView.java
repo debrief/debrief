@@ -71,7 +71,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxSpeed(event.getValue());
+				_myData.setMaxSpeed((double) event.getValue());
 			}
 		});
 
@@ -80,7 +80,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinSpeed(event.getValue());
+				_myData.setMinSpeed((double) event.getValue());
 			}
 		});
 
@@ -89,7 +89,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate(event.getValue());
+				_myData.setEstimate((double) event.getValue());
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -162,8 +162,8 @@ public class SpeedForecastContributionView extends BaseContributionView
 
 		// property changes
 		// initialise the UI components
-		min.setData((int) _myData.getMinSpeed());
-		max.setData((int) _myData.getMaxSpeed());
+		min.setData(_myData.getMinSpeed().intValue());
+		max.setData(_myData.getMaxSpeed().intValue());
 		estimate.setData((int) Math.round(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
