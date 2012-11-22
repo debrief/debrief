@@ -59,20 +59,6 @@
       </view>
    </extension>
    <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="Debrief SATC"
-            id="com.planetmayo.debrief.satc">
-      </category>
-      <view
-            name="Sample View"
-            icon="icons/sample.gif"
-            category="com.planetmayo.debrief.satc"
-            class="com.planetmayo.debrief.satc_rcp.views.SampleView"
-            id="com.planetmayo.debrief.satc_rcp.views.SampleView">
-      </view>
-   </extension>   
-   <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.jdt.ui.JavaPerspective">
