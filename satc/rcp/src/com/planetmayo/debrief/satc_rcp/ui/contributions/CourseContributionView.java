@@ -3,13 +3,12 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class CourseContributionView extends BaseContributionView<CourseForecastContribution>
 {
@@ -24,45 +23,26 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
+		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(
 				Object.class, " \u00B0");
-		bindCommonHeaderWidgets(context, labelsConverter);
+		bindCommonHeaderWidgets(context, labelConverter);
 		bindCommonDates(context);
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
-		IObservableValue estimateLabel = WidgetProperties.text().observe(
-				this.estimateLabel);
-		context.bindValue(estimateLabel, estimateValue, null,
-				UIUtils.converterStrategy(labelsConverter));
-
 		IObservableValue minCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MIN_COURSE);
-		IObservableValue minCourseSlider = WidgetProperties.selection().observe(
-				minSlider);
-		IObservableValue minCourseLabel = WidgetProperties.text().observe(minLabel);
-		context.bindValue(minCourseSlider, minCourseValue);
-		context.bindValue(minCourseLabel, minCourseValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " \u00B0")));
-
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MAX_COURSE);
-		IObservableValue maxCourseSlider = WidgetProperties.selection().observe(
-				maxSlider);
-		IObservableValue maxCourseLabel = WidgetProperties.text().observe(maxLabel);
-		context.bindValue(maxCourseSlider, maxCourseValue);
-		context.bindValue(maxCourseLabel, maxCourseValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " \u00B0")));
-
-		IObservableValue estimateSliderValue = WidgetProperties.selection()
-				.observe(estimateSlider);
-		IObservableValue estimateCourseDetailsLabel = WidgetProperties.text()
-				.observe(estimateDetailsLabel);
-		context.bindValue(estimateSliderValue, estimateValue);
-		context.bindValue(estimateCourseDetailsLabel, estimateValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(int.class, " \u00B0")));
 		
-		bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
+		bindSliderLabelCheckbox(context, minCourseValue, minSlider, minLabel, minActiveCheckbox, 
+				labelConverter, new BooleanToNullConverter<Integer>(0));
+		bindSliderLabelCheckbox(context, maxCourseValue, maxSlider, maxLabel, maxActiveCheckbox, 
+				labelConverter, new BooleanToNullConverter<Integer>(360));
+		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
+				labelConverter, new BooleanToNullConverter<Integer>(0));		
+		
+		//bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
 	}
 
 	@Override

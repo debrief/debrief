@@ -10,8 +10,8 @@ public class AlterationLegForecastContribution extends BaseContribution
 	public static final String MAX_COURSE_CHANGE = "maxCourseChange";
 	public static final String MAX_SPEED_CHANGE = "maxSpeedChange";
 	
-	private Integer maxCourseChange = 0;
-	private Double maxSpeedChange = 0.0;
+	private Integer maxCourseChange;
+	private Double maxSpeedChange;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException

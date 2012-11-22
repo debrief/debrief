@@ -16,11 +16,11 @@ public class CourseForecastContribution extends BaseContribution
 
 	public static final String MAX_COURSE = "maxCourse";
 
-	protected int _minCourse;
+	protected Integer _minCourse = 0;
 
-	protected int _maxCourse = 360;
+	protected Integer _maxCourse = 360;
 
-	protected int _estimate;
+	protected Integer _estimate;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -103,44 +103,46 @@ public class CourseForecastContribution extends BaseContribution
 	@Override
 	public String getEstimateStr()
 	{
-		return "" + _estimate;
+		return "" + (_estimate == null ? "" : _estimate.intValue());
 	}
 
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + _minCourse + (_minCourse == _maxCourse ? "" : " - " + _maxCourse);
+		String min = _minCourse == null ? "0" : "" + _minCourse.intValue();
+		String max = _maxCourse == null ? "360" : "" + _maxCourse.intValue();
+		return min + (min.equals(max) ? "" : " - " + max);
 	}
 
-	public int getMaxCourse()
+	public Integer getMaxCourse()
 	{
 		return _maxCourse;
 	}
 
-	public int getMinCourse()
+	public Integer getMinCourse()
 	{
 		return _minCourse;
 	}
 
-	public void setEstimate(int estimate)
+	public void setEstimate(Integer estimate)
 	{
-		int oldEstimate = _estimate;
+		Integer oldEstimate = _estimate;
 		this._estimate = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxCourse(int maxCourse)
+	public void setMaxCourse(Integer maxCourse)
 	{
-		int oldMaxCourse = _maxCourse;
+		Integer oldMaxCourse = _maxCourse;
 		String oldConstraints = getHardConstraints();
 		this._maxCourse = maxCourse;
 		firePropertyChange(MAX_COURSE, oldMaxCourse, maxCourse);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinCourse(int minCourse)
+	public void setMinCourse(Integer minCourse)
 	{
-		int oldMinCourse = _minCourse;
+		Integer oldMinCourse = _minCourse;
 		String oldConstraints = getHardConstraints();
 		this._minCourse = minCourse;
 		firePropertyChange(MIN_COURSE, oldMinCourse, minCourse);

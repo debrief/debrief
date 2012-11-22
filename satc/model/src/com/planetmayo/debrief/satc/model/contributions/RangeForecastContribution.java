@@ -30,15 +30,15 @@ public class RangeForecastContribution extends BaseContribution
 	 * for UI components, this is the maximum range that a user can select
 	 * 
 	 */
-	public static final int MAX_SELECTABLE_RANGE_M = 10000;
+	public static final double MAX_SELECTABLE_RANGE_M = 10000;
 
 	private static final double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
 
-	protected double _minRangeM;
+	protected Double _minRangeM;
 
-	protected double _maxRangeM;
+	protected Double _maxRangeM;
 
-	protected double _estimate;
+	protected Double _estimate;
 
 	/**
 	 * the set of measurements we store
@@ -160,14 +160,16 @@ public class RangeForecastContribution extends BaseContribution
 
 	@Override
 	public String getEstimateStr()
-	{
-		return "" + (int) _estimate;
+	{		
+		return "" + (_estimate == null ? "" :  _estimate.intValue());
 	}
 
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + ((int) _minRangeM) + (_maxRangeM == _minRangeM ? "" : " - " + ((int) _maxRangeM));
+		String min = _minRangeM == null ? "-\u221E" : "" + _minRangeM.intValue();
+		String max = _maxRangeM == null ? "+\u221E" : "" + _maxRangeM.intValue();
+		return min + (min.equals(max) ? "" : " - " + max);
 	}
 
 	private LinearRing getInnerRing(Point pt)
@@ -194,12 +196,12 @@ public class RangeForecastContribution extends BaseContribution
 		return res;
 	}
 
-	public double getMaxRange()
+	public Double getMaxRange()
 	{
 		return _maxRangeM;
 	}
 
-	public double getMinRange()
+	public Double getMinRange()
 	{
 		return _minRangeM;
 	}
@@ -289,31 +291,31 @@ public class RangeForecastContribution extends BaseContribution
 		}
 
 		// give us some max/min data
-		this.setMaxRange(9000);
-		this.setMinRange(5);
+		this.setMaxRange(9000d);
+		this.setMinRange(5d);
 
 		// TODO: set the start/end times = just for tidiness
 	}
 
-	public void setEstimate(double estimate)
+	public void setEstimate(Double estimate)
 	{
-		double oldEstimate = _estimate;
+		Double oldEstimate = _estimate;
 		this._estimate = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxRange(double maxRngM)
+	public void setMaxRange(Double maxRngM)
 	{
-		double oldMaxRange = _maxRangeM;
+		Double oldMaxRange = _maxRangeM;
 		String oldConstraints = getHardConstraints();
 		this._maxRangeM = maxRngM;
 		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinRange(double minRngM)
+	public void setMinRange(Double minRngM)
 	{
-		double oldMinRange = _minRangeM;
+		Double oldMinRange = _minRangeM;
 		String oldConstraints = getHardConstraints();
 		this._minRangeM = minRngM;
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);

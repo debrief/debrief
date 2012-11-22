@@ -3,13 +3,12 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
-import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
@@ -31,38 +30,18 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
-		IObservableValue estimateLabel = WidgetProperties.text().observe(
-				this.estimateLabel);
-		context.bindValue(estimateLabel, estimateValue, null,
-				UIUtils.converterStrategy(labelsConverter));
-
 		IObservableValue minSpeedValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MIN_RANGE);
-		IObservableValue minSpeedSlider = WidgetProperties.selection().observe(
-				minSlider);
-		IObservableValue minSpeedLabel = WidgetProperties.text().observe(minLabel);
-		context.bindValue(minSpeedSlider, minSpeedValue);
-		context.bindValue(minSpeedLabel, minSpeedValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " m")));
-
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
-		IObservableValue maxSpeedSlider = WidgetProperties.selection().observe(
-				maxSlider);
-		IObservableValue maxSpeedLabel = WidgetProperties.text().observe(maxLabel);
-		context.bindValue(maxSpeedSlider, maxSpeedValue);
-		context.bindValue(maxSpeedLabel, maxSpeedValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class, "m")));
-
-		IObservableValue estimateSliderValue = WidgetProperties.selection()
-				.observe(estimateSlider);
-		IObservableValue estimateSpeedDetailsLabel = WidgetProperties.text()
-				.observe(estimateDetailsLabel);
-		context.bindValue(estimateSliderValue, estimateValue);
-		context.bindValue(estimateSpeedDetailsLabel, estimateValue, null, UIUtils
-				.converterStrategy(new PrefixSuffixLabelConverter(double.class, " m")));
 		
-		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
+		bindSliderLabelCheckbox(context, minSpeedValue, minSlider, minLabel, minActiveCheckbox, 
+				labelsConverter, new BooleanToNullConverter<Double>(0d));
+		bindSliderLabelCheckbox(context, maxSpeedValue, maxSlider, maxLabel, maxActiveCheckbox, 
+				labelsConverter, new BooleanToNullConverter<Double>(RangeForecastContribution.MAX_SELECTABLE_RANGE_M));
+		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
+				labelsConverter, new BooleanToNullConverter<Double>(0d));		
+		//bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}
 
 
@@ -70,9 +49,12 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	protected void initializeWidgets()
 	{
 		// give a monster max range
-		maxSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
-		minSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
-		estimateSlider.setMaximum(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+		maxSlider.setMaximum((int) RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+		minSlider.setMaximum((int) RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+		estimateSlider.setMaximum((int) RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
+		minSlider.setPageIncrement(100);
+		maxSlider.setPageIncrement(100);
+		estimateSlider.setPageIncrement(100);
 
 		startDate.setEnabled(false);
 		startTime.setEnabled(false);

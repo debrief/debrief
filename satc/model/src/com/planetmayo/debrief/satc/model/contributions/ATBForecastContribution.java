@@ -10,9 +10,9 @@ public class ATBForecastContribution extends BaseContribution
 	public static final String MIN_ANGLE = "minAngle";	
 	public static final String MAX_ANGLE = "maxAngle";
 	
-	private int _minAngle;
-	private int _maxAngle = 360;
-	private int _estimate;
+	private Integer _minAngle = 0;
+	private Integer _maxAngle = 360;
+	private Integer _estimate;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -29,45 +29,47 @@ public class ATBForecastContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		return "" + _minAngle + (_minAngle == _maxAngle ? "" : " - " + _maxAngle);
+		String min = _minAngle == null ? "0" : "" + _minAngle.intValue();
+		String max = _maxAngle == null ? "360" : "" + _maxAngle.intValue();
+		return min + (min.equals(max) ? "" : " - " + max);
 	}
 
-	public int getMinAngle()
+	public Integer getMinAngle()
 	{
 		return _minAngle;
 	}
 
-	public void setMinAngle(int minAngle)
+	public void setMinAngle(Integer minAngle)
 	{
 		String oldHardConstraints = getHardConstraints();
-		int old = _minAngle;
+		Integer old = _minAngle;
 		_minAngle = minAngle;
 		firePropertyChange(MIN_ANGLE, old, minAngle);
 		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints, getHardConstraints());
 	}
 
-	public int getMaxAngle()
+	public Integer getMaxAngle()
 	{
 		return _maxAngle;
 	}
 
-	public void setMaxAngle(int maxAngle)
+	public void setMaxAngle(Integer maxAngle)
 	{
 		String oldHardConstraints = getHardConstraints();
-		int old = _maxAngle;		
+		Integer old = _maxAngle;		
 		_maxAngle = maxAngle;
 		firePropertyChange(MAX_ANGLE, old, maxAngle);
 		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints, getHardConstraints());
 	}
 
-	public int getEstimate()
+	public Integer getEstimate()
 	{
 		return _estimate;
 	}
 
-	public void setEstimate(int estimate)
+	public void setEstimate(Integer estimate)
 	{
-		int old = _estimate;
+		Integer old = _estimate;
 		_estimate = estimate;
 		firePropertyChange(ESTIMATE, old, estimate);
 	}

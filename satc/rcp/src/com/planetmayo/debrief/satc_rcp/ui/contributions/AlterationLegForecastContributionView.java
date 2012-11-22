@@ -3,7 +3,6 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -13,6 +12,7 @@ import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
@@ -79,19 +79,15 @@ public class AlterationLegForecastContributionView extends BaseContributionView<
 		
 		IObservableValue maxCourseValue = BeansObservables.observeValue(contribution, 
 				AlterationLegForecastContribution.MAX_COURSE_CHANGE);
-		IObservableValue maxCourseLabelValue = WidgetProperties.text().observe(maxCourseLabel);
-		IObservableValue maxCourseSliderValue = WidgetProperties.selection().observe(maxCourseSlider);
-		context.bindValue(maxCourseSliderValue, maxCourseValue);
-		context.bindValue(maxCourseLabelValue, maxCourseValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Integer.class, " \u00b0")));
-		
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution, 
 				AlterationLegForecastContribution.MAX_SPEED_CHANGE);
-		IObservableValue maxSpeedLabelValue = WidgetProperties.text().observe(maxSpeedLabel);
-		IObservableValue maxSpeedSliderValue = WidgetProperties.selection().observe(maxSpeedSlider);
-		context.bindValue(maxSpeedSliderValue, maxSpeedValue);
-		context.bindValue(maxSpeedLabelValue, maxSpeedValue, null, 
-				UIUtils.converterStrategy(new PrefixSuffixLabelConverter(Double.class, " kts")));
+		
+		bindSliderLabelCheckbox(context, maxCourseValue, maxCourseSlider, maxCourseLabel, maxCourseActiveCheckbox, 
+				new PrefixSuffixLabelConverter(Integer.class, " \u00b0"), 
+				new BooleanToNullConverter<Integer>(360));
+		bindSliderLabelCheckbox(context, maxSpeedValue, maxSpeedSlider, maxSpeedLabel, maxSpeedActiveCheckbox, 
+				new PrefixSuffixLabelConverter(Double.class, " kts"), 
+				new BooleanToNullConverter<Double>(SpeedForecastContribution.MAX_SPEED_VALUE_KTS));		
 	}
 
 	@Override
