@@ -271,7 +271,7 @@ public class RangeForecastContribution extends BaseContribution
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd hhmmss", date
+			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", date
 					+ " " + time);
 
 			// and the location
