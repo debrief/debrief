@@ -1,7 +1,6 @@
 package com.planetmayo.debrief.satc.support;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -106,7 +105,6 @@ public class TestSupport
 		return rows;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void loadSampleData(boolean useLong)
 	{
 		// TODO: replace this with deserializing an existing SteppingGenerator, once
