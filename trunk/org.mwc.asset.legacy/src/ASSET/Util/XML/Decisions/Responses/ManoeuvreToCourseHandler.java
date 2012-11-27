@@ -12,7 +12,6 @@ package ASSET.Util.XML.Decisions.Responses;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
 import ASSET.Models.Decision.Responses.ManoeuvreToCourse;
@@ -21,6 +20,8 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
+
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * class which reads in a man to course response

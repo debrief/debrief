@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.21" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.22" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -97,9 +97,9 @@
    </plugins>
 
    <features>
-      <feature id="org.mwc.asset.core.feature" version="1.0.33"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.164"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.207"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.184"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.233"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.34"/>
    </features>
 
 
