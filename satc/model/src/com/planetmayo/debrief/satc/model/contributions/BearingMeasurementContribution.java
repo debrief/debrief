@@ -28,7 +28,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * the allowable bearing error (in degrees)
 	 * 
 	 */
-	private Double _degError = 0d;
+	private double _degError = 0d;
 
 	/**
 	 * the set of measurements we store
@@ -151,11 +151,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	@Override
 	public String getHardConstraints()
 	{
-		if (_degError == null) 
-		{
-			return null;
-		}
-		return "" + _degError.intValue();
+		return "" + _degError;
 	}
 
 	/**
@@ -232,13 +228,13 @@ public class BearingMeasurementContribution extends BaseContribution
 		this.setBearingError(3d);
 		// TODO: set the start/end times = just for tidiness
 	}
-	
-	public Double getBearingError()
+
+	public double getBearingError()
 	{
 		return _degError;
-	}	
+	}
 
-	public void setBearingError(Double errorDegs)
+	public void setBearingError(double errorDegs)
 	{
 		String oldConstraints = getHardConstraints();
 		Double old = _degError;
@@ -246,7 +242,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		firePropertyChange(BEARING_ERROR, old, errorDegs);
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
-	
+
 	/**
 	 * utility class for storing a measurement
 	 * 
@@ -271,5 +267,5 @@ public class BearingMeasurementContribution extends BaseContribution
 			_time = time;
 			_theRange = theRange;
 		}
-	}	
+	}
 }

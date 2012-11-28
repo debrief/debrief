@@ -196,12 +196,12 @@ public class RangeForecastContribution extends BaseContribution
 		return res;
 	}
 
-	public Double getMaxRange()
+	public double getMaxRange()
 	{
 		return _maxRangeM;
 	}
 
-	public Double getMinRange()
+	public double getMinRange()
 	{
 		return _minRangeM;
 	}
@@ -297,14 +297,14 @@ public class RangeForecastContribution extends BaseContribution
 		// TODO: set the start/end times = just for tidiness
 	}
 
-	public void setEstimate(Double estimate)
+	public void setEstimate(double estimate)
 	{
 		Double oldEstimate = _estimate;
 		this._estimate = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxRange(Double maxRngM)
+	public void setMaxRange(double maxRngM)
 	{
 		Double oldMaxRange = _maxRangeM;
 		String oldConstraints = getHardConstraints();
@@ -313,7 +313,7 @@ public class RangeForecastContribution extends BaseContribution
 		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinRange(Double minRngM)
+	public void setMinRange(double minRngM)
 	{
 		Double oldMinRange = _minRangeM;
 		String oldConstraints = getHardConstraints();
