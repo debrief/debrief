@@ -69,7 +69,7 @@ public class RangeForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxRange(new Double(event.getValue()));
+				_myData.setMaxRange(event.getValue());
 			}
 		});
 
@@ -78,7 +78,7 @@ public class RangeForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinRange(new Double(event.getValue()));
+				_myData.setMinRange(event.getValue());
 			}
 		});
 
@@ -87,7 +87,7 @@ public class RangeForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate(new Double(event.getValue()));
+				_myData.setEstimate(event.getValue());
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -155,12 +155,8 @@ public class RangeForecastContributionView extends BaseContributionView
 
 		// property changes
 		// initialise the UI components
-		Double minR = _myData.getMinRange();
-		if (minR != null)
-			min.setData((int) minR.doubleValue());
-		Double maxR = _myData.getMaxRange();
-		if (maxR != null)
-			max.setData((int) maxR.doubleValue());
+		min.setData((int) _myData.getMinRange());
+		max.setData((int) _myData.getMaxRange());
 		estimate.setData((int) Math.round(Double.valueOf(_myData.getEstimate()
 				.toString())));
 		name.setData(contribution.getName());

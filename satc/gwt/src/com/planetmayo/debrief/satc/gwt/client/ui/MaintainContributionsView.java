@@ -31,7 +31,6 @@ import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
@@ -194,7 +193,7 @@ public class MaintainContributionsView extends Composite implements MyView,
 	}
 
 	@Override
-	public void populateContributionList(List<ContributionBuilder> items)
+	public void populateContributionList(ArrayList<String> items)
 	{
 		// TODO use these strings to populate the drop-down list of new contribution
 		// types
