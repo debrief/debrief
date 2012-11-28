@@ -16,7 +16,7 @@ public class VehiclePerformanceReferenceContribution extends BaseContribution
 		// store the current value of vehicle type
 	}
 
-	public void setRepository(VehicleType vType)
+	public void setVehicleType(VehicleType vType)
 	{
 		this.vType = vType;
 	}
