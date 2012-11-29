@@ -6,7 +6,7 @@ package com.planetmayo.debrief.satc.model.generator;
  * @author ian
  * 
  */
-public interface SteppingGenerator
+public interface ISteppingGenerator
 {
 	/**
 	 * restart the set of contributions

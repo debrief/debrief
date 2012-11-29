@@ -15,11 +15,11 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
+import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 
-public class TrackStates extends Composite implements BoundedStatesListener
+public class TrackStates extends Composite implements IBoundedStatesListener
 {
 
 	interface TrackStatesUiBinder extends UiBinder<Widget, TrackStates>

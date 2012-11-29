@@ -20,7 +20,7 @@ import com.planetmayo.debrief.satc.support.SupportServices;
  * @author ian
  * 
  */
-public class TrackGenerator implements SteppingGenerator
+public class TrackGenerator implements ISteppingGenerator
 {
 	public static final String STATES_BOUNDED = "states_bounded";
 
@@ -28,19 +28,19 @@ public class TrackGenerator implements SteppingGenerator
 	 * bounded state listeners
 	 * 
 	 */
-	final private ArrayList<BoundedStatesListener> _boundedListeners = new ArrayList<BoundedStatesListener>();
+	final private ArrayList<IBoundedStatesListener> _boundedListeners = new ArrayList<IBoundedStatesListener>();
 
 	/**
 	 * people interested in contributions
 	 * 
 	 */
-	final private ArrayList<ContributionsChangedListener> _contributionListeners = new ArrayList<ContributionsChangedListener>();
+	final private ArrayList<IContributionsChangedListener> _contributionListeners = new ArrayList<IContributionsChangedListener>();
 
 	/**
 	 * people interested in us stepping
 	 * 
 	 */
-	final private ArrayList<SteppingListener> _steppingListeners = new ArrayList<SteppingListener>();
+	final private ArrayList<ISteppingListener> _steppingListeners = new ArrayList<ISteppingListener>();
 
 	/**
 	 * the problem space we consider
@@ -96,7 +96,7 @@ public class TrackGenerator implements SteppingGenerator
 	 */
 	private boolean _liveRunning;
 
-	public void addBoundedStateListener(BoundedStatesListener newListener)
+	public void addBoundedStateListener(IBoundedStatesListener newListener)
 	{
 		_boundedListeners.add(newListener);
 	}
@@ -121,22 +121,22 @@ public class TrackGenerator implements SteppingGenerator
 		// ok, and tell the world
 		if (_contributionListeners != null)
 		{
-			final Iterator<ContributionsChangedListener> iter = _contributionListeners
+			final Iterator<IContributionsChangedListener> iter = _contributionListeners
 					.iterator();
 			while (iter.hasNext())
 			{
-				final ContributionsChangedListener listener = iter.next();
+				final IContributionsChangedListener listener = iter.next();
 				listener.added(contribution);
 			}
 		}
 	}
 
-	public void addContributionsListener(ContributionsChangedListener newListener)
+	public void addContributionsListener(IContributionsChangedListener newListener)
 	{
 		_contributionListeners.add(newListener);
 	}
 
-	public void addSteppingListener(SteppingListener newListener)
+	public void addSteppingListener(ISteppingListener newListener)
 	{
 		_steppingListeners.add(newListener);
 	}
@@ -144,10 +144,10 @@ public class TrackGenerator implements SteppingGenerator
 	private void broadcastBoundedStates()
 	{
 		// now share the good news
-		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		Iterator<IBoundedStatesListener> iter2 = _boundedListeners.iterator();
 		while (iter2.hasNext())
 		{
-			BoundedStatesListener boundedStatesListener = iter2.next();
+			IBoundedStatesListener boundedStatesListener = iter2.next();
 			boundedStatesListener.statesBounded(_space.states());
 		}
 	}
@@ -155,10 +155,10 @@ public class TrackGenerator implements SteppingGenerator
 	private void broadcastBoundedStatesDebug()
 	{
 		// now share the good news
-		Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+		Iterator<IBoundedStatesListener> iter2 = _boundedListeners.iterator();
 		while (iter2.hasNext())
 		{
-			BoundedStatesListener boundedStatesListener = iter2.next();
+			IBoundedStatesListener boundedStatesListener = iter2.next();
 			boundedStatesListener.debugStatesBounded(_space.states());
 		}
 	}
@@ -214,10 +214,10 @@ public class TrackGenerator implements SteppingGenerator
 			}
 
 			// and tell any step listeners
-			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+			Iterator<ISteppingListener> iter3 = _steppingListeners.iterator();
 			while (iter3.hasNext())
 			{
-				SteppingListener stepper = iter3.next();
+				ISteppingListener stepper = iter3.next();
 
 				stepper.stepped(stepIndex, _contribs.size());
 			}
@@ -229,10 +229,10 @@ public class TrackGenerator implements SteppingGenerator
 					"Failed applying bounds:" + theContrib.getName(), e);
 
 			// ooh dear, suppose we should tell everybody
-			Iterator<BoundedStatesListener> iter2 = _boundedListeners.iterator();
+			Iterator<IBoundedStatesListener> iter2 = _boundedListeners.iterator();
 			while (iter2.hasNext())
 			{
-				BoundedStatesListener boundedStatesListener = iter2.next();
+				IBoundedStatesListener boundedStatesListener = iter2.next();
 				boundedStatesListener.incompatibleStatesIdentified(theContrib, e);
 			}
 
@@ -251,7 +251,7 @@ public class TrackGenerator implements SteppingGenerator
 
 	}
 
-	public void removeBoundedStateListener(BoundedStatesListener newListener)
+	public void removeBoundedStateListener(IBoundedStatesListener newListener)
 	{
 		_boundedListeners.remove(newListener);
 	}
@@ -276,23 +276,23 @@ public class TrackGenerator implements SteppingGenerator
 		// ok, and tell the world
 		if (_contributionListeners != null)
 		{
-			final Iterator<ContributionsChangedListener> iter = _contributionListeners
+			final Iterator<IContributionsChangedListener> iter = _contributionListeners
 					.iterator();
 			while (iter.hasNext())
 			{
-				final ContributionsChangedListener listener = iter.next();
+				final IContributionsChangedListener listener = iter.next();
 				listener.removed(contribution);
 			}
 		}
 	}
 
 	public void removeContributionsListener(
-			ContributionsChangedListener newListener)
+			IContributionsChangedListener newListener)
 	{
 		_contributionListeners.remove(newListener);
 	}
 
-	public void removeSteppingStateListener(SteppingListener newListener)
+	public void removeSteppingStateListener(ISteppingListener newListener)
 	{
 		_steppingListeners.remove(newListener);
 
@@ -308,13 +308,11 @@ public class TrackGenerator implements SteppingGenerator
 		_currentStep = 0;
 
 		// and tell everybody we've restared
-		Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+		Iterator<ISteppingListener> iter3 = _steppingListeners.iterator();
 		while (iter3.hasNext())
 		{
-
-			SteppingListener stepper = iter3.next();
+			ISteppingListener stepper = iter3.next();
 			stepper.restarted();
-
 		}
 
 		// and tell them about the new bounded states
@@ -361,11 +359,11 @@ public class TrackGenerator implements SteppingGenerator
 		if (_currentStep == _contribs.size())
 		{
 			// and tell any step listeners
-			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+			Iterator<ISteppingListener> iter3 = _steppingListeners.iterator();
 
 			while (iter3.hasNext())
 			{
-				SteppingListener stepper = iter3.next();
+				ISteppingListener stepper = iter3.next();
 				stepper.complete();
 			}
 

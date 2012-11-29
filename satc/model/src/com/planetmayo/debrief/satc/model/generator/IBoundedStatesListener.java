@@ -12,7 +12,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
  * @author ian
  * 
  */
-public interface BoundedStatesListener
+public interface IBoundedStatesListener
 {
 
 	/**

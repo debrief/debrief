@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
+import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -33,7 +33,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
  * @author ian
  * 
  */
-public class TrackStatesView extends CoreView implements BoundedStatesListener
+public class TrackStatesView extends CoreView implements IBoundedStatesListener
 {
 
 	class NameSorter extends ViewerSorter

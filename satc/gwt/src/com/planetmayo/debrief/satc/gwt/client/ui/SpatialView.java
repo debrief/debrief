@@ -26,13 +26,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.BoundedStatesListener;
+import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SpatialView extends Composite implements BoundedStatesListener
+public class SpatialView extends Composite implements IBoundedStatesListener
 {
 
 	interface SpatialViewUiBinder extends UiBinder<Widget, SpatialView>

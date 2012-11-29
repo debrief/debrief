@@ -7,7 +7,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
  * @author ian
  *
  */
-public interface ContributionsChangedListener
+public interface IContributionsChangedListener
 {
 	/**
 	 * a contribution has been added

@@ -6,7 +6,7 @@ package com.planetmayo.debrief.satc.model.generator;
  * @author ian
  * 
  */
-public interface SteppingListener
+public interface ISteppingListener
 {
 	/**
 	 * stepping is complete

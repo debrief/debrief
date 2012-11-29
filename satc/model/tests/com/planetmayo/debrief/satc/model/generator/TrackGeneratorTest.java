@@ -27,7 +27,7 @@ public class TrackGeneratorTest extends TestCase {
 		TrackGenerator tg = new TrackGenerator();
 
 		// sort out the listener
-		tg.addContributionsListener(new ContributionsChangedListener() {
+		tg.addContributionsListener(new IContributionsChangedListener() {
 			public void removed(BaseContribution contribution) {
 				_ctr1--;
 			}
@@ -99,7 +99,7 @@ public class TrackGeneratorTest extends TestCase {
 		_ctr3 = 0;
 
 		// listen out for track genny changes
-		tg.addSteppingListener(new SteppingListener() {
+		tg.addSteppingListener(new ISteppingListener() {
 
 			@Override
 			public void stepped(int thisStep, int totalSteps) {
@@ -198,7 +198,7 @@ public class TrackGeneratorTest extends TestCase {
 		_ctr3 = 0;
 
 		// listen out for track genny changes
-		tg.addSteppingListener(new SteppingListener() {
+		tg.addSteppingListener(new ISteppingListener() {
 
 			@Override
 			public void stepped(int thisStep, int totalSteps) {
@@ -215,7 +215,7 @@ public class TrackGeneratorTest extends TestCase {
 				// TODO Auto-generated method stub
 			}
 		});
-		tg.addBoundedStateListener(new BoundedStatesListener() {
+		tg.addBoundedStateListener(new IBoundedStatesListener() {
 
 			@Override
 			public void statesBounded(Collection<BoundedState> newStates) {

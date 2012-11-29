@@ -16,14 +16,14 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
 public class MaintainContributions
 {
 
-	public static interface MyView extends ContributionsChangedListener
+	public static interface MyView extends IContributionsChangedListener
 	{
 
 		/**

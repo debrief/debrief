@@ -40,7 +40,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
@@ -48,7 +48,7 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
 public class MaintainContributionsView extends Composite implements MyView,
-		ContributionsChangedListener
+		IContributionsChangedListener
 {
 
 	interface ManageSolutionsViewUiBinder extends
