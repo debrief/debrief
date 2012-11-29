@@ -22,7 +22,7 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -229,7 +229,7 @@ public class SpatialView extends CoreView implements IBoundedStatesListener,
 	}
 
 	@Override
-	protected void startListeningTo(TrackGenerator genny)
+	protected void startListeningTo(BoundsManager genny)
 	{
 		genny.addBoundedStateListener(this);
 	}
@@ -249,7 +249,7 @@ public class SpatialView extends CoreView implements IBoundedStatesListener,
 	}
 
 	@Override
-	protected void stopListeningTo(TrackGenerator genny)
+	protected void stopListeningTo(BoundsManager genny)
 	{
 		genny.removeBoundedStateListener(this);
 	}

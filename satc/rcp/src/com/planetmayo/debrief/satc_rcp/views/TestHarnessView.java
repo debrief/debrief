@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
 
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
@@ -219,7 +219,7 @@ public class TestHarnessView extends CoreView
 	}
 
 	@Override
-	protected void startListeningTo(TrackGenerator genny)
+	protected void startListeningTo(BoundsManager genny)
 	{
 		enableControls(true);
 
@@ -230,7 +230,7 @@ public class TestHarnessView extends CoreView
 	}
 
 	@Override
-	protected void stopListeningTo(TrackGenerator genny)
+	protected void stopListeningTo(BoundsManager genny)
 	{
 		// ok, we can disable our buttons
 		enableControls(false);

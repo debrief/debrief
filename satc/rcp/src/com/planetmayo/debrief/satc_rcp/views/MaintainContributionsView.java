@@ -50,7 +50,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
@@ -201,7 +201,7 @@ public class MaintainContributionsView extends ViewPart implements
 	@Override
 	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
 	{
-		if (adapter.equals(TrackGenerator.class))
+		if (adapter.equals(BoundsManager.class))
 			return _manager.getGenerator();
 		else
 			return super.getAdapter(adapter);

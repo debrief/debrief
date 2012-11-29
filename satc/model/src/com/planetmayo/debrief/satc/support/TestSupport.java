@@ -9,16 +9,16 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class TestSupport
 {
 
-	private TrackGenerator _genny;
+	private BoundsManager _genny;
 
-	private TrackGenerator getGenerator()
+	private BoundsManager getGenerator()
 	{
 		return _genny;
 	}
@@ -200,7 +200,7 @@ public class TestSupport
 		}
 	}
 
-	public void setGenerator(TrackGenerator genny)
+	public void setGenerator(BoundsManager genny)
 	{
 		_genny = genny;
 	}

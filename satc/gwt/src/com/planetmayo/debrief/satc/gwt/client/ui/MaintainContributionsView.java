@@ -41,7 +41,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -61,9 +61,9 @@ public class MaintainContributionsView extends Composite implements MyView,
 
 	private MaintainContributions _manager;
 
-	private static TrackGenerator _stepper;
+	private static BoundsManager _stepper;
 
-	public static TrackGenerator getGenerator()
+	public static BoundsManager getGenerator()
 	{
 		return _stepper;
 	}

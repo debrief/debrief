@@ -8,7 +8,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
@@ -46,7 +46,7 @@ public class RootLayout extends Composite
 		// HERE YOU CAN PUT YOUR LOGIC
 		MaintainContributions maintainP = new MaintainContributions(
 				manageSolutionsView, new MockVehicleTypesRepository());
-		final TrackGenerator genny = maintainP.getGenerator();
+		final BoundsManager genny = maintainP.getGenerator();
 		TestSupport testP = new TestSupport();
 		testP.setGenerator(genny);
 

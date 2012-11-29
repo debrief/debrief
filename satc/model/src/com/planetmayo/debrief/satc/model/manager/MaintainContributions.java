@@ -17,7 +17,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 
 public class MaintainContributions
@@ -82,13 +82,13 @@ public class MaintainContributions
 	 * our track generator
 	 * 
 	 */
-	TrackGenerator _genny;
+	BoundsManager _genny;
 
 	public MaintainContributions(MyView myView,
 			VehicleTypesRepository vehiclesRepository)
 	{
 		// sort out our generator
-		_genny = new TrackGenerator();
+		_genny = new BoundsManager();
 
 		// ok, let the view start listening to the genny
 		_genny.addContributionsListener(myView);
@@ -203,7 +203,7 @@ public class MaintainContributions
 		return result;
 	}
 
-	public TrackGenerator getGenerator()
+	public BoundsManager getGenerator()
 	{
 		return _genny;
 	}

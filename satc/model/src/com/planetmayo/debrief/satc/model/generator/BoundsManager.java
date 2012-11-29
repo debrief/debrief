@@ -20,7 +20,7 @@ import com.planetmayo.debrief.satc.support.SupportServices;
  * @author ian
  * 
  */
-public class TrackGenerator implements ISteppingGenerator
+public class BoundsManager implements ISteppingGenerator
 {
 	public static final String STATES_BOUNDED = "states_bounded";
 

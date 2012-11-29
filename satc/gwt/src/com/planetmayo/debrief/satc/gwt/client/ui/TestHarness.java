@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.gwt.client.Gwt;
 import com.planetmayo.debrief.satc.gwt.client.event.CollapseDisclosurePanelsEvent;
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
@@ -51,7 +51,7 @@ public class TestHarness extends Composite
 	@UiField
 	Anchor nextTest;
 
-	private TrackGenerator _generator;
+	private BoundsManager _generator;
 	private TestSupport _tester;
 
 	public TestHarness()
@@ -104,7 +104,7 @@ public class TestHarness extends Composite
 		_generator.restart();
 	}
 
-	public void setGenerator(TrackGenerator genny)
+	public void setGenerator(BoundsManager genny)
 	{
 		_generator = genny;
 		updateLiveLabel();

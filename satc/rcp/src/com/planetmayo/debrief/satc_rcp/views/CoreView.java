@@ -3,13 +3,13 @@ package com.planetmayo.debrief.satc_rcp.views;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc_rcp.ui.PartMonitor;
 
 public abstract class CoreView extends ViewPart
 {
 
-	private TrackGenerator _generator;
+	private BoundsManager _generator;
 
 	private PartMonitor _myPartMonitor;
 
@@ -26,7 +26,7 @@ public abstract class CoreView extends ViewPart
 		super.dispose();
 	}
 
-	protected TrackGenerator getGenerator()
+	protected BoundsManager getGenerator()
 	{
 		return _generator;
 	}
@@ -48,7 +48,7 @@ public abstract class CoreView extends ViewPart
 		 * listen out for a new generator
 		 * 
 		 */
-		_myPartMonitor.addPartListener(TrackGenerator.class, PartMonitor.ACTIVATED,
+		_myPartMonitor.addPartListener(BoundsManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
 
@@ -57,7 +57,7 @@ public abstract class CoreView extends ViewPart
 							IWorkbenchPart parentPart)
 					{
 						// get the generator
-						TrackGenerator newGenerator = (TrackGenerator) instance;
+						BoundsManager newGenerator = (BoundsManager) instance;
 
 						// is this new?
 						if (newGenerator != _generator)
@@ -81,7 +81,7 @@ public abstract class CoreView extends ViewPart
 		 * listen out for a our geneator closing
 		 * 
 		 */
-		_myPartMonitor.addPartListener(TrackGenerator.class, PartMonitor.CLOSED,
+		_myPartMonitor.addPartListener(BoundsManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 
@@ -90,7 +90,7 @@ public abstract class CoreView extends ViewPart
 							IWorkbenchPart parentPart)
 					{
 						// get the generator
-						TrackGenerator newGenerator = (TrackGenerator) instance;
+						BoundsManager newGenerator = (BoundsManager) instance;
 
 						// is this new?
 						if (newGenerator == _generator)
@@ -104,8 +104,8 @@ public abstract class CoreView extends ViewPart
 		// just see if there's anything of interest
 	}
 
-	protected abstract void startListeningTo(TrackGenerator genny);
+	protected abstract void startListeningTo(BoundsManager genny);
 
-	protected abstract void stopListeningTo(TrackGenerator genny);
+	protected abstract void stopListeningTo(BoundsManager genny);
 
 }

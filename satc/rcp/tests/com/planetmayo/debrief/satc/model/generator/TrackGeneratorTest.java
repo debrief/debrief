@@ -39,7 +39,7 @@ public class TrackGeneratorTest extends TestCase
 
 	public void testAddOrder()
 	{
-		TrackGenerator tg = new TrackGenerator();
+		BoundsManager tg = new BoundsManager();
 
 		// sort out the listener
 		tg.addContributionsListener(new IContributionsChangedListener()
@@ -104,7 +104,7 @@ public class TrackGeneratorTest extends TestCase
 		speedF.setMaxSpeed(14d);
 
 		// and the track generator
-		TrackGenerator tg = new TrackGenerator();
+		BoundsManager tg = new BoundsManager();
 		tg.addContribution(speedF);
 		tg.addContribution(bearingM);
 		tg.addContribution(courseF);
@@ -214,7 +214,7 @@ public class TrackGeneratorTest extends TestCase
 		speedF.setMaxSpeed(14d);
 
 		// and the track generator
-		TrackGenerator tg = new TrackGenerator();
+		BoundsManager tg = new BoundsManager();
 		tg.addContribution(speedF);
 		tg.addContribution(bearingM);
 		tg.addContribution(courseF);
