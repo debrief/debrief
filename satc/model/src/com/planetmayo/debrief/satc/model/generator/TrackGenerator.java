@@ -183,13 +183,13 @@ public class TrackGenerator implements SteppingGenerator
 		}
 	}
 
-	public Collection<BaseContribution> contributions()
+	public Collection<BaseContribution> getContributions()
 	{
 		return _contribs;
 	}
 
 	/**
-	 * indicate whether we do 'run' after each contr change
+	 * indicate whether we do 'run' after each contribution change
 	 * 
 	 * @return
 	 */
@@ -198,7 +198,7 @@ public class TrackGenerator implements SteppingGenerator
 		return _liveRunning;
 	}
 
-	protected void processThisStep(final BaseContribution theContrib,
+	protected void performSingleStep(final BaseContribution theContrib,
 			final int stepIndex)
 	{
 		try
@@ -216,7 +216,7 @@ public class TrackGenerator implements SteppingGenerator
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
 			while (iter3.hasNext())
 			{
-				SteppingGenerator.SteppingListener stepper = iter3.next();
+				SteppingListenerext();
 				stepper.stepped(stepIndex, _contribs.size());
 			}
 
@@ -290,9 +290,7 @@ public class TrackGenerator implements SteppingGenerator
 		_contributionListeners.remove(newListener);
 	}
 
-	public void removeSteppingStateListener(SteppingListener newListener)
-	{
-		_steppingListeners.remove(newListener);
+	public void removeSteppingStateListener(SteppingListener nSteppingListener	_steppingListeners.remove(newListener);
 	}
 
 	@Override
@@ -305,11 +303,10 @@ public class TrackGenerator implements SteppingGenerator
 		_currentStep = 0;
 
 		// and tell everybody we've restared
-		Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+		Iterator<SteppingListener> SteppingListenergListeners.iterator();
 		while (iter3.hasNext())
 		{
-			SteppingGenerator.SteppingListener stepper = iter3.next();
-			stepper.restarted();
+			SteppingListener sSteppingListenerrestarted();
 		}
 
 		// and tell them about the new bounded states
@@ -347,7 +344,7 @@ public class TrackGenerator implements SteppingGenerator
 		BaseContribution thisC = (BaseContribution) theArr[_currentStep];
 
 		// ok, go for it.
-		processThisStep(thisC, _currentStep);
+		performSingleStep(thisC, _currentStep);
 
 		// now increment the counter
 		_currentStep++;
@@ -356,13 +353,10 @@ public class TrackGenerator implements SteppingGenerator
 		if (_currentStep == _contribs.size())
 		{
 			// and tell any step listeners
-			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+			Iterator<SteppingListener> iter3 = _steppingLSteppingListenerr();
 			while (iter3.hasNext())
 			{
-				SteppingGenerator.SteppingListener stepper = iter3.next();
-				stepper.complete();
-			}
-
+				SteppingListener stepper = iter3.nexSteppingListener
 			// tell any listeners that the final bounds have been updated
 			broadcastBoundedStates();
 		}

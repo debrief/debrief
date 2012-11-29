@@ -12,7 +12,6 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.SteppingGenerator.SteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.support.SupportServices;
@@ -51,7 +50,7 @@ public class TrackGeneratorTest extends TestCase {
 		assertEquals("counter should have found some", 3, _ctr1);
 
 		// hmm, but are they in the correct order?
-		Iterator<BaseContribution> iter = tg.contributions().iterator();
+		Iterator<BaseContribution> iter = tg.getContributions().iterator();
 		BaseContribution c1 = iter.next();
 		BaseContribution c2 = iter.next();
 		BaseContribution c3 = iter.next();
@@ -92,7 +91,7 @@ public class TrackGeneratorTest extends TestCase {
 		tg.addContribution(courseF);
 
 		// check they've all loaded
-		assertEquals("have 3 contribs", 3, tg.contributions().size());
+		assertEquals("have 3 contribs", 3, tg.getContributions().size());
 
 		// reset the change counter;
 		_ctr1 = 0;

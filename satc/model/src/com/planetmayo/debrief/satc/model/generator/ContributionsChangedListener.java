@@ -2,6 +2,11 @@ package com.planetmayo.debrief.satc.model.generator;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
+/** listener for when the list of contributions has changed
+ * 
+ * @author ian
+ *
+ */
 public interface ContributionsChangedListener
 {
 	/**

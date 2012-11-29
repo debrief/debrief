@@ -112,7 +112,7 @@ public class TestSupport
 		// https://bitbucket.org/ianmayo/deb_satc/issue/10
 
 		// clear the geneartor first
-		getGenerator().contributions().clear();
+		getGenerator().getContributionsons().clear();
 
 		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
