@@ -157,8 +157,10 @@ public class RangeForecastContributionView extends BaseContributionView
 		// initialise the UI components
 		min.setData((int) _myData.getMinRange());
 		max.setData((int) _myData.getMaxRange());
-		estimate.setData((int) Math.round(Double.valueOf(_myData.getEstimate()
-				.toString())));
+		// do we have an estimate?
+		if (_myData.getEstimate() != null)
+			estimate.setData((int) Math.round(Double.valueOf(_myData.getEstimate()
+					.toString())));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());

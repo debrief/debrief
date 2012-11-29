@@ -34,11 +34,11 @@ public class RangeForecastContribution extends BaseContribution
 
 	private static final double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
 
-	protected Double _minRangeM;
+	protected Double _minRangeM = 0d;
 
-	protected Double _maxRangeM;
+	protected Double _maxRangeM = 0d;
 
-	protected Double _estimate;
+	protected Double _estimate = 0d;
 
 	/**
 	 * the set of measurements we store
@@ -293,6 +293,7 @@ public class RangeForecastContribution extends BaseContribution
 		// give us some max/min data
 		this.setMaxRange(9000d);
 		this.setMinRange(5d);
+		this.setEstimate(4000d);
 
 		// TODO: set the start/end times = just for tidiness
 	}

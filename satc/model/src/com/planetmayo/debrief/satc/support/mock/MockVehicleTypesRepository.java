@@ -19,7 +19,7 @@ public class MockVehicleTypesRepository implements VehicleTypesRepository
 				new VehicleType("Medium Tanker", GeoSupport.kts2MSec(1), GeoSupport
 						.kts2MSec(12), 800, 2600, 1, 3, 1, 3), 
 				new VehicleType(
-						"Large Tanker", GeoSupport.kts2MSec(1), GeoSupport.kts2MSec(12),
+						"Large Tanker", GeoSupport.kts2MSec(1), GeoSupport.kts2MSec(15),
 						1400, 4600, 1, 3, 1, 3)
 
 		);

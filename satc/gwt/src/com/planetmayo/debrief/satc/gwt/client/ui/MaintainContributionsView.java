@@ -1,10 +1,13 @@
 package com.planetmayo.debrief.satc.gwt.client.ui;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,6 +20,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.gwt.client.contributions.AnalysisContributionView;
@@ -40,6 +44,7 @@ import com.planetmayo.debrief.satc.model.generator.ContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
 public class MaintainContributionsView extends Composite implements MyView,
@@ -62,6 +67,9 @@ public class MaintainContributionsView extends Composite implements MyView,
 	{
 		return _stepper;
 	}
+
+	@UiField
+	ListBox vehicleTypes;
 
 	@UiField
 	HorizontalPanel header;
@@ -100,6 +108,10 @@ public class MaintainContributionsView extends Composite implements MyView,
 	private PropertyChangeListener _addListener;
 
 	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
+
+	private PropertyChangeListener _vehicleListener;
+
+	private List<VehicleType> _theVehicleTypes;
 
 	public MaintainContributionsView()
 	{
@@ -182,8 +194,18 @@ public class MaintainContributionsView extends Composite implements MyView,
 		else if ((Label) e.getSource() == locationForecast)
 		{
 			Window.alert(((Label) e.getSource()).getText());
-
 		}
+
+	}
+
+	@UiHandler("vehicleTypes")
+	void onChange(ChangeEvent evt)
+	{
+		// get the particular type
+		VehicleType vType = _theVehicleTypes.get(vehicleTypes.getSelectedIndex());
+		PropertyChangeEvent pce = new PropertyChangeEvent(vehicleTypes,
+				ProblemSpace.VEHICLE_TYPE, null, vType);
+		_vehicleListener.propertyChange(pce);
 	}
 
 	@UiHandler("add")
@@ -210,8 +232,14 @@ public class MaintainContributionsView extends Composite implements MyView,
 	@Override
 	public void populateVehicleTypesList(List<VehicleType> vehicles)
 	{
-		// TODO Auto-generated method stub
-
+		_theVehicleTypes = vehicles;
+		vehicleTypes.clear();
+		Iterator<VehicleType> iter = vehicles.iterator();
+		while (iter.hasNext())
+		{
+			VehicleType vType = (VehicleType) iter.next();
+			vehicleTypes.addItem(vType.getName());
+		}
 	}
 
 	@Override
@@ -252,8 +280,7 @@ public class MaintainContributionsView extends Composite implements MyView,
 	@Override
 	public void setVehicleChangeListener(PropertyChangeListener listener)
 	{
-		// TODO Auto-generated method stub
-
+		_vehicleListener = listener;
 	}
 
 }

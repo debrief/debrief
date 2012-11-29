@@ -20,7 +20,7 @@ public class CourseForecastContribution extends BaseContribution
 
 	protected Integer _maxCourse = 360;
 
-	protected Integer _estimate;
+	protected Integer _estimate = 0;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException

@@ -116,7 +116,7 @@
 
 			<g:CaptionPanel captionText="Vehicle">
 				<g:HTMLPanel>
-					<g:ListBox>
+					<g:ListBox  ui:field="vehicleTypes">
 						<g:item value='1'>UK Cross Channel Ferry</g:item>
 						<g:item value='1'>UK Tanker</g:item>
 						<g:item value='1'>FRA Tanker</g:item>

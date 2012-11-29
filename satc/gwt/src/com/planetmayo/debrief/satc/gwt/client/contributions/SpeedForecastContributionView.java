@@ -164,7 +164,8 @@ public class SpeedForecastContributionView extends BaseContributionView
 		// initialise the UI components
 		min.setData(_myData.getMinSpeed().intValue());
 		max.setData(_myData.getMaxSpeed().intValue());
-		estimate.setData((int) Math.round(_myData.getEstimate()));
+		if (_myData.getEstimate() != null)
+			estimate.setData((int) Math.round(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
