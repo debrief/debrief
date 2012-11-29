@@ -216,7 +216,8 @@ public class TrackGenerator implements SteppingGenerator
 			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
 			while (iter3.hasNext())
 			{
-				SteppingListenerext();
+				SteppingListener stepper = iter3.next();
+
 				stepper.stepped(stepIndex, _contribs.size());
 			}
 
@@ -290,7 +291,10 @@ public class TrackGenerator implements SteppingGenerator
 		_contributionListeners.remove(newListener);
 	}
 
-	public void removeSteppingStateListener(SteppingListener nSteppingListener	_steppingListeners.remove(newListener);
+	public void removeSteppingStateListener(SteppingListener newListener)
+	{
+		_steppingListeners.remove(newListener);
+
 	}
 
 	@Override
@@ -303,10 +307,13 @@ public class TrackGenerator implements SteppingGenerator
 		_currentStep = 0;
 
 		// and tell everybody we've restared
-		Iterator<SteppingListener> SteppingListenergListeners.iterator();
+		Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
 		while (iter3.hasNext())
 		{
-			SteppingListener sSteppingListenerrestarted();
+
+			SteppingListener stepper = iter3.next();
+			stepper.restarted();
+
 		}
 
 		// and tell them about the new bounded states
@@ -353,10 +360,14 @@ public class TrackGenerator implements SteppingGenerator
 		if (_currentStep == _contribs.size())
 		{
 			// and tell any step listeners
-			Iterator<SteppingListener> iter3 = _steppingLSteppingListenerr();
+			Iterator<SteppingListener> iter3 = _steppingListeners.iterator();
+
 			while (iter3.hasNext())
 			{
-				SteppingListener stepper = iter3.nexSteppingListener
+				SteppingListener stepper = iter3.next();
+				stepper.complete();
+			}
+
 			// tell any listeners that the final bounds have been updated
 			broadcastBoundedStates();
 		}
