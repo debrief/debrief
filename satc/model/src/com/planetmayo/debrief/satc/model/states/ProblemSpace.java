@@ -5,15 +5,45 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 public class ProblemSpace
 {
+	/**
+	 * this set of bounded states
+	 * 
+	 */
 	private TreeSet<BoundedState> _boundedStates;
+
+	/**
+	 * the performance characeristics of the subject vehicle
+	 * 
+	 */
+	private VehicleType _vType;
 
 	public ProblemSpace()
 	{
 		_boundedStates = new TreeSet<BoundedState>();
+	}
+
+	/**
+	 * set the subject vehicle type
+	 * 
+	 * @param vType
+	 */
+	public void setVehicleType(VehicleType vType)
+	{
+		_vType = vType;
+	}
+
+	/** get the subject vehicle type
+	 * 
+	 * @return
+	 */
+	public VehicleType getVehicleType()
+	{
+		return _vType;
 	}
 
 	/**
