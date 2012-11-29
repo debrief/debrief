@@ -8,7 +8,10 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -49,16 +52,17 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalysisContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BaseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalysisContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
@@ -75,19 +79,29 @@ public class MaintainContributionsView extends ViewPart implements
 {
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
-	
+
 	private static final Map<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>> CONTRIBUTION_PANELS;
-	static {
+	static
+	{
 		CONTRIBUTION_PANELS = new HashMap<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>>();
-		CONTRIBUTION_PANELS.put(AlterationLegForecastContribution.class, AlterationLegForecastContributionView.class);
-		CONTRIBUTION_PANELS.put(ATBForecastContribution.class, ATBForecastContributionView.class);
-		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class, BearingMeasurementContributionView.class);
-		CONTRIBUTION_PANELS.put(CourseForecastContribution.class, CourseContributionView.class);
-		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class, AnalysisContributionView.class);
-		CONTRIBUTION_PANELS.put(LocationForecastContribution.class, LocationContributionView.class);
-		CONTRIBUTION_PANELS.put(RangeForecastContribution.class, RangeForecastContributionView.class);
-		CONTRIBUTION_PANELS.put(SpeedForecastContribution.class, SpeedContributionView.class);
-		CONTRIBUTION_PANELS.put(StraightLegForecastContribution.class, StraightLegForecastContributionView.class);		
+		CONTRIBUTION_PANELS.put(AlterationLegForecastContribution.class,
+				AlterationLegForecastContributionView.class);
+		CONTRIBUTION_PANELS.put(ATBForecastContribution.class,
+				ATBForecastContributionView.class);
+		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class,
+				BearingMeasurementContributionView.class);
+		CONTRIBUTION_PANELS.put(CourseForecastContribution.class,
+				CourseContributionView.class);
+		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class,
+				AnalysisContributionView.class);
+		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,
+				LocationContributionView.class);
+		CONTRIBUTION_PANELS.put(RangeForecastContribution.class,
+				RangeForecastContributionView.class);
+		CONTRIBUTION_PANELS.put(SpeedForecastContribution.class,
+				SpeedContributionView.class);
+		CONTRIBUTION_PANELS.put(StraightLegForecastContribution.class,
+				StraightLegForecastContributionView.class);
 	}
 
 	private Composite main;
@@ -109,7 +123,6 @@ public class MaintainContributionsView extends ViewPart implements
 
 	private PropertyChangeListener _addContListener;
 
-	@SuppressWarnings("unused")
 	private PropertyChangeListener _vehicleChangeListener;
 
 	@SuppressWarnings("unused")
@@ -123,16 +136,18 @@ public class MaintainContributionsView extends ViewPart implements
 	{
 		// ok, create a wrapper for this
 		BaseContributionView<?> panel = null;
-		if (! CONTRIBUTION_PANELS.containsKey(contribution.getClass())) 
+		if (!CONTRIBUTION_PANELS.containsKey(contribution.getClass()))
 		{
-			SupportServices.INSTANCE.getLog().error("Failed to generate panel for " + contribution);
+			SupportServices.INSTANCE.getLog().error(
+					"Failed to generate panel for " + contribution);
 			return;
 		}
-		try 
+		try
 		{
 			Class<?> viewClass = CONTRIBUTION_PANELS.get(contribution.getClass());
-			panel = (BaseContributionView<?>) viewClass.getConstructor(Composite.class, 
-					contribution.getClass()).newInstance(contList, contribution);
+			panel = (BaseContributionView<?>) viewClass.getConstructor(
+					Composite.class, contribution.getClass()).newInstance(contList,
+					contribution);
 			panel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 					| GridData.GRAB_HORIZONTAL));
 
@@ -141,10 +156,11 @@ public class MaintainContributionsView extends ViewPart implements
 
 			// ok, redo the layout...
 			contList.layout();
-		} 
-		catch (Exception ex) 
+		}
+		catch (Exception ex)
 		{
-			SupportServices.INSTANCE.getLog().error("Failed to generate panel for " + contribution);
+			SupportServices.INSTANCE.getLog().error(
+					"Failed to generate panel for " + contribution);
 		}
 	}
 
@@ -357,6 +373,27 @@ public class MaintainContributionsView extends ViewPart implements
 				return ((VehicleType) element).getName();
 			}
 		});
+		vehiclesCombo.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent arg0)
+			{
+				if (_vehicleChangeListener != null)
+				{
+					ISelection sel = arg0.getSelection();
+					if (sel instanceof StructuredSelection)
+					{
+						StructuredSelection ss = (StructuredSelection) sel;
+						Object current = ss.getFirstElement();
+						PropertyChangeEvent pce = new PropertyChangeEvent(vehiclesCombo,
+								ProblemSpace.VEHICLE_TYPE, null, current);
+						_vehicleChangeListener.propertyChange(pce);
+					}
+
+				}
+			}
+		});
 	}
 
 	@Override
@@ -372,8 +409,8 @@ public class MaintainContributionsView extends ViewPart implements
 				public void widgetSelected(SelectionEvent arg0)
 				{
 					if (_addContListener != null)
-						_addContListener.propertyChange(new PropertyChangeEvent(item,
-								null, null, item));
+						_addContListener.propertyChange(new PropertyChangeEvent(item, null,
+								null, item));
 				}
 			});
 		}
@@ -443,7 +480,6 @@ public class MaintainContributionsView extends ViewPart implements
 	@Override
 	public void setVehicleChangeListener(PropertyChangeListener listener)
 	{
-		// TODO: support vehicle change
 		_vehicleChangeListener = listener;
 	}
 

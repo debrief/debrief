@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -371,6 +372,23 @@ public class TrackGenerator implements SteppingGenerator
 			// tell any listeners that the final bounds have been updated
 			broadcastBoundedStates();
 		}
+	}
+
+	/**
+	 * store the vehicle type
+	 * 
+	 * @param v
+	 *          the new vehicle type
+	 */
+	public void setVehicleType(VehicleType v)
+	{
+		// store the new value
+		_space.setVehicleType(v);
+
+		// and get ourselves to re-run, to reflect this change
+		PropertyChangeEvent pce = new PropertyChangeEvent(this,
+				ProblemSpace.VEHICLE_TYPE, null, v);
+		_contribListener.propertyChange(pce);
 	}
 
 }

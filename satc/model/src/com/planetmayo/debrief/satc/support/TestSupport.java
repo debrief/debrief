@@ -8,6 +8,7 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.TrackGenerator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -141,8 +142,11 @@ public class TestSupport
 		}
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
+		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121331"));
+		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122025"));
 		speed.setMinSpeed(12d);
-		speed.setMaxSpeed(43d);
+		speed.setMaxSpeed(25d);
+		speed.setName("Initial speed obs");
 		getGenerator().addContribution(speed);
 
 		// hey, how about a time-bounded course constraint?
@@ -159,7 +163,22 @@ public class TestSupport
 		speed2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123100"));
 		speed2.setMinSpeed(8d);
 		speed2.setMaxSpeed(27d);
+		speed2.setName("Later speed obs");
 		getGenerator().addContribution(speed2);
+		
+		// that's nothing - we can now do straight leg forecasts
+		StraightLegForecastContribution st = new StraightLegForecastContribution();
+		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121200"));
+		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122000"));
+		getGenerator().addContribution(st);
+
+		// and an altering leg forecasts
+		StraightLegForecastContribution al = new StraightLegForecastContribution();
+		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122100"));
+		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
+		getGenerator().addContribution(al);
+
+		
 
 		LocationAnalysisContribution lac = new LocationAnalysisContribution();
 		getGenerator().addContribution(lac);

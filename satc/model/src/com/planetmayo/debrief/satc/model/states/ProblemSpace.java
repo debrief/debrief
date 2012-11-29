@@ -16,6 +16,8 @@ public class ProblemSpace
 	 */
 	private TreeSet<BoundedState> _boundedStates;
 
+	public static final String VEHICLE_TYPE = "vType";
+	
 	/**
 	 * the performance characeristics of the subject vehicle
 	 * 
@@ -37,7 +39,8 @@ public class ProblemSpace
 		_vType = vType;
 	}
 
-	/** get the subject vehicle type
+	/**
+	 * get the subject vehicle type
 	 * 
 	 * @return
 	 */
@@ -68,6 +71,13 @@ public class ProblemSpace
 		}
 		else
 			_boundedStates.add(newState);
+
+		// ok, constrain the new state to our vehicle performance, if we have one
+		if (_vType != null)
+		{
+			SpeedRange sr = new SpeedRange(_vType.getMinSpeed(), _vType.getMaxSpeed());
+			newState.constrainTo(sr);
+		}
 	}
 
 	/**

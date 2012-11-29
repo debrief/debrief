@@ -133,7 +133,8 @@ public class MaintainContributions
 			@Override
 			public void propertyChange(PropertyChangeEvent e)
 			{
-				// TODO support vehicle change
+				VehicleType v = (VehicleType) e.getNewValue();
+				_genny.setVehicleType(v);
 			}
 		});
 
