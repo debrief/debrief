@@ -6,7 +6,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 
 public class BoundedState implements Comparable<BoundedState>
 {
-	private Date _time;
+	private final Date _time;
 	private SpeedRange _speed;
 	private CourseRange _course;
 	private LocationRange _location;
@@ -114,11 +114,6 @@ public class BoundedState implements Comparable<BoundedState>
 	public Date getTime()
 	{
 		return _time;
-	}
-
-	public void setTime(Date time)
-	{
-		_time = time;
 	}
 
 }

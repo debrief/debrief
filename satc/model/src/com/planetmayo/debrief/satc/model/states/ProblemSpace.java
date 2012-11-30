@@ -2,21 +2,21 @@ package com.planetmayo.debrief.satc.model.states;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.TreeMap;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.util.ObjectUtils;
 
 public class ProblemSpace
 {
+	public static final String VEHICLE_TYPE = "vType";
+	
 	/**
-	 * this set of bounded states
+	 * this map of bounded states, stored by time
 	 * 
 	 */
-	private TreeSet<BoundedState> _boundedStates;
-
-	public static final String VEHICLE_TYPE = "vType";
+	private TreeMap<Date, BoundedState> _boundedStates;
 	
 	/**
 	 * the performance characeristics of the subject vehicle
@@ -26,7 +26,7 @@ public class ProblemSpace
 
 	public ProblemSpace()
 	{
-		_boundedStates = new TreeSet<BoundedState>();
+		_boundedStates = new TreeMap<Date, BoundedState>();
 	}
 
 	/**
@@ -66,11 +66,11 @@ public class ProblemSpace
 						"we can't accept a null time state, since we don't know our period yet");
 
 			// ok, we'll just apply this state to our start and end times
-			_boundedStates.first().constrainTo(newState);
-			_boundedStates.last().constrainTo(newState);
+			_boundedStates.firstEntry().getValue().constrainTo(newState);
+			_boundedStates.lastEntry().getValue().constrainTo(newState);
 		}
 		else
-			_boundedStates.add(newState);
+			_boundedStates.put(newState.getTime(), newState);
 
 		// ok, constrain the new state to our vehicle performance, if we have one
 		if (_vType != null)
@@ -98,41 +98,35 @@ public class ProblemSpace
 	 */
 	public BoundedState getBoundedStateAt(Date theTime)
 	{
-		BoundedState res = null;
-		Iterator<BoundedState> iter = _boundedStates.iterator();
-		while (iter.hasNext())
-		{
-			BoundedState boundedState = iter.next();
-			if (boundedState.getTime().equals(theTime))
-			{
-				res = boundedState;
-				break;
-			}
-		}
-
-		return res;
+		return _boundedStates.get(theTime);
 	}
+	
+	/**
+	 * return the bounded state at this time (or null)
+	 * 
+	 * @param theTime
+	 *          the time we're searching for
+	 * @return
+	 */
+	public Collection<BoundedState> getBoundedStatesBetween(Date startDate, Date finishDate)
+	{
+		if (_boundedStates.isEmpty()) 
+		{
+			return _boundedStates.values();
+		}
+		startDate = ObjectUtils.safe(startDate, _boundedStates.firstKey());
+		finishDate = ObjectUtils.safe(finishDate, _boundedStates.lastKey());
+		return _boundedStates.subMap(startDate, true, finishDate, true).values();
+	}	
 
 	protected Date getFinishDate()
 	{
-		Date res = null;
-		if (size() > 0)
-		{
-			res = _boundedStates.last().getTime();
-		}
-
-		return res;
+		return _boundedStates.isEmpty() ? null : _boundedStates.lastKey();
 	}
 
 	protected Date getStartDate()
 	{
-		Date res = null;
-		if (size() > 0)
-		{
-			res = _boundedStates.first().getTime();
-		}
-
-		return res;
+		return _boundedStates.isEmpty() ? null : _boundedStates.firstKey();
 	}
 
 	public int size()
@@ -147,7 +141,6 @@ public class ProblemSpace
 	 */
 	public Collection<BoundedState> states()
 	{
-		return _boundedStates;
+		return _boundedStates.values();
 	}
-
 }

@@ -2,7 +2,6 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.TreeSet;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -42,7 +41,7 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 
 	class ViewContentProvider implements IStructuredContentProvider
 	{
-		private TreeSet<BoundedState> _myData;
+		private Collection<BoundedState> _myData;
 
 		@Override
 		public void dispose()
@@ -67,7 +66,7 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 		@Override
 		public void inputChanged(Viewer v, Object oldInput, Object newInput)
 		{
-			_myData = (TreeSet<BoundedState>) newInput;
+			_myData = (Collection<BoundedState>) newInput;
 		}
 
 	}

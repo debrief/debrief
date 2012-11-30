@@ -1,8 +1,5 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.util.Date;
-import java.util.Iterator;
-
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -26,67 +23,23 @@ public class CourseForecastContribution extends BaseContribution
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// create a bounded state representing our values
-		final CourseRange myR = new CourseRange(_minCourse, _maxCourse);
-
-		// remember if we've found items at our start/end times
-		boolean needToInjectStart = true;
-		boolean needToInjectFinish = true;
-
-		// loop through the states
-		final Iterator<BoundedState> sIter = space.states().iterator();
-		while (sIter.hasNext())
+		final CourseRange courseRange = new CourseRange(_minCourse, _maxCourse);
+		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
 		{
-			// get the next state
-			final BoundedState state = sIter.next();
-
-			boolean constrainIt = false;
-
-			// is this one of our end-terms?
-			final Date thisT = state.getTime();
-
-			// do we have a start time?
-			if (this.getStartDate() != null)
-			{
-				if (thisT.equals(this.getStartDate()))
-				{
-					// cool, store it
-					needToInjectStart = false;
-				}
-			}
-
-			// do we have an end time?
-			if (this.getFinishDate() != null)
-			{
-				if (thisT.equals(this.getFinishDate()))
-				{
-					needToInjectFinish = false;
-				}
-			}
-
-			// ok, special in-range processing
-			constrainIt = checkInDatePeriod(thisT);
-
-			if (constrainIt)
-				state.constrainTo(myR);
-
+			state.constrainTo(courseRange);
 		}
-
-		// ok, did we find our end terms?
-		if (needToInjectStart)
+		if (_startDate != null && space.getBoundedStateAt(_startDate) == null)
 		{
 			final BoundedState startState = new BoundedState(this.getStartDate());
-			startState.constrainTo(myR);
+			startState.constrainTo(courseRange);
 			space.add(startState);
 		}
-
-		// ok, did we find our end terms?
-		if (needToInjectFinish)
+		if (_finishDate != null && space.getBoundedStateAt(_finishDate) == null)
 		{
 			final BoundedState endState = new BoundedState(this.getFinishDate());
-			endState.constrainTo(myR);
+			endState.constrainTo(courseRange);
 			space.add(endState);
-		}
-
+		}		
 	}
 
 	@Override
