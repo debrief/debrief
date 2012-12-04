@@ -26,10 +26,10 @@ public class BearingMeasurementContribution extends BaseContribution
 	public static final String OBSERVATIONS_NUMBER = "numObservations";	
 
 	/**
-	 * the allowable bearing error (in degrees)
+	 * the allowable bearing error (in radians)
 	 * 
 	 */
-	private Double _degError = 0d;
+	private Double _bearingError = 0d;
 
 	/**
 	 * the set of measurements we store
@@ -64,16 +64,16 @@ public class BearingMeasurementContribution extends BaseContribution
 			coords[0] = new Coordinate(lon, lat);
 
 			// now the top-left
-			coords[1] = new Coordinate(lon + Math.sin(bearing - _degError)
-					* range, lat + Math.cos(bearing - _degError) * range);
+			coords[1] = new Coordinate(lon + Math.sin(bearing - _bearingError)
+					* range, lat + Math.cos(bearing - _bearingError) * range);
 
 			// now the centre bearing
 			coords[2] = new Coordinate(lon + Math.sin(bearing) * range, lat
 					+ Math.cos(bearing) * range);
 
 			// now the top-right
-			coords[3] = new Coordinate(lon + Math.sin(bearing + _degError)
-					* range, lat + Math.cos(bearing + _degError) * range);
+			coords[3] = new Coordinate(lon + Math.sin(bearing + _bearingError)
+					* range, lat + Math.cos(bearing + _bearingError) * range);
 
 			// and back to the start
 			coords[4] = new Coordinate(coords[0]);
@@ -222,13 +222,13 @@ public class BearingMeasurementContribution extends BaseContribution
 
 	public Double getBearingError()
 	{
-		return _degError;
+		return _bearingError;
 	}
 
 	public void setBearingError(Double errorDegs)
 	{
-		Double old = _degError;
-		this._degError = errorDegs;
+		Double old = _bearingError;
+		this._bearingError = errorDegs;
 		firePropertyChange(BEARING_ERROR, old, errorDegs);
 	}
 
