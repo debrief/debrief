@@ -17,7 +17,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	public static final String FREQUENCY_ERROR = "frequencyError";
 
 	/**
-	 * the allowable bearing error (in degrees)
+	 * the allowable frequency error (in hertz)
 	 * 
 	 */
 	private Double _frequencyError = 0d;
@@ -174,13 +174,16 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	 */
 	public static class FMeasurement
 	{
+		@SuppressWarnings("unused")
 		private final GeoPoint _origin;
+		@SuppressWarnings("unused")
 		private final double _bearingDegs;
 		private final Date _time;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
+		@SuppressWarnings("unused")
 		private final Double _theRange;
 
 		public FMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
