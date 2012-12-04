@@ -7,8 +7,10 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.HardContraintsObservable;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
 public class CourseContributionView extends BaseContributionView<CourseForecastContribution>
 {
@@ -25,22 +27,25 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 	{
 		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(
 				Object.class, " \u00B0");
-		bindCommonHeaderWidgets(context, labelConverter);
-		bindCommonDates(context);
-
+		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
+		
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
 		IObservableValue minCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MIN_COURSE);
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
-				contribution, CourseForecastContribution.MAX_COURSE);
+				contribution, CourseForecastContribution.MAX_COURSE);		
+		HardContraintsObservable hardConstraints = new HardContraintsObservable(minCourseValue, 
+				maxCourseValue, UnitConverter.ANGLE_DEG);
+		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelConverter);
+		bindCommonDates(context);
 		
 		bindSliderLabelCheckbox(context, minCourseValue, minSlider, minLabel, minActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Integer>(0));
+				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
 		bindSliderLabelCheckbox(context, maxCourseValue, maxSlider, maxLabel, maxActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Integer>(360));
+				labelConverter, new BooleanToNullConverter<Double>(2 * Math.PI), UnitConverter.ANGLE_DEG);
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Integer>(0));		
+				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);		
 		
 		bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
 	}

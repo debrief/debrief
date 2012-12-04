@@ -11,9 +11,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
 public class BearingMeasurementContributionView extends BaseContributionView<BearingMeasurementContribution>
 {
@@ -32,14 +33,17 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 	protected void bindValues(DataBindingContext context)
 	{
 		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "+/- ", " degs");
-		bindCommonHeaderWidgets(context, new PrefixSuffixLabelConverter(Object.class, " Measurements"),
-				labelConverter);
-		bindCommonDates(context);
-
+		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, BearingMeasurementContribution.BEARING_ERROR);
+		IObservableValue estimateValue = BeansObservables.observeValue(
+				contribution, BearingMeasurementContribution.ESTIMATE);		
+		bindCommonHeaderWidgets(context, errorValue, estimateValue, 
+				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
+		bindCommonDates(context);
+
 		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox,
-				labelConverter, new BooleanToNullConverter<Double>(0d));
+				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
 	}
 	
 	@Override

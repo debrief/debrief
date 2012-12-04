@@ -21,9 +21,9 @@ import org.eclipse.swt.widgets.Scale;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
 public class LocationContributionView extends BaseContributionView<LocationForecastContribution>
 {
@@ -44,14 +44,16 @@ public class LocationContributionView extends BaseContributionView<LocationForec
 	protected void bindValues(DataBindingContext context)
 	{
 		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
-				Object.class, " m");		
-		bindCommonHeaderWidgets(context, null, labelsConverter);
-		bindCommonDates(context);
-
+				Object.class, " m");	
 		IObservableValue limitValue = BeansObservables.observeValue(contribution,
 				LocationForecastContribution.LIMIT);
+		IObservableValue estimateValue = BeansObservables.observeValue(contribution, 
+				BaseContribution.ESTIMATE);
+		bindCommonHeaderWidgets(context, limitValue, estimateValue, null, labelsConverter);
+		bindCommonDates(context);
+
 		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, 
-				labelsConverter, new BooleanToNullConverter<Integer>(0));
+				labelsConverter, new BooleanToNullConverter<Double>(0d), null);
 
 		IObservableValue latValue = BeansObservables.observeDetailValue(
 				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),

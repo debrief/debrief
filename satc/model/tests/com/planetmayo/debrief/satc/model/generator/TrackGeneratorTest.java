@@ -15,6 +15,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class TrackGeneratorTest extends TestCase {
 	static protected IncompatibleStateException _ise;
@@ -77,12 +78,12 @@ public class TrackGeneratorTest extends TestCase {
 				.readLinesFrom(BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
-		courseF.setMinCourse(24);
-		courseF.setMaxCourse(31);
+		courseF.setMinCourse(Math.toRadians(24));
+		courseF.setMaxCourse(Math.toRadians(31));
 
 		SpeedForecastContribution speedF = new SpeedForecastContribution();
-		speedF.setMinSpeed(21d);
-		speedF.setMaxSpeed(14d);
+		speedF.setMinSpeed(GeoSupport.kts2MSec(21d));
+		speedF.setMaxSpeed(GeoSupport.kts2MSec(14d));
 
 		// and the track generator
 		BoundsManager tg = new BoundsManager();
@@ -118,7 +119,7 @@ public class TrackGeneratorTest extends TestCase {
 		});
 
 		// ok, make some changes
-		courseF.setMinCourse(12);
+		courseF.setMinCourse(Math.toRadians(12));
 
 		// did we even see it?
 		assertEquals("we saw change", 1, _ctr1);
@@ -130,8 +131,8 @@ public class TrackGeneratorTest extends TestCase {
 		assertEquals("we saw step", 1, _ctr2);
 
 		// ok, lets get fancy
-		courseF.setMaxCourse(44);
-		courseF.setMinCourse(23);
+		courseF.setMaxCourse(Math.toRadians(44));
+		courseF.setMinCourse(Math.toRadians(23));
 
 		// did we even see it?
 		assertEquals("we saw more changes", 3, _ctr1);
@@ -179,12 +180,12 @@ public class TrackGeneratorTest extends TestCase {
 				.readLinesFrom(BearingMeasurementContributionTest.THE_PATH));
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
-		courseF.setMinCourse(24);
-		courseF.setMaxCourse(31);
+		courseF.setMinCourse(Math.toRadians(24));
+		courseF.setMaxCourse(Math.toRadians(31));
 
 		SpeedForecastContribution speedF = new SpeedForecastContribution();
-		speedF.setMinSpeed(21d);
-		speedF.setMaxSpeed(14d);
+		speedF.setMinSpeed(GeoSupport.kts2MSec(21d));
+		speedF.setMaxSpeed(GeoSupport.kts2MSec(14d));
 
 		// and the track generator
 		BoundsManager tg = new BoundsManager();
@@ -235,7 +236,7 @@ public class TrackGeneratorTest extends TestCase {
 		});
 
 		// ok, make some changes
-		courseF.setMinCourse(12);
+		courseF.setMinCourse(Math.toRadians(12));
 
 		assertEquals("restart got fired", 1, _ctr3);
 
@@ -250,8 +251,8 @@ public class TrackGeneratorTest extends TestCase {
 		_ctr1 = _ctr2 = _ctr3 = 0;
 
 		// ok, lets get fancy
-		courseF.setMaxCourse(44);
-		courseF.setMinCourse(23);
+		courseF.setMaxCourse(Math.toRadians(44));
+		courseF.setMinCourse(Math.toRadians(23));
 
 		// hey, chuck in a step
 		tg.step();
@@ -265,7 +266,7 @@ public class TrackGeneratorTest extends TestCase {
 		_ctr1 = _ctr2 = _ctr3 = 0;
 
 		// trigger the trouble
-		courseF.setMinCourse(100);
+		courseF.setMinCourse(Math.toRadians(100));
 
 		// hey, chuck in a step
 		tg.run();

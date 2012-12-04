@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.ui;
+package com.planetmayo.debrief.satc_rcp.ui.converters;
 
 import org.eclipse.core.databinding.conversion.IConverter;
 

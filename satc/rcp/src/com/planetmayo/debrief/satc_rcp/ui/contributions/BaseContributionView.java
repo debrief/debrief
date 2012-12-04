@@ -28,10 +28,11 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.NullToBooleanConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.NullToBooleanConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 import com.planetmayo.debrief.satc_rcp.ui.widgets.ExpandButton;
 
 public abstract class BaseContributionView<T extends BaseContribution>
@@ -96,13 +97,22 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	
 	protected void bindSliderLabelCheckbox(DataBindingContext context, IObservableValue modelValue,
 			Scale slider, Label label, Button checkBox, PrefixSuffixLabelConverter labelValueConverter, 
-			BooleanToNullConverter<?> checkBoxValueConverter) 
+			BooleanToNullConverter<?> checkBoxValueConverter, UnitConverter unitConverter) 
 	{
 		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
 		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
 		IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
-		context.bindValue(sliderValue, modelValue);
+		if (unitConverter != null) 
+		{
+			context.bindValue(sliderValue, modelValue,
+					UIUtils.converterStrategy(unitConverter.getUIToModel()),
+					UIUtils.converterStrategy(unitConverter.getModelToUI()));
+		} 
+		else 
+		{
+			context.bindValue(sliderValue, modelValue);
+		}
 		context.bindValue(sliderEnabled, modelValue, null, 
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
 		context.bindValue(checkBoxValue, modelValue, 
@@ -127,9 +137,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				if (newValue == null) {
 					return;
 				}
-				long minT = minValue == null ? Long.MIN_VALUE : minValue.longValue();
-				long maxT = maxValue == null ? Long.MAX_VALUE : maxValue.longValue();
-				if (newValue.longValue() < minT || newValue.longValue() > maxT) 
+				double minT = minValue == null ? Double.MIN_VALUE : minValue.doubleValue();
+				double maxT = maxValue == null ? Double.MAX_VALUE : maxValue.doubleValue();
+				if (newValue.doubleValue() < minT || newValue.doubleValue() > maxT) 
 				{
 					if (minT == maxT) 
 					{
@@ -165,11 +175,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				if (newValue == null) {
 					return;
 				}
-				if (newValue.longValue() > maxValue.longValue()) 
+				if (newValue.doubleValue() > maxValue.doubleValue()) 
 				{
 					max.setValue(newValue);
 				} 
-				if (estimateValue.longValue() < newValue.longValue()) 
+				if (estimateValue.doubleValue() < newValue.doubleValue()) 
 				{
 					estimate.setValue(newValue);
 				}
@@ -187,11 +197,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				if (newValue == null) {
 					return;
 				}				
-				if (newValue.longValue() < minValue.longValue()) 
+				if (newValue.doubleValue() < minValue.doubleValue()) 
 				{
 					min.setValue(newValue);										
 				}
-				if (estimateValue.longValue() > newValue.longValue()) 
+				if (estimateValue.doubleValue() > newValue.doubleValue()) 
 				{
 					estimate.setValue(newValue);
 				}
@@ -240,10 +250,10 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	 * @param context
 	 * @param labelsConverter
 	 */
-	protected final void bindCommonHeaderWidgets(DataBindingContext context, IConverter labelConverter)
+	protected final void bindCommonHeaderWidgets(DataBindingContext context, IObservableValue hardContraints,
+			IObservableValue estimateValue, IConverter labelConverter)
 	{
-		bindCommonHeaderWidgets(context, labelConverter,
-				labelConverter);
+		bindCommonHeaderWidgets(context, hardContraints, estimateValue, labelConverter, labelConverter);
 	}
 
 	/**
@@ -255,8 +265,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	 * @param contribution
 	 * @param labelsConverter
 	 */
-	protected final void bindCommonHeaderWidgets(DataBindingContext context, IConverter estimateConverter,
-			IConverter hardConstraintsConverter)
+	protected final void bindCommonHeaderWidgets(DataBindingContext context, IObservableValue hardContraint,
+			IObservableValue estimateValue, IConverter estimateConverter, IConverter hardConstraintsConverter)
 	{
 		IObservableValue activeValue = BeansObservables.observeValue(contribution,
 				BaseContribution.ACTIVE);
@@ -264,19 +274,21 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				activeCheckBox);
 		context.bindValue(activeButton, activeValue);
 
-		IObservableValue hardContraintValue = BeansObservables.observeValue(
-				contribution, BaseContribution.HARD_CONSTRAINTS);
-		IObservableValue hardContraintLabel = WidgetProperties.text().observe(
-				hardConstraintLabel);
-		context.bindValue(hardContraintLabel, hardContraintValue, null,
-				UIUtils.converterStrategy(hardConstraintsConverter));
+		if (hardContraint != null) 
+		{
+			IObservableValue hardContraintLabel = WidgetProperties.text().observe(
+					hardConstraintLabel);
+			context.bindValue(hardContraintLabel, hardContraint, null,
+					UIUtils.converterStrategy(hardConstraintsConverter));
+		}
 
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BaseContribution.ESTIMATE);
-		IObservableValue estimateLabel = WidgetProperties.text().observe(
-				this.estimateLabel);
-		context.bindValue(estimateLabel, estimateValue, null,
-				UIUtils.converterStrategy(estimateConverter));
+		if (estimateValue != null) 
+		{
+			IObservableValue estimateLabel = WidgetProperties.text().observe(
+					this.estimateLabel);
+			context.bindValue(estimateLabel, estimateValue, null,
+					UIUtils.converterStrategy(estimateConverter));
+		}
 
 		IObservableValue weightValue = BeansObservables.observeValue(contribution,
 				BaseContribution.WEIGHT);

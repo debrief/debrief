@@ -28,7 +28,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * the allowable bearing error (in degrees)
 	 * 
 	 */
-	private double _degError = 0d;
+	private Double _degError = 0d;
 
 	/**
 	 * the set of measurements we store
@@ -41,9 +41,6 @@ public class BearingMeasurementContribution extends BaseContribution
 	{
 		// ok, here we really go for it!
 		Iterator<BMeasurement> iter = _measurements.iterator();
-
-		// sort out the bearing error
-		double errorRads = _degError / 180 * Math.PI;
 
 		// sort out a geometry factory
 		GeometryFactory factory = GeoSupport.getFactory();
@@ -67,16 +64,16 @@ public class BearingMeasurementContribution extends BaseContribution
 			coords[0] = new Coordinate(lon, lat);
 
 			// now the top-left
-			coords[1] = new Coordinate(lon + Math.sin(bearingRads - errorRads)
-					* range, lat + Math.cos(bearingRads - errorRads) * range);
+			coords[1] = new Coordinate(lon + Math.sin(bearingRads - _degError)
+					* range, lat + Math.cos(bearingRads - _degError) * range);
 
 			// now the centre bearing
 			coords[2] = new Coordinate(lon + Math.sin(bearingRads) * range, lat
 					+ Math.cos(bearingRads) * range);
 
 			// now the top-right
-			coords[3] = new Coordinate(lon + Math.sin(bearingRads + errorRads)
-					* range, lat + Math.cos(bearingRads + errorRads) * range);
+			coords[3] = new Coordinate(lon + Math.sin(bearingRads + _degError)
+					* range, lat + Math.cos(bearingRads + _degError) * range);
 
 			// and back to the start
 			coords[4] = new Coordinate(coords[0]);
@@ -146,12 +143,6 @@ public class BearingMeasurementContribution extends BaseContribution
 	public int getEstimate()
 	{
 		return _measurements.size();
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		return "" + _degError;
 	}
 
 	/**
@@ -225,22 +216,20 @@ public class BearingMeasurementContribution extends BaseContribution
 			addThis(measure);
 
 		}
-		this.setBearingError(3d);
+		this.setBearingError(Math.toRadians(3d));
 		// TODO: set the start/end times = just for tidiness
 	}
 
-	public double getBearingError()
+	public Double getBearingError()
 	{
 		return _degError;
 	}
 
-	public void setBearingError(double errorDegs)
+	public void setBearingError(Double errorDegs)
 	{
-		String oldConstraints = getHardConstraints();
 		Double old = _degError;
 		this._degError = errorDegs;
 		firePropertyChange(BEARING_ERROR, old, errorDegs);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	/**

@@ -12,9 +12,10 @@ import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
 public class AlterationLegForecastContributionView extends BaseContributionView<AlterationLegForecastContribution>
 {
@@ -64,6 +65,9 @@ public class AlterationLegForecastContributionView extends BaseContributionView<
 	@Override
 	protected void initializeWidgets()
 	{
+		hardConstraintLabel.setText("n/a");
+		estimateLabel.setText("n/a");
+		
 		maxCourseSlider.setMinimum(0);
 		maxCourseSlider.setMaximum(360);
 		
@@ -74,7 +78,7 @@ public class AlterationLegForecastContributionView extends BaseContributionView<
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		bindCommonHeaderWidgets(context, null);
+		bindCommonHeaderWidgets(context, null, null, null, null);
 		bindCommonDates(context);
 		
 		IObservableValue maxCourseValue = BeansObservables.observeValue(contribution, 
@@ -82,12 +86,17 @@ public class AlterationLegForecastContributionView extends BaseContributionView<
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution, 
 				AlterationLegForecastContribution.MAX_SPEED_CHANGE);
 		
+		PrefixSuffixLabelConverter speedLabelConverter = new PrefixSuffixLabelConverter(Double.class, " kts");
+		speedLabelConverter.setNestedUnitConverter(UnitConverter.SPEED_KTS.getModelToUI());
+		PrefixSuffixLabelConverter courseConverter = new PrefixSuffixLabelConverter(Double.class, " \u00b0");
+		courseConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
+		
 		bindSliderLabelCheckbox(context, maxCourseValue, maxCourseSlider, maxCourseLabel, maxCourseActiveCheckbox, 
-				new PrefixSuffixLabelConverter(Integer.class, " \u00b0"), 
-				new BooleanToNullConverter<Integer>(360));
+				courseConverter, new BooleanToNullConverter<Double>(2 * Math.PI), 
+				UnitConverter.ANGLE_DEG);
 		bindSliderLabelCheckbox(context, maxSpeedValue, maxSpeedSlider, maxSpeedLabel, maxSpeedActiveCheckbox, 
-				new PrefixSuffixLabelConverter(Double.class, " kts"), 
-				new BooleanToNullConverter<Double>(SpeedForecastContribution.MAX_SPEED_VALUE_KTS));		
+				speedLabelConverter, new BooleanToNullConverter<Double>(SpeedForecastContribution.MAX_SPEED_VALUE_MS),
+				UnitConverter.SPEED_KTS);		
 	}
 
 	@Override

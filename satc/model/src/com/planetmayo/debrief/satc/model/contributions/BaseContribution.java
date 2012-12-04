@@ -16,7 +16,6 @@ public abstract class BaseContribution extends ModelObject implements
 	public static final String NAME = "name";
 	public static final String FINISH_DATE = "finishDate";
 	public static final String ACTIVE = "active";
-	public static final String HARD_CONSTRAINTS = "hardConstraints";
 	public static final String ESTIMATE = "estimate";
 
 	protected String _name;
@@ -88,23 +87,10 @@ public abstract class BaseContribution extends ModelObject implements
 
 	public abstract ContributionDataType getDataType();
 
-	/** provide a string representation of the estimate */
-	public String getEstimateStr()
-	{
-		return "n/a";
-	}
-
 	public Date getFinishDate()
 	{
 		return _finishDate;
 	}
-
-	/**
-	 * provide a formatted string representing the hard constraints
-	 * 
-	 * @return summary of constraints
-	 */
-	public abstract String getHardConstraints();
 
 	public String getName()
 	{

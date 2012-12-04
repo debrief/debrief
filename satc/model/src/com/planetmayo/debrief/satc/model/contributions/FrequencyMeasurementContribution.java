@@ -84,16 +84,6 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		return _measurements.size();
 	}
 
-	@Override
-	public String getHardConstraints()
-	{
-		if (_frequencyError == null) 
-		{
-			return null;
-		}
-		return "" + _frequencyError.intValue();
-	}
-
 	/**
 	 * whether this contribution has any measurements yet
 	 * 
@@ -171,11 +161,9 @@ public class FrequencyMeasurementContribution extends BaseContribution
 
 	public void setFrequencyError(double frequencyError)
 	{
-		String oldConstraints = getHardConstraints();
 		double old = _frequencyError;
 		this._frequencyError = frequencyError;
 		firePropertyChange(FREQUENCY_ERROR, old, frequencyError);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 	
 	/**

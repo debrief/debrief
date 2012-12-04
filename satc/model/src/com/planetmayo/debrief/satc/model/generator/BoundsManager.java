@@ -62,8 +62,9 @@ public class BoundsManager implements ISteppingGenerator
 	 * the set of contribution properties that we're interested in
 	 * 
 	 */
+	// TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	private final String[] _interestingProperties =
-	{ BaseContribution.ACTIVE, BaseContribution.HARD_CONSTRAINTS,
+	{ BaseContribution.ACTIVE, 
 			BaseContribution.START_DATE, BaseContribution.FINISH_DATE };
 
 	/**

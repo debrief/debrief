@@ -10,14 +10,15 @@ public class SpeedForecastContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static final double MAX_SPEED_VALUE_KTS = 40.0;	
+	public static final double MAX_SPEED_VALUE_KTS = 40.0;
+	public static final double MAX_SPEED_VALUE_MS = GeoSupport.kts2MSec(MAX_SPEED_VALUE_KTS);	
 
 	public static final String MIN_SPEED = "minSpeed";
 
 	public static final String MAX_SPEED = "maxSpeed";
 
 	protected Double _minSpeedKts = 0d;
-	protected Double _maxSpeedKts = MAX_SPEED_VALUE_KTS;
+	protected Double _maxSpeedKts = MAX_SPEED_VALUE_MS;
 	protected Double _estimateKts;
 	
 	@Override
@@ -25,8 +26,7 @@ public class SpeedForecastContribution extends BaseContribution
 			throws IncompatibleStateException
 	{
 		// create a bounded state representing our values
-		final SpeedRange speedRange = new SpeedRange(GeoSupport.kts2MSec(getMinSpeed()),
-				GeoSupport.kts2MSec(getMaxSpeed()));
+		final SpeedRange speedRange = new SpeedRange(getMinSpeed(), getMaxSpeed());
 		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
 		{
 			state.constrainTo(speedRange);
@@ -56,20 +56,6 @@ public class SpeedForecastContribution extends BaseContribution
 		return _estimateKts;
 	}
 
-	@Override
-	public String getEstimateStr()
-	{
-		return _estimateKts == null ? "" : "" + _estimateKts.intValue();
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		String min = _minSpeedKts == null ? "-\u221E" : "" + _minSpeedKts.intValue();
-		String max = _maxSpeedKts == null ? "+\u221E" : "" + _maxSpeedKts.intValue();
-		return min + (min.equals(max) ? "" : " - " + max);
-	}
-
 	public Double getMaxSpeed()
 	{
 		return _maxSpeedKts;
@@ -89,20 +75,16 @@ public class SpeedForecastContribution extends BaseContribution
 
 	public void setMaxSpeed(Double maxSpeed)
 	{
-		String oldConstraints = getHardConstraints();
 		Double oldMaxSpeed = _maxSpeedKts;
 		this._maxSpeedKts = maxSpeed;
 		firePropertyChange(MAX_SPEED, oldMaxSpeed, maxSpeed);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 	public void setMinSpeed(Double minSpeed)
 	{
 		Double oldMinSpeed = _minSpeedKts;
-		String oldConstraints = getHardConstraints();
 		this._minSpeedKts = minSpeed;
 		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 }

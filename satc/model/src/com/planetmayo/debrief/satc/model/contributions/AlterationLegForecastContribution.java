@@ -10,7 +10,7 @@ public class AlterationLegForecastContribution extends BaseContribution
 	public static final String MAX_COURSE_CHANGE = "maxCourseChange";
 	public static final String MAX_SPEED_CHANGE = "maxSpeedChange";
 	
-	private Integer maxCourseChange;
+	private Double maxCourseChange;
 	private Double maxSpeedChange;
 
 	@Override
@@ -25,25 +25,19 @@ public class AlterationLegForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	@Override
-	public String getHardConstraints()
-	{
-		return "n/a";
-	}
-	
 	public String getEstimate() 
 	{
 		return "n/a";
 	}
 
-	public Integer getMaxCourseChange()
+	public Double getMaxCourseChange()
 	{
 		return maxCourseChange;
 	}
 
-	public void setMaxCourseChange(Integer maxCourseChange)
+	public void setMaxCourseChange(Double maxCourseChange)
 	{
-		Integer old = this.maxCourseChange;
+		Double old = this.maxCourseChange;
 		this.maxCourseChange = maxCourseChange;
 		firePropertyChange(MAX_COURSE_CHANGE, old, maxCourseChange);
 	}

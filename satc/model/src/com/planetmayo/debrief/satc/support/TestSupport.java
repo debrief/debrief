@@ -144,8 +144,8 @@ public class TestSupport
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121331"));
 		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122025"));
-		speed.setMinSpeed(12d);
-		speed.setMaxSpeed(25d);
+		speed.setMinSpeed(GeoSupport.kts2MSec(12d));
+		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
 		speed.setName("Initial speed obs");
 		getGenerator().addContribution(speed);
 
@@ -153,16 +153,16 @@ public class TestSupport
 		CourseForecastContribution course = new CourseForecastContribution();
 		course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121231"));
 		course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122525"));
-		course.setMinCourse(225);
-		course.setMaxCourse(315);
+		course.setMinCourse(Math.toRadians(225));
+		course.setMaxCourse(Math.toRadians(315));
 		getGenerator().addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
 		SpeedForecastContribution speed2 = new SpeedForecastContribution();
 		speed2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122500"));
 		speed2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123100"));
-		speed2.setMinSpeed(8d);
-		speed2.setMaxSpeed(27d);
+		speed2.setMinSpeed(GeoSupport.kts2MSec(8d));
+		speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
 		speed2.setName("Later speed obs");
 		getGenerator().addContribution(speed2);
 		

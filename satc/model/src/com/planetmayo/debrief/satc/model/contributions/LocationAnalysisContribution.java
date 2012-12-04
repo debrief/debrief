@@ -114,11 +114,6 @@ public class LocationAnalysisContribution extends BaseContribution
 	{
 		return ContributionDataType.ANALYSIS;
 	}
-	@Override
-	public String getHardConstraints()
-	{
-		return "n/a";
-	}
 
 	public double getMaxRangeDegs(SpeedRange sRange, long timeMillis)
 	{

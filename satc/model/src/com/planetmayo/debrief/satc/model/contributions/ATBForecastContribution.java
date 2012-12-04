@@ -10,9 +10,9 @@ public class ATBForecastContribution extends BaseContribution
 	public static final String MIN_ANGLE = "minAngle";	
 	public static final String MAX_ANGLE = "maxAngle";
 	
-	private Integer _minAngle = 0;
-	private Integer _maxAngle = 360;
-	private Integer _estimate;
+	private Double _minAngle = 0d;
+	private Double _maxAngle = 2 * Math.PI;
+	private Double _estimate;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -26,50 +26,38 @@ public class ATBForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	@Override
-	public String getHardConstraints()
-	{
-		String min = _minAngle == null ? "0" : "" + _minAngle.intValue();
-		String max = _maxAngle == null ? "360" : "" + _maxAngle.intValue();
-		return min + (min.equals(max) ? "" : " - " + max);
-	}
-
-	public Integer getMinAngle()
+	public Double getMinAngle()
 	{
 		return _minAngle;
 	}
 
-	public void setMinAngle(Integer minAngle)
+	public void setMinAngle(Double minAngle)
 	{
-		String oldHardConstraints = getHardConstraints();
-		Integer old = _minAngle;
+		Double old = _minAngle;
 		_minAngle = minAngle;
 		firePropertyChange(MIN_ANGLE, old, minAngle);
-		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints, getHardConstraints());
 	}
 
-	public Integer getMaxAngle()
+	public Double getMaxAngle()
 	{
 		return _maxAngle;
 	}
 
-	public void setMaxAngle(Integer maxAngle)
+	public void setMaxAngle(Double maxAngle)
 	{
-		String oldHardConstraints = getHardConstraints();
-		Integer old = _maxAngle;		
+		Double old = _maxAngle;		
 		_maxAngle = maxAngle;
 		firePropertyChange(MAX_ANGLE, old, maxAngle);
-		firePropertyChange(HARD_CONSTRAINTS, oldHardConstraints, getHardConstraints());
 	}
 
-	public Integer getEstimate()
+	public Double getEstimate()
 	{
 		return _estimate;
 	}
 
-	public void setEstimate(Integer estimate)
+	public void setEstimate(Double estimate)
 	{
-		Integer old = _estimate;
+		Double old = _estimate;
 		_estimate = estimate;
 		firePropertyChange(ESTIMATE, old, estimate);
 	}

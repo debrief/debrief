@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.ui;
+package com.planetmayo.debrief.satc_rcp.ui.converters;
 
 import java.util.concurrent.Callable;
 

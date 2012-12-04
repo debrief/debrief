@@ -7,8 +7,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.HardContraintsObservable;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
 {
@@ -25,8 +26,6 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 	{
 		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
 				Object.class, " m");
-		bindCommonHeaderWidgets(context, labelsConverter);
-		bindCommonDates(context);
 
 		IObservableValue estimateValue = BeansObservables.observeValue(
 				contribution, BaseContribution.ESTIMATE);
@@ -34,13 +33,17 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 				contribution, RangeForecastContribution.MIN_RANGE);
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
+		HardContraintsObservable hardConstraints = new HardContraintsObservable(
+				minSpeedValue, maxSpeedValue);
+		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter);
+		bindCommonDates(context);
 		
 		bindSliderLabelCheckbox(context, minSpeedValue, minSlider, minLabel, minActiveCheckbox, 
-				labelsConverter, new BooleanToNullConverter<Double>(0d));
+				labelsConverter, new BooleanToNullConverter<Double>(0d), null);
 		bindSliderLabelCheckbox(context, maxSpeedValue, maxSlider, maxLabel, maxActiveCheckbox, 
-				labelsConverter, new BooleanToNullConverter<Double>(RangeForecastContribution.MAX_SELECTABLE_RANGE_M));
+				labelsConverter, new BooleanToNullConverter<Double>(RangeForecastContribution.MAX_SELECTABLE_RANGE_M), null);
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
-				labelsConverter, new BooleanToNullConverter<Double>(0d));		
+				labelsConverter, new BooleanToNullConverter<Double>(0d), null);		
 		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}
 

@@ -10,10 +10,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
-import com.planetmayo.debrief.satc_rcp.ui.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
+import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
+import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
 public class FrequencyMeasurementContributionView extends BaseContributionView<FrequencyMeasurementContribution>
 {
@@ -31,16 +32,17 @@ public class FrequencyMeasurementContributionView extends BaseContributionView<F
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		bindCommonHeaderWidgets(context, 
-				new PrefixSuffixLabelConverter(Object.class, " Measurements"),
-				new PrefixSuffixLabelConverter(Object.class, "+/- ", " Hz"));
-		bindCommonDates(context);
-
+		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, "+/- ", " Hz");
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, FrequencyMeasurementContribution.FREQUENCY_ERROR);
-		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox, 
-				new PrefixSuffixLabelConverter(Object.class, "+/- ", " Hz"), 
-				new BooleanToNullConverter<Double>(0d));
+		IObservableValue estimateValue = BeansObservables.observeValue(
+				contribution, BearingMeasurementContribution.ESTIMATE);		
+		bindCommonHeaderWidgets(context, errorValue, estimateValue, 
+				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
+		bindCommonDates(context);
+
+		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox,
+				labelConverter, new BooleanToNullConverter<Double>(0d), null);		
 	}
 	
 	@Override

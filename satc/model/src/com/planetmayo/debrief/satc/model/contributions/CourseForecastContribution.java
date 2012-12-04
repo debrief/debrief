@@ -13,11 +13,11 @@ public class CourseForecastContribution extends BaseContribution
 
 	public static final String MAX_COURSE = "maxCourse";
 
-	protected Integer _minCourse = 0;
+	protected Double _minCourse = 0d;
 
-	protected Integer _maxCourse = 360;
+	protected Double _maxCourse = 2 * Math.PI;
 
-	protected Integer _estimate = 0;
+	protected Double _estimate = 0d;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -48,58 +48,40 @@ public class CourseForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	public Integer getEstimate()
+	public Double getEstimate()
 	{
 		return _estimate;
 	}
 
-	@Override
-	public String getEstimateStr()
-	{
-		return "" + (_estimate == null ? "" : _estimate.intValue());
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		String min = _minCourse == null ? "0" : "" + _minCourse.intValue();
-		String max = _maxCourse == null ? "360" : "" + _maxCourse.intValue();
-		return min + (min.equals(max) ? "" : " - " + max);
-	}
-
-	public Integer getMaxCourse()
+	public Double getMaxCourse()
 	{
 		return _maxCourse;
 	}
 
-	public Integer getMinCourse()
+	public Double getMinCourse()
 	{
 		return _minCourse;
 	}
 
-	public void setEstimate(Integer estimate)
+	public void setEstimate(Double estimate)
 	{
-		Integer oldEstimate = _estimate;
+		Double oldEstimate = _estimate;
 		this._estimate = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxCourse(Integer maxCourse)
+	public void setMaxCourse(Double maxCourse)
 	{
-		Integer oldMaxCourse = _maxCourse;
-		String oldConstraints = getHardConstraints();
+		Double oldMaxCourse = _maxCourse;
 		this._maxCourse = maxCourse;
 		firePropertyChange(MAX_COURSE, oldMaxCourse, maxCourse);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinCourse(Integer minCourse)
+	public void setMinCourse(Double minCourse)
 	{
-		Integer oldMinCourse = _minCourse;
-		String oldConstraints = getHardConstraints();
+		Double oldMinCourse = _minCourse;
 		this._minCourse = minCourse;
 		firePropertyChange(MIN_COURSE, oldMinCourse, minCourse);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
 }

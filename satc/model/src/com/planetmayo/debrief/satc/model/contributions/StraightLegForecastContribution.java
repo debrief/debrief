@@ -18,12 +18,6 @@ public class StraightLegForecastContribution extends BaseContribution
 	{
 		return ContributionDataType.FORECAST;
 	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		return "n/a";
-	}
 	
 	public String getEstimate()
 	{

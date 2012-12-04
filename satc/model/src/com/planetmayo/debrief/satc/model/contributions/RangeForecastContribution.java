@@ -158,20 +158,6 @@ public class RangeForecastContribution extends BaseContribution
 		return _estimate;
 	}
 
-	@Override
-	public String getEstimateStr()
-	{		
-		return "" + (_estimate == null ? "" :  _estimate.intValue());
-	}
-
-	@Override
-	public String getHardConstraints()
-	{
-		String min = _minRangeM == null ? "-\u221E" : "" + _minRangeM.intValue();
-		String max = _maxRangeM == null ? "+\u221E" : "" + _maxRangeM.intValue();
-		return min + (min.equals(max) ? "" : " - " + max);
-	}
-
 	private LinearRing getInnerRing(Point pt)
 	{
 		final LinearRing res;
@@ -196,12 +182,12 @@ public class RangeForecastContribution extends BaseContribution
 		return res;
 	}
 
-	public double getMaxRange()
+	public Double getMaxRange()
 	{
 		return _maxRangeM;
 	}
 
-	public double getMinRange()
+	public Double getMinRange()
 	{
 		return _minRangeM;
 	}
@@ -298,29 +284,25 @@ public class RangeForecastContribution extends BaseContribution
 		// TODO: set the start/end times = just for tidiness
 	}
 
-	public void setEstimate(double estimate)
+	public void setEstimate(Double estimate)
 	{
 		Double oldEstimate = _estimate;
 		this._estimate = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
-	public void setMaxRange(double maxRngM)
+	public void setMaxRange(Double maxRngM)
 	{
 		Double oldMaxRange = _maxRangeM;
-		String oldConstraints = getHardConstraints();
 		this._maxRangeM = maxRngM;
 		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 
-	public void setMinRange(double minRngM)
+	public void setMinRange(Double minRngM)
 	{
 		Double oldMinRange = _minRangeM;
-		String oldConstraints = getHardConstraints();
 		this._minRangeM = minRngM;
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
-		firePropertyChange(HARD_CONSTRAINTS, oldConstraints, getHardConstraints());
 	}
 	
 	/**

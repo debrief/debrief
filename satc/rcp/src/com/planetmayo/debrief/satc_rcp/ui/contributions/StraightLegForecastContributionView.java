@@ -28,7 +28,14 @@ public class StraightLegForecastContributionView extends BaseContributionView<St
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
-		bindCommonHeaderWidgets(context, null);
+		bindCommonHeaderWidgets(context, null, null, null);
 		bindCommonDates(context);
 	}
+
+	@Override
+	protected void initializeWidgets()
+	{
+		hardConstraintLabel.setText("n/a");
+		estimateLabel.setText("n/a");
+	}	
 }
