@@ -91,23 +91,6 @@ public class LocationRange extends BaseRange<LocationRange>
 		}
 	}
 
-	@Override
-	public String getConstraintSummary()
-	{
-		String res = "N/A";
-		if (_myArea != null)
-		{
-			// NumberFormat df = new DecimalFormat("0.0000");
-			Geometry theBoundary = _myArea.convexHull();
-			;
-			double theArea = theBoundary.getArea();
-
-			// TODO: the next line should have better formatting
-			res = _myArea.getCoordinates().length + "pts " + (int) (theArea * 100000);
-		}
-		return res;
-	}
-
 	public Polygon getPolygon()
 	{
 		return _myArea;

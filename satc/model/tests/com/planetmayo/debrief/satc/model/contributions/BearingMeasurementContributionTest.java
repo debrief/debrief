@@ -18,6 +18,7 @@ public class BearingMeasurementContributionTest extends TestCase
 	public static final String THE_PATH = "tests/com/planetmayo/debrief/satc/model/contributions/data/bearing_measurement_data.txt";
 	public static final String THE_SHORT_PATH = "tests/com/planetmayo/debrief/satc/model/contributions/data/short_bearing_measurement_data.txt";
 
+
 	@SuppressWarnings("deprecation")
 	public void testNullDateSingleState() throws IncompatibleStateException, IOException
 	{

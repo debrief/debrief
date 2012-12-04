@@ -69,11 +69,4 @@ public abstract class BaseRange<T extends BaseRange<?>>
 	 *           if the contraints are mutually exclusive
 	 */
 	abstract public void constrainTo(T other) throws IncompatibleStateException;
-
-	/**
-	 * provide a textual summary of this constraint
-	 * 
-	 * @return summary of this constraint - hopefully under about 20 chars
-	 */
-	abstract public String getConstraintSummary();
 }

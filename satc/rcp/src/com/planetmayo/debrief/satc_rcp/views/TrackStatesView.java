@@ -22,9 +22,14 @@ import org.eclipse.ui.IActionBars;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
-import com.planetmayo.debrief.satc.model.states.BaseRange;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.CourseRange;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * view that monitors the current set of bounded states
@@ -169,9 +174,14 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 			{
 				String res;
 				BoundedState bs = (BoundedState) element;
-				BaseRange<?> loc = bs.getLocation();
+				LocationRange loc = bs.getLocation();
 				if (loc != null)
-					res = loc.getConstraintSummary();
+				{
+					Polygon myArea = loc.getPolygon();
+					Geometry theBoundary = myArea.convexHull();
+					double theArea = theBoundary.getArea();
+					res = myArea.getCoordinates().length + "pts " + (int) (theArea * 100000);					
+				}
 				else
 					res = "n/a";
 
@@ -190,9 +200,9 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 			{
 				String res;
 				BoundedState bs = (BoundedState) element;
-				BaseRange<?> loc = bs.getSpeed();
-				if (loc != null)
-					res = loc.getConstraintSummary();
+				SpeedRange range = bs.getSpeed();
+				if (range != null)
+					res = (int) GeoSupport.MSec2kts(range.getMin()) + " - " + (int) GeoSupport.MSec2kts(range.getMax());
 				else
 					res = "n/a";
 
@@ -211,9 +221,9 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 			{
 				String res;
 				BoundedState bs = (BoundedState) element;
-				BaseRange<?> loc = bs.getCourse();
-				if (loc != null)
-					res = loc.getConstraintSummary();
+				CourseRange range = bs.getCourse();
+				if (range != null)
+					res = (int) Math.toDegrees(range.getMin()) + " - " + (int) Math.toDegrees(range.getMax());					
 				else
 					res = "n/a";
 

@@ -43,16 +43,14 @@ public class RangeForecastContributionTest extends TestCase
 		assertEquals("still have one state", 1, ps.size());
 		final BoundedState theState = ps.states().iterator().next();
 		assertEquals("correct limits", 5, theState.getLocation().getPolygon().getNumPoints());
-		
-		assertEquals("correct speed constraint listing", "5pts 100.0000", theState.getLocation().getConstraintSummary());
 	}
 
 	@SuppressWarnings("deprecation")
 	public void testNullDateDoubleStates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 
 		ProblemSpace ps = new ProblemSpace();
 		ps.add(new BoundedState(new Date(2012, 3, 3)));
@@ -78,8 +76,8 @@ public class RangeForecastContributionTest extends TestCase
 	public void testWithDates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
@@ -108,8 +106,8 @@ public class RangeForecastContributionTest extends TestCase
 	public void testWithDateNotAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
@@ -153,8 +151,8 @@ public class RangeForecastContributionTest extends TestCase
 	public void testWithDateAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));

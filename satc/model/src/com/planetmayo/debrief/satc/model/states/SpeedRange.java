@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc.model.states;
 
-import com.planetmayo.debrief.satc.util.GeoSupport;
-
 /**
  * class representing a set of speed bounds
  * 
@@ -34,16 +32,6 @@ public class SpeedRange extends BaseRange<SpeedRange>
 	{
 		_minSpeed = Math.max(getMin(), sTwo.getMin());
 		_maxSpeed = Math.min(getMax(), sTwo.getMax());
-	}
-
-	@Override
-	public String getConstraintSummary()
-	{
-		// get the range, in knots
-		int minSpdKts = (int) GeoSupport.MSec2kts(_minSpeed);
-		int maxSpdKts = (int) GeoSupport.MSec2kts(_maxSpeed);
-
-		return "" + minSpdKts + " - " + maxSpdKts + " kts";
 	}
 
 	public double getMax()

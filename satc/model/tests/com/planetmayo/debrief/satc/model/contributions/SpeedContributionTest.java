@@ -9,7 +9,6 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedContributionTest extends TestCase
 {
@@ -17,8 +16,8 @@ public class SpeedContributionTest extends TestCase
 	public void testNullDateSingleState() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 
 		ProblemSpace ps = new ProblemSpace();
 		ps.add(new BoundedState(new Date(2012, 3, 3)));
@@ -32,17 +31,15 @@ public class SpeedContributionTest extends TestCase
 		assertEquals("still have one state", 1, ps.size());
 		final BoundedState theState = ps.states().iterator().next();
 		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
-		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
-		
-		assertEquals("correct description", "12 - 22", theState.getSpeed().getConstraintSummary());
+		assertEquals("correct limits", 22d, theState.getSpeed().getMax());		
 	}
 
 	@SuppressWarnings("deprecation")
 	public void testNullDateDoubleStates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 
 		ProblemSpace ps = new ProblemSpace();
 		ps.add(new BoundedState(new Date(2012, 3, 3)));
@@ -68,8 +65,8 @@ public class SpeedContributionTest extends TestCase
 	public void testWithDates() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
@@ -98,8 +95,8 @@ public class SpeedContributionTest extends TestCase
 	public void testWithDateNotAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
@@ -138,8 +135,8 @@ public class SpeedContributionTest extends TestCase
 	public void testWithDateAlreadyPresent() throws IncompatibleStateException
 	{
 		SpeedForecastContribution sc = new SpeedForecastContribution();
-		sc.setMinSpeed(GeoSupport.MSec2kts(12d));
-		sc.setMaxSpeed(GeoSupport.MSec2kts(22d));
+		sc.setMinSpeed(12d);
+		sc.setMaxSpeed(22d);
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 

@@ -43,11 +43,11 @@ public class LocationAnalysisTest extends TestCase
 		LocationAnalysisContribution lac = new LocationAnalysisContribution();
 
 		// give it a course
-		CourseRange cRange = new CourseRange(20, 60);
+		CourseRange cRange = new CourseRange(Math.toRadians(20), Math.toRadians(60));
 		bs.constrainTo(cRange);
 
 		// and a speed
-		SpeedRange sRange = new SpeedRange(6, 9);
+		SpeedRange sRange = new SpeedRange(GeoSupport.kts2MSec(6), GeoSupport.kts2MSec(9));
 		bs.constrainTo(sRange);
 
 		// try the speed

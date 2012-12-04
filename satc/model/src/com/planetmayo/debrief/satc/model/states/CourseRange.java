@@ -44,12 +44,6 @@ public class CourseRange extends BaseRange<CourseRange>
 			throw new IncompatibleStateException("Incompatible states", this, sTwo);
 	}
 
-	@Override
-	public String getConstraintSummary()
-	{
-		return "" + (int) Math.toDegrees(_min) + " - " + (int) Math.toDegrees(_max);
-	}
-
 	public double getMax()
 	{
 		return _max < 0 ? _max + 2 * Math.PI : _max;
