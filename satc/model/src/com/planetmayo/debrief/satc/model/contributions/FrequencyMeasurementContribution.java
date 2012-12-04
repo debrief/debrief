@@ -149,7 +149,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			FMeasurement measure = new FMeasurement(theLoc, Double.valueOf(bearing),
+			FMeasurement measure = new FMeasurement(theLoc, Math.toRadians(Double.valueOf(bearing)),
 					theDate, GeoSupport.m2deg(Double.valueOf(range)));
 
 			addThis(measure);
@@ -177,7 +177,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		@SuppressWarnings("unused")
 		private final GeoPoint _origin;
 		@SuppressWarnings("unused")
-		private final double _bearingDegs;
+		private final double _bearingAngle;
 		private final Date _time;
 		/**
 		 * the (optional) maximum range for this measurement
@@ -189,7 +189,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		public FMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
 			_origin = loc;
-			_bearingDegs = bearing;
+			_bearingAngle = bearing;
 			_time = time;
 			_theRange = theRange;
 		}

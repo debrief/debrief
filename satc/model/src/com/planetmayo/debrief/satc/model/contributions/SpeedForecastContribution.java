@@ -17,9 +17,9 @@ public class SpeedForecastContribution extends BaseContribution
 
 	public static final String MAX_SPEED = "maxSpeed";
 
-	protected Double _minSpeedKts = 0d;
-	protected Double _maxSpeedKts = MAX_SPEED_VALUE_MS;
-	protected Double _estimateKts;
+	protected Double _minSpeed = 0d;
+	protected Double _maxSpeed = MAX_SPEED_VALUE_MS;
+	protected Double _estimate;
 	
 	@Override
 	public void actUpon(final ProblemSpace space)
@@ -53,37 +53,37 @@ public class SpeedForecastContribution extends BaseContribution
 
 	public Double getEstimate()
 	{
-		return _estimateKts;
+		return _estimate;
 	}
 
 	public Double getMaxSpeed()
 	{
-		return _maxSpeedKts;
+		return _maxSpeed;
 	}
 
 	public Double getMinSpeed()
 	{
-		return _minSpeedKts;
+		return _minSpeed;
 	}
 
 	public void setEstimate(Double estimate)
 	{
-		Double oldEstimate = _estimateKts;
-		this._estimateKts = estimate;
+		Double oldEstimate = _estimate;
+		this._estimate = estimate;
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
 	}
 
 	public void setMaxSpeed(Double maxSpeed)
 	{
-		Double oldMaxSpeed = _maxSpeedKts;
-		this._maxSpeedKts = maxSpeed;
+		Double oldMaxSpeed = _maxSpeed;
+		this._maxSpeed = maxSpeed;
 		firePropertyChange(MAX_SPEED, oldMaxSpeed, maxSpeed);
 	}
 
 	public void setMinSpeed(Double minSpeed)
 	{
-		Double oldMinSpeed = _minSpeedKts;
-		this._minSpeedKts = minSpeed;
+		Double oldMinSpeed = _minSpeed;
+		this._minSpeed = minSpeed;
 		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);
 	}
 

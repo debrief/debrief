@@ -55,15 +55,4 @@ public class SpeedRange extends BaseRange<SpeedRange>
 	{
 		return _minSpeed;
 	}
-
-	public void setMax(double maxSpeed)
-	{
-		_maxSpeed = maxSpeed;
-	}
-
-	public void setMin(double minSpeed)
-	{
-		_minSpeed = minSpeed;
-	}
-
 }

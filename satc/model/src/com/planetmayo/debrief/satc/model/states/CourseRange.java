@@ -59,16 +59,4 @@ public class CourseRange extends BaseRange<CourseRange>
 	{
 		return _min < 0 ? _min + 2 * Math.PI : _min;
 	}
-
-	public void setMax(double maxCourse)
-	{
-		_max = maxCourse;
-		
-	}
-
-	public void setMin(double minCourse)
-	{
-		_min = minCourse;
-	}
-
 }
