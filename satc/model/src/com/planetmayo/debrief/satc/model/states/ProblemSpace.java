@@ -116,7 +116,8 @@ public class ProblemSpace
 		}
 		startDate = ObjectUtils.safe(startDate, _boundedStates.firstKey());
 		finishDate = ObjectUtils.safe(finishDate, _boundedStates.lastKey());
-		// TODO:  the two 'true' attributes had to be removed from the next line to make it GWT compliant
+		// inclusive toKey - gwt compliant version
+		finishDate = new Date(finishDate.getTime() + 1);
 		return _boundedStates.subMap(startDate, finishDate).values();
 	}	
 
