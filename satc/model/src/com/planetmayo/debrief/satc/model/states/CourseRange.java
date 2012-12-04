@@ -26,7 +26,9 @@ public class CourseRange extends BaseRange<CourseRange>
 		_min = minCrse;
 		_max = maxCourse;
 
-		// SPECIAL PROCESSING, FOR COURSES THAT PASS THROUGH ZERO
+		// SPECIAL PROCESSING, courses that pass through zero may be recorded as
+		// min:310, max 030.  We need to switch that to -50 to 30 to get a continuous
+		// number series that we can easily compare/constrain.
 		if (_min > 180)
 		{
 			// ok, we're passing through zero - sort it
