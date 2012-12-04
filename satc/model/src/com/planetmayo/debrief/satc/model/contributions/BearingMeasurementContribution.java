@@ -50,8 +50,7 @@ public class BearingMeasurementContribution extends BaseContribution
 			BearingMeasurementContribution.BMeasurement measurement = iter.next();
 			// ok, create the polygon for this measurement
 			GeoPoint origin = measurement._origin;
-			double bearing = measurement._bearingDegs;
-			double bearingRads = bearing / 180 * Math.PI;
+			double bearing = measurement._bearingAngle;
 			double range = measurement._theRange;
 
 			// ok, generate the polygon
@@ -64,16 +63,16 @@ public class BearingMeasurementContribution extends BaseContribution
 			coords[0] = new Coordinate(lon, lat);
 
 			// now the top-left
-			coords[1] = new Coordinate(lon + Math.sin(bearingRads - _degError)
-					* range, lat + Math.cos(bearingRads - _degError) * range);
+			coords[1] = new Coordinate(lon + Math.sin(bearing - _degError)
+					* range, lat + Math.cos(bearing - _degError) * range);
 
 			// now the centre bearing
-			coords[2] = new Coordinate(lon + Math.sin(bearingRads) * range, lat
-					+ Math.cos(bearingRads) * range);
+			coords[2] = new Coordinate(lon + Math.sin(bearing) * range, lat
+					+ Math.cos(bearing) * range);
 
 			// now the top-right
-			coords[3] = new Coordinate(lon + Math.sin(bearingRads + _degError)
-					* range, lat + Math.cos(bearingRads + _degError) * range);
+			coords[3] = new Coordinate(lon + Math.sin(bearing + _degError)
+					* range, lat + Math.cos(bearing + _degError) * range);
 
 			// and back to the start
 			coords[4] = new Coordinate(coords[0]);
@@ -210,7 +209,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			BMeasurement measure = new BMeasurement(theLoc, Double.valueOf(bearing),
+			BMeasurement measure = new BMeasurement(theLoc, Math.toRadians(Double.valueOf(bearing)),
 					theDate, GeoSupport.m2deg(Double.valueOf(range)));
 
 			addThis(measure);
@@ -241,7 +240,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	public static class BMeasurement
 	{
 		private final GeoPoint _origin;
-		private final double _bearingDegs;
+		private final double _bearingAngle;
 		private final Date _time;
 		/**
 		 * the (optional) maximum range for this measurement
@@ -252,7 +251,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
 			_origin = loc;
-			_bearingDegs = bearing;
+			_bearingAngle = bearing;
 			_time = time;
 			_theRange = theRange;
 		}
