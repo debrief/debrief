@@ -36,9 +36,9 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
 		IObservableValue errorValue = BeansObservables.observeValue(
 				contribution, BearingMeasurementContribution.BEARING_ERROR);
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BearingMeasurementContribution.ESTIMATE);		
-		bindCommonHeaderWidgets(context, errorValue, estimateValue, 
+		IObservableValue observationNumberValue = BeansObservables.observeValue(
+				contribution, BearingMeasurementContribution.OBSERVATIONS_NUMBER);		
+		bindCommonHeaderWidgets(context, errorValue, observationNumberValue, 
 				new PrefixSuffixLabelConverter(Object.class, " Measurements"), labelConverter);
 		bindCommonDates(context);
 

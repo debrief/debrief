@@ -23,6 +23,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
+	public static final String OBSERVATIONS_NUMBER = "numObservations";	
 
 	/**
 	 * the allowable bearing error (in degrees)
@@ -105,7 +106,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		GeoPoint loc = new GeoPoint(lat, lon);
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
 		addThis(measure);
-		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
+		firePropertyChange(OBSERVATIONS_NUMBER, _measurements.size(), _measurements.size());
 	}
 
 	/**
