@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.converters.HardContraintsObservable;
+import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
@@ -35,7 +35,7 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 				contribution, CourseForecastContribution.MIN_COURSE);
 		IObservableValue maxCourseValue = BeansObservables.observeValue(
 				contribution, CourseForecastContribution.MAX_COURSE);		
-		HardContraintsObservable hardConstraints = new HardContraintsObservable(minCourseValue, 
+		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(minCourseValue, 
 				maxCourseValue, UnitConverter.ANGLE_DEG);
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelConverter);
 		bindCommonDates(context);

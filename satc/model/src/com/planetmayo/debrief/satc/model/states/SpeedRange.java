@@ -10,13 +10,13 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
  */
 public class SpeedRange extends BaseRange<SpeedRange>
 {
-	private double _minMS;
-	private double _maxMS;
+	private double _minSpeed;
+	private double _maxSpeed;
 
 	public SpeedRange(double minSpd, double maxSpd)
 	{
-		_minMS = minSpd;
-		_maxMS = maxSpd;
+		_minSpeed = minSpd;
+		_maxSpeed = maxSpd;
 	}
 
 	/**
@@ -26,44 +26,44 @@ public class SpeedRange extends BaseRange<SpeedRange>
 	 */
 	public SpeedRange(SpeedRange range)
 	{
-		this(range.getMinMS(), range.getMaxMS());
+		this(range.getMin(), range.getMax());
 	}
 
 	@Override
 	public void constrainTo(SpeedRange sTwo) throws IncompatibleStateException
 	{
-		_minMS = Math.max(getMinMS(), sTwo.getMinMS());
-		_maxMS = Math.min(getMaxMS(), sTwo.getMaxMS());
+		_minSpeed = Math.max(getMin(), sTwo.getMin());
+		_maxSpeed = Math.min(getMax(), sTwo.getMax());
 	}
 
 	@Override
 	public String getConstraintSummary()
 	{
 		// get the range, in knots
-		int minSpdKts = (int) GeoSupport.MSec2kts(_minMS);
-		int maxSpdKts = (int) GeoSupport.MSec2kts(_maxMS);
+		int minSpdKts = (int) GeoSupport.MSec2kts(_minSpeed);
+		int maxSpdKts = (int) GeoSupport.MSec2kts(_maxSpeed);
 
 		return "" + minSpdKts + " - " + maxSpdKts + " kts";
 	}
 
-	public double getMaxMS()
+	public double getMax()
 	{
-		return _maxMS;
+		return _maxSpeed;
 	}
 
-	public double getMinMS()
+	public double getMin()
 	{
-		return _minMS;
+		return _minSpeed;
 	}
 
-	public void setMaxMS(double maxSpeed)
+	public void setMax(double maxSpeed)
 	{
-		_maxMS = maxSpeed;
+		_maxSpeed = maxSpeed;
 	}
 
-	public void setMinMS(double minSpeed)
+	public void setMin(double minSpeed)
 	{
-		_minMS = minSpeed;
+		_minSpeed = minSpeed;
 	}
 
 }

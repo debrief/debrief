@@ -68,10 +68,10 @@ public class RangeForecastContributionTest extends TestCase
 		Iterator<BoundedState> iter = ps.states().iterator();
 		final BoundedState first = iter.next();
 		final BoundedState second = iter.next();
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits", 12d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -97,10 +97,10 @@ public class RangeForecastContributionTest extends TestCase
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits", 12d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 
 	}
 
@@ -125,9 +125,9 @@ public class RangeForecastContributionTest extends TestCase
 		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
 		assertEquals("correct limits before new constraints", 15d, first.getSpeed()
-				.getMinMS());
+				.getMin());
 		assertEquals("correct limits before new constraints", 25d, first.getSpeed()
-				.getMaxMS());
+				.getMax());
 
 		sc.actUpon(ps);
 
@@ -139,13 +139,13 @@ public class RangeForecastContributionTest extends TestCase
 		BoundedState second = iter.next();
 		BoundedState third = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
 		assertEquals("correct limits (using existing constraint)", 15d, second
-				.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, third.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, third.getSpeed().getMaxMS());
+				.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
+		assertEquals("correct limits", 12d, third.getSpeed().getMin());
+		assertEquals("correct limits", 22d, third.getSpeed().getMax());
 
 	}
 
@@ -174,10 +174,10 @@ public class RangeForecastContributionTest extends TestCase
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits", 12d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 
 	}
 

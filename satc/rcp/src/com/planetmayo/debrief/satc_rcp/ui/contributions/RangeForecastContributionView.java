@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.converters.HardContraintsObservable;
+import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
 public class RangeForecastContributionView extends BaseContributionView<RangeForecastContribution>
@@ -33,7 +33,7 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 				contribution, RangeForecastContribution.MIN_RANGE);
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(
 				contribution, RangeForecastContribution.MAX_RANGE);
-		HardContraintsObservable hardConstraints = new HardContraintsObservable(
+		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(
 				minSpeedValue, maxSpeedValue);
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter);
 		bindCommonDates(context);

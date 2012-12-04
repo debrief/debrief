@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.converters.HardContraintsObservable;
+import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
@@ -29,7 +29,7 @@ public class ATBForecastContributionView extends BaseContributionView<ATBForecas
 		IObservableValue minValue = BeansObservables.observeValue(contribution, ATBForecastContribution.MIN_ANGLE);
 		IObservableValue maxValue = BeansObservables.observeValue(contribution, ATBForecastContribution.MAX_ANGLE);
 		IObservableValue estimateValue = BeansObservables.observeValue(contribution, ATBForecastContribution.ESTIMATE);
-		HardContraintsObservable hardContraints = new HardContraintsObservable(minValue, maxValue, UnitConverter.ANGLE_DEG);
+		MinMaxLimitObservable hardContraints = new MinMaxLimitObservable(minValue, maxValue, UnitConverter.ANGLE_DEG);
 		bindCommonHeaderWidgets(context, hardContraints,  estimateValue, labelConverter);
 		bindCommonDates(context);
 

@@ -14,7 +14,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
-public class HardContraintsObservable extends AbstractObservableValue
+public class MinMaxLimitObservable extends AbstractObservableValue
 {
 	private IObservableValue minObservable;
 	private IObservableValue maxObservable;
@@ -45,13 +45,13 @@ public class HardContraintsObservable extends AbstractObservableValue
 		}
 	}
 
-	public HardContraintsObservable(IObservableValue minObservable,
+	public MinMaxLimitObservable(IObservableValue minObservable,
 			IObservableValue maxObservable)
 	{
 		this(minObservable, maxObservable, null);
 	}
 	
-	public HardContraintsObservable(IObservableValue minObservable,
+	public MinMaxLimitObservable(IObservableValue minObservable,
 			IObservableValue maxObservable, UnitConverter siConverter) 
 	{
 		super(minObservable.getRealm());

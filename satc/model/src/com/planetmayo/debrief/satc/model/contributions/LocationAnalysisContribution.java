@@ -10,7 +10,6 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -75,8 +74,8 @@ public class LocationAnalysisContribution extends BaseContribution
 			// ok, produce the arcs
 			Coordinate[] coords = new Coordinate[5];
 
-			double minC = Angle.toRadians(course.getMin());
-			double maxC = Angle.toRadians(course.getMax());
+			double minC = course.getMin();
+			double maxC = course.getMax();
 
 			// minor idiot check. if the two courses are the same, the geometry falls
 			// over. so, if they are the same, trim one slightly
@@ -119,7 +118,7 @@ public class LocationAnalysisContribution extends BaseContribution
 	{
 		final double res;
 		if (sRange != null)
-			res = GeoSupport.m2deg(sRange.getMaxMS() * timeMillis / 1000d);
+			res = GeoSupport.m2deg(sRange.getMax() * timeMillis / 1000d);
 		else
 			res = GeoSupport.m2deg(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 
@@ -298,7 +297,7 @@ public class LocationAnalysisContribution extends BaseContribution
 		if (sRange != null)
 		{
 			// yes, get calculating
-			double minR = sRange.getMinMS() * timeMillis / 1000d;
+			double minR = sRange.getMin() * timeMillis / 1000d;
 			// convert to degs
 			minR = GeoSupport.m2deg(minR);
 			

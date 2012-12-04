@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
-import com.planetmayo.debrief.satc_rcp.ui.converters.HardContraintsObservable;
+import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
@@ -31,7 +31,7 @@ public class SpeedContributionView extends BaseContributionView<SpeedForecastCon
 		IObservableValue minSpeedValue = BeansObservables.observeValue(contribution, SpeedForecastContribution.MIN_SPEED);
 		IObservableValue maxSpeedValue = BeansObservables.observeValue(contribution, SpeedForecastContribution.MAX_SPEED);
 		
-		bindCommonHeaderWidgets(context, new HardContraintsObservable(minSpeedValue, maxSpeedValue, 
+		bindCommonHeaderWidgets(context, new MinMaxLimitObservable(minSpeedValue, maxSpeedValue, 
 				UnitConverter.SPEED_KTS), estimateValue, labelsConverter);
 		bindCommonDates(context);
 

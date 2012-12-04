@@ -21,10 +21,14 @@ public class CourseRange extends BaseRange<CourseRange>
 		this(range.getMin(), range.getMax());
 	}
 
-	public CourseRange(double minCrse, double maxCourse)
+	public CourseRange(double minCourse, double maxCourse)
 	{
-		setMin(minCrse);
-		setMax(maxCourse);
+		if (minCourse > maxCourse) 
+		{
+			minCourse = minCourse - 2 * Math.PI;
+		}
+		this._min = minCourse;
+		this._max = maxCourse;
 	}
 
 	@Override
@@ -48,32 +52,23 @@ public class CourseRange extends BaseRange<CourseRange>
 
 	public double getMax()
 	{
-		return _max < 0 ? _max + 360 : _max;
+		return _max < 0 ? _max + 2 * Math.PI : _max;
 	}
 
 	public double getMin()
 	{
-		return _min < 0 ? _min + 360 : _min;
+		return _min < 0 ? _min + 2 * Math.PI : _min;
 	}
 
 	public void setMax(double maxCourse)
 	{
 		_max = maxCourse;
-		if (_max > 180)
-		{
-			// ok, we're passing through zero - sort it
-			_max -= 360;
-		}		
+		
 	}
 
 	public void setMin(double minCourse)
 	{
 		_min = minCourse;
-		if (_min > 180)
-		{
-			// ok, we're passing through zero - sort it			
-			_min -= 360;
-		}		
 	}
 
 }
