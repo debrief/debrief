@@ -139,7 +139,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		return ContributionDataType.MEASUREMENT;
 	}
 
-	public int getEstimate()
+	public int getNumObservations()
 	{
 		return _measurements.size();
 	}
