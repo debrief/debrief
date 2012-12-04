@@ -66,8 +66,8 @@ public class ProblemSpace
 						"we can't accept a null time state, since we don't know our period yet");
 
 			// ok, we'll just apply this state to our start and end times
-			_boundedStates.firstEntry().getValue().constrainTo(newState);
-			_boundedStates.lastEntry().getValue().constrainTo(newState);
+			_boundedStates.get(_boundedStates.firstKey()).constrainTo(newState);
+			_boundedStates.get(_boundedStates.lastKey()).constrainTo(newState);
 		}
 		else
 			_boundedStates.put(newState.getTime(), newState);
@@ -116,7 +116,8 @@ public class ProblemSpace
 		}
 		startDate = ObjectUtils.safe(startDate, _boundedStates.firstKey());
 		finishDate = ObjectUtils.safe(finishDate, _boundedStates.lastKey());
-		return _boundedStates.subMap(startDate, true, finishDate, true).values();
+		// TODO:  the two 'true' attributes had to be removed from the next line to make it GWT compliant
+		return _boundedStates.subMap(startDate, finishDate).values();
 	}	
 
 	protected Date getFinishDate()

@@ -31,8 +31,8 @@ public class SpeedContributionTest extends TestCase
 		// should be two states
 		assertEquals("still have one state", 1, ps.size());
 		final BoundedState theState = ps.states().iterator().next();
-		assertEquals("correct limits", 12d, theState.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, theState.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
+		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
 		
 		assertEquals("correct description", "12 - 22", theState.getSpeed().getConstraintSummary());
 	}
@@ -58,10 +58,10 @@ public class SpeedContributionTest extends TestCase
 		Iterator<BoundedState> iter = ps.states().iterator();
 		final BoundedState first = iter.next();
 		final BoundedState second = iter.next();
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits", 12d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -87,10 +87,10 @@ public class SpeedContributionTest extends TestCase
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits", 12d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 
 	}
 	
@@ -113,8 +113,8 @@ public class SpeedContributionTest extends TestCase
 
 		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
-		assertEquals("correct limits before new constraints", 15d, first.getSpeed().getMinMS());
-		assertEquals("correct limits before new constraints", 25d, first.getSpeed().getMaxMS());
+		assertEquals("correct limits before new constraints", 15d, first.getSpeed().getMin());
+		assertEquals("correct limits before new constraints", 25d, first.getSpeed().getMax());
 
 		sc.actUpon(ps);
 
@@ -126,12 +126,12 @@ public class SpeedContributionTest extends TestCase
 		BoundedState second = iter.next();
 		BoundedState third = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits (using existing constraint)", 15d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, third.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, third.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits (using existing constraint)", 15d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
+		assertEquals("correct limits", 12d, third.getSpeed().getMin());
+		assertEquals("correct limits", 22d, third.getSpeed().getMax());
 
 	}
 	@SuppressWarnings("deprecation")
@@ -158,10 +158,10 @@ public class SpeedContributionTest extends TestCase
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
-		assertEquals("correct limits", 12d, first.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, first.getSpeed().getMaxMS());
-		assertEquals("correct limits", 12d, second.getSpeed().getMinMS());
-		assertEquals("correct limits", 22d, second.getSpeed().getMaxMS());
+		assertEquals("correct limits", 12d, first.getSpeed().getMin());
+		assertEquals("correct limits", 22d, first.getSpeed().getMax());
+		assertEquals("correct limits", 12d, second.getSpeed().getMin());
+		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 
 	}
 
