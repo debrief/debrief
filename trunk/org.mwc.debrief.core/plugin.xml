@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.187"
+<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.188"
 	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
 
 	<runtime>
@@ -109,6 +109,10 @@
 	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
 		<loader class="org.mwc.debrief.core.loaders.GPXLoader"
 			extensions="gpx" name="GPX Plot File" />
+	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.TifLoader"
+			extensions="tif;tiff" name="GeoTIF Image File" />
 	</extension>
 
 

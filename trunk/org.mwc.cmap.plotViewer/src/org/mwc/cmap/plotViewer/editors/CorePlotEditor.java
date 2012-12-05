@@ -164,13 +164,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 					if (dl.getDataType().equals(
 							MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
 					{
-						GeoToolsLayer gt = null;
-
-						if (dl.getFilename().endsWith("1785_NORTH_MINCH_NORTHERN_PA.tif"))
-							gt = new WorldImageLayer("Gebco",
-									"/Volumes/Sys_Slow/NoBackup/gebco/gebco_08.tif");
-						else
-							gt = new WorldImageLayer(dl.getName(), dl.getFilename());
+						GeoToolsLayer gt = new WorldImageLayer(dl.getName(),
+								dl.getFilename());
 
 						gt.setVisible(dl.getVisible());
 						_myGeoHandler.addGeoToolsLayer(gt);
