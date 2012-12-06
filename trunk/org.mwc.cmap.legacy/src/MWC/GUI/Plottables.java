@@ -454,10 +454,15 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		// right, add it.
 		_thePlottables.add(thePlottable);
 
-		// try to listen out for if the plottable moves
-		thePlottable.getInfo().addPropertyChangeListener(
-				PlainWrapper.LOCATION_CHANGED, this);
-
+		// does it have info?
+		if (thePlottable.getInfo() != null)
+		{
+			// try to listen out for if the plottable moves
+			thePlottable.getInfo().addPropertyChangeListener(
+					PlainWrapper.LOCATION_CHANGED, this);
+		}
+		
+		
 		// hmm, if it's got bounds, let's clear the world area - that's
 		// if we've got a world area... It may have already been cleared...
 		if (_myArea != null)
