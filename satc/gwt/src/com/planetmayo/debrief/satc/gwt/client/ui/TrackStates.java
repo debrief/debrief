@@ -18,6 +18,10 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.CourseRange;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class TrackStates extends Composite implements IBoundedStatesListener
 {
@@ -80,9 +84,8 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 		while (grid.getRowCount() > 1)
 			grid.removeRow(1);
 
-
 	}
-	
+
 	private void clearMessage()
 	{
 		errorPanel.setText(""); // This clears the error label
@@ -99,14 +102,14 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 	{
 		// get rid of any existing message
 		clearMessage();
-		
+
 		// empty the table
 		clearGrid();
 
 		String message1 = "Incompatible States. Contribution: "
 				+ contribution.toString();
-		String message2 = "Adding:" + e.getNewRange().getConstraintSummary()
-				+ " to " + e.getExistingRange().getConstraintSummary();
+		String message2 = "Adding:" + e.getNewRange() + " to "
+				+ e.getExistingRange();
 		System.err.println(message1);
 		System.err.println(message2);
 
@@ -135,11 +138,11 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 				String courseStr = "n/a";
 
 				if (state.getLocation() != null)
-					locStr = state.getLocation().getConstraintSummary();
+					locStr = formatThis(state.getLocation());
 				if (state.getSpeed() != null)
-					speedStr = state.getSpeed().getConstraintSummary();
+					speedStr = formatThis(state.getSpeed());
 				if (state.getCourse() != null)
-					courseStr = state.getCourse().getConstraintSummary();
+					courseStr = formatThis(state.getCourse());
 
 				addStates(dateStr, locStr, speedStr, courseStr);
 			}
@@ -147,4 +150,30 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 
 	}
 
+	public static String formatThis(CourseRange course)
+	{
+		return "" + (int) Math.toDegrees(course.getMin()) + " - "
+				+ (int) Math.toDegrees(course.getMax());
+	}
+
+	public static String formatThis(SpeedRange speed)
+	{
+		// get the range, in knots
+		int minSpdKts = (int) GeoSupport.MSec2kts(speed.getMin());
+		int maxSpdKts = (int) GeoSupport.MSec2kts(speed.getMax());
+
+		return "" + minSpdKts + " - " + maxSpdKts + " kts";
+	}
+
+	public static String formatThis(LocationRange location)
+	{
+
+		String res = "N/A";
+		if (location != null)
+		{
+			res = location.numPoints() + " pts";
+		}
+		return res;
+
+	}
 }
