@@ -16,6 +16,7 @@ import com.planetmayo.debrief.satc.gwt.client.ui.Slider2BarWidget;
 import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedForecastContributionView extends BaseContributionView
 {
@@ -71,7 +72,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxSpeed((double) event.getValue());
+				_myData.setMaxSpeed(GeoSupport.kts2MSec(event.getValue()));
 			}
 		});
 
@@ -80,7 +81,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinSpeed((double) event.getValue());
+				_myData.setMinSpeed(GeoSupport.kts2MSec( event.getValue()));
 			}
 		});
 
@@ -89,7 +90,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate((double) event.getValue());
+				_myData.setEstimate(GeoSupport.kts2MSec( event.getValue()));
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -162,10 +163,12 @@ public class SpeedForecastContributionView extends BaseContributionView
 
 		// property changes
 		// initialise the UI components
-		min.setData(_myData.getMinSpeed().intValue());
-		max.setData(_myData.getMaxSpeed().intValue());
-		if (_myData.getEstimate() != null)
-			estimate.setData((int) Math.round(_myData.getEstimate()));
+		min.setData((_myData.getMinSpeed() == null) ? 0 : (int) GeoSupport
+				.MSec2kts(_myData.getMinSpeed()));
+		max.setData((_myData.getMaxSpeed() == null) ? 0 : (int) GeoSupport
+				.MSec2kts(_myData.getMaxSpeed()));
+		estimate.setData((_myData.getEstimate() == null) ? 0 : (int) GeoSupport
+				.MSec2kts(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());

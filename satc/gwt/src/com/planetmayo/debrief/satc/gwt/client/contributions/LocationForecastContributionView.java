@@ -62,7 +62,7 @@ public class LocationForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setLimit(event.getValue());
+				_myData.setLimit((double) event.getValue());
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -139,7 +139,8 @@ public class LocationForecastContributionView extends BaseContributionView
 
 		// property changes
 		// initialise the UI components
-		limit.setData(_myData.getLimit());
+		limit.setData((_myData.getLimit() == null) ? 0 : _myData.getLimit()
+				.intValue());
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());

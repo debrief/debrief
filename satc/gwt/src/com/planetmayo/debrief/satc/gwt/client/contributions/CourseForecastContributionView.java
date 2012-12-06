@@ -73,7 +73,7 @@ public class CourseForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxCourse(event.getValue());
+				_myData.setMaxCourse(Math.toRadians(event.getValue()));
 			}
 		});
 
@@ -82,7 +82,7 @@ public class CourseForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinCourse(event.getValue());
+				_myData.setMinCourse(Math.toRadians(event.getValue()));
 			}
 		});
 
@@ -91,7 +91,7 @@ public class CourseForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate(event.getValue());
+				_myData.setEstimate(Math.toRadians(event.getValue()));
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -164,9 +164,12 @@ public class CourseForecastContributionView extends BaseContributionView
 
 		// property changes
 		// initialise the UI components
-		min.setData(_myData.getMinCourse());
-		max.setData(_myData.getMaxCourse());
-		estimate.setData(_myData.getEstimate());
+		min.setData((_myData.getMinCourse() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getMinCourse()));
+		max.setData((_myData.getMaxCourse() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getMaxCourse()));
+		estimate.setData((_myData.getEstimate() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());

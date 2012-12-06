@@ -58,7 +58,7 @@ public class BearingMeasurementContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setBearingError(event.getValue());
+				_myData.setBearingError(Math.toRadians(event.getValue()));
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -97,7 +97,8 @@ public class BearingMeasurementContributionView extends BaseContributionView
 
 		// property changes
 		// initialise the UI components
-		bearing.setData((int) _myData.getBearingError());
+		bearing.setData((_myData.getBearingError() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getBearingError()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
