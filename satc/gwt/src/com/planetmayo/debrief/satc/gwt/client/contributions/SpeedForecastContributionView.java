@@ -160,11 +160,11 @@ public class SpeedForecastContributionView extends BaseContributionView
 		super.propertyChange(arg0);
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(SpeedForecastContribution.MIN_SPEED))
-			min.setData((Integer) arg0.getNewValue());
+			min.setData((int)GeoSupport.MSec2kts((Double) arg0.getNewValue()));
 		else if (attr.equals(SpeedForecastContribution.MAX_SPEED))
-			max.setData((Integer) arg0.getNewValue());
+			max.setData((int)GeoSupport.MSec2kts((Double)  arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.ESTIMATE))
-			estimate.setData((int) Math.round((Double) arg0.getNewValue()));
+			estimate.setData((int)GeoSupport.MSec2kts((Double) arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.START_DATE))

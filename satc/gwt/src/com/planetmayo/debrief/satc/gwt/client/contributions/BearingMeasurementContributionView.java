@@ -80,8 +80,10 @@ public class BearingMeasurementContributionView extends BaseContributionView
 	@Override
 	protected String getHardConstraintsStr()
 	{
-		return (_myData.getBearingError() == null) ? "unset" : ""
-				+ _myData.getBearingError().intValue() + " degs";
+		String res = "" +		_myData.getNumObservations() + " pts " 
+				+ (int)Math.toDegrees(_myData.getBearingError()) + " degs error";
+		
+		return res;
 	}
 
 	@Override
