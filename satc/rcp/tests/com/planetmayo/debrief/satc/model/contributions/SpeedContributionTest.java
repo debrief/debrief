@@ -33,8 +33,6 @@ public class SpeedContributionTest extends TestCase
 		final BoundedState theState = ps.states().iterator().next();
 		assertEquals("correct limits", 12d, theState.getSpeed().getMin());
 		assertEquals("correct limits", 22d, theState.getSpeed().getMax());
-		
-		assertEquals("correct description", "12 - 22", theState.getSpeed().getConstraintSummary());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -93,7 +91,7 @@ public class SpeedContributionTest extends TestCase
 		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public void testWithDateNotAlreadyPresent() throws IncompatibleStateException
 	{
@@ -104,8 +102,8 @@ public class SpeedContributionTest extends TestCase
 		sc.setFinishDate(new Date(2012, 4, 16));
 
 		ProblemSpace ps = new ProblemSpace();
-		BoundedState newState = new BoundedState(new Date(2012, 4,14));
-		newState.constrainTo(new SpeedRange(15d,25d));
+		BoundedState newState = new BoundedState(new Date(2012, 4, 14));
+		newState.constrainTo(new SpeedRange(15d, 25d));
 		ps.add(newState);
 
 		// should be empty
@@ -113,8 +111,10 @@ public class SpeedContributionTest extends TestCase
 
 		Iterator<BoundedState> iter = ps.states().iterator();
 		BoundedState first = iter.next();
-		assertEquals("correct limits before new constraints", 15d, first.getSpeed().getMin());
-		assertEquals("correct limits before new constraints", 25d, first.getSpeed().getMax());
+		assertEquals("correct limits before new constraints", 15d, first.getSpeed()
+				.getMin());
+		assertEquals("correct limits before new constraints", 25d, first.getSpeed()
+				.getMax());
 
 		sc.actUpon(ps);
 
@@ -128,12 +128,14 @@ public class SpeedContributionTest extends TestCase
 
 		assertEquals("correct limits", 12d, first.getSpeed().getMin());
 		assertEquals("correct limits", 22d, first.getSpeed().getMax());
-		assertEquals("correct limits (using existing constraint)", 15d, second.getSpeed().getMin());
+		assertEquals("correct limits (using existing constraint)", 15d, second
+				.getSpeed().getMin());
 		assertEquals("correct limits", 22d, second.getSpeed().getMax());
 		assertEquals("correct limits", 12d, third.getSpeed().getMin());
 		assertEquals("correct limits", 22d, third.getSpeed().getMax());
 
 	}
+
 	@SuppressWarnings("deprecation")
 	public void testWithDateAlreadyPresent() throws IncompatibleStateException
 	{
@@ -144,7 +146,7 @@ public class SpeedContributionTest extends TestCase
 		sc.setFinishDate(new Date(2012, 4, 16));
 
 		ProblemSpace ps = new ProblemSpace();
-		ps.add(new BoundedState(new Date(2012, 4,16)));
+		ps.add(new BoundedState(new Date(2012, 4, 16)));
 
 		// should be empty
 		assertEquals("just one state", 1, ps.size());
