@@ -70,6 +70,7 @@ public class RangeForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setMaxRange((double) event.getValue());
+				refreshHardConstraints();
 			}
 		});
 
@@ -79,6 +80,7 @@ public class RangeForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setMinRange((double) event.getValue());
+				refreshHardConstraints();
 			}
 		});
 
@@ -88,6 +90,7 @@ public class RangeForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setEstimate((double) event.getValue());
+				refreshEstimate();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -124,6 +127,27 @@ public class RangeForecastContributionView extends BaseContributionView
 	}
 
 	@Override
+	protected String getHardConstraintsStr()
+	{
+		String res = super.getEstimateStr();
+		if (_myData.getMinRange() != null)
+			res = "" + _myData.getMinRange().intValue() + " - "
+					+ _myData.getMaxRange().intValue() + "m";
+		return res;
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		final String res;
+		if (_myData.getEstimate() == null)
+			res = super.getEstimateStr();
+		else
+			res = "" + _myData.getEstimate().intValue() + "m";
+		return res;
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		super.propertyChange(arg0);
@@ -147,9 +171,6 @@ public class RangeForecastContributionView extends BaseContributionView
 	public void setData(BaseContribution contribution)
 	{
 
-		// let the parent register with the contribution
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (RangeForecastContribution) contribution;
 
@@ -166,6 +187,8 @@ public class RangeForecastContributionView extends BaseContributionView
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
 
+		// and update the parent UI elements/listeners
+		super.setData(contribution);
 	}
 
 }

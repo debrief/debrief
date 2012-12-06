@@ -73,6 +73,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setMaxSpeed(GeoSupport.kts2MSec(event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -82,6 +83,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setMinSpeed(GeoSupport.kts2MSec( event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -91,6 +93,7 @@ public class SpeedForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setEstimate(GeoSupport.kts2MSec( event.getValue()));
+				refreshEstimate();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -131,6 +134,26 @@ public class SpeedForecastContributionView extends BaseContributionView
 		// BaseContributionView.java
 	}
 
+	
+	@Override
+	protected String getHardConstraintsStr()
+	{
+		String res = super.getHardConstraintsStr();
+
+		if (_myData.getMinSpeed() != null)
+			res = "" + (int)GeoSupport.MSec2kts( _myData.getMinSpeed())+ "-"
+					+ (int)GeoSupport.MSec2kts( _myData.getMaxSpeed()) + " kts";
+
+		return res;
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		return (_myData.getEstimate() == null) ? super.getEstimateStr() : ""
+				+ GeoSupport.MSec2kts( _myData.getEstimate()) + " kts";
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
@@ -154,10 +177,6 @@ public class SpeedForecastContributionView extends BaseContributionView
 	@Override
 	public void setData(BaseContribution contribution)
 	{
-
-		// let the parent register with the contribution
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (SpeedForecastContribution) contribution;
 
@@ -172,6 +191,11 @@ public class SpeedForecastContributionView extends BaseContributionView
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
+		
+		// let the parent register with the contribution
+		super.setData(contribution);
+
+
 	}
 
 }

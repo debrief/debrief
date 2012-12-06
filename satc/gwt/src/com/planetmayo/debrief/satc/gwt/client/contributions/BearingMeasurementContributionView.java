@@ -59,6 +59,9 @@ public class BearingMeasurementContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setBearingError(Math.toRadians(event.getValue()));
+
+				// update the displayed constraints
+				refreshHardConstraints();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -75,6 +78,13 @@ public class BearingMeasurementContributionView extends BaseContributionView
 	}
 
 	@Override
+	protected String getHardConstraintsStr()
+	{
+		return (_myData.getBearingError() == null) ? "unset" : ""
+				+ _myData.getBearingError().intValue() + " degs";
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		super.propertyChange(arg0);
@@ -82,15 +92,15 @@ public class BearingMeasurementContributionView extends BaseContributionView
 		if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(BearingMeasurementContribution.BEARING_ERROR))
+		{
 			bearing.setData((Integer) arg0.getNewValue());
-
+			super.refreshHardConstraints();
+		}
 	}
 
 	@Override
 	public void setData(BaseContribution contribution)
 	{
-
-		super.setData(contribution);
 
 		// and store the type-casted contribution
 		_myData = (BearingMeasurementContribution) contribution;
@@ -105,6 +115,9 @@ public class BearingMeasurementContributionView extends BaseContributionView
 
 		contribution.addPropertyChangeListener(
 				BearingMeasurementContribution.BEARING_ERROR, this);
+
+		super.setData(contribution);
+
 	}
 
 }

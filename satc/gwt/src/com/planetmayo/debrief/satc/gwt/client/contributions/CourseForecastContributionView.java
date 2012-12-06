@@ -74,6 +74,7 @@ public class CourseForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setMaxCourse(Math.toRadians(event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -83,6 +84,7 @@ public class CourseForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setMinCourse(Math.toRadians(event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -92,6 +94,7 @@ public class CourseForecastContributionView extends BaseContributionView
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
 				_myData.setEstimate(Math.toRadians(event.getValue()));
+				refreshEstimate();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -133,6 +136,25 @@ public class CourseForecastContributionView extends BaseContributionView
 	}
 
 	@Override
+	protected String getHardConstraintsStr()
+	{
+		String res = super.getHardConstraintsStr();
+
+		if (_myData.getMinCourse() != null)
+			res = "" + _myData.getMinCourse().intValue() + "-"
+					+ _myData.getMaxCourse().intValue() + " degs";
+
+		return res;
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		return (_myData.getEstimate() == null) ? super.getEstimateStr() : ""
+				+ _myData.getEstimate().intValue() + " degs";
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		super.propertyChange(arg0);
@@ -156,9 +178,6 @@ public class CourseForecastContributionView extends BaseContributionView
 	public void setData(BaseContribution contribution)
 	{
 
-		// let the parent register with the contribution
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (CourseForecastContribution) contribution;
 
@@ -173,6 +192,11 @@ public class CourseForecastContributionView extends BaseContributionView
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
+		
+		// let the parent register with the contribution
+		super.setData(contribution);
+
+
 	}
 
 }
