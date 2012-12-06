@@ -142,7 +142,7 @@ public class CourseForecastContributionView extends BaseContributionView
 
 		if ( _myData.getMinCourse() != null)
 			res = "" + (int)Math.toDegrees( _myData.getMinCourse()) + "-"
-					+ (int)Math.toDegrees(_myData.getMaxCourse()) + " degs";
+					+ (int)Math.toDegrees(_myData.getMaxCourse()) + "\u00b0";
 
 		return res;
 	}
@@ -151,7 +151,7 @@ public class CourseForecastContributionView extends BaseContributionView
 	protected String getEstimateStr()
 	{
 		return (_myData.getEstimate() == null) ? super.getEstimateStr() : ""
-				+ (int)Math.toDegrees(_myData.getEstimate()) + " degs";
+				+ (int)Math.toDegrees(_myData.getEstimate()) + "\u00b0";
 	}
 
 	@Override

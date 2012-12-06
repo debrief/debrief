@@ -81,7 +81,7 @@ public class BearingMeasurementContributionView extends BaseContributionView
 	protected String getHardConstraintsStr()
 	{
 		String res = "" +		_myData.getNumObservations() + " pts " 
-				+ (int)Math.toDegrees(_myData.getBearingError()) + " degs error";
+				+ (int)Math.toDegrees(_myData.getBearingError()) + "\u00b0 error";
 		
 		return res;
 	}

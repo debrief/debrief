@@ -152,8 +152,8 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 
 	public static String formatThis(CourseRange course)
 	{
-		return "" + (int) Math.toDegrees(course.getMin()) + " - "
-				+ (int) Math.toDegrees(course.getMax());
+		return "" + (int) Math.toDegrees(course.getMin()) + "\u00b0 - "
+				+ (int) Math.toDegrees(course.getMax()) + "\u00b0";
 	}
 
 	public static String formatThis(SpeedRange speed)
