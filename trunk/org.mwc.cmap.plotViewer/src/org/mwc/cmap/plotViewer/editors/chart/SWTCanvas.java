@@ -161,7 +161,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * an event queue - where we place screen update events, to trim down lots of
 	 * consecutive screen updates
 	 */
-	private EventStack _eventQue = new EventStack(50);
+	private EventStack _eventQue = new EventStack(100);
 
 	/**
 	 * our double-buffering safe copy.
