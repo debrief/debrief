@@ -237,8 +237,8 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 		
 		root.put("lat", lat);
 		root.put("lon", lon);
-		root.put("time", time);
 		root.put("depth", altitude);
+		root.put("time", time);
 		
 		try
 		{
