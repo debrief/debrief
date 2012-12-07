@@ -70,7 +70,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	 */
 	public void start(BundleContext context) throws Exception
 	{
-		super.start(context);		
+		super.start(context);
 	}
 
 	/*
@@ -111,7 +111,12 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	{
 		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK,
 				message, exception);
-		getDefault().getLog().log(stat);
+
+		if (getDefault() != null)
+			getDefault().getLog().log(stat);
+		else
+			System.err.println("Logger called before initialisation. Msg:" + message
+					+ " Ex:" + exception);
 	}
 
 	/**
@@ -155,13 +160,13 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	public void earlyStartup()
 	{
 
-		// move image support from early startup to here, so we can declare the images 
+		// move image support from early startup to here, so we can declare the
+		// images
 		// before the UI gets drawn
 		_myImageHelper = new ASSETImageHelper();
 		// give the LayerManager our image creator.
 		CoreViewLabelProvider.addImageHelper(_myImageHelper);
 
-		
 		XMLFileDropHandler parts = new XMLParticipantDropHandler(new String[]
 		{ "SSK", "FixedWing", "Torpedo", "SSN", "Helo", "Surface" }, new Class[]
 		{ ScenarioLayer.class });
