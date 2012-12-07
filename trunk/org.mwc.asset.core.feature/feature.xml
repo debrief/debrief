@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.34">
+      version="1.0.35">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -15,113 +15,6 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
-
-   <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.mwc.asset.legacy" version="1.0.1" match="greaterOrEqual"/>
-      <import plugin="org.mwc.asset.core" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.mwc.cmap.legacy" version="1.0.45" match="greaterOrEqual"/>
-      <import plugin="org.mwc.cmap.core" version="1.0.65" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui.navigator.resources"/>
-      <import plugin="org.eclipse.ui.navigator"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.mwc.asset.ScenarioController2" version="1.0.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.swt" version="3.2.0" match="compatible"/>
-      <import plugin="com.ibm.icu"/>
-      <import plugin="org.eclipse.core.resources" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.common.frameworks" version="1.1.200" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.common.project.facet.core" version="1.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.expressions" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.ide" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.ui" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.swt" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.common.frameworks.ui" version="1.1.200" match="compatible"/>
-      <import plugin="org.eclipse.wst.validation" version="1.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.forms" version="3.3.100" match="compatible"/>
-      <import plugin="org.apache.xerces" version="2.9.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.common.uriresolver" version="1.1.301" match="equivalent"/>
-      <import plugin="org.eclipse.wst.sse.core" version="1.1.500" match="equivalent"/>
-      <import plugin="org.eclipse.wst.common.core" version="1.1.201"/>
-      <import plugin="org.eclipse.osgi.services" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.views" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.jface.text" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.sse.ui" version="1.2.0"/>
-      <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.xml.core" version="1.1.500" match="equivalent"/>
-      <import plugin="org.eclipse.wst.common.ui" version="1.1.400" match="equivalent"/>
-      <import plugin="org.eclipse.wst.validation" version="1.2.100" match="equivalent"/>
-      <import plugin="org.eclipse.core.expressions" version="3.4.100" match="compatible"/>
-      <import plugin="org.eclipse.core.filesystem" version="1.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.common.uriresolver" version="1.1.0" match="equivalent"/>
-      <import plugin="org.eclipse.xsd" version="2.2.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.xml.core" version="1.1.0" match="equivalent"/>
-      <import plugin="org.eclipse.wst.validation" version="1.2.0" match="equivalent"/>
-      <import plugin="org.eclipse.ui.views.properties.tabbed" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.sse.core" version="1.1.300" match="equivalent"/>
-      <import plugin="org.eclipse.wst.common.core" version="1.1.0"/>
-      <import plugin="org.eclipse.wst.xml.core" version="1.1.300" match="equivalent"/>
-      <import plugin="org.eclipse.wst.xml.ui" version="1.0.400"/>
-      <import plugin="org.eclipse.wst.common.ui" version="1.1.0" match="equivalent"/>
-      <import plugin="org.eclipse.jface.text" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.gef" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.ide" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.emf.ecore.edit" version="2.2.0" match="compatible"/>
-      <import plugin="org.eclipse.core.resources" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.xsd.edit" version="2.2.0" match="compatible"/>
-      <import plugin="org.eclipse.emf.edit.ui" version="2.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ltk.core.refactoring" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.xsd.core" version="1.1.300" match="equivalent"/>
-      <import plugin="org.eclipse.search" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.core.filesystem" version="1.2.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.emf.common" version="2.7.0" match="compatible"/>
-      <import plugin="org.eclipse.emf.ecore" version="2.7.0" match="compatible"/>
-      <import plugin="org.eclipse.emf.edit" version="2.7.0" match="compatible"/>
-      <import plugin="org.eclipse.xsd" version="2.7.0" match="compatible"/>
-      <import plugin="org.eclipse.draw2d" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.jface" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.views" version="3.6.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.emf.common.ui" version="2.7.0" match="compatible"/>
-      <import plugin="org.eclipse.ui" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.ui" version="3.3.0" match="compatible"/>
-      <import plugin="org.mwc.cmap.legacy" version="1.0.50" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.2" match="compatible"/>
-      <import plugin="org.eclipse.ui.cheatsheets" version="3.4.0" match="compatible"/>
-      <import plugin="org.hamcrest.core" version="1.1.0" match="greaterOrEqual"/>
-      <import plugin="org.junit" version="4.8.1" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.expressions" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.debug.core" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.wst.common.core" version="1.2.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.swt" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.jface" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ui" version="3.6.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.forms" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.help" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="compatible"/>
-      <import plugin="org.eclipse.core.expressions" version="3.4.200" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.help" version="3.2.0" match="compatible"/>
-      <import plugin="org.eclipse.jface.databinding" version="1.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.databinding.property" version="1.2.0" match="compatible"/>
-      <import plugin="org.eclipse.core.databinding.observable" version="1.2.0" match="compatible"/>
-   </requires>
 
    <plugin
          id="org.mwc.asset.core"
@@ -235,13 +128,6 @@
 
    <plugin
          id="org.eclipse.wst.xsd.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.wst.xsdeditor.doc.user"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -483,13 +369,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.wst.common.uriresolver"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.wst.common.environment"
          download-size="0"
          install-size="0"
@@ -561,6 +440,34 @@
 
    <plugin
          id="org.apache.xml.serializer"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.common.infopop"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.common.modulecore"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.common.modulecore.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.common.snippets"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -1,4 +1,4 @@
-<project default="build">
+<project default="deploy">
 	<property file="build361.properties" />
 
 	<!-- get it built in the correct place -->
@@ -52,7 +52,7 @@
 	</target>
 
 
-	<target name="deploy" description="move compiled bits to deploy folder">
+	<target name="deploy" description="move compiled bits to deploy folder" depends="build">
 
 		<antcall target="move_files_to_deploy_directory" />
 
