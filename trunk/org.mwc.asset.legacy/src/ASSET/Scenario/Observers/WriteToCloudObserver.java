@@ -3,9 +3,21 @@ package ASSET.Scenario.Observers;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
@@ -105,7 +117,7 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 	 */
 	protected void performCloseProcessing(ScenarioType scenario)
 	{
-//		 do we have any data?
+		// do we have any data?
 		if (_myTracks == null)
 		{
 			System.err.println("NO TRACKS FOR TRACK PLOT OBSERVER");
@@ -167,7 +179,9 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 
 	/**
 	 * right, export our tracks
-	 * @param scenario  the scenario the tracks are from
+	 * 
+	 * @param scenario
+	 *          the scenario the tracks are from
 	 * 
 	 */
 	private void outputTracks(String scenario)
@@ -178,36 +192,78 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 		{
 			// get the next participant
 			CoreParticipant cp = (CoreParticipant) thisTrack.next();
-			
+
 			// retrieve its track
 			Track track = (Track) _myTracks.get(cp);
-			
+
 			outputThisTrack(track, scenario);
-			
+
 		}
 
 	}
-	
+
 	private void outputThisTrack(Track theTrack, String scenarioName)
 	{
-		// create the document
-		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode root = mapper.createObjectNode();
+		ObjectNode metadata =  mapper.createObjectNode();
+		root.put("metadata",metadata);
+
 		// sort out the metadata
-		
+		metadata.put("Platform", theTrack.getName());
+		metadata.put("PlatformType", theTrack.getName());
+		metadata.put("Sensor", theTrack.getName());
+
 		// sort out the data points
-		
+		// and the data arrays
+		ArrayNode lat = mapper.createArrayNode();
+		ArrayNode lon = mapper.createArrayNode();
+		ArrayNode time = mapper.createArrayNode();
+		ArrayNode altitude = mapper.createArrayNode();
+
+		int ctr = 0;
+
 		Enumeration<Fix> enumer = theTrack.getFixes();
-		while (enumer.hasMoreElements())
+		while (enumer.hasMoreElements() && ctr++ < 5)
 		{
-			@SuppressWarnings("unused")
 			Fix fix = (Fix) enumer.nextElement();
+
+			lat.add(fix.getLocation().getLat());
+			lon.add(fix.getLocation().getLong());
+			time.add(fix.getTime().getDate().toString());
+			altitude.add(-fix.getLocation().getDepth());
+
 		}
 		
-		// now send to the cloud
+		root.put("lat", lat);
+		root.put("lon", lon);
+		root.put("time", time);
+		root.put("depth", altitude);
 		
-		
+		try
+		{
+			StringWriter sw = new StringWriter();
+			mapper.writeValue(sw, root);
+			// now send to the cloud
+			System.out.println("here:" + sw.toString());
+		}
+		catch (JsonGenerationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (JsonMappingException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
-	
 
 	/**
 	 * the scenario has stepped forward
@@ -281,16 +337,26 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 			trk.setName(pt.getName());
 			_myTracks.put(pt, trk);
 
-			_mySpatialCoverages.put(pt, new WorldArea(pt.getStatus().getLocation(),
-					pt.getStatus().getLocation()));
 			HiResDate dt = new HiResDate(stat.getTime());
 			HiResDate dt2 = new HiResDate(dt);
 			_myTemporalCoverages.put(pt, new TimePeriod.BaseTimePeriod(dt, dt2));
+}
+
+		if (_mySpatialCoverages.get(pt) == null)
+		{
+			if (stat.getLocation() != null)
+				_mySpatialCoverages.put(pt,
+						new WorldArea(stat.getLocation(), stat.getLocation()));
 		}
 		else
-		{
 			_mySpatialCoverages.get(pt).extend(pt.getStatus().getLocation());
-			_myTemporalCoverages.get(pt).extend(new HiResDate(stat.getTime()));
+
+
+		_myTemporalCoverages.get(pt).extend(new HiResDate(stat.getTime()));
+
+		if (_mySpatialCoverages == null)
+		{
+
 		}
 
 		// create the fix
