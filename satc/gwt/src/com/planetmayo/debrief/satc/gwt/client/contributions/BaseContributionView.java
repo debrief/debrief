@@ -30,7 +30,7 @@ abstract public class BaseContributionView extends Composite implements
 	}
 
 	abstract protected BaseContribution getData();
-
+	
 	@Override
 	public void initHandlers()
 	{

@@ -21,6 +21,9 @@
 
 	<!-- Specify the app entry point class. -->
 	<entry-point class='com.planetmayo.debrief.satc.gwt.client.Gwt' />
+	
+	  <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
+ 		 <extend-property name="log_level" values="DEBUG,WARN"/>
 
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />

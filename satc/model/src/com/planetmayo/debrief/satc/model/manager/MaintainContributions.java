@@ -140,7 +140,7 @@ public class MaintainContributions
 
 	}
 
-	private ArrayList<ContributionBuilder> getContributions()
+	public static  ArrayList<ContributionBuilder> getContributions()
 	{
 		ArrayList<ContributionBuilder> result = new ArrayList<ContributionBuilder>();
 		result.add(new ContributionBuilder("Course Forecast")
