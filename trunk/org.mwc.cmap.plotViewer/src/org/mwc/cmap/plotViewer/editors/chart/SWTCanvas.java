@@ -130,7 +130,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.ui_support.EventStack;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 
 import MWC.Algorithms.PlainProjection;
@@ -161,7 +160,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * an event queue - where we place screen update events, to trim down lots of
 	 * consecutive screen updates
 	 */
-	private EventStack _eventQue = new EventStack(100);
+//	private EventStack _eventQue = new EventStack(100);
 
 	/**
 	 * our double-buffering safe copy.
@@ -486,6 +485,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 		_myCanvas.redraw(x, y, width, height, b);
 	}
 
+	private long lastRun = 0;
+
 	/**
 	 * perform an immediate redraw, not a deferred one like we do for an updateme
 	 * operation
@@ -494,25 +495,50 @@ public class SWTCanvas extends SWTCanvasAdapter
 	public void redraw()
 	{
 
+		final long TIME_INTERVAL = 150;
+		
 		if (_deferPaints)
 		{
-			if (!_myCanvas.isDisposed())
+
+			long tNow = System.currentTimeMillis();
+			long elapsed = tNow - lastRun;
+			if (elapsed > TIME_INTERVAL)
 			{
-				// create the runnable to place in the que
-				Runnable runme = new Runnable()
-				{
-					public void run()
+				lastRun = tNow;
+
+				// nope, fire it right away
+				Display thisD = Display.getDefault();
+				if (thisD != null)
+					thisD.syncExec(new Runnable()
 					{
-						if (!_myCanvas.isDisposed())
+
+						public void run()
 						{
 							_myCanvas.redraw();
 						}
-					}
-				};
-
-				// add it to the cache
-				_eventQue.addEvent(runme);
+					});
 			}
+
+			// NOTE: this is the previous stacked events, used to reduce number of
+			// redraws
+			//
+			// if (!_myCanvas.isDisposed())
+			// {
+			// // create the runnable to place in the que
+			// Runnable runme = new Runnable()
+			// {
+			// public void run()
+			// {
+			// if (!_myCanvas.isDisposed())
+			// {
+			// _myCanvas.redraw();
+			// }
+			// }
+			// };
+			//
+			// // add it to the cache
+			// _eventQue.addEvent(runme);
+			// }
 		}
 		else
 		{
