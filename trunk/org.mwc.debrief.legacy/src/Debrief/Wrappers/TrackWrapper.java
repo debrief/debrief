@@ -2731,7 +2731,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			dest.setLineWidth(_lineWidth);
 
 			// and set the initial colour for this track
-			dest.setColor(getColor());
+			if (getColor() != null)
+				dest.setColor(getColor());
 
 			// /////////////////////////////////////////////
 			// firstly plot the solutions
@@ -3080,9 +3081,26 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								_theLabel.setString(getName());
 							}
 
+							// does the first label have a colour?
 							if (_theLabel.getColor() == null)
 							{
-								_theLabel.setColor(getColor());
+								// check we have a colour
+								Color labelColor = getColor();
+								
+								// did we ourselves have a colour?
+								if(labelColor == null)
+								{
+									// nope - do we have any legs?
+									Enumeration<Editable> numer = this.getPositions();
+									if(numer.hasMoreElements())
+									{
+										// ok, use the colour of the first point
+										FixWrapper pos = (FixWrapper) numer.nextElement();
+										labelColor = pos.getColor();
+									}
+								}
+								
+								_theLabel.setColor(labelColor);
 							}
 
 							// and paint it
@@ -3119,17 +3137,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							WorldLocation theLoc = thisE.getTrackStart();
 							String oldTxt = _theLabel.getString();
 							_theLabel.setString(thisE.getName());
-							
+
 							// just see if this is a planning segment, with its own colors
-							if(thisE instanceof PlanningSegment)
+							if (thisE instanceof PlanningSegment)
 							{
 								PlanningSegment ps = (PlanningSegment) thisE;
 								_theLabel.setColor(ps.getColor());
 							}
 							else
 								_theLabel.setColor(getColor());
-							
-							
+
 							_theLabel.setLocation(theLoc);
 							_theLabel.paint(dest);
 							_theLabel.setString(oldTxt);

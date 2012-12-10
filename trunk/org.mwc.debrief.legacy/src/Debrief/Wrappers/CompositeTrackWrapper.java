@@ -9,12 +9,14 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import Debrief.Wrappers.FixWrapper.MyDateFormatPropertyEditor;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -108,6 +110,10 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 						expertProp("SymbolColor", "the color of the symbol (when used)",
 								FORMAT),
 						expertProp("TrackFont", "the track label font", FORMAT),
+						longProp(
+								"LabelFormat",
+								"the time format of the position labels, or N/A to leave as-is",
+								MyDateFormatPropertyEditor.class, SPATIAL),
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("NameAtStart",
 								"whether to show the track name at the start (or end)",
@@ -135,6 +141,11 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	private HiResDate _startDate;
 	private WorldLocation _origin;
 
+	/** remember what label format was set, if any
+	 * 
+	 */
+	private String _lastLabelFormat = null;
+
 	public CompositeTrackWrapper(HiResDate startDate, final WorldLocation centre)
 	{
 		super();
@@ -153,16 +164,12 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 				TimeFrequencyPropertyEditor._15_MINS));
 	}
 
-	
-	
 	@Override
 	public Color getColor()
 	{
 		// TODO Auto-generated method stub
 		return super.getColor();
 	}
-
-
 
 	@Override
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
@@ -249,6 +256,41 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	{
 		this._origin = origin;
 		recalculate();
+	}
+
+	public final String getLabelFormat()
+	{
+		return _lastLabelFormat;
+		/**
+		 * note, we return null, not the "N/A" value, so that none of the values in
+		 * the tag list are designated as "current value"
+		 */
+	}
+
+	@FireReformatted
+	public final void setLabelFormat(final String format)
+	{
+		// store the format
+		_lastLabelFormat = format;
+
+		// just check that the user isn't keeping the value as null
+		if (format == null)
+			return;
+
+		if (!format.equals(MyDateFormatPropertyEditor.stringTags[0]))
+		{
+			// we need to loop through all of the positions
+			Enumeration<Editable> numer = this.getPositions();
+			while (numer.hasMoreElements())
+			{
+				Editable editable = (Editable) numer.nextElement();
+				if (editable instanceof FixWrapper)
+				{
+					FixWrapper fix = (FixWrapper) editable;
+					fix.setLabelFormat(format);
+				}
+			}
+		}
 	}
 
 	/**
@@ -388,7 +430,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
 			if (point.getName() != name)
 				((PlanningSegment) point).setName(name);
-			
+
 			// better do a recalc, aswell
 			recalculate();
 		}
