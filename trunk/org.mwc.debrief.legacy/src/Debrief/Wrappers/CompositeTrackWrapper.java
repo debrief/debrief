@@ -23,6 +23,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.Duration;
@@ -144,7 +145,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	/** remember what label format was set, if any
 	 * 
 	 */
-	private String _lastLabelFormat = null;
+	private String _lastLabelFormat = DateFormatPropertyEditor.TIME_FORMAT;
 
 	public CompositeTrackWrapper(HiResDate startDate, final WorldLocation centre)
 	{
@@ -270,27 +271,9 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	@FireReformatted
 	public final void setLabelFormat(final String format)
 	{
-		// store the format
+		// store the format (note: we don't need to apply the format to all of the fixes, we do it when we redraw the line
 		_lastLabelFormat = format;
 
-		// just check that the user isn't keeping the value as null
-		if (format == null)
-			return;
-
-		if (!format.equals(MyDateFormatPropertyEditor.stringTags[0]))
-		{
-			// we need to loop through all of the positions
-			Enumeration<Editable> numer = this.getPositions();
-			while (numer.hasMoreElements())
-			{
-				Editable editable = (Editable) numer.nextElement();
-				if (editable instanceof FixWrapper)
-				{
-					FixWrapper fix = (FixWrapper) editable;
-					fix.setLabelFormat(format);
-				}
-			}
-		}
 	}
 
 	/**
@@ -311,6 +294,10 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 	protected void paintThisFix(CanvasType dest, WorldLocation lastLocation,
 			FixWrapper fw)
 	{
+		// set the label format to ]my label format
+		if(_lastLabelFormat != null)
+			fw.setLabelFormat(_lastLabelFormat);
+		
 		// set the fix font-size to be my font-size
 		fw.setFont(this.getTrackFont());
 

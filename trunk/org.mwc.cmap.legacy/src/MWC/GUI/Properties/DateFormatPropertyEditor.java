@@ -98,6 +98,18 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
   	return getTagList();
   }
   
+  /** provide easy access to the 'first cut of the day' format
+   * 
+   */
+	public static final String DATE_FORMAT = "ddHHmm";
+
+	/** provide easy access to the 'normal' time lable format
+	 * 
+	 */
+	public static final String TIME_FORMAT = "HHmm";
+
+
+  
   /** retrieve/initialise our list of date formats
    * 
    * @return
@@ -108,8 +120,8 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
   		_stringTags = new String[]{
           "mm:ss.SSS",
           "HHmm.ss",
-          "HHmm",
-          "ddHHmm",
+          TIME_FORMAT,
+          DATE_FORMAT,
           "ddHHmm:ss",
           "yy/MM/dd HH:mm"
   		};

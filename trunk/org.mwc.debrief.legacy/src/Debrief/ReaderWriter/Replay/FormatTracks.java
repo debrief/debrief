@@ -45,34 +45,35 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.TimeZone;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.TimeZone;
+import MWC.GUI.Properties.DateFormatPropertyEditor;
 
 /**
  * class to apply default formatting to a set of tracks
  */
 public final class FormatTracks implements ImportReplay.LayersFormatter
 {
-
-	/**
-	 * the format we use for the first point on a track plus the point equal to or
-	 * greater than 2400 hrs
-	 */
-	private java.text.SimpleDateFormat _dayFormat = null;
-
-	/**
-	 * the default format we use
-	 */
-	private java.text.SimpleDateFormat _normalFormat = null;
+//
+//	/**
+//	 * the format we use for the first point on a track plus the point equal to or
+//	 * greater than 2400 hrs
+//	 */
+//	private static java.text.SimpleDateFormat _dayFormat = null;
+//
+//	/**
+//	 * the default format we use
+//	 */
+//	private static java.text.SimpleDateFormat _normalFormat = null;
 
 	/**
 	 * const to represent a day in millis
@@ -94,12 +95,18 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 	 * @param normalFormat
 	 *          the normal format to use
 	 */
-	private static void formatThisTrack(TrackWrapper track,
-			java.text.SimpleDateFormat dayFormat,
-			java.text.SimpleDateFormat normalFormat)
+	private static void formatThisTrack(TrackWrapper track)
 	{
 		try
 		{
+			
+			SimpleDateFormat dayFormat = new java.text.SimpleDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
+			SimpleDateFormat normalFormat = new java.text.SimpleDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
+
+			dayFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			normalFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+			
 			// the last hour we stamped
 			long lastStamp = -1;
 
@@ -186,36 +193,15 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 	 */
 	public static void formatTrack(TrackWrapper theTrack)
 	{
-		// initialise the formatters
-
-		// first the style
-		SimpleDateFormat dayFormat = new java.text.SimpleDateFormat("ddHHmm");
-		SimpleDateFormat normalFormat = new java.text.SimpleDateFormat("HHmm");
-
-		// now the time zone
-		dayFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		normalFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-
 		// and format it
-		formatThisTrack(theTrack, dayFormat, normalFormat);
+		formatThisTrack(theTrack);
 	}
-
+	
 	/**
 	 * have a go at setting the detault time/date values for imported tracks
 	 */
 	public final void formatLayers(Layers newData)
 	{
-
-		// initialise the formatters
-		if (_dayFormat == null)
-		{
-			_dayFormat = new java.text.SimpleDateFormat("ddHHmm");
-			_normalFormat = new java.text.SimpleDateFormat("HHmm");
-
-			_dayFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-			_normalFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		}
-
 		// have we received valid data?
 		if (newData == null)
 			return;
@@ -233,7 +219,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
 				Debrief.Wrappers.TrackWrapper thisTrack = (TrackWrapper) thisL;
 
 				// now, apply the formatting to this track
-				formatThisTrack(thisTrack, _dayFormat, _normalFormat);
+				formatThisTrack(thisTrack);
 			}
 		}
 
