@@ -2,10 +2,12 @@ package com.planetmayo.debrief.satc.support;
 
 import java.util.ArrayList;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
+import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
@@ -149,6 +151,16 @@ public class TestSupport
 		speed.setName("Initial speed obs");
 		getGenerator().addContribution(speed);
 
+		// try a location forecast
+		LocationForecastContribution locF = new LocationForecastContribution();
+		locF.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121329"));
+		locF.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121330"));
+		locF.setEstimate(new GeoPoint(0.06, -30.8));
+		locF.setLimit(3000d);
+		locF.setName("Last known location");
+		locF.setActive(false);
+		getGenerator().addContribution(locF);
+		
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
 		course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121231"));
@@ -178,7 +190,6 @@ public class TestSupport
 		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
 		getGenerator().addContribution(al);
 
-		
 
 		LocationAnalysisContribution lac = new LocationAnalysisContribution();
 		getGenerator().addContribution(lac);
