@@ -155,7 +155,7 @@ public class LocationForecastContributionView extends BaseContributionView
 		if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(LocationForecastContribution.LIMIT))
-			limit.setData((Integer) arg0.getNewValue());
+			limit.setData(( (Double) arg0.getNewValue()).intValue());
 		else if (attr.equals(BaseContribution.START_DATE))
 			startFinish.setStartData((Date) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.FINISH_DATE))
