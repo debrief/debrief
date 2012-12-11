@@ -23,8 +23,8 @@
 							<my:NameWidget ui:field="name"></my:NameWidget>
 							<my:StartFinishWidget ui:field="startFinish"></my:StartFinishWidget>
 
-							<my:Slider2BarWidget ui:field="limit" type="location" text="Constraint :" sliderWidth="190px"></my:Slider2BarWidget>
-							<my:NameWidget ui:field="estimate" text="Estimate: "></my:NameWidget>
+							<my:Slider2BarWidget ui:field="limit" type="location" text="Distance:" sliderWidth="190px"></my:Slider2BarWidget>
+							<my:NameWidget ui:field="estimate" text="Location: "></my:NameWidget>
 
 						</g:HTMLPanel>
 					</g:CaptionPanel>

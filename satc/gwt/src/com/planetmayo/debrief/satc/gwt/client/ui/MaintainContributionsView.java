@@ -13,7 +13,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -41,8 +40,8 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -98,7 +97,6 @@ public class MaintainContributionsView extends Composite implements MyView,
 	@UiField
 	HTMLPanel analystContributions;
 
-	@SuppressWarnings("unused")
 	private PropertyChangeListener _addListener;
 
 	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
