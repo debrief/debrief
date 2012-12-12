@@ -134,7 +134,8 @@ public class RightClickCutCopyAdaptor
 				catch (ClassNotFoundException e)
 				{
 					CorePlugin.logError(Status.ERROR,
-							"Whilst converting from native to java, can't find this class:" + e.getMessage(), null);
+							"Whilst converting from native to java, can't find this class:"
+									+ e.getMessage(), null);
 				}
 				return myData;
 			}
@@ -179,6 +180,7 @@ public class RightClickCutCopyAdaptor
 
 		CutItem cutter = null;
 		CopyItem copier = null;
+		DeleteItem deleter = null;
 
 		// just check is trying to operate on the layers object itself
 		if (data instanceof MWC.GUI.Layers)
@@ -193,17 +195,15 @@ public class RightClickCutCopyAdaptor
 					updateLayers);
 
 			// now the copy action
-			// hey, it it cloneable?
-			// if (editables[0] instanceof Cloneable)
-			// {
 			copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
 					updateLayers);
-			// }
+
+			// and the delete
+			deleter = new DeleteItem(editables, parentLayers, theLayers, updateLayers);
 
 			// create the menu items
 
 			// add to the menu
-			// menu.addSeparator();
 			manager.add(new Separator());
 			manager.add(cutter);
 
@@ -212,6 +212,8 @@ public class RightClickCutCopyAdaptor
 			{
 				manager.add(copier);
 			}
+
+			manager.add(deleter);
 		}
 
 	}
@@ -377,8 +379,6 @@ public class RightClickCutCopyAdaptor
 					_myClipboard.setContents(new Object[]
 					{ _data }, new Transfer[]
 					{ transfer });
-					
-					
 
 					for (int i = 0; i < _data.length; i++)
 					{
@@ -391,21 +391,22 @@ public class RightClickCutCopyAdaptor
 							// no, it must be the top layers object
 							_theLayers.removeThisLayer((Layer) thisE);
 
-							// no need to remember the layer. the "removeThisLayer" will have fired updates
+							// no need to remember the layer. the "removeThisLayer" will have
+							// fired updates
 						}
 						else
 						{
 							// remove the new data from it's parent
 							parentLayer.removeElement(thisE);
-							
-							if(!changedLayers.contains(parentLayer))
+
+							if (!changedLayers.contains(parentLayer))
 								changedLayers.add(parentLayer);
 						}
 					}
 
 					if (changedLayers.size() > 1)
 						_theLayers.fireExtended();
-					else if(changedLayers.size() == 1)
+					else if (changedLayers.size() == 1)
 						_theLayers.fireExtended(null, changedLayers.firstElement());
 					else
 					{
@@ -692,7 +693,7 @@ public class RightClickCutCopyAdaptor
 			}
 			return itemFound;
 		}
-		
+
 		private static class MyCutItem extends CutItem
 		{
 
@@ -708,8 +709,6 @@ public class RightClickCutCopyAdaptor
 				// don't bother, we haven't got enough platform running
 			}
 
-			
-			
 		}
 
 		public void testCut()
@@ -930,6 +929,148 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isContactThere(tw, tcw2));
 			assertTrue("item back again after op", isContactThere(tw, tcwa3));
 
+		}
+
+	}
+
+	// /////////////////////////////////
+	// nested classes
+	// ////////////////////////////////
+
+	// ////////////////////////////////////////////
+	//
+	// ///////////////////////////////////////////////
+	public static class DeleteItem extends Action
+	{
+		protected Editable[] _data;
+
+		protected Layer[] _theParent;
+
+		protected Layers _theLayers;
+
+		protected Object _oldContents;
+
+		protected Layer[] _updateLayer;
+
+		public DeleteItem(Editable[] data, Layer[] theParent, Layers theLayers,
+				Layer[] updateLayer)
+		{
+			// remember parameters
+			_data = data;
+			_theParent = theParent;
+			_theLayers = theLayers;
+			_updateLayer = updateLayer;
+
+			// formatting
+			super.setText("Delete " + toString());
+
+			// and the icon
+			setImageIcon();
+
+		}
+
+		protected void setImageIcon()
+		{
+			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+					.getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+		}
+
+		/**
+		 * 
+		 */
+		public void run()
+		{
+			AbstractOperation myOperation = new AbstractOperation(getText())
+			{
+				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					doCut();
+					return Status.OK_STATUS;
+				}
+
+				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					return Status.OK_STATUS;
+				}
+
+				/**
+				 * the cut operation is common for execute and redo operations - so
+				 * factor it out to here...
+				 * 
+				 */
+				private void doCut()
+				{
+					Vector<Layer> changedLayers = new Vector<Layer>();
+
+					for (int i = 0; i < _data.length; i++)
+					{
+						Editable thisE = _data[i];
+						Layer parentLayer = _theParent[i];
+
+						// is the parent the data object itself?
+						if (parentLayer == null)
+						{
+							// no, it must be the top layers object
+							_theLayers.removeThisLayer((Layer) thisE);
+
+							// no need to remember the layer. the "removeThisLayer" will have
+							// fired updates
+						}
+						else
+						{
+							// remove the new data from it's parent
+							parentLayer.removeElement(thisE);
+
+							if (!changedLayers.contains(parentLayer))
+								changedLayers.add(parentLayer);
+						}
+					}
+
+					if (changedLayers.size() > 1)
+						_theLayers.fireExtended();
+					else if (changedLayers.size() == 1)
+						_theLayers.fireExtended(null, changedLayers.firstElement());
+					else
+					{
+						// zero layers listed as changed. no 'firing' necessary
+					}
+				}
+
+				@Override
+				public boolean canRedo()
+				{
+					return false;
+				}
+
+				@Override
+				public boolean canUndo()
+				{
+					return false;
+				}
+
+				@Override
+				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					return null;
+				}
+
+			};
+			// put in the global context, for some reason
+			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			CorePlugin.run(myOperation);
+		}
+
+		public String toString()
+		{
+			String res = "";
+			if (_data.length > 1)
+				res += _data.length + " selected items";
+			else
+				res += _data[0].getName();
+			return res;
 		}
 
 	}
