@@ -515,8 +515,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 			if (date == null || origin == null)
 				return;
 
-			double distPerMinute = getMinuteDelta(seg);
-			double timeTravelled = getSecsTravelled(seg);
+			double timeTravelledMillis = getSecsTravelled(seg) * 1000;
 
 			// ditch the existing items
 			seg.removeAllElements();
@@ -525,11 +524,30 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 			double courseDegs = seg.getCourse();
 			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
 
-			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
-					distPerMinute, WorldDistance.METRES), null);
-
 			long timeMillis = date.getDate().getTime();
-			for (long tNow = timeMillis; tNow <= timeMillis + timeTravelled * 1000; tNow += 60 * 1000)
+			final long timeStepMillis;
+			final long ONE_MIN = 60 * 1000;
+			final long ONE_HOUR = 60 * ONE_MIN;
+			final long ONE_DAY = 24 * ONE_HOUR;
+			
+			// use a time step appropriate to how long we're generating the track for
+			if(timeTravelledMillis <= 4 * ONE_HOUR)
+				timeStepMillis = ONE_MIN;
+			else if(timeTravelledMillis <= 12 * ONE_HOUR)
+				timeStepMillis = 10 * ONE_MIN;
+			else if(timeTravelledMillis <= 2 * ONE_DAY )
+				timeStepMillis = 30 * ONE_MIN;
+			else
+				timeStepMillis = ONE_HOUR;
+
+			// now work out how far he will have travelled in a time step
+			double distPerMinute = getMinuteDelta(seg);
+			double distPerStep = distPerMinute * (timeStepMillis / ONE_MIN);
+			WorldVector vec = new WorldVector(courseRads, new WorldDistance(
+					distPerStep, WorldDistance.METRES), null);
+			
+			
+			for (long tNow = timeMillis; tNow <= timeMillis + timeTravelledMillis; tNow += timeStepMillis)
 			{
 				HiResDate thisDtg = new HiResDate(tNow);
 
