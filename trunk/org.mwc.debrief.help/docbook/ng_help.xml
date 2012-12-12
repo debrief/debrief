@@ -2492,6 +2492,13 @@ and so on....</programlisting></para>
             by right-clicking on the screen item directly in addition to via
             the Layer Manager.</para>
           </note>
+          <warning>
+            <para>In addition to the <guibutton>Cut</guibutton> menu command, is the
+                <guibutton>Delete</guibutton> command.  This doesn't store the removed items on the
+              clipboard, and is suited for bulk data point removal.  To further ease the memory
+              burden of this large operation it isn't possible to <guibutton>Undo</guibutton> the
+                <guibutton>Delete</guibutton> command.</para>
+          </warning>
         </sect2>
       </sect1>
 
