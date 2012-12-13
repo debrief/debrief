@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.support;
 import java.util.ArrayList;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
@@ -181,13 +182,15 @@ public class TestSupport
 		// that's nothing - we can now do straight leg forecasts
 		StraightLegForecastContribution st = new StraightLegForecastContribution();
 		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121200"));
-		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122000"));
+		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122800"));
+		st.setName("Straight prediction");
 		getGenerator().addContribution(st);
 
 		// and an altering leg forecasts
-		StraightLegForecastContribution al = new StraightLegForecastContribution();
-		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122100"));
-		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
+		AlterationLegForecastContribution al = new AlterationLegForecastContribution();
+		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
+		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
+		al.setName("Alteration prediction");
 		getGenerator().addContribution(al);
 
 
