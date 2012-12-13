@@ -230,6 +230,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		Double old = _bearingError;
 		this._bearingError = errorDegs;
 		firePropertyChange(BEARING_ERROR, old, errorDegs);
+		firePropertyChange(HARD_CONSTRAINTS, old, errorDegs);
 	}
 
 	/**
