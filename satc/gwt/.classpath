@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwtx-1.5.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-slider-bar-1.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gflot-2.4.3.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jts4gwt-1.13.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jts4gwt-1.13.jar"/>	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-log-3.1.8.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

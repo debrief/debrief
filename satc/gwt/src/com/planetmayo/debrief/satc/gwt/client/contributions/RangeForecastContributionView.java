@@ -69,7 +69,8 @@ public class RangeForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxRange(event.getValue());
+				_myData.setMaxRange((double) event.getValue());
+				refreshHardConstraints();
 			}
 		});
 
@@ -78,7 +79,8 @@ public class RangeForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinRange(event.getValue());
+				_myData.setMinRange((double) event.getValue());
+				refreshHardConstraints();
 			}
 		});
 
@@ -87,7 +89,8 @@ public class RangeForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate(event.getValue());
+				_myData.setEstimate((double) event.getValue());
+				refreshEstimate();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -124,6 +127,27 @@ public class RangeForecastContributionView extends BaseContributionView
 	}
 
 	@Override
+	protected String getHardConstraintsStr()
+	{
+		String res = super.getEstimateStr();
+		if (_myData.getMinRange() != null)
+			res = "" + _myData.getMinRange().intValue() + " - "
+					+ _myData.getMaxRange().intValue() + "m";
+		return res;
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		final String res;
+		if (_myData.getEstimate() == null)
+			res = super.getEstimateStr();
+		else
+			res = "" + _myData.getEstimate().intValue() + "m";
+		return res;
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		super.propertyChange(arg0);
@@ -147,24 +171,24 @@ public class RangeForecastContributionView extends BaseContributionView
 	public void setData(BaseContribution contribution)
 	{
 
-		// let the parent register with the contribution
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (RangeForecastContribution) contribution;
 
 		// property changes
 		// initialise the UI components
-		min.setData((int) _myData.getMinRange());
-		max.setData((int) _myData.getMaxRange());
+		min.setData((_myData.getMinRange() == null) ? 0 : _myData.getMinRange()
+				.intValue());
+		max.setData((_myData.getMaxRange() == null) ? 0 : _myData.getMaxRange()
+				.intValue());
 		// do we have an estimate?
-		if (_myData.getEstimate() != null)
-			estimate.setData((int) Math.round(Double.valueOf(_myData.getEstimate()
-					.toString())));
+		estimate.setData((_myData.getEstimate() == null) ? 0 : _myData
+				.getEstimate().intValue());
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
 
+		// and update the parent UI elements/listeners
+		super.setData(contribution);
 	}
 
 }

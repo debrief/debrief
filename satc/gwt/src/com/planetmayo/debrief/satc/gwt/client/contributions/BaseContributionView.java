@@ -30,7 +30,7 @@ abstract public class BaseContributionView extends Composite implements
 	}
 
 	abstract protected BaseContribution getData();
-
+	
 	@Override
 	public void initHandlers()
 	{
@@ -63,14 +63,12 @@ abstract public class BaseContributionView extends Composite implements
 
 		if (attr.equals(BaseContribution.ESTIMATE))
 		{
-			header.setEstimateData(getData().getEstimateStr());
+			refreshEstimate();
 		}
 		else if (attr.equals(BaseContribution.WEIGHT))
 			header.setWeightData((Integer) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.ACTIVE))
 			header.setActiveData((Boolean) arg0.getNewValue());
-		else if (attr.equals(BaseContribution.HARD_CONSTRAINTS))
-			header.setHardConstraintsData((String) arg0.getNewValue());
 
 	}
 
@@ -79,8 +77,11 @@ abstract public class BaseContributionView extends Composite implements
 	{
 
 		// initialise the UI components
-		header.setData(contribution.isActive(), contribution.getHardConstraints(),
-				contribution.getEstimateStr(), contribution.getWeight());
+		refreshHardConstraints();
+		refreshEstimate();
+		
+		// and the rest of the hearder
+		header.setData(contribution.isActive(), contribution.getWeight());
 
 		// TODO: Akash - this method should only register listeners for the
 		// BaseContribution attributes that it knows about. The course-specific
@@ -103,9 +104,6 @@ abstract public class BaseContributionView extends Composite implements
 		contribution.addPropertyChangeListener(BaseContribution.WEIGHT, this);
 
 		contribution.addPropertyChangeListener(BaseContribution.ACTIVE, this);
-
-		contribution.addPropertyChangeListener(BaseContribution.HARD_CONSTRAINTS,
-				this);
 	}
 	
 	@Override
@@ -113,5 +111,41 @@ abstract public class BaseContributionView extends Composite implements
 	{
 			disclosurePanel.setOpen(false);
 	}
+
+	/** an attribute that contributes to the hard constraints has changed, refresh what is displayed
+	 * 
+	 */
+	public final void refreshHardConstraints()
+	{
+		header.setHardConstraints(getHardConstraintsStr());
+	}
+	
+	/** an attribute that represents the estimate has changed, refresh what is displayed
+	 * 
+	 */
+	public final void refreshEstimate()
+	{
+		header.setEstimate(getEstimateStr());
+	}
+
+
+	/** retrieve a user-readable description of the hard constraints
+	 * 
+	 * @return
+	 */
+	protected String getHardConstraintsStr()
+	{
+		return "n/a";
+	}
+	
+  /**	retrieve a user-readable description of the estimate
+   * 
+   * @return
+   */
+	protected String getEstimateStr()
+	{
+		return "n/a";
+	}
+	
 
 }

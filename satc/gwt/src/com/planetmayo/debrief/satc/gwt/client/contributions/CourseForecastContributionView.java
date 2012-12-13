@@ -73,7 +73,8 @@ public class CourseForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxCourse(event.getValue());
+				_myData.setMaxCourse(Math.toRadians(event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -82,7 +83,8 @@ public class CourseForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinCourse(event.getValue());
+				_myData.setMinCourse(Math.toRadians(event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -91,7 +93,8 @@ public class CourseForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate(event.getValue());
+				_myData.setEstimate(Math.toRadians(event.getValue()));
+				refreshEstimate();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -133,16 +136,35 @@ public class CourseForecastContributionView extends BaseContributionView
 	}
 
 	@Override
+	protected String getHardConstraintsStr()
+	{
+		String res = super.getHardConstraintsStr();
+
+		if ( _myData.getMinCourse() != null)
+			res = "" + (int)Math.toDegrees( _myData.getMinCourse()) + "-"
+					+ (int)Math.toDegrees(_myData.getMaxCourse()) + "\u00b0";
+
+		return res;
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		return (_myData.getEstimate() == null) ? super.getEstimateStr() : ""
+				+ (int)Math.toDegrees(_myData.getEstimate()) + "\u00b0";
+	}
+
+	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		super.propertyChange(arg0);
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(CourseForecastContribution.MIN_COURSE))
-			min.setData((Integer) arg0.getNewValue());
+			min.setData((int) Math.toDegrees((Double) arg0.getNewValue()));
 		else if (attr.equals(CourseForecastContribution.MAX_COURSE))
-			max.setData((Integer) arg0.getNewValue());
+			max.setData((int) Math.toDegrees((Double) arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.ESTIMATE))
-			estimate.setData((Integer) arg0.getNewValue());
+			estimate.setData((int) Math.toDegrees((Double) arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.START_DATE))
@@ -156,20 +178,24 @@ public class CourseForecastContributionView extends BaseContributionView
 	public void setData(BaseContribution contribution)
 	{
 
-		// let the parent register with the contribution
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (CourseForecastContribution) contribution;
 
 		// property changes
 		// initialise the UI components
-		min.setData(_myData.getMinCourse());
-		max.setData(_myData.getMaxCourse());
-		estimate.setData(_myData.getEstimate());
+		min.setData((_myData.getMinCourse() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getMinCourse()));
+		max.setData((_myData.getMaxCourse() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getMaxCourse()));
+		estimate.setData((_myData.getEstimate() == null) ? 0 : (int) Math
+				.toDegrees(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
+
+		// let the parent register with the contribution
+		super.setData(contribution);
+
 	}
 
 }

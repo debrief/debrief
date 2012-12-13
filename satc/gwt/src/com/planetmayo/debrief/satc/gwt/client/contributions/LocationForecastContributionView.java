@@ -14,6 +14,7 @@ import com.kiouri.sliderbar.client.event.BarValueChangedHandler;
 import com.planetmayo.debrief.satc.gwt.client.ui.NameWidget;
 import com.planetmayo.debrief.satc.gwt.client.ui.Slider2BarWidget;
 import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 
@@ -62,7 +63,28 @@ public class LocationForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setLimit(event.getValue());
+				_myData.setLimit((double) event.getValue());
+				
+				// and update the UI
+				refreshHardConstraints();
+			}
+		});
+		estimate.addValueChangeHandler(new ValueChangeHandler<String>()
+		{
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event)
+			{
+				@SuppressWarnings("unused")
+				String newLoc = event.getValue();
+				
+				// TODO: Akash, we need to convert newLoc to a GeoPoint
+				GeoPoint geop = null;
+				_myData.setEstimate(geop);
+				
+				// and update the UI
+				refreshEstimate();
+
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -109,6 +131,21 @@ public class LocationForecastContributionView extends BaseContributionView
 		 */
 
 	}
+	
+	
+
+	@Override
+	protected String getHardConstraintsStr()
+	{
+		
+		return (_myData.getLimit()==null)?super.getHardConstraintsStr():""+_myData.getLimit().intValue() + "m";
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		return (_myData.getEstimate()==null)?super.getEstimateStr():"location set";
+	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
@@ -118,13 +155,18 @@ public class LocationForecastContributionView extends BaseContributionView
 		if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(LocationForecastContribution.LIMIT))
-			limit.setData((Integer) arg0.getNewValue());
+			limit.setData(( (Double) arg0.getNewValue()).intValue());
 		else if (attr.equals(BaseContribution.START_DATE))
 			startFinish.setStartData((Date) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.FINISH_DATE))
 			startFinish.setFinishData((Date) arg0.getNewValue());
 		if (attr.equals(BaseContribution.ESTIMATE))
-			estimate.setData((String) arg0.getNewValue());
+		{
+			GeoPoint pt = (GeoPoint) arg0.getNewValue();
+			// TODO: Akash, we need to convert pt to a string
+			String strPt = pt.toString();
+			estimate.setData(strPt);
+		}
 
 	}
 
@@ -132,22 +174,27 @@ public class LocationForecastContributionView extends BaseContributionView
 	public void setData(BaseContribution contribution)
 	{
 
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (LocationForecastContribution) contribution;
 
 		// property changes
 		// initialise the UI components
-		limit.setData(_myData.getLimit());
+		limit.setData((_myData.getLimit() == null) ? 0 : _myData.getLimit()
+				.intValue());
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
-		estimate.setData(_myData.getEstimate().toString());
+		
+		GeoPoint gp = _myData.getEstimate();
+		// TODO: Akash, we need to convert gp to a string
+		String strVal = gp.toString();
+		estimate.setData(strVal);
 
 		contribution.addPropertyChangeListener(LocationForecastContribution.LIMIT,
 				this);
-
+		
+		// and update the parent UI elements/listeners
+		super.setData(contribution);
 	}
 
 }

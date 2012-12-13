@@ -34,6 +34,21 @@ public class LocationRange extends BaseRange<LocationRange>
 	}
 
 	/**
+	 * find out the number of points in the shape (if we have one)
+	 * 
+	 * @return
+	 */
+	public int numPoints()
+	{
+		final int res;
+		if (_myArea != null)
+			res = _myArea.getNumPoints();
+		else
+			res = 0;
+		return res;
+	}
+
+	/**
 	 * trim my area to the area provided
 	 * 
 	 * @param sTwo

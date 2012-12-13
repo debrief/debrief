@@ -9,10 +9,10 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -40,8 +40,8 @@ import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribut
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
 import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -91,20 +91,12 @@ public class MaintainContributionsView extends Composite implements MyView,
 
 	@UiField
 	PopupPanel contextMenu;
-
-	@UiField
-	Label courseForecastContribution;
-
-	@UiField
-	Label speedForecast;
-
-	@UiField
-	Label locationForecast;
+	
+	@UiField HTMLPanel contextMenuList;
 
 	@UiField
 	HTMLPanel analystContributions;
 
-	@SuppressWarnings("unused")
 	private PropertyChangeListener _addListener;
 
 	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
@@ -125,6 +117,35 @@ public class MaintainContributionsView extends Composite implements MyView,
 		// now the the data object
 		_manager = new MaintainContributions(this, new MockVehicleTypesRepository());
 		_stepper = _manager.getGenerator();
+		
+		populateContextMenu();
+	}
+
+	// create custom handler for the 'add' dropdown menu. Handle it by
+	// passing
+	// the String to the _addListener as PropertyChangeEvent(theString, null,
+	// null, theString);
+	
+	//Added by Akash - Iterating thru the list of contribution builders and added them to Context Menu, implementation needs to be verified.
+	//TODO Ian, please verify if its ok.
+	private void populateContextMenu()
+	{
+		for (final ContributionBuilder contributionBuilder : MaintainContributions.getContributions())
+		{
+			Label contribution = new Label(contributionBuilder.getDescription());
+			contribution.addClickHandler(new ClickHandler()
+			{
+				
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					_addListener.propertyChange(new PropertyChangeEvent(contributionBuilder, null, null, contributionBuilder));
+					contextMenu.hide();
+				}
+			});
+			
+			contextMenuList.add(contribution);
+		}
 	}
 
 	@Override
@@ -168,32 +189,6 @@ public class MaintainContributionsView extends Composite implements MyView,
 		else
 		{
 			System.err.println("Contribution view missing for:" + contribution);
-		}
-
-	}
-
-	@UiHandler(value =
-	{ "courseForecastContribution", "speedForecast", "locationForecast" })
-	void handleClick(ClickEvent e)
-	{
-		// TODO: create custom handler for the 'add' dropdown menu. Handle it by
-		// passing
-		// the String to the _addListener as PropertyChangeEvent(theString, null,
-		// null, theString);
-
-		contextMenu.hide();
-		if ((Label) e.getSource() == courseForecastContribution)
-		{
-			analystContributions.add(new CourseForecastContributionView());
-		}
-		else if ((Label) e.getSource() == speedForecast)
-		{
-			Window.alert(((Label) e.getSource()).getText());
-
-		}
-		else if ((Label) e.getSource() == locationForecast)
-		{
-			Window.alert(((Label) e.getSource()).getText());
 		}
 
 	}

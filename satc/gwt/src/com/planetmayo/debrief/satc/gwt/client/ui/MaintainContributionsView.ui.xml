@@ -200,11 +200,7 @@
 
 		<g:PopupPanel animationEnabled="true" autoHideEnabled="true"
 			visible="false" ui:field="contextMenu" styleName="contextMenu">
-			<g:HTMLPanel>
-				<g:Label ui:field="courseForecastContribution">Course
-					Forecast</g:Label>
-				<g:Label ui:field="speedForecast">Speed Forecast</g:Label>
-				<g:Label ui:field="locationForecast">Location Forecast</g:Label>
+			<g:HTMLPanel ui:field="contextMenuList">
 			</g:HTMLPanel>
 		</g:PopupPanel>
 

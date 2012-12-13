@@ -16,6 +16,7 @@ import com.planetmayo.debrief.satc.gwt.client.ui.Slider2BarWidget;
 import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedForecastContributionView extends BaseContributionView
 {
@@ -71,7 +72,8 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMaxSpeed((double) event.getValue());
+				_myData.setMaxSpeed(GeoSupport.kts2MSec(event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -80,7 +82,8 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setMinSpeed((double) event.getValue());
+				_myData.setMinSpeed(GeoSupport.kts2MSec( event.getValue()));
+				refreshHardConstraints();
 			}
 		});
 
@@ -89,7 +92,8 @@ public class SpeedForecastContributionView extends BaseContributionView
 			@Override
 			public void onBarValueChanged(BarValueChangedEvent event)
 			{
-				_myData.setEstimate((double) event.getValue());
+				_myData.setEstimate(GeoSupport.kts2MSec( event.getValue()));
+				refreshEstimate();
 			}
 		});
 		name.addValueChangeHandler(new ValueChangeHandler<String>()
@@ -130,17 +134,37 @@ public class SpeedForecastContributionView extends BaseContributionView
 		// BaseContributionView.java
 	}
 
+	
+	@Override
+	protected String getHardConstraintsStr()
+	{
+		String res = super.getHardConstraintsStr();
+
+		if (_myData.getMinSpeed() != null)
+			res = "" + (int)GeoSupport.MSec2kts( _myData.getMinSpeed())+ "-"
+					+ (int)GeoSupport.MSec2kts( _myData.getMaxSpeed()) + " kts";
+
+		return res;
+	}
+
+	@Override
+	protected String getEstimateStr()
+	{
+		return (_myData.getEstimate() == null) ? super.getEstimateStr() : ""
+				+ GeoSupport.MSec2kts( _myData.getEstimate()) + " kts";
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0)
 	{
 		super.propertyChange(arg0);
 		final String attr = arg0.getPropertyName();
 		if (attr.equals(SpeedForecastContribution.MIN_SPEED))
-			min.setData((Integer) arg0.getNewValue());
+			min.setData((int)GeoSupport.MSec2kts((Double) arg0.getNewValue()));
 		else if (attr.equals(SpeedForecastContribution.MAX_SPEED))
-			max.setData((Integer) arg0.getNewValue());
+			max.setData((int)GeoSupport.MSec2kts((Double)  arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.ESTIMATE))
-			estimate.setData((int) Math.round((Double) arg0.getNewValue()));
+			estimate.setData((int)GeoSupport.MSec2kts((Double) arg0.getNewValue()));
 		else if (attr.equals(BaseContribution.NAME))
 			name.setData((String) arg0.getNewValue());
 		else if (attr.equals(BaseContribution.START_DATE))
@@ -153,22 +177,25 @@ public class SpeedForecastContributionView extends BaseContributionView
 	@Override
 	public void setData(BaseContribution contribution)
 	{
-
-		// let the parent register with the contribution
-		super.setData(contribution);
-
 		// and store the type-casted contribution
 		_myData = (SpeedForecastContribution) contribution;
 
 		// property changes
 		// initialise the UI components
-		min.setData(_myData.getMinSpeed().intValue());
-		max.setData(_myData.getMaxSpeed().intValue());
-		if (_myData.getEstimate() != null)
-			estimate.setData((int) Math.round(_myData.getEstimate()));
+		min.setData((_myData.getMinSpeed() == null) ? 0 : (int) GeoSupport
+				.MSec2kts(_myData.getMinSpeed()));
+		max.setData((_myData.getMaxSpeed() == null) ? 0 : (int) GeoSupport
+				.MSec2kts(_myData.getMaxSpeed()));
+		estimate.setData((_myData.getEstimate() == null) ? 0 : (int) GeoSupport
+				.MSec2kts(_myData.getEstimate()));
 		name.setData(contribution.getName());
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
+		
+		// let the parent register with the contribution
+		super.setData(contribution);
+
+
 	}
 
 }
