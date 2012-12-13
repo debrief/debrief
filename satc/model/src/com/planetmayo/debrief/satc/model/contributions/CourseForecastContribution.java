@@ -75,6 +75,7 @@ public class CourseForecastContribution extends BaseContribution
 		Double oldMaxCourse = _maxCourse;
 		this._maxCourse = maxCourse;
 		firePropertyChange(MAX_COURSE, oldMaxCourse, maxCourse);
+		firePropertyChange(HARD_CONSTRAINTS,  oldMaxCourse, maxCourse);
 	}
 
 	public void setMinCourse(Double minCourse)
@@ -82,6 +83,7 @@ public class CourseForecastContribution extends BaseContribution
 		Double oldMinCourse = _minCourse;
 		this._minCourse = minCourse;
 		firePropertyChange(MIN_COURSE, oldMinCourse, minCourse);
+		firePropertyChange(HARD_CONSTRAINTS,  oldMinCourse, minCourse);
 	}
 
 }

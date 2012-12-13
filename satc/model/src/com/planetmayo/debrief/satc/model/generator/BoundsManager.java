@@ -65,7 +65,7 @@ public class BoundsManager implements ISteppingGenerator
 	// TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	private final String[] _interestingProperties =
 	{ BaseContribution.ACTIVE, 
-			BaseContribution.START_DATE, BaseContribution.FINISH_DATE };
+			BaseContribution.START_DATE, BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
 
 	/**
 	 * property listener = so we know about contibutions changing

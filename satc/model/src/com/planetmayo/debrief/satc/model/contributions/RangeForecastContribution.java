@@ -296,6 +296,7 @@ public class RangeForecastContribution extends BaseContribution
 		Double oldMaxRange = _maxRangeM;
 		this._maxRangeM = maxRngM;
 		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
+		firePropertyChange(HARD_CONSTRAINTS, oldMaxRange, maxRngM);
 	}
 
 	public void setMinRange(Double minRngM)
@@ -303,6 +304,7 @@ public class RangeForecastContribution extends BaseContribution
 		Double oldMinRange = _minRangeM;
 		this._minRangeM = minRngM;
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
+		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
 	}
 	
 	/**

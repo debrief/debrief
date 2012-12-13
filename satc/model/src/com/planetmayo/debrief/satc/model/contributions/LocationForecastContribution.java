@@ -62,6 +62,7 @@ public class LocationForecastContribution extends BaseContribution
 			estimate.addPropertyChangeListener(estimateDetailsListener);
 		}
 		firePropertyChange(ESTIMATE, oldEstimate, estimate);
+		firePropertyChange(HARD_CONSTRAINTS, oldEstimate, estimate);
 	}
 
 	public void setLimit(Double limit)
@@ -69,5 +70,6 @@ public class LocationForecastContribution extends BaseContribution
 		Double oldLimit = _limit;
 		_limit = limit;
 		firePropertyChange(LIMIT, oldLimit, limit);
+		firePropertyChange(HARD_CONSTRAINTS, oldLimit, limit);
 	}
 }

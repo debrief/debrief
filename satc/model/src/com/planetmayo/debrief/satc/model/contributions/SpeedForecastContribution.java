@@ -78,6 +78,7 @@ public class SpeedForecastContribution extends BaseContribution
 		Double oldMaxSpeed = _maxSpeed;
 		this._maxSpeed = maxSpeed;
 		firePropertyChange(MAX_SPEED, oldMaxSpeed, maxSpeed);
+		firePropertyChange(HARD_CONSTRAINTS, oldMaxSpeed, maxSpeed);
 	}
 
 	public void setMinSpeed(Double minSpeed)
@@ -85,6 +86,7 @@ public class SpeedForecastContribution extends BaseContribution
 		Double oldMinSpeed = _minSpeed;
 		this._minSpeed = minSpeed;
 		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);
+		firePropertyChange(HARD_CONSTRAINTS, oldMinSpeed, minSpeed);
 	}
 
 }

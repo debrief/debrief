@@ -17,6 +17,8 @@ public abstract class BaseContribution extends ModelObject implements
 	public static final String FINISH_DATE = "finishDate";
 	public static final String ACTIVE = "active";
 	public static final String ESTIMATE = "estimate";
+	
+	public static final String HARD_CONSTRAINTS = "hardConstraint";
 
 	protected String _name;
 	protected boolean _active = true;
