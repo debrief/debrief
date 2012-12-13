@@ -40,6 +40,7 @@ public class AlterationLegForecastContribution extends BaseContribution
 		Double old = this.maxCourseChange;
 		this.maxCourseChange = maxCourseChange;
 		firePropertyChange(MAX_COURSE_CHANGE, old, maxCourseChange);
+		firePropertyChange(HARD_CONSTRAINTS, old, maxCourseChange);
 	}
 
 	public Double getMaxSpeedChange()
@@ -52,5 +53,6 @@ public class AlterationLegForecastContribution extends BaseContribution
 		Double old = this.maxSpeedChange;
 		this.maxSpeedChange = maxSpeedChange;
 		firePropertyChange(MAX_SPEED_CHANGE, old, maxSpeedChange);
+		firePropertyChange(HARD_CONSTRAINTS, old, maxSpeedChange);		
 	}
 }

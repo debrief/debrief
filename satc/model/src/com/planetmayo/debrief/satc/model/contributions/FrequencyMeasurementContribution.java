@@ -164,6 +164,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		double old = _frequencyError;
 		this._frequencyError = frequencyError;
 		firePropertyChange(FREQUENCY_ERROR, old, frequencyError);
+		firePropertyChange(HARD_CONSTRAINTS, old, frequencyError);
 	}
 	
 	/**

@@ -36,6 +36,7 @@ public class ATBForecastContribution extends BaseContribution
 		Double old = _minAngle;
 		_minAngle = minAngle;
 		firePropertyChange(MIN_ANGLE, old, minAngle);
+		firePropertyChange(HARD_CONSTRAINTS, old, minAngle);		
 	}
 
 	public Double getMaxAngle()
@@ -48,6 +49,7 @@ public class ATBForecastContribution extends BaseContribution
 		Double old = _maxAngle;		
 		_maxAngle = maxAngle;
 		firePropertyChange(MAX_ANGLE, old, maxAngle);
+		firePropertyChange(HARD_CONSTRAINTS, old, maxAngle);
 	}
 
 	public Double getEstimate()
