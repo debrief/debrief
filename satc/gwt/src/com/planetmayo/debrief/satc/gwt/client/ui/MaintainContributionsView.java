@@ -117,36 +117,8 @@ public class MaintainContributionsView extends Composite implements MyView,
 		// now the the data object
 		_manager = new MaintainContributions(this, new MockVehicleTypesRepository());
 		_stepper = _manager.getGenerator();
-		
-		populateContextMenu();
 	}
 
-	// create custom handler for the 'add' dropdown menu. Handle it by
-	// passing
-	// the String to the _addListener as PropertyChangeEvent(theString, null,
-	// null, theString);
-	
-	//Added by Akash - Iterating thru the list of contribution builders and added them to Context Menu, implementation needs to be verified.
-	//TODO Ian, please verify if its ok.
-	private void populateContextMenu()
-	{
-		for (final ContributionBuilder contributionBuilder : MaintainContributions.getContributions())
-		{
-			Label contribution = new Label(contributionBuilder.getDescription());
-			contribution.addClickHandler(new ClickHandler()
-			{
-				
-				@Override
-				public void onClick(ClickEvent event)
-				{
-					_addListener.propertyChange(new PropertyChangeEvent(contributionBuilder, null, null, contributionBuilder));
-					contextMenu.hide();
-				}
-			});
-			
-			contextMenuList.add(contribution);
-		}
-	}
 
 	@Override
 	public void added(BaseContribution contribution)
@@ -212,9 +184,22 @@ public class MaintainContributionsView extends Composite implements MyView,
 	@Override
 	public void populateContributionList(List<ContributionBuilder> items)
 	{
-		// TODO use these strings to populate the drop-down list of new contribution
-		// types
-
+		for (final ContributionBuilder contributionBuilder : items)
+		{
+			Label contribution = new Label(contributionBuilder.getDescription());
+			contribution.addClickHandler(new ClickHandler()
+			{
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					_addListener.propertyChange(new PropertyChangeEvent(contributionBuilder, null, null, contributionBuilder));
+					contextMenu.hide();
+				}
+			});
+			
+			contextMenuList.add(contribution);
+		}
+	
 	}
 
 	@Override
