@@ -63,7 +63,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalysisContributionView
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BaseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.CourseContributionView;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationContributionView;
+import com.planetmayo.debrief.satc_rcp.ui.contributions.LocationForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.RangeForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
@@ -95,7 +95,7 @@ public class MaintainContributionsView extends ViewPart implements
 		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class,
 				AnalysisContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,
-				LocationContributionView.class);
+				LocationForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(RangeForecastContribution.class,
 				RangeForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(SpeedForecastContribution.class,

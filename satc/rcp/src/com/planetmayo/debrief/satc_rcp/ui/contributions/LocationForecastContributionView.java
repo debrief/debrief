@@ -25,7 +25,7 @@ import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
-public class LocationContributionView extends BaseContributionView<LocationForecastContribution>
+public class LocationForecastContributionView extends BaseContributionView<LocationForecastContribution>
 {
 	private Label limitLabel;
 	private Button limitActiveButton;
@@ -33,7 +33,7 @@ public class LocationContributionView extends BaseContributionView<LocationForec
 	private FormattedText latitude;
 	private FormattedText longitude;
 
-	public LocationContributionView(Composite parent,
+	public LocationForecastContributionView(Composite parent,
 			LocationForecastContribution contribution)
 	{
 		super(parent, contribution);
@@ -93,7 +93,7 @@ public class LocationContributionView extends BaseContributionView<LocationForec
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
-		UIUtils.createLabel(bodyGroup, "Constraint:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Range:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		Composite composite = new Composite(bodyGroup, SWT.NONE);
 		composite.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
@@ -102,7 +102,7 @@ public class LocationContributionView extends BaseContributionView<LocationForec
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		UIUtils.createLabel(bodyGroup, "Estimate", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Location", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		GridLayout estimateLayout = new GridLayout(1, false);
 		estimateLayout.horizontalSpacing = 15;
 		Composite estimateComposite = UIUtils.createEmptyComposite(bodyGroup,
