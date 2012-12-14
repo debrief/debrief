@@ -190,6 +190,9 @@ public class MaintainContributionsView extends Composite implements MyView,
 	@Override
 	public void populateContributionList(List<ContributionBuilder> items)
 	{
+		// clear the list to start wtih
+		contextMenuList.clear();
+		
 		for (final ContributionBuilder contributionBuilder : items)
 		{
 			Label contribution = new Label(contributionBuilder.getDescription());

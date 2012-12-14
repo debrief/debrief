@@ -5,7 +5,7 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-		<g:CaptionPanel captionText="Location Analysis">
+		<g:CaptionPanel ui:field="titlePanel" captionText="Location Analysis">
 
 			<g:DisclosurePanel ui:field="disclosurePanel" animationEnabled="true" open="true"
 				width="100%">

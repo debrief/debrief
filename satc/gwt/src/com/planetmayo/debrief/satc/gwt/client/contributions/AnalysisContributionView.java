@@ -4,6 +4,8 @@ import java.beans.PropertyChangeEvent;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
@@ -15,6 +17,8 @@ public class AnalysisContributionView extends BaseContributionView
 	{
 	}
 
+	@UiField CaptionPanel titlePanel;
+	
 	private static AnalysisContributionViewUiBinder uiBinder = GWT
 			.create(AnalysisContributionViewUiBinder.class);
 
@@ -43,6 +47,7 @@ public class AnalysisContributionView extends BaseContributionView
 	{
 		super.setData(contribution);
 		_myData = contribution;
+		titlePanel.setCaptionText(contribution.getName());
 	}
 
 }
