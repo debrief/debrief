@@ -4,7 +4,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class LocationForecastContribution extends BaseContribution
 {
@@ -27,10 +34,31 @@ public class LocationForecastContribution extends BaseContribution
 	};
 
 	@Override
-	public void actUpon(ProblemSpace space)
+	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		// TODO implement this
-		throw new RuntimeException("Not yet implemented");
+		if (_limit == null) {
+			return;			
+		}
+		Coordinate coordinate = new Coordinate(_estimate.getLon(), _estimate.getLat());
+		Geometry geometry = GeoSupport.getFactory().createPoint(coordinate).buffer(GeoSupport.m2deg(_limit));
+		LocationRange range = new LocationRange((Polygon) geometry);
+		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
+		{
+			state.constrainTo(range);
+		}
+		if (_startDate != null && space.getBoundedStateAt(_startDate) == null)
+		{
+			final BoundedState startState = new BoundedState(this.getStartDate());
+			startState.constrainTo(range);
+			space.add(startState);
+		}
+		if (_finishDate != null && space.getBoundedStateAt(_finishDate) == null)
+		{
+			final BoundedState endState = new BoundedState(this.getFinishDate());
+			endState.constrainTo(range);
+			space.add(endState);
+		}
+		
 	}
 
 	@Override
