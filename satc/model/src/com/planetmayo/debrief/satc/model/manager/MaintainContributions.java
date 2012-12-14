@@ -11,9 +11,11 @@ import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
@@ -174,6 +176,22 @@ public class MaintainContributions
 			public BaseContribution create()
 			{
 				return new LocationAnalysisContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Speed Analysis")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new SpeedAnalysisContribution();
+			}
+		});
+		result.add(new ContributionBuilder("Course Analysis")
+		{			
+			@Override
+			public BaseContribution create()
+			{
+				return new CourseAnalysisContribution();
 			}
 		});
 		result.add(new ContributionBuilder("Straight Leg Forecast")

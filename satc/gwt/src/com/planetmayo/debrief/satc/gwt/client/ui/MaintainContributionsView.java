@@ -35,10 +35,12 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
@@ -137,6 +139,10 @@ public class MaintainContributionsView extends Composite implements MyView,
 		else if (contribution instanceof BearingMeasurementContribution)
 			res = new BearingMeasurementContributionView();
 		else if (contribution instanceof LocationAnalysisContribution)
+			res = new AnalysisContributionView();
+		else if (contribution instanceof SpeedAnalysisContribution)
+			res = new AnalysisContributionView();
+		else if (contribution instanceof CourseAnalysisContribution)
 			res = new AnalysisContributionView();
 
 		// did we find one?
