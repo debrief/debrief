@@ -7,6 +7,13 @@ public class CourseAnalysisContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
 
+	
+	
+	public CourseAnalysisContribution() {
+		super();
+		setName("Course Analysis");
+	}
+
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{

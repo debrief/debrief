@@ -23,6 +23,14 @@ public class LocationAnalysisContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
 
+	
+	
+	public LocationAnalysisContribution() {
+		super();
+		setName("Location Analysis");
+
+	}
+
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
