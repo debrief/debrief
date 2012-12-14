@@ -8,7 +8,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 public class AnalysisContributionView extends BaseContributionView<BaseContribution>
@@ -23,12 +25,19 @@ public class AnalysisContributionView extends BaseContributionView<BaseContribut
 		initUI();
 	}
 	
-	/*public AnalysisContributionView(Composite parent,	SpeedAnalysisContribution contribution)
+	public AnalysisContributionView(Composite parent,	SpeedAnalysisContribution contribution)
 	{
 		super(parent, contribution);
 		title = "Speed Analysis - ";
 		initUI();
-	}*/
+	}
+	public AnalysisContributionView(Composite parent,	CourseAnalysisContribution contribution)
+	{
+		super(parent, contribution);
+		title = "Course Analysis - ";
+		initUI();
+	}
+
 
 	@Override
 	protected void bindValues(DataBindingContext context)

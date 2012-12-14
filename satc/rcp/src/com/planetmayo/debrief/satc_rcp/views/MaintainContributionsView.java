@@ -44,10 +44,12 @@ import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastCont
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
@@ -93,6 +95,10 @@ public class MaintainContributionsView extends ViewPart implements
 		CONTRIBUTION_PANELS.put(CourseForecastContribution.class,
 				CourseContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class,
+				AnalysisContributionView.class);
+		CONTRIBUTION_PANELS.put(CourseAnalysisContribution.class,
+				AnalysisContributionView.class);
+		CONTRIBUTION_PANELS.put(SpeedAnalysisContribution.class,
 				AnalysisContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,
 				LocationForecastContributionView.class);

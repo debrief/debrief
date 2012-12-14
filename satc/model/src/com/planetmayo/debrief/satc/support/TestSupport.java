@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisTest;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
@@ -193,9 +195,11 @@ public class TestSupport
 		al.setName("Alteration prediction");
 		getGenerator().addContribution(al);
 
-
-		LocationAnalysisContribution lac = new LocationAnalysisContribution();
-		getGenerator().addContribution(lac);
+		// and our analysis contributions
+		getGenerator().addContribution(new SpeedAnalysisContribution());
+		getGenerator().addContribution(new CourseAnalysisContribution());
+		getGenerator().addContribution(new LocationAnalysisContribution());
+	
 	}
 
 	public void nextTest()
