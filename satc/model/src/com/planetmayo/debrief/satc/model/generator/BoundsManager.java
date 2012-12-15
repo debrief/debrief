@@ -309,14 +309,14 @@ public class BoundsManager implements ISteppingGenerator
 		if (_currentStep >= _contribs.size())
 			return;
 		
-		BaseContribution contributionToProcess = 
-				_currentContribution == null ? _contribs.first() : _contribs.higher(_currentContribution);
+		// get next contribution
+		_currentContribution = _currentContribution == null ? 
+				_contribs.first() : _contribs.higher(_currentContribution);
 		// ok, go for it.
-		performSingleStep(contributionToProcess, _currentStep);
+		performSingleStep(_currentContribution, _currentStep);
 
 		// now increment the counter and contribution
 		_currentStep++;
-		_currentContribution = contributionToProcess;
 
 		// are we now complete?
 		if (_currentStep == _contribs.size())
