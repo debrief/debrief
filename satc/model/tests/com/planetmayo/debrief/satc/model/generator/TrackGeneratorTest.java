@@ -1,7 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
@@ -13,7 +12,6 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
@@ -103,18 +101,25 @@ public class TrackGeneratorTest extends TestCase {
 		tg.addSteppingListener(new ISteppingListener() {
 
 			@Override
-			public void stepped(int thisStep, int totalSteps) {
+			public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps) {
 				_ctr2++;
 			}
 
 			@Override
-			public void restarted() {
+			public void restarted(BoundsManager boundsManager) {
 				_ctr1++;
 			}
 
 			@Override
-			public void complete() {
+			public void complete(BoundsManager boundsManager) {
 				_ctr3++;
+			}
+
+			@Override
+			public void error(BoundsManager boundsManager,
+					IncompatibleStateException ex)
+			{
+				_ise = ex;
 			}
 		});
 
@@ -202,39 +207,27 @@ public class TrackGeneratorTest extends TestCase {
 		tg.addSteppingListener(new ISteppingListener() {
 
 			@Override
-			public void stepped(int thisStep, int totalSteps) {
-
+			public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps) {
+				_ctr2++;
 			}
 
 			@Override
-			public void restarted() {
+			public void restarted(BoundsManager boundsManager) {
 				_ctr3++;
 			}
 
 			@Override
-			public void complete() {
-				// TODO Auto-generated method stub
-			}
-		});
-		tg.addBoundedStateListener(new IBoundedStatesListener() {
-
-			@Override
-			public void statesBounded(Collection<BoundedState> newStates) {
+			public void complete(BoundsManager boundsManager) {
 				_ctr1++;
 			}
 
 			@Override
-			public void incompatibleStatesIdentified(BaseContribution contribution, 
-					IncompatibleStateException e) {
-				_ise = e;
-			}
-
-			@Override
-			public void debugStatesBounded(Collection<BoundedState> newStates) {
-				_ctr2++;
+			public void error(BoundsManager boundsManager,
+					IncompatibleStateException ex)
+			{
+				_ise = ex;
 			}
 		});
-
 		// ok, make some changes
 		courseF.setMinCourse(Math.toRadians(12));
 
@@ -244,9 +237,8 @@ public class TrackGeneratorTest extends TestCase {
 		tg.run();
 
 		// did we even see it?
-		assertEquals("we saw two states bounded events (one for reset)", 2,
-				_ctr1);
-		assertEquals("we saw debug steps", 3, _ctr2);
+		assertEquals("it's completed succesfully", 1,	_ctr1);
+		assertEquals("3 steps", 3, _ctr2);
 
 		_ctr1 = _ctr2 = _ctr3 = 0;
 
@@ -273,7 +265,7 @@ public class TrackGeneratorTest extends TestCase {
 
 		// hopefully something got triggered.
 		assertEquals(
-				"we saw debug steps before incompatible states got thrown", 2,
+				"we saw 2 steps before incompatible states got thrown", 2,
 				_ctr2);
 		assertNotNull("caught an exception", _ise);
 

@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+
 /**
  * interface for anybody that wants to know about a stepping generator
  * 
@@ -12,13 +14,19 @@ public interface ISteppingListener
 	 * stepping is complete
 	 * 
 	 */
-	public void complete();
+	public void complete(BoundsManager boundsManager);
 
 	/**
 	 * the sequence has restarted
 	 * 
 	 */
-	public void restarted();
+	public void restarted(BoundsManager boundsManager);
+	
+	/**
+	 * error was appeared during processing
+	 * 
+	 */
+	public void error(BoundsManager boundsManager, IncompatibleStateException ex);	
 
 	/**
 	 * a step has been performed
@@ -28,5 +36,5 @@ public interface ISteppingListener
 	 * @param totalSteps
 	 *          the total number of steps
 	 */
-	public void stepped(int thisStep, int totalSteps);
+	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps);
 }

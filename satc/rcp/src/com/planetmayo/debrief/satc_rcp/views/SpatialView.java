@@ -20,9 +20,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -30,7 +29,7 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class SpatialView extends CoreView implements IBoundedStatesListener,
+public class SpatialView extends CoreView implements ISteppingListener,
 		GeoSupport.GeoPlotter
 {
 
@@ -113,17 +112,28 @@ public class SpatialView extends CoreView implements IBoundedStatesListener,
 	}
 
 	@Override
-	public void debugStatesBounded(Collection<BoundedState> newStates)
+	public void complete(BoundsManager boundsManager)
 	{
-		if (_debugMode.isChecked())
-			statesBounded(newStates);
+		showData(boundsManager.getSpace().states());		
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution,
-			IncompatibleStateException e)
+	public void restarted(BoundsManager boundsManager)
 	{
-		_myData.removeAllSeries();
+		clear(null);		
+	}
+
+	@Override
+	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
+	{
+		_myData.removeAllSeries();		
+	}
+
+	@Override
+	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	{
+		if (_debugMode.isChecked())
+			showData(boundsManager.getSpace().states());	
 	}
 
 	private void makeActions()
@@ -158,6 +168,9 @@ public class SpatialView extends CoreView implements IBoundedStatesListener,
 
 	private void showData(Collection<BoundedState> newStates)
 	{
+		if (newStates.isEmpty()) {
+			return;
+		}
 		// clear the data
 		// _myData.removeAllSeries();
 
@@ -231,26 +244,12 @@ public class SpatialView extends CoreView implements IBoundedStatesListener,
 	@Override
 	protected void startListeningTo(BoundsManager genny)
 	{
-		genny.addBoundedStateListener(this);
-	}
-
-	@Override
-	public void statesBounded(Collection<BoundedState> newStates)
-	{
-		if ((newStates != null) && (newStates.size() > 0))
-		{
-			// hey, we've got data. show it
-			showData(newStates);
-		}
-		else
-		{
-			clear(null);
-		}
+		genny.addSteppingListener(this);
 	}
 
 	@Override
 	protected void stopListeningTo(BoundsManager genny)
 	{
-		genny.removeBoundedStateListener(this);
+		genny.removeSteppingListener(this);
 	}
 }

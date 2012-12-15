@@ -25,14 +25,14 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SpatialView extends Composite implements IBoundedStatesListener
+public class SpatialView extends Composite implements ISteppingListener
 {
 
 	interface SpatialViewUiBinder extends UiBinder<Widget, SpatialView>
@@ -112,27 +112,29 @@ public class SpatialView extends Composite implements IBoundedStatesListener
 		plot.getModel().removeAllSeries();
 	}
 
+	
 	@Override
-	public void debugStatesBounded(Collection<BoundedState> newStates)
+	public void complete(BoundsManager boundsManager)
+	{
+		plotThis(boundsManager.getSpace().states());		
+	}
+
+	@Override
+	public void restarted(BoundsManager boundsManager)
+	{
+		plotThis(boundsManager.getSpace().states());		
+	}
+
+	@Override
+	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_inDebug)
-			plotThis(newStates);
+			plotThis(boundsManager.getSpace().states());		
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution,
-			IncompatibleStateException e)
+	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
 	{
-		clearPlot();
-	}
-
-	@Override
-	public void statesBounded(Collection<BoundedState> newStates)
-	{
-		// clear the plot
-		clearPlot();
-
-		plotThis(newStates);
 	}
 
 	private void plotThis(Collection<BoundedState> newStates)

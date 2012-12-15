@@ -4,7 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -23,12 +23,6 @@ import com.planetmayo.debrief.satc.support.SupportServices;
 public class BoundsManager implements ISteppingGenerator
 {
 	public static final String STATES_BOUNDED = "states_bounded";
-
-	/**
-	 * bounded state listeners
-	 * 
-	 */
-	final private ArrayList<IBoundedStatesListener> _boundedListeners = new ArrayList<IBoundedStatesListener>();
 
 	/**
 	 * people interested in contributions
@@ -62,7 +56,6 @@ public class BoundsManager implements ISteppingGenerator
 	 * the set of contribution properties that we're interested in
 	 * 
 	 */
-	// TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	private final String[] _interestingProperties =
 	{ BaseContribution.ACTIVE, 
 			BaseContribution.START_DATE, BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
@@ -86,10 +79,11 @@ public class BoundsManager implements ISteppingGenerator
 	};
 
 	/**
-	 * how far we've got to through the contributions
+	 * current step number and current step contribution
 	 * 
 	 */
 	private int _currentStep = 0;
+	private BaseContribution _currentContribution = null;
 
 	/**
 	 * whether we auto=run after each contribution chagne
@@ -97,10 +91,82 @@ public class BoundsManager implements ISteppingGenerator
 	 */
 	private boolean _liveRunning;
 
-	public void addBoundedStateListener(IBoundedStatesListener newListener)
+	
+	/**
+	 * Contribution listeners stuff
+	 * 
+	 */
+	public void addContributionsListener(IContributionsChangedListener newListener)
 	{
-		_boundedListeners.add(newListener);
+		_contributionListeners.add(newListener);
 	}
+	
+	public void removeContributionsListener(IContributionsChangedListener newListener)
+	{
+		_contributionListeners.remove(newListener);
+	}
+	
+	protected void fireContributionAdded(BaseContribution contribution) 
+	{
+		for (IContributionsChangedListener listener : _contributionListeners) 
+		{
+			listener.added(contribution);
+		}
+	}
+	
+	protected void fireContributionRemoved(BaseContribution contribution) 
+	{
+		for (IContributionsChangedListener listener : _contributionListeners) 
+		{
+			listener.removed(contribution);
+		}
+	}		
+
+	/**
+	 * Stepping listeners stuff
+	 * 
+	 */	
+	public void addSteppingListener(ISteppingListener newListener)
+	{
+		_steppingListeners.add(newListener);
+	}	
+
+	public void removeSteppingListener(ISteppingListener newListener)
+	{
+		_steppingListeners.remove(newListener);
+	}
+	
+	protected void fireStepped(int thisStep, int totalSteps)
+	{
+		for (ISteppingListener listener : _steppingListeners) 
+		{
+			listener.stepped(this, thisStep, totalSteps);
+		}		
+	}
+	
+	protected void fireComplete()
+	{
+		for (ISteppingListener listener : _steppingListeners) 
+		{
+			listener.complete(this);
+		}		
+	}
+	
+	protected void fireRestarted()
+	{
+		for (ISteppingListener listener : _steppingListeners) 
+		{
+			listener.restarted(this);
+		}		
+	}
+	
+	protected void fireError(IncompatibleStateException ex)
+	{
+		for (ISteppingListener listener : _steppingListeners) 
+		{
+			listener.error(this, ex);
+		}		
+	}	
 
 	/**
 	 * store this new contribution
@@ -113,55 +179,11 @@ public class BoundsManager implements ISteppingGenerator
 		_contribs.add(contribution);
 
 		// start listening to it
-		for (int i = 0; i < _interestingProperties.length; i++)
+		for (String property : _interestingProperties)
 		{
-			String thisProp = _interestingProperties[i];
-			contribution.addPropertyChangeListener(thisProp, _contribListener);
+			contribution.addPropertyChangeListener(property, _contribListener);
 		}
-
-		// ok, and tell the world
-		if (_contributionListeners != null)
-		{
-			final Iterator<IContributionsChangedListener> iter = _contributionListeners
-					.iterator();
-			while (iter.hasNext())
-			{
-				final IContributionsChangedListener listener = iter.next();
-				listener.added(contribution);
-			}
-		}
-	}
-
-	public void addContributionsListener(IContributionsChangedListener newListener)
-	{
-		_contributionListeners.add(newListener);
-	}
-
-	public void addSteppingListener(ISteppingListener newListener)
-	{
-		_steppingListeners.add(newListener);
-	}
-
-	private void broadcastBoundedStates()
-	{
-		// now share the good news
-		Iterator<IBoundedStatesListener> iter2 = _boundedListeners.iterator();
-		while (iter2.hasNext())
-		{
-			IBoundedStatesListener boundedStatesListener = iter2.next();
-			boundedStatesListener.statesBounded(_space.states());
-		}
-	}
-
-	private void broadcastBoundedStatesDebug()
-	{
-		// now share the good news
-		Iterator<IBoundedStatesListener> iter2 = _boundedListeners.iterator();
-		while (iter2.hasNext())
-		{
-			IBoundedStatesListener boundedStatesListener = iter2.next();
-			boundedStatesListener.debugStatesBounded(_space.states());
-		}
+		fireContributionAdded(contribution);
 	}
 
 	/**
@@ -170,24 +192,26 @@ public class BoundsManager implements ISteppingGenerator
 	 */
 	public void clear()
 	{
-		// ditch the bounded states first
 		this.restart();
-
-		// clear out the contributions
-		// take a copy, since we're going to be modifying the list
-		BaseContribution[] safeList = _contribs.toArray(new BaseContribution[]
-		{});
-
-		for (int i = 0; i < safeList.length; i++)
+		for (BaseContribution contribution : new ArrayList<BaseContribution>(_contribs))
 		{
-			BaseContribution contrib = safeList[i];
-			this.removeContribution(contrib);
+			this.removeContribution(contribution);
 		}
 	}
 
 	public Collection<BaseContribution> getContributions()
 	{
-		return _contribs;
+		return Collections.unmodifiableSet(_contribs);
+	}
+	
+	public int getCurrentStep() 
+	{
+		return _currentStep;
+	}
+	
+	public BaseContribution getCurrentContribution() 
+	{
+		return _currentContribution;
 	}
 
 	/**
@@ -205,56 +229,25 @@ public class BoundsManager implements ISteppingGenerator
 	{
 		try
 		{
-
 			if (theContrib.isActive())
 			{
 				theContrib.actUpon(_space);
-
-				// tell everybody the bounded states have changed
-				broadcastBoundedStatesDebug();
 			}
-
-			// and tell any step listeners
-			Iterator<ISteppingListener> iter3 = _steppingListeners.iterator();
-			while (iter3.hasNext())
-			{
-				ISteppingListener stepper = iter3.next();
-
-				stepper.stepped(stepIndex, _contribs.size());
-			}
-
+			fireStepped(stepIndex, _contribs.size());
 		}
 		catch (IncompatibleStateException e)
 		{
 			SupportServices.INSTANCE.getLog().error(
 					"Failed applying bounds:" + theContrib.getName(), e);
-
-			// ooh dear, suppose we should tell everybody
-			Iterator<IBoundedStatesListener> iter2 = _boundedListeners.iterator();
-			while (iter2.hasNext())
-			{
-				IBoundedStatesListener boundedStatesListener = iter2.next();
-				boundedStatesListener.incompatibleStatesIdentified(theContrib, e);
-			}
-
-			// clear the bounded states = they're invalid
-			_space.clear();
-			// TODO handle the incompatible state problem, see ticket 5:
-			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
+			fireError(e);
 		}
 		catch (Exception re)
 		{
 			SupportServices.INSTANCE.getLog().error(
 					"unknown error:" + theContrib.getName(), re);
-			// TODO handle the incompatible state problem, see ticket 5:
-			// https://bitbucket.org/ianmayo/deb_satc/issue/5/consider-how-to-propagate-incompatible
+			throw new RuntimeException(re);
 		}
 
-	}
-
-	public void removeBoundedStateListener(IBoundedStatesListener newListener)
-	{
-		_boundedListeners.remove(newListener);
 	}
 
 	/**
@@ -273,30 +266,7 @@ public class BoundsManager implements ISteppingGenerator
 			String thisProp = _interestingProperties[i];
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
-
-		// ok, and tell the world
-		if (_contributionListeners != null)
-		{
-			final Iterator<IContributionsChangedListener> iter = _contributionListeners
-					.iterator();
-			while (iter.hasNext())
-			{
-				final IContributionsChangedListener listener = iter.next();
-				listener.removed(contribution);
-			}
-		}
-	}
-
-	public void removeContributionsListener(
-			IContributionsChangedListener newListener)
-	{
-		_contributionListeners.remove(newListener);
-	}
-
-	public void removeSteppingStateListener(ISteppingListener newListener)
-	{
-		_steppingListeners.remove(newListener);
-
+		fireContributionRemoved(contribution);
 	}
 
 	@Override
@@ -307,17 +277,10 @@ public class BoundsManager implements ISteppingGenerator
 
 		// ok, just clear the counter.
 		_currentStep = 0;
-
-		// and tell everybody we've restared
-		Iterator<ISteppingListener> iter3 = _steppingListeners.iterator();
-		while (iter3.hasNext())
-		{
-			ISteppingListener stepper = iter3.next();
-			stepper.restarted();
-		}
+		_currentContribution = null;
 
 		// and tell them about the new bounded states
-		broadcastBoundedStates();
+		fireRestarted();
 	}
 
 	@Override
@@ -345,31 +308,21 @@ public class BoundsManager implements ISteppingGenerator
 	{
 		if (_currentStep >= _contribs.size())
 			return;
-
-		// ok, get the next contribution
-		Object[] theArr = _contribs.toArray();
-		BaseContribution thisC = (BaseContribution) theArr[_currentStep];
-
+		
+		BaseContribution contributionToProcess = 
+				_currentContribution == null ? _contribs.first() : _contribs.higher(_currentContribution);
 		// ok, go for it.
-		performSingleStep(thisC, _currentStep);
+		performSingleStep(contributionToProcess, _currentStep);
 
-		// now increment the counter
+		// now increment the counter and contribution
 		_currentStep++;
+		_currentContribution = contributionToProcess;
 
 		// are we now complete?
 		if (_currentStep == _contribs.size())
 		{
-			// and tell any step listeners
-			Iterator<ISteppingListener> iter3 = _steppingListeners.iterator();
-
-			while (iter3.hasNext())
-			{
-				ISteppingListener stepper = iter3.next();
-				stepper.complete();
-			}
-
 			// tell any listeners that the final bounds have been updated
-			broadcastBoundedStates();
+			fireComplete();
 		}
 	}
 
@@ -390,4 +343,8 @@ public class BoundsManager implements ISteppingGenerator
 		_contribListener.propertyChange(pce);
 	}
 
+	public ProblemSpace getSpace()
+	{
+		return _space;
+	}
 }

@@ -19,9 +19,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -37,7 +36,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author ian
  * 
  */
-public class TrackStatesView extends CoreView implements IBoundedStatesListener
+public class TrackStatesView extends CoreView implements ISteppingListener
 {
 
 	class NameSorter extends ViewerSorter
@@ -240,33 +239,23 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 		 */
 		setupMonitor();
 	}
+	
+	
 
 	@Override
-	public void debugStatesBounded(Collection<BoundedState> newStates)
+	public void complete(BoundsManager boundsManager)
 	{
-		// are we tracking all states?
-		if (_debugMode.isChecked())
-		{
-			// yes - pass on the good news
-			if ((newStates == null) || (newStates.isEmpty()))
-				statesBounded(null);
-			else
-				statesBounded(newStates);
-		}
-	}
-
-	private void fillLocalPullDown(IMenuManager manager)
-	{
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager)
-	{
-		manager.add(_debugMode);
+		viewer.setInput(boundsManager.getSpace().states());
 	}
 
 	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution,
-			IncompatibleStateException e)
+	public void restarted(BoundsManager boundsManager)
+	{
+		viewer.setInput(null);		
+	}
+
+	@Override
+	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
 	{
 		// TODO: switch UI to be a composite view, with a label above the table.
 		// the label is normally hidden , and shown when
@@ -276,7 +265,25 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 		viewer.setInput(null);
 		//
 		// MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-		// "Bounding states", "Incompatible states found");
+		// "Bounding states", "Incompatible states found");		
+	}
+
+	@Override
+	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	{
+		if (_debugMode.isChecked()) 
+		{
+			viewer.setInput(boundsManager.getSpace().states());
+		}		
+	}
+
+	private void fillLocalPullDown(IMenuManager manager)
+	{
+	}
+
+	private void fillLocalToolBar(IToolBarManager manager)
+	{
+		manager.add(_debugMode);
 	}
 
 	private void makeActions()
@@ -302,21 +309,12 @@ public class TrackStatesView extends CoreView implements IBoundedStatesListener
 	@Override
 	protected void startListeningTo(BoundsManager genny)
 	{
-		genny.addBoundedStateListener(this);
-	}
-
-	@Override
-	public void statesBounded(Collection<BoundedState> newStates)
-	{
-		if ((newStates == null) || (newStates.isEmpty()))
-			viewer.setInput(null);
-		else
-			viewer.setInput(newStates);
+		genny.addSteppingListener(this);
 	}
 
 	@Override
 	protected void stopListeningTo(BoundsManager genny)
 	{
-		genny.removeBoundedStateListener(this);
+		genny.removeSteppingListener(this);
 	}
 }

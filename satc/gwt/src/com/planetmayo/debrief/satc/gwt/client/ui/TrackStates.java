@@ -1,7 +1,6 @@
 package com.planetmayo.debrief.satc.gwt.client.ui;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,8 +13,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundedStatesListener;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -23,7 +22,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class TrackStates extends Composite implements IBoundedStatesListener
+public class TrackStates extends Composite implements ISteppingListener
 {
 
 	interface TrackStatesUiBinder extends UiBinder<Widget, TrackStates>
@@ -91,46 +90,21 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 		errorPanel.setText(""); // This clears the error label
 	}
 
+	
+	
 	@Override
-	public void debugStatesBounded(Collection<BoundedState> newStates)
-	{
-	}
-
-	@Override
-	public void incompatibleStatesIdentified(BaseContribution contribution,
-			IncompatibleStateException e)
-	{
-		// get rid of any existing message
-		clearMessage();
-
-		// empty the table
-		clearGrid();
-
-		String message1 = "Incompatible States. Contribution: "
-				+ contribution.toString();
-		String message2 = "Adding:" + e.getNewRange() + " to "
-				+ e.getExistingRange();
-		System.err.println(message1);
-		System.err.println(message2);
-
-		errorPanel.setHTML(message1 + "<BR>" + message2);
-	}
-
-	@Override
-	public void statesBounded(Collection<BoundedState> newStates)
+	public void complete(BoundsManager boundsManager)
 	{
 		clearGrid();
-
+		Collection<BoundedState> states = boundsManager.getSpace().states();
 		// do we have states?
-		if ((newStates != null) && newStates.size() > 0)
+		if ((states != null) && states.size() > 0)
 		{
 			// have data, check the error message is clear
 			clearMessage();
 
-			Iterator<BoundedState> iter = newStates.iterator();
-			while (iter.hasNext())
+			for (BoundedState state : states)
 			{
-				BoundedState state = iter.next();
 				@SuppressWarnings("deprecation")
 				String dateStr = state.getTime().toGMTString();
 				String locStr = "n/a";
@@ -146,8 +120,37 @@ public class TrackStates extends Composite implements IBoundedStatesListener
 
 				addStates(dateStr, locStr, speedStr, courseStr);
 			}
-		}
+		}		
+	}
 
+	@Override
+	public void restarted(BoundsManager boundsManager)
+	{
+		clearGrid();
+	}
+
+	@Override
+	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	{	
+	}
+
+	@Override
+	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
+	{
+		// get rid of any existing message
+		clearMessage();
+
+		// empty the table
+		clearGrid();
+
+		String message1 = "Incompatible States. Contribution: "
+				+ boundsManager.getCurrentContribution().toString();
+		String message2 = "Adding:" + ex.getNewRange() + " to "
+				+ ex.getExistingRange();
+		System.err.println(message1);
+		System.err.println(message2);
+
+		errorPanel.setHTML(message1 + "<BR>" + message2);
 	}
 
 	public static String formatThis(CourseRange course)
