@@ -27,6 +27,7 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
 public class LocationForecastContributionView extends BaseContributionView<LocationForecastContribution>
 {
+	private static final int MAX_RANGE = 20000;
 	private Label limitLabel;
 	private Button limitActiveButton;
 	private Scale limitSlider;
@@ -101,6 +102,7 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 		limitLabel = UIUtils.createSpacer(composite, new GridData(GridData.FILL_HORIZONTAL));
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		limitSlider.setMaximum(MAX_RANGE);
 
 		UIUtils.createLabel(bodyGroup, "Location", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		GridLayout estimateLayout = new GridLayout(1, false);
