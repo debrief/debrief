@@ -109,4 +109,10 @@ public interface IBoundsManager
 	 * @return constrained problem space on current space
 	 */
 	ProblemSpace getSpace();
+	
+	/**
+	 * 
+	 * @return is bounds manager already processed all contributions 
+	 */
+	boolean isCompleted();
 }

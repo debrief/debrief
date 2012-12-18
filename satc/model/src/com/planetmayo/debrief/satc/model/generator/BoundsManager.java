@@ -358,7 +358,7 @@ public class BoundsManager implements IBoundsManager
 		{
 			createInitialBoundedStates();
 		}
-		if (_currentStep >= _contribs.size())
+		if (isCompleted())
 			return;
 		
 		// get next contribution
@@ -376,6 +376,12 @@ public class BoundsManager implements IBoundsManager
 			// tell any listeners that the final bounds have been updated
 			fireComplete();
 		}
+	}
+	
+	@Override
+	public boolean isCompleted()
+	{
+		return _currentStep >= _contribs.size();
 	}
 
 	/**
