@@ -15,22 +15,22 @@ public class VehicleType extends ModelObject
 	private final String name;
 	private final double minSpeedMS;
 	private final double maxSpeedMS;
-	private final double minTurnCircleM;
-	private final double maxTurnCircleM;
+	private final double minTurnRate_RadperSec;
+	private final double maxTurnRate_RadperSec;
 	private final double minAccelRateMSS;
 	private final double maxAccelRateMSS;
 	private final double minDecelRateMSS;
 	private final double maxDecelRateMSS;
 
 	public VehicleType(String name, double minSpeedMS, double maxSpeedMS,
-			double minTurnCircleM, double maxTurnCircleM, double minAccelRateMSS,
+			double minTurnRate_RadperSec, double maxTurnRate_RadperSec, double minAccelRateMSS,
 			double maxAccelRateMSS, double minDecelRateMSS, double maxDecelRateMSS)
 	{
 		this.name = name;
 		this.minSpeedMS = minSpeedMS;
 		this.maxSpeedMS = maxSpeedMS;
-		this.minTurnCircleM = minTurnCircleM;
-		this.maxTurnCircleM = maxTurnCircleM;
+		this.minTurnRate_RadperSec = minTurnRate_RadperSec;
+		this.maxTurnRate_RadperSec = maxTurnRate_RadperSec;
 		this.minAccelRateMSS = minAccelRateMSS;
 		this.maxAccelRateMSS = maxAccelRateMSS;
 		this.minDecelRateMSS = minDecelRateMSS;
@@ -52,14 +52,14 @@ public class VehicleType extends ModelObject
 		return maxSpeedMS;
 	}
 
-	public double getMinTurnCircle()
+	public double getMinTurnRate()
 	{
-		return minTurnCircleM;
+		return minTurnRate_RadperSec;
 	}
 
-	public double getMaxTurnCircle()
+	public double getMaxTurnRate()
 	{
-		return maxTurnCircleM;
+		return maxTurnRate_RadperSec;
 	}
 
 	public double getMinAccelRate()
