@@ -46,19 +46,6 @@ public class LocationForecastContribution extends BaseContribution
 		{
 			state.constrainTo(range);
 		}
-		if (_startDate != null && space.getBoundedStateAt(_startDate) == null)
-		{
-			final BoundedState startState = new BoundedState(this.getStartDate());
-			startState.constrainTo(range);
-			space.add(startState);
-		}
-		if (_finishDate != null && space.getBoundedStateAt(_finishDate) == null)
-		{
-			final BoundedState endState = new BoundedState(this.getFinishDate());
-			endState.constrainTo(range);
-			space.add(endState);
-		}
-		
 	}
 
 	@Override

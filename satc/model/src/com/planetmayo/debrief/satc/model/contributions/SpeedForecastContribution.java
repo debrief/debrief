@@ -31,18 +31,6 @@ public class SpeedForecastContribution extends BaseContribution
 		{
 			state.constrainTo(speedRange);
 		}
-		if (_startDate != null && space.getBoundedStateAt(_startDate) == null)
-		{
-			final BoundedState startState = new BoundedState(this.getStartDate());
-			startState.constrainTo(speedRange);
-			space.add(startState);
-		}
-		if (_finishDate != null && space.getBoundedStateAt(_finishDate) == null)
-		{
-			final BoundedState endState = new BoundedState(this.getFinishDate());
-			endState.constrainTo(speedRange);
-			space.add(endState);
-		}
 	}
 
 	@Override

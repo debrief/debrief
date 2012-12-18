@@ -28,18 +28,6 @@ public class CourseForecastContribution extends BaseContribution
 		{
 			state.constrainTo(courseRange);
 		}
-		if (_startDate != null && space.getBoundedStateAt(_startDate) == null)
-		{
-			final BoundedState startState = new BoundedState(this.getStartDate());
-			startState.constrainTo(courseRange);
-			space.add(startState);
-		}
-		if (_finishDate != null && space.getBoundedStateAt(_finishDate) == null)
-		{
-			final BoundedState endState = new BoundedState(this.getFinishDate());
-			endState.constrainTo(courseRange);
-			space.add(endState);
-		}		
 	}
 
 	@Override

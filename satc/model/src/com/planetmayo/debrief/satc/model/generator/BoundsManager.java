@@ -5,11 +5,14 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
@@ -246,7 +249,42 @@ public class BoundsManager implements IBoundsManager
 					"unknown error:" + theContrib.getName(), re);
 			throw new RuntimeException(re);
 		}
-
+	}
+	
+	protected void createInitialBoundedStates() 
+	{
+		for (BaseContribution contribution : _contribs) 
+		{
+			if (contribution.getDataType() == ContributionDataType.FORECAST) 
+			{
+				Date startDate = contribution.getStartDate();
+				Date finishDate = contribution.getFinishDate();
+				if (startDate != null && _space.getBoundedStateAt(startDate) == null) 
+				{
+					try 
+					{
+						_space.add(new BoundedState(startDate));
+					} 
+					catch (IncompatibleStateException ex) 
+					{
+						// can't be thrown here in any correct situation
+						throw new RuntimeException(ex);
+					}
+				}
+				if (finishDate != null && _space.getBoundedStateAt(finishDate) == null) 
+				{
+					try 
+					{
+						_space.add(new BoundedState(finishDate));
+					} 
+					catch (IncompatibleStateException ex) 
+					{
+						// can't be thrown here in any correct situation
+						throw new RuntimeException(ex); 
+					}
+				}				
+			}
+		}
 	}
 
 	/**
@@ -316,6 +354,10 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void step()
 	{
+		if (_currentStep == 0) 
+		{
+			createInitialBoundedStates();
+		}
 		if (_currentStep >= _contribs.size())
 			return;
 		
