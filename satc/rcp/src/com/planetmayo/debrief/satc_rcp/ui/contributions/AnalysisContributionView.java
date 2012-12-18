@@ -42,6 +42,8 @@ public class AnalysisContributionView extends BaseContributionView<BaseContribut
 	@Override
 	protected void bindValues(DataBindingContext context)
 	{
+		bindCommonHeaderWidgets(context, null, null, null);
+
 	}
 	
 	@Override

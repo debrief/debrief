@@ -15,12 +15,14 @@ public class MockVehicleTypesManager implements IVehicleTypesManager
 	{
 		return Arrays.asList(
 				new VehicleType("UK Ferry", GeoSupport.kts2MSec(2), GeoSupport
-						.kts2MSec(30), 400, 1600, 0.2, 0.4, 0.2, 0.4),
+						.kts2MSec(30), GeoSupport.degsSec2radsMilli(0), GeoSupport
+						.degsSec2radsMilli(2), 0.2, 0.4, 0.2, 0.4),
 				new VehicleType("Medium Tanker", GeoSupport.kts2MSec(1), GeoSupport
-						.kts2MSec(12), 800, 2600, 1, 3, 1, 3), 
-				new VehicleType(
-						"Large Tanker", GeoSupport.kts2MSec(1), GeoSupport.kts2MSec(15),
-						1400, 4600, 1, 3, 1, 3)
+						.kts2MSec(12), GeoSupport.degsSec2radsMilli(0), GeoSupport
+						.degsSec2radsMilli(1), 1, 3, 1, 3),
+				new VehicleType("Large Tanker", GeoSupport.kts2MSec(1), GeoSupport
+						.kts2MSec(15), GeoSupport.degsSec2radsMilli(0), GeoSupport
+						.degsSec2radsMilli(0.5), 1, 3, 1, 3)
 
 		);
 	}

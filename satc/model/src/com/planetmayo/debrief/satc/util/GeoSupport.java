@@ -93,7 +93,35 @@ public class GeoSupport
 	{
 		return metres / 111200d;
 	}
-
+	
+	/** convert a turn rate of degrees per second to radians per millisecond
+	 * 
+	 * @param rads_milli
+	 * @return
+	 */
+	public static double degsSec2radsMilli(double degs_sec)
+	{
+		// first convert to millis
+		double res = degs_sec / 1000;
+		
+		// and now to rads
+		return Math.toRadians(res);
+	}
+	
+	/** convert a turn rate of  radians per millisecond to degrees per second to radians per millisecond
+	 * 
+	 * @param rads_milli
+	 * @return
+	 */
+	public static double radsMilli2degSec(double rads_milli)
+	{
+		// first convert to seconds
+		double res = rads_milli * 1000d;
+		
+		// now to degrees
+		return Math.toDegrees(res);
+	}
+	
 	public static double MSec2kts(double m_sec)
 	{
 		return m_sec / 0.514444444;
