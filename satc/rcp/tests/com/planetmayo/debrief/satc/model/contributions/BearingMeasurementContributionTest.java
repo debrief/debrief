@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
-import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
+import com.planetmayo.debrief.satc_rcp.services.RCPUtilsService;
 import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -28,7 +28,7 @@ public class BearingMeasurementContributionTest extends TestCase
 	@Override
 	protected void setUp() throws Exception
 	{
-		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPConverterService(), new RCPIOService());
+		SupportServices.INSTANCE.initialize(new RCPLogService(), new RCPUtilsService(), new RCPIOService());
 		super.setUp();
 	}
 

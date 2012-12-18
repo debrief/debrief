@@ -8,10 +8,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
-import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
+import com.planetmayo.debrief.satc.gwt.client.Gwt;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
-import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
 /**
  * @author Akash-Gupta
@@ -38,23 +37,23 @@ public class RootLayout extends Composite
 
 	private static RootLayoutUiBinder uiBinder = GWT
 			.create(RootLayoutUiBinder.class);
+	
+	IBoundsManager boundsManager;
 
 	public RootLayout()
 	{
+		boundsManager = Gwt.getInstance().getBoundsManager();
 		initWidget(uiBinder.createAndBindUi(this));
 
 		// HERE YOU CAN PUT YOUR LOGIC
-		MaintainContributions maintainP = new MaintainContributions(
-				manageSolutionsView, new MockVehicleTypesRepository());
-		final BoundsManager genny = maintainP.getGenerator();
 		TestSupport testP = new TestSupport();
-		testP.setGenerator(genny);
+		testP.setGenerator(boundsManager);
 
-		testHarness.setGenerator(genny);
+		testHarness.setGenerator(boundsManager);
 		testHarness.setTestSupport(testP);
 
-		genny.addSteppingListener(tabularStates);
-		genny.addSteppingListener(spatialStates);
+		boundsManager.addSteppingListener(tabularStates);
+		boundsManager.addSteppingListener(spatialStates);
 	}
 
 }

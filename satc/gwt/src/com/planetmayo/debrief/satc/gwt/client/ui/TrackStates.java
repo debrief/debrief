@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -93,7 +93,7 @@ public class TrackStates extends Composite implements ISteppingListener
 	
 	
 	@Override
-	public void complete(BoundsManager boundsManager)
+	public void complete(IBoundsManager boundsManager)
 	{
 		clearGrid();
 		Collection<BoundedState> states = boundsManager.getSpace().states();
@@ -124,18 +124,18 @@ public class TrackStates extends Composite implements ISteppingListener
 	}
 
 	@Override
-	public void restarted(BoundsManager boundsManager)
+	public void restarted(IBoundsManager boundsManager)
 	{
 		clearGrid();
 	}
 
 	@Override
-	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{	
 	}
 
 	@Override
-	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
+	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
 		// get rid of any existing message
 		clearMessage();

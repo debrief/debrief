@@ -14,19 +14,19 @@ public interface ISteppingListener
 	 * stepping is complete
 	 * 
 	 */
-	public void complete(BoundsManager boundsManager);
+	void complete(IBoundsManager boundsManager);
 
 	/**
 	 * the sequence has restarted
 	 * 
 	 */
-	public void restarted(BoundsManager boundsManager);
+	void restarted(IBoundsManager boundsManager);
 	
 	/**
 	 * error was appeared during processing
 	 * 
 	 */
-	public void error(BoundsManager boundsManager, IncompatibleStateException ex);	
+	void error(IBoundsManager boundsManager, IncompatibleStateException ex);	
 
 	/**
 	 * a step has been performed
@@ -36,5 +36,5 @@ public interface ISteppingListener
 	 * @param totalSteps
 	 *          the total number of steps
 	 */
-	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps);
+	void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps);
 }

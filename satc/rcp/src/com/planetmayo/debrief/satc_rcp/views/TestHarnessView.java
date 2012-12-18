@@ -6,9 +6,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -25,7 +27,7 @@ import com.planetmayo.debrief.satc.support.TestSupport;
  * <p>
  */
 
-public class TestHarnessView extends CoreView
+public class TestHarnessView extends ViewPart
 {
 
 	/**
@@ -39,6 +41,8 @@ public class TestHarnessView extends CoreView
 	 * as-is. These objects may be sensitive to the current input of the view, or
 	 * ignore it and always show the same content (like Task List, for example).
 	 */
+	
+	private IBoundsManager boundsManager;
 
 	private Action _restartAction;
 	private Action _stepAction;
@@ -79,13 +83,8 @@ public class TestHarnessView extends CoreView
 		contributeToActionBars();
 
 		// disable our controls, until we find a genny
-		stopListeningTo(null);
-
-		/**
-		 * and listen out for track generators
-		 * 
-		 */
-		setupMonitor();
+		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
+		startListeningTo();
 	}
 
 	private void enableControls(boolean enabled)
@@ -147,7 +146,7 @@ public class TestHarnessView extends CoreView
 			public void run()
 			{
 				// clear the bounded states
-				getGenerator().clear();
+				boundsManager.clear();
 			}
 		};
 		_clearAction.setText("Clear");
@@ -169,7 +168,7 @@ public class TestHarnessView extends CoreView
 			@Override
 			public void run()
 			{
-				getGenerator().setLiveRunning(_liveAction.isChecked());
+				boundsManager.setLiveRunning(_liveAction.isChecked());
 			}
 		};
 		_liveAction.setChecked(false);
@@ -180,7 +179,7 @@ public class TestHarnessView extends CoreView
 			public void run()
 			{
 				// clear the bounded states
-				getGenerator().restart();
+				boundsManager.restart();
 			}
 		};
 		_restartAction.setText("Restart");
@@ -191,7 +190,7 @@ public class TestHarnessView extends CoreView
 			@Override
 			public void run()
 			{
-				getGenerator().step();
+				boundsManager.step();
 			}
 		};
 		_stepAction.setText("Step");
@@ -202,7 +201,7 @@ public class TestHarnessView extends CoreView
 			@Override
 			public void run()
 			{
-				getGenerator().run();
+				boundsManager.run();
 			}
 		};
 		_playAction.setText("Play");
@@ -218,25 +217,20 @@ public class TestHarnessView extends CoreView
 	{
 	}
 
-	@Override
-	protected void startListeningTo(BoundsManager genny)
+	protected void startListeningTo()
 	{
 		enableControls(true);
 
-		_testSupport.setGenerator(genny);
+		_testSupport.setGenerator(boundsManager);
 
 		// sort out the 'live' setting
-		_liveAction.setChecked(genny.isLiveEnabled());
+		_liveAction.setChecked(boundsManager.isLiveEnabled());
 	}
 
-	@Override
-	protected void stopListeningTo(BoundsManager genny)
+	protected void stopListeningTo()
 	{
 		// ok, we can disable our buttons
 		enableControls(false);
-
-		_testSupport.setGenerator(genny);
-
 	}
 
 }

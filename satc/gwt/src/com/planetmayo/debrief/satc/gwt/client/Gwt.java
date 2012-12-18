@@ -4,23 +4,66 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.planetmayo.debrief.satc.gwt.client.services.GWTConverterService;
+import com.planetmayo.debrief.satc.gwt.client.services.GWTUtilsService;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTIOService;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTLogService;
 import com.planetmayo.debrief.satc.gwt.client.ui.RootLayout;
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
+import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
+import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
+import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class Gwt implements EntryPoint {
 
-	public static final EventBus eventBus = new SimpleEventBus();
+	private static Gwt instance;
+	
+	public static Gwt getInstance() {
+		return instance;
+	}
+	
+	private final EventBus eventBus = new SimpleEventBus();
+	private IVehicleTypesManager vehicleTypesManager;
+	private IContributionsManager contributionsManager;
+	private IBoundsManager boundsManager;	
+	
+	private void initializeManagers() 
+	{
+		vehicleTypesManager = new MockVehicleTypesManager();
+		contributionsManager = new ContributionsManagerImpl();
+		boundsManager = new BoundsManager();
+	}
+	
+	public EventBus getEventBus()
+	{
+		return eventBus;
+	}
+
+	public IVehicleTypesManager getVehicleTypesManager()
+	{
+		return vehicleTypesManager;
+	}
+
+	public IContributionsManager getContributionsManager()
+	{
+		return contributionsManager;
+	}
+
+	public IBoundsManager getBoundsManager()
+	{
+		return boundsManager;
+	}
 
 	@Override
 	public void onModuleLoad() {
-
+		instance = this;
+		initializeManagers();
 		RootPanel.get().add(new RootLayout());
 
 		SupportServices.INSTANCE.initialize(new GWTLogService(),
-				new GWTConverterService(), new GWTIOService());
+				new GWTUtilsService(), new GWTIOService());
 
 		/*
 		 * 

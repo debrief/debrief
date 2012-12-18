@@ -26,7 +26,7 @@ abstract public class BaseContributionView extends Composite implements
 
 	public BaseContributionView()
 	{
-		Gwt.eventBus.addHandler(CollapseDisclosurePanelsEvent.TYPE , this);
+		Gwt.getInstance().getEventBus().addHandler(CollapseDisclosurePanelsEvent.TYPE , this);
 	}
 
 	abstract protected BaseContribution getData();

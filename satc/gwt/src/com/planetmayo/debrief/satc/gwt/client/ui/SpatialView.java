@@ -25,7 +25,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -114,26 +114,26 @@ public class SpatialView extends Composite implements ISteppingListener
 
 	
 	@Override
-	public void complete(BoundsManager boundsManager)
+	public void complete(IBoundsManager boundsManager)
 	{
 		plotThis(boundsManager.getSpace().states());		
 	}
 
 	@Override
-	public void restarted(BoundsManager boundsManager)
+	public void restarted(IBoundsManager boundsManager)
 	{
 		plotThis(boundsManager.getSpace().states());		
 	}
 
 	@Override
-	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_inDebug)
 			plotThis(boundsManager.getSpace().states());		
 	}
 
 	@Override
-	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
+	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
 	}
 

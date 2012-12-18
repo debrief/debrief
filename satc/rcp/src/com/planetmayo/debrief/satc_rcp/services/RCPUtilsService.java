@@ -3,11 +3,12 @@ package com.planetmayo.debrief.satc_rcp.services;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TreeSet;
 
-import com.planetmayo.debrief.satc.support.ConverterService;
+import com.planetmayo.debrief.satc.support.UtilsService;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
-public class RCPConverterService implements ConverterService
+public class RCPUtilsService implements UtilsService
 {
 
 	@Override
@@ -30,4 +31,13 @@ public class RCPConverterService implements ConverterService
 		}
 	}
 
+	@Override
+	public <T> T higherElement(TreeSet<T> set, T currentElement)
+	{
+		if (set == null || set.isEmpty()) 
+		{
+			return null;
+		}		
+		return currentElement == null ? set.first() : set.higher(currentElement);
+	}
 }

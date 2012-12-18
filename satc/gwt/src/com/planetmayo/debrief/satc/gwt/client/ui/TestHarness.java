@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.gwt.client.Gwt;
 import com.planetmayo.debrief.satc.gwt.client.event.CollapseDisclosurePanelsEvent;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
@@ -51,7 +51,7 @@ public class TestHarness extends Composite
 	@UiField
 	Anchor nextTest;
 
-	private BoundsManager _generator;
+	private IBoundsManager _generator;
 	private TestSupport _tester;
 
 	public TestHarness()
@@ -88,14 +88,14 @@ public class TestHarness extends Composite
 	void populateLinkClick(ClickEvent e)
 	{
 		_tester.loadSampleData(true);
-		Gwt.eventBus.fireEvent(new CollapseDisclosurePanelsEvent());
+		Gwt.getInstance().getEventBus().fireEvent(new CollapseDisclosurePanelsEvent());
 	}
 
 	@UiHandler("populateShort")
 	void populateShortClick(ClickEvent e)
 	{
 		_tester.loadSampleData(false);
-		Gwt.eventBus.fireEvent(new CollapseDisclosurePanelsEvent());
+		Gwt.getInstance().getEventBus().fireEvent(new CollapseDisclosurePanelsEvent());
 	}
 
 	@UiHandler("restart")
@@ -104,7 +104,7 @@ public class TestHarness extends Composite
 		_generator.restart();
 	}
 
-	public void setGenerator(BoundsManager genny)
+	public void setGenerator(IBoundsManager genny)
 	{
 		_generator = genny;
 		updateLiveLabel();

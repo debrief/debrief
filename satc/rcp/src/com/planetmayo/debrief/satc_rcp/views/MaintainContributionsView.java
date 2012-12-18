@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +30,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.IMemento;
-import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.Precision;
@@ -52,11 +47,11 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
-import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
+import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
+import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
-import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
@@ -76,8 +71,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
  * @author ian
  * 
  */
-public class MaintainContributionsView extends ViewPart implements
-		MaintainContributions.MyView
+public class MaintainContributionsView extends ViewPart implements IContributionsChangedListener
 {
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
@@ -118,24 +112,14 @@ public class MaintainContributionsView extends ViewPart implements
 	private ComboViewer vehiclesCombo;
 	private Composite contList;
 	private Menu _addContMenu;
-
-	private MaintainContributions _manager;
+	
+	private IBoundsManager boundsManager;
 
 	/**
 	 * remember which contributions we're displaying
 	 * 
 	 */
 	private HashMap<BaseContribution, BaseContributionView<?>> _myControls = new HashMap<BaseContribution, BaseContributionView<?>>();
-
-	private PropertyChangeListener _addContListener;
-
-	private PropertyChangeListener _vehicleChangeListener;
-
-	@SuppressWarnings("unused")
-	private PropertyChangeListener _precisionChangeListener;
-
-	@SuppressWarnings("unused")
-	private PropertyChangeListener _removeContListener;
 
 	@Override
 	public void added(BaseContribution contribution)
@@ -169,18 +153,55 @@ public class MaintainContributionsView extends ViewPart implements
 					"Failed to generate panel for " + contribution);
 		}
 	}
+	
+	@Override
+	public void removed(BaseContribution contribution)
+	{
+		// get the panel
+		BaseContributionView<?> panel = _myControls.get(contribution);
+
+		// did we find it?
+		if (panel != null)
+		{
+			// and remove it
+			panel.getControl().dispose();
+
+			// and forget it
+			_myControls.remove(contribution);
+		}
+		else
+		{
+			System.err.println("failed to find UI for:" + contribution);
+		}
+	}	
 
 	@Override
 	public void createPartControl(Composite parent)
 	{
-
-		// build the UI
+		IContributionsManager contributionsManager = SATC_Activator
+				.getDefault().getService(IContributionsManager.class, true);
+		IVehicleTypesManager vehicleManager = SATC_Activator
+				.getDefault().getService(IVehicleTypesManager.class, true);
+		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
+		
 		initUI(parent);
-
-		// create the manager
-		_manager = new MaintainContributions(this, SATC_Activator.getDefault()
-				.getService(VehicleTypesRepository.class, true));
-
+		populateContributionList(contributionsManager.getAvailableContributions());
+		populatePrecisionsList(Precision.values());
+		populateVehicleTypesList(vehicleManager.getAllTypes());
+		
+		boundsManager.addContributionsListener(this);
+	}
+	
+	@Override
+	public void dispose()
+	{
+		boundsManager.removeContributionsListener(this);
+		super.dispose();
+	}
+	
+	@Override
+	public void setFocus()
+	{
 	}
 
 	private void fillAnalystContributionsGroup(Composite parent)
@@ -202,22 +223,6 @@ public class MaintainContributionsView extends ViewPart implements
 				GridData.FILL_HORIZONTAL));
 		UIUtils.createLabel(header, SWT.RIGHT, "Weight", new GridData(40,
 				SWT.DEFAULT));
-	}
-
-	@Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter)
-	{
-		if (adapter.equals(BoundsManager.class))
-			return _manager.getGenerator();
-		else
-			return super.getAdapter(adapter);
-	}
-
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException
-	{
-		super.init(site, memento);
-
 	}
 
 	private void initAddContributionGroup(Composite parent)
@@ -383,26 +388,20 @@ public class MaintainContributionsView extends ViewPart implements
 		{
 
 			@Override
-			public void selectionChanged(SelectionChangedEvent arg0)
+			public void selectionChanged(SelectionChangedEvent event)
 			{
-				if (_vehicleChangeListener != null)
+				if (boundsManager != null) 
 				{
-					ISelection sel = arg0.getSelection();
-					if (sel instanceof StructuredSelection)
-					{
-						StructuredSelection ss = (StructuredSelection) sel;
-						Object current = ss.getFirstElement();
-						PropertyChangeEvent pce = new PropertyChangeEvent(vehiclesCombo,
-								ProblemSpace.VEHICLE_TYPE, null, current);
-						_vehicleChangeListener.propertyChange(pce);
+					ISelection selection = event.getSelection();
+					if (selection instanceof StructuredSelection) {
+						VehicleType type = (VehicleType) ((StructuredSelection) selection).getFirstElement();
+						boundsManager.setVehicleType(type);
 					}
-
 				}
 			}
 		});
 	}
 
-	@Override
 	public void populateContributionList(List<ContributionBuilder> items)
 	{
 		for (final ContributionBuilder item : items)
@@ -414,15 +413,12 @@ public class MaintainContributionsView extends ViewPart implements
 				@Override
 				public void widgetSelected(SelectionEvent arg0)
 				{
-					if (_addContListener != null)
-						_addContListener.propertyChange(new PropertyChangeEvent(item, null,
-								null, item));
+					boundsManager.addContribution(item.create());
 				}
 			});
 		}
 	}
 
-	@Override
 	public void populatePrecisionsList(Precision[] precisions)
 	{
 		precisionsCombo.setInput(precisions);
@@ -430,63 +426,8 @@ public class MaintainContributionsView extends ViewPart implements
 		precisionsCombo.setSelection(new StructuredSelection(precisions[0]));
 	}
 
-	@Override
 	public void populateVehicleTypesList(List<VehicleType> vehicles)
 	{
 		vehiclesCombo.setInput(vehicles);
 	}
-
-	@Override
-	public void removed(BaseContribution contribution)
-	{
-		// get the panel
-		BaseContributionView<?> panel = _myControls.get(contribution);
-
-		// did we find it?
-		if (panel != null)
-		{
-			// and remove it
-			panel.getControl().dispose();
-
-			// and forget it
-			_myControls.remove(contribution);
-		}
-		else
-		{
-			System.err.println("failed to find UI for:" + contribution);
-		}
-	}
-
-	@Override
-	public void setAddContributionListener(PropertyChangeListener listener)
-	{
-		_addContListener = listener;
-	}
-
-	@Override
-	public void setFocus()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setPrecisionChangeListener(PropertyChangeListener listener)
-	{
-		_precisionChangeListener = listener;
-	}
-
-	@Override
-	public void setRemoveContributionListener(PropertyChangeListener listener)
-	{
-		// TODO: support removing an item from the list
-		_removeContListener = listener;
-	}
-
-	@Override
-	public void setVehicleChangeListener(PropertyChangeListener listener)
-	{
-		_vehicleChangeListener = listener;
-	}
-
 }

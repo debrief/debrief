@@ -9,6 +9,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -20,18 +21,19 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class SpatialView extends CoreView implements ISteppingListener,
-		GeoSupport.GeoPlotter
+public class SpatialView extends ViewPart implements ISteppingListener, GeoSupport.GeoPlotter
 {
+	private IBoundsManager boundsManager;
 
 	private static XYPlot _plot;
 	private static XYLineAndShapeRenderer _renderer;
@@ -88,6 +90,7 @@ public class SpatialView extends CoreView implements ISteppingListener,
 	@Override
 	public void createPartControl(Composite parent)
 	{
+		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
 		// get the data ready
 		_myData = new XYSeriesCollection();
 
@@ -100,37 +103,38 @@ public class SpatialView extends CoreView implements ISteppingListener,
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
 
-		/**
-		 * and listen out for track generators
-		 * 
-		 */
-		setupMonitor();
-
 		// tell the GeoSupport about us
 		GeoSupport.setPlotter(this);
-
+		boundsManager.addSteppingListener(this);
+	}
+	
+	@Override
+	public void dispose()
+	{
+		boundsManager.removeSteppingListener(this);
+		super.dispose();
 	}
 
 	@Override
-	public void complete(BoundsManager boundsManager)
+	public void complete(IBoundsManager boundsManager)
 	{
 		showData(boundsManager.getSpace().states());		
 	}
 
 	@Override
-	public void restarted(BoundsManager boundsManager)
+	public void restarted(IBoundsManager boundsManager)
 	{
 		clear(null);		
 	}
 
 	@Override
-	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
+	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
 		_myData.removeAllSeries();		
 	}
 
 	@Override
-	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked())
 			showData(boundsManager.getSpace().states());	
@@ -239,17 +243,5 @@ public class SpatialView extends CoreView implements ISteppingListener,
 				BasicStroke.JOIN_ROUND, 1.0f, new float[]
 				{ 10.0f, 6.0f }, 0.0f));
 
-	}
-
-	@Override
-	protected void startListeningTo(BoundsManager genny)
-	{
-		genny.addSteppingListener(this);
-	}
-
-	@Override
-	protected void stopListeningTo(BoundsManager genny)
-	{
-		genny.removeSteppingListener(this);
 	}
 }

@@ -101,22 +101,22 @@ public class TrackGeneratorTest extends TestCase {
 		tg.addSteppingListener(new ISteppingListener() {
 
 			@Override
-			public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps) {
+			public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps) {
 				_ctr2++;
 			}
 
 			@Override
-			public void restarted(BoundsManager boundsManager) {
+			public void restarted(IBoundsManager boundsManager) {
 				_ctr1++;
 			}
 
 			@Override
-			public void complete(BoundsManager boundsManager) {
+			public void complete(IBoundsManager boundsManager) {
 				_ctr3++;
 			}
 
 			@Override
-			public void error(BoundsManager boundsManager,
+			public void error(IBoundsManager boundsManager,
 					IncompatibleStateException ex)
 			{
 				_ise = ex;
@@ -207,22 +207,22 @@ public class TrackGeneratorTest extends TestCase {
 		tg.addSteppingListener(new ISteppingListener() {
 
 			@Override
-			public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps) {
+			public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps) {
 				_ctr2++;
 			}
 
 			@Override
-			public void restarted(BoundsManager boundsManager) {
+			public void restarted(IBoundsManager boundsManager) {
 				_ctr3++;
 			}
 
 			@Override
-			public void complete(BoundsManager boundsManager) {
+			public void complete(IBoundsManager boundsManager) {
 				_ctr1++;
 			}
 
 			@Override
-			public void error(BoundsManager boundsManager,
+			public void error(IBoundsManager boundsManager,
 					IncompatibleStateException ex)
 			{
 				_ise = ex;

@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/junit-4.10.jar"/>
-	<classpathentry kind="lib" path="libs/jts-1.13.jar"/>
+	<classpathentry kind="lib" path="libs/jts-1.13.jar" sourcepath="/gwt/war/WEB-INF/lib/jts4gwt-1.13.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

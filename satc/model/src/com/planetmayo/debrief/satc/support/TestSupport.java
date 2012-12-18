@@ -14,16 +14,16 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class TestSupport
 {
 
-	private BoundsManager _genny;
+	private IBoundsManager _genny;
 
-	private BoundsManager getGenerator()
+	private IBoundsManager getGenerator()
 	{
 		return _genny;
 	}
@@ -218,7 +218,7 @@ public class TestSupport
 		}
 	}
 
-	public void setGenerator(BoundsManager genny)
+	public void setGenerator(IBoundsManager genny)
 	{
 		_genny = genny;
 	}

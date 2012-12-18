@@ -8,10 +8,14 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
+import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
+import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
+import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
-import com.planetmayo.debrief.satc.support.VehicleTypesRepository;
-import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
-import com.planetmayo.debrief.satc_rcp.services.RCPConverterService;
+import com.planetmayo.debrief.satc_rcp.services.RCPUtilsService;
 import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 
@@ -63,15 +67,19 @@ public class SATC_Activator extends AbstractUIPlugin
 
 	private void registerServices(BundleContext context)
 	{
-		context.registerService(VehicleTypesRepository.class,
-				new MockVehicleTypesRepository(), new Hashtable<String, Object>());
+		context.registerService(IVehicleTypesManager.class,
+				new MockVehicleTypesManager(), new Hashtable<String, Object>());
+		context.registerService(IContributionsManager.class, 
+				new ContributionsManagerImpl(), new Hashtable<String, Object>());
+		context.registerService(IBoundsManager.class, 
+				new BoundsManager(), new Hashtable<String, Object>());
 	}
 
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
 		SupportServices.INSTANCE.initialize(new RCPLogService(),
-				new RCPConverterService(), new RCPIOService());
+				new RCPUtilsService(), new RCPIOService());
 		super.start(context);
 		this.context = context;
 		plugin = this;

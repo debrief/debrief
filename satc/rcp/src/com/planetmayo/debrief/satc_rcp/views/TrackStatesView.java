@@ -18,8 +18,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -27,6 +28,7 @@ import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -36,7 +38,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author ian
  * 
  */
-public class TrackStatesView extends CoreView implements ISteppingListener
+public class TrackStatesView extends ViewPart implements ISteppingListener
 {
 
 	class NameSorter extends ViewerSorter
@@ -105,6 +107,9 @@ public class TrackStatesView extends CoreView implements ISteppingListener
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.TrackStatesView";
+	
+	private IBoundsManager boundsManager;
+	
 	private TableViewer viewer;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
 
@@ -128,6 +133,7 @@ public class TrackStatesView extends CoreView implements ISteppingListener
 	@Override
 	public void createPartControl(Composite parent)
 	{
+		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -237,25 +243,32 @@ public class TrackStatesView extends CoreView implements ISteppingListener
 		 * and listen out for track generators
 		 * 
 		 */
-		setupMonitor();
+		boundsManager.addSteppingListener(this);
 	}
 	
 	
 
 	@Override
-	public void complete(BoundsManager boundsManager)
+	public void dispose()
+	{
+		boundsManager.removeSteppingListener(this);
+		super.dispose();
+	}
+
+	@Override
+	public void complete(IBoundsManager boundsManager)
 	{
 		viewer.setInput(boundsManager.getSpace().states());
 	}
 
 	@Override
-	public void restarted(BoundsManager boundsManager)
+	public void restarted(IBoundsManager boundsManager)
 	{
 		viewer.setInput(null);		
 	}
 
 	@Override
-	public void error(BoundsManager boundsManager, IncompatibleStateException ex)
+	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
 		// TODO: switch UI to be a composite view, with a label above the table.
 		// the label is normally hidden , and shown when
@@ -269,7 +282,7 @@ public class TrackStatesView extends CoreView implements ISteppingListener
 	}
 
 	@Override
-	public void stepped(BoundsManager boundsManager, int thisStep, int totalSteps)
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked()) 
 		{
@@ -304,17 +317,5 @@ public class TrackStatesView extends CoreView implements ISteppingListener
 	public void setFocus()
 	{
 		viewer.getControl().setFocus();
-	}
-
-	@Override
-	protected void startListeningTo(BoundsManager genny)
-	{
-		genny.addSteppingListener(this);
-	}
-
-	@Override
-	protected void stopListeningTo(BoundsManager genny)
-	{
-		genny.removeSteppingListener(this);
 	}
 }

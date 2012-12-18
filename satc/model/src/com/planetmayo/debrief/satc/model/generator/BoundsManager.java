@@ -20,7 +20,7 @@ import com.planetmayo.debrief.satc.support.SupportServices;
  * @author ian
  * 
  */
-public class BoundsManager implements ISteppingGenerator
+public class BoundsManager implements IBoundsManager
 {
 	public static final String STATES_BOUNDED = "states_bounded";
 
@@ -96,11 +96,13 @@ public class BoundsManager implements ISteppingGenerator
 	 * Contribution listeners stuff
 	 * 
 	 */
+	@Override
 	public void addContributionsListener(IContributionsChangedListener newListener)
 	{
 		_contributionListeners.add(newListener);
 	}
-	
+
+	@Override	
 	public void removeContributionsListener(IContributionsChangedListener newListener)
 	{
 		_contributionListeners.remove(newListener);
@@ -126,11 +128,13 @@ public class BoundsManager implements ISteppingGenerator
 	 * Stepping listeners stuff
 	 * 
 	 */	
+	@Override	
 	public void addSteppingListener(ISteppingListener newListener)
 	{
 		_steppingListeners.add(newListener);
 	}	
 
+	@Override	
 	public void removeSteppingListener(ISteppingListener newListener)
 	{
 		_steppingListeners.remove(newListener);
@@ -173,6 +177,7 @@ public class BoundsManager implements ISteppingGenerator
 	 * 
 	 * @param contribution
 	 */
+	@Override	
 	public void addContribution(BaseContribution contribution)
 	{
 		// remember it
@@ -190,6 +195,7 @@ public class BoundsManager implements ISteppingGenerator
 	 * ditch all of the contributions
 	 * 
 	 */
+	@Override	
 	public void clear()
 	{
 		this.restart();
@@ -199,29 +205,22 @@ public class BoundsManager implements ISteppingGenerator
 		}
 	}
 
+	@Override
 	public Collection<BaseContribution> getContributions()
 	{
 		return Collections.unmodifiableSet(_contribs);
 	}
 	
+	@Override
 	public int getCurrentStep() 
 	{
 		return _currentStep;
 	}
 	
+	@Override
 	public BaseContribution getCurrentContribution() 
 	{
 		return _currentContribution;
-	}
-
-	/**
-	 * indicate whether we do 'run' after each contribution change
-	 * 
-	 * @return
-	 */
-	public boolean isLiveEnabled()
-	{
-		return _liveRunning;
 	}
 
 	protected void performSingleStep(final BaseContribution theContrib,
@@ -255,6 +254,7 @@ public class BoundsManager implements ISteppingGenerator
 	 * 
 	 * @param contribution
 	 */
+	@Override
 	public void removeContribution(BaseContribution contribution)
 	{
 		// remember it
@@ -294,6 +294,16 @@ public class BoundsManager implements ISteppingGenerator
 	}
 
 	/**
+	 * indicate whether we do 'run' after each contribution change
+	 * 
+	 * @return
+	 */
+	public boolean isLiveEnabled()
+	{
+		return _liveRunning;
+	}
+
+	/**
 	 * specify whether we should do a 'run' after each contribution change
 	 * 
 	 * @param checked
@@ -310,8 +320,8 @@ public class BoundsManager implements ISteppingGenerator
 			return;
 		
 		// get next contribution
-		_currentContribution = _currentContribution == null ? 
-				_contribs.first() : _contribs.higher(_currentContribution);
+		_currentContribution = SupportServices.INSTANCE
+				.getUtilsService().higherElement(_contribs, _currentContribution);
 		// ok, go for it.
 		performSingleStep(_currentContribution, _currentStep);
 
@@ -332,6 +342,7 @@ public class BoundsManager implements ISteppingGenerator
 	 * @param v
 	 *          the new vehicle type
 	 */
+	@Override
 	public void setVehicleType(VehicleType v)
 	{
 		// store the new value
@@ -343,6 +354,7 @@ public class BoundsManager implements ISteppingGenerator
 		_contribListener.propertyChange(pce);
 	}
 
+	@Override
 	public ProblemSpace getSpace()
 	{
 		return _space;

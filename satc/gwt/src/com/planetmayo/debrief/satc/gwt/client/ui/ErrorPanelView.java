@@ -24,7 +24,7 @@ public class ErrorPanelView extends Composite implements ErrorEventHandler {
 
 	public ErrorPanelView() {
 		initWidget(uiBinder.createAndBindUi(this));
-		Gwt.eventBus.addHandler(ErrorEvent.TYPE, this);
+		Gwt.getInstance().getEventBus().addHandler(ErrorEvent.TYPE, this);
 	}
 
 	@Override

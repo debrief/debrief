@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc.gwt.client.ui;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +21,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.gwt.client.Gwt;
 import com.planetmayo.debrief.satc.gwt.client.contributions.AnalysisContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.BearingMeasurementContributionView;
 import com.planetmayo.debrief.satc.gwt.client.contributions.ContributionView;
@@ -42,15 +41,10 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.manager.MaintainContributions;
-import com.planetmayo.debrief.satc.model.manager.MaintainContributions.MyView;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.support.mock.MockVehicleTypesRepository;
 
-public class MaintainContributionsView extends Composite implements MyView,
-		IContributionsChangedListener
+public class MaintainContributionsView extends Composite implements IContributionsChangedListener
 {
 
 	interface ManageSolutionsViewUiBinder extends
@@ -60,15 +54,6 @@ public class MaintainContributionsView extends Composite implements MyView,
 
 	private static ManageSolutionsViewUiBinder uiBinder = GWT
 			.create(ManageSolutionsViewUiBinder.class);
-
-	private MaintainContributions _manager;
-
-	private static BoundsManager _stepper;
-
-	public static BoundsManager getGenerator()
-	{
-		return _stepper;
-	}
 
 	@UiField
 	ListBox vehicleTypes;
@@ -97,28 +82,27 @@ public class MaintainContributionsView extends Composite implements MyView,
 	@UiField HTMLPanel contextMenuList;
 
 	@UiField
-	HTMLPanel analystContributions;
-
-	private PropertyChangeListener _addListener;
+	HTMLPanel analystContributions;	
+	
+	private IBoundsManager boundsManager;
 
 	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
-
-	private PropertyChangeListener _vehicleListener;
 
 	private List<VehicleType> _theVehicleTypes;
 
 	public MaintainContributionsView()
 	{
-
+		boundsManager = Gwt.getInstance().getBoundsManager();
 		initWidget(uiBinder.createAndBindUi(this));
 		header.setCellWidth(active, "20%");
 		header.setCellWidth(estimate, "30%");
 		header.setCellWidth(hardConstraints, "30%");
 		header.setCellWidth(weighting, "20%");
-
-		// now the the data object
-		_manager = new MaintainContributions(this, new MockVehicleTypesRepository());
-		_stepper = _manager.getGenerator();
+		
+		populateContributionList(Gwt.getInstance().getContributionsManager().getAvailableContributions());
+		populatePrecisionsList(Precision.values());
+		populateVehicleTypesList(Gwt.getInstance().getVehicleTypesManager().getAllTypes());
+		boundsManager.addContributionsListener(this);
 	}
 
 
@@ -176,9 +160,7 @@ public class MaintainContributionsView extends Composite implements MyView,
 	{
 		// get the particular type
 		VehicleType vType = _theVehicleTypes.get(vehicleTypes.getSelectedIndex());
-		PropertyChangeEvent pce = new PropertyChangeEvent(vehicleTypes,
-				ProblemSpace.VEHICLE_TYPE, null, vType);
-		_vehicleListener.propertyChange(pce);
+		boundsManager.setVehicleType(vType);		
 	}
 
 	@UiHandler("add")
@@ -187,7 +169,6 @@ public class MaintainContributionsView extends Composite implements MyView,
 		contextMenu.showRelativeTo(add);
 	}
 
-	@Override
 	public void populateContributionList(List<ContributionBuilder> items)
 	{
 		// clear the list to start wtih
@@ -201,7 +182,7 @@ public class MaintainContributionsView extends Composite implements MyView,
 				@Override
 				public void onClick(ClickEvent event)
 				{
-					_addListener.propertyChange(new PropertyChangeEvent(contributionBuilder, null, null, contributionBuilder));
+					boundsManager.addContribution(contributionBuilder.create());
 					contextMenu.hide();
 				}
 			});
@@ -211,14 +192,12 @@ public class MaintainContributionsView extends Composite implements MyView,
 	
 	}
 
-	@Override
 	public void populatePrecisionsList(Precision[] precisions)
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void populateVehicleTypesList(List<VehicleType> vehicles)
 	{
 		_theVehicleTypes = vehicles;
@@ -245,31 +224,4 @@ public class MaintainContributionsView extends Composite implements MyView,
 		else
 			System.err.println("failed to find contriubtion for:" + contribution);
 	}
-
-	@Override
-	public void setAddContributionListener(PropertyChangeListener listener)
-	{
-		_addListener = listener;
-	}
-
-	@Override
-	public void setPrecisionChangeListener(PropertyChangeListener listener)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setRemoveContributionListener(PropertyChangeListener listener)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setVehicleChangeListener(PropertyChangeListener listener)
-	{
-		_vehicleListener = listener;
-	}
-
 }

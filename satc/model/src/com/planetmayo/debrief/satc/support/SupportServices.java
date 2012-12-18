@@ -8,15 +8,15 @@ public class SupportServices
 
 	private volatile boolean initialized = false;
 	private volatile LogService logService;
-	private volatile ConverterService converterService;
+	private volatile UtilsService utilsService;
 	private volatile IOService ioService;
 
 	public String formatDate(String pattern, Date date)
 	{
-		return getConverterService().formatDate(pattern, date);
+		return getUtilsService().formatDate(pattern, date);
 	}
 
-	public ConverterService getConverterService()
+	public UtilsService getUtilsService()
 	{
 		if (!initialized)
 		{
@@ -24,7 +24,7 @@ public class SupportServices
 					"Support services isn't initialized. Do you forget to call "
 							+ "SupportServices.initialize in your RCP activator or GWT entry point?");
 		}
-		return converterService;
+		return utilsService;
 	}
 
 	public IOService getIOService()
@@ -50,16 +50,16 @@ public class SupportServices
 	}
 
 	public synchronized void initialize(LogService logService,
-			ConverterService converterService, IOService ioService)
+			UtilsService converterService, IOService ioService)
 	{
 		this.logService = logService;
-		this.converterService = converterService;
+		this.utilsService = converterService;
 		this.ioService = ioService;
 		initialized = true;
 	}
 
 	public Date parseDate(String pattern, String text)
 	{
-		return getConverterService().parseDate(pattern, text);
+		return getUtilsService().parseDate(pattern, text);
 	}
 }
