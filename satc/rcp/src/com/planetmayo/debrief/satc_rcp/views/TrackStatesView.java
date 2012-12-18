@@ -30,7 +30,6 @@ import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * view that monitors the current set of bounded states
@@ -182,7 +181,7 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 				LocationRange loc = bs.getLocation();
 				if (loc != null)
 				{
-					Polygon myArea = loc.getPolygon();
+					Geometry myArea = loc.getGeometry();
 					Geometry theBoundary = myArea.convexHull();
 					double theArea = theBoundary.getArea();
 					res = myArea.getCoordinates().length + "pts " + (int) (theArea * 100000);					

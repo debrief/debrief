@@ -16,7 +16,7 @@ import com.planetmayo.debrief.satc_rcp.services.RCPUtilsService;
 import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class BearingMeasurementContributionTest extends TestCase
 {
@@ -66,7 +66,7 @@ public class BearingMeasurementContributionTest extends TestCase
 			BoundedState newState = (BoundedState) iter.next();
 			
 			// ok, output it.
-			Polygon poly = newState.getLocation().getPolygon();
+			Geometry poly = newState.getLocation().getGeometry();
 			Coordinate[] coords = poly.getCoordinates();
 			for (int i = 0; i <=4; i++)
 			{

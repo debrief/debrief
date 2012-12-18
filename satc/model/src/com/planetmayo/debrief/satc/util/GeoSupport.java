@@ -58,8 +58,8 @@ public class GeoSupport
 
 	public static double[][] getCoordsFor(LocationRange loc)
 	{
-		Polygon poly = loc.getPolygon();
-		Coordinate[] coords = poly.getCoordinates();
+		Geometry geometry = loc.getGeometry();
+		Coordinate[] coords = geometry.getCoordinates();
 		double[][] res = new double[coords.length][2];
 		for (int i = 0; i < coords.length; i++)
 		{

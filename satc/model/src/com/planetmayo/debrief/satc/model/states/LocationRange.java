@@ -1,8 +1,6 @@
 package com.planetmayo.debrief.satc.model.states;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * class representing a bounded set of locations, stored as a polygon
@@ -16,7 +14,7 @@ public class LocationRange extends BaseRange<LocationRange>
 	 * the range of locations we allow
 	 * 
 	 */
-	private Polygon _myArea;
+	private Geometry _myArea;
 
 	/**
 	 * copy constructor
@@ -25,11 +23,14 @@ public class LocationRange extends BaseRange<LocationRange>
 	 */
 	public LocationRange(LocationRange range)
 	{
-		this((Polygon) range._myArea.clone());
+		this((Geometry) range._myArea.clone());
 	}
 
-	public LocationRange(Polygon area)
+	public LocationRange(Geometry area)
 	{
+		if (area == null) {
+			throw new IllegalArgumentException("Location range must have area");
+		}
 		_myArea = area;
 	}
 
@@ -40,12 +41,7 @@ public class LocationRange extends BaseRange<LocationRange>
 	 */
 	public int numPoints()
 	{
-		final int res;
-		if (_myArea != null)
-			res = _myArea.getNumPoints();
-		else
-			res = 0;
-		return res;
+		return _myArea.getNumPoints();
 	}
 
 	/**
@@ -56,59 +52,15 @@ public class LocationRange extends BaseRange<LocationRange>
 	@Override
 	public void constrainTo(LocationRange sTwo) throws IncompatibleStateException
 	{
-		Geometry collection = _myArea.intersection(sTwo._myArea);
-		if (collection instanceof Polygon)
-		{
-			Polygon geo = (Polygon) collection;
-			// do we already have an area?
-			if (_myArea == null)
-			{
-				// take a copy of it
-				_myArea = (Polygon) geo.clone();
-			}
-			else
-			{
-				// ok, constrain myself
-				Geometry intersect = _myArea.intersection(geo);
-
-				// is this just a geometry collection?
-				if (intersect instanceof GeometryCollection)
-				{
-					GeometryCollection gc = (GeometryCollection) intersect;
-
-					// TODO: the intersect above isn't working as expected - see below
-					// on occasion it returns a linestring followed by a polygon. The
-					// LineString is contained inside the polygon, and shouldn't be there.
-					if (gc.getNumGeometries() == 2)
-					{
-						Geometry outer = gc.getGeometryN(1);
-						if (outer instanceof Polygon)
-							intersect = outer;
-					}
-				}
-
-				_myArea = (Polygon) intersect;
-			}
+		Geometry intersection = _myArea.intersection(sTwo._myArea);
+		if (intersection.isEmpty()) {
+			throw new IncompatibleStateException("location ranges don't intersect", this, sTwo);
 		}
-
-		else if (collection instanceof GeometryCollection)
-		{
-			GeometryCollection geo = (GeometryCollection) collection;
-			if (geo.getLength() == 1)
-			{
-				_myArea = (Polygon) geo.getGeometryN(0);
-			}
-			else if (geo.getLength() == 0)
-			{
-				throw new IncompatibleStateException("Polygons do not overlap", this,
-						sTwo);
-			}
-		}
+		_myArea = intersection;
 	}
 
-	public Polygon getPolygon()
+	public Geometry getGeometry()
 	{
 		return _myArea;
 	}
-
 }

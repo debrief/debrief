@@ -204,62 +204,66 @@ public class LocationAnalysisContribution extends BaseContribution
 			if (loc != null)
 			{
 				// move around the outer points
-				LineString ls = loc.getPolygon().getExteriorRing();
-				LinearRing ext = GeoSupport.getFactory().createLinearRing(
-						ls.getCoordinates());
-				Coordinate[] pts = ext.getCoordinates();
-				// Coordinate[] newPts = new Coordinate[pts.length];
-
-				for (int i = 0; i < pts.length; i++)
+				Geometry geometry = loc.getGeometry();
+				if (geometry instanceof Polygon)
 				{
-					Coordinate thisC = pts[i];
+					LineString ls = ((Polygon) geometry).getExteriorRing();
+					LinearRing ext = GeoSupport.getFactory().createLinearRing(ls.getCoordinates());
+					Coordinate[] pts = ext.getCoordinates();
+					// Coordinate[] newPts = new Coordinate[pts.length];
 
-					// make a copy of the shape
-
-					// add each of these coords to that shape
-					AffineTransformation aff = new AffineTransformation();
-					AffineTransformation trans = aff.translate(thisC.x, thisC.y);
-
-					// actually do the move
-					Coordinate[] oldCoords = achievable.getCoordinates();
-					Coordinate[] newCoords = new Coordinate[oldCoords.length];
-					for (int j = 0; j < oldCoords.length; j++)
+					for (int i = 0; i < pts.length; i++)
 					{
-						Coordinate tmpC = oldCoords[j];
-						Coordinate newC = new Coordinate(0, 0);
-						newC = trans.transform(tmpC, newC);
-						newCoords[j] = newC;
+						Coordinate thisC = pts[i];
+
+						// make a copy of the shape
+
+						// add each of these coords to that shape
+						AffineTransformation aff = new AffineTransformation();
+						AffineTransformation trans = aff.translate(thisC.x, thisC.y);
+
+						// actually do the move
+						Coordinate[] oldCoords = achievable.getCoordinates();
+						Coordinate[] newCoords = new Coordinate[oldCoords.length];
+						for (int j = 0; j < oldCoords.length; j++)
+						{
+							Coordinate tmpC = oldCoords[j];
+							Coordinate newC = new Coordinate(0, 0);
+							newC = trans.transform(tmpC, newC);
+							newCoords[j] = newC;
+						}
+
+						// and put it back into a linestring
+						Geometry translated = GeoSupport.getFactory().createLinearRing(
+								newCoords);
+
+						// GeoSupport.writeGeometry("shape:" + i, translated);
+
+						if (res == null)
+						{
+							res = (LinearRing) translated;
+						}
+						else
+						{
+							// now we need to combine the two geometries
+							Geometry geom = res.union(translated);
+							Geometry geom2 = geom.convexHull();
+							res = (LinearRing) geom2.getBoundary();
+						}
+
+						// store the value
+						// newPts[i] = translated.getCoordinate();
 					}
 
-					// and put it back into a linestring
-					Geometry translated = GeoSupport.getFactory().createLinearRing(
-							newCoords);
+					// ok, create a shape from the new points
+					// LinearRing after =
+					// GeoSupport.getFactory().createLinearRing(newPts);
+					// LinearRing after =
+					// GeoSupport.getFactory().createLinearRing(translated.getCoordinates());
 
-					// GeoSupport.writeGeometry("shape:" + i, translated);
-
-					if (res == null)
-					{
-						res = (LinearRing) translated;
-					}
-					else
-					{
-						// now we need to combine the two geometries
-						Geometry geom = res.union(translated);
-						Geometry geom2 = geom.convexHull();
-						res = (LinearRing) geom2.getBoundary();
-					}
-
-					// store the value
-					// newPts[i] = translated.getCoordinate();
+					// extend our bounds with this new geometry
+					// res = (LinearRing) after;
 				}
-
-				// ok, create a shape from the new points
-				// LinearRing after = GeoSupport.getFactory().createLinearRing(newPts);
-				// LinearRing after =
-				// GeoSupport.getFactory().createLinearRing(translated.getCoordinates());
-
-				// extend our bounds with this new geometry
-				// res = (LinearRing) after;
 			}
 		}
 

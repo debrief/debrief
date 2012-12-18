@@ -29,7 +29,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class SpatialView extends ViewPart implements ISteppingListener, GeoSupport.GeoPlotter
 {
@@ -192,8 +192,8 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 						+ _numCycles++, false);
 
 				// get the shape
-				Polygon poly = loc.getPolygon();
-				Coordinate[] boundary = poly.getCoordinates();
+				Geometry geometry = loc.getGeometry();
+				Coordinate[] boundary = geometry.getCoordinates();
 				for (int i = 0; i < boundary.length; i++)
 				{
 					Coordinate coordinate = boundary[i];

@@ -11,7 +11,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class BearingMeasurementContributionTest extends TestCase
 {
@@ -53,8 +53,8 @@ public class BearingMeasurementContributionTest extends TestCase
 			BoundedState newState = (BoundedState) iter.next();
 			
 			// ok, output it.
-			Polygon poly = newState.getLocation().getPolygon();
-			Coordinate[] coords = poly.getCoordinates();
+			Geometry geo = newState.getLocation().getGeometry();
+			Coordinate[] coords = geo.getCoordinates();
 			for (int i = 0; i <=4; i++)
 			{
 				Coordinate coordinate = coords[i];

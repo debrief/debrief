@@ -42,7 +42,7 @@ public class RangeForecastContributionTest extends TestCase
 		// should be two states
 		assertEquals("still have one state", 1, ps.size());
 		final BoundedState theState = ps.states().iterator().next();
-		assertEquals("correct limits", 5, theState.getLocation().getPolygon().getNumPoints());
+		assertEquals("correct limits", 5, theState.getLocation().getGeometry().getNumPoints());
 	}
 
 	@SuppressWarnings("deprecation")
