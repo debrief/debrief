@@ -21,5 +21,6 @@
 			<attribute name="javadoc_location" value="jar:file:/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/org.ektorp-1.2.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
