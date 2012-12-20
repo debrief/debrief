@@ -583,7 +583,7 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 
 			// add a participant
 			final SSN ssn = new SSN(12);
-			ssn.setName("Subject92");
+			ssn.setName("Subject97");
 			ssn.setCategory(new Category(Category.Force.BLUE,
 					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
 			ssn.setDecisionModel(new ASSET.Models.Decision.Tactical.Wait(
@@ -605,9 +605,10 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 			ssn.addSensor(sampleSensor);
 			HeloMovementCharacteristics moveChars = (HeloMovementCharacteristics) HeloMovementCharacteristics
 					.getSampleChars();
-			moveChars.setTurnRate(0.04);
+			moveChars.setTurnRate(0.02);
 			moveChars.setDecelRate(new WorldAcceleration(0.05, WorldAcceleration.Kts_sec));
 			moveChars.setAccelRate(new WorldAcceleration(0.05, WorldAcceleration.Kts_sec));
+			moveChars.setMinSpeed(new WorldSpeed(4, WorldSpeed.Kts));
 			ssn.setMovementChars(moveChars);
 			Status theStat = new Status(12, 12);
 			theStat.setTime(new Date().getTime());
@@ -636,7 +637,27 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 			cs.step();
 
 			// do lots more steps
-			for (int i = 0; i < 150; i++)
+			for (int i = 0; i < 50; i++)
+			{
+				// do a step
+				cs.step();
+			}
+
+			userControl.setCourse(313);
+			userControl.setSpeed(new WorldSpeed(3, WorldSpeed.Kts));
+
+			// do lots more steps
+			for (int i = 0; i < 50; i++)
+			{
+				// do a step
+				cs.step();
+			}
+
+			userControl.setCourse(166);
+			userControl.setSpeed(new WorldSpeed(19, WorldSpeed.Kts));
+
+			// do lots more steps
+			for (int i = 0; i < 50; i++)
 			{
 				// do a step
 				cs.step();
