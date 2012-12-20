@@ -62,8 +62,9 @@ public class GNDDocHandler
 	private static String timeFor(Date date)
 	{
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
-		return df.format(date);
+		String theTime = df.format(date);
+		theTime = theTime.replace("+0000", "Z");
+		return theTime;
 	}
 
 	private static JsonNode locationFor(WorldLocation loc, ObjectMapper mapper)
