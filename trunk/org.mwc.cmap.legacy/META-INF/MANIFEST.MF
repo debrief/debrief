@@ -226,6 +226,7 @@ Export-Package:
    MWC.Utilities.ReaderWriter.XML,
    org.w3c.dom,
    org.xml.sax",
+ MWC.Utilities.ReaderWriter.json,
  MWC.Utilities.TextFormatting;uses:="junit.framework,MWC.GenericData",
  MWC.Utilities.Timer,
  codecLib.mpa,
