@@ -33,6 +33,113 @@ import MWC.TacticalData.Track;
 public class GNDDocHandler
 {
 
+	private static JsonNode timeBoundsFor(Track track, ObjectMapper mapper)
+	{
+		Date first = track.getStartDTG().getDate();
+		Date last = track.getEndDTG().getDate();
+
+		ObjectNode times = mapper.createObjectNode();
+		times.put("start", timeFor(first));
+		times.put("end", timeFor(last));
+
+		return times;
+	}
+
+	private static WorldArea geoBoundsFor(Track track)
+	{
+		WorldArea bounds = null;
+		Enumeration<Fix> fixes = track.getFixes();
+		while (fixes.hasMoreElements())
+		{
+			Fix fix = fixes.nextElement();
+			if (bounds == null)
+				bounds = new WorldArea(fix.getLocation(), fix.getLocation());
+			else
+				bounds.extend(fix.getLocation());
+		}
+		return bounds;
+	}
+
+	private static String timeFor(Date date)
+	{
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+
+		return df.format(date);
+	}
+
+	private static JsonNode locationFor(WorldLocation loc, ObjectMapper mapper)
+	{
+		ArrayNode locs = mapper.createArrayNode();
+		locs.add(loc.getLat());
+		locs.add(loc.getLong());
+		return locs;
+	}
+
+	public static String toJSON(String name, Track track, String platform,
+			String platformType, String sensor, String sensorType, String trial)
+			throws IOException
+	{
+		String res;
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
+		ObjectNode root = mapper.createObjectNode();
+
+		ObjectNode metadata = mapper.createObjectNode();
+		metadata.put("name", name);
+		metadata.put("platform", platform);
+		metadata.put("platform_type", platformType);
+		metadata.put("sensor", sensor);
+		metadata.put("sensor_type", sensorType);
+		metadata.put("trial", trial);
+		metadata.put("type", "track");
+
+		ArrayNode types = mapper.createArrayNode();
+		types.add("lat");
+		types.add("lon");
+		types.add("time");
+		types.add("elevation");
+		metadata.put("data_type", types);
+
+		// now the location bounds
+		WorldArea theArea = geoBoundsFor(track);
+		ObjectNode gBounds = mapper.createObjectNode();
+		gBounds.put("tl", locationFor(theArea.getTopLeft(), mapper));
+		gBounds.put("br", locationFor(theArea.getBottomRight(), mapper));
+		metadata.put("geo_bounds", gBounds);
+
+		// and the time bounds
+		metadata.put("time_bounds", timeBoundsFor(track, mapper));
+
+		root.put("metadata", metadata);
+
+		// now the data arrays
+		ArrayNode latArr = mapper.createArrayNode();
+		ArrayNode longArr = mapper.createArrayNode();
+		ArrayNode timeArr = mapper.createArrayNode();
+		ArrayNode eleArr = mapper.createArrayNode();
+
+		Enumeration<Fix> fixes = track.getFixes();
+		while (fixes.hasMoreElements())
+		{
+			Fix fix = fixes.nextElement();
+			latArr.add(fix.getLocation().getLat());
+			longArr.add(fix.getLocation().getLong());
+			timeArr.add(timeFor(fix.getTime().getDate()));
+			eleArr.add(-fix.getLocation().getDepth());
+		}
+
+		root.put("lat", latArr);
+		root.put("lon", longArr);
+		root.put("time", timeArr);
+		root.put("elevation", eleArr);
+
+		StringWriter writer = new StringWriter();
+		mapper.writeValue(writer, root);
+		res = writer.toString();
+		return res;
+
+	}
+
 	public static class GNDDocument
 	{
 		private String _name;
@@ -123,7 +230,7 @@ public class GNDDocHandler
 					WorldLocation theLoc = new WorldLocation(lat, lon, depth);
 					Fix thisF = new Fix(dt, theLoc, course, speed);
 					_track.addFix(thisF);
-					
+
 					ctr++;
 				}
 
@@ -175,32 +282,32 @@ public class GNDDocHandler
 
 		public ObjectNode getMetadata(ObjectMapper mapper)
 		{
-			ObjectNode root = mapper.createObjectNode();
-			root.put("name", _name);
-			root.put("platform", _platform);
-			root.put("platform_type", _platformType);
-			root.put("sensor", _sensor);
-			root.put("sensor_type", _sensorType);
-			root.put("trial", _trial);
-			root.put("type", "track");
+			ObjectNode metadata = mapper.createObjectNode();
+			metadata.put("name", _name);
+			metadata.put("platform", _platform);
+			metadata.put("platform_type", _platformType);
+			metadata.put("sensor", _sensor);
+			metadata.put("sensor_type", _sensorType);
+			metadata.put("trial", _trial);
+			metadata.put("type", "track");
 
 			ArrayNode types = mapper.createArrayNode();
 			types.add("lat");
 			types.add("lon");
 			types.add("time");
 			types.add("elevation");
-			root.put("data_type", types);
+			metadata.put("data_type", types);
 
 			// now the location bounds
 			WorldArea theArea = geoBoundsFor(_track);
 			ObjectNode gBounds = mapper.createObjectNode();
 			gBounds.put("tl", toJsonObject(theArea.getTopLeft(), mapper));
 			gBounds.put("br", toJsonObject(theArea.getBottomRight(), mapper));
-			root.put("geo_bounds", gBounds);
+			metadata.put("geo_bounds", gBounds);
 
 			// and the time bounds
-			root.put("time_bounds", timeBoundsFor(_track, mapper));
-			return root;
+			metadata.put("time_bounds", timeBoundsFor(_track, mapper));
+			return metadata;
 		}
 
 		private JsonNode toJsonObject(WorldLocation loc, ObjectMapper mapper)
