@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TreeSet;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.support.UtilsService;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
@@ -39,5 +40,12 @@ public class RCPUtilsService implements UtilsService
 			return null;
 		}		
 		return currentElement == null ? set.first() : set.higher(currentElement);
+	}
+
+	@Override
+	public String formatGeoPoint(GeoPoint geoPoint) {
+		// TODO Auto-generated method stub
+		// Implementation logic can be copied from GWT counterpart, and logic needs to be fix to show degree symbol accordingly.
+		return null;
 	}
 }

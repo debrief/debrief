@@ -17,6 +17,7 @@ import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class LocationForecastContributionView extends BaseContributionView
 {
@@ -187,7 +188,7 @@ public class LocationForecastContributionView extends BaseContributionView
 		
 		GeoPoint gp = _myData.getEstimate();
 		// TODO: Akash, we need to convert gp to a string
-		String strVal = gp.toString();
+		String strVal = SupportServices.INSTANCE.getUtilsService().formatGeoPoint(gp);
 		estimate.setData(strVal);
 
 		contribution.addPropertyChangeListener(LocationForecastContribution.LIMIT,
