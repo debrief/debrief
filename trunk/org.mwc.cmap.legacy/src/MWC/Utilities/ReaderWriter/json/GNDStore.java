@@ -10,6 +10,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -54,11 +55,11 @@ public class GNDStore
 		return res;
 	}
 
-	public void put(GNDDocHandler.GNDDocument doc)
-			throws JsonGenerationException, JsonMappingException, IOException
+	public void put(JsonNode doc) throws JsonGenerationException,
+			JsonMappingException, IOException
 	{
 		String THE_URL = _url + "/" + _dbName;
-		String theDoc = doc.toJSON();
+		String theDoc = GNDDocHandler.asString(doc);
 
 		Post post = Http.post(THE_URL, theDoc).header("Content-type",
 				"application/json");
@@ -103,9 +104,8 @@ public class GNDStore
 			assertNotNull("has some fixes", fixes.hasMoreElements());
 		}
 
-		@SuppressWarnings("unused")
-		public void testPost() throws JsonGenerationException, JsonMappingException,
-				IOException
+		public void testPost() throws JsonGenerationException,
+				JsonMappingException, IOException
 		{
 			// get a track
 			Track trk = GNDDocHandler.TestJSON.getTestTrack("tester");
@@ -113,9 +113,10 @@ public class GNDStore
 			String db = "tracks";
 
 			GNDStore store = new GNDStore(url, db);
-			GNDDocument theDoc = new GNDDocument(trk.getName(), trk, "tst_platform2",
-					"test_plat_type", "test_sensor", "test_sensor_type", "test_trial");
-	//		store.put(theDoc);
+			JsonNode theDoc = new GNDDocHandler().toJson(trk.getName(), trk,
+					"tst_platform2", "test_plat_type", "test_sensor", "test_sensor_type",
+					"test_trial");
+			store.put(theDoc);
 		}
 
 		@SuppressWarnings("unused")
@@ -133,7 +134,7 @@ public class GNDStore
 				GNDDocument theDoc = new GNDDocument(trk.getName(), trk,
 						"tst_platform2", "test_plat_type", "test_sensor",
 						"test_sensor_type", "test_trial");
-	//			store.put(theDoc);
+				// store.put(theDoc);
 			}
 		}
 

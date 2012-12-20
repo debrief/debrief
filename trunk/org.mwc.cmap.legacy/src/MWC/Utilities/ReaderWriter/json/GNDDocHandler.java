@@ -15,7 +15,6 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser.Feature;
@@ -75,11 +74,10 @@ public class GNDDocHandler
 		return locs;
 	}
 
-	public static String toJSON(String name, Track track, String platform,
+	public ObjectNode toJson(String name, Track track, String platform,
 			String platformType, String sensor, String sensorType, String trial)
 			throws IOException
 	{
-		String res;
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 		ObjectNode root = mapper.createObjectNode();
@@ -133,21 +131,30 @@ public class GNDDocHandler
 		root.put("time", timeArr);
 		root.put("elevation", eleArr);
 
+		return root;
+	}
+	
+	public static String asString(JsonNode root) throws IOException
+	{
+		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, root);
-		res = writer.toString();
-		return res;
-
+		return  writer.toString();
 	}
-
-	public static class GNDDocument
+	
+	public final  static class GNDDocument
 	{
 		private String _name;
 		private Track _track;
+		@SuppressWarnings("unused")
 		private String _platform;
+		@SuppressWarnings("unused")
 		private String _platformType;
+		@SuppressWarnings("unused")
 		private String _sensor;
+		@SuppressWarnings("unused")
 		private String _sensorType;
+		@SuppressWarnings("unused")
 		private String _trial;
 
 		public GNDDocument(String name, Track track, String platform,
@@ -238,120 +245,9 @@ public class GNDDocHandler
 
 		}
 
-		public String toJSON() throws JsonGenerationException,
-				JsonMappingException, IOException
-		{
-			String res;
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
-			ObjectNode root = mapper.createObjectNode();
-			root.put("metadata", getMetadata(mapper));
-
-			// now the data arrays
-			ArrayNode latArr = mapper.createArrayNode();
-			ArrayNode longArr = mapper.createArrayNode();
-			ArrayNode timeArr = mapper.createArrayNode();
-			ArrayNode eleArr = mapper.createArrayNode();
-
-			Enumeration<Fix> fixes = _track.getFixes();
-			while (fixes.hasMoreElements())
-			{
-				Fix fix = fixes.nextElement();
-				latArr.add(fix.getLocation().getLat());
-				longArr.add(fix.getLocation().getLong());
-				timeArr.add(timeFor(fix.getTime().getDate()));
-				eleArr.add(-fix.getLocation().getDepth());
-			}
-
-			root.put("lat", latArr);
-			root.put("lon", longArr);
-			root.put("time", timeArr);
-			root.put("elevation", eleArr);
-
-			StringWriter writer = new StringWriter();
-			mapper.writeValue(writer, root);
-			res = writer.toString();
-
-			return res;
-		}
-
 		public Track getTrack()
 		{
 			return _track;
-		}
-
-		public ObjectNode getMetadata(ObjectMapper mapper)
-		{
-			ObjectNode metadata = mapper.createObjectNode();
-			metadata.put("name", _name);
-			metadata.put("platform", _platform);
-			metadata.put("platform_type", _platformType);
-			metadata.put("sensor", _sensor);
-			metadata.put("sensor_type", _sensorType);
-			metadata.put("trial", _trial);
-			metadata.put("type", "track");
-
-			ArrayNode types = mapper.createArrayNode();
-			types.add("lat");
-			types.add("lon");
-			types.add("time");
-			types.add("elevation");
-			metadata.put("data_type", types);
-
-			// now the location bounds
-			WorldArea theArea = geoBoundsFor(_track);
-			ObjectNode gBounds = mapper.createObjectNode();
-			gBounds.put("tl", toJsonObject(theArea.getTopLeft(), mapper));
-			gBounds.put("br", toJsonObject(theArea.getBottomRight(), mapper));
-			metadata.put("geo_bounds", gBounds);
-
-			// and the time bounds
-			metadata.put("time_bounds", timeBoundsFor(_track, mapper));
-			return metadata;
-		}
-
-		private JsonNode toJsonObject(WorldLocation loc, ObjectMapper mapper)
-		{
-			ArrayNode locs = mapper.createArrayNode();
-			locs.add(loc.getLat());
-			locs.add(loc.getLong());
-			return locs;
-		}
-
-		private JsonNode timeBoundsFor(Track track, ObjectMapper mapper)
-		{
-			Date first = track.getStartDTG().getDate();
-			Date last = track.getEndDTG().getDate();
-
-			ObjectNode times = mapper.createObjectNode();
-			times.put("start", timeFor(first));
-			times.put("end", timeFor(last));
-
-			return times;
-		}
-
-		private WorldArea geoBoundsFor(Track track)
-		{
-			WorldArea bounds = null;
-			Enumeration<Fix> fixes = track.getFixes();
-			while (fixes.hasMoreElements())
-			{
-				Fix fix = fixes.nextElement();
-				if (bounds == null)
-					bounds = new WorldArea(fix.getLocation(), fix.getLocation());
-				else
-					bounds.extend(fix.getLocation());
-			}
-			// String res = "{\"tl\":" + toString(bounds.getTopLeft()) + ",\"br\":"
-			// + toString(bounds.getBottomRight()) + "}";
-			return bounds;
-		}
-
-		private String timeFor(Date date)
-		{
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-
-			return df.format(date);
 		}
 
 		private Date timeFrom(String str) throws ParseException
@@ -403,11 +299,6 @@ public class GNDDocHandler
 			return track;
 		}
 
-		public static String getTestString()
-		{
-			return null;
-		}
-
 		public void testToGNDDoc() throws IOException
 		{
 			// ok, create a bit of a track
@@ -422,7 +313,12 @@ public class GNDDocHandler
 			assertNotNull("No output received", doc);
 
 			// and check the contents
-			ObjectNode metadata = doc.getMetadata(new ObjectMapper());
+			ObjectNode root = new GNDDocHandler().toJson("NAME", track, "PLATFORM", "P_TYPE",
+					"SENS", "S_TYPE", "TRIAL");		
+
+			assertNotNull("found root", root);
+			
+			ObjectNode metadata = (ObjectNode) root.get("metadata");
 
 			assertNotNull("metadata not found", metadata);
 			assertEquals("name wrong", "NAME", metadata.get("name").asText());
@@ -438,10 +334,6 @@ public class GNDDocHandler
 			// "[\"lat\",\"long\",\"time\",\"elevation\"", metadata.get("data_type"));
 			assertNotNull("geo bounds wrong", metadata.get("geo_bounds"));
 			assertNotNull("time bounds wrong", metadata.get("time_bounds"));
-
-			// try the overall export
-			Object res = doc.toJSON();
-			assertNotNull(res);
 		}
 	}
 
