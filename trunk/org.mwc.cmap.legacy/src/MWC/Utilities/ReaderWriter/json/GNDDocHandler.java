@@ -63,7 +63,9 @@ public class GNDDocHandler
 	{
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		String theTime = df.format(date);
+		// TODO: provide tidier timezone handling here
 		theTime = theTime.replace("+0000", "Z");
+		theTime = theTime.replace("+0100", "Z");
 		return theTime;
 	}
 

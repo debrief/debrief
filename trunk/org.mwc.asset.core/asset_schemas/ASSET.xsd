@@ -175,6 +175,7 @@
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="PlotInvestigationSubjectObserver" type="PlotInvestigationSubjectObserverType"/>
+			<xs:element name="CloudObserver" type="CloudObserverType"/>
 			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType"/>
 			<xs:element name="DebriefDeployableSensorLocationObserver" type="DebriefDeployableSensorLocationObserverType"/>
 			<xs:element name="TrackPlotObserver" type="TrackPlotObserverType"/>
@@ -3526,6 +3527,57 @@
 				<xs:attribute name="record_positions" type="xs:boolean" use="required">
 					<xs:annotation>
 						<xs:documentation>Whether to record positions to file
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+		<xs:complexType name="CloudObserverType">
+		<xs:annotation>
+			<xs:documentation>Record tracks to the GND cloud</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited,
+				SubjectToTrack.
+				Editable: inherited</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreFileObserverType">
+				<xs:sequence>
+					<xs:element name="SubjectToTrack" type="TargetTypeType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The type of target we want to record a
+								narrative full
+								(or omit to record all)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="record_detections" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether to record detections to file
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="record_decisions" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether to record decisions to file
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="record_positions" type="xs:boolean" use="required">
+					<xs:annotation>
+						<xs:documentation>Whether to record positions to file
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="hostURL" type="xs:anyURI" use="required">
+					<xs:annotation>
+						<xs:documentation>URL of the cloud store
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="database" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation>Name of database to use in cloud store
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>

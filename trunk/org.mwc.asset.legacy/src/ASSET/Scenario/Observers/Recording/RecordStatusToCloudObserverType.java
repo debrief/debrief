@@ -703,7 +703,7 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 
 			try
 			{
-				System.err.println("about to export");
+				System.err.println("about to export at" + new Date().toString());
 
 				JsonNode js = new GNDDocHandler().toJson(key.getName(), track,
 						key.getName(), key.getCategory().getType(), "ASSET_SENSOR",
@@ -717,7 +717,7 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 
 					store.put(js);
 
-					System.err.println("put complete");
+					System.err.println("put complete at" + new Date().toString());
 				}
 			}
 			catch (IOException e)
