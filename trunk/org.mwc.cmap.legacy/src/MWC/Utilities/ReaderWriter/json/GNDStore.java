@@ -103,7 +103,8 @@ public class GNDStore
 			assertNotNull("has some fixes", fixes.hasMoreElements());
 		}
 
-		public void testPut() throws JsonGenerationException, JsonMappingException,
+		@SuppressWarnings("unused")
+		public void testPost() throws JsonGenerationException, JsonMappingException,
 				IOException
 		{
 			// get a track
@@ -117,7 +118,8 @@ public class GNDStore
 	//		store.put(theDoc);
 		}
 
-		public void testBulkPut() throws JsonGenerationException,
+		@SuppressWarnings("unused")
+		public void testBulkPost() throws JsonGenerationException,
 				JsonMappingException, IOException
 		{
 			for (int i = 0; i < 10; i++)
