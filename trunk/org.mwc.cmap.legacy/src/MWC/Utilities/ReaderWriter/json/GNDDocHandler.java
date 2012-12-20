@@ -96,6 +96,8 @@ public class GNDDocHandler
 		types.add("lon");
 		types.add("time");
 		types.add("elevation");
+		types.add("course");
+		types.add("speed");
 		metadata.put("data_type", types);
 
 		// now the location bounds
@@ -115,6 +117,8 @@ public class GNDDocHandler
 		ArrayNode longArr = mapper.createArrayNode();
 		ArrayNode timeArr = mapper.createArrayNode();
 		ArrayNode eleArr = mapper.createArrayNode();
+		ArrayNode crseArr = mapper.createArrayNode();
+		ArrayNode speedArr = mapper.createArrayNode();
 
 		Enumeration<Fix> fixes = track.getFixes();
 		while (fixes.hasMoreElements())
@@ -124,12 +128,22 @@ public class GNDDocHandler
 			longArr.add(fix.getLocation().getLong());
 			timeArr.add(timeFor(fix.getTime().getDate()));
 			eleArr.add(-fix.getLocation().getDepth());
+			crseArr.add(fix.getCourse());
+			
+			
+			// get m/s
+			double yps = fix.getSpeed();
+			double kts = MWC.Algorithms.Conversions.Yps2Kts(yps);
+			double m_sec = MWC.Algorithms.Conversions.Kts2Mps(kts);
+			speedArr.add(m_sec);
 		}
 
 		root.put("lat", latArr);
 		root.put("lon", longArr);
 		root.put("time", timeArr);
 		root.put("elevation", eleArr);
+		root.put("course",  crseArr);
+		root.put("speed", speedArr);
 
 		return root;
 	}
