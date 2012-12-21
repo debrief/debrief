@@ -176,7 +176,7 @@ public class GNDStore
 
 			System.out.println("before bulk put:" + new Date());
 
-			store.bulkPut(nodes);
+			store.bulkPut(nodes, 10);
 
 			System.out.println("after bulk put:" + new Date());
 
@@ -184,38 +184,55 @@ public class GNDStore
 
 	}
 
-	public void bulkPut(ArrayList<JsonNode> theTracks) throws IOException
+	public void bulkPut(ArrayList<JsonNode> theTracks,int batchSize) throws IOException
 	{
-		// ok, collate the bulk submit object
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode root = mapper.createObjectNode();
-		ArrayNode trackArray = mapper.createArrayNode();
-		trackArray.addAll(theTracks);
-		root.put("docs", trackArray);
+		// hmm, how many tracks are there?
+		int len = theTracks.size();
 
-		// ok, now formulate the URL
-		String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
-		String theDoc = GNDDocHandler.asString(root);
-
-		Post post = Http.post(THE_URL, theDoc).header("Content-type",
-				"application/json");
-
-		if (post.responseCode() == 201)
+		for (int i = 0; i < len; i += batchSize)
 		{
 
-			JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
-			ArrayNode docs = (ArrayNode) mapper.readTree(jp);
-			if (theTracks.size() != docs.size())
+			// ok, collate the bulk submit object
+			ObjectMapper mapper = new ObjectMapper();
+			ObjectNode root = mapper.createObjectNode();
+			ArrayNode trackArray = mapper.createArrayNode();
+
+			for (int j = i; j < i + batchSize && j < len; j++)
+			{
+					trackArray.add(theTracks.get(j));
+			}
+
+			// trackArray.addAll(theTracks);
+			root.put("docs", trackArray);
+
+			// ok, now formulate the URL
+			String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
+			String theDoc = GNDDocHandler.asString(root);
+			
+			System.out.println("ABOUT TO PUT:" + theDoc.length() + " chars");
+
+			Post post = Http.post(THE_URL, theDoc).header("Content-type",
+					"application/json");
+
+			if (post.responseCode() == 201)
+			{
+				System.out.println("PUT complete");
+				JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
+				ArrayNode docs = (ArrayNode) mapper.readTree(jp);
+				if (trackArray.size() != docs.size())
+				{
+					MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
+							post.text(), null);
+				}
+			}
+			else
 			{
 				MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
-						post.text(), null);
+						post.responseMessage(), null);
 			}
+
 		}
-		else
-		{
-			MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
-					post.responseMessage(), null);
-		}
+
 	}
 
 }

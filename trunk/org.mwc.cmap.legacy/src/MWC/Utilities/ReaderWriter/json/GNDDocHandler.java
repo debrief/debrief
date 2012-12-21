@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -27,6 +28,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.Track;
 
 public class GNDDocHandler
@@ -83,21 +85,21 @@ public class GNDDocHandler
 		mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 		ObjectNode root = mapper.createObjectNode();
 
-		ObjectNode metadata = mapper.createObjectNode();
-		metadata.put("name", name);
-		metadata.put("platform", platform);
-		metadata.put("platform_type", platformType);
-		metadata.put("sensor", sensor);
-		metadata.put("sensor_type", sensorType);
-		metadata.put("trial", trial);
-		metadata.put("type", "track");
+		// sort out the metadata
+		ObjectNode metadata = doMetadata(name, platform, platformType, sensor,
+				sensorType, trial, mapper);
 
+		// store the metadata
+		root.put("metadata", metadata);
+
+		// now the type specific stuff
+		metadata.put("type", "track");
 		ArrayNode types = mapper.createArrayNode();
 		types.add("lat");
 		types.add("lon");
 		types.add("time");
 		types.add("elevation");
-		types.add("course");
+		types.add("heading");
 		types.add("speed");
 		metadata.put("data_type", types);
 
@@ -111,14 +113,12 @@ public class GNDDocHandler
 		// and the time bounds
 		metadata.put("time_bounds", timeBoundsFor(track, mapper));
 
-		root.put("metadata", metadata);
-
 		// now the data arrays
 		ArrayNode latArr = mapper.createArrayNode();
 		ArrayNode longArr = mapper.createArrayNode();
 		ArrayNode timeArr = mapper.createArrayNode();
 		ArrayNode eleArr = mapper.createArrayNode();
-		ArrayNode crseArr = mapper.createArrayNode();
+		ArrayNode headArr = mapper.createArrayNode();
 		ArrayNode speedArr = mapper.createArrayNode();
 
 		Enumeration<Fix> fixes = track.getFixes();
@@ -129,9 +129,8 @@ public class GNDDocHandler
 			longArr.add(fix.getLocation().getLong());
 			timeArr.add(timeFor(fix.getTime().getDate()));
 			eleArr.add(-fix.getLocation().getDepth());
-			crseArr.add(fix.getCourse());
-			
-			
+			headArr.add(fix.getCourse());
+
 			// get m/s
 			double yps = fix.getSpeed();
 			double kts = MWC.Algorithms.Conversions.Yps2Kts(yps);
@@ -143,21 +142,103 @@ public class GNDDocHandler
 		root.put("lon", longArr);
 		root.put("time", timeArr);
 		root.put("elevation", eleArr);
-		root.put("course",  crseArr);
+		root.put("heading", headArr);
 		root.put("speed", speedArr);
 
 		return root;
 	}
-	
+
+	public ObjectNode doMetadata(String name, String platform,
+			String platformType, String sensor, String sensorType, String trial,
+			ObjectMapper mapper)
+	{
+		ObjectNode metadata = mapper.createObjectNode();
+		metadata.put("name", name);
+		metadata.put("platform", platform);
+		metadata.put("platform_type", platformType);
+		metadata.put("sensor", sensor);
+		metadata.put("sensor_type", sensorType);
+		metadata.put("trial", trial);
+
+		return metadata;
+	}
+
+	public ObjectNode toJson(String name, List<NarrativeEntry> entries,
+			String platform, String platformType, String sensor, String sensorType,
+			String trial) throws IOException
+	{
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
+		ObjectNode root = mapper.createObjectNode();
+
+		// sort out the metadata
+		ObjectNode metadata = doMetadata(name, platform, platformType, sensor,
+				sensorType, trial, mapper);
+
+		// store the metadata
+		root.put("metadata", metadata);
+
+		// now the type specific stuff
+		metadata.put("type", "narrative");
+		ArrayNode types = mapper.createArrayNode();
+		types.add("obs");
+		types.add("obs_type");
+		metadata.put("data_type", types);
+
+		// now the data arrays
+		ArrayNode obsArr = mapper.createArrayNode();
+		ArrayNode obsTypeArr = mapper.createArrayNode();
+		ArrayNode timeArr = mapper.createArrayNode();
+
+		long first = -1;
+		long last = 0;
+
+		Iterator<NarrativeEntry> iter = entries.iterator();
+		while (iter.hasNext())
+		{
+			NarrativeEntry entry = iter.next();
+
+			obsArr.add(entry.getEntry());
+
+			if (entry.getType() != null)
+				obsTypeArr.add(entry.getType());
+
+			HiResDate time = entry.getDTG();
+			timeArr.add(timeFor(time.getDate()));
+			long t = time.getDate().getTime();
+
+			// store the first
+			if (first == -1)
+				first = t;
+
+			// and the last
+			last = Math.max(last, t);
+		}
+
+		root.put("obs", obsArr);
+		if (obsTypeArr.size() > 0)
+			root.put("obs_type", obsTypeArr);
+		root.put("time", timeArr);
+
+		// store the time bounds
+		ObjectNode times = mapper.createObjectNode();
+		times.put("start", timeFor(new Date(first)));
+		times.put("end", timeFor(new Date(last)));
+		metadata.put("time_bounds", times);
+
+		return root;
+	}
+
 	public static String asString(JsonNode root) throws IOException
 	{
 		ObjectMapper mapper = new ObjectMapper();
 		StringWriter writer = new StringWriter();
 		mapper.writeValue(writer, root);
-		return  writer.toString();
+		return writer.toString();
 	}
-	
-	public final  static class GNDDocument
+
+	public final static class GNDDocument
 	{
 		private String _name;
 		private Track _track;
@@ -328,11 +409,11 @@ public class GNDDocHandler
 			assertNotNull("No output received", doc);
 
 			// and check the contents
-			ObjectNode root = new GNDDocHandler().toJson("NAME", track, "PLATFORM", "P_TYPE",
-					"SENS", "S_TYPE", "TRIAL");		
+			ObjectNode root = new GNDDocHandler().toJson("NAME", track, "PLATFORM",
+					"P_TYPE", "SENS", "S_TYPE", "TRIAL");
 
 			assertNotNull("found root", root);
-			
+
 			ObjectNode metadata = (ObjectNode) root.get("metadata");
 
 			assertNotNull("metadata not found", metadata);

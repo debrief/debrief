@@ -122,6 +122,10 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 
 		_url = storeURL;
 		_database = databaseNAme;
+		
+		_tracks = new HashMap<NetworkParticipant, Track>();
+		_narratives = new HashMap<NetworkParticipant, List<NarrativeEntry>>();
+
 	}
 
 	// ////////////////////////////////////////////////
@@ -168,155 +172,12 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 			_tracks.put(pt, theTrack);
 		}
 
-		Fix newF = new Fix(new HiResDate(stat.getTime()), stat.getLocation(),
+		Fix newF = new Fix(new HiResDate(newTime), stat.getLocation(),
 				stat.getCourse(), stat.getSpeed().getValueIn(WorldSpeed.M_sec));
 		theTrack.addFix(newF);
 
-		// try
-		// {
-		// // see if we've loaded this participant
-		// Integer theIndex = _participantIds.get(pt.getName() + POSITION_FORMAT);
-		// PreparedStatement stP;
-		//
-		// if (theIndex == null)
-		// {
-		// theIndex = getDatasetIndexFor(pt.getName(), POSITION_FORMAT);
-		// _participantIds.put(pt.getName() + POSITION_FORMAT, theIndex);
-		// }
-		//
-		// stP = _conn
-		// .prepareStatement("INSERT INTO dataItems(datasetid, dtg, location, contenttype, content) VALUES"
-		// +
-		// "(?, ?, ?,?,?)");
-		// stP.setInt(1, theIndex.intValue());
-		// stP.setTimestamp(2, new Timestamp(stat.getTime()));
-		// stP.setObject(3, createGeometry(loc));
-		// stP.setString(4, "application/vstatus+xml");
-		// stP.setString(5, wrapStatus(stat.getCourse(), stat.getSpeed()));
-		// stP.executeUpdate();
-		// stP.close();
-		// }
-		// catch (SQLException e)
-		// {
-		// e.printStackTrace();
-		// }
 	}
 
-	//
-	// private String wrapStatus(double course, WorldSpeed speed)
-	// {
-	// return "<status course=\"" + course + "\" speed=\"" + speed.toString() +
-	// "\" />";
-	// }
-	//
-	// private org.postgis.PGgeometry createGeometry(WorldLocation loc)
-	// {
-	// org.postgis.Point theP = new org.postgis.Point(loc.getLong(), loc.getLat(),
-	// -loc.getDepth());
-	// theP.setSrid(4326);
-	// return new org.postgis.PGgeometry(theP);
-	// }
-
-	// private Integer getDatasetIndexFor(String participantName, String
-	// dataFormat)
-	// throws SQLException
-	// {
-	// int thisParticipantIndex = 0;
-	// ResultSet rs;
-	// PreparedStatement stP;
-	// Statement st = _conn.createStatement();
-	//
-	// // does the participant exist in the database?
-	// rs =
-	// st.executeQuery("SELECT platformid from platforms where platformname = '"
-	// + participantName + "';");
-	// if (rs.next())
-	// {
-	// thisParticipantIndex = rs.getInt(1);
-	// }
-	// else
-	// {
-	// // nope, better create it
-	// stP =
-	// _conn.prepareStatement("INSERT INTO platforms(platformname) VALUES (?)");
-	// stP.setString(1, participantName);
-	// stP.executeUpdate();
-	// stP.close();
-	//
-	// // and get the id
-	// rs = st
-	// .executeQuery("SELECT Max(platformid) AS MaxOfID FROM platforms;");
-	// rs.next();
-	// thisParticipantIndex = rs.getInt(1);
-	// }
-	//
-	// // does the data format in the database?
-	// int thisExerciseIndex = 0;
-	// rs =
-	// st.executeQuery("SELECT exerciseid from exercises where exercisename = '"
-	// + _scenarioName + "';");
-	// if (rs.next())
-	// {
-	// thisExerciseIndex = rs.getInt(1);
-	// }
-	// else
-	// {
-	// // nope, better create it
-	// stP =
-	// _conn.prepareStatement("INSERT INTO exercises(exercisename) VALUES (?)");
-	// stP.setString(1, _scenarioName);
-	// stP.executeUpdate();
-	// stP.close();
-	//
-	// // and get the id
-	// rs = st.executeQuery("SELECT Max(exerciseid) AS MaxOfID FROM exercises;");
-	// rs.next();
-	// thisExerciseIndex = rs.getInt(1);
-	// }
-	//
-	// // does the data format in the database?
-	// int thisFormatIndex = 0;
-	// rs = st.executeQuery("SELECT formatid from formats where formatname = '"
-	// + dataFormat + "';");
-	// if (rs.next())
-	// {
-	// thisFormatIndex = rs.getInt(1);
-	// }
-	// else
-	// {
-	// // nope, better create it
-	// stP =
-	// _conn.prepareStatement("INSERT INTO formats(formatname, iconname) VALUES (?,?)");
-	// stP.setString(1, dataFormat);
-	// stP.setString(2, dataFormat +".png");
-	// stP.executeUpdate();
-	// stP.close();
-	//
-	// // and get the id
-	// rs = st.executeQuery("SELECT Max(formatid) AS MaxOfID FROM formats;");
-	// rs.next();
-	// thisFormatIndex = rs.getInt(1);
-	// }
-	//
-	// // ok, now create the dataset
-	// stP = _conn
-	// .prepareStatement("INSERT INTO datasets(datasetname, platformid, formatId, exerciseid) VALUES (?,?,?,?)");
-	// stP.setString(1, _datasetPrefix + " dated:" + new Date().toString());
-	// stP.setInt(2, thisParticipantIndex);
-	// stP.setInt(3, thisFormatIndex);
-	// stP.setInt(4, thisExerciseIndex);
-	// stP.executeUpdate();
-	// stP.close();
-	//
-	// // and get the id
-	// rs = st.executeQuery("SELECT Max(datasetid) AS MaxOfID FROM datasets;");
-	// rs.next();
-	// int thisDatasetIndex = rs.getInt(1);
-	//
-	// st.close();
-	//
-	// return new Integer(thisDatasetIndex);
-	// }
 
 	/**
 	 * write these detections to file
@@ -391,32 +252,20 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 	protected void writeThisDecisionDetail(NetworkParticipant pt,
 			String activity, long dtg)
 	{
-		// TODO: implement writing decision to file
+		
+		if (_narratives == null)
+			_narratives = new HashMap<NetworkParticipant, List<NarrativeEntry>>();
 
-		// try
-		// {
-		// // see if we've loaded this participant
-		// Integer theIndex = _participantIds.get(pt.getName() + NARRATIVE_FORMAT);
-		// PreparedStatement stP;
-		//
-		// if (theIndex == null)
-		// {
-		// theIndex = getDatasetIndexFor(pt.getName(), NARRATIVE_FORMAT);
-		// _participantIds.put(pt.getName() + NARRATIVE_FORMAT, theIndex);
-		// }
-		//
-		// stP = _conn
-		// .prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
-		// stP.setInt(1, theIndex.intValue());
-		// stP.setTimestamp(2, new Timestamp(dtg));
-		// stP.setString(3, activity);
-		// stP.executeUpdate();
-		// stP.close();
-		// }
-		// catch (SQLException e)
-		// {
-		// e.printStackTrace();
-		// }
+		// find hte track
+		List<NarrativeEntry> thisNarr = _narratives.get(pt);
+
+		if (thisNarr == null)
+		{
+			thisNarr = new ArrayList<NarrativeEntry>();
+			_narratives.put(pt,  thisNarr);
+		}
+		
+		thisNarr.add(new NarrativeEntry(pt.getName(), new HiResDate(dtg), activity));
 	}
 
 	/**
@@ -694,10 +543,9 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 	{
 		GNDStore store = null;
 
-		ArrayList<JsonNode> theTracks = new ArrayList<JsonNode>();
+		ArrayList<JsonNode> theDocs = new ArrayList<JsonNode>();
 		try
 		{
-
 			// do we have any tracks?
 			Collection<NetworkParticipant> keys = _tracks.keySet();
 			for (Iterator<NetworkParticipant> iterator = keys.iterator(); iterator
@@ -710,18 +558,48 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 						key.getName(), key.getCategory().getType(), "ASSET_SENSOR",
 						"ASSET_POSITION", scenario.getName());
 
-				theTracks.add(js);
+				theDocs.add(js);
 			}
 
 			// do we have any?
-			if (theTracks.size() > 0)
+			if (theDocs.size() > 0)
 			{
 				// ok, do bulk submit
 				if (store == null)
 					store = new GNDStore(_url, _database);
 
 				if (store != null)
-					store.bulkPut(theTracks);
+					store.bulkPut(theDocs, 5);
+			}
+			
+			// clear the list of tracks
+			theDocs.clear();
+			
+			// and the decisions
+			// do we have any tracks?
+			keys = _narratives.keySet();
+			for (Iterator<NetworkParticipant> iterator = keys.iterator(); iterator
+					.hasNext();)
+			{
+				NetworkParticipant key = iterator.next();
+				List<NarrativeEntry> thisNarr = _narratives.get(key);
+
+				JsonNode js = new GNDDocHandler().toJson(key.getName(), thisNarr,
+						key.getName(), key.getCategory().getType(), "ASSET_SENSOR",
+						"ASSET_DECISION", scenario.getName());
+
+				theDocs.add(js);
+			}
+
+			// do we have any?
+			if (theDocs.size() > 0)
+			{
+				// ok, do bulk submit
+				if (store == null)
+					store = new GNDStore(_url, _database);
+
+				if (store != null)
+					store.bulkPut(theDocs, 5);
 			}
 		}
 		catch (IOException e)
@@ -738,9 +616,6 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 			_tracks.clear();
 		if (_narratives != null)
 			_narratives.clear();
-
-		if (_tracks == null)
-			_tracks = new HashMap<NetworkParticipant, Track>();
 
 	}
 
