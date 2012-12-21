@@ -465,7 +465,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 		catch (IOException e)
 		{
-			ASSETPlugin.logError(Status.ERROR, "Failed to initialise comms", e);
+			ASSETPlugin.logThisError(Status.ERROR, "Failed to initialise comms", e);
 		}
 	}
 
@@ -641,7 +641,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 		catch (PartInitException e)
 		{
-			ASSETPlugin.logError(IStatus.ERROR, "trouble opening ScenarioPlotter", e);
+			ASSETPlugin.logThisError(IStatus.ERROR, "trouble opening ScenarioPlotter", e);
 			e.printStackTrace();
 		}
 	}
@@ -656,7 +656,7 @@ public class MultiScenarioView extends ViewPart implements ISelectionProvider,
 		}
 		catch (CoreException e)
 		{
-			ASSETPlugin.logError(IStatus.ERROR,
+			ASSETPlugin.logThisError(IStatus.ERROR,
 					"Had trouble refreshing project folder", e);
 			e.printStackTrace();
 		}

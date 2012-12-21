@@ -8,23 +8,28 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.core.ui_support.DragDropSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
+import org.mwc.cmap.core.ui_support.DragDropSupport;
 import org.mwc.cmap.core.ui_support.DragDropSupport.XMLFileDropHandler;
 import org.osgi.framework.BundleContext;
 
 import ASSET.ParticipantType;
-import ASSET.GUI.Workbench.Plotters.*;
+import ASSET.GUI.Workbench.Plotters.BehavioursPlottable;
+import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
+import ASSET.GUI.Workbench.Plotters.SensorsPlottable;
 import ASSET.Models.Decision.BehaviourList;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.XML.ASSETReaderWriter;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.LoggingService;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ASSETPlugin extends AbstractUIPlugin implements IStartup
+public class ASSETPlugin extends AbstractUIPlugin implements IStartup,
+		ErrorLogger
 {
 
 	// The plug-in ID
@@ -71,6 +76,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	public void start(BundleContext context) throws Exception
 	{
 		super.start(context);
+		LoggingService.initialise(this);
 	}
 
 	/*
@@ -107,7 +113,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	 * @param exception
 	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
-	public static void logError(int severity, String message, Throwable exception)
+	public static void logThisError(int severity, String message, Throwable exception)
 	{
 		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK,
 				message, exception);
@@ -212,5 +218,12 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 		DragDropSupport.addDropHelper(parts);
 		DragDropSupport.addDropHelper(behaviours);
 		DragDropSupport.addDropHelper(sensors);
+	}
+
+	@Override
+	public void logError(int severity, String text, Exception e)
+	{
+		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, text, e);
+		getLog().log(stat);
 	}
 }
