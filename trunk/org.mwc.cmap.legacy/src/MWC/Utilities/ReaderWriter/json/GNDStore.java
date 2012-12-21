@@ -3,7 +3,9 @@ package MWC.Utilities.ReaderWriter.json;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,12 +14,16 @@ import junit.framework.TestCase;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
 import org.javalite.http.Get;
 import org.javalite.http.Http;
 import org.javalite.http.Post;
 
+import MWC.GUI.ErrorLogger;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.Track;
 import MWC.Utilities.ReaderWriter.json.GNDDocHandler.GNDDocument;
@@ -104,6 +110,7 @@ public class GNDStore
 			assertNotNull("has some fixes", fixes.hasMoreElements());
 		}
 
+		@SuppressWarnings("unused")
 		public void testPost() throws JsonGenerationException,
 				JsonMappingException, IOException
 		{
@@ -116,28 +123,99 @@ public class GNDStore
 			JsonNode theDoc = new GNDDocHandler().toJson(trk.getName(), trk,
 					"tst_platform2", "test_plat_type", "test_sensor", "test_sensor_type",
 					"test_trial");
-			store.put(theDoc);
+			// store.put(theDoc);
 		}
 
-		@SuppressWarnings("unused")
-		public void testBulkPost() throws JsonGenerationException,
+		public void testBulkPost1() throws JsonGenerationException,
 				JsonMappingException, IOException
 		{
+			ArrayList<ObjectNode> tracks = new ArrayList<ObjectNode>();
+
 			for (int i = 0; i < 10; i++)
 			{
 				// get a track
-				Track trk = GNDDocHandler.TestJSON.getTestTrack("test-" + i);
-				String url = "http://gnd.iriscouch.com";
-				String db = "speed_test";
+				Track trk = GNDDocHandler.TestJSON.getTestTrack("test_-" + i);
 
-				GNDStore store = new GNDStore(url, db);
-				GNDDocument theDoc = new GNDDocument(trk.getName(), trk,
+				ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk,
 						"tst_platform2", "test_plat_type", "test_sensor",
-						"test_sensor_type", "test_trial");
-				// store.put(theDoc);
+						"test_sensor_type", "test_put_1");
+				tracks.add(js);
 			}
+			String url = "http://gnd.iriscouch.com";
+			String db = "tracks";
+			GNDStore store = new GNDStore(url, db);
+
+			System.out.println("before put:" + new Date());
+
+			for (Iterator<ObjectNode> iterator = tracks.iterator(); iterator
+					.hasNext();)
+			{
+				ObjectNode objectNode = (ObjectNode) iterator.next();
+				store.put(objectNode);
+			}
+
+			System.out.println("after put:" + new Date());
 		}
 
+		public void testBulkPost2() throws JsonGenerationException,
+				JsonMappingException, IOException
+		{
+			ArrayList<JsonNode> nodes = new ArrayList<JsonNode>();
+			for (int i = 0; i < 10; i++)
+			{
+				// get a track
+				Track trk = GNDDocHandler.TestJSON.getTestTrack("test2-" + i);
+				ObjectNode js = new GNDDocHandler().toJson(trk.getName(), trk,
+						"tst_platform2", "test_plat_type", "test_sensor",
+						"test_sensor_type", "test_bulk_put");
+				nodes.add(js);
+			}
+			String url = "http://gnd.iriscouch.com";
+			String db = "tracks";
+			GNDStore store = new GNDStore(url, db);
+
+			System.out.println("before bulk put:" + new Date());
+
+			store.bulkPut(nodes);
+
+			System.out.println("after bulk put:" + new Date());
+
+		}
+
+	}
+
+	public void bulkPut(ArrayList<JsonNode> theTracks) throws IOException
+	{
+		// ok, collate the bulk submit object
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode root = mapper.createObjectNode();
+		ArrayNode trackArray = mapper.createArrayNode();
+		trackArray.addAll(theTracks);
+		root.put("docs", trackArray);
+
+		// ok, now formulate the URL
+		String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
+		String theDoc = GNDDocHandler.asString(root);
+
+		Post post = Http.post(THE_URL, theDoc).header("Content-type",
+				"application/json");
+
+		if (post.responseCode() == 201)
+		{
+
+			JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
+			ArrayNode docs = (ArrayNode) mapper.readTree(jp);
+			if (theTracks.size() != docs.size())
+			{
+				MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
+						post.text(), null);
+			}
+		}
+		else
+		{
+			MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
+					post.responseMessage(), null);
+		}
 	}
 
 }

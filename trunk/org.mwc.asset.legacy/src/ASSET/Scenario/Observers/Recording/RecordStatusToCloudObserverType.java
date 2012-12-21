@@ -1,6 +1,7 @@
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -574,7 +575,7 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 			assertNotNull("observer wasn't created", observer);
 
 			observer.setActive(true);
-			
+
 			// and the scenario
 			CoreScenario cs = new CoreScenario();
 			cs.setName("RecordTrial");
@@ -583,7 +584,7 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 
 			// add a participant
 			final SSN ssn = new SSN(12);
-			ssn.setName("Subject97");
+			ssn.setName("Subject98");
 			ssn.setCategory(new Category(Category.Force.BLUE,
 					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
 			ssn.setDecisionModel(new ASSET.Models.Decision.Tactical.Wait(
@@ -606,8 +607,10 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 			HeloMovementCharacteristics moveChars = (HeloMovementCharacteristics) HeloMovementCharacteristics
 					.getSampleChars();
 			moveChars.setTurnRate(0.02);
-			moveChars.setDecelRate(new WorldAcceleration(0.05, WorldAcceleration.Kts_sec));
-			moveChars.setAccelRate(new WorldAcceleration(0.05, WorldAcceleration.Kts_sec));
+			moveChars.setDecelRate(new WorldAcceleration(0.05,
+					WorldAcceleration.Kts_sec));
+			moveChars.setAccelRate(new WorldAcceleration(0.05,
+					WorldAcceleration.Kts_sec));
 			moveChars.setMinSpeed(new WorldSpeed(4, WorldSpeed.Kts));
 			ssn.setMovementChars(moveChars);
 			Status theStat = new Status(12, 12);
@@ -691,39 +694,39 @@ public class RecordStatusToCloudObserverType extends CoreObserver implements
 	{
 		GNDStore store = null;
 
-		System.err.println("about to collate");
-
-		// do we have any tracks?
-		Collection<NetworkParticipant> keys = _tracks.keySet();
-		for (Iterator<NetworkParticipant> iterator = keys.iterator(); iterator
-				.hasNext();)
+		ArrayList<JsonNode> theTracks = new ArrayList<JsonNode>();
+		try
 		{
-			NetworkParticipant key = iterator.next();
-			Track track = _tracks.get(key);
 
-			try
+			// do we have any tracks?
+			Collection<NetworkParticipant> keys = _tracks.keySet();
+			for (Iterator<NetworkParticipant> iterator = keys.iterator(); iterator
+					.hasNext();)
 			{
-				System.err.println("about to export at" + new Date().toString());
+				NetworkParticipant key = iterator.next();
+				Track track = _tracks.get(key);
 
 				JsonNode js = new GNDDocHandler().toJson(key.getName(), track,
 						key.getName(), key.getCategory().getType(), "ASSET_SENSOR",
 						"ASSET_POSITION", scenario.getName());
-				if (js != null)
-				{
-					if (store == null)
-						store = new GNDStore(_url, _database);
 
-					System.err.println("about to put");
-
-					store.put(js);
-
-					System.err.println("put complete at" + new Date().toString());
-				}
+				theTracks.add(js);
 			}
-			catch (IOException e)
+
+			// do we have any?
+			if (theTracks.size() > 0)
 			{
-				e.printStackTrace();
+				// ok, do bulk submit
+				if (store == null)
+					store = new GNDStore(_url, _database);
+
+				if (store != null)
+					store.bulkPut(theTracks);
 			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 	}
 

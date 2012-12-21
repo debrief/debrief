@@ -61,11 +61,9 @@ public class GNDDocHandler
 
 	private static String timeFor(Date date)
 	{
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		// do a bit of grooming of the data
+		DateFormat df = new InternetDateFormat();
 		String theTime = df.format(date);
-		// TODO: provide tidier timezone handling here
-		theTime = theTime.replace("+0000", "Z");
-		theTime = theTime.replace("+0100", "Z");
 		return theTime;
 	}
 
@@ -301,7 +299,7 @@ public class GNDDocHandler
 			double speed = 5;
 			// put in some fixes
 			Vector<Fix> fixes = new Vector<Fix>();
-			for (int i = 0; i < 3; i++)
+			for (int i = 0; i < 30; i++)
 			{
 				@SuppressWarnings("deprecation")
 				HiResDate time = new HiResDate(new Date(112, 6, 6, 12, 5, i * 25));
