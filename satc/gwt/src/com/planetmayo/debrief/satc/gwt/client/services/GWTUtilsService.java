@@ -52,8 +52,8 @@ public class GWTUtilsService implements UtilsService
 		double _lat = geoPoint.getLat();
 		double _lon = geoPoint.getLon();
 
-		String latitudeStr = decimalToDMS(_lat) + (_lat < 0 ? "S" : "N");
-		String longitudeStr = decimalToDMS(_lon) + (_lon < 0 ? "W" : "E");
+		String latitudeStr = decimalToDMS(Math.abs(_lat)) + (_lat < 0 ? "S" : "N");
+		String longitudeStr = decimalToDMS(Math.abs(_lon)) + (_lon < 0 ? "W" : "E");
 		return latitudeStr + " " + longitudeStr;
 	}
 
