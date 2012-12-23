@@ -5,11 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TreeSet;
 
-import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.support.UtilsService;
 import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.support.UtilsService;
 
-public class RCPUtilsService implements UtilsService
+public class RCPUtilsService extends UtilsService
 {
 
 	@Override
@@ -35,17 +34,16 @@ public class RCPUtilsService implements UtilsService
 	@Override
 	public <T> T higherElement(TreeSet<T> set, T currentElement)
 	{
-		if (set == null || set.isEmpty()) 
+		if (set == null || set.isEmpty())
 		{
 			return null;
-		}		
+		}
 		return currentElement == null ? set.first() : set.higher(currentElement);
 	}
 
 	@Override
-	public String formatGeoPoint(GeoPoint geoPoint) {
-		// TODO Auto-generated method stub
-		// Implementation logic can be copied from GWT counterpart, and logic needs to be fix to show degree symbol accordingly.
-		return null;
+	public String getDegreeSymbol()
+	{
+		return "°";
 	}
 }

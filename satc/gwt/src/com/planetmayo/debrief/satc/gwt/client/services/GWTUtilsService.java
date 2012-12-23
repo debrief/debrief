@@ -7,10 +7,9 @@ import java.util.TreeSet;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.HTML;
-import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.support.UtilsService;
 
-public class GWTUtilsService implements UtilsService
+public class GWTUtilsService extends UtilsService
 {
 
 	@Override
@@ -47,37 +46,9 @@ public class GWTUtilsService implements UtilsService
 	}
 
 	@Override
-	public String formatGeoPoint(GeoPoint geoPoint)
+	public String getDegreeSymbol()
 	{
-		double _lat = geoPoint.getLat();
-		double _lon = geoPoint.getLon();
-
-		String latitudeStr = decimalToDMS(Math.abs(_lat)) + (_lat < 0 ? "S" : "N");
-		String longitudeStr = decimalToDMS(Math.abs(_lon)) + (_lon < 0 ? "W" : "E");
-		return latitudeStr + " " + longitudeStr;
+		return new HTML("&deg;").getHTML();
 	}
 
-	public static String decimalToDMS(double coord)
-	{
-		String output, degrees, minutes, seconds;
-
-		double mod = coord % 1;
-		int intPart = (int) coord;
-
-		degrees = String.valueOf(intPart);
-
-		coord = mod * 60;
-		mod = coord % 1;
-		intPart = (int) coord;
-
-		minutes = String.valueOf(intPart);
-
-		coord = mod * 60;
-		intPart = (int) coord;
-
-		seconds = String.valueOf(intPart);
-
-		output = degrees + new HTML("&deg;").getHTML() + " " + minutes + "' "	+ seconds + "\" ";
-		return output;
-	}
 }
