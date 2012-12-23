@@ -196,8 +196,12 @@ public class TestSupport
 		getGenerator().addContribution(al);
 
 		// and our analysis contributions
-		getGenerator().addContribution(new SpeedAnalysisContribution());
-		getGenerator().addContribution(new CourseAnalysisContribution());
+		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
+		speedA.setActive(false);
+		getGenerator().addContribution(speedA);
+		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
+		courseA.setActive(false);
+		getGenerator().addContribution(courseA);
 		getGenerator().addContribution(new LocationAnalysisContribution());
 	
 	}
