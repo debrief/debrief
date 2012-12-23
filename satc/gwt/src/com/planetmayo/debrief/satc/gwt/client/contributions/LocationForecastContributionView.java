@@ -79,8 +79,8 @@ public class LocationForecastContributionView extends BaseContributionView
 				@SuppressWarnings("unused")
 				String newLoc = event.getValue();
 				
-				// TODO: Akash, we need to convert newLoc to a GeoPoint
-				GeoPoint geop = null;
+				// DONE: Akash, we need to convert newLoc to a GeoPoint
+				GeoPoint geop = SupportServices.INSTANCE.getUtilsService().getGeoPointFromString(newLoc);
 				_myData.setEstimate(geop);
 				
 				// and update the UI
@@ -164,8 +164,8 @@ public class LocationForecastContributionView extends BaseContributionView
 		if (attr.equals(BaseContribution.ESTIMATE))
 		{
 			GeoPoint pt = (GeoPoint) arg0.getNewValue();
-			// TODO: Akash, we need to convert pt to a string
-			String strPt = pt.toString();
+			// DONE: Akash, we need to convert pt to a string
+			String strPt = SupportServices.INSTANCE.getUtilsService().formatGeoPoint(pt);
 			estimate.setData(strPt);
 		}
 
@@ -187,7 +187,7 @@ public class LocationForecastContributionView extends BaseContributionView
 				contribution.getFinishDate());
 		
 		GeoPoint gp = _myData.getEstimate();
-		// TODO: Akash, we need to convert gp to a string
+		// DONE: Akash, we need to convert gp to a string
 		String strVal = SupportServices.INSTANCE.getUtilsService().formatGeoPoint(gp);
 		estimate.setData(strVal);
 
