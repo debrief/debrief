@@ -1,31 +1,37 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import org.junit.Test;
+
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class SpeedRangeTest extends TestCase
+public class SpeedRangeTest
 {
+	private static final double EPS = 0.000001d;
+	
+	@Test
 	public void testCreate()
 	{
-		final double minS = 23.4;
-		final double maxS = 34.5;
-		SpeedRange spdR = new SpeedRange(minS, maxS);
-		assertEquals("correct lower value", minS, spdR.getMin());
-		assertEquals("correct upper value", maxS, spdR.getMax());
+		final double minSpeed = 23.4;
+		final double maxSpeed = 34.5;
+		SpeedRange range = new SpeedRange(minSpeed, maxSpeed);
+		assertEquals("correct lower value", minSpeed, range.getMin(), EPS);
+		assertEquals("correct upper value", maxSpeed, range.getMax(), EPS);
 	}
 
+	@Test
 	public void testConstrain() throws IncompatibleStateException
 	{
-		SpeedRange sOne = new SpeedRange(10d, 20d);
-		SpeedRange sTwo = new SpeedRange(12d, 40d);
-		sOne.constrainTo(sTwo);
-		assertEquals("correct lower", 12d, sOne.getMin());
-		assertEquals("correct upper", 20d, sOne.getMax());
+		SpeedRange range1 = new SpeedRange(10d, 20d);
+		SpeedRange range2 = new SpeedRange(12d, 40d);
+		range1.constrainTo(range2);
+		assertEquals("correct lower", 12d, range1.getMin(), EPS);
+		assertEquals("correct upper", 20d, range1.getMax(), EPS);
 
-		SpeedRange sThree = new SpeedRange(4d, 16d);
-		sOne.constrainTo(sThree);
-		assertEquals("correct lower", 12d, sOne.getMin());
-		assertEquals("correct upper", 16d, sOne.getMax());
+		SpeedRange range3 = new SpeedRange(4d, 16d);
+		range1.constrainTo(range3);
+		assertEquals("correct lower", 12d, range1.getMin(), EPS);
+		assertEquals("correct upper", 16d, range1.getMax(), EPS);
 	}
 }
