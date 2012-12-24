@@ -6,9 +6,9 @@ import java.util.TreeSet;
 public interface UtilsService
 {
 
-	public abstract String formatDate(String pattern, Date date);
+	String formatDate(String pattern, Date date);
 
-	public abstract Date parseDate(String pattern, String text);
+	Date parseDate(String pattern, String text);
 
-	public abstract <T> T higherElement(TreeSet<T> set, T currentElement);
+	<T> T higherElement(TreeSet<T> set, T currentElement);
 }
