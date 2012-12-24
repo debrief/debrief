@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.util.Iterator;
-
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -21,37 +19,30 @@ public class CourseAnalysisContribution extends BaseContribution
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// remember the previous state
-		BoundedState _lastStateWithCourse = null;
+		BoundedState lastStateWithCourse = null;
 
 		// PHASE 1 - Produce course bounds when none are present
 
 		// do we have vehicle reference data?
 		if (space.getVehicleType() != null)
 		{
+			double maxRate = space.getVehicleType().getMaxTurnRate();			
 			// ok, loop through the states, setting course limits for any unbounded
-			// courses
-			Iterator<BoundedState> iter = space.states().iterator();
-			while (iter.hasNext())
+			// courses			
+			for (BoundedState currentState : space.states())
 			{
-				BoundedState thisS = iter.next();
-
 				// ok, do we have a previous state
-				if (_lastStateWithCourse != null)
+				if (lastStateWithCourse != null)
 				{
-					// yes we do, let's see how far it could have turned
-
 					// ok, how long since that last observation?
-					long millis = thisS.getTime().getTime()
-							- _lastStateWithCourse.getTime().getTime();
-
-					// ok, what's the most it could have turned in this time?
-					double maxRate = space.getVehicleType().getMaxTurnRate();
+					long millis = currentState.getTime().getTime()
+							- lastStateWithCourse.getTime().getTime();
 
 					// how many rads?
-					double maxTurn = maxRate * millis;
+					double maxTurn = maxRate * millis / 1000.0d;
 
 					// ok, we need to produce a new course constraint
-					CourseRange lastKnown = _lastStateWithCourse.getCourse();
+					CourseRange lastKnown = lastStateWithCourse.getCourse();
 
 					double newMin, newMax;
 
@@ -83,13 +74,11 @@ public class CourseAnalysisContribution extends BaseContribution
 					CourseRange newCourse = new CourseRange(newMin, newMax);
 
 					// and apply it
-					thisS.constrainTo(newCourse);
+					currentState.constrainTo(newCourse);
 				}
-
 				// ok, do we now have course data?
-				if (thisS.getCourse() != null)
-					_lastStateWithCourse = thisS;
-
+				if (currentState.getCourse() != null)
+					lastStateWithCourse = currentState;
 			}
 		}
 
