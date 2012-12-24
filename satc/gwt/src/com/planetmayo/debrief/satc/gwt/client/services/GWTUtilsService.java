@@ -6,10 +6,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.HTML;
 import com.planetmayo.debrief.satc.support.UtilsService;
 
-public class GWTUtilsService extends UtilsService
+public class GWTUtilsService implements UtilsService
 {
 
 	@Override
@@ -44,11 +43,4 @@ public class GWTUtilsService extends UtilsService
 		iterator.next();
 		return iterator.next();
 	}
-
-	@Override
-	public String getDegreeSymbol()
-	{
-		return new HTML("&deg;").getHTML();
-	}
-
 }

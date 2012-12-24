@@ -8,7 +8,7 @@ import java.util.TreeSet;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.UtilsService;
 
-public class RCPUtilsService extends UtilsService
+public class RCPUtilsService implements UtilsService
 {
 
 	@Override
@@ -39,11 +39,5 @@ public class RCPUtilsService extends UtilsService
 			return null;
 		}
 		return currentElement == null ? set.first() : set.higher(currentElement);
-	}
-
-	@Override
-	public String getDegreeSymbol()
-	{
-		return "°";
 	}
 }

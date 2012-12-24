@@ -17,7 +17,7 @@ import com.planetmayo.debrief.satc.gwt.client.ui.StartFinishWidget;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
-import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class LocationForecastContributionView extends BaseContributionView
 {
@@ -76,11 +76,8 @@ public class LocationForecastContributionView extends BaseContributionView
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event)
 			{
-				@SuppressWarnings("unused")
 				String newLoc = event.getValue();
-				
-				// DONE: Akash, we need to convert newLoc to a GeoPoint
-				GeoPoint geop = SupportServices.INSTANCE.getUtilsService().getGeoPointFromString(newLoc);
+				GeoPoint geop = GeoSupport.getGeoPointFromString(newLoc);
 				_myData.setEstimate(geop);
 				
 				// and update the UI
@@ -164,8 +161,7 @@ public class LocationForecastContributionView extends BaseContributionView
 		if (attr.equals(BaseContribution.ESTIMATE))
 		{
 			GeoPoint pt = (GeoPoint) arg0.getNewValue();
-			// DONE: Akash, we need to convert pt to a string
-			String strPt = SupportServices.INSTANCE.getUtilsService().formatGeoPoint(pt);
+			String strPt = GeoSupport.formatGeoPoint(pt);
 			estimate.setData(strPt);
 		}
 
@@ -187,8 +183,7 @@ public class LocationForecastContributionView extends BaseContributionView
 				contribution.getFinishDate());
 		
 		GeoPoint gp = _myData.getEstimate();
-		// DONE: Akash, we need to convert gp to a string
-		String strVal = SupportServices.INSTANCE.getUtilsService().formatGeoPoint(gp);
+		String strVal =  GeoSupport.formatGeoPoint(gp);
 		estimate.setData(strVal);
 
 		contribution.addPropertyChangeListener(LocationForecastContribution.LIMIT,
