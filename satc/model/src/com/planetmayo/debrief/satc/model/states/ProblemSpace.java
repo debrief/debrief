@@ -36,7 +36,7 @@ public class ProblemSpace
 	 */
 	public void setVehicleType(VehicleType vType)
 	{
-		_vType = vType;
+		_vType = vType;		
 	}
 
 	/**
@@ -70,7 +70,13 @@ public class ProblemSpace
 			_boundedStates.get(_boundedStates.lastKey()).constrainTo(newState);
 		}
 		else
-			_boundedStates.put(newState.getTime(), newState);
+		{
+			if (getBoundedStateAt(newState.getTime()) != null) 
+			{
+				throw new IllegalArgumentException("We already have bounded state at " + newState.getTime());
+			}
+			_boundedStates.put(newState.getTime(), newState);			
+		}			
 
 		// ok, constrain the new state to our vehicle performance, if we have one
 		if (_vType != null)
@@ -121,12 +127,12 @@ public class ProblemSpace
 		return _boundedStates.subMap(startDate, finishDate).values();
 	}	
 
-	protected Date getFinishDate()
+	public Date getFinishDate()
 	{
 		return _boundedStates.isEmpty() ? null : _boundedStates.lastKey();
 	}
 
-	protected Date getStartDate()
+	public Date getStartDate()
 	{
 		return _boundedStates.isEmpty() ? null : _boundedStates.firstKey();
 	}

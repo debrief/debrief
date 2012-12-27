@@ -13,6 +13,10 @@ public class BoundedState implements Comparable<BoundedState>
 
 	public BoundedState(Date time)
 	{
+		if (time == null) 
+		{
+			throw new IllegalArgumentException("time can't be null");
+		}
 		_time = time;
 	}
 

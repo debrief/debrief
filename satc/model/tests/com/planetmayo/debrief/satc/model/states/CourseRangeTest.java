@@ -2,11 +2,12 @@ package com.planetmayo.debrief.satc.model.states;
 
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 import static org.junit.Assert.*;
 
-public class CourseRangeTest
+public class CourseRangeTest extends ModelTestBase
 {
 	private static final double EPS = 0.000001d;
 	
@@ -18,6 +19,16 @@ public class CourseRangeTest
 		CourseRange range = new CourseRange(minCourse, maxCourse);
 		assertEquals("correct lower value", minCourse, range.getMin(), EPS);
 		assertEquals("correct upper value", maxCourse, range.getMax(), EPS);
+	}
+	
+	@Test
+	public void testCloneCreate() {
+		final double minCourse = Math.toRadians(23.4);
+		final double maxCourse = Math.toRadians(34.5);
+		CourseRange range1 = new CourseRange(minCourse, maxCourse);
+		CourseRange range2 = new CourseRange(range1);
+		assertEquals("correct lower value", minCourse, range2.getMin(), EPS);
+		assertEquals("correct upper value", maxCourse, range2.getMax(), EPS);		
 	}
 
 	@Test

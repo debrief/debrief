@@ -3,8 +3,9 @@ package com.planetmayo.debrief.satc.model.generator;
 import java.io.IOException;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
@@ -15,13 +16,16 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class TrackGeneratorTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class TrackGeneratorTest extends ModelTestBase {
 	static protected IncompatibleStateException _ise;
 	static int _ctr1 = 0;
 	static int _ctr2 = 0;
 	static int _ctr3 = 0;
 	private RuntimeException _re;
 
+	@Test
 	public void testAddOrder() {
 		BoundsManager tg = new BoundsManager();
 
@@ -69,6 +73,7 @@ public class TrackGeneratorTest extends TestCase {
 
 	}
 
+	@Test
 	public void testRestartOnContribChange() throws IOException {
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
@@ -178,6 +183,7 @@ public class TrackGeneratorTest extends TestCase {
 
 	}
 
+	@Test
 	public void testIncompatibleBounds() throws IOException {
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
@@ -271,11 +277,13 @@ public class TrackGeneratorTest extends TestCase {
 
 	}
 
+	@Test
 	public void testListeningB() {
 		// TODO: create some contributions, add them to generator, make some
 		// changes, check we're listening to the correct events
 	}
 
+	@Test
 	public void testRegeneration() {
 		// TODO: create some contributions, include some constraints, check that
 		// contraint restriction is happening

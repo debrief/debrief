@@ -63,4 +63,23 @@ public class LocationRange extends BaseRange<LocationRange>
 	{
 		return _myArea;
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return _myArea.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || getClass() != obj.getClass())
+		{
+			return false;
+		}
+		LocationRange other = (LocationRange) obj;		
+		
+		if (! _myArea.equals(other._myArea)) return false;
+		return true;
+	}			
 }

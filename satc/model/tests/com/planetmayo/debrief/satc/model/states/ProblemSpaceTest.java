@@ -1,51 +1,130 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
+import org.junit.Before;
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
+import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
-public class ProblemSpaceTest extends TestCase
+import static org.junit.Assert.*;
+
+@SuppressWarnings("deprecation")
+public class ProblemSpaceTest extends ModelTestBase
 {
-	@SuppressWarnings("deprecation")
-	@Test
-	public void testMissingDate() throws IncompatibleStateException
+	
+	private ProblemSpace space;	
+	
+	private ProblemSpace createTestSpace(VehicleType vehicleType) throws IncompatibleStateException
 	{
-		ProblemSpace ps = new ProblemSpace();
-		BoundedState b1 = new BoundedState(new Date(2012, 4,4));
-		BoundedState b2 = new BoundedState(new Date(2012, 5,4));
-		BoundedState b3 = new BoundedState(new Date(2012, 2,4));
-		
-		ps.add(b1);
-		ps.add(b2);
-		ps.add(b3);
-		
-		Iterator<BoundedState> iter = ps.states().iterator();
-		assertEquals("correct order", b3, iter.next());
-		assertEquals("correct order", b1, iter.next());
-		assertEquals("correct order", b2, iter.next());
-		
+		ProblemSpace space = new ProblemSpace();
+		if (vehicleType != null) 
+		{
+			space.setVehicleType(vehicleType);
+		}
+		space.add(new BoundedState(new Date(2012, 4, 4)));
+		space.add(new BoundedState(new Date(2012, 5, 4)));
+		space.add(new BoundedState(new Date(2012, 2, 4)));
+		space.add(new BoundedState(new Date(2012, 3, 4)));
+		return space;		
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void testAddSort() throws IncompatibleStateException
+	@Before
+	public void prepareCommonProblemSpace() throws Exception 
 	{
-		ProblemSpace ps = new ProblemSpace();
-		BoundedState b1 = new BoundedState(new Date(2012, 4,4));
-		BoundedState b2 = new BoundedState(new Date(2012, 5,4));
-		BoundedState b3 = new BoundedState(new Date(2012, 2,4));
+		space = createTestSpace(null);
+	}
+	
+	@Test
+	public void testAdd() throws IncompatibleStateException 
+	{
+		assertEquals("correct size", 4, space.size());		
+		for (BoundedState state : space.states()) 
+		{
+			assertNull(state.getSpeed());
+			assertNull(state.getCourse());
+			assertNull(state.getLocation());
+		}		
+	}
+	
+	@Test
+	public void testCorrectSort() throws IncompatibleStateException
+	{
+		Iterator<BoundedState> iter = space.states().iterator();
+		assertEquals("correct size", 4, space.size());
+		assertEquals("correct order", new Date(2012, 2, 4), iter.next().getTime());
+		assertEquals("correct order", new Date(2012, 3, 4), iter.next().getTime());
+		assertEquals("correct order", new Date(2012, 4, 4), iter.next().getTime());
+		assertEquals("correct order", new Date(2012, 5, 4), iter.next().getTime());
+	}
+	
+	@Test
+	public void testAddWithVehicleType() throws IncompatibleStateException 
+	{
+		VehicleType type = new MockVehicleTypesManager().getAllTypes().get(0);
+		ProblemSpace space = createTestSpace(type);
+		SpeedRange range = new SpeedRange(type.getMinSpeed(), type.getMaxSpeed());
+		for (BoundedState state : space.states()) 
+		{
+			assertEquals(range, state.getSpeed());
+			assertNull(state.getCourse());
+			assertNull(state.getLocation());			
+		}
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testDobleBoundedState() throws Exception 
+	{
+		space.add(new BoundedState(new Date(2012, 4, 4)));
+	}
+	
+	@Test
+	public void testGetBoundedStateAt() throws Exception 
+	{
+		Date date1 = new Date(2012, 3, 4);
+		Date date2 = new Date(2012, 3, 5);
+		assertNotNull(space.getBoundedStateAt(date1));
+		assertNull(space.getBoundedStateAt(date2));
+	}
+	
+	@Test
+	public void testBoundaries() throws Exception 
+	{
+		assertEquals(new Date(2012, 2, 4), space.getStartDate());
+		assertEquals(new Date(2012, 5, 4), space.getFinishDate());
 		
-		ps.add(b1);
-		ps.add(b2);
-		ps.add(b3);
+		ProblemSpace cleanSpace = new ProblemSpace();
+		assertNull(cleanSpace.getFinishDate());
+		assertNull(cleanSpace.getStartDate());
+	}
+	
+	@Test
+	public void testClear() throws Exception 
+	{
+		space.clear();
+		assertEquals(0, space.size());
+	}
+	
+	@Test
+	public void testGetBoundedStatesBetween() throws Exception 
+	{
+		Collection<BoundedState> states = space.getBoundedStatesBetween(
+				new Date(2012, 1, 4), new Date(2012, 4, 4));
+
+		Iterator<BoundedState> iter = states.iterator();
+		assertEquals(3, states.size());
+		assertEquals("correct order", new Date(2012, 2, 4), iter.next().getTime());
+		assertEquals("correct order", new Date(2012, 3, 4), iter.next().getTime());
+		assertEquals("correct order", new Date(2012, 4, 4), iter.next().getTime());	
 		
-		Iterator<BoundedState> iter = ps.states().iterator();
-		assertEquals("correct order", b3, iter.next());
-		assertEquals("correct order", b1, iter.next());
-		assertEquals("correct order", b2, iter.next());
+		ProblemSpace cleanSpace = new ProblemSpace();
+		states = cleanSpace.getBoundedStatesBetween(
+				new Date(2012, 1, 4), new Date(2012, 4, 4));
+		assertTrue(states.isEmpty());
 	}
 }

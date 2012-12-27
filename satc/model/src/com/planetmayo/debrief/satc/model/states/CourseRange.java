@@ -75,4 +75,27 @@ public class CourseRange extends BaseRange<CourseRange>
 	{
 		return _min < 0 ? _min + 2 * Math.PI : _min;
 	}
+
+	@Override
+	public int hashCode()
+	{
+    int result = (int) _min;
+    result = 31 * result + (int) _max;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || getClass() != obj.getClass())
+		{
+			return false;
+		}
+		CourseRange other = (CourseRange) obj;		
+		
+		if (_max != other._max)	return false;
+		if (_min != other._min)	return false;
+
+		return true;
+	}	
 }

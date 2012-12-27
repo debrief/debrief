@@ -42,5 +42,28 @@ public class SpeedRange extends BaseRange<SpeedRange>
 	public double getMin()
 	{
 		return _minSpeed;
+	}	
+
+	@Override
+	public int hashCode()
+	{
+    int result = (int) _minSpeed;
+    result = 31 * result + (int) _maxSpeed;
+		return result;
 	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || getClass() != obj.getClass())
+		{
+			return false;
+		}
+		SpeedRange other = (SpeedRange) obj;		
+		
+		if (_maxSpeed != other._maxSpeed)	return false;
+		if (_minSpeed != other._minSpeed)	return false;
+
+		return true;
+	}		
 }

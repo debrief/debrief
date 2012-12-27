@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.model.states;
 
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -12,7 +13,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import static org.junit.Assert.*;
 
-public class LocationRangeTest
+public class LocationRangeTest extends ModelTestBase
 {
 	private static final double EPS = 0.000001d;	
 	
@@ -24,6 +25,21 @@ public class LocationRangeTest
 		Geometry polygon = GeoSupport.getFactory().createPolygon(array);
 		LocationRange range = new LocationRange(polygon);
 		assertEquals("polygons aren't equal", polygon, range.getGeometry());
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testCreateWithNull() throws Exception {
+		new LocationRange((Geometry) null);
+	}
+	
+	@Test
+	public void testCloneCreate() throws Exception {
+		Coordinate[] array = {new Coordinate(0, 0), new Coordinate(1, 0), 
+				new Coordinate(1, 1), new Coordinate(0, 1), new Coordinate(0, 0)};
+		Geometry polygon = GeoSupport.getFactory().createPolygon(array);
+		LocationRange range1 = new LocationRange(polygon);
+		LocationRange range2 = new LocationRange(range1);
+		assertTrue(range1.getGeometry().equals(range2.getGeometry()));
 	}
 	
 	@Test

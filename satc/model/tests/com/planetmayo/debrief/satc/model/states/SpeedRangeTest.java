@@ -2,11 +2,12 @@ package com.planetmayo.debrief.satc.model.states;
 
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 import static org.junit.Assert.*;
 
-public class SpeedRangeTest
+public class SpeedRangeTest extends ModelTestBase
 {
 	private static final double EPS = 0.000001d;
 	
@@ -19,6 +20,17 @@ public class SpeedRangeTest
 		assertEquals("correct lower value", minSpeed, range.getMin(), EPS);
 		assertEquals("correct upper value", maxSpeed, range.getMax(), EPS);
 	}
+	
+	@Test
+	public void testCloneCreate()
+	{
+		final double minSpeed = 23.4;
+		final double maxSpeed = 34.5;
+		SpeedRange range1 = new SpeedRange(minSpeed, maxSpeed);
+		SpeedRange range2 = new SpeedRange(range1);		
+		assertEquals("correct lower value", minSpeed, range2.getMin(), EPS);
+		assertEquals("correct upper value", maxSpeed, range2.getMax(), EPS);
+	}	
 
 	@Test
 	public void testConstrain() throws IncompatibleStateException
