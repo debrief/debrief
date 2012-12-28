@@ -122,7 +122,9 @@ public class TestSupport
 
 		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		bmc.setName("Measured bearing");
 		RangeForecastContribution rangeF = new RangeForecastContribution();
+		rangeF.setName("Measured range");
 		ArrayList<String> rows;
 		if (useLong)
 			rows = getLongData();
@@ -170,6 +172,7 @@ public class TestSupport
 		course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122525"));
 		course.setMinCourse(Math.toRadians(225));
 		course.setMaxCourse(Math.toRadians(315));
+		course.setName("Last known course");
 		getGenerator().addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
