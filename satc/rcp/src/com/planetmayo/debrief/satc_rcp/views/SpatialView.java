@@ -15,6 +15,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -31,7 +32,8 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SpatialView extends ViewPart implements ISteppingListener, GeoSupport.GeoPlotter
+public class SpatialView extends ViewPart implements ISteppingListener,
+		GeoSupport.GeoPlotter
 {
 	private IBoundsManager boundsManager;
 
@@ -84,13 +86,19 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 	public void clear(String title)
 	{
 		_myData.removeAllSeries();
-		_chart.setTitle(title);
+
+		if (title != null)
+			_chart.setTitle(new TextTitle(title, new java.awt.Font("SansSerif",
+					java.awt.Font.BOLD, 8)));
+		else
+			_chart.setTitle(title);
 	}
 
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
+		boundsManager = SATC_Activator.getDefault().getService(
+				IBoundsManager.class, true);
 		// get the data ready
 		_myData = new XYSeriesCollection();
 
@@ -107,7 +115,7 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 		GeoSupport.setPlotter(this);
 		boundsManager.addSteppingListener(this);
 	}
-	
+
 	@Override
 	public void dispose()
 	{
@@ -118,26 +126,28 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 	@Override
 	public void complete(IBoundsManager boundsManager)
 	{
-		showData(boundsManager.getSpace().states());		
+		showData(boundsManager.getSpace().states());
 	}
 
 	@Override
 	public void restarted(IBoundsManager boundsManager)
 	{
-		clear(null);		
+		clear(null);
 	}
 
 	@Override
 	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
-		clear(ex.getLocalizedMessage());
+		String theCont = boundsManager.getCurrentContribution().getName();
+		clear("In contribution:[" + theCont + "] problem is: ["
+				+ ex.getLocalizedMessage() + "]");
 	}
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked())
-			showData(boundsManager.getSpace().states());	
+			showData(boundsManager.getSpace().states());
 	}
 
 	private void makeActions()
@@ -172,7 +182,8 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 
 	private void showData(Collection<BoundedState> newStates)
 	{
-		if (newStates.isEmpty()) {
+		if (newStates.isEmpty())
+		{
 			return;
 		}
 		// clear the data
@@ -207,21 +218,21 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 	@Override
 	public void showGeometry(String title, Coordinate[] coords)
 	{
-		
+
 		// are we in debug mode?
-		if(! _debugMode.isChecked())
+		if (!_debugMode.isChecked())
 			return;
-		
+
 		// switch the legend on
-//		if (_chart.getSubtitleCount() == 0)
-//		{
-//			LegendTitle legend = new LegendTitle(_plot);
-//			legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-//			legend.setFrame(new LineBorder());
-//			legend.setBackgroundPaint(Color.white);
-//			legend.setPosition(RectangleEdge.BOTTOM);
-//			_chart.addSubtitle(0, legend);
-//		}
+		// if (_chart.getSubtitleCount() == 0)
+		// {
+		// LegendTitle legend = new LegendTitle(_plot);
+		// legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
+		// legend.setFrame(new LineBorder());
+		// legend.setBackgroundPaint(Color.white);
+		// legend.setPosition(RectangleEdge.BOTTOM);
+		// _chart.addSubtitle(0, legend);
+		// }
 
 		// does this series already exist?
 
