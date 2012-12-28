@@ -130,7 +130,7 @@ public class SpatialView extends ViewPart implements ISteppingListener, GeoSuppo
 	@Override
 	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
-		_myData.removeAllSeries();		
+		clear(ex.getLocalizedMessage());
 	}
 
 	@Override

@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
@@ -57,7 +56,7 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 				labelsConverter, new BooleanToNullConverter<Double>(0d), null);
 
 		IObservableValue latValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.LIMIT),
+				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION),
 				GeoPoint.LAT, double.class);
 		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
 		latitude.getControl().addListener(SWT.Modify, new Listener()
@@ -73,7 +72,7 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 		});
 
 		IObservableValue lonValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.LIMIT),
+				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION),
 				GeoPoint.LON, double.class);
 		context.bindValue(PojoObservables.observeValue(longitude, "value"),
 				lonValue);
