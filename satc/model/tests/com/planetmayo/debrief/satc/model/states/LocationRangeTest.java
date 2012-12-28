@@ -15,7 +15,6 @@ import static org.junit.Assert.*;
 
 public class LocationRangeTest extends ModelTestBase
 {
-	private static final double EPS = 0.000001d;	
 	
 	@Test
 	public void testCreate() throws IncompatibleStateException 
