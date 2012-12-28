@@ -48,19 +48,18 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 				Object.class, " m");	
 		IObservableValue limitValue = BeansObservables.observeValue(contribution,
 				LocationForecastContribution.LIMIT);
-		IObservableValue estimateValue = BeansObservables.observeValue(contribution, 
-				BaseContribution.ESTIMATE);
-		bindCommonHeaderWidgets(context, limitValue, estimateValue, null, labelsConverter);
+		IObservableValue locationValue = BeansObservables.observeValue(contribution, 
+				LocationForecastContribution.LOCATION);
+		bindCommonHeaderWidgets(context, limitValue, locationValue, null, labelsConverter);
 		bindCommonDates(context);
 
 		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, 
 				labelsConverter, new BooleanToNullConverter<Double>(0d), null);
 
 		IObservableValue latValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),
+				BeansObservables.observeValue(contribution, LocationForecastContribution.LIMIT),
 				GeoPoint.LAT, double.class);
-		context
-				.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
+		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
 		latitude.getControl().addListener(SWT.Modify, new Listener()
 		{
 			@Override
@@ -68,13 +67,13 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 			{
 				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
 				GeoPoint geoPoint = new GeoPoint((Double) latitude.getValue(), temp
-						.getEstimate().getLon());
-				temp.setEstimate(geoPoint);
+						.getLocation().getLon());
+				temp.setLocation(geoPoint);
 			}
 		});
 
 		IObservableValue lonValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE),
+				BeansObservables.observeValue(contribution, LocationForecastContribution.LIMIT),
 				GeoPoint.LON, double.class);
 		context.bindValue(PojoObservables.observeValue(longitude, "value"),
 				lonValue);
@@ -84,9 +83,9 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 			public void handleEvent(Event event)
 			{
 				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
-				GeoPoint geoPoint = new GeoPoint(temp.getEstimate().getLat(),
+				GeoPoint geoPoint = new GeoPoint(temp.getLocation().getLat(),
 						(Double) longitude.getValue());
-				temp.setEstimate(geoPoint);
+				temp.setLocation(geoPoint);
 			}
 		});
 	}

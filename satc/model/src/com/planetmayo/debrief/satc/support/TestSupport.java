@@ -158,7 +158,7 @@ public class TestSupport
 		LocationForecastContribution locF = new LocationForecastContribution();
 		locF.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121300"));
 		locF.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121700"));
-		locF.setEstimate(new GeoPoint(0.03, -30.0));
+		locF.setLocation(new GeoPoint(0.03, -30.0));
 		locF.setLimit(3000d);
 		locF.setName("Last known location");
 		locF.setActive(false);

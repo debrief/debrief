@@ -41,7 +41,7 @@ public class LocationForecastContributionTest extends ForecastContributionTestBa
 		contribution.setFinishDate(new Date(112, 11, 27, 2, 55));
 		contribution.setWeight(3);
 		contribution.setLimit(2d);
-		contribution.setEstimate(new GeoPoint(2, -2));
+		contribution.setLocation(new GeoPoint(2, -2));
 		return contribution;
 	}
 	

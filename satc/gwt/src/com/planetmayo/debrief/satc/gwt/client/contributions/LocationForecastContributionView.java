@@ -78,7 +78,7 @@ public class LocationForecastContributionView extends BaseContributionView
 			{
 				String newLoc = event.getValue();
 				GeoPoint geop = GeoSupport.getGeoPointFromString(newLoc);
-				_myData.setEstimate(geop);
+				_myData.setLocation(geop);
 				
 				// and update the UI
 				refreshEstimate();
@@ -142,7 +142,7 @@ public class LocationForecastContributionView extends BaseContributionView
 	@Override
 	protected String getEstimateStr()
 	{
-		return (_myData.getEstimate()==null)?super.getEstimateStr():"location set";
+		return (_myData.getLocation()==null)?super.getEstimateStr():"location set";
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class LocationForecastContributionView extends BaseContributionView
 		startFinish.setData(contribution.getStartDate(),
 				contribution.getFinishDate());
 		
-		GeoPoint gp = _myData.getEstimate();
+		GeoPoint gp = _myData.getLocation();
 		String strVal =  GeoSupport.formatGeoPoint(gp);
 		estimate.setData(strVal);
 

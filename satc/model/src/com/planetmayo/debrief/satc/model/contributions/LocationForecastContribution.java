@@ -17,19 +17,20 @@ public class LocationForecastContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
 
+	public static final String LOCATION = "location";
 	public static final String LIMIT = "limit";
 
 	private Double _limit;
 
-	private GeoPoint _estimate = new GeoPoint(0, 0);
+	private GeoPoint _location = new GeoPoint(0, 0);
 
-	private PropertyChangeListener estimateDetailsListener = new PropertyChangeListener()
+	private PropertyChangeListener locationDetailsListener = new PropertyChangeListener()
 	{
 
 		@Override
 		public void propertyChange(PropertyChangeEvent evt)
 		{
-			firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _estimate);
+			firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _location);
 		}
 	};
 
@@ -39,7 +40,7 @@ public class LocationForecastContribution extends BaseContribution
 		if (_limit == null) {
 			return;			
 		}
-		Coordinate coordinate = new Coordinate(_estimate.getLon(), _estimate.getLat());
+		Coordinate coordinate = new Coordinate(_location.getLon(), _location.getLat());
 		Geometry geometry = GeoSupport.getFactory().createPoint(coordinate).buffer(GeoSupport.m2deg(_limit));
 		LocationRange range = new LocationRange((Polygon) geometry);
 		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
@@ -54,9 +55,9 @@ public class LocationForecastContribution extends BaseContribution
 		return ContributionDataType.FORECAST;
 	}
 
-	public GeoPoint getEstimate()
+	public GeoPoint getLocation()
 	{
-		return _estimate;
+		return _location;
 	}
 
 	public Double getLimit()
@@ -64,20 +65,20 @@ public class LocationForecastContribution extends BaseContribution
 		return _limit;
 	}
 
-	public void setEstimate(GeoPoint estimate)
+	public void setLocation(GeoPoint location)
 	{
-		GeoPoint oldEstimate = _estimate;
-		_estimate = estimate;
+		GeoPoint oldEstimate = _location;
+		_location = location;
 		if (oldEstimate != null)
 		{
-			oldEstimate.removePropertyChangeListener(estimateDetailsListener);
+			oldEstimate.removePropertyChangeListener(locationDetailsListener);
 		}
-		if (estimate != null)
+		if (location != null)
 		{
-			estimate.addPropertyChangeListener(estimateDetailsListener);
+			location.addPropertyChangeListener(locationDetailsListener);
 		}
-		firePropertyChange(ESTIMATE, oldEstimate, estimate);
-		firePropertyChange(HARD_CONSTRAINTS, oldEstimate, estimate);
+		firePropertyChange(LOCATION, oldEstimate, location);
+		firePropertyChange(HARD_CONSTRAINTS, oldEstimate, location);
 	}
 
 	public void setLimit(Double limit)

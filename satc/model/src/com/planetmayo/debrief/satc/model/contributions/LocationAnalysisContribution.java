@@ -219,8 +219,11 @@ public class LocationAnalysisContribution extends BaseContribution
 						// make a copy of the shape
 
 						// add each of these coords to that shape
-						AffineTransformation aff = new AffineTransformation();
-						AffineTransformation trans = aff.translate(thisC.x, thisC.y);
+//						AffineTransformation aff = new AffineTransformation();
+//						AffineTransformation trans = aff.translate(thisC.x, thisC.y);
+						
+						AffineTransformation trans = new AffineTransformation();
+						trans.setToTranslation(thisC.x, thisC.y);
 
 						// actually do the move
 						Coordinate[] oldCoords = achievable.getCoordinates();
