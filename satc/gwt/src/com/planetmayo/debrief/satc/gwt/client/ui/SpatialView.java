@@ -48,7 +48,7 @@ public class SpatialView extends Composite implements ISteppingListener
 	@UiHandler("clear")
 	void clearClick(ClickEvent e)
 	{
-
+		clearPlot();
 	}
 	
 	@UiHandler("debug")
@@ -122,6 +122,9 @@ public class SpatialView extends Composite implements ISteppingListener
 	@Override
 	public void restarted(IBoundsManager boundsManager)
 	{
+		// ok, do a clear, so we redraw afresh
+		clearPlot();
+		
 		plotThis(boundsManager.getSpace().states());		
 	}
 
