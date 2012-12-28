@@ -25,6 +25,8 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 public class TrackStates extends Composite implements ISteppingListener
 {
 
+	private static final String EMPTY_STATE = "===";
+
 	interface TrackStatesUiBinder extends UiBinder<Widget, TrackStates>
 	{
 	}
@@ -87,7 +89,7 @@ public class TrackStates extends Composite implements ISteppingListener
 
 	private void clearMessage()
 	{
-		errorPanel.setText(""); // This clears the error label
+		errorPanel.setText(EMPTY_STATE); // This clears the error label
 	}
 
 	
@@ -100,9 +102,6 @@ public class TrackStates extends Composite implements ISteppingListener
 		// do we have states?
 		if ((states != null) && states.size() > 0)
 		{
-			// have data, check the error message is clear
-			clearMessage();
-
 			for (BoundedState state : states)
 			{
 				@SuppressWarnings("deprecation")
@@ -127,6 +126,7 @@ public class TrackStates extends Composite implements ISteppingListener
 	public void restarted(IBoundsManager boundsManager)
 	{
 		clearGrid();
+		clearMessage();
 	}
 
 	@Override
@@ -144,13 +144,14 @@ public class TrackStates extends Composite implements ISteppingListener
 		clearGrid();
 
 		String message1 = "Incompatible States. Contribution: "
-				+ boundsManager.getCurrentContribution().toString();
+				+ boundsManager.getCurrentContribution().getName();
 		String message2 = "Adding:" + ex.getNewRange() + " to "
 				+ ex.getExistingRange();
 		System.err.println(message1);
 		System.err.println(message2);
 
-		errorPanel.setHTML(message1 + "<BR>" + message2);
+		errorPanel.setText(message1 + " \\ " + message2);
+	//	errorPanel.setHTML(message1 + "<BR>" + message2);
 	}
 
 	public static String formatThis(CourseRange course)

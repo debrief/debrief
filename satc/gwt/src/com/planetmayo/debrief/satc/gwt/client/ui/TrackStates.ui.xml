@@ -128,7 +128,7 @@
 			</g:InlineLabel>
 		</g:HTMLPanel>
 
-		<g:HTML ui:field="errorPanel" styleName="{style.errorPanel}"></g:HTML>
+		<g:HTML ui:field="errorPanel" styleName="{style.errorPanel}">===</g:HTML>
 
 		<g:Grid ui:field="grid" styleName="{style.grid}" borderWidth="1"
 			cellPadding="4" cellSpacing="0" width="100%">
