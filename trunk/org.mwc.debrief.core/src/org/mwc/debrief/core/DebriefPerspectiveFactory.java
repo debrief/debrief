@@ -42,7 +42,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
-		bottomLeft.addView(DebriefPlugin.MULTI_PATH);
+		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 			
 		
