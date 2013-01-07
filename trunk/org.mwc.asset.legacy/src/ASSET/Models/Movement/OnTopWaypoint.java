@@ -159,10 +159,10 @@ public class OnTopWaypoint extends WaypointVisitor
           double amountRemaining = demandedTurn - amountTurned;
 
           // trim the amount remaining to a realistic figure, silly.
-          if (amountRemaining < -360)
+          if (amountRemaining <= -360)
             amountRemaining += 360;
 
-          if (amountRemaining > 360)
+          if (amountRemaining >= 360)
             amountRemaining -= 360;
 
           // ok, update the amount of course change remaining
