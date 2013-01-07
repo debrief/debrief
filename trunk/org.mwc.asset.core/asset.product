@@ -16,7 +16,7 @@
    <launcherArgs>
       <programArgs>-data
 @user.home/.AssetNG</programArgs>
-      <vmArgs>-Xms40m -Xmx256m</vmArgs>
+      <vmArgs>-Xms128m -Xmx1025m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.asset.core/icons/components.gif"/>
@@ -99,7 +99,7 @@
    <features>
       <feature id="org.mwc.asset.core.feature" version="1.0.36"/>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.188"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.237"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.238"/>
    </features>
 
 
