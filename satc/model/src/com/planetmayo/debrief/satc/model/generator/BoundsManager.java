@@ -255,34 +255,38 @@ public class BoundsManager implements IBoundsManager
 	{
 		for (BaseContribution contribution : _contribs) 
 		{
-			if (contribution.getDataType() == ContributionDataType.FORECAST) 
+			// is this contribution active?
+			if (contribution.isActive())
 			{
-				Date startDate = contribution.getStartDate();
-				Date finishDate = contribution.getFinishDate();
-				if (startDate != null && _space.getBoundedStateAt(startDate) == null) 
+				if (contribution.getDataType() == ContributionDataType.FORECAST) 
 				{
-					try 
+					Date startDate = contribution.getStartDate();
+					Date finishDate = contribution.getFinishDate();
+					if (startDate != null && _space.getBoundedStateAt(startDate) == null) 
 					{
-						_space.add(new BoundedState(startDate));
-					} 
-					catch (IncompatibleStateException ex) 
-					{
-						// can't be thrown here in any correct situation
-						throw new RuntimeException(ex);
+						try 
+						{
+							_space.add(new BoundedState(startDate));
+						} 
+						catch (IncompatibleStateException ex) 
+						{
+							// can't be thrown here in any correct situation
+							throw new RuntimeException(ex);
+						}
 					}
+					if (finishDate != null && _space.getBoundedStateAt(finishDate) == null) 
+					{
+						try 
+						{
+							_space.add(new BoundedState(finishDate));
+						} 
+						catch (IncompatibleStateException ex) 
+						{
+							// can't be thrown here in any correct situation
+							throw new RuntimeException(ex); 
+						}
+					}		
 				}
-				if (finishDate != null && _space.getBoundedStateAt(finishDate) == null) 
-				{
-					try 
-					{
-						_space.add(new BoundedState(finishDate));
-					} 
-					catch (IncompatibleStateException ex) 
-					{
-						// can't be thrown here in any correct situation
-						throw new RuntimeException(ex); 
-					}
-				}				
 			}
 		}
 	}
