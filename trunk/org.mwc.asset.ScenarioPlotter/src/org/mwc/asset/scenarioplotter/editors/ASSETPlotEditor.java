@@ -398,7 +398,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public void update()
 	{
 		// call a chart update - so it removes it's cached data
-		_myChart.update();
+		if (_myChart != null)
+			_myChart.update();
 	}
 
 	/**

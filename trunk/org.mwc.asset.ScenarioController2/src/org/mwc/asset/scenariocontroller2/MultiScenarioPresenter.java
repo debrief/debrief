@@ -266,7 +266,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		InstanceWrapper instance = _myModel.getWrapperFor(_currentScen
 				.getScenario());
 		instance.terminate(_myModel.getObservers());
-		
+
 		// refresh the workspace, so the output files are visible
 		_myDisplay.refreshWorkspace();
 
@@ -316,7 +316,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		}
 
 		// set the listeners
-		instance.initialise(_myModel.getObservers(), _scenarioController.outputDirectory);
+		instance.initialise(_myModel.getObservers(),
+				_scenarioController.outputDirectory);
 
 		_myDisplay.getUI().setInitEnabled(false);
 		_myDisplay.getUI().setStepEnabled(true);
@@ -330,15 +331,9 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	protected void newTime(final long newTime)
 	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				String dateStr = _dateFormat.format(new Date(newTime));
-				String timeStr = _timeFormat.format(new Date(newTime));
-				_myDisplay.getUI().setTime(dateStr + "\n" + timeStr);
-			}
-		});
+		String dateStr = _dateFormat.format(new Date(newTime));
+		String timeStr = _timeFormat.format(new Date(newTime));
+		_myDisplay.getUI().setTime(dateStr + "\n" + timeStr);
 	}
 
 	protected void selectThis(final ScenarioWrapper wrap)
@@ -358,7 +353,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			_currentScen.getScenario().removeScenarioSteppedListener(_stepListener);
 			_currentScen.getScenario().removeScenarioRunningListener(_runListener);
 		}
-		
+
 		// get convenient short cut
 		ScenarioType scen = wrap.getScenario();
 
@@ -391,12 +386,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 		// see if the scenario has been initialised yet
 		InstanceWrapper instance = _myModel.getWrapperFor(scen);
 		boolean isInit = instance.isInitialised();
-		
+
 		_myDisplay.getUI().setInitEnabled(!isInit);
 		_myDisplay.getUI().setPlayEnabled(isInit);
 		_myDisplay.getUI().setStepEnabled(isInit);
 
-		
 	}
 
 	protected void controllerAssigned(String controlFile)
@@ -466,7 +460,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	{
 		return _myModel;
 	}
-	
+
 	protected void doGenerate()
 	{
 		// disable the genny button, until it's done.
@@ -481,12 +475,14 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				// and let it create some files
 				try
 				{
-					_myModel.prepareFiles(_controlFileName, _scenarioFileName, System.out,
-							System.err, System.in, montor, _scenarioController.outputDirectory);
+					_myModel.prepareFiles(_controlFileName, _scenarioFileName,
+							System.out, System.err, System.in, montor,
+							_scenarioController.outputDirectory);
 				}
 				catch (XPathExpressionException e1)
 				{
-					CorePlugin.logError(Status.ERROR, "Whilst performing scenario generation", e1);
+					CorePlugin.logError(Status.ERROR,
+							"Whilst performing scenario generation", e1);
 					return;
 				}
 
@@ -553,7 +549,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				}
 				catch (Exception e)
 				{
-					CorePlugin.logError(Status.ERROR, "Whilst loading " + thisName,e);
+					CorePlugin.logError(Status.ERROR, "Whilst loading " + thisName, e);
 					return;
 				}
 
@@ -601,7 +597,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	{
 		if ((_controlFileName == null) || (_scenarioFileName == null))
 			return;
-		
+
 		// clear any existing secnarios
 		_myDisplay.clearScenarios();
 
@@ -754,7 +750,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// TODO: test that we remove ourselves from unselected scenarios
 
 		}
-		
+
 		private static class RunnablePresenter extends MultiScenarioPresenter
 		{
 
@@ -763,7 +759,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			{
 				super(display, model);
 			}
-			
+
 			@Override
 			protected void runThisJob(JobWithProgress theJob)
 			{
@@ -780,7 +776,6 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				theJob.run(monitor);
 			}
 
-			
 		}
 
 		public void testRealDataSinglePart()
@@ -794,8 +789,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			UIDisplay ui = mock(UIDisplay.class);
 			when(display.getUI()).thenReturn(ui);
 			final MultiScenarioCore model = new MultiScenarioCore();
-			final MultiScenarioPresenter pres = new RunnablePresenter(display,
-					model);
+			final MultiScenarioPresenter pres = new RunnablePresenter(display, model);
 
 			// just add support for a couple of methods that we need to work
 			when(display.getProjectPathFor(new File("results"))).thenReturn(
@@ -842,7 +836,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			verify(ui).setRunAllEnabled(false);
 			verify(ui).setInitEnabled(true);
 			verify(ui, times(2)).setStepEnabled(false);
-			verify(ui,times(2)).setPlayEnabled(false);
+			verify(ui, times(2)).setPlayEnabled(false);
 		}
 
 		public void testRealDataMultiPart()
@@ -863,33 +857,32 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 					new File("results"));
 
 			doAnswer(new Answer<Object>()
-					{
-						public Object answer(InvocationOnMock invocation)
-						{
+			{
+				public Object answer(InvocationOnMock invocation)
+				{
 
-							ScenarioType theScenario = (ScenarioType) model.getSimulations()
-									.firstElement();
+					ScenarioType theScenario = (ScenarioType) model.getSimulations()
+							.firstElement();
 
-							// better wrap it
-							ScenarioLayer sl = new ScenarioLayer();
-							sl.setScenario(theScenario);
+					// better wrap it
+					ScenarioLayer sl = new ScenarioLayer();
+					sl.setScenario(theScenario);
 
-							ScenarioWrapper sw = new ScenarioWrapper(pres, sl);
+					ScenarioWrapper sw = new ScenarioWrapper(pres, sl);
 
-							// tell it about any backdrop data
-							Layer theBackdrop = theScenario.getBackdrop();
-							if (theBackdrop != null)
-								sw.addThisLayer(theBackdrop);
+					// tell it about any backdrop data
+					Layer theBackdrop = theScenario.getBackdrop();
+					if (theBackdrop != null)
+						sw.addThisLayer(theBackdrop);
 
-							// also tell it about any observers
-							sw.fireNewController();
+					// also tell it about any observers
+					sw.fireNewController();
 
-							pres.selectThis(sw);
-							return null;
-						}
-					}).when(display).selectFirstRow();
+					pres.selectThis(sw);
+					return null;
+				}
+			}).when(display).selectFirstRow();
 
-			
 			pres.handleTheseFiles(new String[]
 			{ scenarioPath, control_multiP_Path });
 
@@ -900,7 +893,7 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 			// and that the UI looks right
 			verify(ui, times(2)).setGenerateEnabled(false);
 			verify(ui).setRunAllEnabled(false);
-			
+
 			verify(ui).setInitEnabled(true);
 			verify(ui, times(2)).setPlayEnabled(false);
 			verify(ui, times(2)).setStepEnabled(false);

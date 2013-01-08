@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ScenarioPlotter Plug-in
 Bundle-SymbolicName: org.mwc.asset.ScenarioPlotter; singleton:=true
-Bundle-Version: 1.0.12
+Bundle-Version: 1.0.13
 Bundle-Activator: org.mwc.asset.scenarioplotter.Activator
 Require-Bundle: org.mwc.asset.core,
  org.mwc.cmap.core,
