@@ -1,5 +1,9 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -8,15 +12,12 @@ import org.junit.Test;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContributionTest;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
-
-import static org.junit.Assert.*;
 
 public class TrackGeneratorTest extends ModelTestBase {
 	static protected IncompatibleStateException _ise;
@@ -77,8 +78,7 @@ public class TrackGeneratorTest extends ModelTestBase {
 	public void testRestartOnContribChange() throws IOException {
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(SupportServices.INSTANCE.getIOService()
-				.readLinesFrom(BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(TestSupport.getLongData());
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(Math.toRadians(24));
@@ -187,8 +187,7 @@ public class TrackGeneratorTest extends ModelTestBase {
 	public void testIncompatibleBounds() throws IOException {
 		// sort out our contributions
 		BearingMeasurementContribution bearingM = new BearingMeasurementContribution();
-		bearingM.loadFrom(SupportServices.INSTANCE.getIOService()
-				.readLinesFrom(BearingMeasurementContributionTest.THE_PATH));
+		bearingM.loadFrom(TestSupport.getLongData());
 
 		CourseForecastContribution courseF = new CourseForecastContribution();
 		courseF.setMinCourse(Math.toRadians(24));

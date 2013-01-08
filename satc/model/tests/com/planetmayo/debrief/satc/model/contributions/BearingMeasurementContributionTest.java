@@ -1,5 +1,10 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
 import org.junit.Test;
@@ -7,11 +12,9 @@ import org.junit.Test;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.support.TestSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-
-import static org.junit.Assert.*;
 
 @SuppressWarnings("deprecation")
 public class BearingMeasurementContributionTest extends ModelTestBase
@@ -27,7 +30,7 @@ public class BearingMeasurementContributionTest extends ModelTestBase
 		contribution = new BearingMeasurementContribution();
 		assertFalse("should be empty", contribution.hasData());
 		
-		contribution.loadFrom(SupportServices.INSTANCE.getIOService().readLinesFrom(THE_SHORT_PATH));
+		contribution.loadFrom(TestSupport.getShortData());
 		assertTrue("should not be empty", contribution.hasData());	
 		assertEquals("correct start date", new Date(110, 00, 12, 12, 13, 29), contribution.getStartDate());
 		assertEquals("correct finish date", new Date(110, 00, 12, 12, 24, 29), contribution.getFinishDate());
@@ -51,6 +54,6 @@ public class BearingMeasurementContributionTest extends ModelTestBase
 				assertNotNull("we should have a coordinate", coordinate);
 			}
 		}
-		assertEquals("read in all lines", 8, ps.size());
+		assertEquals("read in all lines", 5, ps.size());
 	}
 }

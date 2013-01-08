@@ -28,7 +28,7 @@ public class TestSupport
 		return _genny;
 	}
 
-	private ArrayList<String> getLongData()
+	public static ArrayList<String> getLongData()
 	{
 		final ArrayList<String> rows = new ArrayList<String>();
 
@@ -94,7 +94,7 @@ public class TestSupport
 		return rows;
 	}
 
-	private ArrayList<String> getShortData()
+	public static ArrayList<String> getShortData()
 	{
 		// and put them into an array list
 		final ArrayList<String> rows = new ArrayList<String>();
