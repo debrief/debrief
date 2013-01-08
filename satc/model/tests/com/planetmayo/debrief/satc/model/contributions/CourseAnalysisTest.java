@@ -28,8 +28,8 @@ public class CourseAnalysisTest extends TestCase
 		space.add(bb);
 		space.add(bc);
 		VehicleType vType = new VehicleType("UK Ferry", GeoSupport.kts2MSec(2),
-				GeoSupport.kts2MSec(30), GeoSupport.degsSec2radsMilli(0),
-				GeoSupport.degsSec2radsMilli(1), 0.2, 0.4, 0.2, 0.4);
+				GeoSupport.kts2MSec(30), Math.toRadians(0),
+				Math.toRadians(1), 0.2, 0.4, 0.2, 0.4);
 		space.setVehicleType(vType);
 
 		// set some course data
@@ -73,8 +73,8 @@ public class CourseAnalysisTest extends TestCase
 		space.add(bb);
 		space.add(bc);
 		VehicleType vType = new VehicleType("UK Ferry", GeoSupport.kts2MSec(2),
-				GeoSupport.kts2MSec(30), GeoSupport.degsSec2radsMilli(0),
-				GeoSupport.degsSec2radsMilli(1), 0.2, 0.4, 0.2, 0.4);
+				GeoSupport.kts2MSec(30), Math.toRadians(0),
+				Math.toRadians(1), 0.2, 0.4, 0.2, 0.4);
 		space.setVehicleType(vType);
 
 		// set some course data
