@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
+import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -80,18 +81,29 @@ public class RangeForecastContributionTest extends TestCase
 		sc.setMaxSpeed(22d);
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
+		sc.setActive(false);
+		
+		BoundsManager bm = new BoundsManager();
+		bm.addContribution(sc);
+		
+		// should be empty (not run yet)
+		assertEquals("no states yet", 0, bm.getSpace().size());
 
-		ProblemSpace ps = new ProblemSpace();
+		bm.run();
 
-		// should be empty
-		assertEquals("no states yet", 0, ps.size());
+		// should still have zero states (not activated yet)
+		assertEquals("now have two states", 0, bm.getSpace().size());
+		
+		// aah, try activating the contribution
+		sc.setActive(true);
 
-		sc.actUpon(ps);
-
+		// and run again
+		bm.run();
+		
 		// should be two states
-		assertEquals("now have two states", 2, ps.size());
-
-		Iterator<BoundedState> iter = ps.states().iterator();
+		assertEquals("now have two states", 2, bm.getSpace().size());
+		
+		Iterator<BoundedState> iter = bm.getSpace().states().iterator();
 		BoundedState first = iter.next();
 		BoundedState second = iter.next();
 
@@ -112,7 +124,10 @@ public class RangeForecastContributionTest extends TestCase
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
-		ProblemSpace ps = new ProblemSpace();
+		BoundsManager bm = new BoundsManager();
+		bm.addContribution(sc);
+
+		ProblemSpace ps = bm.getSpace();
 		BoundedState newState = new BoundedState(new Date(2012, 4, 14));
 		newState.constrainTo(new SpeedRange(15d, 25d));
 		ps.add(newState);
@@ -127,7 +142,8 @@ public class RangeForecastContributionTest extends TestCase
 		assertEquals("correct limits before new constraints", 25d, first.getSpeed()
 				.getMax());
 
-		sc.actUpon(ps);
+		bm.run();
+//		sc.actUpon(ps);
 
 		// should be three states
 		assertEquals("now have three states", 3, ps.size());
@@ -157,13 +173,15 @@ public class RangeForecastContributionTest extends TestCase
 		sc.setStartDate(new Date(2012, 4, 12));
 		sc.setFinishDate(new Date(2012, 4, 16));
 
-		ProblemSpace ps = new ProblemSpace();
+		BoundsManager bm = new BoundsManager();
+		bm.addContribution(sc);
+		ProblemSpace ps = bm.getSpace();
 		ps.add(new BoundedState(new Date(2012, 4, 16)));
 
 		// should be empty
 		assertEquals("just one state", 1, ps.size());
 
-		sc.actUpon(ps);
+		bm.run();
 
 		// should be two states
 		assertEquals("now have two states", 2, ps.size());

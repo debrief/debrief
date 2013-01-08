@@ -27,7 +27,7 @@ public class LocationForecastContributionTest extends ForecastContributionTestBa
 		map.put(LocationForecastContribution.FINISH_DATE, new Date(6));
 		map.put(LocationForecastContribution.START_DATE, new Date(2));
 		map.put(LocationForecastContribution.WEIGHT, 7);
-		map.put(LocationForecastContribution.ESTIMATE, new GeoPoint(1, -1));		
+		map.put(LocationForecastContribution.LOCATION, new GeoPoint(1, -1));		
 		map.put(LocationForecastContribution.LIMIT, 1d);
 		return map;
 	}
