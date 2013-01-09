@@ -2,8 +2,9 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -14,7 +15,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class LocationAnalysisTest extends TestCase
+import static org.junit.Assert.*;
+
+public class LocationAnalysisTest extends ModelTestBase
 {
 
 	public void testOverap()
@@ -22,6 +25,7 @@ public class LocationAnalysisTest extends TestCase
 
 	}
 
+	@Test
 	public void testBoundary() throws IncompatibleStateException
 	{
 		// ok, create the state

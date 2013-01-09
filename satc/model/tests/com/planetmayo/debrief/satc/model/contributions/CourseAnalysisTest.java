@@ -2,8 +2,10 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -11,47 +13,54 @@ import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class CourseAnalysisTest extends TestCase
-{
+import static org.junit.Assert.*;
 
-	public void testBoundary() throws IncompatibleStateException
+public class CourseAnalysisTest extends ModelTestBase
+{
+	ProblemSpace space;
+	BoundedState firstState;
+	BoundedState secondState;
+	BoundedState thirdState;
+
+	@Before
+	public void createProblemSpace() throws IncompatibleStateException 
 	{
-		// ok, create the state
-		Date oldDate = new Date(100000);
-		Date newDate1 = new Date(105000);
-		Date newDate2 = new Date(115000);
-		BoundedState ba = new BoundedState(oldDate);
-		BoundedState bb = new BoundedState(newDate1);
-		BoundedState bc = new BoundedState(newDate2);
-		ProblemSpace space = new ProblemSpace();
-		space.add(ba);
-		space.add(bb);
-		space.add(bc);
+		firstState = new BoundedState(new Date(100000));
+		secondState = new BoundedState(new Date(105000));
+		thirdState = new BoundedState(new Date(115000));
+		space = new ProblemSpace();
+		space.add(firstState);
+		space.add(secondState);
+		space.add(thirdState);
 		VehicleType vType = new VehicleType("UK Ferry", GeoSupport.kts2MSec(2),
 				GeoSupport.kts2MSec(30), Math.toRadians(0),
 				Math.toRadians(1), 0.2, 0.4, 0.2, 0.4);
-		space.setVehicleType(vType);
-
+		space.setVehicleType(vType);		
+	}
+	
+	@Test
+	public void testBoundary() throws IncompatibleStateException
+	{
 		// set some course data
 		CourseRange cr = new CourseRange(Math.toRadians(45), Math.toRadians(110));
-		ba.constrainTo(cr);
+		firstState.constrainTo(cr);
 		
-		assertNull(" course constraint empty",bb.getCourse());
-		assertNull(" course constraint empty",bc.getCourse());
+		assertNull(" course constraint empty",secondState.getCourse());
+		assertNull(" course constraint empty",thirdState.getCourse());
 	
 		CourseAnalysisContribution cac = new CourseAnalysisContribution();
 		cac.actUpon(space);
 		
-		assertNotNull(" course constriant not empty", bb.getCourse());
-		assertNotNull(" course constriant not empty", bc.getCourse());
+		assertNotNull(" course constriant not empty", secondState.getCourse());
+		assertNotNull(" course constriant not empty", thirdState.getCourse());
 		
 		// have a look at the new min/max course
-		assertEquals("new min course valid",40d, Math.toDegrees( bb.getCourse().getMin()), 0.001);
-		assertEquals("new max course valid",115d, Math.toDegrees(bb.getCourse().getMax()), 0.001);
+		assertEquals("new min course valid",40d, Math.toDegrees( secondState.getCourse().getMin()), EPS);
+		assertEquals("new max course valid",115d, Math.toDegrees(secondState.getCourse().getMax()), EPS);
 		
 		// have a look at the new min/max course once we've run for a little longer
-		assertEquals("new min course valid",30d, Math.toDegrees( bc.getCourse().getMin()), 0.001);
-		assertEquals("new max course valid",125d, Math.toDegrees(bc.getCourse().getMax()), 0.001);
+		assertEquals("new min course valid",30d, Math.toDegrees( thirdState.getCourse().getMin()), EPS);
+		assertEquals("new max course valid",125d, Math.toDegrees(thirdState.getCourse().getMax()), EPS);
 	}
 	
 
@@ -59,44 +68,29 @@ public class CourseAnalysisTest extends TestCase
 	 * 
 	 * @throws IncompatibleStateException
 	 */
+	@Test
 	public void testWrapAround() throws IncompatibleStateException
 	{
-		// ok, create the state
-		Date oldDate = new Date(100000);
-		Date newDate1 = new Date(105000);
-		Date newDate2 = new Date(115000);
-		BoundedState ba = new BoundedState(oldDate);
-		BoundedState bb = new BoundedState(newDate1);
-		BoundedState bc = new BoundedState(newDate2);
-		ProblemSpace space = new ProblemSpace();
-		space.add(ba);
-		space.add(bb);
-		space.add(bc);
-		VehicleType vType = new VehicleType("UK Ferry", GeoSupport.kts2MSec(2),
-				GeoSupport.kts2MSec(30), Math.toRadians(0),
-				Math.toRadians(1), 0.2, 0.4, 0.2, 0.4);
-		space.setVehicleType(vType);
-
 		// set some course data
 		CourseRange cr = new CourseRange(Math.toRadians(5), Math.toRadians(350));
-		ba.constrainTo(cr);
+		firstState.constrainTo(cr);
 		
-		assertNull(" course constraint empty",bb.getCourse());
-		assertNull(" course constraint empty",bc.getCourse());
+		assertNull(" course constraint empty",secondState.getCourse());
+		assertNull(" course constraint empty",thirdState.getCourse());
 	
 		CourseAnalysisContribution cac = new CourseAnalysisContribution();
 		cac.actUpon(space);
 		
-		assertNotNull(" course constriant not empty", bb.getCourse());
-		assertNotNull(" course constriant not empty", bc.getCourse());
+		assertNotNull(" course constriant not empty", secondState.getCourse());
+		assertNotNull(" course constriant not empty", thirdState.getCourse());
 		
 		// have a look at the new min/max course
-		assertEquals("new min course valid",00d, Math.toDegrees( bb.getCourse().getMin()), 0.001);
-		assertEquals("new max course valid",355d, Math.toDegrees(bb.getCourse().getMax()), 0.001);
+		assertEquals("new min course valid",00d, Math.toDegrees( secondState.getCourse().getMin()), EPS);
+		assertEquals("new max course valid",355d, Math.toDegrees(secondState.getCourse().getMax()), EPS);
 		
 		// have a look at the new min/max course once we've run for a little longer
-		assertEquals("new min course valid",0d, Math.toDegrees( bc.getCourse().getMin()), 0.001);
-		assertEquals("new max course valid",360d, Math.toDegrees(bc.getCourse().getMax()), 0.001);
+		assertEquals("new min course valid",0d, Math.toDegrees( thirdState.getCourse().getMin()), EPS);
+		assertEquals("new max course valid",360d, Math.toDegrees(thirdState.getCourse().getMax()), EPS);
 	}
 	
 }
