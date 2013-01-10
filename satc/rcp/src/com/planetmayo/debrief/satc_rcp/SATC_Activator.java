@@ -4,6 +4,8 @@ import java.util.Hashtable;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -84,6 +86,10 @@ public class SATC_Activator extends AbstractUIPlugin
 		this.context = context;
 		plugin = this;
 		registerServices(context);
+		
+		// try to set the default perspective
+		IPerspectiveDescriptor myPer = PlatformUI.getWorkbench().getPerspectiveRegistry().findPerspectiveWithId("com.planetmayo.debrief.satc_rcp.perspective");
+		PlatformUI.getWorkbench().getPerspectiveRegistry().revertPerspective(myPer);
 	}
 
 	@Override

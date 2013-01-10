@@ -59,22 +59,20 @@
       </view>
    </extension>
    <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.jdt.ui.JavaPerspective">
-         <view
-               ratio="0.5"
-               relative="org.eclipse.ui.views.TaskList"
-               relationship="right"
-               id="com.planetmayo.debrief.satc.views.SampleView">
-         </view>
-      </perspectiveExtension>
-   </extension>
-   <extension
          point="org.eclipse.help.contexts">
       <contexts
             file="contexts.xml">
       </contexts>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.planetmayo.debrief.satc_rcp.ui.SATC_Perspective"
+            fixed="true"
+            icon="icons/calculator.png"
+            id="com.planetmayo.debrief.satc_rcp.perspective"
+            name="Track Generation">
+      </perspective>
    </extension>
 
 </plugin>
