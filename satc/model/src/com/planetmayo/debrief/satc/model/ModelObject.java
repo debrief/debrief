@@ -21,6 +21,11 @@ public abstract class ModelObject implements Serializable
 	{
 		changeSupport.addPropertyChangeListener(propertyName, listener);
 	}
+	
+	public int getPropertyChangeListenersCount() 
+	{
+		return changeSupport.getPropertyChangeListeners().length;
+	}
 
 	protected void firePropertyChange(String propertyName, Object oldValue,
 			Object newValue)

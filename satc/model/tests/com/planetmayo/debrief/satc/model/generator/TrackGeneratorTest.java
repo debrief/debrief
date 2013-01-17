@@ -1,9 +1,5 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -19,7 +15,10 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
+import static org.junit.Assert.*;
+
 public class TrackGeneratorTest extends ModelTestBase {
+	
 	static protected IncompatibleStateException _ise;
 	static int _ctr1 = 0;
 	static int _ctr2 = 0;
