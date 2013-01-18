@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -122,16 +123,20 @@ public class BoundsManagerTest extends ModelTestBase
 				fired[0] = true;				
 			}
 		});
+		assertEquals(0, speedContribution.getPropertyChangeListenersCount());
+		
 		boundsManager.addContribution(speedContribution);
 		assertTrue(fired[0]);
 		assertFalse(fired[1]);
 		assertEquals(3, boundsManager.getContributions().size());
+		assertFalse(0 == speedContribution.getPropertyChangeListenersCount());		
 		fired[0] = false;
 		
 		boundsManager.removeContribution(speedContribution);
 		assertFalse(fired[0]);
 		assertTrue(fired[1]);
 		assertEquals(2, boundsManager.getContributions().size());
+		assertEquals(0, speedContribution.getPropertyChangeListenersCount());
 		fired[1] = false;
 		
 		boundsManager.removeContribution(new LocationForecastContribution());
@@ -260,5 +265,24 @@ public class BoundsManagerTest extends ModelTestBase
 		assertFalse(0 == courseForecastContribution.getPropertyChangeListenersCount());
 		boundsManager.clear();
 		assertEquals(0, courseForecastContribution.getPropertyChangeListenersCount());
-	}	
+	}
+	
+	@Test
+	public void testError() 
+	{
+		LocationForecastContribution locationForecastContribution = new LocationForecastContribution();
+		locationForecastContribution.setStartDate(new Date(110, 0, 12, 12, 15, 0));
+		locationForecastContribution.setFinishDate(new Date(110, 0, 12, 12, 20, 0));
+		locationForecastContribution.setLimit(3d);
+		locationForecastContribution.setLocation(new GeoPoint(0, 0));
+		boundsManager.addContribution(locationForecastContribution);
+		
+		boundsManager.step();
+		assertNull(hasError());
+		boundsManager.step();
+		assertNull(hasError());		
+		boundsManager.step();
+		assertNotNull(hasError());		
+	}
+	
 }
