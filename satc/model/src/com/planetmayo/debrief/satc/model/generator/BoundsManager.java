@@ -299,6 +299,10 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void removeContribution(BaseContribution contribution)
 	{
+		if (! _contribs.contains(contribution)) 
+		{
+			return;
+		}
 		// remember it
 		_contribs.remove(contribution);
 
@@ -314,6 +318,10 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void restart()
 	{
+		if (_currentStep == 0) 
+		{
+			return;
+		}
 		// clear the states
 		_space.clear();
 

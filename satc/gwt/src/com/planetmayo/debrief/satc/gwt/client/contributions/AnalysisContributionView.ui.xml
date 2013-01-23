@@ -7,7 +7,7 @@
 	<g:HTMLPanel>
 		<g:CaptionPanel ui:field="titlePanel" captionText="Location Analysis">
 
-			<g:DisclosurePanel ui:field="disclosurePanel" animationEnabled="true" open="true"
+			<g:DisclosurePanel ui:field="disclosurePanel" animationEnabled="false" open="true"
 				width="100%">
 
 				<g:customHeader>
