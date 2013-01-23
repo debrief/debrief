@@ -133,6 +133,12 @@ public class LocationAnalysisContribution extends BaseContribution
 		return res;
 	}
 
+	/** at the newDate, work out a relaxed location bounds from the previous state
+	 * 
+	 * @param state the previous known state
+	 * @param newDate the point in time that we're projecting forwards to
+	 * @return
+	 */
 	public LocationRange getRangeFor(BoundedState state, Date newDate)
 	{
 		LinearRing res = null;
@@ -285,7 +291,7 @@ public class LocationAnalysisContribution extends BaseContribution
 	}
 
 	/**
-	 * calculate the speed boundary
+	 * calculate the speed boundary, according to the min/max speeds.
 	 * 
 	 * @param sRange
 	 *          the speed constraints
