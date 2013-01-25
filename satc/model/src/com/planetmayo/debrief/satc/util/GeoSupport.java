@@ -84,6 +84,11 @@ public class GeoSupport
 
 		return _factory;
 	}
+	
+	public static Distance computeDistance(Geometry geo1, Geometry geo2) 
+	{
+		return new DistanceHelper(geo1, geo2).calculate();
+	}
 
 	public static double kts2MSec(double kts)
 	{

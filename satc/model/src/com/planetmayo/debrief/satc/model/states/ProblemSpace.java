@@ -151,4 +151,9 @@ public class ProblemSpace
 	{
 		return _boundedStates.values();
 	}
+	
+	public Collection<BoundedState> statesAfter(BoundedState state) 
+	{
+		return _boundedStates.tailMap(new Date(state.getTime().getTime() + 1)).values();
+	}
 }

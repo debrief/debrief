@@ -42,7 +42,31 @@ public class SpeedAnalysisContribution extends BaseContribution
 				if (currentState.getSpeed() != null)
 					lastStateWithSpeed = currentState;
 			}
-		}		
+		}
+		/*for (BoundedState state1 : space.states()) 
+		{
+			if (state1.getLocation() == null) 
+			{
+				continue;
+			}			
+			for (BoundedState state2 : space.statesAfter(state1)) 
+			{
+				if (state2.getLocation() != null) 
+				{
+					long time = state2.getTime().getTime() - state1.getTime().getTime();
+					double timeInSec = time / 1000.d;
+					Distance distance = GeoSupport.computeDistance(
+							state1.getLocation().getGeometry(),
+							state2.getLocation().getGeometry()
+					);
+					SpeedRange range = new SpeedRange(
+							distance.getShortestDistance() / timeInSec,
+							distance.getLongestDistance() / timeInSec
+					);
+					state1.constrainTo(range);
+				}
+			}
+		}*/
 	}
 
 	@Override
