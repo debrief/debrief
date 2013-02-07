@@ -14,6 +14,9 @@ import org.junit.Test;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.Route;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.support.TestSupport;
@@ -204,6 +207,67 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		// check we have the correct nubmer of points
 		assertEquals("correct number of points", startLen * endLen, ctr);
+
+	}
+	
+	@Test
+	public void testLegCreation() throws ParseException, IncompatibleStateException
+	{
+		Date startD = new Date(2012, 5, 5, 12, 0, 0);
+		Date endD = new Date(2012, 5, 5, 17, 0, 0);
+		BoundedState start = new BoundedState(startD);
+		BoundedState end = new BoundedState(endD);
+		
+		WKTReader wkt = new WKTReader();
+		LocationRange startL = new LocationRange(wkt.read("POLYGON ((0 3, 2 4, 4 4, 2 3, 0 3))"));
+		LocationRange endL = new LocationRange(wkt.read("POLYGON ((5 1, 5.5 2,6 2,6 1, 5 1))"));
+		
+		start.constrainTo(startL);
+		end.constrainTo(endL);
+		
+		StraightLeg sl = new StraightLeg(start, end);
+		
+		assertNotNull("created leg", sl);
+		
+	}
+
+	public static class StraightLeg
+	{
+		/*
+		 * the route permutations through the leg This array will always be
+		 * rectangular
+		 */
+		Route[][] myRoutes;
+
+		public StraightLeg(BoundedState start, BoundedState end)
+		{
+
+			// how many cells per end-state?
+			int gridNum = 10;
+
+			// produce the grid of cells
+			ArrayList<Point> startP = MakeGrid.ST_Tile(start.getLocation()
+					.getGeometry(), gridNum, 6);
+			ArrayList<Point> endP = MakeGrid.ST_Tile(end.getLocation().getGeometry(),
+					gridNum, 6);
+
+			// ok, now generate the array of routes
+			int startLen = startP.size();
+			int endLen = endP.size();
+
+			// ok, create the array
+			myRoutes = new Route[startLen][endLen];
+
+			// now populate it
+			for (int i = 0; i < startLen; i++)
+			{
+				for (int j = 0; j < endLen; j++)
+				{
+					myRoutes[i][j] = new Route(startP.get(i), start.getTime(),
+							endP.get(j), end.getTime());
+				}
+			}
+		}
 
 	}
 
