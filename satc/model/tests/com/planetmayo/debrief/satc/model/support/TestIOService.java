@@ -22,6 +22,7 @@ public class TestIOService implements IOService
 		{
 			list.add(line);
 		}
+		reader.close();
 		return list;
 	}	
 }
