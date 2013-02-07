@@ -14,6 +14,7 @@ import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
@@ -48,26 +49,14 @@ public class GenerateCandidatesTest extends ModelTestBase {
 
 		WKTReader wkt = new WKTReader();
 		Geometry geom = wkt.read("POLYGON ((0.0 3.0, 2.0 4.0, 4.0 4.0, 2.0 3.0, 0.0 3.0))");
-//		Geometry geom = wkt.read("POLYGON ((6010902.111 2119413.551, 6011149.257 2119630.788, 6011224.818 2119772.465, 6011319.269 2119797.652, 6011399.552 2119734.684, 6011341.308 2119585.137, 6011328.714 2119435.59, 6011229.541 2119369.474, 6011155.554 2119478.092, 6010982.394 2119418.274, 6010898.962 2119367.9, 6010902.111 2119413.551))");
 
-		// cool, what's the area:
-		double area = geom.getArea();
-		
-		// home many points?
-		final int num = 100;
-
-		// how long should each side of the area be if it was regular
-		double side_length = Math.sqrt(area);
-		
-		// how many points along each side would I want?
-		double lat_interval = Math.sqrt(num);
-		
-		// work out what their spacing would be
-		double interval = side_length/lat_interval;
+		// how many points?
+		final int num = 1000;
 		
 		// ok, try the tesselate function
-		ArrayList<Geometry> pts = tesselate.ST_Tile(geom, interval, interval,
-				2);
+		long start = System.currentTimeMillis();
+		ArrayList<Geometry> pts = MakeGrid.ST_Tile(geom, num,6);
+		System.out.println("elapsed:" + (System.currentTimeMillis()-start));
 		assertNotNull("something returned", pts);
 		assertEquals("correct num", 98, pts.size());
 		Iterator<Geometry> iter = pts.iterator();
@@ -79,7 +68,7 @@ public class GenerateCandidatesTest extends ModelTestBase {
 			assertEquals("point is in area",true, geom.contains(po));
 
 			// send out for debug
-	//		System.out.println(po.getX() + "\t" + po.getY());
+			System.out.println(po.getX() + "\t" + po.getY());
 		}
 	}
 
