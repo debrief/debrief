@@ -13,25 +13,30 @@ import com.vividsolutions.jts.math.Vector2D;
 public class Route
 {
 	/**
-	 * whether this route is feasible
+	 * whether this route is possible. Routes start off as possible, and we mark
+	 * them as impossible through successive tests
 	 * 
 	 */
-	private boolean _isPossible;
+	private boolean _isPossible = true;
+
 	/**
 	 * the sum of errors representing the performance of this route
 	 * 
 	 */
 	private double _errorSum;
+
 	/**
 	 * the start point
 	 * 
 	 */
 	private final Point _startP;
+
 	/**
 	 * the end point
 	 * 
 	 */
 	private final Point _endP;
+
 	/**
 	 * the start time
 	 * 
@@ -60,6 +65,11 @@ public class Route
 	 */
 	private double _speed;
 
+	/** the length of this route (m)
+	 * 
+	 */
+	private double _length;
+
 	/**
 	 * @param startP
 	 * @param startTime
@@ -83,11 +93,9 @@ public class Route
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
 
 		// find the speed
-		double lengthDegs = vector.length();
-		double lengthMins = lengthDegs * 60d;
-		double elapsedHours = elapsed / (1000 * 60 * 60);
-		double speedKts = lengthMins / elapsedHours;
-		_speed = GeoSupport.kts2MSec(speedKts);
+		double lengthDeg = vector.length();
+		_length = GeoSupport.deg2m(lengthDeg);
+		_speed = _length / (elapsed /1000);
 
 	}
 
@@ -140,9 +148,9 @@ public class Route
 					// create the state object
 					State newS = new State(thisDate, p, _course, _speed);
 
-					if(_myStates == null)
-						_myStates =new ArrayList<State>();
-					
+					if (_myStates == null)
+						_myStates = new ArrayList<State>();
+
 					// and remember it
 					_myStates.add(newS);
 
@@ -162,6 +170,15 @@ public class Route
 		return _errorSum;
 	}
 
+	/**
+	 * indicate that this route is not achievable
+	 * 
+	 */
+	public void setImpossible()
+	{
+		_isPossible = false;
+	}
+
 	public boolean isPossible()
 	{
 		return _isPossible;
@@ -170,5 +187,20 @@ public class Route
 	public ArrayList<State> getStates()
 	{
 		return _myStates;
+	}
+
+	/**
+	 * get the length of this route
+	 * 
+	 * @return
+	 */
+	public double getDistance()
+	{
+		return _length;
+	}
+
+	public long getElapsedTime()
+	{
+		return (_endTime.getTime() - _startTime.getTime())/1000;
 	}
 }

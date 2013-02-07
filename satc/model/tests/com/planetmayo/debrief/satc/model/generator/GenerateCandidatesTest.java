@@ -18,6 +18,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.Route;
+import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -209,26 +210,46 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertEquals("correct number of points", startLen * endLen, ctr);
 
 	}
-	
+
 	@Test
-	public void testLegCreation() throws ParseException, IncompatibleStateException
+	public void testLegCreation() throws ParseException,
+			IncompatibleStateException
 	{
 		Date startD = new Date(2012, 5, 5, 12, 0, 0);
 		Date endD = new Date(2012, 5, 5, 17, 0, 0);
 		BoundedState start = new BoundedState(startD);
 		BoundedState end = new BoundedState(endD);
-		
+
+		// apply location bounds
 		WKTReader wkt = new WKTReader();
-		LocationRange startL = new LocationRange(wkt.read("POLYGON ((0 3, 2 4, 4 4, 2 3, 0 3))"));
-		LocationRange endL = new LocationRange(wkt.read("POLYGON ((5 1, 5.5 2,6 2,6 1, 5 1))"));
-		
+		LocationRange startL = new LocationRange(
+				wkt.read("POLYGON ((0 3, 2 4, 4 4, 2 3, 0 3))"));
+		LocationRange endL = new LocationRange(
+				wkt.read("POLYGON ((5 1, 5.5 2,6 2,6 1, 5 1))"));
 		start.constrainTo(startL);
 		end.constrainTo(endL);
-		
+
+		// apply speed bounds
+		SpeedRange sr = new SpeedRange(3, 24);
+		start.constrainTo(sr);
+		end.constrainTo(sr);
+
+		long tStart = System.currentTimeMillis();
+
 		StraightLeg sl = new StraightLeg(start, end);
-		
+
+		System.out.println("elapsed:" + (System.currentTimeMillis() - tStart));
+
 		assertNotNull("created leg", sl);
-		
+
+		// check we're still achievable
+		assertEquals("all still achievable", 64, sl.getNumAchievable());
+
+		// ok, check what's achievable
+		sl.decideAchievableRoutesSpeedTime();
+
+		// check some knocked off
+		assertEquals("fewer achievable", 25, sl.getNumAchievable());
 	}
 
 	public static class StraightLeg
@@ -239,8 +260,27 @@ public class GenerateCandidatesTest extends ModelTestBase
 		 */
 		Route[][] myRoutes;
 
+		/**
+		 * how many points there are in the start polygon
+		 * 
+		 */
+		private int _startLen;
+
+		/**
+		 * how many points there are in the end polygon
+		 * 
+		 */
+		private int _endLen;
+
+		private BoundedState _start;
+
+		private BoundedState _end;
+
 		public StraightLeg(BoundedState start, BoundedState end)
 		{
+
+			_start = start;
+			_end = end;
 
 			// how many cells per end-state?
 			int gridNum = 10;
@@ -252,20 +292,122 @@ public class GenerateCandidatesTest extends ModelTestBase
 					gridNum, 6);
 
 			// ok, now generate the array of routes
-			int startLen = startP.size();
-			int endLen = endP.size();
+			_startLen = startP.size();
+			_endLen = endP.size();
 
 			// ok, create the array
-			myRoutes = new Route[startLen][endLen];
+			myRoutes = new Route[_startLen][_endLen];
 
 			// now populate it
-			for (int i = 0; i < startLen; i++)
+			for (int i = 0; i < _startLen; i++)
 			{
-				for (int j = 0; j < endLen; j++)
+				for (int j = 0; j < _endLen; j++)
 				{
 					myRoutes[i][j] = new Route(startP.get(i), start.getTime(),
 							endP.get(j), end.getTime());
 				}
+			}
+		}
+
+		/**
+		 * use a simple speed/time decision to decide if it's possible to navigate a
+		 * route
+		 */
+		public void decideAchievableRoutesSpeedTime()
+		{
+			RouteOperator spd = new RouteOperator()
+			{
+
+				@Override
+				public void process(Route theRoute)
+				{
+					// do we already know this isn't possible?
+					if (!theRoute.isPossible())
+						return;
+
+					double speed = theRoute.getSpeed();
+
+					SpeedRange speedC = _start.getSpeed();
+					if (speedC != null)
+					{
+						// test against the max speed
+						double max = speedC.getMax();
+						if (speed > max)
+							theRoute.setImpossible();
+
+						// test against the min speed
+						double min = speedC.getMin();
+						if (speed < min)
+							theRoute.setImpossible();
+					}
+
+				}
+
+			};
+
+			applyToRoutes(spd);
+		}
+
+		/**
+		 * apply the operator to all my routes
+		 * 
+		 * @param operator
+		 */
+		private void applyToRoutes(RouteOperator operator)
+		{
+			for (int i = 0; i < _startLen; i++)
+			{
+				for (int j = 0; j < _endLen; j++)
+				{
+					operator.process(myRoutes[i][j]);
+				}
+			}
+		}
+
+		/**
+		 * find out how many achievable routes there are through the area
+		 * 
+		 * @return how many
+		 */
+		public int getNumAchievable()
+		{
+
+			CountPossible isPossible = new CountPossible();
+			applyToRoutes(isPossible);
+
+			return isPossible.getCount();
+		}
+
+		/**
+		 * interface for a generic operation that acts on a route
+		 * 
+		 * @author Ian
+		 * 
+		 */
+		public static interface RouteOperator
+		{
+			/**
+			 * apply the processing to this route
+			 * 
+			 * @param theRoute
+			 */
+			public void process(Route theRoute);
+		}
+
+		public static class CountPossible implements RouteOperator
+		{
+			int res = 0;
+
+			@Override
+			public void process(Route theRoute)
+			{
+				if (theRoute.isPossible())
+					res++;
+			}
+
+			public int getCount()
+			{
+				return res;
 			}
 		}
 
