@@ -1,7 +1,6 @@
 package com.planetmayo.debrief.satc.model.states;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -104,12 +103,27 @@ public class Route
 		_speed = _length / (elapsed /1000);
 
 	}
+	
+	public State first()
+	{
+		return _myStates.get(0);
+	}
+	
+	public State last()
+	{
+		return _myStates.get(_myStates.size()-1);
+	}
 
 	public double getCourse()
 	{
 		return _course;
 	}
 
+	public String getName()
+	{
+		return _name;
+	}
+	
 	public double getSpeed()
 	{
 		return _speed;

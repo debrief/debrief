@@ -1,10 +1,9 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -21,15 +20,14 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.Route;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.model.states.StraightLeg;
+import com.planetmayo.debrief.satc.model.states.StraightLeg.RouteOperator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -100,7 +98,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		// ok, generate some times
 		ArrayList<BoundedState> theTimes = new ArrayList<BoundedState>();
-		theTimes.add(new BoundedState( new Date(2012, 5, 5, 11, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 11, 0, 0)));
 		theTimes.add(new BoundedState(new Date(2012, 5, 5, 12, 0, 0)));
 		theTimes.add(new BoundedState(new Date(2012, 5, 5, 14, 0, 0)));
 		theTimes.add(new BoundedState(new Date(2012, 5, 5, 15, 0, 0)));
@@ -235,7 +233,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		LocationRange locB = new LocationRange(
 				wkt.read("POLYGON ((2.63 2.56, 3.5 3.16, 4.11 3.42, 3.33 2.3, 2.63 2.56))"));
 		LocationRange locC = new LocationRange(
-				wkt.read("POLYGON ((3.76 1.58, 4.55 2.39, 5.17 2.64, 4.38 1.53, 3.76 1.58))"));
+				wkt.read("POLYGON ((3.32 1.99,3.93 2.71,4.64 2.87,3.81 1.78, 3.32 1.99))"));
 		LocationRange locD = new LocationRange(
 				wkt.read("POLYGON ((5 1, 5.5 2, 6 2, 6 1, 5 1))"));
 
@@ -245,11 +243,9 @@ public class GenerateCandidatesTest extends ModelTestBase
 		bD.constrainTo(locD);
 
 		// apply speed bounds
-		SpeedRange sr = new SpeedRange(3, 24);
+		SpeedRange sr = new SpeedRange(3, 30);
 		bA.constrainTo(sr);
 		bD.constrainTo(sr);
-
-		long tStart = System.currentTimeMillis();
 
 		ArrayList<BoundedState> sList = new ArrayList<BoundedState>();
 		sList.add(bA);
@@ -259,244 +255,54 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		StraightLeg sl = new StraightLeg("Straight_1", sList);
 
-		System.out.println("elapsed:" + (System.currentTimeMillis() - tStart));
-
 		assertNotNull("created leg", sl);
 
 		// check we're still achievable
-		assertEquals("all still achievable", 64, sl.getNumAchievable());
+		// assertEquals("all still achievable", 64, sl.getNumAchievable());
 
 		// generate the routes
 		// ok, check what's achievable
 		sl.decideAchievableRoutes();
 
 		// check some knocked off
-		assertEquals("fewer achievable", 64, sl.getNumAchievable());
-	}
+		// assertEquals("fewer achievable", 21, sl.getNumAchievable());
 
-	public static class StraightLeg
-	{
-		/*
-		 * the route permutations through the leg This array will always be
-		 * rectangular
-		 */
-		Route[][] myRoutes;
-
-		/**
-		 * how many points there are in the start polygon
-		 * 
-		 */
-		private int _startLen;
-
-		/**
-		 * how many points there are in the end polygon
-		 * 
-		 */
-		private int _endLen;
-
-		private final String _name;
-
-		private final ArrayList<BoundedState> _states;
-
-		public StraightLeg(String name, ArrayList<BoundedState> states)
+		// have a look at the achievable routes
+		RouteOperator writePossible = new RouteOperator()
 		{
-			_states = states;
-			_name = name;
-
-			// how many cells per end-state?
-			int gridNum = 10;
-
-			// produce the grid of cells
-			ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
-					.getGeometry(), gridNum, 6);
-			ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
-					.getGeometry(), gridNum, 6);
-
-			// ok, now generate the array of routes
-			_startLen = startP.size();
-			_endLen = endP.size();
-
-			// ok, create the array
-			myRoutes = new Route[_startLen][_endLen];
-
-			// now populate it
-			int ctr = 1;
-			for (int i = 0; i < _startLen; i++)
-			{
-				for (int j = 0; j < _endLen; j++)
-				{
-					String thisName = _name + "_" + ctr++;
-					Route newRoute = new Route(thisName, startP.get(i), getFirst()
-							.getTime(), endP.get(j), getLast().getTime());
-					
-					// tell the route to decimate itself
-					newRoute.generateSegments(states);
-					
-					// and store the route
-					myRoutes[i][j] = newRoute;
-				}
-			}
-		}
-
-		private BoundedState getFirst()
-		{
-			return _states.get(0);
-		}
-
-		private BoundedState getLast()
-		{
-			return _states.get(_states.size() - 1);
-		}
-
-		/**
-		 * use a simple speed/time decision to decide if it's possible to navigate a
-		 * route
-		 */
-		public void decideAchievableRoutes()
-		{
-			RouteOperator spd = new RouteOperator()
-			{
-
-				@Override
-				public void process(Route theRoute)
-				{
-					// do we already know this isn't possible?
-					if (!theRoute.isPossible())
-						return;
-
-					// bugger, we'll have to get on with our hard sums then
-
-					// sort out the origin.
-					State startState = theRoute.getStates().get(0);
-					Coordinate startCoord = startState.getLocation().getCoordinate();
-					
-					// also sort out the end state
-					State endState = theRoute.getStates().get(theRoute.getStates().size()-1);
-					Point endPt = endState.getLocation();
-					
-					// remeber the start time
-					long tZero = startState.getTime().getTime();
-
-					// how long is the total run?
-					long elapsed = theRoute.getElapsedTime();
-
-					// loop through our states
-					Iterator<BoundedState> iter = _states.iterator();
-					while (iter.hasNext())
-					{
-						BoundedState thisB = iter.next();
-
-						LocationRange thisL = thisB.getLocation();
-						if (thisL != null)
-						{
-							// ok, what's the time difference
-							long tDelta = (thisB.getTime().getTime() - tZero)/1000;
-
-							// is this our first state
-							if (tDelta > 0)
-							{
-								double scale = (1d*elapsed) / tDelta;
-								
-								// ok, project the shape forwards
-								AffineTransformation st = AffineTransformation.scaleInstance(
-										scale, scale, startCoord.x, startCoord.y);
-								
-								// ok, apply the transform to the location
-								Geometry newGeom = st.transform(thisL.getGeometry());
-								
-								// see if the end point is in the new geometry
-								if(newGeom.disjoint(endPt))
-								{
-									theRoute.setImpossible();
-									break;
-								}
-								
-							}
-
-						}
-					}
-				}
-
-			};
-
-			applyToRoutes(spd);
-		}
-		
-		private void tmpOutputGeometry(String name, Geometry geom)
-		{
-			if(geom instanceof Polygon)
-			{
-				Polygon poly = (Polygon) geom;
-				Coordinate[] pts = poly.getCoordinates();
-			}
-			else if(geom instanceof Point)
-			{
-				Point pt = (Point) geom;
-			}
-		}
-
-		/**
-		 * apply the operator to all my routes
-		 * 
-		 * @param operator
-		 */
-		private void applyToRoutes(RouteOperator operator)
-		{
-			for (int i = 0; i < _startLen; i++)
-			{
-				for (int j = 0; j < _endLen; j++)
-				{
-					operator.process(myRoutes[i][j]);
-				}
-			}
-		}
-
-		/**
-		 * find out how many achievable routes there are through the area
-		 * 
-		 * @return how many
-		 */
-		public int getNumAchievable()
-		{
-
-			CountPossible isPossible = new CountPossible();
-			applyToRoutes(isPossible);
-
-			return isPossible.getCount();
-		}
-
-		/**
-		 * interface for a generic operation that acts on a route
-		 * 
-		 * @author Ian
-		 * 
-		 */
-		public static interface RouteOperator
-		{
-			/**
-			 * apply the processing to this route
-			 * 
-			 * @param theRoute
-			 */
-			public void process(Route theRoute);
-		}
-
-		public static class CountPossible implements RouteOperator
-		{
-			int res = 0;
 
 			@Override
 			public void process(Route theRoute)
 			{
 				if (theRoute.isPossible())
-					res++;
+				{
+					Coordinate coord = theRoute.first().getLocation().getCoordinate();
+					System.out.println(coord.x + "\t" + coord.y);
+					coord = theRoute.last().getLocation().getCoordinate();
+					System.out.println(" " + coord.x + "\t" + coord.y);
+				}
 			}
+		};
+		sl.applyToRoutes(writePossible);
+		
+		System.out.println("=====================");
+		
+		RouteOperator writeimPossible = new RouteOperator()
+		{
 
-			public int getCount()
+			@Override
+			public void process(Route theRoute)
 			{
-				return res;
+				if (!theRoute.isPossible())
+				{
+					Coordinate coord = theRoute.first().getLocation().getCoordinate();
+					System.out.println(coord.x + "\t" + coord.y);
+					coord = theRoute.last().getLocation().getCoordinate();
+					System.out.println(" " + coord.x + "\t" + coord.y);
+				}
 			}
-		}
+		};
+		sl.applyToRoutes(writeimPossible);
 
 	}
 

@@ -65,5 +65,15 @@ public class SpeedRange extends BaseRange<SpeedRange>
 		if (_minSpeed != other._minSpeed)	return false;
 
 		return true;
+	}
+
+	/** does the supplied speed fit in my range?
+	 * 
+	 * @param speed the value to test
+	 * @return  yes/no
+	 */
+	public boolean allows(double speed)
+	{
+		return (speed >= _minSpeed) && (speed <= _maxSpeed);
 	}		
 }
