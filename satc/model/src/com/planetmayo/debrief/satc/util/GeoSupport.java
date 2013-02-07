@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -280,7 +281,7 @@ public class GeoSupport
 
 	/** generate a grid of points across the polygon (see implementation for more detail)
 	 */
-	public static ArrayList<Geometry> ST_Tile(final Geometry p_geom,
+	public static ArrayList<Point> ST_Tile(final Geometry p_geom,
 			final int numPoints, final int p_precision)
 	{
 		return MakeGrid.ST_Tile(p_geom, numPoints, p_precision);

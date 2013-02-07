@@ -35,7 +35,7 @@ public class MakeGrid
 	 *           %40big-spdba.greener.local&forum_name=jts-topo-suite-user
 	 * 
 	 */
-	public static ArrayList<Geometry> ST_Tile(final Geometry p_geom,
+	public static ArrayList<Point> ST_Tile(final Geometry p_geom,
 			final int numPoints, final int p_precision)
 	{
 
@@ -56,9 +56,9 @@ public class MakeGrid
 		int v_loCol, v_hiCol, v_loRow, v_hiRow;
 		Geometry v_mbr = null;
 		Point v_geometry = null;
-		Geometry v_clip_geom = null;
+		Point v_clip_geom = null;
 		Coordinate[] v_vertices = null;
-		ArrayList<Geometry> grid = new ArrayList<Geometry>();
+		ArrayList<Point> grid = new ArrayList<Point>();
 
 		if (p_geom == null || p_geom.isEmpty() || !p_geom.isValid())
 		{

@@ -152,6 +152,15 @@ public class ProblemSpace
 		return _boundedStates.values();
 	}
 	
+	/** provide the date times
+	 * 
+	 * @return
+	 */
+	public Collection<Date> times()
+	{
+		return _boundedStates.keySet();
+	}
+	
 	public Collection<BoundedState> statesAfter(BoundedState state) 
 	{
 		return _boundedStates.tailMap(new Date(state.getTime().getTime() + 1)).values();
