@@ -20,6 +20,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 @SuppressWarnings("deprecation")
 public class GenerateCandidatesTest extends ModelTestBase {
+
 	private IBoundsManager boundsManager;
 	private BearingMeasurementContribution bearingMeasurementContribution;
 	private CourseForecastContribution courseForecastContribution;
@@ -59,15 +60,18 @@ public class GenerateCandidatesTest extends ModelTestBase {
 		
 		// ok, try the tesselate function
 		
+		
 		long start = System.currentTimeMillis();
 		
 		ArrayList<Geometry> pts = tesselate.ST_Tile(geom, interval, interval,
-				"POINT", "TOUCH", 2);
+				2);
 		
 		long elapsed = System.currentTimeMillis() - start;
 		System.out.println("elapsed:" + elapsed);
 		
 		assertNotNull("something returned", pts);
+		
+		
 	//	assertEquals("correct num", 15, pts.size());
 //		Iterator<Geometry> iter = pts.iterator();
 //		while(iter.hasNext())
