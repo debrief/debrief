@@ -44,20 +44,20 @@ public class StraightLeg
 	 * 
 	 * @param name what to call the leg
 	 * @param states the set of bounded states that comprise the leg
+	 * @param gridNum how many grid cells to dissect the area into
 	 */
-	public StraightLeg(String name, ArrayList<BoundedState> states)
+	public StraightLeg(String name, ArrayList<BoundedState> states, int gridNum)
 	{
 		_states = states;
 		_name = name;
 
-		// how many cells per end-state?
-		int gridNum = 5;
-
 		// produce the grid of cells
 		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
 				.getGeometry(), gridNum, 6);
+		System.err.println("created " + startP.size() + " start points");
 		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
 				.getGeometry(), gridNum, 6);
+		System.err.println("created " + endP.size() + " end points");
 
 		// ok, now generate the array of routes
 		_startLen = startP.size();
@@ -76,7 +76,7 @@ public class StraightLeg
 				Route newRoute = new Route(thisName, startP.get(i), getFirst()
 						.getTime(), endP.get(j), getLast().getTime());
 				
-				System.out.println(startP.get(i) + " " + endP.get(j));
+			//	System.out.println(startP.get(i) + " " + endP.get(j));
 
 				// tell the route to decimate itself
 				newRoute.generateSegments(states);

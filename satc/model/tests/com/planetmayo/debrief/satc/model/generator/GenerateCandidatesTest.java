@@ -21,7 +21,6 @@ import com.planetmayo.debrief.satc.model.states.Route;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.model.states.StraightLeg;
-import com.planetmayo.debrief.satc.model.states.StraightLeg.RouteOperator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
@@ -217,6 +216,100 @@ public class GenerateCandidatesTest extends ModelTestBase
 	public void testLegCreation() throws ParseException,
 			IncompatibleStateException
 	{
+		ArrayList<BoundedState> sList1 = createStates(3, 36, false);
+		ArrayList<BoundedState> sList2 = createStates(3, 29, true);
+
+		StraightLeg sl = new StraightLeg("Straight_1", sList1, 12);
+		StraightLeg s2 = new StraightLeg("Straight_2", sList2, 8);
+
+		assertNotNull("created leg", sl);
+
+		// check we're still achievable
+		assertEquals("all still achievable", 180, sl.getNumAchievable());
+		assertEquals("all still achievable", 96, s2.getNumAchievable());
+
+		// generate the routes
+		// ok, check what's achievable
+		sl.decideAchievableRoutes();
+		s2.decideAchievableRoutes();
+
+		// check some knocked off
+		assertEquals("fewer achievable", 65, sl.getNumAchievable());
+		assertEquals("fewer achievable", 26, s2.getNumAchievable());
+
+		Route[][] routes = sl.getRoutes();
+		for (int x = 0; x < routes.length; x++)
+		{
+			for (int y = 0; y < routes[0].length; y++)
+			{
+				Route thisR = routes[x][y];
+				if (thisR.isPossible())
+					System.out.print("1 ");
+				else
+					System.out.print("0 ");
+
+			}
+			System.out.println();
+		}
+
+		System.out.println("==========");
+		routes = s2.getRoutes();
+		for (int x = 0; x < routes.length; x++)
+		{
+			for (int y = 0; y < routes[0].length; y++)
+			{
+				Route thisR = routes[x][y];
+				if (thisR.isPossible())
+					System.out.print("1 ");
+				else
+					System.out.print("0 ");
+
+			}
+			System.out.println();
+		}
+
+		// have a look at the achievable routes
+		// RouteOperator writePossible = new RouteOperator()
+		// {
+		//
+		// @Override
+		// public void process(Route theRoute)
+		// {
+		// if (theRoute.isPossible())
+		// {
+		// Coordinate coord = theRoute.first().getLocation().getCoordinate();
+		// System.out.println(coord.x + "\t" + coord.y);
+		// coord = theRoute.last().getLocation().getCoordinate();
+		// System.out.println(" " + coord.x + "\t" + coord.y);
+		// }
+		// }
+		// };
+		// sl.applyToRoutes(writePossible);
+		//
+		// System.out.println("=====================");
+		//
+		// RouteOperator writeimPossible = new RouteOperator()
+		// {
+		//
+		// @Override
+		// public void process(Route theRoute)
+		// {
+		// if (!theRoute.isPossible())
+		// {
+		// Coordinate coord = theRoute.first().getLocation().getCoordinate();
+		// System.out.println(coord.x + "\t" + coord.y);
+		// coord = theRoute.last().getLocation().getCoordinate();
+		// System.out.println(" " + coord.x + "\t" + coord.y);
+		// }
+		// }
+		// };
+		// sl.applyToRoutes(writeimPossible);
+
+	}
+
+	private ArrayList<BoundedState> createStates(double minS, double maxS,
+			boolean reverseOrder) throws ParseException, IncompatibleStateException
+	{
 		Date startA = new Date(2012, 5, 5, 12, 0, 0);
 		Date startB = new Date(2012, 5, 5, 14, 0, 0);
 		Date startC = new Date(2012, 5, 5, 15, 0, 0);
@@ -237,13 +330,24 @@ public class GenerateCandidatesTest extends ModelTestBase
 		LocationRange locD = new LocationRange(
 				wkt.read("POLYGON ((5 1, 5.5 2, 6 2, 6 1, 5 1))"));
 
-		bA.constrainTo(locA);
-		bB.constrainTo(locB);
-		bC.constrainTo(locC);
-		bD.constrainTo(locD);
+		if (!reverseOrder)
+		{
+			bA.constrainTo(locA);
+			bB.constrainTo(locB);
+			bC.constrainTo(locC);
+			bD.constrainTo(locD);
+		}
+		else
+		{
+			bA.constrainTo(locD);
+			bB.constrainTo(locC);
+			bC.constrainTo(locB);
+			bD.constrainTo(locA);
+			
+		}
 
 		// apply speed bounds
-		SpeedRange sr = new SpeedRange(3, 30);
+		SpeedRange sr = new SpeedRange(minS, maxS);
 		bA.constrainTo(sr);
 		bD.constrainTo(sr);
 
@@ -252,58 +356,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		sList.add(bB);
 		sList.add(bC);
 		sList.add(bD);
-
-		StraightLeg sl = new StraightLeg("Straight_1", sList);
-
-		assertNotNull("created leg", sl);
-
-		// check we're still achievable
-		// assertEquals("all still achievable", 64, sl.getNumAchievable());
-
-		// generate the routes
-		// ok, check what's achievable
-		sl.decideAchievableRoutes();
-
-		// check some knocked off
-		// assertEquals("fewer achievable", 21, sl.getNumAchievable());
-
-		// have a look at the achievable routes
-		RouteOperator writePossible = new RouteOperator()
-		{
-
-			@Override
-			public void process(Route theRoute)
-			{
-				if (theRoute.isPossible())
-				{
-					Coordinate coord = theRoute.first().getLocation().getCoordinate();
-					System.out.println(coord.x + "\t" + coord.y);
-					coord = theRoute.last().getLocation().getCoordinate();
-					System.out.println(" " + coord.x + "\t" + coord.y);
-				}
-			}
-		};
-		sl.applyToRoutes(writePossible);
-		
-		System.out.println("=====================");
-		
-		RouteOperator writeimPossible = new RouteOperator()
-		{
-
-			@Override
-			public void process(Route theRoute)
-			{
-				if (!theRoute.isPossible())
-				{
-					Coordinate coord = theRoute.first().getLocation().getCoordinate();
-					System.out.println(coord.x + "\t" + coord.y);
-					coord = theRoute.last().getLocation().getCoordinate();
-					System.out.println(" " + coord.x + "\t" + coord.y);
-				}
-			}
-		};
-		sl.applyToRoutes(writeimPossible);
-
+		return sList;
 	}
 
 }
