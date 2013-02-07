@@ -54,32 +54,33 @@ public class GenerateCandidatesTest extends ModelTestBase {
 		double area = geom.getArea();
 		
 		// home many points?
-		final int num = 1000;
+		final int num = 100;
+
+		// how long should each side of the area be if it was regular
+		double side_length = Math.sqrt(area);
 		
-		double interval = 2* area/num;
+		// how many points along each side would I want?
+		double lat_interval = Math.sqrt(num);
+		
+		// work out what their spacing would be
+		double interval = side_length/lat_interval;
 		
 		// ok, try the tesselate function
-		
-		
-		long start = System.currentTimeMillis();
-		
 		ArrayList<Geometry> pts = tesselate.ST_Tile(geom, interval, interval,
 				2);
-		
-		long elapsed = System.currentTimeMillis() - start;
-		System.out.println("elapsed:" + elapsed);
-		
 		assertNotNull("something returned", pts);
-		
-		
-	//	assertEquals("correct num", 15, pts.size());
-//		Iterator<Geometry> iter = pts.iterator();
-//		while(iter.hasNext())
-//		{
-//			Geometry ge = iter.next();
-//			Point po = (Point) ge;
-//			System.out.println(po.getX() + "\t" + po.getY());
-//		}
+		assertEquals("correct num", 98, pts.size());
+		Iterator<Geometry> iter = pts.iterator();
+		while(iter.hasNext())
+		{
+			Geometry ge = iter.next();
+			Point po = (Point) ge;
+			// check the point is in the area
+			assertEquals("point is in area",true, geom.contains(po));
+
+			// send out for debug
+	//		System.out.println(po.getX() + "\t" + po.getY());
+		}
 	}
 
 }
