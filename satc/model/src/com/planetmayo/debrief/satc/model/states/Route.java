@@ -70,18 +70,24 @@ public class Route
 	 */
 	private double _length;
 
+	/** the identifier for this route
+	 * 
+	 */
+	private final String _name;
+
 	/**
 	 * @param startP
 	 * @param startTime
 	 * @param endP
 	 * @param endTime
 	 */
-	public Route(Point startP, Date startTime, Point endP, Date endTime)
+	public Route(String name, Point startP, Date startTime, Point endP, Date endTime)
 	{
 		_startP = startP;
 		_endP = endP;
 		_startTime = startTime;
 		_endTime = endTime;
+		_name = name;
 
 		Vector2D vector = new Vector2D(_startP.getCoordinate(),
 				_endP.getCoordinate());
@@ -113,7 +119,7 @@ public class Route
 	 * break the line down into a series of points, at the indicated times
 	 * 
 	 */
-	public void generateSegments(final Collection<Date> times)
+	public void generateSegments(final ArrayList<BoundedState> states)
 	{
 		// what is our time period
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
@@ -125,11 +131,11 @@ public class Route
 		final double yDelta = _endP.getY() - startY;
 
 		// move to our start time
-		Iterator<Date> iter = times.iterator();
+		Iterator<BoundedState> iter = states.iterator();
 		while (iter.hasNext())
 		{
 			// get the next date
-			Date thisDate = iter.next();
+			Date thisDate = iter.next().getTime();
 
 			// is this after our start time?
 			if (!thisDate.before(_startTime))

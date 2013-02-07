@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -23,9 +24,12 @@ import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -90,18 +94,18 @@ public class GenerateCandidatesTest extends ModelTestBase
 		Date endD = new Date(2012, 5, 5, 17, 0, 0);
 		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
 		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
-		Route testR = new Route(startP, startD, endP, endD);
+		Route testR = new Route("1", startP, startD, endP, endD);
 
 		assertNull("no states, yet", testR.getStates());
 
 		// ok, generate some times
-		ArrayList<Date> theTimes = new ArrayList<Date>();
-		theTimes.add(new Date(2012, 5, 5, 11, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 12, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 14, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 15, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 17, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 18, 0, 0));
+		ArrayList<BoundedState> theTimes = new ArrayList<BoundedState>();
+		theTimes.add(new BoundedState( new Date(2012, 5, 5, 11, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 12, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 14, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 15, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 17, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 18, 0, 0)));
 
 		testR.generateSegments(theTimes);
 
@@ -117,18 +121,18 @@ public class GenerateCandidatesTest extends ModelTestBase
 		Date endD = new Date(2012, 5, 5, 12, 0, 0);
 		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
 		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
-		Route testR = new Route(startP, startD, endP, endD);
+		Route testR = new Route("1", startP, startD, endP, endD);
 
 		assertNull("no states, yet", testR.getStates());
 
 		// ok, generate some times
-		ArrayList<Date> theTimes = new ArrayList<Date>();
-		theTimes.add(new Date(2012, 5, 5, 11, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 12, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 14, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 15, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 17, 0, 0));
-		theTimes.add(new Date(2012, 5, 5, 18, 0, 0));
+		ArrayList<BoundedState> theTimes = new ArrayList<BoundedState>();
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 11, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 12, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 14, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 15, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 17, 0, 0)));
+		theTimes.add(new BoundedState(new Date(2012, 5, 5, 18, 0, 0)));
 
 		testR.generateSegments(theTimes);
 
@@ -144,7 +148,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		Date endD = new Date(2012, 5, 5, 17, 0, 0);
 		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
 		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
-		Route testR = new Route(startP, startD, endP, endD);
+		Route testR = new Route("1", startP, startD, endP, endD);
 
 		assertEquals("correct course", 0, testR.getCourse(), EPS);
 		assertEquals("correct speed", GeoSupport.kts2MSec(12), testR.getSpeed(),
@@ -152,7 +156,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
 		endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 1));
-		testR = new Route(startP, startD, endP, endD);
+		testR = new Route("1", startP, startD, endP, endD);
 
 		assertEquals("correct course", Math.toRadians(45), testR.getCourse(), EPS);
 		assertEquals("correct speed", GeoSupport.kts2MSec(16.97), testR.getSpeed(),
@@ -160,7 +164,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
 		endP = GeoSupport.getFactory().createPoint(new Coordinate(1, -1));
-		testR = new Route(startP, startD, endP, endD);
+		testR = new Route("1", startP, startD, endP, endD);
 
 		assertEquals("correct course", Math.toRadians(-45), testR.getCourse(), EPS);
 		assertEquals("correct speed", GeoSupport.kts2MSec(16.97), testR.getSpeed(),
@@ -168,7 +172,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		startP = GeoSupport.getFactory().createPoint(new Coordinate(1, -1));
 		endP = GeoSupport.getFactory().createPoint(new Coordinate(1, -1));
-		testR = new Route(startP, startD, endP, endD);
+		testR = new Route("1", startP, startD, endP, endD);
 
 		assertEquals("correct course", Math.toRadians(0), testR.getCourse(), EPS);
 		assertEquals("correct speed", 0, testR.getSpeed(), 0.01);
@@ -201,7 +205,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		{
 			for (int j = 0; j < endLen; j++)
 			{
-				leg1[i][j] = new Route(startP.get(i), tStart, endP.get(j), tEnd);
+				leg1[i][j] = new Route("1", startP.get(i), tStart, endP.get(j), tEnd);
 				ctr++;
 			}
 		}
@@ -215,28 +219,45 @@ public class GenerateCandidatesTest extends ModelTestBase
 	public void testLegCreation() throws ParseException,
 			IncompatibleStateException
 	{
-		Date startD = new Date(2012, 5, 5, 12, 0, 0);
-		Date endD = new Date(2012, 5, 5, 17, 0, 0);
-		BoundedState start = new BoundedState(startD);
-		BoundedState end = new BoundedState(endD);
+		Date startA = new Date(2012, 5, 5, 12, 0, 0);
+		Date startB = new Date(2012, 5, 5, 14, 0, 0);
+		Date startC = new Date(2012, 5, 5, 15, 0, 0);
+		Date startD = new Date(2012, 5, 5, 17, 0, 0);
+		BoundedState bA = new BoundedState(startA);
+		BoundedState bB = new BoundedState(startB);
+		BoundedState bC = new BoundedState(startC);
+		BoundedState bD = new BoundedState(startD);
 
 		// apply location bounds
 		WKTReader wkt = new WKTReader();
-		LocationRange startL = new LocationRange(
+		LocationRange locA = new LocationRange(
 				wkt.read("POLYGON ((0 3, 2 4, 4 4, 2 3, 0 3))"));
-		LocationRange endL = new LocationRange(
-				wkt.read("POLYGON ((5 1, 5.5 2,6 2,6 1, 5 1))"));
-		start.constrainTo(startL);
-		end.constrainTo(endL);
+		LocationRange locB = new LocationRange(
+				wkt.read("POLYGON ((2.63 2.56, 3.5 3.16, 4.11 3.42, 3.33 2.3, 2.63 2.56))"));
+		LocationRange locC = new LocationRange(
+				wkt.read("POLYGON ((3.76 1.58, 4.55 2.39, 5.17 2.64, 4.38 1.53, 3.76 1.58))"));
+		LocationRange locD = new LocationRange(
+				wkt.read("POLYGON ((5 1, 5.5 2, 6 2, 6 1, 5 1))"));
+
+		bA.constrainTo(locA);
+		bB.constrainTo(locB);
+		bC.constrainTo(locC);
+		bD.constrainTo(locD);
 
 		// apply speed bounds
 		SpeedRange sr = new SpeedRange(3, 24);
-		start.constrainTo(sr);
-		end.constrainTo(sr);
+		bA.constrainTo(sr);
+		bD.constrainTo(sr);
 
 		long tStart = System.currentTimeMillis();
 
-		StraightLeg sl = new StraightLeg(start, end);
+		ArrayList<BoundedState> sList = new ArrayList<BoundedState>();
+		sList.add(bA);
+		sList.add(bB);
+		sList.add(bC);
+		sList.add(bD);
+
+		StraightLeg sl = new StraightLeg("Straight_1", sList);
 
 		System.out.println("elapsed:" + (System.currentTimeMillis() - tStart));
 
@@ -245,11 +266,12 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// check we're still achievable
 		assertEquals("all still achievable", 64, sl.getNumAchievable());
 
+		// generate the routes
 		// ok, check what's achievable
-		sl.decideAchievableRoutesSpeedTime();
+		sl.decideAchievableRoutes();
 
 		// check some knocked off
-		assertEquals("fewer achievable", 25, sl.getNumAchievable());
+		assertEquals("fewer achievable", 64, sl.getNumAchievable());
 	}
 
 	public static class StraightLeg
@@ -272,24 +294,23 @@ public class GenerateCandidatesTest extends ModelTestBase
 		 */
 		private int _endLen;
 
-		private BoundedState _start;
+		private final String _name;
 
-		private BoundedState _end;
+		private final ArrayList<BoundedState> _states;
 
-		public StraightLeg(BoundedState start, BoundedState end)
+		public StraightLeg(String name, ArrayList<BoundedState> states)
 		{
-
-			_start = start;
-			_end = end;
+			_states = states;
+			_name = name;
 
 			// how many cells per end-state?
 			int gridNum = 10;
 
 			// produce the grid of cells
-			ArrayList<Point> startP = MakeGrid.ST_Tile(start.getLocation()
+			ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
 					.getGeometry(), gridNum, 6);
-			ArrayList<Point> endP = MakeGrid.ST_Tile(end.getLocation().getGeometry(),
-					gridNum, 6);
+			ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
+					.getGeometry(), gridNum, 6);
 
 			// ok, now generate the array of routes
 			_startLen = startP.size();
@@ -299,21 +320,39 @@ public class GenerateCandidatesTest extends ModelTestBase
 			myRoutes = new Route[_startLen][_endLen];
 
 			// now populate it
+			int ctr = 1;
 			for (int i = 0; i < _startLen; i++)
 			{
 				for (int j = 0; j < _endLen; j++)
 				{
-					myRoutes[i][j] = new Route(startP.get(i), start.getTime(),
-							endP.get(j), end.getTime());
+					String thisName = _name + "_" + ctr++;
+					Route newRoute = new Route(thisName, startP.get(i), getFirst()
+							.getTime(), endP.get(j), getLast().getTime());
+					
+					// tell the route to decimate itself
+					newRoute.generateSegments(states);
+					
+					// and store the route
+					myRoutes[i][j] = newRoute;
 				}
 			}
+		}
+
+		private BoundedState getFirst()
+		{
+			return _states.get(0);
+		}
+
+		private BoundedState getLast()
+		{
+			return _states.get(_states.size() - 1);
 		}
 
 		/**
 		 * use a simple speed/time decision to decide if it's possible to navigate a
 		 * route
 		 */
-		public void decideAchievableRoutesSpeedTime()
+		public void decideAchievableRoutes()
 		{
 			RouteOperator spd = new RouteOperator()
 			{
@@ -325,27 +364,75 @@ public class GenerateCandidatesTest extends ModelTestBase
 					if (!theRoute.isPossible())
 						return;
 
-					double speed = theRoute.getSpeed();
+					// bugger, we'll have to get on with our hard sums then
 
-					SpeedRange speedC = _start.getSpeed();
-					if (speedC != null)
+					// sort out the origin.
+					State startState = theRoute.getStates().get(0);
+					Coordinate startCoord = startState.getLocation().getCoordinate();
+					
+					// also sort out the end state
+					State endState = theRoute.getStates().get(theRoute.getStates().size()-1);
+					Point endPt = endState.getLocation();
+					
+					// remeber the start time
+					long tZero = startState.getTime().getTime();
+
+					// how long is the total run?
+					long elapsed = theRoute.getElapsedTime();
+
+					// loop through our states
+					Iterator<BoundedState> iter = _states.iterator();
+					while (iter.hasNext())
 					{
-						// test against the max speed
-						double max = speedC.getMax();
-						if (speed > max)
-							theRoute.setImpossible();
+						BoundedState thisB = iter.next();
 
-						// test against the min speed
-						double min = speedC.getMin();
-						if (speed < min)
-							theRoute.setImpossible();
+						LocationRange thisL = thisB.getLocation();
+						if (thisL != null)
+						{
+							// ok, what's the time difference
+							long tDelta = (thisB.getTime().getTime() - tZero)/1000;
+
+							// is this our first state
+							if (tDelta > 0)
+							{
+								double scale = (1d*elapsed) / tDelta;
+								
+								// ok, project the shape forwards
+								AffineTransformation st = AffineTransformation.scaleInstance(
+										scale, scale, startCoord.x, startCoord.y);
+								
+								// ok, apply the transform to the location
+								Geometry newGeom = st.transform(thisL.getGeometry());
+								
+								// see if the end point is in the new geometry
+								if(newGeom.disjoint(endPt))
+								{
+									theRoute.setImpossible();
+									break;
+								}
+								
+							}
+
+						}
 					}
-
 				}
 
 			};
 
 			applyToRoutes(spd);
+		}
+		
+		private void tmpOutputGeometry(String name, Geometry geom)
+		{
+			if(geom instanceof Polygon)
+			{
+				Polygon poly = (Polygon) geom;
+				Coordinate[] pts = poly.getCoordinates();
+			}
+			else if(geom instanceof Point)
+			{
+				Point pt = (Point) geom;
+			}
 		}
 
 		/**
