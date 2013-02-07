@@ -219,54 +219,35 @@ public class GenerateCandidatesTest extends ModelTestBase
 		ArrayList<BoundedState> sList1 = createStates(3, 36, false);
 		ArrayList<BoundedState> sList2 = createStates(3, 29, true);
 
-		StraightLeg sl = new StraightLeg("Straight_1", sList1, 12);
+		StraightLeg s1 = new StraightLeg("Straight_1", sList1, 12);
 		StraightLeg s2 = new StraightLeg("Straight_2", sList2, 8);
 
-		assertNotNull("created leg", sl);
+		assertNotNull("created leg", s1);
 
 		// check we're still achievable
-		assertEquals("all still achievable", 180, sl.getNumAchievable());
+		assertEquals("all still achievable", 180, s1.getNumAchievable());
 		assertEquals("all still achievable", 96, s2.getNumAchievable());
 
 		// generate the routes
 		// ok, check what's achievable
-		sl.decideAchievableRoutes();
+		s1.decideAchievableRoutes();
 		s2.decideAchievableRoutes();
 
 		// check some knocked off
-		assertEquals("fewer achievable", 65, sl.getNumAchievable());
+		assertEquals("fewer achievable", 65, s1.getNumAchievable());
 		assertEquals("fewer achievable", 26, s2.getNumAchievable());
 
-		Route[][] routes = sl.getRoutes();
-		for (int x = 0; x < routes.length; x++)
-		{
-			for (int y = 0; y < routes[0].length; y++)
-			{
-				Route thisR = routes[x][y];
-				if (thisR.isPossible())
-					System.out.print("1 ");
-				else
-					System.out.print("0 ");
-
-			}
-			System.out.println();
-		}
-
+		writeMatrix(s1.getRoutes());
 		System.out.println("==========");
-		routes = s2.getRoutes();
-		for (int x = 0; x < routes.length; x++)
-		{
-			for (int y = 0; y < routes[0].length; y++)
-			{
-				Route thisR = routes[x][y];
-				if (thisR.isPossible())
-					System.out.print("1 ");
-				else
-					System.out.print("0 ");
+		writeMatrix(s2.getRoutes());
+		
+		
+		// now multiply them together
+		final int s1x = s1.getRoutes().length;
+		final int s2y = s2.getRoutes()[0].length;
+		boolean [][] feasible = new boolean [s1x][s2y];
 
-			}
-			System.out.println();
-		}
+		// work through the matrix multiplication style thing.
 
 		// have a look at the achievable routes
 		// RouteOperator writePossible = new RouteOperator()
@@ -305,6 +286,23 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// };
 		// sl.applyToRoutes(writeimPossible);
 
+	}
+
+	private void writeMatrix(Route[][] routes)
+	{
+		for (int x = 0; x < routes.length; x++)
+		{
+			for (int y = 0; y < routes[0].length; y++)
+			{
+				Route thisR = routes[x][y];
+				if (thisR.isPossible())
+					System.out.print("1 ");
+				else
+					System.out.print("0 ");
+
+			}
+			System.out.println();
+		}
 	}
 
 	private ArrayList<BoundedState> createStates(double minS, double maxS,

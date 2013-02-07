@@ -54,10 +54,8 @@ public class StraightLeg
 		// produce the grid of cells
 		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
 				.getGeometry(), gridNum, 6);
-		System.err.println("created " + startP.size() + " start points");
 		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
 				.getGeometry(), gridNum, 6);
-		System.err.println("created " + endP.size() + " end points");
 
 		// ok, now generate the array of routes
 		_startLen = startP.size();
