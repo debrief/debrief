@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -14,6 +15,7 @@ import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.states.Route;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
@@ -77,20 +79,98 @@ public class GenerateCandidatesTest extends ModelTestBase
 		}
 	}
 
-	@Test 
-	public void testRoutes()
+	@Test
+	public void testRouteSegmentation1()
 	{
-		Date startD = new Date(2012,5,5,12,0,0);
-		Date endD = new Date(2012,5,5,2,0,0);
-		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0,0));
-		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1,0));
+		Date startD = new Date(2012, 5, 5, 12, 0, 0);
+		Date endD = new Date(2012, 5, 5, 17, 0, 0);
+		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
+		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
 		Route testR = new Route(startP, startD, endP, endD);
-		
-		assertEquals("correct course", 0, testR.getCourse(), EPS);
-		assertEquals("correct speed", 30, testR.getSpeed(), EPS);
-		
+
+		assertNull("no states, yet", testR.getStates());
+
+		// ok, generate some times
+		ArrayList<Date> theTimes = new ArrayList<Date>();
+		theTimes.add(new Date(2012, 5, 5, 11, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 12, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 14, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 15, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 17, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 18, 0, 0));
+
+		testR.generateSegments(theTimes);
+
+		ArrayList<State> states = testR.getStates();
+		assertNotNull("have some states", states);
+		assertEquals("correct num states", 4, states.size());
 	}
-	
+
+	@Test
+	public void testRouteSegmentation2()
+	{
+		Date startD = new Date(2012, 5, 5, 12, 0, 0);
+		Date endD = new Date(2012, 5, 5, 12, 0, 0);
+		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
+		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
+		Route testR = new Route(startP, startD, endP, endD);
+
+		assertNull("no states, yet", testR.getStates());
+
+		// ok, generate some times
+		ArrayList<Date> theTimes = new ArrayList<Date>();
+		theTimes.add(new Date(2012, 5, 5, 11, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 12, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 14, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 15, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 17, 0, 0));
+		theTimes.add(new Date(2012, 5, 5, 18, 0, 0));
+
+		testR.generateSegments(theTimes);
+
+		ArrayList<State> states = testR.getStates();
+		assertNotNull("have some states", states);
+		assertEquals("correct num states", 1, states.size());
+	}
+
+	@Test
+	public void testRouteCourseAndSpeed()
+	{
+		Date startD = new Date(2012, 5, 5, 12, 0, 0);
+		Date endD = new Date(2012, 5, 5, 17, 0, 0);
+		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
+		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
+		Route testR = new Route(startP, startD, endP, endD);
+
+		assertEquals("correct course", 0, testR.getCourse(), EPS);
+		assertEquals("correct speed", GeoSupport.kts2MSec(12), testR.getSpeed(),
+				0.01);
+
+		startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
+		endP = GeoSupport.getFactory().createPoint(new Coordinate(1, 1));
+		testR = new Route(startP, startD, endP, endD);
+
+		assertEquals("correct course", Math.toRadians(45), testR.getCourse(), EPS);
+		assertEquals("correct speed", GeoSupport.kts2MSec(16.97), testR.getSpeed(),
+				0.01);
+
+		startP = GeoSupport.getFactory().createPoint(new Coordinate(0, 0));
+		endP = GeoSupport.getFactory().createPoint(new Coordinate(1, -1));
+		testR = new Route(startP, startD, endP, endD);
+
+		assertEquals("correct course", Math.toRadians(-45), testR.getCourse(), EPS);
+		assertEquals("correct speed", GeoSupport.kts2MSec(16.97), testR.getSpeed(),
+				0.01);
+
+		startP = GeoSupport.getFactory().createPoint(new Coordinate(1, -1));
+		endP = GeoSupport.getFactory().createPoint(new Coordinate(1, -1));
+		testR = new Route(startP, startD, endP, endD);
+
+		assertEquals("correct course", Math.toRadians(0), testR.getCourse(), EPS);
+		assertEquals("correct speed", 0, testR.getSpeed(), 0.01);
+
+	}
+
 	@Test
 	public void testMatrixStorage() throws ParseException
 	{
@@ -124,7 +204,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		// check we have the correct nubmer of points
 		assertEquals("correct number of points", startLen * endLen, ctr);
-		
+
 	}
 
 }

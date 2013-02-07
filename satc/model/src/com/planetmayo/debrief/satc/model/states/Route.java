@@ -85,7 +85,7 @@ public class Route
 		// find the speed
 		double lengthDegs = vector.length();
 		double lengthMins = lengthDegs * 60d;
-		double elapsedHours = elapsed / (60 * 60);
+		double elapsedHours = elapsed / (1000 * 60 * 60);
 		double speedKts = lengthMins / elapsedHours;
 		_speed = GeoSupport.kts2MSec(speedKts);
 
@@ -124,9 +124,9 @@ public class Route
 			Date thisDate = iter.next();
 
 			// is this after our start time?
-			if (thisDate.after(_startTime))
+			if (!thisDate.before(_startTime))
 			{
-				if (thisDate.before(_endTime))
+				if (!thisDate.after(_endTime))
 				{
 					// ok, consider how far along the route we are
 					long delta = thisDate.getTime() - _startTime.getTime();
@@ -140,6 +140,9 @@ public class Route
 					// create the state object
 					State newS = new State(thisDate, p, _course, _speed);
 
+					if(_myStates == null)
+						_myStates =new ArrayList<State>();
+					
 					// and remember it
 					_myStates.add(newS);
 
@@ -162,5 +165,10 @@ public class Route
 	public boolean isPossible()
 	{
 		return _isPossible;
+	}
+
+	public ArrayList<State> getStates()
+	{
+		return _myStates;
 	}
 }
