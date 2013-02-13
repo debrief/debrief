@@ -12,8 +12,7 @@ import com.vividsolutions.jts.geom.util.AffineTransformation;
 public class StraightLeg
 {
 	/*
-	 * the routeimport com.planetmayo.debrief.satc.model.states.StraightLeg;
- permutations through the leg This array will always be
+	 * the route permutations through the leg This array will always be
 	 * rectangular
 	 */
 	Route[][] myRoutes;
@@ -30,21 +29,27 @@ public class StraightLeg
 	 */
 	private int _endLen;
 
-	/** a name for the leg
+	/**
+	 * a name for the leg
 	 * 
 	 */
 	private final String _name;
 
-	/** the set of bounded states
+	/**
+	 * the set of bounded states
 	 * 
 	 */
 	private final ArrayList<BoundedState> _states;
 
-	/** create a straight leg.
+	/**
+	 * create a straight leg.
 	 * 
-	 * @param name what to call the leg
-	 * @param states the set of bounded states that comprise the leg
-	 * @param gridNum how many grid cells to dissect the area into
+	 * @param name
+	 *          what to call the leg
+	 * @param states
+	 *          the set of bounded states that comprise the leg
+	 * @param gridNum
+	 *          how many grid cells to dissect the area into
 	 */
 	public StraightLeg(String name, ArrayList<BoundedState> states, int gridNum)
 	{
@@ -73,8 +78,8 @@ public class StraightLeg
 				String thisName = _name + "_" + ctr++;
 				Route newRoute = new Route(thisName, startP.get(i), getFirst()
 						.getTime(), endP.get(j), getLast().getTime());
-				
-			//	System.out.println(startP.get(i) + " " + endP.get(j));
+
+				// System.out.println(startP.get(i) + " " + endP.get(j));
 
 				// tell the route to decimate itself
 				newRoute.generateSegments(states);
@@ -112,7 +117,7 @@ public class StraightLeg
 				double speed = distance / elapsed;
 
 				SpeedRange speedR = _states.get(0).getSpeed();
-				if(!speedR.allows(speed))
+				if (!speedR.allows(speed))
 				{
 					theRoute.setImpossible();
 				}
@@ -239,11 +244,68 @@ public class StraightLeg
 	{
 		return myRoutes;
 	}
-	
-	/** utility class to count how many routes are possible
+
+	/**
+	 * represent this set of routes as an integer matrix, with 1 for achievable
+	 * and 0 for not achievable
+	 * 
+	 * @return
+	 */
+	public int[][] asMatrix()
+	{
+		int xLen = myRoutes.length;
+		int yLen = myRoutes[0].length;
+		int[][] res = new int[xLen][yLen];
+		for (int x = 0; x < xLen; x++)
+			for (int y = 0; y < yLen; y++)
+			{
+				boolean isPoss = myRoutes[x][y].isPossible();
+				res[x][y] = (isPoss ? 1 : 0);
+			}
+		return res;
+	}
+
+	/**
+	 * perform matrix multiplication on these two integer arrays
+	 * taken from: 
+	 * http://blog.ryanrampersad.com/2010/01/matrix-multiplication-in-java/
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static int[][] multiply(int a[][], int b[][])
+	{
+
+		int aRows = a.length, aColumns = a[0].length, bRows = b.length, bColumns = b[0].length;
+
+		if (aColumns != bRows)
+		{
+			throw new IllegalArgumentException("A:Rows: " + aColumns
+					+ " did not match B:Columns " + bRows + ".");
+		}
+
+		int[][] resultant = new int[aRows][bColumns];
+
+		for (int i = 0; i < aRows; i++)
+		{ // aRow
+			for (int j = 0; j < bColumns; j++)
+			{ // bColumn
+				for (int k = 0; k < aColumns; k++)
+				{ // aColumn
+					resultant[i][j] += a[i][k] * b[k][j];
+				}
+			}
+		}
+
+		return resultant;
+	}
+
+	/**
+	 * utility class to count how many routes are possible
 	 * 
 	 * @author Ian
-	 *
+	 * 
 	 */
 	private static class CountPossible implements StraightLeg.RouteOperator
 	{

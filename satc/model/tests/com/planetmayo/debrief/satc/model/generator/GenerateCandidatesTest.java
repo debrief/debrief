@@ -237,16 +237,23 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertEquals("fewer achievable", 65, s1.getNumAchievable());
 		assertEquals("fewer achievable", 26, s2.getNumAchievable());
 
-		writeMatrix(s1.getRoutes());
-		System.out.println("==========");
-		writeMatrix(s2.getRoutes());
-		
-		
-		// now multiply them together
-		final int s1x = s1.getRoutes().length;
-		final int s2y = s2.getRoutes()[0].length;
-		boolean [][] feasible = new boolean [s1x][s2y];
+//		writeMatrix("s1",s1.getRoutes());
+//		System.out.println("==========");
+//		writeMatrix("s2", s2.getRoutes());
 
+		// now multiply them together
+		int[][] leg1Arr = s1.asMatrix();
+		int[][] leg2Arr = s2.asMatrix();
+		int[][] legRes = s2.multiply(leg1Arr, leg2Arr);
+
+//		writeMatrix("l1", leg1Arr);
+//		writeMatrix("l2", leg2Arr);
+//		writeMatrix("l res", legRes);
+//		
+		// double check that the answer is of the correct size
+		assertEquals("correct rows", s1.getRoutes().length, legRes.length);
+		assertEquals("correct rows", s2.getRoutes()[0].length, legRes[0].length);
+		
 		// work through the matrix multiplication style thing.
 
 		// have a look at the achievable routes
@@ -288,8 +295,9 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 	}
 
-	private void writeMatrix(Route[][] routes)
+	private static void writeMatrix(String name, Route[][] routes)
 	{
+		System.out.println("== " + name + " ==");
 		for (int x = 0; x < routes.length; x++)
 		{
 			for (int y = 0; y < routes[0].length; y++)
@@ -300,6 +308,19 @@ public class GenerateCandidatesTest extends ModelTestBase
 				else
 					System.out.print("0 ");
 
+			}
+			System.out.println();
+		}
+	}
+
+	private static void writeMatrix(String name, int[][] routes)
+	{
+		System.out.println("== " + name + " ==");
+		for (int x = 0; x < routes.length; x++)
+		{
+			for (int y = 0; y < routes[0].length; y++)
+			{
+				System.out.print(routes[x][y] + " ");
 			}
 			System.out.println();
 		}
@@ -341,7 +362,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 			bB.constrainTo(locC);
 			bC.constrainTo(locB);
 			bD.constrainTo(locA);
-			
+
 		}
 
 		// apply speed bounds
