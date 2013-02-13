@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.awt.Checkbox;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -13,7 +11,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
@@ -25,7 +22,7 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 	private Scale errorSlider;
 	private Label errorLabel;
 	private Button errorActiveCheckbox;
-	private Button runMDA;
+	private Button runMDACheckbox;
 
 	public BearingMeasurementContributionView(Composite parent,
 			BearingMeasurementContribution contribution)
@@ -50,10 +47,11 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		bindSliderLabelCheckbox(context, errorValue, errorSlider, errorLabel, errorActiveCheckbox,
 				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
 		
+		// connect up the MDA toggle
 		IObservableValue autoValue = BeansObservables.observeValue(contribution,
 				BearingMeasurementContribution.RUN_MDA);
 		IObservableValue autoButton = WidgetProperties.selection().observe(
-				runMDA);
+				runMDACheckbox);
 		context.bindValue(autoButton, autoValue);
 	}
 	
@@ -71,11 +69,12 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 		errorSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		errorSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
+		// and now the MDA components
 		UIUtils.createLabel(bodyGroup, "MDA: ", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		Composite group2 = new Composite(bodyGroup, SWT.NONE);
 		group2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group2.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
-		runMDA = new Button(group2, SWT.CHECK);
+		runMDACheckbox = new Button(group2, SWT.CHECK);
 		Label lbl = new Label(group2, SWT.NONE);
 		lbl.setText("(Run Manoeuvre Detection Algortihm)");
 	}
