@@ -187,7 +187,7 @@ public class TestSupport
 		
 		// that's nothing - we can now do straight leg forecasts
 		StraightLegForecastContribution st = new StraightLegForecastContribution();
-		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121600"));
+		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122100"));
 		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122800"));
 		st.setName("Straight prediction");
 		getGenerator().addContribution(st);
