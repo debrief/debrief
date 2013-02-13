@@ -266,9 +266,10 @@ public class StraightLeg
 	}
 
 	/**
-	 * perform matrix multiplication on these two integer arrays
-	 * taken from: 
+	 * perform matrix multiplication on these two integer arrays taken from:
 	 * http://blog.ryanrampersad.com/2010/01/matrix-multiplication-in-java/
+	 * 
+	 * Tested using: {{2,3},{1,2},{1,1}} multiplied by {{0,2,3},{1,2,0}};
 	 * 
 	 * @param a
 	 * @param b

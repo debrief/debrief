@@ -294,6 +294,15 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// sl.applyToRoutes(writeimPossible);
 
 	}
+	
+	@Test
+	public void testMult()
+	{
+		int[][] m1 = new int[][]{{2,3},{1,2},{1,1}};
+		int[][] m2 = new int[][]{{0,2,3},{1,2,0}};
+		int[][] res = StraightLeg.multiply(m1, m2);
+		writeMatrix("res", res);
+	}
 
 	private static void writeMatrix(String name, Route[][] routes)
 	{
