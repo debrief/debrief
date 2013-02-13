@@ -304,6 +304,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		writeMatrix("res", res);
 	}
 
+	@SuppressWarnings("unused")
 	private static void writeMatrix(String name, Route[][] routes)
 	{
 		System.out.println("== " + name + " ==");
