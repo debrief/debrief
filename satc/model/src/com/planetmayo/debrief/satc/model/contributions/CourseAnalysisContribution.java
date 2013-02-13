@@ -56,6 +56,13 @@ public class CourseAnalysisContribution extends BaseContribution
 					// two times maxTurn is greater than 360, then the acceptable range
 					// is 0 to 360.
 					double turnDelta = lastKnown.getMax() - lastKnown.getMin();
+					
+					// special case. if the delta is -ve, put it into the +ve domain. We need to do this
+					// to handle the case when we have a very large pie slice (over 1/2). 
+					// it's quite possible that once expanded, this large slice will cover the whole circle
+					if(turnDelta < 0)
+						turnDelta += Math.PI * 2;
+					
 					double newDelta = turnDelta + 2 * maxTurn;
 					if (newDelta > Math.PI * 2)
 					{
