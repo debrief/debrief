@@ -11,14 +11,18 @@ public class StraightLegForecastContribution extends BaseContribution
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		
-		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
+
+		for (BoundedState state : space.getBoundedStatesBetween(_startDate,
+				_finishDate))
 		{
-			// NOTE: just double-check that this doesn't already have a leg - we can't let them overlap
+			// NOTE: just double-check that this doesn't already have a leg - we can't
+			// let them overlap
 			String existing = state.getMemberOf();
-			if(existing != null)
-				throw new RuntimeException("We don't support overlapping legs");
-			
+			if (existing != null)
+				throw new IncompatibleStateException(
+						"We don't support overlapping legs. Old leg:" + existing
+								+ " New leg:" + this.getName(), null, null);
+
 			// ok, now just store the leg id
 			state.setMemberOf(this.getName());
 		}

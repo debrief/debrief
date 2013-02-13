@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
@@ -16,6 +17,7 @@ public class StraightLegContributionTest extends ForecastContributionTestBase
 {
 
 	private static final String TEST_NAME_1 = "test_name_1";
+	private static final String TEST_NAME_2 = "test_name_2";
 
 	@Override
 	protected Map<String, Object> getPropertiesForTest()
@@ -45,7 +47,7 @@ public class StraightLegContributionTest extends ForecastContributionTestBase
 	{
 		StraightLegForecastContribution contribution = new StraightLegForecastContribution();
 		contribution.setActive(false);
-		contribution.setName(TEST_NAME_1);
+		contribution.setName(TEST_NAME_2);
 		contribution.setFinishDate(new Date(112, 11, 27, 1, 53));
 		contribution.setStartDate(new Date(112, 11, 27, 1, 45));
 		contribution.setWeight(3);
@@ -79,8 +81,10 @@ public class StraightLegContributionTest extends ForecastContributionTestBase
 		try{
 			contribution2.actUpon(space);
 		}
-		catch(RuntimeException re)
+		catch(IncompatibleStateException re)
 		{
+			assertEquals("Correct message provided", 
+					"We don't support overlapping legs. Old leg:test_name_1 New leg:test_name_2", re.getMessage());
 			hasThrown = true;
 		}
 		assertTrue("an exception should have been thrown, for overlapping legs", hasThrown);
