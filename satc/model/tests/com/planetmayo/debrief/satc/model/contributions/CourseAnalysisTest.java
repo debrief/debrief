@@ -229,18 +229,18 @@ public class CourseAnalysisTest extends ModelTestBase
 
 		CourseAnalysisContribution cac = new CourseAnalysisContribution();
 		VehicleType theV = space.getVehicleType();
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				firstState, theV);
 		
 		assertNull("last course is still null", lastStateWithCourse);
 
 		
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				secondState, theV);
 
 		assertNull("last course is still null", lastStateWithCourse);
 
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				secondState, theV);
 
 		assertNull("last course is still null", lastStateWithCourse);
@@ -263,20 +263,20 @@ public class CourseAnalysisTest extends ModelTestBase
 
 		CourseAnalysisContribution cac = new CourseAnalysisContribution();
 		VehicleType theV = space.getVehicleType();
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				firstState, theV);
 		
 		assertNotNull("value of last course should be null", lastStateWithCourse);
 		assertEquals("correct min",87, Math.toDegrees( lastStateWithCourse.getCourse().getMin()), 0.1);
 
 		
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				secondState, theV);
 
 		assertNotNull("last course is still null", lastStateWithCourse);
 		assertEquals("correct min",82, Math.toDegrees( lastStateWithCourse.getCourse().getMin()), 0.1);
 
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				thirdState, theV);
 
 		assertNotNull("last course is still null", lastStateWithCourse);
@@ -300,18 +300,18 @@ public class CourseAnalysisTest extends ModelTestBase
 
 		CourseAnalysisContribution cac = new CourseAnalysisContribution();
 		VehicleType theV = space.getVehicleType();
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				firstState, theV);
 		
 		assertNull("value of last course should be null", lastStateWithCourse);
 	
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				secondState, theV);
 
 		assertNotNull("last course is still null", lastStateWithCourse);
 		assertEquals("correct min",87, Math.toDegrees( lastStateWithCourse.getCourse().getMin()), 0.001);
 
-		lastStateWithCourse = cac.applyRelaxedCourseBounds(lastStateWithCourse,
+		lastStateWithCourse = cac.applyRelaxedRangeBounds(lastStateWithCourse,
 				thirdState, theV);
 
 		assertNotNull("last course is still null", lastStateWithCourse);
