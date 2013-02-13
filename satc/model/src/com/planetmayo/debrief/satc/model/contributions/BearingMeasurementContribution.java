@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -104,6 +105,25 @@ public class BearingMeasurementContribution extends BaseContribution
 
 			// well, if we didn't - we do now! Apply it!
 			thisState.constrainTo(lr);
+		}
+		
+		// hmm, do we run the MDA?
+		if(getAutoDetect())
+		{
+			System.err.println("Running MDA");
+			
+			// get a few bounded states
+			Collection<BoundedState> testStates = space.getBoundedStatesBetween(this.getStartDate(), this.getFinishDate());
+			int ctr = 0;
+			for (Iterator<BoundedState> iterator = testStates.iterator(); iterator.hasNext();)
+			{
+				BoundedState boundedState =  iterator.next();
+				ctr++;
+				if(ctr >= 0 && ctr <= 2)
+				{
+					boundedState.setMemberOf("test MDA leg");
+				}
+			}
 		}
 	}
 
@@ -243,7 +263,11 @@ public class BearingMeasurementContribution extends BaseContribution
 
 	public void setAutoDetect(boolean onAuto)
 	{
+		boolean previous = _runMDA;
 		_runMDA = onAuto;
+		firePropertyChange(RUN_MDA, previous, onAuto);
+		firePropertyChange(HARD_CONSTRAINTS, previous, onAuto);
+
 	}
 
 	public boolean getAutoDetect()
