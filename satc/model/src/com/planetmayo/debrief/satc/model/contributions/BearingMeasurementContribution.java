@@ -23,13 +23,20 @@ public class BearingMeasurementContribution extends BaseContribution
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
-	public static final String OBSERVATIONS_NUMBER = "numObservations";	
+	public static final String RUN_MDA = "autoDetect";
+	public static final String OBSERVATIONS_NUMBER = "numObservations";
 
 	/**
 	 * the allowable bearing error (in radians)
 	 * 
 	 */
 	private Double _bearingError = 0d;
+
+	/**
+	 * flag for whether this contribution should run an MDA on the data
+	 * 
+	 */
+	private boolean _runMDA = true;
 
 	/**
 	 * the set of measurements we store
@@ -106,7 +113,8 @@ public class BearingMeasurementContribution extends BaseContribution
 		GeoPoint loc = new GeoPoint(lat, lon);
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
 		addThis(measure);
-		firePropertyChange(OBSERVATIONS_NUMBER, _measurements.size(), _measurements.size());
+		firePropertyChange(OBSERVATIONS_NUMBER, _measurements.size(),
+				_measurements.size());
 	}
 
 	/**
@@ -210,8 +218,8 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			BMeasurement measure = new BMeasurement(theLoc, Math.toRadians(Double.valueOf(bearing)),
-					theDate, GeoSupport.m2deg(Double.valueOf(range)));
+			BMeasurement measure = new BMeasurement(theLoc, Math.toRadians(Double
+					.valueOf(bearing)), theDate, GeoSupport.m2deg(Double.valueOf(range)));
 
 			addThis(measure);
 
@@ -231,6 +239,16 @@ public class BearingMeasurementContribution extends BaseContribution
 		this._bearingError = errorDegs;
 		firePropertyChange(BEARING_ERROR, old, errorDegs);
 		firePropertyChange(HARD_CONSTRAINTS, old, errorDegs);
+	}
+
+	public void setAutoDetect(boolean onAuto)
+	{
+		_runMDA = onAuto;
+	}
+
+	public boolean getAutoDetect()
+	{
+		return _runMDA;
 	}
 
 	/**
