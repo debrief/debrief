@@ -20,7 +20,7 @@ public class CourseAnalysisContribution extends BaseContribution
 	}
 
 	@Override
-	public void actUpon(ProblemSpace space) throws IncompatibleStateException
+	public void actUpon(final ProblemSpace space) throws IncompatibleStateException
 	{
 		// remember the previous state
 		BoundedState lastStateWithCourse = null;
@@ -30,12 +30,10 @@ public class CourseAnalysisContribution extends BaseContribution
 
 		// keep track of the states in this leg - so we can apply the common course
 		// bounds to them
-		ArrayList<BoundedState> statesInThisLeg = new ArrayList<BoundedState>();
+		final ArrayList<BoundedState> statesInThisLeg = new ArrayList<BoundedState>();
 
 		// get the vehicle type
-		VehicleType vType = space.getVehicleType();
-
-		// PHASE 1 - Produce course bounds when none are present
+		final VehicleType vType = space.getVehicleType();
 
 		// ok, loop through the states, setting course limits for any unbounded
 		// courses
@@ -95,6 +93,12 @@ public class CourseAnalysisContribution extends BaseContribution
 							currentLegCourse.constrainTo(thisC);
 						}
 					}
+					
+					// but, we do need to know the DTG and course of the last 
+					// state that had both.  If we've ever had a course constraint,
+					// then we know we're able to use this state for the DTG.
+					if(lastStateWithCourse != null)
+						lastStateWithCourse = currentState;
 				}
 
 				// ok, remmber this leg
@@ -156,7 +160,7 @@ public class CourseAnalysisContribution extends BaseContribution
 				// ok, how long since that last observation?
 				long millis = currentState.getTime().getTime()
 						- lastStateWithCourse.getTime().getTime();
-
+				
 				// how many rads?
 				double maxTurn = maxRate * millis / 1000.0d;
 
