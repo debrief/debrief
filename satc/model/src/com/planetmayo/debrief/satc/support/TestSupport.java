@@ -123,6 +123,7 @@ public class TestSupport
 		// now load some data
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		bmc.setName("Measured bearing");
+		bmc.setAutoDetect(true);
 		RangeForecastContribution rangeF = new RangeForecastContribution();
 		rangeF.setName("Measured range");
 		ArrayList<String> rows;
@@ -186,7 +187,7 @@ public class TestSupport
 		
 		// that's nothing - we can now do straight leg forecasts
 		StraightLegForecastContribution st = new StraightLegForecastContribution();
-		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121200"));
+		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121600"));
 		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122800"));
 		st.setName("Straight prediction");
 		getGenerator().addContribution(st);
