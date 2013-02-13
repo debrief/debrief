@@ -234,6 +234,28 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 				return res;
 			}
 		});
+		
+		TableViewerColumn col5 = new TableViewerColumn(viewer, SWT.NONE);
+		col5.getColumn().setText("Leg");
+		col5.getColumn().setWidth(100);
+		col5.setLabelProvider(new ColumnLabelProvider()
+		{
+			@Override
+			public String getText(Object element)
+			{
+				String res;
+				BoundedState bs = (BoundedState) element;
+				String leg = bs.getMemberOf();
+				if (leg != null)
+					res = leg;					
+				else
+					res = " ";
+
+				return res;
+			}
+		});
+
+		
 
 		makeActions();
 		contributeToActionBars();
