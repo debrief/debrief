@@ -7,9 +7,17 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 public class BoundedState implements Comparable<BoundedState>
 {
 	private final Date _time;
+	
 	private SpeedRange _speed;
+	
 	private CourseRange _course;
+	
 	private LocationRange _location;
+	
+	/** the leg that this state is a member of
+	 * 
+	 */
+	private String _memberOf;
 
 	public BoundedState(Date time)
 	{
@@ -98,6 +106,16 @@ public class BoundedState implements Comparable<BoundedState>
 		{ // yes, further constrain to this set
 			_speed.constrainTo(range);
 		}
+	}
+	
+	public void setMemberOf(String legName)
+	{
+		_memberOf = legName;
+	}
+	
+	public String getMemberOf()
+	{
+		return _memberOf;
 	}
 
 	public CourseRange getCourse()
