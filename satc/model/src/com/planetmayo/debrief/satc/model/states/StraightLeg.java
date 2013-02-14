@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
+// TODO: refactor this to support both straight and curved legs
 public class StraightLeg
 {
 	/*
@@ -48,14 +49,20 @@ public class StraightLeg
 	 *          what to call the leg
 	 * @param states
 	 *          the set of bounded states that comprise the leg
-	 * @param gridNum
-	 *          how many grid cells to dissect the area into
 	 */
-	public StraightLeg(String name, ArrayList<BoundedState> states, int gridNum)
+	public StraightLeg(String name, ArrayList<BoundedState> states)
 	{
 		_states = states;
 		_name = name;
-
+	}
+	
+	/** produce the set of constituent routes for this leg
+	 * 
+	 * @param gridNum
+	 *          how many grid cells to dissect the area into
+	 */
+	public void diceUp(int gridNum)
+	{
 		// produce the grid of cells
 		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
 				.getGeometry(), gridNum, 6);
@@ -82,12 +89,25 @@ public class StraightLeg
 				// System.out.println(startP.get(i) + " " + endP.get(j));
 
 				// tell the route to decimate itself
-				newRoute.generateSegments(states);
+				newRoute.generateSegments(_states);
 
 				// and store the route
 				myRoutes[i][j] = newRoute;
 			}
 		}
+	}
+
+	/** add this bounded state
+	 * 
+	 * @param thisS
+	 */
+	public void add(BoundedState thisS)
+	{
+		_states.add(thisS);
+		
+		// TODO: remove this at some point
+		if(myRoutes != null)
+			throw new IllegalArgumentException("Cannot add new state once gridded");
 	}
 
 	private BoundedState getFirst()

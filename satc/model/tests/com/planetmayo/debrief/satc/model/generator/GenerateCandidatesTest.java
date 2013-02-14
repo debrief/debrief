@@ -219,8 +219,11 @@ public class GenerateCandidatesTest extends ModelTestBase
 		ArrayList<BoundedState> sList1 = createStates(3, 36, false);
 		ArrayList<BoundedState> sList2 = createStates(3, 29, true);
 
-		StraightLeg s1 = new StraightLeg("Straight_1", sList1, 12);
-		StraightLeg s2 = new StraightLeg("Straight_2", sList2, 8);
+		StraightLeg s1 = new StraightLeg("Straight_1", sList1);
+		StraightLeg s2 = new StraightLeg("Straight_2", sList2);
+		
+		s1.diceUp(12);
+		s2.diceUp(8);
 
 		assertNotNull("created leg", s1);
 
