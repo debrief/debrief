@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.24" useFeatures="true" includeLaunchers="false">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.25" useFeatures="true" includeLaunchers="false">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -16,7 +16,7 @@
    <launcherArgs>
       <programArgs>-data
 @user.home/.AssetNG</programArgs>
-      <vmArgs>-Xms128m -Xmx1025m</vmArgs>
+      <vmArgs>-Xms128m -Xmx1025m   -XX:MaxPermSize=512m  -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.asset.core/icons/components.gif"/>
@@ -98,8 +98,8 @@
 
    <features>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.188"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.238"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.38"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.239"/>
    </features>
 
 
