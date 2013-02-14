@@ -1,7 +1,9 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange;
@@ -56,6 +58,55 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 	public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException
 	{
+		// do a forward pass through the list
+		analyseConstraints(space, new SwitchableIterator(true));
+		
+		// and now a reverse pass
+		analyseConstraints(space, new SwitchableIterator(false));
+	}
+
+	/** support class that lets use move either forwards or backwards through a list
+	 * 
+	 * @author Ian
+	 *
+	 */
+	private static class SwitchableIterator
+	{
+		private final boolean _fwd;
+
+		protected SwitchableIterator(boolean fwd)
+		{
+			_fwd = fwd;
+		}
+
+		protected ListIterator<BoundedState> getIterator(ArrayList<BoundedState> states )
+		{
+			if(_fwd)
+				return states.listIterator();
+			else
+				return states.listIterator(states.size());
+		}
+		
+		protected BoundedState next(ListIterator<BoundedState> iter)
+		{
+			if (_fwd)
+				return iter.next();
+			else
+				return iter.previous();
+		}
+
+		protected boolean canStep(ListIterator<BoundedState> iter)
+		{
+			if (_fwd)
+				return iter.hasNext();
+			else
+				return iter.hasPrevious();
+		}
+	}
+
+	private void analyseConstraints(final ProblemSpace space,
+			SwitchableIterator switcher) throws IncompatibleStateException
+	{
 		// remember the previous state
 		BoundedState lastStateWithState = null;
 
@@ -71,11 +122,17 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 
 		// ok, loop through the states, setting range limits for any unbounded
 		// ranges
-		for (BoundedState currentState : space.states())
+		Collection<BoundedState> theStates = space.states();
+		ArrayList<BoundedState> al = new ArrayList<BoundedState>(theStates);
+		ListIterator<BoundedState> iter = switcher.getIterator(al);
+		while(switcher.canStep(iter))
 		{
+			BoundedState currentState = switcher.next(iter);
+
+			// ok - what leg is this?
 			String thisLeg = currentState.getMemberOf();
 
-			// ok, is this in a leg?
+			// is it even in a leg?
 			if (thisLeg == null)
 			{
 				// ok, have we just finished a leg?
@@ -148,7 +205,58 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		}
 	}
 
-	/** apply our range to this existing one
+	protected BoundedState applyRelaxedRangeBounds(
+			BoundedState lastStateWithRange, BoundedState currentState,
+			VehicleType vehicleType) throws IncompatibleStateException
+	{
+		// do we have vehicle reference data?
+		if (vehicleType != null)
+		{
+	
+			// do we have a previous state?
+			if (lastStateWithRange != null)
+			{
+				// ok, how long since that last observation?
+				long millis = currentState.getTime().getTime()
+						- lastStateWithRange.getTime().getTime();
+	
+				// just in case we're doing a reverse pass, use the abs millis
+				millis = Math.abs(millis);
+	
+				R newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
+	
+				// and create a constraint for the new valus
+				applyThis(currentState, newRange);
+	
+			}
+		}
+	
+		final BoundedState newLastState;
+	
+		// ok, now a tricky bit. We have to find out if we have a new state object that
+		// has a constraint in our range type.
+		
+		// retrieve our range
+		R thisRange = getRangeFor(currentState);
+		
+		// is there a range for our type?
+		if (thisRange != null)
+		{
+			// yes - we can use this state
+			newLastState = currentState;
+		}
+		else
+		{
+			// nope, stick with the state that got passed in
+			newLastState = lastStateWithRange;
+		}
+	
+		return newLastState;
+	
+	}
+
+	/**
+	 * apply our range to this existing one
 	 * 
 	 * @param currentLegRange
 	 * @param thisRange
@@ -157,60 +265,29 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 	abstract protected void furtherConstrain(R currentLegRange, R thisRange)
 			throws IncompatibleStateException;
 
-	/** run the copy constructor for this range
+	/**
+	 * run the copy constructor for this range
 	 * 
 	 * @param thisRange
 	 * @return
 	 */
 	protected abstract R duplicateThis(R thisRange);
 
-	/** extract my range type from this state
+	/**
+	 * extract my range type from this state
 	 * 
 	 * @param lastStateWithRange
 	 * @return
 	 */
 	abstract protected R getRangeFor(BoundedState lastStateWithRange);
 
-	public BoundedState applyRelaxedRangeBounds(BoundedState lastStateWithRange,
-			BoundedState currentState, VehicleType vehicleType)
-			throws IncompatibleStateException
-	{
-		// do we have vehicle reference data?
-		if (vehicleType != null)
-		{
-
-			// do we have a previous state?
-			if (lastStateWithRange != null)
-			{
-				// ok, how long since that last observation?
-				long millis = currentState.getTime().getTime()
-						- lastStateWithRange.getTime().getTime();
-
-				R newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
-
-				// and create a constraint for the new valus
-				applyThis(currentState, newRange);
-
-			}
-		}
-
-		BoundedState newLastState = null;
-
-		// did we find one?
-		R thisRange = getRangeFor(currentState);
-		if (thisRange != null)
-		{
-			newLastState = currentState;
-		}
-		else
-		{
-			newLastState = lastStateWithRange;
-		}
-
-		return newLastState;
-
-	}
-
+	/** ok, how far does the range relax after the specified period
+	 * 
+	 * @param lastStateWithRange the last known state with contraints for our range
+	 * @param vType the vehicle type data
+	 * @param millis how long has elapsed
+	 * @return the new bounded state
+	 */
 	abstract protected R calcRelaxedRange(BoundedState lastStateWithRange,
 			VehicleType vType, long millis);
 
