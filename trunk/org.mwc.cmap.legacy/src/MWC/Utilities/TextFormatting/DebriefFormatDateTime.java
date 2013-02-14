@@ -180,6 +180,39 @@ public class DebriefFormatDateTime
 	/**
 	 * parse a date string using our format
 	 */
+	public static HiResDate parseThis(String dateToken, String timeToken)
+	{
+		// do we have millis?
+		int decPoint = timeToken.indexOf(".");
+		String milliStr, timeStr;
+		if (decPoint > 0)
+		{
+			milliStr = timeToken.substring(decPoint, timeToken.length());
+			timeStr = timeToken.substring(0, decPoint);
+		}
+		else
+		{
+			milliStr = "";
+			timeStr = timeToken;
+		}
+
+		
+		// sort out if we have to padd
+		// check the date for missing leading zeros
+		dateToken = String.format("%06d", Integer.parseInt(dateToken));
+		timeStr = String.format("%06d", Integer.parseInt(timeStr));
+
+		String composite = dateToken + " " + timeStr + milliStr;
+
+//		if (milliStr.length() > 0)
+//			composite += milliStr;
+
+		return parseThis(composite);
+	}
+
+	/**
+	 * parse a date string using our format
+	 */
 	public static HiResDate parseThis(String rawText)
 	{
 		// make sure our two and four-digit date bits are initialised
@@ -313,6 +346,57 @@ public class DebriefFormatDateTime
 			hi = new HiResDate(0, 11);
 			res = DebriefFormatDateTime.toStringHiRes(hi);
 			assertEquals("matches", "700101 000000.000011", res);
+
+		}
+
+		@SuppressWarnings("deprecation")
+		public void testPadding()
+		{
+			HiResDate val = parseThis("700101", "010000");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			assertEquals("correct date", new Date(70, 00, 01, 02, 00, 00),
+					val.getDate());
+
+			val = parseThis("080101", "010000");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			assertEquals("correct date", new Date(108, 00, 01, 01, 00, 00),
+					val.getDate());
+
+			val = parseThis("080101", "010000.005");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			Date thisDate = new Date(108, 00, 01, 01, 00, 00);
+			thisDate = new Date(thisDate.getTime() + 5);
+			assertEquals("correct date", thisDate,
+					val.getDate());
+
+			val = parseThis("080101", "010000.5");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			 thisDate = new Date(108, 00, 01, 01, 00, 00);
+			thisDate = new Date(thisDate.getTime() + 500);
+			assertEquals("correct date", thisDate,
+					val.getDate());
+
+			val = parseThis("80101", "10000");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			assertEquals("correct date", new Date(108, 00, 01, 01, 00, 00),
+					val.getDate());
+
+			val = parseThis("20080101", "10000");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			assertEquals("correct date", new Date(108, 00, 01, 01, 00, 00),
+					val.getDate());
+
+			val = parseThis("20080101", "200");
+			// System.out.println("1:" + val.getDate().getTime() + " 2:" + new
+			// Date(70,00,01,01,00,00).getTime());
+			assertEquals("correct date", new Date(108, 00, 01, 00, 02, 00),
+					val.getDate());
 
 		}
 	}

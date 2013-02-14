@@ -101,14 +101,13 @@ final class ImportPeriodText implements PlainLineImporter
     // start with the symbology
     theSymbology = st.nextToken();
 
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
-    // combine the date, a space, and the time
-    dateStr = st.nextToken() + " " + st.nextToken();
-
-    // and extract the date
-    theDate = DebriefFormatDateTime.parseThis(dateStr);
-
-
+		// and extract the date
+		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		
     // combine the date, a space, and the time
     dateStr = st.nextToken() + " " + st.nextToken();
 

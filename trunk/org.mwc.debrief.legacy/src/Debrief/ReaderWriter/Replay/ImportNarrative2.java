@@ -92,17 +92,17 @@ public final class ImportNarrative2 implements PlainLineImporter
     HiResDate DTG = null;
     String theTrack = null;
     String theEntry = null;
-    String dateStr = null;
 		String theType = null;
 
     // skip the comment identifier
     st.nextToken();
 
-    // combine the date, a space, and the time
-    dateStr = st.nextToken() + " " + st.nextToken();
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
 		// and extract the date
-    DTG = DebriefFormatDateTime.parseThis(dateStr);
+		DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // now the track name
     theTrack = ImportFix.checkForQuotedTrackName(st);

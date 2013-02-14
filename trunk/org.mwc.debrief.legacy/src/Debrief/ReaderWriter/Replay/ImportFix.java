@@ -134,7 +134,6 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -152,7 +151,7 @@ public final class ImportFix implements PlainLineImporter
 	/**
 	 * use static strings to reduce initialisation times
 	 */
-	static private String dateStr;
+//	static private String dateStr;
 
 	/**
 	 * the type for this string
@@ -195,35 +194,8 @@ public final class ImportFix implements PlainLineImporter
 		String dateToken = st.nextToken();
 		String timeToken = st.nextToken();
 
-		// check the date for missing leading zeros
-		dateToken = String.format("%06d", Integer.parseInt(dateToken));
-
-		// check the time (Excel may have omitted leading zeros)
-
-		// do we have millis?
-		int decPoint = timeToken.indexOf(".");
-		String milliStr, timeStr;
-		if (decPoint > 0)
-		{
-			milliStr = timeToken.substring(decPoint, timeToken.length());
-			timeStr = timeToken.substring(0, decPoint);
-		}
-		else
-		{
-			milliStr = "";
-			timeStr = timeToken;
-		}
-
-		// left-pad the time string
-		timeStr = String.format("%06d", Integer.parseInt(timeStr));
-		timeStr = timeStr + milliStr;
-
-		// ok, all done.
-
-		dateStr = dateToken + " " + timeStr;
-
 		// and extract the date
-		theDate = DebriefFormatDateTime.parseThis(dateStr);
+		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
 		// trouble - the track name may have been quoted, in which case we will
 		// pull
@@ -343,8 +315,6 @@ public final class ImportFix implements PlainLineImporter
 						.formatOneDecimalPlace(Conversions.Rads2Degs(fix.getCourse()));
 		double theSpeedYPS = fix.getSpeed();
 		double theSpeedKts = Conversions.Yps2Kts(theSpeedYPS);
-		WorldSpeed wS = new WorldSpeed(fix.getSpeed()*3, WorldSpeed.ft_sec);
-		double otherSpeedKts = wS.getValueIn(WorldSpeed.Kts);
 		line += " "
 				+ MWC.Utilities.TextFormatting.GeneralFormat
 						.formatOneDecimalPlace(theSpeedKts);
@@ -702,6 +672,31 @@ public final class ImportFix implements PlainLineImporter
 			ers = DebriefFormatDateTime.parseThis(val);
 			assertNull("Shouldn't manage to produce value", ers);
 		}
+		
+
+		public void testPaddingStrings()
+		{
+			String iLine = "0101 01 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			ImportFix iff = new ImportFix();
+			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
+
+			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			iLine = "700101 000000.100100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET", res.theTrackName);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
+					0.01);
+		}
+
 
 		public void testMilliSecValues()
 		{
