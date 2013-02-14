@@ -24,7 +24,6 @@ public class StraightLegContributionTest extends ForecastContributionTestBase
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put(StraightLegForecastContribution.ACTIVE, true);
-		map.put(StraightLegForecastContribution.ESTIMATE, 4d);
 		map.put(StraightLegForecastContribution.FINISH_DATE, new Date(6));
 		map.put(StraightLegForecastContribution.START_DATE, new Date(2));
 		map.put(StraightLegForecastContribution.WEIGHT, 7);
