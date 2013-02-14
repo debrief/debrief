@@ -17,7 +17,6 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class SpeedAnalysisTest extends ModelTestBase
 {
@@ -121,7 +120,7 @@ public class SpeedAnalysisTest extends ModelTestBase
 		cac.actUpon(space);
 
 		// ok, the first state should have the new constraint.
-		assertNull(" course constriant not empty", state1.getSpeed());
+		assertNotNull(" course constriant not empty", state1.getSpeed());
 		assertNotNull(" course constriant not empty", state2.getSpeed());
 		assertNotNull(" course constriant not empty", state3.getSpeed());
 		assertNotNull(" course constriant not empty", state4.getSpeed());
@@ -176,13 +175,13 @@ public class SpeedAnalysisTest extends ModelTestBase
 		
 		// have a look at the new min/max course
 		SpeedRange sp2 = state2.getSpeed();
-		assertEquals("new min speed valid", 140, sp2.getMin(), EPS);
-		assertEquals("new max speed valid", 180, sp2.getMax(), EPS);
+		assertEquals("new min speed valid", 125, sp2.getMin(), EPS);
+		assertEquals("new max speed valid", 185, sp2.getMax(), EPS);
 
 		// check we're still on the same speed
 		SpeedRange sp3 = state3.getSpeed();
-		assertEquals("new min speed valid", 140, sp3.getMin(), EPS);
-		assertEquals("new max speed valid", 180, sp3.getMax(), EPS);
+		assertEquals("new min speed valid", 125, sp3.getMin(), EPS);
+		assertEquals("new max speed valid", 185, sp3.getMax(), EPS);
 	}
 	
 	private void dumpSpeeds()

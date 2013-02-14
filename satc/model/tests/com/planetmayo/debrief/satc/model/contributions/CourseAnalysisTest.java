@@ -126,7 +126,7 @@ public class CourseAnalysisTest extends ModelTestBase
 		// have a look at the new min/max course
 		assertEquals("new min course valid", 109d,
 				Math.toDegrees(secondState.getCourse().getMin()), EPS);
-		assertEquals("new max course valid", 91.9999999d,
+		assertEquals("new max course valid", 360d,
 				Math.toDegrees(secondState.getCourse().getMax()), EPS);
 
 		// have a look at the new min/max course once we've run for a little longer
