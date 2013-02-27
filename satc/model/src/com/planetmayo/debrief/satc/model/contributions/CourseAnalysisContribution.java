@@ -40,7 +40,7 @@ public class CourseAnalysisContribution extends
 	{
 		return new CourseRange(thisRange);
 	}
-
+		
 	@Override
 	protected void furtherConstrain(CourseRange currentLegCourse,
 			CourseRange thisRange) throws IncompatibleStateException
@@ -82,7 +82,7 @@ public class CourseAnalysisContribution extends
 		double maxTurn = maxRate * millis / 1000.0d;
 
 		double newDelta = turnDelta + 2 * maxTurn;
-		if (newDelta > Math.PI * 2)
+		if (newDelta >= Math.PI * 2)
 		{
 			newMin = 0;
 			newMax = Math.PI * 2;
@@ -97,6 +97,12 @@ public class CourseAnalysisContribution extends
 
 		CourseRange newRange = new CourseRange(newMin, newMax);
 		return newRange;
+	}
+
+	@Override
+	protected void relaxConstraint(BoundedState currentState, CourseRange newRange)
+	{
+		currentState.setCourse(newRange);
 	}
 
 }

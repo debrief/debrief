@@ -98,4 +98,10 @@ public class SpeedAnalysisContribution extends
 		}
 		return new SpeedRange(minSpeed, maxSpeed);
 	}
+
+	@Override
+	protected void relaxConstraint(BoundedState currentState, SpeedRange newRange)
+	{
+		currentState.setSpeed(newRange);
+	}
 }
