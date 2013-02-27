@@ -17,6 +17,7 @@ public abstract class BaseRange<T extends BaseRange<?>>
 		private final String _message;
 		private final BaseRange<?> _existingRange;
 		private final BaseRange<?> _newRange;
+		private BoundedState _failingState;
 
 		/**
 		 * 
@@ -32,6 +33,11 @@ public abstract class BaseRange<T extends BaseRange<?>>
 			_newRange = newRange;
 		}
 
+		public void setFailingState(BoundedState state)
+		{
+			_failingState = state;
+		}
+
 		/**
 		 * get the existing (old) constraint
 		 * 
@@ -45,7 +51,10 @@ public abstract class BaseRange<T extends BaseRange<?>>
 		@Override
 		public String getMessage()
 		{
-			return _message;
+			String res = _message;
+			if (_failingState != null)
+				res += " at:" + _failingState.getTime();
+			return res;
 		}
 
 		/**

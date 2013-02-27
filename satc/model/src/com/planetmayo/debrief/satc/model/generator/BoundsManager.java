@@ -240,7 +240,7 @@ public class BoundsManager implements IBoundsManager
 		catch (IncompatibleStateException e)
 		{
 			SupportServices.INSTANCE.getLog().error(
-					"Failed applying bounds:" + theContrib.getName(), e);
+					"Failed applying bounds:" + theContrib.getName());
 			fireError(e);
 		}
 		catch (Exception re)
