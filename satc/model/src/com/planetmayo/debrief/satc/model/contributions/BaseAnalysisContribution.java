@@ -224,10 +224,11 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 				millis = Math.abs(millis);
 	
 				R newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
-	
-				// and create a constraint for the new valus
-				applyThis(currentState, newRange);
-	
+				
+				// note = we're not going to apply this as a constraint, since
+				// that would just use the intersection, which is the 'tighter' range
+				// we're going to assign this new range
+				relaxConstraint(currentState, newRange);
 			}
 		}
 	
@@ -254,6 +255,8 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		return newLastState;
 	
 	}
+
+	abstract protected void relaxConstraint(BoundedState currentState, R newRange);
 
 	/**
 	 * apply our range to this existing one
