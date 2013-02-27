@@ -7,21 +7,22 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 public class BoundedState implements Comparable<BoundedState>
 {
 	private final Date _time;
-	
+
 	private SpeedRange _speed;
-	
+
 	private CourseRange _course;
-	
+
 	private LocationRange _location;
-	
-	/** the leg that this state is a member of
+
+	/**
+	 * the leg that this state is a member of
 	 * 
 	 */
 	private String _memberOf;
 
 	public BoundedState(Date time)
 	{
-		if (time == null) 
+		if (time == null)
 		{
 			throw new IllegalArgumentException("time can't be null");
 		}
@@ -64,8 +65,19 @@ public class BoundedState implements Comparable<BoundedState>
 			_course = new CourseRange(range);
 		}
 		else
-		{ // yes, further constrain to this set
-			_course.constrainTo(range);
+		{
+			// yes, further constrain to this set
+
+			try
+			{
+				_course.constrainTo(range);
+			}
+			catch (IncompatibleStateException e)
+			{
+				// inject the state details
+				e.setFailingState(this);
+				throw e;
+			}
 		}
 	}
 
@@ -107,12 +119,12 @@ public class BoundedState implements Comparable<BoundedState>
 			_speed.constrainTo(range);
 		}
 	}
-	
+
 	public void setMemberOf(String legName)
 	{
 		_memberOf = legName;
 	}
-	
+
 	public String getMemberOf()
 	{
 		return _memberOf;
@@ -136,6 +148,21 @@ public class BoundedState implements Comparable<BoundedState>
 	public Date getTime()
 	{
 		return _time;
+	}
+
+	public void setLocation(LocationRange newRange)
+	{
+		_location = newRange;
+	}
+
+	public void setSpeed(SpeedRange newRange)
+	{
+		_speed = newRange;
+	}
+
+	public void setCourse(CourseRange newRange)
+	{
+		_course = newRange;
 	}
 
 }
