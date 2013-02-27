@@ -77,8 +77,12 @@ package Debrief.ReaderWriter.Replay;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
+import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -104,8 +108,7 @@ final class ImportBearing implements PlainLineImporter
     double latSec, longSec;
     String theText="";
     String theSymbology;
-    String dateStr;
-    long theDate;
+    HiResDate theDate;
 
 
 //;BRG: BD YYMMDD HHMMSS DD MM SS.SS H DD MM SS.SS H CCC XXXX xx.xx
@@ -117,11 +120,12 @@ final class ImportBearing implements PlainLineImporter
     // start with the symbology
     theSymbology = st.nextToken();
 
-    // combine the date, a space, and the time
-    dateStr = st.nextToken() + " " + st.nextToken();
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
-    // and extract the date
-    theDate = DebriefFormatDateTime.parseThis(dateStr).getMicros();
+		// and extract the date
+		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // now the start location
     latDeg = Double.valueOf(st.nextToken());
@@ -185,7 +189,7 @@ final class ImportBearing implements PlainLineImporter
     ShapeWrapper sw = new ShapeWrapper(theText,
                                        sp,
                                        ImportReplay.replayColorFor(theSymbology),
-                                       new HiResDate(theDate));
+                                       theDate);
 
     return sw;
   }

@@ -117,7 +117,6 @@ final class ImportSensor2 implements PlainLineImporter {
     String theSymbology;
     String theTrack;
     String sensorName;
-    String dateStr;
     double latDeg, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
@@ -131,14 +130,12 @@ final class ImportSensor2 implements PlainLineImporter {
     // skip the comment identifier
     st.nextToken();
 
-    // now the dtg
-    dateStr = st.nextToken();
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
-    // append the time
-    dateStr = dateStr + " " + st.nextToken();
-
-    // and extract the date
-    theDtg = DebriefFormatDateTime.parseThis(dateStr);
+		// and extract the date
+		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // get the (possibly multi-word) track name
     theTrack = ImportFix.checkForQuotedTrackName(st);

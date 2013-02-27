@@ -58,16 +58,17 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import MWC.TacticalData.NarrativeEntry;
-import MWC.Utilities.ReaderWriter.*;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.StringTokenizer;
 
-import java.io.*;
-import java.util.*;
-
-import MWC.GenericData.*;
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Layers;
-import Debrief.Wrappers.*;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.PlainImporterBase;
+import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /** class to parse a label from a line of text
  */
@@ -90,16 +91,16 @@ public final class ImportNarrative implements PlainLineImporter
     HiResDate DTG = null;
     String theTrack = null;
     String theEntry = null;
-    String dateStr = null;
 
     // skip the comment identifier
     st.nextToken();
+    
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
-    // combine the date, a space, and the time
-    dateStr = st.nextToken() + " " + st.nextToken();
-
-    // and extract the date
-    DTG = DebriefFormatDateTime.parseThis(dateStr);
+		// and extract the date
+		DTG = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // now the track name
     theTrack = ImportFix.checkForQuotedTrackName(st);

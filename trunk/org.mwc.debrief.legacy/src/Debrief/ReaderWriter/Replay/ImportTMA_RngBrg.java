@@ -73,7 +73,6 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 		String theSymbology;
 		String vesselName;
 		String solutionName;
-		String dateStr;
 		HiResDate theDtg = null;
 		double brg, rng;
 		double course, speed, depth;
@@ -84,14 +83,12 @@ public final class ImportTMA_RngBrg implements PlainLineImporter
 		// skip the comment identifier
 		st.nextToken();
 
-		// now the dtg
-		dateStr = st.nextToken();
-
-		// append the time
-		dateStr = dateStr + " " + st.nextToken();
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
 		// and extract the date
-		theDtg = DebriefFormatDateTime.parseThis(dateStr);
+		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
 		// now the vessel name
 		vesselName = ImportFix.checkForQuotedTrackName(st);

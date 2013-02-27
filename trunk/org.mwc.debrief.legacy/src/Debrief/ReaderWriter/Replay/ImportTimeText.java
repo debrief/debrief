@@ -81,7 +81,6 @@ final class ImportTimeText implements PlainLineImporter
     double latSec, longSec;
     String theText;
     String theSymbology;
-		String dateStr;
 		HiResDate theDate=null;
 
     // skip the comment identifier
@@ -90,13 +89,13 @@ final class ImportTimeText implements PlainLineImporter
     // start with the symbology
     theSymbology = st.nextToken();
 
-
-    // combine the date, a space, and the time
-		dateStr = st.nextToken() + " " + st.nextToken();
+		// combine the date, a space, and the time
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
 
 		// and extract the date
-		theDate = DebriefFormatDateTime.parseThis(dateStr);
-
+		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		
     // now the location
     latDeg = Double.valueOf(st.nextToken());
     latMin = Double.valueOf(st.nextToken());
