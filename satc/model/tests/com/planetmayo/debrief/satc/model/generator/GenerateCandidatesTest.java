@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.generator;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -10,10 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
+import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.SolutionGenerator.ISolutionsReadyListener;
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
@@ -30,6 +36,9 @@ public class GenerateCandidatesTest extends ModelTestBase
 	{
 		boundsManager = new BoundsManager();
 
+		VehicleType type = new MockVehicleTypesManager().getAllTypes().get(0);
+		boundsManager.setVehicleType(type);
+		
 		bearingMeasurementContribution = new BearingMeasurementContribution();
 		bearingMeasurementContribution.loadFrom(TestSupport.getLongData());
 		bearingMeasurementContribution.setAutoDetect(false);
@@ -59,6 +68,8 @@ public class GenerateCandidatesTest extends ModelTestBase
 		sl.setFinishDate(new Date(110, 0, 12, 12, 56, 0));
 		sl.setName("Straight leg 3");
 		boundsManager.addContribution(sl);
+		
+		boundsManager.addContribution(new LocationAnalysisContribution());
 
 	}
 
@@ -73,7 +84,48 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 		assertNotNull("got some legs", theLegs);
 		assertEquals("got 7 (3 straight, 4 turns) legs",7, theLegs.size());
-		
 	}
+
+	private static boolean called = false;
+	
+	@Test
+	public void testWholeCycle()
+	{
+		boundsManager.run();
+
+		// ok, let's look at the legs
+		Collection<BoundedState> theStates = boundsManager.getSpace().states();
+
+		// ok, check the locations
+		for (Iterator iterator = theStates.iterator(); iterator.hasNext();)
+		{
+			BoundedState boundedState = (BoundedState) iterator.next();
+			System.out.println("time:" + boundedState.getTime() + " loc:" +( boundedState.getLocation() != null)
+					+ " crse:" + (boundedState.getCourse() != null)
+					 + " spd:" + (boundedState.getSpeed() != null));
+		}	
+		
+		SolutionGenerator genny = new SolutionGenerator();
+		genny.addReadyListener(new ISolutionsReadyListener()
+		{
+			
+			@Override
+			public void solutionsReady(CompositeRoute[] routes)
+			{
+				called = true;
+			}
+		});
+		
+		// ok, get it to run
+		assertFalse("not called yet", called);
+		
+		genny.complete(boundsManager);
+		
+		// ok, get it to run
+		assertTrue("now called yet", called);
+	}
+
+	
+	
 
 }

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
@@ -15,11 +16,32 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class SolutionGenerator implements ISteppingListener
 {
+	
+	/** listener for someone who wants to know if we've managed to generate some routes
+	 * 
+	 * @author Ian
+	 *
+	 */
+	public static interface ISolutionsReadyListener
+	{
+		/** a set of candidate routes have been generated
+		 * 
+		 * @param routes
+		 */
+		public void solutionsReady(CompositeRoute[] routes);
+	}
+	
 	final int NUM_CELLS = 20;
+	private ArrayList<ISolutionsReadyListener> _readyListeners;
 
 	public SolutionGenerator()
 	{
-
+		_readyListeners = new ArrayList<ISolutionsReadyListener>();
+	}
+	
+	public void addReadyListener(ISolutionsReadyListener listener)
+	{
+		_readyListeners.add(listener);
 	}
 
 	@Override
@@ -69,23 +91,36 @@ public class SolutionGenerator implements ISteppingListener
 		});
 
 		// generate some candidate solutions
+		CompositeRoute[] routes = generateCandidates(theLegs);
 
-		// and we're done!
+		// and we're done, share the good news!
+		for (ISolutionsReadyListener listener : _readyListeners) 
+		{
+			listener.solutionsReady(routes);
+		}
+	}
 
-		// TODO: also extract the altering legs
-
+	/** using best performing routes through the straight legs, generate a set of overall
+	 * solutions
+	 * @param theLegs the set of legs we're looking at
+	 * @return a set of routes through the data
+	 */
+	private CompositeRoute[] generateCandidates(HashMap<String, CoreLeg> theLegs)
+	{
+		// TODO generate the candidate solutions
+		return null;
 	}
 
 	static void cancelUnachievable(HashMap<String, CoreLeg> theLegs,
 			int[][] achievableRes)
 	{
-		// TODO Auto-generated method stub
+		// TODO ditch permutations that aren't possible
 
 	}
 
 	static int[][] calculateAchievableRoutesFor(HashMap<String, CoreLeg> theLegs)
 	{
-		// TODO Auto-generated method stub
+		// TODO do the fancy matrix multiplication
 		return null;
 	}
 

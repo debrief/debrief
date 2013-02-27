@@ -39,9 +39,15 @@ public class StraightLeg extends CoreLeg
 	public void generateRoutes(int gridNum)
 	{
 		// produce the grid of cells
-		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
+		LocationRange firstLoc = getFirst().getLocation();
+		LocationRange lastLoc = getLast().getLocation();
+
+		if((firstLoc == null) || (lastLoc == null))
+			throw new IllegalArgumentException("The end states must have location bounds");
+		
+		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc
 				.getGeometry(), gridNum, 6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
+		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc
 				.getGeometry(), gridNum, 6);
 
 		// ok, now generate the array of routes
