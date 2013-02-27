@@ -10,14 +10,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>test_data</name>
-			<type>2</type>
-			<location>D:/Dev/Eclipse2/deploy/DebriefNG/workspace/test_data</location>
-		</link>
-		<link>
 			<name>Debrief 2003</name>
 			<type>2</type>
 			<location>C:/Program Files/Debrief 2003</location>
+		</link>
+		<link>
+			<name>test_data</name>
+			<type>2</type>
+			<location>D:/dev/Eclipse2/deploy/DebriefNG/workspace/test_data</location>
 		</link>
 	</linkedResources>
 </projectDescription>
