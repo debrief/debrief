@@ -209,6 +209,8 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 			BoundedState lastStateWithRange, BoundedState currentState,
 			VehicleType vehicleType) throws IncompatibleStateException
 	{
+		R newRange = null;
+		
 		// do we have vehicle reference data?
 		if (vehicleType != null)
 		{
@@ -223,12 +225,12 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 				// just in case we're doing a reverse pass, use the abs millis
 				millis = Math.abs(millis);
 	
-				R newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
-				
-				// note = we're not going to apply this as a constraint, since
-				// that would just use the intersection, which is the 'tighter' range
-				// we're going to assign this new range
-				relaxConstraint(currentState, newRange);
+				// ok, what does that state relax to
+			  newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
+			
+				// ok, apply this new constraint, or further constrain any existing one
+				applyThis(currentState, newRange);
+
 			}
 		}
 	
@@ -248,8 +250,13 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		}
 		else
 		{
-			// nope, stick with the state that got passed in
-			newLastState = lastStateWithRange;
+			// have we calculated a relaxed range?
+			if(newRange != null)
+				// yes, use it
+				newLastState =  currentState;
+			else
+				// now, lose the constraint
+				newLastState= null;
 		}
 	
 		return newLastState;
