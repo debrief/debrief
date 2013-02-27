@@ -1,57 +1,28 @@
-package com.planetmayo.debrief.satc.model.states;
+package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.math.Vector2D;
 
-public class Route
+/** a straight line path between two points, with a given speed
+ * 
+ * @author Ian
+ *
+ */
+public class StraightRoute extends CoreRoute
 {
-	/**
-	 * whether this route is possible. Routes start off as possible, and we mark
-	 * them as impossible through successive tests
-	 * 
-	 */
-	private boolean _isPossible = true;
-
 	/**
 	 * the sum of errors representing the performance of this route
 	 * 
 	 */
 	private double _errorSum;
-
-	/**
-	 * the start point
-	 * 
-	 */
-	private final Point _startP;
-
-	/**
-	 * the end point
-	 * 
-	 */
-	private final Point _endP;
-
-	/**
-	 * the start time
-	 * 
-	 */
-	private final Date _startTime;
-	/**
-	 * the end time
-	 * 
-	 */
-	private final Date _endTime;
-
-	/**
-	 * the series of points that this route represents
-	 * 
-	 */
-	private ArrayList<State> _myStates = null;
 
 	/**
 	 * the course followed for this route
@@ -69,24 +40,15 @@ public class Route
 	 */
 	private double _length;
 
-	/** the identifier for this route
-	 * 
-	 */
-	private final String _name;
-
 	/**
 	 * @param startP
 	 * @param startTime
 	 * @param endP
 	 * @param endTime
 	 */
-	public Route(String name, Point startP, Date startTime, Point endP, Date endTime)
+	public StraightRoute(String name, Point startP, Date startTime, Point endP, Date endTime)
 	{
-		_startP = startP;
-		_endP = endP;
-		_startTime = startTime;
-		_endTime = endTime;
-		_name = name;
+		super(startP, endP, startTime, endTime, name);
 
 		Vector2D vector = new Vector2D(_startP.getCoordinate(),
 				_endP.getCoordinate());
@@ -104,26 +66,11 @@ public class Route
 
 	}
 	
-	public State first()
-	{
-		return _myStates.get(0);
-	}
-	
-	public State last()
-	{
-		return _myStates.get(_myStates.size()-1);
-	}
-
 	public double getCourse()
 	{
 		return _course;
 	}
 
-	public String getName()
-	{
-		return _name;
-	}
-	
 	public double getSpeed()
 	{
 		return _speed;
@@ -217,10 +164,5 @@ public class Route
 	public double getDistance()
 	{
 		return _length;
-	}
-
-	public long getElapsedTime()
-	{
-		return (_endTime.getTime() - _startTime.getTime())/1000;
 	}
 }

@@ -1,8 +1,12 @@
-package com.planetmayo.debrief.satc.model.states;
+package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -10,37 +14,13 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 // TODO: refactor this to support both straight and curved legs
-public class StraightLeg
+public class StraightLeg extends CoreLeg
 {
 	/*
 	 * the route permutations through the leg This array will always be
 	 * rectangular
 	 */
-	Route[][] myRoutes;
-
-	/**
-	 * how many points there are in the start polygon
-	 * 
-	 */
-	private int _startLen;
-
-	/**
-	 * how many points there are in the end polygon
-	 * 
-	 */
-	private int _endLen;
-
-	/**
-	 * a name for the leg
-	 * 
-	 */
-	private final String _name;
-
-	/**
-	 * the set of bounded states
-	 * 
-	 */
-	private final ArrayList<BoundedState> _states;
+	StraightRoute[][] myRoutes;
 
 	/**
 	 * create a straight leg.
@@ -52,16 +32,11 @@ public class StraightLeg
 	 */
 	public StraightLeg(String name, ArrayList<BoundedState> states)
 	{
-		_states = states;
-		_name = name;
+		super(name, states);
 	}
-	
-	/** produce the set of constituent routes for this leg
-	 * 
-	 * @param gridNum
-	 *          how many grid cells to dissect the area into
-	 */
-	public void diceUp(int gridNum)
+
+	@Override
+	public void generateRoutes(int gridNum)
 	{
 		// produce the grid of cells
 		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
@@ -74,7 +49,7 @@ public class StraightLeg
 		_endLen = endP.size();
 
 		// ok, create the array
-		myRoutes = new Route[_startLen][_endLen];
+		myRoutes = new StraightRoute[_startLen][_endLen];
 
 		// now populate it
 		int ctr = 1;
@@ -83,10 +58,8 @@ public class StraightLeg
 			for (int j = 0; j < _endLen; j++)
 			{
 				String thisName = _name + "_" + ctr++;
-				Route newRoute = new Route(thisName, startP.get(i), getFirst()
-						.getTime(), endP.get(j), getLast().getTime());
-
-				// System.out.println(startP.get(i) + " " + endP.get(j));
+				StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
+						getFirst().getTime(), endP.get(j), getLast().getTime());
 
 				// tell the route to decimate itself
 				newRoute.generateSegments(_states);
@@ -97,27 +70,18 @@ public class StraightLeg
 		}
 	}
 
-	/** add this bounded state
+	/**
+	 * add this bounded state
 	 * 
 	 * @param thisS
 	 */
 	public void add(BoundedState thisS)
 	{
 		_states.add(thisS);
-		
+
 		// TODO: remove this at some point
-		if(myRoutes != null)
+		if (myRoutes != null)
 			throw new IllegalArgumentException("Cannot add new state once gridded");
-	}
-
-	private BoundedState getFirst()
-	{
-		return _states.get(0);
-	}
-
-	private BoundedState getLast()
-	{
-		return _states.get(_states.size() - 1);
 	}
 
 	/**
@@ -130,7 +94,7 @@ public class StraightLeg
 		{
 
 			@Override
-			public void process(Route theRoute)
+			public void process(StraightRoute theRoute)
 			{
 				double distance = theRoute.getDistance();
 				double elapsed = theRoute.getElapsedTime();
@@ -148,7 +112,7 @@ public class StraightLeg
 		{
 
 			@Override
-			public void process(Route theRoute)
+			public void process(StraightRoute theRoute)
 			{
 				// do we already know this isn't possible?
 				if (!theRoute.isPossible())
@@ -257,10 +221,10 @@ public class StraightLeg
 		 * 
 		 * @param theRoute
 		 */
-		public void process(Route theRoute);
+		public void process(StraightRoute theRoute);
 	}
 
-	public Route[][] getRoutes()
+	public StraightRoute[][] getRoutes()
 	{
 		return myRoutes;
 	}
@@ -333,7 +297,7 @@ public class StraightLeg
 		int res = 0;
 
 		@Override
-		public void process(Route theRoute)
+		public void process(StraightRoute theRoute)
 		{
 			if (theRoute.isPossible())
 				res++;
