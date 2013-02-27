@@ -15,13 +15,13 @@ public class StraightLegForecastContribution extends BaseContribution
 		for (BoundedState state : space.getBoundedStatesBetween(_startDate,
 				_finishDate))
 		{
-			// NOTE: just double-check that this doesn't already have a leg - we can't
+			// just double-check that this doesn't already have a leg - we can't
 			// let them overlap
 			String existing = state.getMemberOf();
 			if (existing != null)
 				throw new IncompatibleStateException(
 						"We don't support overlapping legs. Old leg:" + existing
-								+ " New leg:" + this.getName(), null, null);
+								+ " New leg:" + this.getName() + " state at:" + state.getTime(), null, null);
 
 			// ok, now just store the leg id
 			state.setMemberOf(this.getName());

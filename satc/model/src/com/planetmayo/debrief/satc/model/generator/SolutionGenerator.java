@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
@@ -121,7 +122,8 @@ public class SolutionGenerator implements ISteppingListener
 		public void apply(CoreLeg thisLeg);
 	}
 
-	/** extract a set of legs from the space
+	/**
+	 * extract a set of legs from the space
 	 * 
 	 * @param space
 	 * @return
@@ -130,33 +132,59 @@ public class SolutionGenerator implements ISteppingListener
 	{
 
 		// extract the straight legs
-		HashMap<String, CoreLeg> straightLegs = new HashMap<String, CoreLeg>();
+		HashMap<String, CoreLeg> theLegs = new HashMap<String, CoreLeg>();
 
 		CoreLeg currentLeg = null;
+		
+		// increementing counter, to number turns
+		int counter = 1;
 
-		for (Iterator<BoundedState> iterator = theStates.iterator(); iterator
-				.hasNext();)
+		Iterator<BoundedState> iterator = theStates.iterator();
+		while (iterator.hasNext())
 		{
 			BoundedState thisS = iterator.next();
 			String thisLegName = thisS.getMemberOf();
-
+			
+			// is this the current leg?
 			if (thisLegName != null)
 			{
 				// ok, do we have a straight leg for this name
-				currentLeg = straightLegs.get(thisLegName);
+				currentLeg = theLegs.get(thisLegName);
 
 				if (currentLeg == null)
 				{
 					currentLeg = new StraightLeg(thisLegName,
 							new ArrayList<BoundedState>());
-					straightLegs.put(thisLegName, currentLeg);
+					theLegs.put(thisLegName, currentLeg);
 				}
-
-				// ok, we've got the leg - now add the state
-				currentLeg.add(thisS);
 			}
+			else
+			{
+				// a leg with no name = must be altering
+				
+				// were we in a straight leg?
+				if(currentLeg != null)
+				{
+					if(currentLeg.getType() == LegType.STRAIGHT)
+					{
+						// ok, the straight leg is now complete. trigger a new altering leg
+						currentLeg = null;
+					}
+				}
+				
+				// ok, are we currently in a leg?
+				if(currentLeg == null)
+				{
+					String thisName = "Alteration " + counter++;
+					currentLeg = new AlteringLeg(thisName, new ArrayList<BoundedState>());
+					theLegs.put(thisName,currentLeg);
+				}
+			}
+			
+			// ok, we've got the leg - now add the state
+			currentLeg.add(thisS);
 		}
-		return straightLegs;
+		return theLegs;
 	}
 
 	@Override

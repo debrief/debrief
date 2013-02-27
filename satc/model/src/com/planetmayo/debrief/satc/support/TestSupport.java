@@ -3,7 +3,6 @@ package com.planetmayo.debrief.satc.support;
 import java.util.ArrayList;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -193,11 +192,11 @@ public class TestSupport
 		getGenerator().addContribution(st);
 
 		// and an altering leg forecasts
-		AlterationLegForecastContribution al = new AlterationLegForecastContribution();
-		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
-		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
-		al.setName("Alteration prediction");
-		getGenerator().addContribution(al);
+//		AlterationLegForecastContribution al = new AlterationLegForecastContribution();
+//		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
+//		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
+//		al.setName("Alteration prediction");
+//		getGenerator().addContribution(al);
 
 		// and our analysis contributions
 		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();

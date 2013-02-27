@@ -85,25 +85,30 @@ public abstract class CoreLeg
 	 * 
 	 * @param thisS
 	 */
-	public void add(BoundedState thisS)
+	final public void add(BoundedState thisS)
 	{
 		_states.add(thisS);
 		if (myRoutes != null)
 			throw new IllegalArgumentException("Cannot add new state once gridded");
 	}
 
-	protected BoundedState getFirst()
+	final protected BoundedState getFirst()
 	{
 		return _states.get(0);
 	}
 	
-	abstract public LegType getType();
-	
 
-	protected BoundedState getLast()
+	final protected BoundedState getLast()
 	{
 		return _states.get(_states.size() - 1);
 	}
+	
+	/** find out if this is straight or altering
+	 * 
+	 * @return
+	 */
+	abstract public LegType getType();
+	
 
 	/** produce the set of constituent routes for this leg
 	 * 

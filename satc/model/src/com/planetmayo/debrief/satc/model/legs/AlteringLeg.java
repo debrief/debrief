@@ -7,14 +7,13 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 // TODO: refactor this to support both straight and curved legs
-public class StraightLeg extends CoreLeg
+public class AlteringLeg extends CoreLeg
 {
 	/*
 	 * the route permutations through the leg This array will always be
@@ -23,14 +22,14 @@ public class StraightLeg extends CoreLeg
 	StraightRoute[][] myRoutes;
 
 	/**
-	 * create a straight leg.
+	 * create an altering leg.
 	 * 
 	 * @param name
 	 *          what to call the leg
 	 * @param states
 	 *          the set of bounded states that comprise the leg
 	 */
-	public StraightLeg(String name, ArrayList<BoundedState> states)
+	public AlteringLeg(String name, ArrayList<BoundedState> states)
 	{
 		super(name, states);
 	}
@@ -38,36 +37,37 @@ public class StraightLeg extends CoreLeg
 	@Override
 	public void generateRoutes(int gridNum)
 	{
-		// produce the grid of cells
-		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
-				.getGeometry(), gridNum, 6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
-				.getGeometry(), gridNum, 6);
-
-		// ok, now generate the array of routes
-		_startLen = startP.size();
-		_endLen = endP.size();
-
-		// ok, create the array
-		myRoutes = new StraightRoute[_startLen][_endLen];
-
-		// now populate it
-		int ctr = 1;
-		for (int i = 0; i < _startLen; i++)
-		{
-			for (int j = 0; j < _endLen; j++)
-			{
-				String thisName = _name + "_" + ctr++;
-				StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
-						getFirst().getTime(), endP.get(j), getLast().getTime());
-
-				// tell the route to decimate itself
-				newRoute.generateSegments(_states);
-
-				// and store the route
-				myRoutes[i][j] = newRoute;
-			}
-		}
+		// TODO: generate the routes through the leg?
+//		// produce the grid of cells
+//		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
+//				.getGeometry(), gridNum, 6);
+//		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
+//				.getGeometry(), gridNum, 6);
+//
+//		// ok, now generate the array of routes
+//		_startLen = startP.size();
+//		_endLen = endP.size();
+//
+//		// ok, create the array
+//		myRoutes = new StraightRoute[_startLen][_endLen];
+//
+//		// now populate it
+//		int ctr = 1;
+//		for (int i = 0; i < _startLen; i++)
+//		{
+//			for (int j = 0; j < _endLen; j++)
+//			{
+//				String thisName = _name + "_" + ctr++;
+//				StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
+//						getFirst().getTime(), endP.get(j), getLast().getTime());
+//
+//				// tell the route to decimate itself
+//				newRoute.generateSegments(_states);
+//
+//				// and store the route
+//				myRoutes[i][j] = newRoute;
+//			}
+//		}
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class StraightLeg extends CoreLeg
 	 */
 	public void decideAchievableRoutes()
 	{
-		StraightLeg.RouteOperator speed = new RouteOperator()
+		AlteringLeg.RouteOperator speed = new RouteOperator()
 		{
 
 			@Override
@@ -94,7 +94,7 @@ public class StraightLeg extends CoreLeg
 			}
 		};
 
-		StraightLeg.RouteOperator scaledPolygons = new RouteOperator()
+		AlteringLeg.RouteOperator scaledPolygons = new RouteOperator()
 		{
 
 			@Override
@@ -169,7 +169,7 @@ public class StraightLeg extends CoreLeg
 	 * 
 	 * @param operator
 	 */
-	public void applyToRoutes(StraightLeg.RouteOperator operator)
+	public void applyToRoutes(AlteringLeg.RouteOperator operator)
 	{
 		for (int i = 0; i < _startLen; i++)
 		{
@@ -188,7 +188,7 @@ public class StraightLeg extends CoreLeg
 	public int getNumAchievable()
 	{
 
-		StraightLeg.CountPossible isPossible = new CountPossible();
+		AlteringLeg.CountPossible isPossible = new CountPossible();
 		applyToRoutes(isPossible);
 
 		return isPossible.getCount();
@@ -241,7 +241,7 @@ public class StraightLeg extends CoreLeg
 	 * @author Ian
 	 * 
 	 */
-	private static class CountPossible implements StraightLeg.RouteOperator
+	private static class CountPossible implements AlteringLeg.RouteOperator
 	{
 		int res = 0;
 
@@ -261,7 +261,7 @@ public class StraightLeg extends CoreLeg
 	@Override
 	public LegType getType()
 	{
-		return LegType.STRAIGHT;
+		return LegType.ALTERING;
 	}
 
 	/** run through all the route permutation, and find the one with the highest score(s)

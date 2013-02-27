@@ -48,7 +48,6 @@ public class StraightLegTests extends ModelTestBase
 		courseForecastContribution.setFinishDate(new Date(110, 0, 12, 12, 20, 0));
 		courseForecastContribution.setMinCourse(50d);
 		courseForecastContribution.setMaxCourse(100d);
-
 	}
 
 	@Test
