@@ -64,134 +64,134 @@ package Debrief.ReaderWriter.Replay;
 import MWC.Utilities.ReaderWriter.*;
 import Debrief.Wrappers.*;
 import MWC.GUI.Shapes.*;
+
 import java.util.*;
+
+import junit.framework.TestCase;
 import MWC.GenericData.*;
 
-/** class to parse a label from a line of text
+/**
+ * class to parse a label from a line of text
  */
-final class ImportRectangle implements PlainLineImporter
-{
-  /** the type for this string
-   */
-  private final String _myType = ";RECT:";
+final class ImportRectangle implements PlainLineImporter {
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";RECT:";
 
-  /** read in this string and return a Label
-   */
-  public final Object readThisLine(String theLine){
+	/**
+	 * read in this string and return a Label
+	 */
+	public final Object readThisLine(String theLine) {
 
-    // get a stream from the string
-    StringTokenizer st = new StringTokenizer(theLine);
+		// get a stream from the string
+		StringTokenizer st = new StringTokenizer(theLine);
 
-    // declare local variables
-    WorldLocation TL, BR;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    String theText;
-    String theSymbology;
+		// declare local variables
+		WorldLocation TL, BR;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		String theText = null;
+		String theSymbology;
 
-    // skip the comment identifier
-    st.nextToken();
+		// skip the comment identifier
+		st.nextToken();
 
-    // start with the symbology
-    theSymbology = st.nextToken();
+		// start with the symbology
+		theSymbology = st.nextToken();
 
-    // now the location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+		// now the location
+		latDeg = Double.valueOf(st.nextToken());
+		latMin = Double.valueOf(st.nextToken());
+		latSec = Double.valueOf(st.nextToken()).doubleValue();
 
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+		/**
+		 * now, we may have trouble here, since there may not be a space between
+		 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
+		 */
+		String vDiff = st.nextToken();
+		if (vDiff.length() > 3) {
+			// hmm, they are combined
+			latHem = vDiff.charAt(0);
+			String secondPart = vDiff.substring(1, vDiff.length());
+			longDeg = Double.valueOf(secondPart);
+		} else {
+			// they are separate, so only the hem is in this one
+			latHem = vDiff.charAt(0);
+			longDeg = Double.valueOf(st.nextToken());
+		}
+		longMin = Double.valueOf(st.nextToken());
+		longSec = Double.valueOf(st.nextToken()).doubleValue();
+		longHem = st.nextToken().charAt(0);
 
 		// we have our first location, create it
-		TL = new WorldLocation(latDeg, latMin, latSec, latHem,
-													 longDeg, longMin, longSec, longHem,
-										       0);
+		TL = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+				longMin, longSec, longHem, 0);
 
-    // now the location
-    latDeg = Integer.parseInt(st.nextToken());
-    latMin = Integer.parseInt(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+		// now the location
+		latDeg = Double.valueOf(st.nextToken());
+		latMin = Double.valueOf(st.nextToken());
+		latSec = Double.valueOf(st.nextToken()).doubleValue();
 
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Integer.parseInt(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Integer.parseInt(st.nextToken());
-    }
-    longMin = Integer.parseInt(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
+		/**
+		 * now, we may have trouble here, since there may not be a space between
+		 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
+		 */
+		vDiff = st.nextToken();
+		if (vDiff.length() > 3) {
+			// hmm, they are combined
+			latHem = vDiff.charAt(0);
+			String secondPart = vDiff.substring(1, vDiff.length());
+			longDeg = Double.valueOf(secondPart);
+		} else {
+			// they are separate, so only the hem is in this one
+			latHem = vDiff.charAt(0);
+			longDeg = Double.valueOf(st.nextToken());
+		}
+		longMin = Double.valueOf(st.nextToken());
+		longSec = Double.valueOf(st.nextToken()).doubleValue();
+		longHem = st.nextToken().charAt(0);
 
 		// we have our second location, create it
-		BR = new WorldLocation(latDeg, latMin, latSec, latHem,
-													 longDeg, longMin, longSec, longHem,
-										       0);
+		BR = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+				longMin, longSec, longHem, 0);
 
-
-    // and lastly read in the message
-    theText = st.nextToken("\r").trim();
-
-    // create the Rectangle object
-    PlainShape sp = new RectangleShape(TL, BR);
-    sp.setColor(ImportReplay.replayColorFor(theSymbology));
+		// and lastly read in the message
+		if (st.hasMoreTokens()) {
+			theText = st.nextToken("\r");
+			if (theText != null)
+				theText = theText.trim();
+		}
+		// create the Rectangle object
+		PlainShape sp = new RectangleShape(TL, BR);
+		sp.setColor(ImportReplay.replayColorFor(theSymbology));
 
 		WorldArea tmp = new WorldArea(TL, BR);
 		tmp.normalise();
 
-    // and put it into a shape
-    ShapeWrapper sw = new ShapeWrapper(theText,
-                                       sp,
-                                       ImportReplay.replayColorFor(theSymbology),
-																			 null);
+		// and put it into a shape
+		ShapeWrapper sw = new ShapeWrapper(theText, sp,
+				ImportReplay.replayColorFor(theSymbology), null);
 
-    return sw;
-  }
+		return sw;
+	}
 
-  /** determine the identifier returning this type of annotation
-   */
-  public final String getYourType(){
-    return _myType;
-  }
-
-	/** export the specified shape as a string
-	 * @return the shape in String form
-	 * @param shape the Shape we are exporting
+	/**
+	 * determine the identifier returning this type of annotation
 	 */
-	public final String exportThis(MWC.GUI.Plottable theWrapper)
-	{
+	public final String getYourType() {
+		return _myType;
+	}
+
+	/**
+	 * export the specified shape as a string
+	 * 
+	 * @return the shape in String form
+	 * @param shape
+	 *            the Shape we are exporting
+	 */
+	public final String exportThis(MWC.GUI.Plottable theWrapper) {
 		ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
 		RectangleShape Rectangle = (RectangleShape) theShape.getShape();
@@ -201,24 +201,31 @@ final class ImportRectangle implements PlainLineImporter
 
 		line = _myType + " BD ";
 
-		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Rectangle.getCorner_TopLeft());
+		line = line
+				+ " "
+				+ MWC.Utilities.TextFormatting.DebriefFormatLocation
+						.toString(Rectangle.getCorner_TopLeft());
 
-		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Rectangle.getCornerBottomRight());
+		line = line
+				+ " "
+				+ MWC.Utilities.TextFormatting.DebriefFormatLocation
+						.toString(Rectangle.getCornerBottomRight());
 
 		return line;
 
 	}
 
-	/** indicate if you can export this type of object
-	 * @param val the object to test
+	/**
+	 * indicate if you can export this type of object
+	 * 
+	 * @param val
+	 *            the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(Object val)
-	{
+	public final boolean canExportThis(Object val) {
 		boolean res = false;
 
-		if(val instanceof ShapeWrapper)
-		{
+		if (val instanceof ShapeWrapper) {
 			ShapeWrapper sw = (ShapeWrapper) val;
 			PlainShape ps = sw.getShape();
 			res = (ps instanceof RectangleShape);
@@ -226,6 +233,35 @@ final class ImportRectangle implements PlainLineImporter
 
 		return res;
 
+	}
+
+	public static class TestImport extends TestCase {
+		public void testNoLabel() {
+			String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			ImportRectangle ir = new ImportRectangle();
+			ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
+			assertNotNull("read it in", res);
+			assertNull(res.getLabel());
+			RectangleShape rect = (RectangleShape) res.getShape();
+			assertNotNull("found shape", rect);
+			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
+			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);
+			assertEquals("correct br long", 49.6405, rect.getCornerBottomRight().getLat(), 0.0001);
+			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
+		}
+		public void testWithLabel() {
+			String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+			ImportRectangle ir = new ImportRectangle();
+			ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
+			assertNotNull("read it in", res);
+			assertNotNull(res.getLabel());
+			RectangleShape rect = (RectangleShape) res.getShape();
+			assertNotNull("found shape", rect);
+			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
+			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);
+			assertEquals("correct br long", 49.6405, rect.getCornerBottomRight().getLat(), 0.0001);
+			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
+		}
 	}
 
 }

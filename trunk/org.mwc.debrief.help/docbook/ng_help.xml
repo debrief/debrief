@@ -9057,8 +9057,8 @@ DDD XX..XX
 ;GRID: @@ DD MM SS.S H DDD MM SS.S H MM.MM MM.MM XX..XX 
 ;; symb, centre lat &amp; long (N13) lat increment, long increment, text 
 
-;RECT: @@ DD MM SS.S H DDD MM SS.S H DDMMSS H DDDMMSS H 
-;; symb, tl corner lat &amp; long, br corner lat &amp; long 
+;RECT: @@ DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
+;; symb, tl corner lat &amp; long, br corner lat &amp; long, label
 
 ;SGSAGEOG: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H 
 DD MM SS.S H DDD MM SS.S H XX..XX 
