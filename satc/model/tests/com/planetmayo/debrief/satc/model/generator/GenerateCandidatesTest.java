@@ -1,12 +1,16 @@
 package com.planetmayo.debrief.satc.model.generator;
 
 import java.util.Date;
+import java.util.HashMap;
+
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 @SuppressWarnings("deprecation")
@@ -34,6 +38,16 @@ public class GenerateCandidatesTest extends ModelTestBase
 		boundsManager.addContribution(courseForecastContribution);
 	}
 
-
+	public void testExtractLegs()
+	{
+		SolutionGenerator genny = new SolutionGenerator();
+		genny.complete(boundsManager);
+		
+		// ok, let's look at the legs
+		HashMap<String, CoreLeg> theLegs = SolutionGenerator.getTheLegs(boundsManager.getSpace().states());
+		
+		assertNotNull("got some legs", theLegs);
+		
+	}
 
 }

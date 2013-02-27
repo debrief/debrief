@@ -260,7 +260,7 @@ public class StraightLegTests extends ModelTestBase
 	}
 
 	@Test
-	public void testMult()
+	public void testLegMultiplication()
 	{
 		int[][] m1 = new int[][]
 		{
@@ -271,10 +271,11 @@ public class StraightLegTests extends ModelTestBase
 		{
 		{ 0, 2, 3 },
 		{ 1, 2, 0 } };
-		int[][] res = StraightLeg.multiply(m1, m2);
+		int[][] res = CoreLeg.multiply(m1, m2);
 		util_writeMatrix("res", res);
 	}
 
+	@SuppressWarnings("unused")
 	private void util_writePossibleRoutes(StraightLeg s1)
 	{
 		// have a look at the achievable routes

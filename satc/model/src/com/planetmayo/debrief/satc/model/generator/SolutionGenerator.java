@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -13,8 +14,8 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class SolutionGenerator implements ISteppingListener
 {
-	final int NUM_CELLS=20;
-	
+	final int NUM_CELLS = 20;
+
 	public SolutionGenerator()
 	{
 
@@ -27,34 +28,74 @@ public class SolutionGenerator implements ISteppingListener
 		ProblemSpace space = boundsManager.getSpace();
 
 		// get the legs
-		HashMap<String, CoreLeg> theLegs = getTheLegs(space);
-		
-		
+		HashMap<String, CoreLeg> theLegs = getTheLegs(space.states());
+
 		// get the legs to dice themselves up
-		operateOn(theLegs, new LegStepper(){
+		operateOn(theLegs, new LegOperation()
+		{
 			public void apply(CoreLeg thisLeg)
 			{
 				thisLeg.generateRoutes(NUM_CELLS);
-			}});
-		
-		
+			}
+		});
+
 		// get the legs to sort out what is achievable
-		
+		operateOn(theLegs, new LegOperation()
+		{
+			public void apply(CoreLeg thisLeg)
+			{
+				thisLeg.decideAchievableRoutes();
+			}
+		});
+
 		// do the fancy multiplication
-		
+		int[][] achievableRes = calculateAchievableRoutesFor(theLegs);
+
 		// ditch the duff permutations
-		
+		cancelUnachievable(theLegs, achievableRes);
+
 		// score the possible routes
-		
+		operateOn(theLegs, new LegOperation()
+		{
+			public void apply(CoreLeg thisLeg)
+			{
+				if (thisLeg.getType() == LegType.STRAIGHT)
+				{
+					StraightLeg leg = (StraightLeg) thisLeg;
+					leg.calculateOptimum();
+				}
+			}
+		});
+
 		// generate some candidate solutions
-		
+
 		// and we're done!
-		
+
 		// TODO: also extract the altering legs
-		
+
 	}
-	
-	private static void operateOn(HashMap<String, CoreLeg> theLegs, LegStepper theStepper)
+
+	static void cancelUnachievable(HashMap<String, CoreLeg> theLegs,
+			int[][] achievableRes)
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	static int[][] calculateAchievableRoutesFor(HashMap<String, CoreLeg> theLegs)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * apply the specified operation on all legs
+	 * 
+	 * @param theLegs
+	 * @param theStepper
+	 */
+	private static void operateOn(HashMap<String, CoreLeg> theLegs,
+			LegOperation theStepper)
 	{
 		Collection<CoreLeg> iter = theLegs.values();
 		for (Iterator<CoreLeg> iterator = iter.iterator(); iterator.hasNext();)
@@ -63,19 +104,29 @@ public class SolutionGenerator implements ISteppingListener
 			theStepper.apply(thisLeg);
 		}
 	}
-	
-	
-	
-	public static interface LegStepper
+
+	/**
+	 * utility interface to make it easy to operate on all legs
+	 * 
+	 * @author Ian
+	 * 
+	 */
+	public static interface LegOperation
 	{
-		/** operate on this leg
+		/**
+		 * operate on this leg
 		 * 
 		 * @param thisLeg
 		 */
 		public void apply(CoreLeg thisLeg);
 	}
 
-	private HashMap<String, CoreLeg> getTheLegs(ProblemSpace space)
+	/** extract a set of legs from the space
+	 * 
+	 * @param space
+	 * @return
+	 */
+	static HashMap<String, CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 
 		// extract the straight legs
@@ -83,8 +134,8 @@ public class SolutionGenerator implements ISteppingListener
 
 		CoreLeg currentLeg = null;
 
-		Collection<BoundedState> theStates = space.states();
-		for (Iterator<BoundedState> iterator = theStates.iterator(); iterator.hasNext();)
+		for (Iterator<BoundedState> iterator = theStates.iterator(); iterator
+				.hasNext();)
 		{
 			BoundedState thisS = iterator.next();
 			String thisLegName = thisS.getMemberOf();
@@ -96,10 +147,11 @@ public class SolutionGenerator implements ISteppingListener
 
 				if (currentLeg == null)
 				{
-					currentLeg = new StraightLeg(thisLegName,new ArrayList<BoundedState>() );
+					currentLeg = new StraightLeg(thisLegName,
+							new ArrayList<BoundedState>());
 					straightLegs.put(thisLegName, currentLeg);
 				}
-				
+
 				// ok, we've got the leg - now add the state
 				currentLeg.add(thisS);
 			}

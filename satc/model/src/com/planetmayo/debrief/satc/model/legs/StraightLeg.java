@@ -250,43 +250,6 @@ public class StraightLeg extends CoreLeg
 	}
 
 	/**
-	 * perform matrix multiplication on these two integer arrays taken from:
-	 * http://blog.ryanrampersad.com/2010/01/matrix-multiplication-in-java/
-	 * 
-	 * Tested using: {{2,3},{1,2},{1,1}} multiplied by {{0,2,3},{1,2,0}};
-	 * 
-	 * @param a
-	 * @param b
-	 * @return
-	 */
-	public static int[][] multiply(int a[][], int b[][])
-	{
-
-		int aRows = a.length, aColumns = a[0].length, bRows = b.length, bColumns = b[0].length;
-
-		if (aColumns != bRows)
-		{
-			throw new IllegalArgumentException("A:Rows: " + aColumns
-					+ " did not match B:Columns " + bRows + ".");
-		}
-
-		int[][] resultant = new int[aRows][bColumns];
-
-		for (int i = 0; i < aRows; i++)
-		{ // aRow
-			for (int j = 0; j < bColumns; j++)
-			{ // bColumn
-				for (int k = 0; k < aColumns; k++)
-				{ // aColumn
-					resultant[i][j] += a[i][k] * b[k][j];
-				}
-			}
-		}
-
-		return resultant;
-	}
-
-	/**
 	 * utility class to count how many routes are possible
 	 * 
 	 * @author Ian
@@ -307,6 +270,21 @@ public class StraightLeg extends CoreLeg
 		{
 			return res;
 		}
+	}
+
+	@Override
+	public LegType getType()
+	{
+		return LegType.STRAIGHT;
+	}
+
+	/** run through all the route permutation, and find the one with the highest score(s)
+	 * 
+	 */
+	public void calculateOptimum()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }
