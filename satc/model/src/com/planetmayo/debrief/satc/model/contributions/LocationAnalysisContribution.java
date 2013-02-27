@@ -23,9 +23,8 @@ public class LocationAnalysisContribution extends BaseContribution
 {
 	private static final long serialVersionUID = 1L;
 
-	
-	
-	public LocationAnalysisContribution() {
+	public LocationAnalysisContribution()
+	{
 		super();
 		setName("Location Analysis");
 
@@ -57,11 +56,11 @@ public class LocationAnalysisContribution extends BaseContribution
 					// ok. sort out the constraints from the last state
 					LocationRange newConstraint = getRangeFor(_lastState, thisS.getTime());
 
-					// ok, display what is being shown
-		//			GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
-
-					// now apply those constraints to me
+					// and constraint it
 					loc.constrainTo(newConstraint);
+
+					// ok, display what is being shown
+					// GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
 				}
 
 				// ok, remember, and move on
@@ -85,32 +84,46 @@ public class LocationAnalysisContribution extends BaseContribution
 			double minC = course.getMin();
 			double maxC = course.getMax();
 
-			// minor idiot check. if the two courses are the same, the geometry falls
-			// over. so, if they are the same, trim one slightly
-			if (minC == maxC)
-				maxC += 0.0000001;
+			// SPECIAL CASE: if the course is 0..360, then we just create a circle
+			if (maxC - minC == 2 * Math.PI)
+			{
+				Point pt = GeoSupport.getFactory().createPoint(new Coordinate(0d, 0d));
 
-			double centreC = minC + (maxC - minC) / 2d;
+				// and create an outer ring to represent it
+				res = (LinearRing) pt.buffer(maxRng).getBoundary();
 
-			// start with the origin
-			coords[0] = new Coordinate(0, 0);
+			}
+			else
+			{
 
-			// now the start course
-			coords[1] = new Coordinate(Math.sin(minC) * maxRng, Math.cos(minC)
-					* maxRng);
+				// minor idiot check. if the two courses are the same, the geometry
+				// falls
+				// over. so, if they are the same, trim one slightly
+				if (minC == maxC)
+					maxC += 0.0000001;
 
-			// give us a centre course
-			coords[2] = new Coordinate(Math.sin(centreC) * (maxRng * 1.4),
-					Math.cos(centreC) * (maxRng * 1.4));
+				double centreC = minC + (maxC - minC) / 2d;
 
-			// now the end course
-			coords[3] = new Coordinate(Math.sin(maxC) * maxRng, Math.cos(maxC)
-					* maxRng);
+				// start with the origin
+				coords[0] = new Coordinate(0, 0);
 
-			// back to the orgin
-			coords[4] = new Coordinate(0, 0);
+				// now the start course
+				coords[1] = new Coordinate(Math.sin(minC) * maxRng, Math.cos(minC)
+						* maxRng);
 
-			res = GeoSupport.getFactory().createLinearRing(coords);
+				// give us a centre course
+				coords[2] = new Coordinate(Math.sin(centreC) * (maxRng * 1.4),
+						Math.cos(centreC) * (maxRng * 1.4));
+
+				// now the end course
+				coords[3] = new Coordinate(Math.sin(maxC) * maxRng, Math.cos(maxC)
+						* maxRng);
+
+				// back to the orgin
+				coords[4] = new Coordinate(0, 0);
+
+				res = GeoSupport.getFactory().createLinearRing(coords);
+			}
 		}
 
 		return res;
@@ -133,10 +146,13 @@ public class LocationAnalysisContribution extends BaseContribution
 		return res;
 	}
 
-	/** at the newDate, work out a relaxed location bounds from the previous state
+	/**
+	 * at the newDate, work out a relaxed location bounds from the previous state
 	 * 
-	 * @param state the previous known state
-	 * @param newDate the point in time that we're projecting forwards to
+	 * @param state
+	 *          the previous known state
+	 * @param newDate
+	 *          the point in time that we're projecting forwards to
 	 * @return
 	 */
 	public LocationRange getRangeFor(BoundedState state, Date newDate)
@@ -158,12 +174,15 @@ public class LocationAnalysisContribution extends BaseContribution
 		{
 			if (courseR != null)
 			{
-				// ok, first we do the overlaps one at a time
+				// convert the course ring into a solid area
 				Polygon courseP = GeoSupport.getFactory().createPolygon(courseR, null);
+
+				// now sort out the intersection between course and speed
 				Geometry trimmed = courseP.intersection(speedP);
+
 				// GeoSupport.writeGeometry("trimmed", trimmed);
 
-				Geometry geom = trimmed.getBoundary();
+				Geometry geom = trimmed.convexHull();
 				if (!(geom instanceof LineString))
 				{
 					// is it a multi-point?
@@ -174,8 +193,25 @@ public class LocationAnalysisContribution extends BaseContribution
 						geom = GeoSupport.getFactory()
 								.createLineString(mp.getCoordinates());
 					}
+					else if (geom instanceof Polygon)
+					{
+						// the geoms are all currently appearing as polygons, maybe this is
+						// to do with the
+						// Jan 2013 JTS update.
+						geom = GeoSupport.getFactory().createLineString(
+								geom.getCoordinates());
+					}
 				}
-				achievable = (LineString) geom;
+				if (geom instanceof LineString)
+					achievable = (LineString) geom;
+				else
+				{
+					System.err
+							.println("LocationAnalysisContribution: we were expecting a line-string, but it hasn't arrived!");
+					// TODO: get rid of this
+					GeoSupport.writeGeometry("not a line-string", geom);
+					achievable = null;
+				}
 			}
 			else
 			{
@@ -205,8 +241,6 @@ public class LocationAnalysisContribution extends BaseContribution
 			// ok, apply this to the pioints of the bounded state
 			LocationRange loc = state.getLocation();
 
-			// GeoSupport.writeGeometry("existing boundary", loc.getPolygon());
-
 			if (loc != null)
 			{
 				// move around the outer points
@@ -214,9 +248,9 @@ public class LocationAnalysisContribution extends BaseContribution
 				if (geometry instanceof Polygon)
 				{
 					LineString ls = ((Polygon) geometry).getExteriorRing();
-					LinearRing ext = GeoSupport.getFactory().createLinearRing(ls.getCoordinates());
+					LinearRing ext = GeoSupport.getFactory().createLinearRing(
+							ls.getCoordinates());
 					Coordinate[] pts = ext.getCoordinates();
-					// Coordinate[] newPts = new Coordinate[pts.length];
 
 					for (int i = 0; i < pts.length; i++)
 					{
@@ -225,9 +259,6 @@ public class LocationAnalysisContribution extends BaseContribution
 						// make a copy of the shape
 
 						// add each of these coords to that shape
-//						AffineTransformation aff = new AffineTransformation();
-//						AffineTransformation trans = aff.translate(thisC.x, thisC.y);
-						
 						AffineTransformation trans = new AffineTransformation();
 						trans.setToTranslation(thisC.x, thisC.y);
 
@@ -259,19 +290,8 @@ public class LocationAnalysisContribution extends BaseContribution
 							Geometry geom2 = geom.convexHull();
 							res = (LinearRing) geom2.getBoundary();
 						}
-
-						// store the value
-						// newPts[i] = translated.getCoordinate();
 					}
 
-					// ok, create a shape from the new points
-					// LinearRing after =
-					// GeoSupport.getFactory().createLinearRing(newPts);
-					// LinearRing after =
-					// GeoSupport.getFactory().createLinearRing(translated.getCoordinates());
-
-					// extend our bounds with this new geometry
-					// res = (LinearRing) after;
 				}
 			}
 		}
@@ -280,9 +300,9 @@ public class LocationAnalysisContribution extends BaseContribution
 		final LocationRange answer;
 		if (res != null)
 		{
-			Polygon tmpPoly = GeoSupport.getFactory().createPolygon(res, null);
+			Polygon tmpPoly2 = GeoSupport.getFactory().createPolygon(res, null);
 
-			answer = new LocationRange(tmpPoly);
+			answer = new LocationRange(tmpPoly2);
 		}
 		else
 			answer = null;
@@ -321,13 +341,13 @@ public class LocationAnalysisContribution extends BaseContribution
 			double minR = sRange.getMin() * timeMillis / 1000d;
 			// convert to degs
 			minR = GeoSupport.m2deg(minR);
-			
+
 			// aaah, just double check the two ranges aren't equal - it causes trouble
-			if(minR == maxR)
+			if (minR == maxR)
 			{
 				minR = maxR - GeoSupport.m2deg(10);
 			}
-			
+
 			inner = new LinearRing[]
 			{ (LinearRing) pt.buffer(minR).getBoundary() };
 		}
