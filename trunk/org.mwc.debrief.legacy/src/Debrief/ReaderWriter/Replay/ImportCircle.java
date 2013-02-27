@@ -103,7 +103,7 @@ final class ImportCircle implements PlainLineImporter
     char latHem, longHem;
     double latSec, longSec;
     double radius;
-    String theText;
+    String theText = null;
     String theSymbology;
     
     // skip the comment identifier
@@ -144,7 +144,11 @@ final class ImportCircle implements PlainLineImporter
     
     
     // and now read in the message
-    theText = st.nextToken("\r").trim();
+	if (st.hasMoreTokens()) {
+		theText = st.nextToken("\r");
+		if (theText != null)
+			theText = theText.trim();
+	}
     
     // create the tactical data    
     theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,

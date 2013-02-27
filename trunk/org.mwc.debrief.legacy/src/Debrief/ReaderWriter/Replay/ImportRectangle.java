@@ -249,6 +249,19 @@ final class ImportRectangle implements PlainLineImporter {
 			assertEquals("correct br long", 49.6405, rect.getCornerBottomRight().getLat(), 0.0001);
 			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
 		}
+		public void testLeadingSpace() {
+			String line1 = "	;RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			ImportRectangle ir = new ImportRectangle();
+			ShapeWrapper res = (ShapeWrapper) ir.readThisLine(line1);
+			assertNotNull("read it in", res);
+			assertNull(res.getLabel());
+			RectangleShape rect = (RectangleShape) res.getShape();
+			assertNotNull("found shape", rect);
+			assertEquals("correct tl lat", 49.7303, rect.getCorner_TopLeft().getLat(), 0.0001);
+			assertEquals("correct tl long", 4.16989, rect.getCorner_TopLeft().getLong(), 0.0001);
+			assertEquals("correct br long", 49.6405, rect.getCornerBottomRight().getLat(), 0.0001);
+			assertEquals("correct br lat", 4.39945, rect.getCornerBottomRight().getLong(), 0.0001);
+		}
 		public void testWithLabel() {
 			String line1 = ";RECT: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			ImportRectangle ir = new ImportRectangle();
