@@ -2,7 +2,6 @@ package com.planetmayo.debrief.satc.model.generator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
@@ -10,6 +9,7 @@ import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.legs.StraightLegTests;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -45,7 +45,7 @@ public class SolutionGenerator implements ISteppingListener
 		ProblemSpace space = boundsManager.getSpace();
 
 		// get the legs
-		HashMap<String, CoreLeg> theLegs = getTheLegs(space.states());
+		ArrayList<CoreLeg> theLegs = getTheLegs(space.states());
 
 		// get the legs to dice themselves up
 		generateRoutes(theLegs);
@@ -82,7 +82,7 @@ public class SolutionGenerator implements ISteppingListener
 		}
 	}
 
-	public void generateRoutes(HashMap<String, CoreLeg> theLegs)
+	public void generateRoutes(ArrayList<CoreLeg> theLegs)
 	{
 		operateOn(theLegs, new LegOperation()
 		{
@@ -93,7 +93,7 @@ public class SolutionGenerator implements ISteppingListener
 		});
 	}
 
-	public void decideAchievable(HashMap<String, CoreLeg> theLegs)
+	public void decideAchievable(ArrayList<CoreLeg> theLegs)
 	{
 		operateOn(theLegs, new LegOperation()
 		{
@@ -112,28 +112,30 @@ public class SolutionGenerator implements ISteppingListener
 	 *          the set of legs we're looking at
 	 * @return a set of routes through the data
 	 */
-	CompositeRoute[] generateCandidates(HashMap<String, CoreLeg> theLegs)
+	CompositeRoute[] generateCandidates(ArrayList<CoreLeg> theLegs)
 	{
 		// TODO generate the candidate solutions
 		return null;
 	}
 
-	void cancelUnachievable(HashMap<String, CoreLeg> theLegs,
+	void cancelUnachievable(ArrayList<CoreLeg> theLegs,
 			int[][] achievableRes)
 	{
 		// TODO ditch permutations that aren't possible
 
 	}
 
-	int[][] calculateAchievableRoutesFor(HashMap<String, CoreLeg> theLegs)
+	int[][] calculateAchievableRoutesFor(ArrayList<CoreLeg> theLegs)
 	{
 		// ok, loop through the legs, doing the multiplication
 		int[][] res = null;
-		Collection<CoreLeg> iter = theLegs.values();
-		for (Iterator<CoreLeg> iterator = iter.iterator(); iterator.hasNext();)
+		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
 			int[][] mat = thisLeg.asMatrix();
+			
+			StraightLegTests.util_writeMatrix(thisLeg.getName(), mat);
+
 			
 			// is this our first one?
 			if(res == null)
@@ -153,11 +155,10 @@ public class SolutionGenerator implements ISteppingListener
 	 * @param theLegs
 	 * @param theStepper
 	 */
-	private static void operateOn(HashMap<String, CoreLeg> theLegs,
+	private static void operateOn(ArrayList<CoreLeg> theLegs,
 			LegOperation theStepper)
 	{
-		Collection<CoreLeg> iter = theLegs.values();
-		for (Iterator<CoreLeg> iterator = iter.iterator(); iterator.hasNext();)
+		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
 			theStepper.apply(thisLeg);
@@ -170,14 +171,18 @@ public class SolutionGenerator implements ISteppingListener
 	 * @param space
 	 * @return
 	 */
-	HashMap<String, CoreLeg> getTheLegs(Collection<BoundedState> theStates)
+	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 
 		// extract the straight legs
-		HashMap<String, CoreLeg> theLegs = new HashMap<String, CoreLeg>();
+		ArrayList<CoreLeg> theLegs = new ArrayList<CoreLeg>();
 
 		CoreLeg currentLeg = null;
 
+		// remember the last state, since end the first/last items in a straight leg are also in the altering
+		// leg before/after them
+		BoundedState previousState = null;
+		
 		// increementing counter, to number turns
 		int counter = 1;
 
@@ -190,14 +195,33 @@ public class SolutionGenerator implements ISteppingListener
 			// is this the current leg?
 			if (thisLegName != null)
 			{
+				// right - this is a state that is part of a straight leg
+				
 				// ok, do we have a straight leg for this name
-				currentLeg = theLegs.get(thisLegName);
-
-				if (currentLeg == null)
+				CoreLeg newLeg = findLeg(thisLegName, theLegs);
+				
+				// are we already in this leg?
+				if (newLeg == null)
 				{
+					// right, we're just starting a straight leg. this state also goes on the end
+					// of the previous altering leg
+					if(currentLeg != null)
+					{
+						if(currentLeg.getType() == LegType.ALTERING)
+						{
+							// ok, add this state to the previous altering leg
+							currentLeg.add(thisS);
+						}
+						else
+						{
+							throw new RuntimeException("A straight leg can only follow an altering leg - some problem here");
+						}
+					}
+					
+					// ok, now go for the straight leg
 					currentLeg = new StraightLeg(thisLegName,
 							new ArrayList<BoundedState>());
-					theLegs.put(thisLegName, currentLeg);
+					theLegs.add(currentLeg);
 				}
 			}
 			else
@@ -219,14 +243,38 @@ public class SolutionGenerator implements ISteppingListener
 				{
 					String thisName = "Alteration " + counter++;
 					currentLeg = new AlteringLeg(thisName, new ArrayList<BoundedState>());
-					theLegs.put(thisName, currentLeg);
+					theLegs.add(currentLeg);
+					
+					// but, we need to start this altering leg with the previous state, if there was one
+					if(previousState != null)
+						currentLeg.add(previousState);
 				}
 			}
 
 			// ok, we've got the leg - now add the state
 			currentLeg.add(thisS);
+			
+			// and remember it
+			previousState = thisS;
 		}
 		return theLegs;
+	}
+
+	private CoreLeg findLeg(String thisLegName, ArrayList<CoreLeg> theLegs)
+	{
+		CoreLeg res = null;
+		
+		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+		{
+			CoreLeg coreLeg = (CoreLeg) iterator.next();
+			if(coreLeg.getName().equals(thisLegName))
+			{
+				res = coreLeg;
+				break;
+			}
+		}
+		
+		return res;
 	}
 
 	@Override

@@ -121,6 +121,11 @@ public abstract class CoreLeg
 		return _states.get(_states.size() - 1);
 	}
 
+	final public String getName()
+	{
+		return _name;
+	}
+	
 	/**
 	 * find out if this is straight or altering
 	 * 

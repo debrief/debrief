@@ -332,7 +332,7 @@ public class StraightLegTests extends ModelTestBase
 		}
 	}
 
-	private static void util_writeMatrix(String name, int[][] routes)
+	public static void util_writeMatrix(String name, int[][] routes)
 	{
 		System.out.println("== " + name + " ==");
 		for (int x = 0; x < routes.length; x++)
