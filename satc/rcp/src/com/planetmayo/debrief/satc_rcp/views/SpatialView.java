@@ -35,55 +35,24 @@ import com.vividsolutions.jts.geom.Geometry;
 public class SpatialView extends ViewPart implements ISteppingListener,
 		GeoSupport.GeoPlotter
 {
-	private IBoundsManager boundsManager;
+	private static JFreeChart _chart;
 
 	private static XYPlot _plot;
 	private static XYLineAndShapeRenderer _renderer;
-	private static JFreeChart _chart;
-
-	/**
-	 * Creates the Chart based on a dataset
-	 * 
-	 * @param _myData2
-	 */
-
-	private static JFreeChart createChart(XYDataset _myData2)
-	{
-		// tell it to draw joined series
-		_renderer = new XYLineAndShapeRenderer(true, false);
-
-		// NumberAxis rangeAx = new NumberAxis("Title on Log");
-		// NumberAxis domainAx = new NumberAxis("Title on Lat");
-		// SquaredXYPlot plot = new SquaredXYPlot(_myData2, rangeAx, domainAx,
-		// renderer);
-		// plot.setRenderer(renderer);
-		// JFreeChart chart = new JFreeChart(plot);
-
-		_chart = ChartFactory.createScatterPlot("States", "Lat", "Lon", _myData2,
-				PlotOrientation.HORIZONTAL, true, false, false);
-		_plot = (XYPlot) _chart.getPlot();
-		_plot.setBackgroundPaint(Color.WHITE);
-		_plot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
-		_plot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
-		_plot.setNoDataMessage("No data available");
-		_plot.setRenderer(_renderer);
-		
-
-		return _chart;
-	}
-
 	private Action _debugMode;
-	private Action _resizeButton;
 
 	private XYSeriesCollection _myData;
-
 	/**
 	 * keep track of how many sets of series that we've plotted
 	 * 
 	 */
 	int _numCycles = 0;
+	private Action _resizeButton;
 
 	private Action _showLegend;
+
+	private IBoundsManager boundsManager;
+
 
 	@Override
 	public void clear(String title)
@@ -95,6 +64,36 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 					java.awt.Font.BOLD, 8)));
 		else
 			_chart.setTitle(title);
+	}
+
+	@Override
+	public void complete(IBoundsManager boundsManager)
+	{
+		showData(boundsManager.getSpace().states());
+	}
+
+	/**
+	 * Creates the Chart based on a dataset
+	 * 
+	 * @param _myData2
+	 */
+	
+	private  JFreeChart createChart(XYDataset _myData2)
+	{
+		// tell it to draw joined series
+		_renderer = new XYLineAndShapeRenderer(true, false);
+	
+		_chart = ChartFactory.createScatterPlot("States", "Lat", "Lon", _myData2,
+				PlotOrientation.HORIZONTAL, true, false, false);
+		_plot = (XYPlot) _chart.getPlot();
+		_plot.setBackgroundPaint(Color.WHITE);
+		_plot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
+		_plot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
+		_plot.setNoDataMessage("No data available");
+		_plot.setRenderer(_renderer);
+		_chart.getLegend().setVisible(false);
+	
+		return _chart;
 	}
 
 	@Override
@@ -128,30 +127,11 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 	}
 
 	@Override
-	public void complete(IBoundsManager boundsManager)
-	{
-		showData(boundsManager.getSpace().states());
-	}
-
-	@Override
-	public void restarted(IBoundsManager boundsManager)
-	{
-		clear(null);
-	}
-
-	@Override
 	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
 		String theCont = boundsManager.getCurrentContribution().getName();
 		clear("In contribution:[" + theCont + "] problem is: ["
 				+ ex.getLocalizedMessage() + "]");
-	}
-
-	@Override
-	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
-	{
-		if (_debugMode.isChecked())
-			showData(boundsManager.getSpace().states());
 	}
 
 	private void makeActions()
@@ -190,6 +170,12 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		};
 		_resizeButton
 				.setToolTipText("Track all states (including application of each Contribution)");
+	}
+
+	@Override
+	public void restarted(IBoundsManager boundsManager)
+	{
+		clear(null);
 	}
 
 	@Override
@@ -258,5 +244,12 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 				BasicStroke.JOIN_ROUND, 1.0f, new float[]
 				{ 10.0f, 6.0f }, 0.0f));
 
+	}
+
+	@Override
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
+	{
+		if (_debugMode.isChecked())
+			showData(boundsManager.getSpace().states());
 	}
 }
