@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import com.planetmayo.debrief.satc.model.generator.SolutionGenerator.ISolutionsR
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.StraightLegTests;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.support.TestSupport;
@@ -83,18 +85,19 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 		// ok, let's look at the legs
 		Collection<BoundedState> theStates = boundsManager.getSpace().states();
-		HashMap<String, CoreLeg> theLegs = new SolutionGenerator().getTheLegs(theStates);
+		ArrayList<CoreLeg>  theLegs = new SolutionGenerator().getTheLegs(theStates);
 		
 		assertNotNull("got some legs", theLegs);
 		assertEquals("got 7 (3 straight, 4 turns) legs",7, theLegs.size());
 		
 		// check the legs overlap
 		CoreLeg lastLeg = null;
-		Iterator<CoreLeg> iter = theLegs.values().iterator();
+		Iterator<CoreLeg> iter = theLegs.iterator();
 		
 		while (iter.hasNext())
 		{
 			CoreLeg coreLeg = (CoreLeg) iter.next();
+//			writeThisLeg(coreLeg);
 			if(lastLeg != null)
 			{
 				assertEquals("state gets re-used", lastLeg.getLast(), coreLeg.getFirst());
@@ -108,7 +111,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 	{
 		Date first = leg.getFirst().getTime();
 		Date last = leg.getLast().getTime();
-		System.out.println("first:" + first + " last:" + last);
+		System.out.println("type:" + leg.getType() +" first:" + first + " last:" + last);
 	}
 
 	@Test
@@ -118,7 +121,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 		// ok, let's look at the legs
 		Collection<BoundedState> theStates = boundsManager.getSpace().states();
-		HashMap<String, CoreLeg> theLegs = new SolutionGenerator().getTheLegs(theStates);
+		ArrayList<CoreLeg> theLegs= new SolutionGenerator().getTheLegs(theStates);
 
 		SolutionGenerator genny = new SolutionGenerator();
 		
@@ -128,6 +131,9 @@ public class GenerateCandidatesTest extends ModelTestBase
 		int[][] achievable = genny.calculateAchievableRoutesFor(theLegs);
 		
 		assertNotNull("produced results matrix", achievable);
+		
+		StraightLegTests.util_writeMatrix("integrated", achievable);
+		
 	}
 	
 	private static boolean called = false;
