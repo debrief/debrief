@@ -11,6 +11,11 @@ public class CourseRange extends BaseRange<CourseRange>
 	private double _min;
 	private double _max;
 
+	public String toDebugString()
+	{
+		return (int) Math.toDegrees(_min) + " - " + (int) Math.toDegrees(_max);
+	}
+
 	/**
 	 * copy constructor
 	 * 
@@ -79,8 +84,8 @@ public class CourseRange extends BaseRange<CourseRange>
 	@Override
 	public int hashCode()
 	{
-    int result = (int) _min;
-    result = 31 * result + (int) _max;
+		int result = (int) _min;
+		result = 31 * result + (int) _max;
 		return result;
 	}
 
@@ -91,21 +96,35 @@ public class CourseRange extends BaseRange<CourseRange>
 		{
 			return false;
 		}
-		CourseRange other = (CourseRange) obj;		
-		
-		if (_max != other._max)	return false;
-		if (_min != other._min)	return false;
+		CourseRange other = (CourseRange) obj;
+
+		if (_max != other._max)
+			return false;
+		if (_min != other._min)
+			return false;
 
 		return true;
 	}
 
-	/** generate a course object that is the reverse of this one
+	/**
+	 * generate a course object that is the reverse of this one
 	 * 
 	 * @return
 	 */
 	public CourseRange generateInverse()
 	{
-		CourseRange res = new CourseRange(this._min + Math.PI, this._max + Math.PI);
+		// special case. if it covers the full circle keep a full circle
+		final CourseRange res;
+		if (_max - _min == 2 * Math.PI)
+			res = new CourseRange(this._min, this._max);
+		else
+		{
+			// generate the inverse angles
+			double newMin = this._min + Math.PI;
+			double newMax = this._max + Math.PI;
+			
+			res = new CourseRange(newMin, newMax);
+		}
 		return res;
-	}	
+	}
 }
