@@ -156,7 +156,6 @@ public class FrequencyMeasurementContribution extends BaseContribution
 
 		}
 		this.setFrequencyError(2d);
-		// TODO: set the start/end times = just for tidiness
 	}
 
 	public void setFrequencyError(double frequencyError)

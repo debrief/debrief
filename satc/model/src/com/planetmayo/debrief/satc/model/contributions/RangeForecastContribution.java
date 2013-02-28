@@ -194,8 +194,6 @@ public class RangeForecastContribution extends BaseContribution
 
 	private LinearRing getOuterRing(Point pt)
 	{
-		// TODO: handle case where range not provided
-
 		// do we have a max range?
 		double theRange;
 

@@ -102,19 +102,14 @@ public class GenerateCandidatesTest extends ModelTestBase
 		for (Iterator<BoundedState> iterator = theStates.iterator(); iterator.hasNext();)
 		{
 			BoundedState boundedState = (BoundedState) iterator.next();
-//			System.out.println("time:" + boundedState.getTime() + " loc:" +( boundedState.getLocation() != null)
-//					+ " crse:" + (boundedState.getCourse() != null)
-//					 + " spd:" + (boundedState.getSpeed() != null));
-			
-//			if(boundedState.getCourse() != null)
-//				System.out.println(" " + boundedState.getCourse().toDebugString());
+			assertNotNull("course constraint should be present", boundedState.getCourse());
+			assertNotNull("speed constraint should be present", boundedState.getSpeed());
+			assertNotNull("location constraint should be present", boundedState.getLocation());
 		}	
 		
 		SolutionGenerator genny = new SolutionGenerator();
 		genny.addReadyListener(new ISolutionsReadyListener()
 		{
-			
-			@Override
 			public void solutionsReady(CompositeRoute[] routes)
 			{
 				called = true;

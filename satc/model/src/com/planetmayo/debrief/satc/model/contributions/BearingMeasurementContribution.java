@@ -245,7 +245,6 @@ public class BearingMeasurementContribution extends BaseContribution
 
 		}
 		this.setBearingError(Math.toRadians(3d));
-		// TODO: set the start/end times = just for tidiness
 	}
 
 	public Double getBearingError()

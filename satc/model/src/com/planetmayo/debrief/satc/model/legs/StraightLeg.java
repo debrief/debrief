@@ -13,7 +13,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
-// TODO: refactor this to support both straight and curved legs
 public class StraightLeg extends CoreLeg
 {
 	/*
@@ -275,7 +274,7 @@ public class StraightLeg extends CoreLeg
 	 */
 	public void calculateOptimum()
 	{
-		// TODO Auto-generated method stub
+		// TODO Go through the permutations, calculate the best result(s);
 		
 	}
 

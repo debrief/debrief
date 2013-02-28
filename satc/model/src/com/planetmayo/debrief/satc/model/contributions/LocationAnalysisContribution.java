@@ -157,9 +157,8 @@ public class LocationAnalysisContribution extends
 				{
 					System.err
 							.println("LocationAnalysisContribution: we were expecting a line-string, but it hasn't arrived!");
-					// TODO: get rid of this
-					GeoSupport.writeGeometry("not a line-string", geom);
-					achievable = null;
+
+					throw new RuntimeException("We should not have encountered a non-linestring here");
 				}
 			}
 			else

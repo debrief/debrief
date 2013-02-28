@@ -112,10 +112,6 @@ public class TestSupport
 
 	public void loadSampleData(boolean useLong)
 	{
-		// TODO: replace this with deserializing an existing SteppingGenerator, once
-		// we have a strategy:
-		// https://bitbucket.org/ianmayo/deb_satc/issue/10
-
 		// clear the geneartor first
 		getGenerator().clear();
 
@@ -220,7 +216,6 @@ public class TestSupport
 		}
 		catch (IncompatibleStateException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
