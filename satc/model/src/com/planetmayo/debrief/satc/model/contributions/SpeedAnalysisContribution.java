@@ -83,6 +83,10 @@ public class SpeedAnalysisContribution extends
 	protected SpeedRange calcRelaxedRange(BoundedState lastStateWithRange,
 			VehicleType vType, long millis)
 	{
+		
+		// just in case we're doing a reverse pass, use the abs millis
+		millis = Math.abs(millis);
+		
 		double maxDecel = vType.getMaxDecelRate();
 		double maxAccel = vType.getMaxAccelRate();
 

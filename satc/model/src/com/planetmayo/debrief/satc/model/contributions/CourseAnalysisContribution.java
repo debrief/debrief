@@ -50,6 +50,11 @@ public class CourseAnalysisContribution extends
 	protected CourseRange calcRelaxedRange(BoundedState lastStateWithRange,
 			VehicleType vType, long millis)
 	{
+		
+		
+		// just in case we're doing a reverse pass, use the abs millis
+		millis = Math.abs(millis);
+		
 		double maxRate = vType.getMaxTurnRate();
 
 		// ok, we need to produce a new course constraint
