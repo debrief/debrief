@@ -83,7 +83,7 @@ public class StraightLegContributionTest extends ForecastContributionTestBase
 		catch(IncompatibleStateException re)
 		{
 			assertEquals("Correct message provided", 
-					"We don't support overlapping legs. Old leg:test_name_1 New leg:test_name_2", re.getMessage());
+					"We don't support overlapping legs. Old leg:test_name_1 New leg:test_name_2 state at:Thu Dec 27 01:50:00 GMT 2012", re.getMessage());
 			hasThrown = true;
 		}
 		assertTrue("an exception should have been thrown, for overlapping legs", hasThrown);
