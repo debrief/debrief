@@ -132,6 +132,8 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 		assertNotNull("produced results matrix", achievable);
 		
+		// TODO !! find out why straight leg 3 is impossible!
+		
 		StraightLegTests.util_writeMatrix("integrated", achievable);
 		
 	}
