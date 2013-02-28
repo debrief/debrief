@@ -258,6 +258,43 @@ public class SpeedAnalysisTest extends ModelTestBase
 		
 	}
 	
+
+	@Test
+	public void testBwd() throws IncompatibleStateException
+	{
+		// set some course data
+		state2.constrainTo(new SpeedRange(100, 200));
+
+		SpeedAnalysisContribution cac = new SpeedAnalysisContribution();
+		cac.actUpon(space);
+
+		// ok, the first state should have the new constraint.
+		assertNotNull(" course constriant not empty", state1.getSpeed());
+		assertNotNull(" course constriant not empty", state2.getSpeed());
+		assertNotNull(" course constriant not empty", state3.getSpeed());
+		assertNotNull(" course constriant not empty", state4.getSpeed());
+		assertNotNull(" course constriant not empty", state5.getSpeed());
+		assertNotNull(" course constriant not empty", state6.getSpeed());
+		assertNotNull(" course constriant not empty", state7.getSpeed());
+
+		dumpSpeeds();
+		
+		// have a look at the new min/max course
+		SpeedRange sp1 = state1.getSpeed();
+		assertEquals("new min speed valid", 85, sp1.getMin(), EPS);
+		assertEquals("new max speed valid", 225, sp1.getMax(), EPS);
+		SpeedRange sp3 = state3.getSpeed();
+		assertEquals("new min speed valid", 50, sp3.getMin(), EPS);
+		assertEquals("new max speed valid", 230, sp3.getMax(), EPS);
+				
+		SpeedRange sp7 = state7.getSpeed();
+		assertEquals("new min speed valid", 0, sp7.getMin(), EPS);
+		assertEquals("new max speed valid", 290, sp7.getMax(), EPS);
+
+		
+	}
+	
+	
 	private void dumpSpeeds()
 	{
 		Collection<BoundedState> states = space.getBoundedStatesBetween(state1.getTime(), state7.getTime());
