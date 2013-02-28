@@ -38,6 +38,22 @@ public class CourseAnalysisTest extends ModelTestBase
 		space.setVehicleType(vType);
 	}
 
+
+	@Test
+	public void testInverse() throws IncompatibleStateException
+	{
+		CourseRange cr = new CourseRange(Math.toRadians(45), Math.toRadians(135));
+		CourseRange cr2 = cr.generateInverse();
+		assertEquals(225, Math.toDegrees(cr2.getMin()),0.0001);
+		assertEquals(315, Math.toDegrees(cr2.getMax()),0.00001);
+		
+		 cr = new CourseRange(Math.toRadians(315), Math.toRadians(45));
+		 cr2 = cr.generateInverse();
+		assertEquals(495, Math.toDegrees(cr2.getMin()),0.0001);
+		assertEquals(225, Math.toDegrees(cr2.getMax()),0.00001);
+		
+	}
+	
 	@Test
 	public void testBoundary() throws IncompatibleStateException
 	{

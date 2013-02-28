@@ -97,5 +97,15 @@ public class CourseRange extends BaseRange<CourseRange>
 		if (_min != other._min)	return false;
 
 		return true;
+	}
+
+	/** generate a course object that is the reverse of this one
+	 * 
+	 * @return
+	 */
+	public CourseRange generateInverse()
+	{
+		CourseRange res = new CourseRange(this._min + Math.PI, this._max + Math.PI);
+		return res;
 	}	
 }
