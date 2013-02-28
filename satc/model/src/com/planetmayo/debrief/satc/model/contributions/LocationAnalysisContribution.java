@@ -2,11 +2,9 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.ListIterator;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
-import com.planetmayo.debrief.satc.model.contributions.BaseAnalysisContribution.SwitchableIterator;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -79,10 +77,6 @@ public class LocationAnalysisContribution extends
 		{
 			BoundedState currentState = switcher.next(iter);
 
-			System.out.println("examining state at:" + currentState.getTime());
-
-			Date currentTime = currentState.getTime();
-
 			// ok, we're not in a leg. relax it.
 			try
 			{
@@ -104,21 +98,21 @@ public class LocationAnalysisContribution extends
 
 		LinearRing res = null;
 
-		Date tmpDate = state.getTime();
-
 		// ok, generate the achievable bounds for the state
 		CourseRange course = state.getCourse();
 		SpeedRange speed = state.getSpeed();
-		
+
 		// now - if we're running backwards, we need to reverse the course
-		if(diff < 0)
+		if (diff < 0)
 		{
-			course = course.generateInverse();
-		}			
-		
+			// aah, do we have a course?
+			if (course != null)
+				course = course.generateInverse();
+		}
+
 		// ok, put the time back to +ve
 		diff = Math.abs(diff);
-		
+
 		double maxRange = getMaxRangeDegs(speed, diff);
 		LinearRing courseR = getCourseRing(course, maxRange);
 		Polygon speedP = getSpeedRing(speed, diff);

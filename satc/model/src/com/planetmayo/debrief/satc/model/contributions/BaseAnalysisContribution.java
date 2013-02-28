@@ -2,7 +2,6 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
 
@@ -98,8 +97,6 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		while(switcher.canStep(iter))
 		{
 			BoundedState currentState = switcher.next(iter);
-			
-			Date currentTime = currentState.getTime();
 
 			// ok - what leg is this?
 			String thisLeg = currentState.getMemberOf();
