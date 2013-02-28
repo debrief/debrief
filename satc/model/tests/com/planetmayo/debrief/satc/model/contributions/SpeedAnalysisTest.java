@@ -277,7 +277,7 @@ public class SpeedAnalysisTest extends ModelTestBase
 		assertNotNull(" course constriant not empty", state6.getSpeed());
 		assertNotNull(" course constriant not empty", state7.getSpeed());
 
-		dumpSpeeds();
+//		dumpSpeeds();
 		
 		// have a look at the new min/max course
 		SpeedRange sp1 = state1.getSpeed();

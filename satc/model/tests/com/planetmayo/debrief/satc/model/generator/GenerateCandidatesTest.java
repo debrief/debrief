@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
@@ -47,8 +48,8 @@ public class GenerateCandidatesTest extends ModelTestBase
 		courseForecastContribution = new CourseForecastContribution();
 		courseForecastContribution.setStartDate(new Date(110, 0, 12, 12, 15, 0));
 		courseForecastContribution.setFinishDate(new Date(110, 0, 12, 12, 20, 0));
-		courseForecastContribution.setMinCourse(50d);
-		courseForecastContribution.setMaxCourse(100d);
+		courseForecastContribution.setMinCourse(Math.toRadians(110d));
+		courseForecastContribution.setMaxCourse(Math.toRadians(300d));
 		boundsManager.addContribution(courseForecastContribution);
 
 		StraightLegForecastContribution sl = new StraightLegForecastContribution();
@@ -70,6 +71,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		boundsManager.addContribution(sl);
 		
 		boundsManager.addContribution(new LocationAnalysisContribution());
+		boundsManager.addContribution(new CourseAnalysisContribution());
 
 	}
 
@@ -97,12 +99,15 @@ public class GenerateCandidatesTest extends ModelTestBase
 		Collection<BoundedState> theStates = boundsManager.getSpace().states();
 
 		// ok, check the locations
-		for (Iterator iterator = theStates.iterator(); iterator.hasNext();)
+		for (Iterator<BoundedState> iterator = theStates.iterator(); iterator.hasNext();)
 		{
 			BoundedState boundedState = (BoundedState) iterator.next();
-			System.out.println("time:" + boundedState.getTime() + " loc:" +( boundedState.getLocation() != null)
-					+ " crse:" + (boundedState.getCourse() != null)
-					 + " spd:" + (boundedState.getSpeed() != null));
+//			System.out.println("time:" + boundedState.getTime() + " loc:" +( boundedState.getLocation() != null)
+//					+ " crse:" + (boundedState.getCourse() != null)
+//					 + " spd:" + (boundedState.getSpeed() != null));
+			
+//			if(boundedState.getCourse() != null)
+//				System.out.println(" " + boundedState.getCourse().toDebugString());
 		}	
 		
 		SolutionGenerator genny = new SolutionGenerator();
@@ -119,6 +124,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// ok, get it to run
 		assertFalse("not called yet", called);
 		
+		// ok, get firing
 		genny.complete(boundsManager);
 		
 		// ok, get it to run
