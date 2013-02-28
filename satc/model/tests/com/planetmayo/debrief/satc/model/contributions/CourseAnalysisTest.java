@@ -67,6 +67,37 @@ public class CourseAnalysisTest extends ModelTestBase
 				Math.toDegrees(thirdState.getCourse().getMax()), EPS);
 	}
 
+
+	@Test
+	public void testFwdBwd() throws IncompatibleStateException
+	{
+		// set some course data
+		CourseRange cr = new CourseRange(Math.toRadians(45), Math.toRadians(110));
+		secondState.constrainTo(cr);
+
+		assertNull(" course constraint empty", firstState.getCourse());
+		assertNull(" course constraint empty", thirdState.getCourse());
+
+		CourseAnalysisContribution cac = new CourseAnalysisContribution();
+		cac.actUpon(space);
+
+		assertNotNull(" course constriant not empty", secondState.getCourse());
+		assertNotNull(" course constriant not empty", thirdState.getCourse());
+
+		// have a look at the new min/max course
+		assertEquals("new min course valid", 40d,
+				Math.toDegrees(firstState.getCourse().getMin()), EPS);
+		assertEquals("new max course valid", 115d,
+				Math.toDegrees(firstState.getCourse().getMax()), EPS);
+
+		// have a look at the new min/max course once we've run for a little longer
+		assertEquals("new min course valid", 35d,
+				Math.toDegrees(thirdState.getCourse().getMin()), EPS);
+		assertEquals("new max course valid", 119.999999d,
+				Math.toDegrees(thirdState.getCourse().getMax()), EPS);
+	}
+
+	
 	/**
 	 * test that we trim the range to 0-360, and never go all the way around a
 	 * circle
@@ -111,7 +142,7 @@ public class CourseAnalysisTest extends ModelTestBase
 	public void testOverlap() throws IncompatibleStateException
 	{
 		// set some course data
-		CourseRange cr = new CourseRange(Math.toRadians(114), Math.toRadians(87));
+		CourseRange cr = new CourseRange(Math.toRadians(115), Math.toRadians(90));
 		firstState.constrainTo(cr);
 
 		assertNull(" course constraint empty", secondState.getCourse());
@@ -124,7 +155,7 @@ public class CourseAnalysisTest extends ModelTestBase
 		assertNotNull(" course constriant not empty", thirdState.getCourse());
 
 		// have a look at the new min/max course
-		assertEquals("new min course valid", 109d,
+		assertEquals("new min course valid", 110d,
 				Math.toDegrees(secondState.getCourse().getMin()), EPS);
 		assertEquals("new max course valid", 360d,
 				Math.toDegrees(secondState.getCourse().getMax()), EPS);
