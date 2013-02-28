@@ -170,6 +170,11 @@ public class LocationAnalysisTest extends ModelTestBase
 	public void testAnalysis() throws IncompatibleStateException
 	{
 		ProblemSpace space = new ProblemSpace();
+		VehicleType vType = new VehicleType("UK Ferry", GeoSupport.kts2MSec(0),
+				GeoSupport.kts2MSec(30000), Math.toRadians(0), Math.toRadians(1), 0.2,
+				0.4, 0.2, 0.4);
+		space.setVehicleType(vType);
+
 
 		// ok, create the state
 		Date oldDate = new Date(100000);
