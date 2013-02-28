@@ -16,24 +16,17 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class SolutionGenerator implements ISteppingListener
 {
-	
-	/** listener for someone who wants to know if we've managed to generate some routes
+	/** how many cells shall we break the polygons down into?
 	 * 
-	 * @author Ian
-	 *
 	 */
-	public static interface ISolutionsReadyListener
-	{
-		/** a set of candidate routes have been generated
-		 * 
-		 * @param routes
-		 */
-		public void solutionsReady(CompositeRoute[] routes);
-	}
-	
 	final int NUM_CELLS = 20;
+	
+	/** anybody interested in a new solution being ready?
+	 * 
+	 */
 	private ArrayList<ISolutionsReadyListener> _readyListeners;
 
+	
 	public SolutionGenerator()
 	{
 		_readyListeners = new ArrayList<ISolutionsReadyListener>();
@@ -105,7 +98,7 @@ public class SolutionGenerator implements ISteppingListener
 	 * @param theLegs the set of legs we're looking at
 	 * @return a set of routes through the data
 	 */
-	private CompositeRoute[] generateCandidates(HashMap<String, CoreLeg> theLegs)
+	static CompositeRoute[] generateCandidates(HashMap<String, CoreLeg> theLegs)
 	{
 		// TODO generate the candidate solutions
 		return null;
@@ -120,6 +113,8 @@ public class SolutionGenerator implements ISteppingListener
 
 	static int[][] calculateAchievableRoutesFor(HashMap<String, CoreLeg> theLegs)
 	{
+		// ok, loop through the legs, doing the multiplication
+		
 		// TODO do the fancy matrix multiplication
 		return null;
 	}
@@ -139,22 +134,6 @@ public class SolutionGenerator implements ISteppingListener
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
 			theStepper.apply(thisLeg);
 		}
-	}
-
-	/**
-	 * utility interface to make it easy to operate on all legs
-	 * 
-	 * @author Ian
-	 * 
-	 */
-	public static interface LegOperation
-	{
-		/**
-		 * operate on this leg
-		 * 
-		 * @param thisLeg
-		 */
-		public void apply(CoreLeg thisLeg);
 	}
 
 	/**
@@ -238,5 +217,35 @@ public class SolutionGenerator implements ISteppingListener
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		// step forward in generated solutions. We should prob ignore this
+	}
+
+	/**
+	 * utility interface to make it easy to operate on all legs
+	 * 
+	 * @author Ian
+	 * 
+	 */
+	public static interface LegOperation
+	{
+		/**
+		 * operate on this leg
+		 * 
+		 * @param thisLeg
+		 */
+		public void apply(CoreLeg thisLeg);
+	}
+
+	/** listener for someone who wants to know if we've managed to generate some routes
+	 * 
+	 * @author Ian
+	 *
+	 */
+	public static interface ISolutionsReadyListener
+	{
+		/** a set of candidate routes have been generated
+		 * 
+		 * @param routes
+		 */
+		public void solutionsReady(CompositeRoute[] routes);
 	}
 }
