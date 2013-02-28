@@ -183,7 +183,7 @@ public class AlteringLeg extends CoreLeg
 	 */
 	public void calculateOptimum()
 	{
-		// TODO Auto-generated method stub
+		// TODO calculate an optimal solution through this manoeuvre
 		
 	}
 
