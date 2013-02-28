@@ -116,7 +116,7 @@ public class LocationAnalysisContribution extends
 		double maxRange = getMaxRangeDegs(speed, diff);
 		LinearRing courseR = getCourseRing(course, maxRange);
 		Polygon speedP = getSpeedRing(speed, diff);
-
+		
 		// now combine the two
 		final LineString achievable;
 		if (speedP != null)
@@ -336,15 +336,11 @@ public class LocationAnalysisContribution extends
 
 			double minC = course.getMin();
 			double maxC = course.getMax();
-
+			
 			// SPECIAL CASE: if the course is 0..360, then we just create a circle
-			if (maxC - minC == 2 * Math.PI)
+			if ((maxC == minC) ||(maxC - minC == 2 * Math.PI))
 			{
-				Point pt = GeoSupport.getFactory().createPoint(new Coordinate(0d, 0d));
-
-				// and create an outer ring to represent it
-				res = (LinearRing) pt.buffer(maxRng).getBoundary();
-
+				return res;
 			}
 			else
 			{
@@ -397,167 +393,6 @@ public class LocationAnalysisContribution extends
 			res = GeoSupport.m2deg(RangeForecastContribution.MAX_SELECTABLE_RANGE_M);
 
 		return res;
-	}
-
-	/**
-	 * at the newDate, work out a relaxed location bounds from the previous state
-	 * 
-	 * @param state
-	 *          the previous known state
-	 * @param newDate
-	 *          the point in time that we're projecting forwards to
-	 * @return
-	 */
-	public LocationRange getRangeFor(BoundedState state, long diff)
-	{
-		LinearRing res = null;
-
-		// ok, generate the achievable bounds for the state
-		CourseRange course = state.getCourse();
-		double maxRange = getMaxRangeDegs(state.getSpeed(), diff);
-		LinearRing courseR = getCourseRing(course, maxRange);
-		Polygon speedP = getSpeedRing(state.getSpeed(), diff);
-
-		// now combine the two
-		final LineString achievable;
-		if (speedP != null)
-		{
-			if (courseR != null)
-			{
-				// convert the course ring into a solid area
-				Polygon courseP = GeoSupport.getFactory().createPolygon(courseR, null);
-
-				// now sort out the intersection between course and speed
-				Geometry trimmed = courseP.intersection(speedP);
-
-				// GeoSupport.writeGeometry("trimmed", trimmed);
-
-				Geometry geom = trimmed.convexHull();
-				if (!(geom instanceof LineString))
-				{
-					// is it a multi-point?
-					if (geom instanceof MultiPoint)
-					{
-						MultiPoint mp = (MultiPoint) geom;
-						// get a line string from the coordinates
-						geom = GeoSupport.getFactory()
-								.createLineString(mp.getCoordinates());
-					}
-					else if (geom instanceof Polygon)
-					{
-						// the geoms are all currently appearing as polygons, maybe this is
-						// to do with the
-						// Jan 2013 JTS update.
-						geom = GeoSupport.getFactory().createLineString(
-								geom.getCoordinates());
-					}
-				}
-				if (geom instanceof LineString)
-					achievable = (LineString) geom;
-				else
-				{
-					System.err
-							.println("LocationAnalysisContribution: we were expecting a line-string, but it hasn't arrived!");
-					// TODO: get rid of this
-					GeoSupport.writeGeometry("not a line-string", geom);
-					achievable = null;
-				}
-			}
-			else
-			{
-				// TODO: speedP is actually two circles = we probably need to process
-				// both circles
-				achievable = (LineString) speedP.getExteriorRing().clone();
-			}
-		}
-		else
-		{
-			if (courseR != null)
-			{
-				achievable = (LineString) courseR.clone();
-			}
-			else
-			{
-				// nope, we don't have any bounds
-				achievable = null;
-			}
-		}
-
-		// GeoSupport.writeGeometry("Achievable_" + newDate, achievable);
-
-		// did we construct a bounds?
-		if (achievable != null)
-		{
-			// ok, apply this to the pioints of the bounded state
-			LocationRange loc = state.getLocation();
-
-			if (loc != null)
-			{
-				// move around the outer points
-				Geometry geometry = loc.getGeometry();
-				if (geometry instanceof Polygon)
-				{
-					LineString ls = ((Polygon) geometry).getExteriorRing();
-					LinearRing ext = GeoSupport.getFactory().createLinearRing(
-							ls.getCoordinates());
-					Coordinate[] pts = ext.getCoordinates();
-
-					for (int i = 0; i < pts.length; i++)
-					{
-						Coordinate thisC = pts[i];
-
-						// make a copy of the shape
-
-						// add each of these coords to that shape
-						AffineTransformation trans = new AffineTransformation();
-						trans.setToTranslation(thisC.x, thisC.y);
-
-						// actually do the move
-						Coordinate[] oldCoords = achievable.getCoordinates();
-						Coordinate[] newCoords = new Coordinate[oldCoords.length];
-						for (int j = 0; j < oldCoords.length; j++)
-						{
-							Coordinate tmpC = oldCoords[j];
-							Coordinate newC = new Coordinate(0, 0);
-							newC = trans.transform(tmpC, newC);
-							newCoords[j] = newC;
-						}
-
-						// and put it back into a linestring
-						Geometry translated = GeoSupport.getFactory().createLinearRing(
-								newCoords);
-
-						// GeoSupport.writeGeometry("shape:" + i, translated);
-
-						if (res == null)
-						{
-							res = (LinearRing) translated;
-						}
-						else
-						{
-							// now we need to combine the two geometries
-							Geometry geom = res.union(translated);
-							Geometry geom2 = geom.convexHull();
-							res = (LinearRing) geom2.getBoundary();
-						}
-					}
-
-				}
-			}
-		}
-
-		// get the region
-		final LocationRange answer;
-		if (res != null)
-		{
-			Polygon tmpPoly2 = GeoSupport.getFactory().createPolygon(res, null);
-
-			answer = new LocationRange(tmpPoly2);
-		}
-		else
-			answer = null;
-
-		return answer;
 	}
 
 	/**
