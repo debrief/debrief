@@ -60,13 +60,14 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		// JFreeChart chart = new JFreeChart(plot);
 
 		_chart = ChartFactory.createScatterPlot("States", "Lat", "Lon", _myData2,
-				PlotOrientation.HORIZONTAL, false, false, false);
+				PlotOrientation.HORIZONTAL, true, false, false);
 		_plot = (XYPlot) _chart.getPlot();
 		_plot.setBackgroundPaint(Color.WHITE);
 		_plot.setDomainCrosshairPaint(Color.LIGHT_GRAY);
 		_plot.setRangeCrosshairPaint(Color.LIGHT_GRAY);
 		_plot.setNoDataMessage("No data available");
 		_plot.setRenderer(_renderer);
+		
 
 		return _chart;
 	}
@@ -81,6 +82,8 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 	 * 
 	 */
 	int _numCycles = 0;
+
+	private Action _showLegend;
 
 	@Override
 	public void clear(String title)
@@ -108,6 +111,7 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		makeActions();
 
 		IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(_showLegend);
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
 
@@ -159,6 +163,19 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		_debugMode.setChecked(false);
 		_debugMode
 				.setToolTipText("Track all states (including application of each Contribution)");
+
+		_showLegend = new Action("Show Legend", SWT.TOGGLE)
+		{
+			public void run()
+			{
+				super.run();
+				_chart.getLegend(0).setVisible(_showLegend.isChecked());
+			}
+		};
+		_showLegend.setText("Show Legend");
+		_showLegend.setChecked(false);
+		_showLegend
+				.setToolTipText("Show the legend");
 
 		_resizeButton = new Action("Resize", SWT.NONE)
 		{
@@ -222,19 +239,6 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		// are we in debug mode?
 		if (!_debugMode.isChecked())
 			return;
-
-		// switch the legend on
-		// if (_chart.getSubtitleCount() == 0)
-		// {
-		// LegendTitle legend = new LegendTitle(_plot);
-		// legend.setMargin(new RectangleInsets(1.0, 1.0, 1.0, 1.0));
-		// legend.setFrame(new LineBorder());
-		// legend.setBackgroundPaint(Color.white);
-		// legend.setPosition(RectangleEdge.BOTTOM);
-		// _chart.addSubtitle(0, legend);
-		// }
-
-		// does this series already exist?
 
 		// ok, we've got a new series
 		XYSeries series = new XYSeries(title, false);
