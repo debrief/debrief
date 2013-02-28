@@ -122,7 +122,6 @@ public class LocationAnalysisTest extends ModelTestBase
 		LocationRange lr = new LocationRange(area1);
 		s2.constrainTo(lr);
 
-		
 		System.out.println(area1.toText());
 		System.out.println("  ");
 
@@ -156,13 +155,13 @@ public class LocationAnalysisTest extends ModelTestBase
 		assertNotNull("Loc range created", s1.getLocation());
 		assertNotNull("Loc range created", s3.getLocation());
 
-//		System.out.println(area2.toText());
-//		System.out.println("  ");
-//		System.out.println(s1.getLocation().getGeometry().toText());
-//		System.out.println("  ");
-//		System.out.println(s2.getLocation().getGeometry().toText());
-//		System.out.println("  ");
-//		System.out.println(s3.getLocation().getGeometry().toText());
+		// System.out.println(area2.toText());
+		// System.out.println("  ");
+		// System.out.println(s1.getLocation().getGeometry().toText());
+		// System.out.println("  ");
+		// System.out.println(s2.getLocation().getGeometry().toText());
+		// System.out.println("  ");
+		// System.out.println(s3.getLocation().getGeometry().toText());
 
 	}
 
@@ -175,12 +174,11 @@ public class LocationAnalysisTest extends ModelTestBase
 				0.4, 0.2, 0.4);
 		space.setVehicleType(vType);
 
-
 		// ok, create the state
 		Date oldDate = new Date(100000);
 		Date newDate = new Date(160000);
 		BoundedState oldState = new BoundedState(oldDate);
-	//	BoundedState newStateConstraint = new BoundedState(newDate);
+		// BoundedState newStateConstraint = new BoundedState(newDate);
 		BoundedState newStateNoConstraint = new BoundedState(newDate);
 
 		Coordinate[] coords = new Coordinate[]
@@ -234,6 +232,10 @@ public class LocationAnalysisTest extends ModelTestBase
 		Date newDate = new Date(160000);
 		BoundedState bs = new BoundedState(oldDate);
 
+		VehicleType vType = new VehicleType("UK Ferry", GeoSupport.kts2MSec(0),
+				GeoSupport.kts2MSec(30000), Math.toRadians(0), Math.toRadians(1), 0.2,
+				0.4, 0.2, 0.4);
+
 		Coordinate[] coords = new Coordinate[]
 		{ createCoord(0.01, 0.02), createCoord(0.04, 0.05),
 				createCoord(0.05, 0.02), createCoord(0.03, 0.01),
@@ -273,7 +275,7 @@ public class LocationAnalysisTest extends ModelTestBase
 		// GeoSupport.writeGeometry("course region", courseRegion);
 
 		//
-		LocationRange newB = lac.getRangeFor(bs, newDate.getTime()
+		LocationRange newB = lac.calcRelaxedRange(bs, vType, newDate.getTime()
 				- bs.getTime().getTime());
 		GeoSupport.writeGeometry("location region", newB.getGeometry());
 
