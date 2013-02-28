@@ -47,9 +47,39 @@ public class SpeedAnalysisTest extends ModelTestBase
 		space.add(state5);
 		space.add(state6);
 		space.add(state7);
-		VehicleType vType = new VehicleType("UK Ferry", 10, 300, Math.toRadians(0),
+		VehicleType vType = new VehicleType("UK Ferry", 10, 500, Math.toRadians(0),
 				Math.toRadians(1), 1, 3, 1, 5);
 		space.setVehicleType(vType);
+	}
+	
+	@Test
+	public void testFwdBwd() throws IncompatibleStateException
+	{
+		// set some course data
+		SpeedRange cr = new SpeedRange(200, 300);
+		state2.constrainTo(cr);
+
+		assertNull(" speed constraint empty", state1.getSpeed());
+		assertNull(" speed constraint empty", state3.getSpeed());
+
+		SpeedAnalysisContribution cac = new SpeedAnalysisContribution();
+		cac.actUpon(space);
+		
+		// ok, check 1 and 3 have speeds
+		assertNotNull(" speed constraint empty", state1.getSpeed());
+		assertNotNull(" speed constraint empty", state3.getSpeed());
+
+		// have a look at the new min/max speeds
+		SpeedRange sp2 = state1.getSpeed();
+		assertEquals("new min speed valid", 185, sp2.getMin(), EPS);
+		assertEquals("new max speed valid", 325, sp2.getMax(), EPS);
+
+		// have a look at the new min/max speeds
+		SpeedRange sp3 = state3.getSpeed();
+		assertEquals("new min speed valid", 150, sp3.getMin(), EPS);
+		assertEquals("new max speed valid", 330, sp3.getMax(), EPS);
+
+		
 	}
 
 	/**
@@ -158,6 +188,46 @@ public class SpeedAnalysisTest extends ModelTestBase
 		state2.setMemberOf("the_leg");
 		state3.setMemberOf("the_leg");
 		state4.setMemberOf("the_leg");
+		
+		SpeedAnalysisContribution cac = new SpeedAnalysisContribution();
+		cac.actUpon(space);
+
+		// ok, the first state should have the new constraint.
+		assertNotNull(" course constriant not empty", state1.getSpeed());
+		assertNotNull(" course constriant not empty", state2.getSpeed());
+		assertNotNull(" course constriant not empty", state3.getSpeed());
+		assertNotNull(" course constriant not empty", state4.getSpeed());
+		assertNotNull(" course constriant not empty", state5.getSpeed());
+		assertNotNull(" course constriant not empty", state6.getSpeed());
+		assertNotNull(" course constriant not empty", state7.getSpeed());
+
+		dumpSpeeds();
+		
+		// have a look at the new min/max course
+
+		SpeedRange sp2 = state2.getSpeed();
+		assertEquals("new min speed valid", 135, sp2.getMin(), EPS);
+		assertEquals("new max speed valid", 195, sp2.getMax(), EPS);
+
+		// check we're still on the same speed
+		SpeedRange sp3 = state3.getSpeed();
+		assertEquals("new min speed valid", 135, sp3.getMin(), EPS);
+		assertEquals("new max speed valid", 195, sp3.getMax(), EPS);
+
+		// check we're still on the same speed
+		SpeedRange sp4 = state4.getSpeed();
+		assertEquals("new min speed valid", 135, sp4.getMin(), EPS);
+		assertEquals("new max speed valid", 195, sp4.getMax(), EPS);
+
+		
+	}
+	
+	@Test
+	public void testTurningLegs() throws IncompatibleStateException
+	{
+		// set some course data
+		state1.constrainTo(new SpeedRange(140, 180));
+		state5.constrainTo(new SpeedRange(150, 170));
 
 		SpeedAnalysisContribution cac = new SpeedAnalysisContribution();
 		cac.actUpon(space);
@@ -175,13 +245,17 @@ public class SpeedAnalysisTest extends ModelTestBase
 		
 		// have a look at the new min/max course
 		SpeedRange sp2 = state2.getSpeed();
-		assertEquals("new min speed valid", 125, sp2.getMin(), EPS);
-		assertEquals("new max speed valid", 185, sp2.getMax(), EPS);
-
-		// check we're still on the same speed
+		assertEquals("new min speed valid", 115, sp2.getMin(), EPS);
+		assertEquals("new max speed valid", 195, sp2.getMax(), EPS);
 		SpeedRange sp3 = state3.getSpeed();
-		assertEquals("new min speed valid", 125, sp3.getMin(), EPS);
-		assertEquals("new max speed valid", 185, sp3.getMax(), EPS);
+		assertEquals("new min speed valid", 120, sp3.getMin(), EPS);
+		assertEquals("new max speed valid", 220, sp3.getMax(), EPS);
+		
+		SpeedRange sp7 = state7.getSpeed();
+		assertEquals("new min speed valid", 100, sp7.getMin(), EPS);
+		assertEquals("new max speed valid", 200, sp7.getMax(), EPS);
+
+		
 	}
 	
 	private void dumpSpeeds()

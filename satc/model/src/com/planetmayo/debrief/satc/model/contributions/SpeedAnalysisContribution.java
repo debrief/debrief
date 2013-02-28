@@ -83,13 +83,24 @@ public class SpeedAnalysisContribution extends
 	protected SpeedRange calcRelaxedRange(BoundedState lastStateWithRange,
 			VehicleType vType, long millis)
 	{
+		final double maxAccel;
+		final double maxDecel;
+		
+		// see if we are running fwd or bwds
+		if(millis < 0)
+		{
+			maxAccel = vType.getMaxDecelRate();
+			maxDecel = vType.getMaxAccelRate();
+		}
+		else
+		{
+			maxDecel = vType.getMaxDecelRate();
+			maxAccel = vType.getMaxAccelRate();			
+		}
 		
 		// just in case we're doing a reverse pass, use the abs millis
 		millis = Math.abs(millis);
 		
-		double maxDecel = vType.getMaxDecelRate();
-		double maxAccel = vType.getMaxAccelRate();
-
 		double diffSeconds = millis / 1000.0d;
 
 		double minSpeed = lastStateWithRange.getSpeed().getMin() - maxDecel
