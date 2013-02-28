@@ -1,6 +1,5 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.util.Date;
 import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -45,28 +44,28 @@ public class LocationAnalysisContribution extends BaseContribution
 			ctr++;
 			BoundedState thisS = iter.next();
 
-			// does it have a location?
-			LocationRange loc = thisS.getLocation();
-			if (loc != null)
+			// do we have a previous constraint to work from?
+			if (_lastState != null)
 			{
-				// ok, do we have a previous state
-				if (_lastState != null)
+
+				// ok. sort out the constraints from the last state
+				long timeDiff = thisS.getTime().getTime() - _lastState.getTime().getTime();
+				
+				// we may be going forwards or backwards, use the abs time diff
+				timeDiff = Math.abs(timeDiff);
+				
+				// ok - where could we have travelled to?
+				LocationRange newConstraint = getRangeFor(_lastState, timeDiff);
+
+				if (newConstraint != null)
 				{
-
-					// ok. sort out the constraints from the last state
-					LocationRange newConstraint = getRangeFor(_lastState, thisS.getTime());
-
 					// and constraint it
-					loc.constrainTo(newConstraint);
-
-					// ok, display what is being shown
-					// GeoSupport.writeGeometry("loc_" + ctr, newConstraint.getPolygon());
+					thisS.constrainTo(newConstraint);
 				}
-
-				// ok, remember, and move on
-				_lastState = thisS;
 			}
 
+			// ok, remember, and move on
+			_lastState = thisS;
 		}
 	}
 
@@ -155,12 +154,9 @@ public class LocationAnalysisContribution extends BaseContribution
 	 *          the point in time that we're projecting forwards to
 	 * @return
 	 */
-	public LocationRange getRangeFor(BoundedState state, Date newDate)
+	public LocationRange getRangeFor(BoundedState state, long diff)
 	{
 		LinearRing res = null;
-
-		// how long have we travelled?
-		long diff = newDate.getTime() - state.getTime().getTime();
 
 		// ok, generate the achievable bounds for the state
 		CourseRange course = state.getCourse();
