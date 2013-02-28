@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
 
@@ -20,49 +21,18 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * apply this bounded constraint to all to all of the states in the list
-	 * 
-	 * @param commonRange
-	 * @param statesInThisLeg
-	 * @throws IncompatibleStateException
-	 */
-	protected void assignCommonState(R commonRange,
-			ArrayList<BoundedState> statesInThisLeg)
-			throws IncompatibleStateException
-	{
-		// ok - apply the common bounded range to all the states in the leg
-
-		// have we produced a constrained range?
-		if (commonRange != null)
-		{
-			// yes. we need to apply the min constraints to all the points in
-			// that leg
-			Iterator<BoundedState> iter = statesInThisLeg.iterator();
-			while (iter.hasNext())
-			{
-				BoundedState boundedState = (BoundedState) iter.next();
-				applyThis(boundedState, commonRange);
-			}
-		}
-
-		// now we need to clear the remembered states, so we're ready for the
-		// next leg
-		statesInThisLeg.clear();
-	}
-
 	protected abstract void applyThis(BoundedState state, R thisState)
 			throws IncompatibleStateException;
 
 	@Override
-	public void actUpon(final ProblemSpace space)
+	final public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException
 	{
 		// do a forward pass through the list
-		analyseConstraints(space, new SwitchableIterator(true));
+		applyAnalysisConstraints(space, new SwitchableIterator(true));
 		
 		// and now a reverse pass
-		analyseConstraints(space, new SwitchableIterator(false));
+		applyAnalysisConstraints(space, new SwitchableIterator(false));
 	}
 
 	/** support class that lets use move either forwards or backwards through a list
@@ -70,7 +40,7 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 	 * @author Ian
 	 *
 	 */
-	private static class SwitchableIterator
+	protected static class SwitchableIterator
 	{
 		private final boolean _fwd;
 
@@ -104,7 +74,7 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		}
 	}
 
-	private void analyseConstraints(final ProblemSpace space,
+	protected void applyAnalysisConstraints(final ProblemSpace space,
 			SwitchableIterator switcher) throws IncompatibleStateException
 	{
 		// remember the previous state
@@ -128,6 +98,8 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		while(switcher.canStep(iter))
 		{
 			BoundedState currentState = switcher.next(iter);
+			
+			Date currentTime = currentState.getTime();
 
 			// ok - what leg is this?
 			String thisLeg = currentState.getMemberOf();
@@ -143,8 +115,16 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 				}
 
 				// ok, we're not in a leg. relax it.
-				lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
-						currentState, vType);
+				try
+				{
+					lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
+							currentState, vType);
+				}
+				catch (IncompatibleStateException e)
+				{
+					e.setFailingState(currentState);
+					throw e;
+				}
 			}
 			else
 			{
@@ -157,8 +137,16 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 				{
 					// yes. this is the first leg. We do need to allow some relaxation
 					// on range from the previous one
-					lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
-							currentState, vType);
+					try
+					{
+						lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
+								currentState, vType);
+					}
+					catch (IncompatibleStateException e)
+					{
+						e.setFailingState(currentState);
+						throw e;
+					}
 
 					// now we can probably store this state
 					if (lastStateWithState != null)
@@ -181,7 +169,15 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 						else
 						{
 							// ok, constrain it.
-							furtherConstrain(currentLegRange, thisRange);
+							try
+							{
+								furtherConstrain(currentLegRange, thisRange);
+							}
+							catch (IncompatibleStateException e)
+							{
+								e.setFailingState(currentState);
+								throw e;
+							}
 						}
 					}
 
@@ -205,6 +201,45 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		}
 	}
 
+	/**
+	 * apply this bounded constraint to all to all of the states in the list
+	 * 
+	 * @param commonRange
+	 * @param statesInThisLeg
+	 * @throws IncompatibleStateException
+	 */
+	protected void assignCommonState(R commonRange,
+			ArrayList<BoundedState> statesInThisLeg) throws IncompatibleStateException
+			
+	{
+		// ok - apply the common bounded range to all the states in the leg
+	
+		// have we produced a constrained range?
+		if (commonRange != null)
+		{
+			// yes. we need to apply the min constraints to all the points in
+			// that leg
+			Iterator<BoundedState> iter = statesInThisLeg.iterator();
+			while (iter.hasNext())
+			{
+				BoundedState boundedState = (BoundedState) iter.next();
+				try
+				{
+					applyThis(boundedState, commonRange);
+				}
+				catch (IncompatibleStateException e)
+				{
+					e.setFailingState(boundedState);
+					throw e;
+				}
+			}
+		}
+	
+		// now we need to clear the remembered states, so we're ready for the
+		// next leg
+		statesInThisLeg.clear();
+	}
+
 	protected BoundedState applyRelaxedRangeBounds(
 			BoundedState lastStateWithRange, BoundedState currentState,
 			VehicleType vehicleType) throws IncompatibleStateException
@@ -221,9 +256,6 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 				// ok, how long since that last observation?
 				long millis = currentState.getTime().getTime()
 						- lastStateWithRange.getTime().getTime();
-	
-				// just in case we're doing a reverse pass, use the abs millis
-				millis = Math.abs(millis);
 	
 				// ok, what does that state relax to
 			  newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
