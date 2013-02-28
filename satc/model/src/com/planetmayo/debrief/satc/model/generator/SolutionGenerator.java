@@ -16,22 +16,23 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class SolutionGenerator implements ISteppingListener
 {
-	/** how many cells shall we break the polygons down into?
+	/**
+	 * how many cells shall we break the polygons down into?
 	 * 
 	 */
 	final int NUM_CELLS = 20;
-	
-	/** anybody interested in a new solution being ready?
+
+	/**
+	 * anybody interested in a new solution being ready?
 	 * 
 	 */
 	private ArrayList<ISolutionsReadyListener> _readyListeners;
 
-	
 	public SolutionGenerator()
 	{
 		_readyListeners = new ArrayList<ISolutionsReadyListener>();
 	}
-	
+
 	public void addReadyListener(ISolutionsReadyListener listener)
 	{
 		_readyListeners.add(listener);
@@ -47,22 +48,10 @@ public class SolutionGenerator implements ISteppingListener
 		HashMap<String, CoreLeg> theLegs = getTheLegs(space.states());
 
 		// get the legs to dice themselves up
-		operateOn(theLegs, new LegOperation()
-		{
-			public void apply(CoreLeg thisLeg)
-			{
-				thisLeg.generateRoutes(NUM_CELLS);
-			}
-		});
+		generateRoutes(theLegs);
 
 		// get the legs to sort out what is achievable
-		operateOn(theLegs, new LegOperation()
-		{
-			public void apply(CoreLeg thisLeg)
-			{
-				thisLeg.decideAchievableRoutes();
-			}
-		});
+		decideAchievable(theLegs);
 
 		// do the fancy multiplication
 		int[][] achievableRes = calculateAchievableRoutesFor(theLegs);
@@ -87,36 +76,75 @@ public class SolutionGenerator implements ISteppingListener
 		CompositeRoute[] routes = generateCandidates(theLegs);
 
 		// and we're done, share the good news!
-		for (ISolutionsReadyListener listener : _readyListeners) 
+		for (ISolutionsReadyListener listener : _readyListeners)
 		{
 			listener.solutionsReady(routes);
 		}
 	}
 
-	/** using best performing routes through the straight legs, generate a set of overall
-	 * solutions
-	 * @param theLegs the set of legs we're looking at
+	public void generateRoutes(HashMap<String, CoreLeg> theLegs)
+	{
+		operateOn(theLegs, new LegOperation()
+		{
+			public void apply(CoreLeg thisLeg)
+			{
+				thisLeg.generateRoutes(NUM_CELLS);
+			}
+		});
+	}
+
+	public void decideAchievable(HashMap<String, CoreLeg> theLegs)
+	{
+		operateOn(theLegs, new LegOperation()
+		{
+			public void apply(CoreLeg thisLeg)
+			{
+				thisLeg.decideAchievableRoutes();
+			}
+		});
+	}
+
+	/**
+	 * using best performing routes through the straight legs, generate a set of
+	 * overall solutions
+	 * 
+	 * @param theLegs
+	 *          the set of legs we're looking at
 	 * @return a set of routes through the data
 	 */
-	static CompositeRoute[] generateCandidates(HashMap<String, CoreLeg> theLegs)
+	CompositeRoute[] generateCandidates(HashMap<String, CoreLeg> theLegs)
 	{
 		// TODO generate the candidate solutions
 		return null;
 	}
 
-	static void cancelUnachievable(HashMap<String, CoreLeg> theLegs,
+	void cancelUnachievable(HashMap<String, CoreLeg> theLegs,
 			int[][] achievableRes)
 	{
 		// TODO ditch permutations that aren't possible
 
 	}
 
-	static int[][] calculateAchievableRoutesFor(HashMap<String, CoreLeg> theLegs)
+	int[][] calculateAchievableRoutesFor(HashMap<String, CoreLeg> theLegs)
 	{
 		// ok, loop through the legs, doing the multiplication
+		int[][] res = null;
+		Collection<CoreLeg> iter = theLegs.values();
+		for (Iterator<CoreLeg> iterator = iter.iterator(); iterator.hasNext();)
+		{
+			CoreLeg thisLeg = (CoreLeg) iterator.next();
+			int[][] mat = thisLeg.asMatrix();
+			
+			// is this our first one?
+			if(res == null)
+				res = mat;
+			else
+			{
+				res = CoreLeg.multiply(res, mat);
+			}
+		}
 		
-		// TODO do the fancy matrix multiplication
-		return null;
+		return res;
 	}
 
 	/**
@@ -142,14 +170,14 @@ public class SolutionGenerator implements ISteppingListener
 	 * @param space
 	 * @return
 	 */
-	static HashMap<String, CoreLeg> getTheLegs(Collection<BoundedState> theStates)
+	HashMap<String, CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 
 		// extract the straight legs
 		HashMap<String, CoreLeg> theLegs = new HashMap<String, CoreLeg>();
 
 		CoreLeg currentLeg = null;
-		
+
 		// increementing counter, to number turns
 		int counter = 1;
 
@@ -158,7 +186,7 @@ public class SolutionGenerator implements ISteppingListener
 		{
 			BoundedState thisS = iterator.next();
 			String thisLegName = thisS.getMemberOf();
-			
+
 			// is this the current leg?
 			if (thisLegName != null)
 			{
@@ -175,26 +203,26 @@ public class SolutionGenerator implements ISteppingListener
 			else
 			{
 				// a leg with no name = must be altering
-				
+
 				// were we in a straight leg?
-				if(currentLeg != null)
+				if (currentLeg != null)
 				{
-					if(currentLeg.getType() == LegType.STRAIGHT)
+					if (currentLeg.getType() == LegType.STRAIGHT)
 					{
 						// ok, the straight leg is now complete. trigger a new altering leg
 						currentLeg = null;
 					}
 				}
-				
+
 				// ok, are we currently in a leg?
-				if(currentLeg == null)
+				if (currentLeg == null)
 				{
 					String thisName = "Alteration " + counter++;
 					currentLeg = new AlteringLeg(thisName, new ArrayList<BoundedState>());
-					theLegs.put(thisName,currentLeg);
+					theLegs.put(thisName, currentLeg);
 				}
 			}
-			
+
 			// ok, we've got the leg - now add the state
 			currentLeg.add(thisS);
 		}
@@ -235,14 +263,17 @@ public class SolutionGenerator implements ISteppingListener
 		public void apply(CoreLeg thisLeg);
 	}
 
-	/** listener for someone who wants to know if we've managed to generate some routes
+	/**
+	 * listener for someone who wants to know if we've managed to generate some
+	 * routes
 	 * 
 	 * @author Ian
-	 *
+	 * 
 	 */
 	public static interface ISolutionsReadyListener
 	{
-		/** a set of candidate routes have been generated
+		/**
+		 * a set of candidate routes have been generated
 		 * 
 		 * @param routes
 		 */

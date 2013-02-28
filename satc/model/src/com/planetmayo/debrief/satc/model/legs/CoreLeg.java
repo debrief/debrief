@@ -16,19 +16,19 @@ public abstract class CoreLeg
 	 * @param b
 	 * @return
 	 */
-	static int[][] multiply(int a[][], int b[][])
+	public static int[][] multiply(int a[][], int b[][])
 	{
-	
+
 		int aRows = a.length, aColumns = a[0].length, bRows = b.length, bColumns = b[0].length;
-	
+
 		if (aColumns != bRows)
 		{
 			throw new IllegalArgumentException("A:Rows: " + aColumns
 					+ " did not match B:Columns " + bRows + ".");
 		}
-	
+
 		int[][] resultant = new int[aRows][bColumns];
-	
+
 		for (int i = 0; i < aRows; i++)
 		{ // aRow
 			for (int j = 0; j < bColumns; j++)
@@ -39,15 +39,36 @@ public abstract class CoreLeg
 				}
 			}
 		}
-	
+
 		return resultant;
 	}
 
 	/**
-	 * the route permutations through the leg. This array will always be
-	 * rectangular
+	 * represent this set of routes as an integer matrix, with 1 for achievable
+	 * and 0 for not achievable
+	 * 
+	 * @return
 	 */
-	protected StraightRoute[][] myRoutes;
+	public int[][] asMatrix()
+	{
+		CoreRoute[][] myRoutes = getRoutes();
+		int xLen = myRoutes.length;
+		int yLen = myRoutes[0].length;
+		int[][] res = new int[xLen][yLen];
+		for (int x = 0; x < xLen; x++)
+			for (int y = 0; y < yLen; y++)
+			{
+				boolean isPoss = myRoutes[x][y].isPossible();
+				res[x][y] = (isPoss ? 1 : 0);
+			}
+		return res;
+	}
+
+	// /**
+	// * the route permutations through the leg. This array will always be
+	// * rectangular
+	// */
+	// protected CoreRoute[][] myRoutes;
 
 	/**
 	 * how many points there are in the start polygon
@@ -88,38 +109,39 @@ public abstract class CoreLeg
 	final public void add(BoundedState thisS)
 	{
 		_states.add(thisS);
-		if (myRoutes != null)
-			throw new IllegalArgumentException("Cannot add new state once gridded");
 	}
 
-	final protected BoundedState getFirst()
+	final public BoundedState getFirst()
 	{
 		return _states.get(0);
 	}
-	
 
-	final protected BoundedState getLast()
+	final public BoundedState getLast()
 	{
 		return _states.get(_states.size() - 1);
 	}
-	
-	/** find out if this is straight or altering
+
+	/**
+	 * find out if this is straight or altering
 	 * 
 	 * @return
 	 */
 	abstract public LegType getType();
-	
 
-	/** produce the set of constituent routes for this leg
+	/**
+	 * produce the set of constituent routes for this leg
 	 * 
 	 * @param gridNum
 	 *          how many grid cells to dissect the area into
 	 */
 	abstract public void generateRoutes(int gridNum);
 
-	/** determine which legs are achievable
+	/**
+	 * determine which legs are achievable
 	 * 
 	 */
 	abstract public void decideAchievableRoutes();
+
+	abstract public CoreRoute[][] getRoutes();
 
 }

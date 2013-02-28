@@ -20,6 +20,7 @@ import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContri
 import com.planetmayo.debrief.satc.model.generator.SolutionGenerator.ISolutionsReadyListener;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.support.TestSupport;
@@ -82,12 +83,53 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 		// ok, let's look at the legs
 		Collection<BoundedState> theStates = boundsManager.getSpace().states();
-		HashMap<String, CoreLeg> theLegs = SolutionGenerator.getTheLegs(theStates);
+		HashMap<String, CoreLeg> theLegs = new SolutionGenerator().getTheLegs(theStates);
 		
 		assertNotNull("got some legs", theLegs);
 		assertEquals("got 7 (3 straight, 4 turns) legs",7, theLegs.size());
+		
+		// check the legs overlap
+		CoreLeg lastLeg = null;
+		Iterator<CoreLeg> iter = theLegs.values().iterator();
+		
+		while (iter.hasNext())
+		{
+			CoreLeg coreLeg = (CoreLeg) iter.next();
+			if(lastLeg != null)
+			{
+				assertEquals("state gets re-used", lastLeg.getLast(), coreLeg.getFirst());
+			}
+			lastLeg = coreLeg;
+//			writeThisLeg(coreLeg);
+		}
+	}
+	
+	private void writeThisLeg(CoreLeg leg)
+	{
+		Date first = leg.getFirst().getTime();
+		Date last = leg.getLast().getTime();
+		System.out.println("first:" + first + " last:" + last);
 	}
 
+	@Test
+	public void testCalculateAchievable()
+	{
+		boundsManager.run();
+		
+		// ok, let's look at the legs
+		Collection<BoundedState> theStates = boundsManager.getSpace().states();
+		HashMap<String, CoreLeg> theLegs = new SolutionGenerator().getTheLegs(theStates);
+
+		SolutionGenerator genny = new SolutionGenerator();
+		
+		genny.generateRoutes(theLegs);
+		genny.decideAchievable(theLegs);
+		
+		int[][] achievable = genny.calculateAchievableRoutesFor(theLegs);
+		
+		assertNotNull("produced results matrix", achievable);
+	}
+	
 	private static boolean called = false;
 	
 	@Test

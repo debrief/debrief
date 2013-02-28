@@ -138,25 +138,6 @@ public class StraightRoute extends CoreRoute
 	}
 
 	/**
-	 * indicate that this route is not achievable
-	 * 
-	 */
-	public void setImpossible()
-	{
-		_isPossible = false;
-	}
-
-	public boolean isPossible()
-	{
-		return _isPossible;
-	}
-
-	public ArrayList<State> getStates()
-	{
-		return _myStates;
-	}
-
-	/**
 	 * get the length of this route
 	 * 
 	 * @return

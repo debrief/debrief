@@ -76,4 +76,23 @@ public class CoreRoute
 		return (_endTime.getTime() - _startTime.getTime())/1000;
 	}
 
+	/**
+	 * indicate that this route is not achievable
+	 * 
+	 */
+	public void setImpossible()
+	{
+		_isPossible = false;
+	}
+
+	public boolean isPossible()
+	{
+		return _isPossible;
+	}
+
+	public ArrayList<State> getStates()
+	{
+		return _myStates;
+	}
+
 }

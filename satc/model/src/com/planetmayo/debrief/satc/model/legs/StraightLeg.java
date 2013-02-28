@@ -34,6 +34,7 @@ public class StraightLeg extends CoreLeg
 		super(name, states);
 	}
 
+
 	@Override
 	public void generateRoutes(int gridNum)
 	{
@@ -215,30 +216,12 @@ public class StraightLeg extends CoreLeg
 		public void process(StraightRoute theRoute);
 	}
 
-	public StraightRoute[][] getRoutes()
+	public CoreRoute[][] getRoutes()
 	{
 		return myRoutes;
 	}
 
-	/**
-	 * represent this set of routes as an integer matrix, with 1 for achievable
-	 * and 0 for not achievable
-	 * 
-	 * @return
-	 */
-	public int[][] asMatrix()
-	{
-		int xLen = myRoutes.length;
-		int yLen = myRoutes[0].length;
-		int[][] res = new int[xLen][yLen];
-		for (int x = 0; x < xLen; x++)
-			for (int y = 0; y < yLen; y++)
-			{
-				boolean isPoss = myRoutes[x][y].isPossible();
-				res[x][y] = (isPoss ? 1 : 0);
-			}
-		return res;
-	}
+
 
 	/**
 	 * utility class to count how many routes are possible

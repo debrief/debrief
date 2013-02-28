@@ -187,7 +187,7 @@ public class StraightLegTests extends ModelTestBase
 		int startLen = startP.size();
 		int endLen = endP.size();
 
-		StraightRoute[][] leg1 = new StraightRoute[startLen][endLen];
+		CoreRoute[][] leg1 = new CoreRoute[startLen][endLen];
 
 		Date tStart = new Date(2012, 1, 1, 11, 0, 0);
 		Date tEnd = new Date(2012, 1, 1, 15, 0, 0);
@@ -314,14 +314,14 @@ public class StraightLegTests extends ModelTestBase
 	}
 
 	@SuppressWarnings("unused")
-	private static void util_writeMatrix(String name, StraightRoute[][] routes)
+	private static void util_writeMatrix(String name, CoreRoute[][] routes)
 	{
 		System.out.println("== " + name + " ==");
 		for (int x = 0; x < routes.length; x++)
 		{
 			for (int y = 0; y < routes[0].length; y++)
 			{
-				StraightRoute thisR = routes[x][y];
+				CoreRoute thisR = routes[x][y];
 				if (thisR.isPossible())
 					System.out.print("1 ");
 				else
