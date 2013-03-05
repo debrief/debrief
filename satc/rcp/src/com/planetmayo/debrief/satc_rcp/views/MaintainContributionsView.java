@@ -71,7 +71,8 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContr
  * @author ian
  * 
  */
-public class MaintainContributionsView extends ViewPart implements IContributionsChangedListener
+public class MaintainContributionsView extends ViewPart implements
+		IContributionsChangedListener
 {
 
 	public static final String ID = "com.planetmayo.debrief.satc.views.MaintainContributionsView";
@@ -112,7 +113,7 @@ public class MaintainContributionsView extends ViewPart implements IContribution
 	private ComboViewer vehiclesCombo;
 	private Composite contList;
 	private Menu _addContMenu;
-	
+
 	private IBoundsManager boundsManager;
 
 	/**
@@ -153,7 +154,7 @@ public class MaintainContributionsView extends ViewPart implements IContribution
 					"Failed to generate panel for " + contribution);
 		}
 	}
-	
+
 	@Override
 	public void removed(BaseContribution contribution)
 	{
@@ -173,32 +174,33 @@ public class MaintainContributionsView extends ViewPart implements IContribution
 		{
 			System.err.println("failed to find UI for:" + contribution);
 		}
-	}	
+	}
 
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		IContributionsManager contributionsManager = SATC_Activator
-				.getDefault().getService(IContributionsManager.class, true);
-		IVehicleTypesManager vehicleManager = SATC_Activator
-				.getDefault().getService(IVehicleTypesManager.class, true);
-		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
-		
+		IContributionsManager contributionsManager = SATC_Activator.getDefault()
+				.getService(IContributionsManager.class, true);
+		IVehicleTypesManager vehicleManager = SATC_Activator.getDefault()
+				.getService(IVehicleTypesManager.class, true);
+		boundsManager = SATC_Activator.getDefault().getService(
+				IBoundsManager.class, true);
+
 		initUI(parent);
 		populateContributionList(contributionsManager.getAvailableContributions());
 		populatePrecisionsList(Precision.values());
 		populateVehicleTypesList(vehicleManager.getAllTypes());
-		
+
 		boundsManager.addContributionsListener(this);
 	}
-	
+
 	@Override
 	public void dispose()
 	{
 		boundsManager.removeContributionsListener(this);
 		super.dispose();
 	}
-	
+
 	@Override
 	public void setFocus()
 	{
@@ -390,11 +392,13 @@ public class MaintainContributionsView extends ViewPart implements IContribution
 			@Override
 			public void selectionChanged(SelectionChangedEvent event)
 			{
-				if (boundsManager != null) 
+				if (boundsManager != null)
 				{
 					ISelection selection = event.getSelection();
-					if (selection instanceof StructuredSelection) {
-						VehicleType type = (VehicleType) ((StructuredSelection) selection).getFirstElement();
+					if (selection instanceof StructuredSelection)
+					{
+						VehicleType type = (VehicleType) ((StructuredSelection) selection)
+								.getFirstElement();
 						boundsManager.setVehicleType(type);
 					}
 				}
@@ -429,5 +433,10 @@ public class MaintainContributionsView extends ViewPart implements IContribution
 	public void populateVehicleTypesList(List<VehicleType> vehicles)
 	{
 		vehiclesCombo.setInput(vehicles);
+
+		// ok, try to set the first one
+		if (vehicles.size() > 0)
+			vehiclesCombo.setSelection(new StructuredSelection(vehicles.iterator()
+					.next()));
 	}
 }
