@@ -171,7 +171,7 @@ public class TestHarnessView extends ViewPart
 				boundsManager.setLiveRunning(_liveAction.isChecked());
 			}
 		};
-		_liveAction.setChecked(false);
+		_liveAction.setChecked(true);
 
 		_restartAction = new Action()
 		{
