@@ -11,6 +11,7 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
@@ -20,6 +21,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
@@ -170,6 +172,45 @@ public class StraightLegTests extends ModelTestBase
 	}
 
 	@Test
+	public void testBearingCalc()
+	{
+		GeoPoint g1 = new GeoPoint(50, 4);
+		assertEquals("correct bearing", Math.PI / 2, g1.bearingTo(GeoSupport
+				.getFactory().createPoint(new Coordinate(5, 50))), 0.0001);
+		assertEquals("correct bearing", Math.PI / 4, g1.bearingTo(GeoSupport
+				.getFactory().createPoint(new Coordinate(5, 51))), 0.0001);
+		assertEquals("correct bearing",Math.PI + Math.PI / 4, g1.bearingTo(GeoSupport
+				.getFactory().createPoint(new Coordinate(3, 49))), 0.0001);
+		assertEquals("correct bearing",-  Math.PI / 2, g1.bearingTo(GeoSupport
+				.getFactory().createPoint(new Coordinate(3, 50))), 0.0001);
+	}
+
+	@Test
+	public void testErrorCalc()
+	{
+		Point startP = GeoSupport.getFactory().createPoint(
+				new Coordinate(-30.003, 0));
+		Date startT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+				"100112 121329");
+		Point endP = GeoSupport.getFactory().createPoint(
+				new Coordinate(-30.03, 0.025));
+		Date endT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+				"100112 122429");
+		StraightRoute thisR = new StraightRoute("sr1", startP, startT, endP, endT);
+		
+		// TODO: produce a set of state objects, invite thisR to segment itself
+		ArrayList<BoundedState> theStates = null;
+		thisR.generateSegments(theStates);
+		
+//		double val = bearingMeasurementContribution.calculateErrorScoreFor(thisR);	
+//		assertEquals("calculated something", 1, val, 0.0001);
+		
+		// TODO: test how bearing measurement works, especially how it find the right measurement to 
+		// compare against.
+		
+	}
+
+	@Test
 	public void testMatrixStorage() throws ParseException
 	{
 		WKTReader wkt = new WKTReader();
@@ -291,10 +332,10 @@ public class StraightLegTests extends ModelTestBase
 		};
 		System.out.println("= Possible: =");
 		s1.applyToRoutes(writePossible);
-	
+
 		System.out.println("=====================");
 		System.out.println("= Impossible: =");
-	
+
 		RouteOperator writeimPossible = new RouteOperator()
 		{
 			public void process(StraightRoute theRoute)

@@ -12,11 +12,13 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
@@ -134,9 +136,40 @@ public class BearingMeasurementContribution extends BaseContribution
 	public double calculateErrorScoreFor(final CoreRoute route)
 	{
 		double res= super.calculateErrorScoreFor(route);
+		ArrayList<State> states = route.getStates();
+		Iterator<State> sIter = states.iterator();
+		State thisS = null;
 		
-		// TODO: work out our own error function
+		if(sIter.hasNext())
+			thisS = sIter.next();
 		
+		// if the list is empty, drop out
+		if(thisS == null)
+			return res;
+		
+		// ok. work through the bearings
+		Iterator<BMeasurement> iter = _measurements.iterator();
+		while (iter.hasNext())
+		{
+			BearingMeasurementContribution.BMeasurement m = (BearingMeasurementContribution.BMeasurement) iter
+					.next();
+			Date time = m._time;
+		
+			while(thisS.getTime().before(time) && sIter.hasNext())
+			{
+				thisS = sIter.next();
+			}
+			
+			// now find the error from this location
+			Point loc = thisS.getLocation();
+			
+			// what's the bearing from this origin?
+			double bearing = m._origin.bearingTo(loc);
+			
+			// what's the difference between that and my measurement
+			res += Math.abs(bearing - m._bearingAngle);
+			
+		}
 		return res;
 	}
 
