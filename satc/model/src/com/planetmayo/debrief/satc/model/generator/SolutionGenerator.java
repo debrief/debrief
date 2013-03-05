@@ -7,6 +7,7 @@ import java.util.Iterator;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightLegTests;
@@ -118,11 +119,39 @@ public class SolutionGenerator implements ISteppingListener
 		return null;
 	}
 
-	void cancelUnachievable(ArrayList<CoreLeg> theLegs,
-			int[][] achievableRes)
+	void cancelUnachievable(ArrayList<CoreLeg> theLegs, int[][] routes)
 	{
-		// TODO ditch permutations that aren't possible
 
+		// get the routes for the first leg
+		CoreLeg firstLeg = theLegs.get(0);
+
+		// get the routes
+		CoreRoute[][] firstRoutes = firstLeg.getRoutes();
+
+		for (int x = 0; x < routes.length; x++)
+		{
+			boolean possible = false;
+			for (int y = 0; y < routes[0].length; y++)
+			{
+
+				if (routes[x][y] > 0)
+				{
+					// this one is possible, drop out
+					possible = true;
+					break;
+				}
+			}
+			if (!possible)
+			{
+				// mark all of that route impossible
+				CoreRoute[] thisSet = firstRoutes[x];
+				for (int i = 0; i < thisSet.length; i++)
+				{
+					CoreRoute thisRoute = thisSet[i];
+					thisRoute.setImpossible();
+				}
+			}
+		}
 	}
 
 	int[][] calculateAchievableRoutesFor(ArrayList<CoreLeg> theLegs)
@@ -133,19 +162,16 @@ public class SolutionGenerator implements ISteppingListener
 		{
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
 			int[][] mat = thisLeg.asMatrix();
-			
-			StraightLegTests.util_writeMatrix(thisLeg.getName(), mat);
 
-			
 			// is this our first one?
-			if(res == null)
+			if (res == null)
 				res = mat;
 			else
 			{
 				res = CoreLeg.multiply(res, mat);
 			}
 		}
-		
+
 		return res;
 	}
 
@@ -179,10 +205,11 @@ public class SolutionGenerator implements ISteppingListener
 
 		CoreLeg currentLeg = null;
 
-		// remember the last state, since end the first/last items in a straight leg are also in the altering
+		// remember the last state, since end the first/last items in a straight leg
+		// are also in the altering
 		// leg before/after them
 		BoundedState previousState = null;
-		
+
 		// increementing counter, to number turns
 		int counter = 1;
 
@@ -196,28 +223,30 @@ public class SolutionGenerator implements ISteppingListener
 			if (thisLegName != null)
 			{
 				// right - this is a state that is part of a straight leg
-				
+
 				// ok, do we have a straight leg for this name
 				CoreLeg newLeg = findLeg(thisLegName, theLegs);
-				
+
 				// are we already in this leg?
 				if (newLeg == null)
 				{
-					// right, we're just starting a straight leg. this state also goes on the end
+					// right, we're just starting a straight leg. this state also goes on
+					// the end
 					// of the previous altering leg
-					if(currentLeg != null)
+					if (currentLeg != null)
 					{
-						if(currentLeg.getType() == LegType.ALTERING)
+						if (currentLeg.getType() == LegType.ALTERING)
 						{
 							// ok, add this state to the previous altering leg
 							currentLeg.add(thisS);
 						}
 						else
 						{
-							throw new RuntimeException("A straight leg can only follow an altering leg - some problem here");
+							throw new RuntimeException(
+									"A straight leg can only follow an altering leg - some problem here");
 						}
 					}
-					
+
 					// ok, now go for the straight leg
 					currentLeg = new StraightLeg(thisLegName,
 							new ArrayList<BoundedState>());
@@ -244,16 +273,17 @@ public class SolutionGenerator implements ISteppingListener
 					String thisName = "Alteration " + counter++;
 					currentLeg = new AlteringLeg(thisName, new ArrayList<BoundedState>());
 					theLegs.add(currentLeg);
-					
-					// but, we need to start this altering leg with the previous state, if there was one
-					if(previousState != null)
+
+					// but, we need to start this altering leg with the previous state, if
+					// there was one
+					if (previousState != null)
 						currentLeg.add(previousState);
 				}
 			}
 
 			// ok, we've got the leg - now add the state
 			currentLeg.add(thisS);
-			
+
 			// and remember it
 			previousState = thisS;
 		}
@@ -263,17 +293,17 @@ public class SolutionGenerator implements ISteppingListener
 	private CoreLeg findLeg(String thisLegName, ArrayList<CoreLeg> theLegs)
 	{
 		CoreLeg res = null;
-		
+
 		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
 			CoreLeg coreLeg = (CoreLeg) iterator.next();
-			if(coreLeg.getName().equals(thisLegName))
+			if (coreLeg.getName().equals(thisLegName))
 			{
 				res = coreLeg;
 				break;
 			}
 		}
-		
+
 		return res;
 	}
 

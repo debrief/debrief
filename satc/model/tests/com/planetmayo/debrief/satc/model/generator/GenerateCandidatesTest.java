@@ -203,6 +203,10 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertFalse("right one failed", sl1.getRoutes()[2][2].isPossible());
 		assertFalse("right one failed", sl1.getRoutes()[3][2].isPossible());
 
+		// handraulically force the other point-B (1,3) points to fail
+		sl1.getRoutes()[3][1].setImpossible();
+	//	sl1.getRoutes()[3][0].setImpossible();
+
 		// now for the second straight leg
 
 		BoundedState s4 = new BoundedState(new Date(20000));
@@ -249,7 +253,6 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// check what is achievable
 		assertEquals("got correct perms", sl2.getNumAchievable(), 8);
 
-
 		// check the right ones failed
 		assertFalse("right one failed", sl2.getRoutes()[2][2].isPossible());
 		assertFalse("right one failed", sl2.getRoutes()[3][2].isPossible());
@@ -275,16 +278,62 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		// check they're all achievable
 		assertEquals("all achievable", 12, a1.getNumAchievable());
-		
+
 		a1.calculatePerms(a1Start, a1End);
-		
+
 		// now see which are achievable
 		a1.decideAchievableRoutes();
-		
+
 		// now how have we got on?
-		assertEquals("not altering legs achievable", 4,a1.getNumAchievable());
-		StraightLegTests.util_writeMatrix("altering leg", a1.getRoutes());
+		assertEquals("not altering legs achievable", 4, a1.getNumAchievable());
+
+		// ok, put them into a legs object
+		SolutionGenerator genny = new SolutionGenerator();
+		ArrayList<CoreLeg> theLegs = new ArrayList<CoreLeg>();
+		theLegs.add(sl1);
+		theLegs.add(a1);
+		theLegs.add(sl2);
+		int[][] achievable = genny.calculateAchievableRoutesFor(theLegs);
+
+		// ok, how many start routes are there
+		assertEquals("correct num possible routes", 3, util_CountStartLocations(achievable));
+
+	//	StraightLegTests.util_writeMatrix("straight 1a", sl1.getRoutes());
+
+		// ok, check they were all cancelled.
+		assertEquals("all start relevant route location allowable", 9, sl1.getNumAchievable());
 		
+
+		// ok, now get it to tidy them
+		genny.cancelUnachievable(theLegs, achievable);
+
+//		StraightLegTests.util_writeMatrix("straight 1b", sl1.getRoutes());
+
+		// ok, check they were all cancelled.
+		assertEquals("start point routes cancelled", 8, sl1.getNumAchievable());
+		
+	//	StraightLegTests.util_writeMatrix("straight 1", sl1.getRoutes());
+//		StraightLegTests.util_writeMatrix("altering 1", a1.getRoutes());
+//		StraightLegTests.util_writeMatrix("straight 2", sl2.getRoutes());
+//		StraightLegTests.util_writeMatrix("achievable", achievable);
+
+	}
+
+	public static int util_CountStartLocations(int[][] routes)
+	{
+		int ctr = 0;
+		for (int x = 0; x < routes.length; x++)
+		{
+			for (int y = 0; y < routes[0].length; y++)
+			{
+				if (routes[x][y] > 0)
+				{
+					ctr++;
+					break;
+				}
+			}
+		}
+		return ctr;
 	}
 
 	@Test
