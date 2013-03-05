@@ -92,7 +92,7 @@ public class BoundsManager implements IBoundsManager
 	 * whether we auto=run after each contribution chagne
 	 * 
 	 */
-	private boolean _liveRunning=true;
+	private boolean _liveRunning;
 
 	
 	/**
