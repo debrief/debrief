@@ -109,20 +109,22 @@ public class BearingMeasurementContribution extends BaseContribution
 			// well, if we didn't - we do now! Apply it!
 			thisState.constrainTo(lr);
 		}
-		
+
 		// hmm, do we run the MDA?
-		if(getAutoDetect())
+		if (getAutoDetect())
 		{
 			System.err.println("Running MDA");
-			
+
 			// get a few bounded states
-			Collection<BoundedState> testStates = space.getBoundedStatesBetween(this.getStartDate(), this.getFinishDate());
+			Collection<BoundedState> testStates = space.getBoundedStatesBetween(
+					this.getStartDate(), this.getFinishDate());
 			int ctr = 0;
-			for (Iterator<BoundedState> iterator = testStates.iterator(); iterator.hasNext();)
+			for (Iterator<BoundedState> iterator = testStates.iterator(); iterator
+					.hasNext();)
 			{
-				BoundedState boundedState =  iterator.next();
+				BoundedState boundedState = iterator.next();
 				ctr++;
-				if(ctr >= 0 && ctr <= 2)
+				if (ctr >= 0 && ctr <= 2)
 				{
 					boundedState.setMemberOf("test MDA leg");
 				}
@@ -130,23 +132,21 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 	}
 
-	
-	
 	@Override
 	public double calculateErrorScoreFor(final CoreRoute route)
 	{
-		double res= super.calculateErrorScoreFor(route);
+		double res = super.calculateErrorScoreFor(route);
 		ArrayList<State> states = route.getStates();
 		Iterator<State> sIter = states.iterator();
 		State thisS = null;
-		
-		if(sIter.hasNext())
+
+		if (sIter.hasNext())
 			thisS = sIter.next();
-		
+
 		// if the list is empty, drop out
-		if(thisS == null)
+		if (thisS == null)
 			return res;
-		
+
 		// ok. work through the bearings
 		Iterator<BMeasurement> iter = _measurements.iterator();
 		while (iter.hasNext())
@@ -154,26 +154,30 @@ public class BearingMeasurementContribution extends BaseContribution
 			BearingMeasurementContribution.BMeasurement m = (BearingMeasurementContribution.BMeasurement) iter
 					.next();
 			Date time = m._time;
-		
-			while(thisS.getTime().before(time) && sIter.hasNext())
+
+			while (thisS.getTime().before(time) && sIter.hasNext())
 			{
 				thisS = sIter.next();
 			}
-			
+
 			// now find the error from this location
 			Point loc = thisS.getLocation();
-			
+
 			// what's the bearing from this origin?
 			double bearing = m._origin.bearingTo(loc);
-			
+
 			// what's the difference between that and my measurement
-			res += Math.abs(bearing - m._bearingAngle);
-			
+			double thisError = Math.abs(bearing - m._bearingAngle);
+
+			// apply the weighting factor
+			thisError *= this.getWeight();
+
+			// and accumulate it
+			res += thisError;
+
 		}
 		return res;
 	}
-
-
 
 	public void addEstimate(double lat, double lon, Date date, double brg,
 			double range)
