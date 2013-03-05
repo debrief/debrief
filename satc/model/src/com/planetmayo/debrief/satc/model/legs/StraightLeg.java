@@ -76,6 +76,91 @@ public class StraightLeg extends CoreLeg
 		}
 	}
 
+	/** work out what if the route is achievable, by scaling the locations to check that they overlap
+	 * 
+	 * @author Ian
+	 *
+	 */
+	public static class ScaledPolygons implements RouteOperator
+	{
+
+		private final ArrayList<BoundedState> _myStates;
+
+		public ScaledPolygons(ArrayList<BoundedState> states)
+		{
+			_myStates = states;
+		}
+		
+		@Override
+		public void process(StraightRoute theRoute)
+		{
+			// do we already know this isn't possible?
+			if (!theRoute.isPossible())
+				return;
+
+			// bugger, we'll have to get on with our hard sums then
+
+			// sort out the origin.
+			State startState = theRoute.getStates().get(0);
+			Coordinate startCoord = startState.getLocation().getCoordinate();
+
+			// also sort out the end state
+			State endState = theRoute.getStates().get(
+					theRoute.getStates().size() - 1);
+			Point endPt = endState.getLocation();
+
+			// remeber the start time
+			long tZero = startState.getTime().getTime();
+
+			// how long is the total run?
+			long elapsed = theRoute.getElapsedTime();
+
+			// loop through our states
+			Iterator<BoundedState> iter = _myStates.iterator();
+			while (iter.hasNext())
+			{
+				BoundedState thisB = iter.next();
+
+				LocationRange thisL = thisB.getLocation();
+				if (thisL != null)
+				{
+					// ok, what's the time difference
+					long thisDelta = thisB.getTime().getTime() - tZero;
+					
+					// convert to secs
+					long tDelta = thisDelta / 1000;
+
+					// is this our first state
+					if (tDelta > 0)
+					{
+						double scale = (1d * elapsed) / tDelta;
+
+						// ok, project the shape forwards
+						AffineTransformation st = AffineTransformation.scaleInstance(
+								scale, scale, startCoord.x, startCoord.y);
+
+						// ok, apply the transform to the location
+						Geometry originalGeom = thisL.getGeometry();
+						Geometry newGeom = st.transform(originalGeom);
+
+						// see if the end point is in the new geometry
+						if(endPt.within(newGeom))
+						{
+							// cool, this route works
+						}
+						else
+						{
+							// bugger, can't do this one
+							theRoute.setImpossible();
+							break;
+						}
+					}
+				}
+			}
+		}
+
+	}
+	
 	/**
 	 * use a simple speed/time decision to decide if it's possible to navigate a
 	 * route
@@ -100,71 +185,7 @@ public class StraightLeg extends CoreLeg
 			}
 		};
 
-		StraightLeg.RouteOperator scaledPolygons = new RouteOperator()
-		{
-
-			@Override
-			public void process(StraightRoute theRoute)
-			{
-				// do we already know this isn't possible?
-				if (!theRoute.isPossible())
-					return;
-
-				// bugger, we'll have to get on with our hard sums then
-
-				// sort out the origin.
-				State startState = theRoute.getStates().get(0);
-				Coordinate startCoord = startState.getLocation().getCoordinate();
-
-				// also sort out the end state
-				State endState = theRoute.getStates().get(
-						theRoute.getStates().size() - 1);
-				Point endPt = endState.getLocation();
-
-				// remeber the start time
-				long tZero = startState.getTime().getTime();
-
-				// how long is the total run?
-				long elapsed = theRoute.getElapsedTime();
-
-				// loop through our states
-				Iterator<BoundedState> iter = _states.iterator();
-				while (iter.hasNext())
-				{
-					BoundedState thisB = iter.next();
-
-					LocationRange thisL = thisB.getLocation();
-					if (thisL != null)
-					{
-						// ok, what's the time difference
-						long tDelta = (thisB.getTime().getTime() - tZero) / 1000;
-
-						// is this our first state
-						if (tDelta > 0)
-						{
-							double scale = (1d * elapsed) / tDelta;
-
-							// ok, project the shape forwards
-							AffineTransformation st = AffineTransformation.scaleInstance(
-									scale, scale, startCoord.x, startCoord.y);
-
-							// ok, apply the transform to the location
-							Geometry newGeom = st.transform(thisL.getGeometry());
-
-							// see if the end point is in the new geometry
-							if (newGeom.disjoint(endPt))
-							{
-								theRoute.setImpossible();
-								break;
-							}
-
-						}
-
-					}
-				}
-			}
-
-		};
+		StraightLeg.RouteOperator scaledPolygons = new ScaledPolygons(_states);
 
 		applyToRoutes(speed);
 		applyToRoutes(scaledPolygons);
