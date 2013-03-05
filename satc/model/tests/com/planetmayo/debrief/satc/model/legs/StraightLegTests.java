@@ -314,7 +314,7 @@ public class StraightLegTests extends ModelTestBase
 	}
 
 	@SuppressWarnings("unused")
-	private static void util_writeMatrix(String name, CoreRoute[][] routes)
+	public static void util_writeMatrix(String name, CoreRoute[][] routes)
 	{
 		System.out.println("== " + name + " ==");
 		for (int x = 0; x < routes.length; x++)
