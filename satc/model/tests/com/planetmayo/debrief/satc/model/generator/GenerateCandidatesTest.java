@@ -149,7 +149,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 	public void testMultiLegAchievable() throws ParseException
 	{
 		WKTReader reader = new WKTReader();
-		SpeedRange sr = new SpeedRange(0, 1000000);
+		SpeedRange sr = new SpeedRange(0, 65000);
 
 		BoundedState s0 = new BoundedState(new Date(5000));
 		Geometry geom = reader.read("		POLYGON ((1 1, 2 1, 2 3, 1 3, 1 1 ))");
@@ -205,17 +205,17 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		// now for the second straight leg
 
-		BoundedState s4 = new BoundedState(new Date(25000));
+		BoundedState s4 = new BoundedState(new Date(20000));
 		geom = reader.read("		POLYGON ((8 2, 9 2, 9 4, 8 4, 8 2))");
 		s4.setLocation(new LocationRange(geom));
 		s4.setSpeed(sr);
 
-		BoundedState s5 = new BoundedState(new Date(30000));
+		BoundedState s5 = new BoundedState(new Date(25000));
 		geom = reader.read("	POLYGON ((10 0.5, 11 0.5, 11 1.5, 10 1.5, 10 0.5))");
 		s5.setLocation(new LocationRange(geom));
 		s5.setSpeed(sr);
 
-		BoundedState s6 = new BoundedState(new Date(35000));
+		BoundedState s6 = new BoundedState(new Date(30000));
 		geom = reader.read("		POLYGON ((12 0, 13  0, 13 1, 12 1, 12 0))");
 		s6.setLocation(new LocationRange(geom));
 		s6.setSpeed(sr);
@@ -249,7 +249,6 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// check what is achievable
 		assertEquals("got correct perms", sl2.getNumAchievable(), 8);
 
-		StraightLegTests.util_writeMatrix("leg 2", sl2.getRoutes());
 
 		// check the right ones failed
 		assertFalse("right one failed", sl2.getRoutes()[2][2].isPossible());
@@ -258,7 +257,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		// now for the altering leg
 		ArrayList<BoundedState> a1States = new ArrayList<BoundedState>();
 		a1States.add(s2);
-		a1States.add(new BoundedState(new Date(20000)));
+		a1States.add(new BoundedState(new Date(17000)));
 		a1States.add(s4);
 		AlteringLeg a1 = new AlteringLeg("al1", a1States);
 
@@ -272,7 +271,20 @@ public class GenerateCandidatesTest extends ModelTestBase
 		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(9, 2)));
 		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(9, 4)));
 		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(8, 3)));
+		a1.calculatePerms(a1Start, a1End);
 
+		// check they're all achievable
+		assertEquals("all achievable", 12, a1.getNumAchievable());
+		
+		a1.calculatePerms(a1Start, a1End);
+		
+		// now see which are achievable
+		a1.decideAchievableRoutes();
+		
+		// now how have we got on?
+		assertEquals("not altering legs achievable", 4,a1.getNumAchievable());
+		StraightLegTests.util_writeMatrix("altering leg", a1.getRoutes());
+		
 	}
 
 	@Test
