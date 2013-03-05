@@ -35,10 +35,8 @@ import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -123,13 +121,13 @@ public class GenerateCandidatesTest extends ModelTestBase
 		}
 	}
 
-	private void writeThisLeg(CoreLeg leg)
-	{
-		Date first = leg.getFirst().getTime();
-		Date last = leg.getLast().getTime();
-		System.out.println("type:" + leg.getType() + " first:" + first + " last:"
-				+ last);
-	}
+//	private void writeThisLeg(CoreLeg leg)
+//	{
+//		Date first = leg.getFirst().getTime();
+//		Date last = leg.getLast().getTime();
+//		System.out.println("type:" + leg.getType() + " first:" + first + " last:"
+//				+ last);
+//	}
 
 	@Test
 	public void testJTSWithin() throws ParseException

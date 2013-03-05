@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
-import com.planetmayo.debrief.satc.model.legs.StraightLegTests;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -40,7 +40,7 @@ public class SolutionGenerator implements ISteppingListener
 	}
 
 	@Override
-	public void complete(IBoundsManager boundsManager)
+	public void complete(final IBoundsManager boundsManager)
 	{
 		// ok - it's complete. now we can process it
 		ProblemSpace space = boundsManager.getSpace();
@@ -61,17 +61,7 @@ public class SolutionGenerator implements ISteppingListener
 		cancelUnachievable(theLegs, achievableRes);
 
 		// score the possible routes
-		operateOn(theLegs, new LegOperation()
-		{
-			public void apply(CoreLeg thisLeg)
-			{
-				if (thisLeg.getType() == LegType.STRAIGHT)
-				{
-					StraightLeg leg = (StraightLeg) thisLeg;
-					leg.calculateOptimum();
-				}
-			}
-		});
+		calculateOptimalRoutes(boundsManager.getContributions(), theLegs);
 
 		// generate some candidate solutions
 		CompositeRoute[] routes = generateCandidates(theLegs);
@@ -81,6 +71,27 @@ public class SolutionGenerator implements ISteppingListener
 		{
 			listener.solutionsReady(routes);
 		}
+	}
+
+	/** for the set of generated routes, work out which have the highest score
+	 * 
+	 * @param boundsManager the c
+	 * @param theLegs
+	 */
+	public void calculateOptimalRoutes(final Collection<BaseContribution> contribs,
+			ArrayList<CoreLeg> theLegs)
+	{
+		operateOn(theLegs, new LegOperation()
+		{
+			public void apply(CoreLeg thisLeg)
+			{
+				if (thisLeg.getType() == LegType.STRAIGHT)
+				{
+					StraightLeg leg = (StraightLeg) thisLeg;
+					leg.calculateOptimum(contribs);
+				}
+			}
+		});
 	}
 
 	public void generateRoutes(ArrayList<CoreLeg> theLegs)
@@ -94,6 +105,10 @@ public class SolutionGenerator implements ISteppingListener
 		});
 	}
 
+	/** get the legs to decide on their achievable routes
+	 * 
+	 * @param theLegs
+	 */
 	public void decideAchievable(ArrayList<CoreLeg> theLegs)
 	{
 		operateOn(theLegs, new LegOperation()
@@ -197,6 +212,7 @@ public class SolutionGenerator implements ISteppingListener
 	 * @param space
 	 * @return
 	 */
+	@SuppressWarnings("null")
 	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 

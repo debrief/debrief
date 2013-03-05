@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -126,6 +127,20 @@ public class BearingMeasurementContribution extends BaseContribution
 			}
 		}
 	}
+
+	
+	
+	@Override
+	public double calculateErrorScoreFor(final CoreRoute route)
+	{
+		double res= super.calculateErrorScoreFor(route);
+		
+		// TODO: work out our own error function
+		
+		return res;
+	}
+
+
 
 	public void addEstimate(double lat, double lon, Date date, double brg,
 			double range)

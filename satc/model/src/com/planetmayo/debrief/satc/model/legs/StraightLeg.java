@@ -1,8 +1,10 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
@@ -254,10 +256,25 @@ public class StraightLeg extends CoreLeg
 	 * score(s)
 	 * 
 	 */
-	public void calculateOptimum()
+	public void calculateOptimum(final Collection<BaseContribution> contribs)
 	{
-		// TODO Go through the permutations, calculate the best result(s);
-
+		RouteOperator calcError = new RouteOperator()
+		{
+			@Override
+			public void process(StraightRoute theRoute)
+			{
+				Double thisScore = 0d;
+				
+				// loop through the contribs
+				Iterator<BaseContribution> iter = contribs.iterator();
+				while (iter.hasNext())
+				{
+					BaseContribution thisC = (BaseContribution) iter.next();
+					thisScore += thisC.calculateErrorScoreFor(theRoute);
+				}
+			}
+		};
+		applyToRoutes(calcError);
 	}
 
 	@Override
