@@ -15,8 +15,6 @@ import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg.RouteOperator;
-import com.planetmayo.debrief.satc.model.legs.StraightRoute;
-import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -313,7 +311,6 @@ public class StraightLegTests extends ModelTestBase
 		s1.applyToRoutes(writeimPossible);
 	}
 
-	@SuppressWarnings("unused")
 	public static void util_writeMatrix(String name, CoreRoute[][] routes)
 	{
 		System.out.println("== " + name + " ==");

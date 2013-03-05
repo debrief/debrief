@@ -7,7 +7,6 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -36,50 +35,25 @@ public class StraightLeg extends CoreLeg
 
 
 	@Override
-	public void generateRoutes(int gridNum)
+	protected void createAndStoreLeg(ArrayList<Point> startP,
+			ArrayList<Point> endP, int i, int j, String thisName)
 	{
-		// produce the grid of cells
-		LocationRange firstLoc = getFirst().getLocation();
-		LocationRange lastLoc = getLast().getLocation();
+		StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
+				getFirst().getTime(), endP.get(j), getLast().getTime());
 
-		if((firstLoc == null) || (lastLoc == null))
-			throw new IllegalArgumentException("The end states must have location bounds");
-		
-		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc
-				.getGeometry(), gridNum, 6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc
-				.getGeometry(), gridNum, 6);
+		// tell the route to decimate itself
+		newRoute.generateSegments(_states);
 
-		// ok, now generate the array of routes
-		_startLen = startP.size();
-		_endLen = endP.size();
-
-		// ok, create the array
-		myRoutes = new StraightRoute[_startLen][_endLen];
-
-		// now populate it
-		int ctr = 1;
-		for (int i = 0; i < _startLen; i++)
-		{
-			for (int j = 0; j < _endLen; j++)
-			{
-				String thisName = _name + "_" + ctr++;
-				StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
-						getFirst().getTime(), endP.get(j), getLast().getTime());
-
-				// tell the route to decimate itself
-				newRoute.generateSegments(_states);
-
-				// and store the route
-				myRoutes[i][j] = newRoute;
-			}
-		}
+		// and store the route
+		myRoutes[i][j] = newRoute;
 	}
 
-	/** work out what if the route is achievable, by scaling the locations to check that they overlap
+	/**
+	 * work out what if the route is achievable, by scaling the locations to check
+	 * that they overlap
 	 * 
 	 * @author Ian
-	 *
+	 * 
 	 */
 	public static class ScaledPolygons implements RouteOperator
 	{
@@ -90,7 +64,7 @@ public class StraightLeg extends CoreLeg
 		{
 			_myStates = states;
 		}
-		
+
 		@Override
 		public void process(StraightRoute theRoute)
 		{
@@ -105,8 +79,8 @@ public class StraightLeg extends CoreLeg
 			Coordinate startCoord = startState.getLocation().getCoordinate();
 
 			// also sort out the end state
-			State endState = theRoute.getStates().get(
-					theRoute.getStates().size() - 1);
+			State endState = theRoute.getStates()
+					.get(theRoute.getStates().size() - 1);
 			Point endPt = endState.getLocation();
 
 			// remeber the start time
@@ -126,7 +100,7 @@ public class StraightLeg extends CoreLeg
 				{
 					// ok, what's the time difference
 					long thisDelta = thisB.getTime().getTime() - tZero;
-					
+
 					// convert to secs
 					long tDelta = thisDelta / 1000;
 
@@ -136,15 +110,15 @@ public class StraightLeg extends CoreLeg
 						double scale = (1d * elapsed) / tDelta;
 
 						// ok, project the shape forwards
-						AffineTransformation st = AffineTransformation.scaleInstance(
-								scale, scale, startCoord.x, startCoord.y);
+						AffineTransformation st = AffineTransformation.scaleInstance(scale,
+								scale, startCoord.x, startCoord.y);
 
 						// ok, apply the transform to the location
 						Geometry originalGeom = thisL.getGeometry();
 						Geometry newGeom = st.transform(originalGeom);
 
 						// see if the end point is in the new geometry
-						if(endPt.within(newGeom))
+						if (endPt.coveredBy(newGeom))
 						{
 							// cool, this route works
 						}
@@ -160,7 +134,7 @@ public class StraightLeg extends CoreLeg
 		}
 
 	}
-	
+
 	/**
 	 * use a simple speed/time decision to decide if it's possible to navigate a
 	 * route
@@ -178,7 +152,11 @@ public class StraightLeg extends CoreLeg
 				double speed = distance / elapsed;
 
 				SpeedRange speedR = _states.get(0).getSpeed();
-				if (!speedR.allows(speed))
+				if (speedR == null)
+				{
+					// hey, we can't calculate it then
+				}
+				else if (!speedR.allows(speed))
 				{
 					theRoute.setImpossible();
 				}
@@ -242,8 +220,6 @@ public class StraightLeg extends CoreLeg
 		return myRoutes;
 	}
 
-
-
 	/**
 	 * utility class to count how many routes are possible
 	 * 
@@ -273,13 +249,22 @@ public class StraightLeg extends CoreLeg
 		return LegType.STRAIGHT;
 	}
 
-	/** run through all the route permutation, and find the one with the highest score(s)
+	/**
+	 * run through all the route permutation, and find the one with the highest
+	 * score(s)
 	 * 
 	 */
 	public void calculateOptimum()
 	{
 		// TODO Go through the permutations, calculate the best result(s);
-		
+
+	}
+
+	@Override
+	protected void createRouteStructure(int startLen, int endLen)
+	{ 
+		// ok, create the array
+		myRoutes = new StraightRoute[_startLen][_endLen];
 	}
 
 }

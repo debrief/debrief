@@ -21,6 +21,7 @@ import com.planetmayo.debrief.satc.model.contributions.CourseForecastContributio
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.SolutionGenerator.ISolutionsReadyListener;
+import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
@@ -30,9 +31,14 @@ import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -57,13 +63,12 @@ public class GenerateCandidatesTest extends ModelTestBase
 		bearingMeasurementContribution.setAutoDetect(false);
 		boundsManager.addContribution(bearingMeasurementContribution);
 
-		// courseForecastContribution = new CourseForecastContribution();
-		// courseForecastContribution.setStartDate(new Date(110, 0, 12, 12, 15, 0));
-		// courseForecastContribution.setFinishDate(new Date(110, 0, 12, 12, 20,
-		// 0));
-		// courseForecastContribution.setMinCourse(Math.toRadians(110d));
-		// courseForecastContribution.setMaxCourse(Math.toRadians(300d));
-		// boundsManager.addContribution(courseForecastContribution);
+		courseForecastContribution = new CourseForecastContribution();
+		courseForecastContribution.setStartDate(new Date(110, 0, 12, 12, 15, 0));
+		courseForecastContribution.setFinishDate(new Date(110, 0, 12, 12, 20, 0));
+		courseForecastContribution.setMinCourse(Math.toRadians(110d));
+		courseForecastContribution.setMaxCourse(Math.toRadians(300d));
+		boundsManager.addContribution(courseForecastContribution);
 
 		StraightLegForecastContribution sl = new StraightLegForecastContribution();
 		sl.setStartDate(new Date(110, 0, 12, 12, 15, 0));
@@ -141,6 +146,136 @@ public class GenerateCandidatesTest extends ModelTestBase
 	}
 
 	@Test
+	public void testMultiLegAchievable() throws ParseException
+	{
+		WKTReader reader = new WKTReader();
+		SpeedRange sr = new SpeedRange(0, 1000000);
+
+		BoundedState s0 = new BoundedState(new Date(5000));
+		Geometry geom = reader.read("		POLYGON ((1 1, 2 1, 2 3, 1 3, 1 1 ))");
+		s0.setLocation(new LocationRange(geom));
+		s0.setSpeed(sr);
+
+		BoundedState s1 = new BoundedState(new Date(10000));
+		geom = reader.read("	POLYGON ((3 1, 4 1, 4 2, 3 2, 3 1))");
+		s1.setLocation(new LocationRange(geom));
+		s1.setSpeed(sr);
+
+		BoundedState s2 = new BoundedState(new Date(15000));
+		geom = reader.read("		POLYGON ((5 1, 6 1, 6 3, 5 3, 5 1))");
+		s2.setLocation(new LocationRange(geom));
+		s2.setSpeed(sr);
+
+		// check it got read int
+		assertNotNull("got read in", geom);
+
+		ArrayList<BoundedState> l1States = new ArrayList<BoundedState>();
+		l1States.add(s0);
+		l1States.add(s1);
+		l1States.add(s2);
+
+		// create the straight leg, sl1
+		StraightLeg sl1 = new StraightLeg("sl1", l1States);
+		// here is straight leg one: http://i.imgur.com/sA1kMFK.png
+
+		ArrayList<Point> s1start = new ArrayList<Point>();
+		s1start.add(GeoSupport.getFactory().createPoint(new Coordinate(1, 1)));
+		s1start.add(GeoSupport.getFactory().createPoint(new Coordinate(2, 1)));
+		s1start.add(GeoSupport.getFactory().createPoint(new Coordinate(2, 3)));
+		s1start.add(GeoSupport.getFactory().createPoint(new Coordinate(1, 3)));
+
+		ArrayList<Point> s1end = new ArrayList<Point>();
+		s1end.add(GeoSupport.getFactory().createPoint(new Coordinate(5, 1)));
+		s1end.add(GeoSupport.getFactory().createPoint(new Coordinate(6, 1)));
+		s1end.add(GeoSupport.getFactory().createPoint(new Coordinate(6, 3)));
+		sl1.calculatePerms(s1start, s1end);
+
+		// check they're created
+		assertEquals("got correct perms", sl1.getNumAchievable(), 12);
+
+		// let them sort out what's achievable
+		sl1.decideAchievableRoutes();
+
+		// check they're created
+		assertEquals("got correct perms", sl1.getNumAchievable(), 10);
+
+		// check the right ones failed
+		assertFalse("right one failed", sl1.getRoutes()[2][2].isPossible());
+		assertFalse("right one failed", sl1.getRoutes()[3][2].isPossible());
+
+		// now for the second straight leg
+
+		BoundedState s4 = new BoundedState(new Date(25000));
+		geom = reader.read("		POLYGON ((8 2, 9 2, 9 4, 8 4, 8 2))");
+		s4.setLocation(new LocationRange(geom));
+		s4.setSpeed(sr);
+
+		BoundedState s5 = new BoundedState(new Date(30000));
+		geom = reader.read("	POLYGON ((10 0.5, 11 0.5, 11 1.5, 10 1.5, 10 0.5))");
+		s5.setLocation(new LocationRange(geom));
+		s5.setSpeed(sr);
+
+		BoundedState s6 = new BoundedState(new Date(35000));
+		geom = reader.read("		POLYGON ((12 0, 13  0, 13 1, 12 1, 12 0))");
+		s6.setLocation(new LocationRange(geom));
+		s6.setSpeed(sr);
+
+		ArrayList<BoundedState> l2States = new ArrayList<BoundedState>();
+		l2States.add(s4);
+		l2States.add(s5);
+		l2States.add(s6);
+
+		// create the straight leg, sl1
+		StraightLeg sl2 = new StraightLeg("sl2", l2States);
+		// here is straight leg two: http://i.imgur.com/lbHZ2Tu.png
+
+		ArrayList<Point> s2start = new ArrayList<Point>();
+		s2start.add(GeoSupport.getFactory().createPoint(new Coordinate(8, 2)));
+		s2start.add(GeoSupport.getFactory().createPoint(new Coordinate(9, 2)));
+		s2start.add(GeoSupport.getFactory().createPoint(new Coordinate(9, 4)));
+		s2start.add(GeoSupport.getFactory().createPoint(new Coordinate(8, 3)));
+
+		ArrayList<Point> s2end = new ArrayList<Point>();
+		s2end.add(GeoSupport.getFactory().createPoint(new Coordinate(12, 0)));
+		s2end.add(GeoSupport.getFactory().createPoint(new Coordinate(13, 0)));
+		s2end.add(GeoSupport.getFactory().createPoint(new Coordinate(13, 1)));
+		sl2.calculatePerms(s2start, s2end);
+
+		// check they're created
+		assertEquals("got correct perms", sl2.getNumAchievable(), 12);
+
+		sl2.decideAchievableRoutes();
+
+		// check what is achievable
+		assertEquals("got correct perms", sl2.getNumAchievable(), 8);
+
+		StraightLegTests.util_writeMatrix("leg 2", sl2.getRoutes());
+
+		// check the right ones failed
+		assertFalse("right one failed", sl2.getRoutes()[2][2].isPossible());
+		assertFalse("right one failed", sl2.getRoutes()[3][2].isPossible());
+
+		// now for the altering leg
+		ArrayList<BoundedState> a1States = new ArrayList<BoundedState>();
+		a1States.add(s2);
+		a1States.add(new BoundedState(new Date(20000)));
+		a1States.add(s4);
+		AlteringLeg a1 = new AlteringLeg("al1", a1States);
+
+		ArrayList<Point> a1Start = new ArrayList<Point>();
+		a1Start.add(GeoSupport.getFactory().createPoint(new Coordinate(5, 1)));
+		a1Start.add(GeoSupport.getFactory().createPoint(new Coordinate(6, 1)));
+		a1Start.add(GeoSupport.getFactory().createPoint(new Coordinate(6, 3)));
+
+		ArrayList<Point> a1End = new ArrayList<Point>();
+		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(8, 2)));
+		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(9, 2)));
+		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(9, 4)));
+		a1End.add(GeoSupport.getFactory().createPoint(new Coordinate(8, 3)));
+
+	}
+
+	@Test
 	public void testScaledPolygons() throws ParseException
 	{
 		WKTReader reader = new WKTReader();
@@ -164,7 +299,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		theStates.add(s0);
 		theStates.add(s1);
 		theStates.add(s2);
-		boundsManager.run();
+		// boundsManager.run();
 
 		// ok, now produce a route through the legs
 		StraightRoute sr = new StraightRoute("sr",
@@ -181,8 +316,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertTrue("can do it", sr.isPossible());
 
 		// try another route
-		sr = new StraightRoute("sr", (Point) reader.read("POINT (2.5 1.5)"),
-				new Date(5000), (Point) reader.read("POINT (5.5 1.5)"), new Date(15000));
+		sr = createRoute("sr", 1.5, 2.5, 5.5, 2.5, 5000, 15000, theStates);
 		sr.generateSegments(theStates);
 
 		sp.process(sr);
@@ -191,9 +325,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertFalse("can't do it", sr.isPossible());
 
 		// try another route
-		sr = new StraightRoute("sr", (Point) reader.read("POINT (1.5 1.5)"),
-				new Date(5000), (Point) reader.read("POINT (5.5 2.5)"), new Date(15000));
-		sr.generateSegments(theStates);
+		sr = createRoute("sr", 1.5, 2.0, 5.5, 2.5, 5000, 15000, theStates);
 
 		sp.process(sr);
 
@@ -201,14 +333,26 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertFalse("can't do it", sr.isPossible());
 
 		// try another route
-		sr = new StraightRoute("sr", (Point) reader.read("POINT (1.5 2.4)"),
-				new Date(5000), (Point) reader.read("POINT (5.5 1.5)"), new Date(15000));
-		sr.generateSegments(theStates);
+		sr = createRoute("sr", 1.5, 2.4, 5.5, 1.5, 5000, 15000, theStates);
 
 		sp.process(sr);
 
 		// check it's not achievable
 		assertTrue("can do it", sr.isPossible());
+
+	}
+
+	private static StraightRoute createRoute(String name, double x0, double y0,
+			double x1, double y1, long t0, long t1, ArrayList<BoundedState> theStates)
+	{
+		Point p0 = GeoSupport.getFactory().createPoint(new Coordinate(x0, y0));
+		Point p1 = GeoSupport.getFactory().createPoint(new Coordinate(x1, y1));
+
+		StraightRoute sr = new StraightRoute(name, p0, new Date(t0), p1, new Date(
+				t1));
+		sr.generateSegments(theStates);
+
+		return sr;
 
 	}
 
@@ -218,9 +362,20 @@ public class GenerateCandidatesTest extends ModelTestBase
 		final long perms = 100000;
 		long tNow;
 		WKTReader reader = new WKTReader();
-		
+
 		boolean running = true;
 
+		// first, check our understanding of the covers method
+		Geometry geomA = reader
+				.read("		POLYGON ((0 0.5, 6.5 0.5, 6.5 2.5, 0 2.5, 0 0.5))");
+		Geometry ptA = reader.read("	POINT (0.1 0.5)");
+		assertTrue("is contained", geomA.covers(ptA));
+
+		geomA = reader.read("		POLYGON ((0 0.5, 6.5 0.5, 6.5 2.5, 0 2.5, 0 0.5))");
+		ptA = reader.read("	POINT (0.09 0.49)");
+		assertFalse("is contained", geomA.covers(ptA));
+
+		// ok, now carry on;
 		Geometry geom = reader
 				.read("		POLYGON ((0 0.5, 6.5 0.5, 6.5 2.5, 0 2.5, 0 0.5))");
 		Geometry pt1 = reader.read("	POINT (5.5 1.5)");

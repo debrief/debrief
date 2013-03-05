@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
-import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Point;
 
 public class AlteringLeg extends CoreLeg
@@ -29,38 +28,30 @@ public class AlteringLeg extends CoreLeg
 
 	}
 
-	@Override
-	public void generateRoutes(int gridNum)
-	{
-		// TODO: generate the routes through the leg?
-		// produce the grid of cells
-		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
-				.getGeometry(), gridNum, 6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
-				.getGeometry(), gridNum, 6);
-
-		// ok, now generate the array of routes
-		_startLen = startP.size();
-		_endLen = endP.size();
-
-		// ok, create the array
-		myRoutes = new AlteringRoute[_startLen][_endLen];
-
-		// now populate it
-		int ctr = 1;
-		for (int i = 0; i < _startLen; i++)
-		{
-			for (int j = 0; j < _endLen; j++)
-			{
-				String thisName = _name + "_" + ctr++;
-				AlteringRoute newRoute = new AlteringRoute(thisName, startP.get(i),
-						getFirst().getTime(), endP.get(j), getLast().getTime());
-
-				// and store the route
-				myRoutes[i][j] = newRoute;
-			}
-		}
-	}
+//	@Override
+//	public void generateRoutes(int gridNum)
+//	{
+//		// TODO: generate the routes through the leg?
+//		// produce the grid of cells
+//		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
+//				.getGeometry(), gridNum, 6);
+//		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
+//				.getGeometry(), gridNum, 6);
+//
+//		// ok, now generate the array of routes
+//		_startLen = startP.size();
+//		_endLen = endP.size();
+//
+//		// now populate it
+//		int ctr = 1;
+//		for (int i = 0; i < _startLen; i++)
+//		{
+//			for (int j = 0; j < _endLen; j++)
+//			{
+//				String thisName = _name + "_" + ctr++;
+//			}
+//		}
+//	}
 
 	/**
 	 * use a simple speed/time decision to decide if it's possible to navigate a
@@ -76,8 +67,9 @@ public class AlteringLeg extends CoreLeg
 
 	static class PointAchievable implements RouteOperator
 	{
-	
+
 		private final SpeedRange _speedR;
+
 		public PointAchievable(SpeedRange theSpeed)
 		{
 			_speedR = theSpeed;
@@ -86,7 +78,7 @@ public class AlteringLeg extends CoreLeg
 		@Override
 		public void process(AlteringRoute theRoute)
 		{
-			double distance =theRoute.getDirectDistance(); 
+			double distance = theRoute.getDirectDistance();
 			double elapsed = theRoute.getElapsedTime();
 			double speed = distance / elapsed;
 
@@ -96,7 +88,7 @@ public class AlteringLeg extends CoreLeg
 			}
 		}
 	}
-	
+
 	/**
 	 * apply the operator to all my routes
 	 * 
@@ -114,8 +106,8 @@ public class AlteringLeg extends CoreLeg
 		}
 	}
 
-	/**s
-	 * find out how many achievable routes there are through the area
+	/**
+	 * s find out how many achievable routes there are through the area
 	 * 
 	 * @return how many
 	 */
@@ -179,13 +171,34 @@ public class AlteringLeg extends CoreLeg
 		return LegType.ALTERING;
 	}
 
-	/** run through all the route permutation, and find the one with the highest score(s)
+	/**
+	 * run through all the route permutation, and find the one with the highest
+	 * score(s)
 	 * 
 	 */
 	public void calculateOptimum()
 	{
 		// TODO calculate an optimal solution through this manoeuvre
-		
+
+	}
+
+	@Override
+	protected void createRouteStructure(int startLen, int endLen)
+	{
+		// ok, create the array
+		myRoutes = new AlteringRoute[startLen][endLen];
+	}
+
+	@Override
+	protected void createAndStoreLeg(ArrayList<Point> startP,
+			ArrayList<Point> endP, int i, int j, String thisName)
+	{
+		// create the appropriate route
+		AlteringRoute newRoute = new AlteringRoute(thisName, startP.get(i),
+				getFirst().getTime(), endP.get(j), getLast().getTime());
+
+		// and store the route
+		myRoutes[i][j] = newRoute;
 	}
 
 }

@@ -3,6 +3,9 @@ package com.planetmayo.debrief.satc.model.legs;
 import java.util.ArrayList;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.util.MakeGrid;
+import com.vividsolutions.jts.geom.Point;
 
 public abstract class CoreLeg
 {
@@ -63,12 +66,6 @@ public abstract class CoreLeg
 			}
 		return res;
 	}
-
-	// /**
-	// * the route permutations through the leg. This array will always be
-	// * rectangular
-	// */
-	// protected CoreRoute[][] myRoutes;
 
 	/**
 	 * how many points there are in the start polygon
@@ -132,19 +129,60 @@ public abstract class CoreLeg
 	}
 	
 	/**
+	 * produce the set of constituent routes for this leg
+	 * 
+	 * @param gridNum
+	 *          how many grid cells to dissect the area into
+	 */
+	public void generateRoutes(int gridNum)
+	{
+		// produce the grid of cells
+		LocationRange firstLoc = getFirst().getLocation();
+		LocationRange lastLoc = getLast().getLocation();
+
+		if ((firstLoc == null) || (lastLoc == null))
+			throw new IllegalArgumentException(
+					"The end states must have location bounds");
+
+		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc.getGeometry(), gridNum,
+				6);
+		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), gridNum, 6);
+
+		// now calculate the routes through these points
+		calculatePerms(startP, endP);
+	}
+
+
+	public void calculatePerms(ArrayList<Point> startP, ArrayList<Point> endP)
+	{
+		// ok, now generate the array of routes
+		_startLen = startP.size();
+		_endLen = endP.size();
+
+		// create the target results object
+		createRouteStructure(_startLen, _endLen);
+		
+		// now populate it
+		int ctr = 1;
+		for (int i = 0; i < _startLen; i++)
+		{
+			for (int j = 0; j < _endLen; j++)
+			{
+				String thisName = _name + "_" + ctr++;
+				createAndStoreLeg(startP, endP, i, j, thisName);
+			}
+		}
+	}
+	
+	abstract protected void createRouteStructure(int startLen, int endLen);
+
+	/**
 	 * find out if this is straight or altering
 	 * 
 	 * @return
 	 */
 	abstract public LegType getType();
 
-	/**
-	 * produce the set of constituent routes for this leg
-	 * 
-	 * @param gridNum
-	 *          how many grid cells to dissect the area into
-	 */
-	abstract public void generateRoutes(int gridNum);
 
 	/**
 	 * determine which legs are achievable
@@ -153,5 +191,16 @@ public abstract class CoreLeg
 	abstract public void decideAchievableRoutes();
 
 	abstract public CoreRoute[][] getRoutes();
+
+	/** create a leg of the correct type between these points, and store it
+	 * 
+	 * @param startP
+	 * @param endP
+	 * @param i
+	 * @param j
+	 * @param thisName
+	 */
+	abstract protected void createAndStoreLeg(ArrayList<Point> startP,
+			ArrayList<Point> endP, int i, int j, String thisName);
 
 }
