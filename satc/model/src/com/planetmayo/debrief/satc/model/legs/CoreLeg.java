@@ -126,6 +126,11 @@ public abstract class CoreLeg
 		return _name;
 	}
 	
+	final public ArrayList<BoundedState> getStates()
+	{
+		return _states;
+	}
+	
 	/**
 	 * find out if this is straight or altering
 	 * 

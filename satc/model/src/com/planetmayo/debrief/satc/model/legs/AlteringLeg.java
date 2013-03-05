@@ -108,7 +108,8 @@ public class AlteringLeg extends CoreLeg
 		{
 			for (int j = 0; j < _endLen; j++)
 			{
-				operator.process(myRoutes[i][j]);
+				AlteringRoute thisR = myRoutes[i][j];
+				operator.process(thisR);
 			}
 		}
 	}
