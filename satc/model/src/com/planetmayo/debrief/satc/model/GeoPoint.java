@@ -62,4 +62,11 @@ public class GeoPoint extends ModelObject
 				+ (_lon < 0 ? "W" : "E");
 		return latitudeStr + " " + longitudeStr;
 	}
+
+	public double bearingTo(Point loc)
+	{
+		double deltaX = loc.getX() - _lon;
+		double deltaY = loc.getY() - _lat;
+		return Math.PI/2 - Math.atan2(deltaY, deltaX);
+	}
 }
