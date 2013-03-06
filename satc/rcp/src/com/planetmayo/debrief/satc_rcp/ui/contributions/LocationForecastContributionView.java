@@ -3,9 +3,10 @@ package com.planetmayo.debrief.satc_rcp.ui.contributions;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.nebula.widgets.formattedtext.DoubleFormatter;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.GeoPointFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -20,11 +21,13 @@ import org.eclipse.swt.widgets.Scale;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
-public class LocationForecastContributionView extends BaseContributionView<LocationForecastContribution>
+public class LocationForecastContributionView extends
+		BaseContributionView<LocationForecastContribution>
 {
 	private static final int MAX_RANGE = 20000;
 	private Label limitLabel;
@@ -32,6 +35,29 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 	private Scale limitSlider;
 	private FormattedText latitude;
 	private FormattedText longitude;
+	private IConverter geoConverter = new IConverter()
+	{
+
+		@Override
+		public Object getToType()
+		{
+			return String.class;
+		}
+
+		@Override
+		public Object getFromType()
+		{
+			return GeoPoint.class;
+		}
+
+		@Override
+		public Object convert(Object arg0)
+		{
+			if (arg0 instanceof GeoPoint)
+				return GeoSupport.formatGeoPoint((GeoPoint) arg0);
+			return arg0.toString();
+		}
+	};
 
 	public LocationForecastContributionView(Composite parent,
 			LocationForecastContribution contribution)
@@ -49,7 +75,7 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 				LocationForecastContribution.LIMIT);
 		IObservableValue locationValue = BeansObservables.observeValue(contribution, 
 				LocationForecastContribution.LOCATION);
-		bindCommonHeaderWidgets(context, limitValue, locationValue, null, labelsConverter);
+		bindCommonHeaderWidgets(context, limitValue, locationValue, geoConverter , labelsConverter);
 		bindCommonDates(context);
 
 		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, 
@@ -92,17 +118,20 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 	@Override
 	protected void createLimitAndEstimateSliders()
 	{
-		UIUtils.createLabel(bodyGroup, "Range:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Range:", new GridData(
+				GridData.HORIZONTAL_ALIGN_FILL));
 		Composite composite = new Composite(bodyGroup, SWT.NONE);
 		composite.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		limitActiveButton = new Button(composite, SWT.CHECK);		
-		limitLabel = UIUtils.createSpacer(composite, new GridData(GridData.FILL_HORIZONTAL));
+		limitActiveButton = new Button(composite, SWT.CHECK);
+		limitLabel = UIUtils.createSpacer(composite, new GridData(
+				GridData.FILL_HORIZONTAL));
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		limitSlider.setMaximum(MAX_RANGE);
 
-		UIUtils.createLabel(bodyGroup, "Location", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Location", new GridData(
+				GridData.HORIZONTAL_ALIGN_FILL));
 		GridLayout estimateLayout = new GridLayout(1, false);
 		estimateLayout.horizontalSpacing = 15;
 		Composite estimateComposite = UIUtils.createEmptyComposite(bodyGroup,
@@ -117,10 +146,10 @@ public class LocationForecastContributionView extends BaseContributionView<Locat
 				new RowLayout(SWT.VERTICAL), new GridData(
 						GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
 		latitude = new FormattedText(estimateGroup);
-		latitude.setFormatter(new DoubleFormatter("-##0.00"));
+		latitude.setFormatter(new GeoPointFormatter(GeoPointFormatter.LAT));
 		latitude.getControl().setLayoutData(new RowData(100, SWT.DEFAULT));
 		longitude = new FormattedText(estimateGroup);
-		longitude.setFormatter(new DoubleFormatter("-##0.00"));
+		longitude.setFormatter(new GeoPointFormatter(GeoPointFormatter.LON));
 		longitude.getControl().setLayoutData(new RowData(100, SWT.DEFAULT));
 	}
 

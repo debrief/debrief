@@ -212,7 +212,7 @@ public class GeoSupport
 
 		String latitudeStr = decimalToDMS(Math.abs(_lat)) + (_lat < 0 ? "S" : "N");
 		String longitudeStr = decimalToDMS(Math.abs(_lon)) + (_lon < 0 ? "W" : "E");
-		return latitudeStr + " " + longitudeStr;
+		return latitudeStr + " \n " + longitudeStr;
 	}
 
 	public static String decimalToDMS(double coord)
