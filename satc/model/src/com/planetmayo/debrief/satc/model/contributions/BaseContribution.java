@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.contributions;
 import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.ModelObject;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
@@ -40,7 +41,25 @@ public abstract class BaseContribution extends ModelObject implements
 	 */
 	public abstract void actUpon(ProblemSpace space)
 			throws IncompatibleStateException;
+	
+	/** generate the error for this route
+	 * 
+	 */
+	public double calculateErrorScoreFor(CoreRoute route)
+	{
+		return 0;
+	}
 
+	/** are my constraints valid for the supplied period?
+	 * 
+	 * @param route
+	 * @return
+	 */
+	protected boolean validFor(CoreRoute route)
+	{
+		return true;
+	}
+	
 	/**
 	 * check if this specified time is between our start/finish times, if we have
 	 * them

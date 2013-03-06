@@ -1,13 +1,14 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -36,44 +37,104 @@ public class StraightLeg extends CoreLeg
 
 
 	@Override
-	public void generateRoutes(int gridNum)
+	protected void createAndStoreLeg(ArrayList<Point> startP,
+			ArrayList<Point> endP, int i, int j, String thisName)
 	{
-		// produce the grid of cells
-		LocationRange firstLoc = getFirst().getLocation();
-		LocationRange lastLoc = getLast().getLocation();
+		StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
+				getFirst().getTime(), endP.get(j), getLast().getTime());
 
-		if((firstLoc == null) || (lastLoc == null))
-			throw new IllegalArgumentException("The end states must have location bounds");
-		
-		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc
-				.getGeometry(), gridNum, 6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc
-				.getGeometry(), gridNum, 6);
+		// tell the route to decimate itself
+		newRoute.generateSegments(_states);
 
-		// ok, now generate the array of routes
-		_startLen = startP.size();
-		_endLen = endP.size();
+		// and store the route
+		myRoutes[i][j] = newRoute;
+	}
 
-		// ok, create the array
-		myRoutes = new StraightRoute[_startLen][_endLen];
+	/**
+	 * work out what if the route is achievable, by scaling the locations to check
+	 * that they overlap
+	 * 
+	 * @author Ian
+	 * 
+	 */
+	public static class ScaledPolygons implements RouteOperator
+	{
 
-		// now populate it
-		int ctr = 1;
-		for (int i = 0; i < _startLen; i++)
+		private final ArrayList<BoundedState> _myStates;
+
+		public ScaledPolygons(ArrayList<BoundedState> states)
 		{
-			for (int j = 0; j < _endLen; j++)
+			_myStates = states;
+		}
+
+		@Override
+		public void process(StraightRoute theRoute)
+		{
+			// do we already know this isn't possible?
+			if (!theRoute.isPossible())
+				return;
+
+			// bugger, we'll have to get on with our hard sums then
+
+			// sort out the origin.
+			State startState = theRoute.getStates().get(0);
+			Coordinate startCoord = startState.getLocation().getCoordinate();
+
+			// also sort out the end state
+			State endState = theRoute.getStates()
+					.get(theRoute.getStates().size() - 1);
+			Point endPt = endState.getLocation();
+
+			// remeber the start time
+			long tZero = startState.getTime().getTime();
+
+			// how long is the total run?
+			long elapsed = theRoute.getElapsedTime();
+
+			// loop through our states
+			Iterator<BoundedState> iter = _myStates.iterator();
+			while (iter.hasNext())
 			{
-				String thisName = _name + "_" + ctr++;
-				StraightRoute newRoute = new StraightRoute(thisName, startP.get(i),
-						getFirst().getTime(), endP.get(j), getLast().getTime());
+				BoundedState thisB = iter.next();
 
-				// tell the route to decimate itself
-				newRoute.generateSegments(_states);
+				LocationRange thisL = thisB.getLocation();
+				if (thisL != null)
+				{
+					// ok, what's the time difference
+					long thisDelta = thisB.getTime().getTime() - tZero;
 
-				// and store the route
-				myRoutes[i][j] = newRoute;
+					// convert to secs
+					long tDelta = thisDelta / 1000;
+
+					// is this our first state
+					if (tDelta > 0)
+					{
+						double scale = (1d * elapsed) / tDelta;
+
+						// ok, project the shape forwards
+						AffineTransformation st = AffineTransformation.scaleInstance(scale,
+								scale, startCoord.x, startCoord.y);
+
+						// ok, apply the transform to the location
+						Geometry originalGeom = thisL.getGeometry();
+						Geometry newGeom = st.transform(originalGeom);
+
+						// see if the end point is in the new geometry
+						if (endPt.coveredBy(newGeom))
+						{
+							// cool, this route works
+						}
+						else
+						{
+							// bugger, can't do this one
+							theRoute.setImpossible();
+							break;
+						}
+					}
+				}
 			}
 		}
+
 	}
 
 	/**
@@ -93,78 +154,18 @@ public class StraightLeg extends CoreLeg
 				double speed = distance / elapsed;
 
 				SpeedRange speedR = _states.get(0).getSpeed();
-				if (!speedR.allows(speed))
+				if (speedR == null)
+				{
+					// hey, we can't calculate it then
+				}
+				else if (!speedR.allows(speed))
 				{
 					theRoute.setImpossible();
 				}
 			}
 		};
 
-		StraightLeg.RouteOperator scaledPolygons = new RouteOperator()
-		{
-
-			@Override
-			public void process(StraightRoute theRoute)
-			{
-				// do we already know this isn't possible?
-				if (!theRoute.isPossible())
-					return;
-
-				// bugger, we'll have to get on with our hard sums then
-
-				// sort out the origin.
-				State startState = theRoute.getStates().get(0);
-				Coordinate startCoord = startState.getLocation().getCoordinate();
-
-				// also sort out the end state
-				State endState = theRoute.getStates().get(
-						theRoute.getStates().size() - 1);
-				Point endPt = endState.getLocation();
-
-				// remeber the start time
-				long tZero = startState.getTime().getTime();
-
-				// how long is the total run?
-				long elapsed = theRoute.getElapsedTime();
-
-				// loop through our states
-				Iterator<BoundedState> iter = _states.iterator();
-				while (iter.hasNext())
-				{
-					BoundedState thisB = iter.next();
-
-					LocationRange thisL = thisB.getLocation();
-					if (thisL != null)
-					{
-						// ok, what's the time difference
-						long tDelta = (thisB.getTime().getTime() - tZero) / 1000;
-
-						// is this our first state
-						if (tDelta > 0)
-						{
-							double scale = (1d * elapsed) / tDelta;
-
-							// ok, project the shape forwards
-							AffineTransformation st = AffineTransformation.scaleInstance(
-									scale, scale, startCoord.x, startCoord.y);
-
-							// ok, apply the transform to the location
-							Geometry newGeom = st.transform(thisL.getGeometry());
-
-							// see if the end point is in the new geometry
-							if (newGeom.disjoint(endPt))
-							{
-								theRoute.setImpossible();
-								break;
-							}
-
-						}
-
-					}
-				}
-			}
-
-		};
+		StraightLeg.RouteOperator scaledPolygons = new ScaledPolygons(_states);
 
 		applyToRoutes(speed);
 		applyToRoutes(scaledPolygons);
@@ -221,8 +222,6 @@ public class StraightLeg extends CoreLeg
 		return myRoutes;
 	}
 
-
-
 	/**
 	 * utility class to count how many routes are possible
 	 * 
@@ -252,13 +251,37 @@ public class StraightLeg extends CoreLeg
 		return LegType.STRAIGHT;
 	}
 
-	/** run through all the route permutation, and find the one with the highest score(s)
+	/**
+	 * run through all the route permutation, and find the one with the highest
+	 * score(s)
 	 * 
 	 */
-	public void calculateOptimum()
+	public void calculateOptimum(final Collection<BaseContribution> contribs)
 	{
-		// TODO Go through the permutations, calculate the best result(s);
-		
+		RouteOperator calcError = new RouteOperator()
+		{
+			@Override
+			public void process(StraightRoute theRoute)
+			{
+				Double thisScore = 0d;
+				
+				// loop through the contribs
+				Iterator<BaseContribution> iter = contribs.iterator();
+				while (iter.hasNext())
+				{
+					BaseContribution thisC = (BaseContribution) iter.next();
+					thisScore += thisC.calculateErrorScoreFor(theRoute);
+				}
+			}
+		};
+		applyToRoutes(calcError);
+	}
+
+	@Override
+	protected void createRouteStructure(int startLen, int endLen)
+	{ 
+		// ok, create the array
+		myRoutes = new StraightRoute[_startLen][_endLen];
 	}
 
 }
