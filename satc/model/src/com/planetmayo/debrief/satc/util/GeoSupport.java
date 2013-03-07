@@ -1,8 +1,11 @@
 package com.planetmayo.debrief.satc.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -281,11 +284,28 @@ public class GeoSupport
 		return degree + ((seconds / 60) + minutes) / 60;
 	}
 
-	/** generate a grid of points across the polygon (see implementation for more detail)
+	/**
+	 * generate a grid of points across the polygon (see implementation for more
+	 * detail)
 	 */
 	public static ArrayList<Point> ST_Tile(final Geometry p_geom,
 			final int numPoints, final int p_precision)
 	{
 		return MakeGrid.ST_Tile(p_geom, numPoints, p_precision);
+	}
+
+	public static void showStates(Collection<BoundedState> states,
+			boolean showAllBounds, boolean showLegEndBounds)
+	{
+		// TODO: we need to process this list/settings and fire an appropriate
+		// TODO:   set of calls to the GeoPlotter
+	}
+
+	public static void showRoutes(CompositeRoute[] routes, boolean _showPoints,
+			boolean _showAchievablePoints, boolean _showRoutes,
+			boolean _showRoutesWithScores)
+	{
+		// TODO: we need to process this list/settings and fire an appropriate
+		// TODO:   set of calls to the GeoPlotter
 	}
 }

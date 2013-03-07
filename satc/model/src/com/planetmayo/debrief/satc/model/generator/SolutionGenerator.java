@@ -14,8 +14,10 @@ import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SolutionGenerator implements ISteppingListener
+public class SolutionGenerator implements  ISteppingListener,
+		IBoundsManager.IShowGenerateSolutionsDiagnostics
 {
 	/**
 	 * how many cells shall we break the polygons down into?
@@ -28,6 +30,34 @@ public class SolutionGenerator implements ISteppingListener
 	 * 
 	 */
 	private ArrayList<ISolutionsReadyListener> _readyListeners;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showPoints;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showAchievablePoints;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showRoutes;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showRoutesWithScores;
 
 	public SolutionGenerator()
 	{
@@ -71,15 +101,21 @@ public class SolutionGenerator implements ISteppingListener
 		{
 			listener.solutionsReady(routes);
 		}
+
+		// and fire the diagnostics to the UI
+		GeoSupport.showRoutes(routes, _showPoints, _showAchievablePoints,
+				_showRoutes, _showRoutesWithScores);
 	}
 
-	/** for the set of generated routes, work out which have the highest score
+	/**
+	 * for the set of generated routes, work out which have the highest score
 	 * 
-	 * @param boundsManager the c
+	 * @param boundsManager
+	 *          the c
 	 * @param theLegs
 	 */
-	public void calculateOptimalRoutes(final Collection<BaseContribution> contribs,
-			ArrayList<CoreLeg> theLegs)
+	public void calculateOptimalRoutes(
+			final Collection<BaseContribution> contribs, ArrayList<CoreLeg> theLegs)
 	{
 		operateOn(theLegs, new LegOperation()
 		{
@@ -105,7 +141,8 @@ public class SolutionGenerator implements ISteppingListener
 		});
 	}
 
-	/** get the legs to decide on their achievable routes
+	/**
+	 * get the legs to decide on their achievable routes
 	 * 
 	 * @param theLegs
 	 */
@@ -212,7 +249,6 @@ public class SolutionGenerator implements ISteppingListener
 	 * @param space
 	 * @return
 	 */
-	@SuppressWarnings("null")
 	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 
@@ -372,5 +408,29 @@ public class SolutionGenerator implements ISteppingListener
 		 * @param routes
 		 */
 		public void solutionsReady(CompositeRoute[] routes);
+	}
+
+	@Override
+	public void setShowPoints(boolean onOff)
+	{
+		_showPoints = onOff;
+	}
+
+	@Override
+	public void setShowAchievablePoints(boolean onOff)
+	{
+		_showAchievablePoints = onOff;
+	}
+
+	@Override
+	public void setShowRoutes(boolean onOff)
+	{
+		_showRoutes = onOff;
+	}
+
+	@Override
+	public void setShowRoutesWithScores(boolean onOff)
+	{
+		_showRoutesWithScores = onOff;
 	}
 }
