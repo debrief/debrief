@@ -3,8 +3,12 @@ package com.planetmayo.debrief.satc_rcp.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 
@@ -41,7 +45,7 @@ public class TestHarnessView extends ViewPart
 	 * as-is. These objects may be sensitive to the current input of the view, or
 	 * ignore it and always show the same content (like Task List, for example).
 	 */
-	
+
 	private IBoundsManager boundsManager;
 
 	private Action _restartAction;
@@ -75,7 +79,9 @@ public class TestHarnessView extends ViewPart
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		new Label(parent, SWT.None);
+		Composite form = new Composite(parent, SWT.NONE);
+
+		// new Label(parent, SWT.None);
 
 		_testSupport = new TestSupport();
 
@@ -83,8 +89,88 @@ public class TestHarnessView extends ViewPart
 		contributeToActionBars();
 
 		// disable our controls, until we find a genny
-		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
+		boundsManager = SATC_Activator.getDefault().getService(
+				IBoundsManager.class, true);
 		startListeningTo();
+
+		// insert the diagnostics panels
+		Group group1 = new Group(form, SWT.SHADOW_ETCHED_IN);
+		group1.setLayout(new FillLayout(SWT.VERTICAL));
+		group1.setText("Constrain problem space");
+
+		Group group2 = new Group(form, SWT.SHADOW_ETCHED_IN);
+		group2.setLayout(new FillLayout(SWT.VERTICAL));
+		group2.setText("Generate Solutions");
+		
+		
+		form.setLayout(new FillLayout(SWT.HORIZONTAL));
+		final Button btn1 = new Button(group1, SWT.CHECK);
+		btn1.setText("Show all legs");
+		btn1.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.getProblemSpaceDiagnostics().setShowAllBounds(
+						btn1.getSelection());
+			}
+		});
+		final Button btn2 = new Button(group1, SWT.CHECK);
+		btn2.setText("Show leg ends");
+		btn2.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.getProblemSpaceDiagnostics().setShowLegEndBounds(
+						btn2.getSelection());
+			}
+		});
+		final Button btn3 = new Button(group2, SWT.CHECK);
+		btn3.setText("Show points");
+		btn3.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.getGeneratorDiagnostics().setShowPoints(
+						btn3.getSelection());
+			}
+		});
+		final Button btn4 = new Button(group2, SWT.CHECK);
+		btn4.setText("Show achievable points");
+		btn4.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.getGeneratorDiagnostics().setShowAchievablePoints(
+						btn4.getSelection());
+			}
+		});
+
+		final Button btn5 = new Button(group2, SWT.CHECK);
+		btn5.setText("Show all routes");
+		btn5.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.getGeneratorDiagnostics().setShowRoutes(
+						btn5.getSelection());
+			}
+		});
+		final Button btn6 = new Button(group2, SWT.CHECK);
+		btn6.setText("Show routes with scores");
+		btn6.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.getGeneratorDiagnostics().setShowRoutesWithScores(
+						btn6.getSelection());
+			}
+		});
+
+		// TODO: provide the remaining buttons
+
+		// and get the form to handle it's layout
+		form.pack();
+
 	}
 
 	private void enableControls(boolean enabled)

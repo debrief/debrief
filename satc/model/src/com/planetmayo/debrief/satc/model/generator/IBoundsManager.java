@@ -115,4 +115,65 @@ public interface IBoundsManager
 	 * @return is bounds manager already processed all contributions 
 	 */
 	boolean isCompleted();
+	
+	/** return the solution generator object
+	 * 
+	 * @return
+	 */
+	IShowGenerateSolutionsDiagnostics getGeneratorDiagnostics();
+	
+	IShowBoundProblemSpaceDiagnostics getProblemSpaceDiagnostics();
+	
+
+	/** control what diagnostic data is broadcast during constrain problem space phase
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static interface IShowBoundProblemSpaceDiagnostics
+	{
+		/** broadcast all of the bounded states
+		 * 
+		 * @param onOff
+		 */
+		public void setShowAllBounds(boolean onOff);
+		
+		/** broadcast just the leg end states
+		 * 
+		 * @param onOff
+		 */
+		public void setShowLegEndBounds(boolean onOff);
+	}
+
+	/** control what diagnostic data is broadcast during generate solutions phase
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static interface IShowGenerateSolutionsDiagnostics
+	{
+		/** broadcast the list of generated grid points
+		 * 
+		 * @param routes
+		 */
+		public void setShowPoints(boolean onOff);
+		
+		/** broadcast the list of achievable grid points
+		 * 
+		 * @param routes
+		 */
+		public void setShowAchievablePoints(boolean onOff);
+		
+		/** show the achievable routes inside legs
+		 * 
+		 * @param routes
+		 */
+		public void setShowRoutes(boolean onOff);
+		
+		/** show the processed routes, including scores
+		 * 
+		 * @param routes
+		 */
+		public void setShowRoutesWithScores(boolean onOff);
+	}
 }

@@ -15,6 +15,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 
 /**
  * the top level manager object that handles the generation of bounded
@@ -23,7 +24,8 @@ import com.planetmayo.debrief.satc.support.SupportServices;
  * @author ian
  * 
  */
-public class BoundsManager implements IBoundsManager
+public class BoundsManager implements IBoundsManager,
+		IBoundsManager.IShowBoundProblemSpaceDiagnostics
 {
 	public static final String STATES_BOUNDED = "states_bounded";
 
@@ -43,6 +45,11 @@ public class BoundsManager implements IBoundsManager
 	 * the problem space we consider
 	 */
 	final private ProblemSpace _space = new ProblemSpace();
+	
+	/** the solution generator module
+	 * 
+	 */
+	final private SolutionGenerator _genny = new SolutionGenerator();
 
 	/**
 	 * the set of contributions we listen to. They are ordered, so that we have
@@ -60,8 +67,8 @@ public class BoundsManager implements IBoundsManager
 	 * 
 	 */
 	private final String[] _interestingProperties =
-	{ BaseContribution.ACTIVE, 
-			BaseContribution.START_DATE, BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
+	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
+			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
 
 	/**
 	 * property listener = so we know about contibutions changing
@@ -92,9 +99,20 @@ public class BoundsManager implements IBoundsManager
 	 * whether we auto=run after each contribution chagne
 	 * 
 	 */
-	private boolean _liveRunning=true;
+	private boolean _liveRunning = true;
 
-	
+	/**
+	 * whether to broadcast all bounded states
+	 * 
+	 */
+	private boolean _showAllBounds;
+
+	/**
+	 * whether to broadcast leg end bounded states
+	 * 
+	 */
+	private boolean _showLegEndBounds;
+
 	/**
 	 * Contribution listeners stuff
 	 * 
@@ -105,82 +123,83 @@ public class BoundsManager implements IBoundsManager
 		_contributionListeners.add(newListener);
 	}
 
-	@Override	
-	public void removeContributionsListener(IContributionsChangedListener newListener)
+	@Override
+	public void removeContributionsListener(
+			IContributionsChangedListener newListener)
 	{
 		_contributionListeners.remove(newListener);
 	}
-	
-	protected void fireContributionAdded(BaseContribution contribution) 
+
+	protected void fireContributionAdded(BaseContribution contribution)
 	{
-		for (IContributionsChangedListener listener : _contributionListeners) 
+		for (IContributionsChangedListener listener : _contributionListeners)
 		{
 			listener.added(contribution);
 		}
 	}
-	
-	protected void fireContributionRemoved(BaseContribution contribution) 
+
+	protected void fireContributionRemoved(BaseContribution contribution)
 	{
-		for (IContributionsChangedListener listener : _contributionListeners) 
+		for (IContributionsChangedListener listener : _contributionListeners)
 		{
 			listener.removed(contribution);
 		}
-	}		
+	}
 
 	/**
 	 * Stepping listeners stuff
 	 * 
-	 */	
-	@Override	
+	 */
+	@Override
 	public void addSteppingListener(ISteppingListener newListener)
 	{
 		_steppingListeners.add(newListener);
-	}	
+	}
 
-	@Override	
+	@Override
 	public void removeSteppingListener(ISteppingListener newListener)
 	{
 		_steppingListeners.remove(newListener);
 	}
-	
+
 	protected void fireStepped(int thisStep, int totalSteps)
 	{
-		for (ISteppingListener listener : _steppingListeners) 
+		for (ISteppingListener listener : _steppingListeners)
 		{
 			listener.stepped(this, thisStep, totalSteps);
-		}		
+		}
 	}
-	
+
 	protected void fireComplete()
 	{
-		for (ISteppingListener listener : _steppingListeners) 
+		for (ISteppingListener listener : _steppingListeners)
 		{
 			listener.complete(this);
-		}		
+		}
 	}
-	
+
 	protected void fireRestarted()
 	{
-		for (ISteppingListener listener : _steppingListeners) 
+		for (ISteppingListener listener : _steppingListeners)
 		{
 			listener.restarted(this);
-		}		
+		}
 	}
-	
+
 	protected void fireError(IncompatibleStateException ex)
 	{
-		for (ISteppingListener listener : _steppingListeners) 
+		for (ISteppingListener listener : _steppingListeners)
 		{
 			listener.error(this, ex);
-		}		
-	}	
+		}
+	}
 
 	/**
 	 * store this new contribution
 	 * 
 	 * @param contribution
 	 */
-	@Override	
+	@Override
 	public void addContribution(BaseContribution contribution)
 	{
 		// remember it
@@ -198,11 +217,12 @@ public class BoundsManager implements IBoundsManager
 	 * ditch all of the contributions
 	 * 
 	 */
-	@Override	
+	@Override
 	public void clear()
 	{
 		this.restart();
-		for (BaseContribution contribution : new ArrayList<BaseContribution>(_contribs))
+		for (BaseContribution contribution : new ArrayList<BaseContribution>(
+				_contribs))
 		{
 			this.removeContribution(contribution);
 		}
@@ -213,15 +233,15 @@ public class BoundsManager implements IBoundsManager
 	{
 		return Collections.unmodifiableSet(_contribs);
 	}
-	
+
 	@Override
-	public int getCurrentStep() 
+	public int getCurrentStep()
 	{
 		return _currentStep;
 	}
-	
+
 	@Override
-	public BaseContribution getCurrentContribution() 
+	public BaseContribution getCurrentContribution()
 	{
 		return _currentContribution;
 	}
@@ -250,42 +270,43 @@ public class BoundsManager implements IBoundsManager
 			throw new RuntimeException(re);
 		}
 	}
-	
-	protected void createInitialBoundedStates() 
+
+	protected void createInitialBoundedStates()
 	{
-		for (BaseContribution contribution : _contribs) 
+		for (BaseContribution contribution : _contribs)
 		{
 			// is this contribution active?
 			if (contribution.isActive())
 			{
-				if (contribution.getDataType() == ContributionDataType.FORECAST) 
+				if (contribution.getDataType() == ContributionDataType.FORECAST)
 				{
 					Date startDate = contribution.getStartDate();
 					Date finishDate = contribution.getFinishDate();
-					if (startDate != null && _space.getBoundedStateAt(startDate) == null) 
+					if (startDate != null && _space.getBoundedStateAt(startDate) == null)
 					{
-						try 
+						try
 						{
 							_space.add(new BoundedState(startDate));
-						} 
-						catch (IncompatibleStateException ex) 
+						}
+						catch (IncompatibleStateException ex)
 						{
 							// can't be thrown here in any correct situation
 							throw new RuntimeException(ex);
 						}
 					}
-					if (finishDate != null && _space.getBoundedStateAt(finishDate) == null) 
+					if (finishDate != null
+							&& _space.getBoundedStateAt(finishDate) == null)
 					{
-						try 
+						try
 						{
 							_space.add(new BoundedState(finishDate));
-						} 
-						catch (IncompatibleStateException ex) 
+						}
+						catch (IncompatibleStateException ex)
 						{
 							// can't be thrown here in any correct situation
-							throw new RuntimeException(ex); 
+							throw new RuntimeException(ex);
 						}
-					}		
+					}
 				}
 			}
 		}
@@ -299,7 +320,7 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void removeContribution(BaseContribution contribution)
 	{
-		if (! _contribs.contains(contribution)) 
+		if (!_contribs.contains(contribution))
 		{
 			return;
 		}
@@ -318,7 +339,7 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void restart()
 	{
-		if (_currentStep == 0) 
+		if (_currentStep == 0)
 		{
 			return;
 		}
@@ -341,6 +362,9 @@ public class BoundsManager implements IBoundsManager
 		{
 			step();
 		}
+
+		// ok, do any broadcasting
+		GeoSupport.showStates(_space.states(), _showAllBounds, _showLegEndBounds);
 	}
 
 	/**
@@ -366,16 +390,19 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void step()
 	{
-		if (_currentStep == 0) 
+		if (_currentStep == 0)
 		{
 			createInitialBoundedStates();
 		}
 		if (isCompleted())
+		{
+			// ok, we're done
 			return;
-		
+		}
+
 		// get next contribution
-		_currentContribution = SupportServices.INSTANCE
-				.getUtilsService().higherElement(_contribs, _currentContribution);
+		_currentContribution = SupportServices.INSTANCE.getUtilsService()
+				.higherElement(_contribs, _currentContribution);
 		// ok, go for it.
 		performSingleStep(_currentContribution, _currentStep);
 
@@ -389,7 +416,7 @@ public class BoundsManager implements IBoundsManager
 			fireComplete();
 		}
 	}
-	
+
 	@Override
 	public boolean isCompleted()
 	{
@@ -418,5 +445,29 @@ public class BoundsManager implements IBoundsManager
 	public ProblemSpace getSpace()
 	{
 		return _space;
+	}
+
+	@Override
+	public void setShowAllBounds(boolean onOff)
+	{
+		_showAllBounds = onOff;
+	}
+
+	@Override
+	public void setShowLegEndBounds(boolean onOff)
+	{
+		_showLegEndBounds = onOff;
+	}
+
+	@Override
+	public IShowGenerateSolutionsDiagnostics getGeneratorDiagnostics()
+	{
+		return _genny;
+	}
+
+	@Override
+	public IShowBoundProblemSpaceDiagnostics getProblemSpaceDiagnostics()
+	{
+		return this;
 	}
 }
