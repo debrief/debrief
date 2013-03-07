@@ -4,6 +4,7 @@
 package org.eclipse.nebula.widgets.formattedtext;
 
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * @author Akash-Gupta GeoPointFormatter is formats the text to degree minutes
@@ -17,6 +18,9 @@ public class GeoPointFormatter extends AbstractFormatter
 	Double geoPoint;
 	private int geoPointType;
 
+	// private KeyListener klistener;
+	// private FocusListener focusListener;
+
 	public GeoPointFormatter()
 	{
 		ignore = true;
@@ -26,12 +30,40 @@ public class GeoPointFormatter extends AbstractFormatter
 	{
 		ignore = true;
 		this.geoPointType = geoPointType;
+
+		/*
+		 * focusListener = new FocusListener() {
+		 * 
+		 * @Override public void focusGained(FocusEvent e) {
+		 * 
+		 * }
+		 * 
+		 * @Override public void focusLost(FocusEvent e) {
+		 * 
+		 * }
+		 * 
+		 * };
+		 * 
+		 * klistener = new KeyListener() { int position;
+		 * 
+		 * @Override public void keyPressed(KeyEvent e) { position =
+		 * text.getCaretPosition(); }
+		 * 
+		 * @Override public void keyReleased(KeyEvent e) { switch (e.keyCode) { case
+		 * SWT.ARROW_UP: return; case SWT.ARROW_DOWN: return; case SWT.ARROW_LEFT:
+		 * return; case SWT.ARROW_RIGHT: return; case SWT.HOME: return; case
+		 * SWT.END: return;
+		 * 
+		 * default:
+		 * 
+		 * } text.setSelection(position + 1); } };
+		 */
 	}
 
 	@Override
 	public String getDisplayString()
 	{
-		return getEditString();
+		return text.getText();
 	}
 
 	@Override
@@ -40,7 +72,7 @@ public class GeoPointFormatter extends AbstractFormatter
 		if (geoPoint instanceof Double)
 			if (LAT == geoPointType)
 				return decimalToDMS(Math.abs(geoPoint)) + (geoPoint < 0 ? "S" : "N");
-			else
+			else 
 				return decimalToDMS(Math.abs(geoPoint)) + (geoPoint < 0 ? "W" : "E");
 
 		else
@@ -54,18 +86,18 @@ public class GeoPointFormatter extends AbstractFormatter
 		double mod = coord % 1;
 		int intPart = (int) coord;
 
-		degrees = String.valueOf(intPart);
+		degrees = String.valueOf((int) intPart);
 
 		coord = mod * 60;
 		mod = coord % 1;
 		intPart = (int) coord;
 
-		minutes = String.valueOf(intPart);
+		minutes = String.valueOf((int) intPart);
 
 		coord = mod * 60;
 		intPart = (int) coord;
 
-		seconds = String.valueOf(intPart);
+		seconds = String.valueOf(Math.round(coord * 100.0) / 100.0);
 
 		output = degrees + "\u00B0 " + minutes + "' " + seconds + "\" ";
 		return output;
@@ -74,7 +106,8 @@ public class GeoPointFormatter extends AbstractFormatter
 	@Override
 	public Object getValue()
 	{
-		return parseDMSString(text.getText());
+		this.geoPoint = parseDMSString(text.getText());
+		return geoPoint;
 	}
 
 	@Override
@@ -99,6 +132,7 @@ public class GeoPointFormatter extends AbstractFormatter
 	public void setValue(Object value)
 	{
 		this.geoPoint = (Double) value;
+		text.setText(getEditString());
 	}
 
 	@Override
@@ -139,6 +173,14 @@ public class GeoPointFormatter extends AbstractFormatter
 			double seconds)
 	{
 		return degree + ((seconds / 60) + minutes) / 60;
+	}
+
+	@Override
+	public void setText(Text text)
+	{
+		super.setText(text);
+		// text.addKeyListener(klistener);
+		// text.addFocusListener(focusListener);
 	}
 
 }

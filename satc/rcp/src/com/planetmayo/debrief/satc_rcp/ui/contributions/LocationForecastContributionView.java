@@ -85,7 +85,7 @@ public class LocationForecastContributionView extends
 				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION),
 				GeoPoint.LAT, double.class);
 		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
-		latitude.getControl().addListener(SWT.Modify, new Listener()
+		latitude.getControl().addListener(SWT.FocusOut, new Listener()
 		{
 			@Override
 			public void handleEvent(Event event)
@@ -102,7 +102,7 @@ public class LocationForecastContributionView extends
 				GeoPoint.LON, double.class);
 		context.bindValue(PojoObservables.observeValue(longitude, "value"),
 				lonValue);
-		longitude.getControl().addListener(SWT.Modify, new Listener()
+		longitude.getControl().addListener(SWT.FocusOut, new Listener()
 		{
 			@Override
 			public void handleEvent(Event event)

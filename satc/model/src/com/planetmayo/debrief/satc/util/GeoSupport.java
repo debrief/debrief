@@ -212,31 +212,33 @@ public class GeoSupport
 
 		String latitudeStr = decimalToDMS(Math.abs(_lat)) + (_lat < 0 ? "S" : "N");
 		String longitudeStr = decimalToDMS(Math.abs(_lon)) + (_lon < 0 ? "W" : "E");
-		return latitudeStr + " \n " + longitudeStr;
+		return latitudeStr + "\n" + longitudeStr;
 	}
 
 	public static String decimalToDMS(double coord)
 	{
+
 		String output, degrees, minutes, seconds;
 
 		double mod = coord % 1;
 		int intPart = (int) coord;
 
-		degrees = String.valueOf(intPart);
+		degrees = String.valueOf((int)intPart);
 
 		coord = mod * 60;
 		mod = coord % 1;
 		intPart = (int) coord;
 
-		minutes = String.valueOf(intPart);
+		minutes = String.valueOf((int)intPart);
 
 		coord = mod * 60;
 		intPart = (int) coord;
 
-		seconds = String.valueOf(intPart);
+		seconds = String.valueOf( Math.round( coord * 100.0 ) / 100.0);
 
 		output = degrees + "\u00B0 " + minutes + "' " + seconds + "\" ";
 		return output;
+	
 	}
 
 	public static GeoPoint getGeoPointFromString(String latlong)
