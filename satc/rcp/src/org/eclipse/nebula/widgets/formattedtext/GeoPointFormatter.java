@@ -72,7 +72,7 @@ public class GeoPointFormatter extends AbstractFormatter
 		if (geoPoint instanceof Double)
 			if (LAT == geoPointType)
 				return decimalToDMS(Math.abs(geoPoint)) + (geoPoint < 0 ? "S" : "N");
-			else 
+			else
 				return decimalToDMS(Math.abs(geoPoint)) + (geoPoint < 0 ? "W" : "E");
 
 		else
@@ -107,6 +107,7 @@ public class GeoPointFormatter extends AbstractFormatter
 	public Object getValue()
 	{
 		this.geoPoint = parseDMSString(text.getText());
+		text.setText(getEditString());
 		return geoPoint;
 	}
 
@@ -141,32 +142,41 @@ public class GeoPointFormatter extends AbstractFormatter
 
 	}
 
-	private static Double parseDMSString(String lat)
+	private Double parseDMSString(String lat)
 	{
 		if (lat.indexOf("\u00B0 ") == -1 || lat.indexOf("\u00B0 ") == -1
 				|| lat.indexOf("' ") == -1)
 		{
-			return null;
+			return geoPoint;
 		}
 
-		double deg = Double.parseDouble(lat.substring(0, lat.indexOf("\u00B0 ")));
-		double min = Double.parseDouble(lat.substring(lat.indexOf("\u00B0 ") + 1,
-				lat.indexOf("' ")));
-		double sec = Double.parseDouble(lat.substring(lat.indexOf("' ") + 1,
-				lat.indexOf("\" ")));
-
-		double geoPoint = dmsToDecimal(deg, min, sec);
-
-		if (lat.indexOf("S") > 0)
+		try
 		{
-			geoPoint *= -1;
-		}
 
-		if (lat.indexOf("W") > 0)
-		{
-			geoPoint *= -1;
+			double deg = Double.parseDouble(lat.substring(0, lat.indexOf("\u00B0 ")));
+			double min = Double.parseDouble(lat.substring(lat.indexOf("\u00B0 ") + 1,
+					lat.indexOf("' ")));
+			double sec = Double.parseDouble(lat.substring(lat.indexOf("' ") + 1,
+					lat.indexOf("\" ")));
+
+			double _geoPoint = dmsToDecimal(deg, min, sec);
+
+			if (lat.indexOf("S") > 0)
+			{
+				_geoPoint *= -1;
+			}
+
+			if (lat.indexOf("W") > 0)
+			{
+				_geoPoint *= -1;
+			}
+			return _geoPoint;
 		}
-		return geoPoint;
+		catch (Exception e)
+		{
+			return this.geoPoint;
+
+		}
 	}
 
 	public static double dmsToDecimal(double degree, double minutes,
