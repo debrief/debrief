@@ -46,6 +46,11 @@ public class CoreRoute
 	 */
 	protected final String _name;
 
+	/** the performance score for this route
+	 * 
+	 */
+	protected double _myScore;
+	
 	protected CoreRoute(Point startP, Point endP, Date startTime, Date endTime,
 			String name)
 	{
@@ -103,6 +108,16 @@ public class CoreRoute
 	public ArrayList<State> getStates()
 	{
 		return _myStates;
+	}
+
+	public void setScore(Double thisScore)
+	{
+		_myScore = thisScore;
+	}
+
+	public double getScore()
+	{
+		return _myScore;
 	}
 
 }

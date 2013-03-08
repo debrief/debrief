@@ -102,9 +102,6 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		// ditch the duff permutations
 		cancelUnachievable(_theLegs, achievableRes);
 
-		// share the news
-		fireLegsGenerated(_theLegs);
-
 		// ok, look for the top performer
 		recalculateTopLegs();
 	}
@@ -116,8 +113,6 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 */
 	private void recalculateTopLegs()
 	{
-		System.out.println("recalculate top legs!!");
-		
 		// just check we have data
 		if (_boundsManager == null || _theLegs == null)
 			return;
@@ -426,20 +421,6 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		// ignore
-	}
-
-	/**
-	 * we've generated the routes
-	 * 
-	 * @param theLegs
-	 * 
-	 */
-	private void fireLegsGenerated(ArrayList<CoreLeg> theLegs)
-	{
-		for (IGenerateSolutionsListener listener : _readyListeners)
-		{
-			listener.legsGenerated(theLegs);
-		}
 	}
 
 	/**

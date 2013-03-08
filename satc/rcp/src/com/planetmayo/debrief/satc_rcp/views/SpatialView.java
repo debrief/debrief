@@ -32,14 +32,15 @@ import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
-import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
 public class SpatialView extends ViewPart implements IConstrainSpaceListener,
@@ -64,8 +65,18 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private IBoundsManager boundsManager;
 
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowBoundProblemSpaceDiagnostics
+	 */
 	private boolean _showLegEndBounds;
 
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowBoundProblemSpaceDiagnostics
+	 */
 	private boolean _showAllBounds;
 
 	/**
@@ -97,12 +108,24 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private boolean _showRoutesWithScores;
 
 	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	@SuppressWarnings("unused")
+	private boolean _showRecommendedSolutions;
+
+	/**
 	 * the last set of states we plotted
 	 * 
 	 */
 	private Collection<BoundedState> _lastStates = null;
 
 	private ISolutionGenerator solutionGenerator;
+
+	private ArrayList<CoreLeg> _lastSetOfScoredLegs;
+
+	private CompositeRoute[] _lastSetOfSolutions;
 
 	@Override
 	public void clear(String title)
@@ -120,7 +143,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void statesBounded(IBoundsManager boundsManager)
 	{
 		_lastStates = boundsManager.getSpace().states();
-		showData(_lastStates);
+		showBoundedStates(_lastStates);
 	}
 
 	/**
@@ -216,8 +239,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			@Override
 			public void run()
 			{
-
-				// TODO: resize the plot
+				// TODO: Akash - resize the plot to show all the data
 			}
 
 		};
@@ -236,7 +258,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 	}
 
-	private void showData(Collection<BoundedState> newStates)
+	private void showBoundedStates(Collection<BoundedState> newStates)
 	{
 		if (newStates.isEmpty())
 		{
@@ -248,6 +270,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			return;
 
 		String lastSeries = "UNSET";
+		@SuppressWarnings("unused")
 		Color thisColor = null;
 		int turnCounter = 1;
 
@@ -357,6 +380,45 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		if (!_debugMode.isChecked())
 			return;
 
+		plotTheseCoordsAsALine(title, coords);
+
+	}
+
+	private void plotTheseCoordsAsALine(String title, Coordinate[] coords)
+	{
+		int num = addSeries(title, coords);
+
+		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND, 1.0f, new float[]
+				{ 10.0f, 6.0f }, 0.0f));
+	}
+
+	private void plotTheseCoordsAsAPoints(Collection<Point> points,
+			boolean largePoints)
+	{
+		Collection<Coordinate> coords = new ArrayList<Coordinate>();
+		for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();)
+		{
+			Point point = (Point) iterator.next();
+
+			// ok, add the coordinate of this point
+			coords.add(point.getCoordinate());
+		}
+		Coordinate[] demo = new Coordinate[]
+		{};
+
+		// create the data series, get the index number
+		int num = addSeries("" + _numCycles++, coords.toArray(demo));
+
+		// TODO: AKASH: configure the renderer to not show lines, but as points
+		// (large/small)
+		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND, 1.0f, new float[]
+				{ 10.0f, 6.0f }, 0.0f));
+	}
+
+	private int addSeries(String title, Coordinate[] coords)
+	{
 		// ok, we've got a new series
 		XYSeries series = new XYSeries(title, false);
 
@@ -370,18 +432,14 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// get the series num
 		int num = _myData.getSeriesCount();
-
-		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1.0f, new float[]
-				{ 10.0f, 6.0f }, 0.0f));
-
+		return num;
 	}
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked())
-			showData(boundsManager.getSpace().states());
+			showBoundedStates(boundsManager.getSpace().states());
 	}
 
 	@Override
@@ -389,12 +447,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		_showAllBounds = onOff;
 
-		// clear the UI
-		clear(null);
-
-		// and replot
-		if (_lastStates != null)
-			showData(_lastStates);
+		redoChart();
 	}
 
 	@Override
@@ -402,59 +455,100 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		_showLegEndBounds = onOff;
 
+		redoChart();
+	}
+
+	@Override
+	public void setShowRecommendedSolutions(boolean onOff)
+	{
+		_showRecommendedSolutions = onOff;
+
+		redoChart();
+	}
+
+	private void redoChart()
+	{
 		// clear the UI
 		clear(null);
 
 		// and replot
 		if (_lastStates != null)
-			showData(_lastStates);
+			showBoundedStates(_lastStates);
+		if (_lastSetOfScoredLegs != null)
+			legsScored(_lastSetOfScoredLegs);
+		if (_lastSetOfSolutions != null)
+			solutionsReady(_lastSetOfSolutions);
 	}
 
 	@Override
 	public void setShowPoints(boolean onOff)
 	{
 		_showPoints = onOff;
+
+		redoChart();
 	}
 
 	@Override
 	public void setShowAchievablePoints(boolean onOff)
 	{
 		_showAchievablePoints = onOff;
+		redoChart();
 	}
 
 	@Override
 	public void setShowRoutes(boolean onOff)
 	{
 		_showRoutes = onOff;
+		redoChart();
 	}
 
 	@Override
 	public void setShowRoutesWithScores(boolean onOff)
 	{
 		_showRoutesWithScores = onOff;
+		redoChart();
 	}
 
 	@Override
 	public void solutionsReady(CompositeRoute[] routes)
 	{
-		// TODO: IAN - HIGH process this
+		_lastSetOfSolutions = routes;
+
+		// TODO: IAN - HIGH present the optimal solutions
+	}
+
+	private static class ScoredRoute
+	{
+		private LineString theRoute;
+		private double theScore;
+
+		public ScoredRoute(LineString route, double score)
+		{
+			theRoute = route;
+			theScore = score;
+		}
 	}
 
 	@Override
-	public void legsGenerated(ArrayList<CoreLeg> theLegs)
+	public void legsScored(ArrayList<CoreLeg> theLegs)
 	{
+		_lastSetOfScoredLegs = theLegs;
+
 		// hey, are we showing points?
-		if (_showPoints || _showAchievablePoints)
+		if (_showPoints || _showAchievablePoints || _showRoutes)
 		{
-			Collection<Point> res = new ArrayList<Point>();
+			Collection<Point> allPoints = new ArrayList<Point>();
+			Collection<Point> possiblePoints = new ArrayList<Point>();
+			Collection<LineString> possibleRoutes = new ArrayList<LineString>();
+			Collection<ScoredRoute> scoredRoutes = new ArrayList<ScoredRoute>();
 
 			// ok, loop trough
 			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 			{
-				CoreLeg coreLeg = (CoreLeg) iterator.next();
+				CoreLeg thisLeg = (CoreLeg) iterator.next();
 
 				// ok, get the points
-				CoreRoute[][] routes = coreLeg.getRoutes();
+				CoreRoute[][] routes = thisLeg.getRoutes();
 
 				// go through the start points
 				int numStart = routes.length;
@@ -470,41 +564,106 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					if (_showPoints)
 					{
 						// ok, just add it to the list
-						res.add(startPoint);
+						allPoints.add(startPoint);
 					}
-					else
+
+					// ok - do we need to check which ones have any valid points?
+					if (_showAchievablePoints || _showRoutes)
 					{
-						if (_showAchievablePoints)
+						boolean isPossible = false;
+
+						for (int j = 0; j < numEnd; j++)
 						{
-							boolean isPossible = true;
+							CoreRoute thisRoute = thisStart[j];
 
-							for (int j = 0; j < numEnd; j++)
+							if (thisRoute.isPossible())
 							{
-								CoreRoute thisRoute = thisStart[j];
+								isPossible = true;
 
-								if (!thisRoute.isPossible())
+								// we're only currently going to draw lines for straight legs
+								if (thisLeg.getType() == LegType.STRAIGHT)
 								{
-									isPossible = false;
-									break;
+									if (_showRoutes || _showRoutesWithScores)
+									{
+										Coordinate[] coords = new Coordinate[]
+										{ thisRoute.getStartPoint().getCoordinate(),
+												thisRoute.getEndPoing().getCoordinate() };
+										LineString newR = GeoSupport.getFactory().createLineString(
+												coords);
+
+										if (_showRoutes)
+											possibleRoutes.add(newR);
+
+										if (_showRoutesWithScores)
+											scoredRoutes.add(new ScoredRoute(newR, thisRoute
+													.getScore()));
+									}
 								}
 							}
+						}
 
-							// ok, add it to the list
-							if (isPossible)
-								res.add(startPoint);
+						// ok, add it to the list
+						if (isPossible)
+						{
 
+							if (_showAchievablePoints)
+								possiblePoints.add(startPoint);
 						}
 					}
+
 				}
 			}
+
+			System.out.println("num all points:" + allPoints.size());
+			System.out.println("num achievable points:" + possiblePoints.size());
+
+			plotTheseCoordsAsAPoints(allPoints, false);
+			plotTheseCoordsAsAPoints(possiblePoints, true);
+			plotPossibleRoutes(possibleRoutes);
+			plotRoutesWithScores(scoredRoutes);
+
 		}
+
 	}
 
-
-	@Override
-	public void legsScored(ArrayList<CoreLeg> theLegs)
+	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
 	{
-		// TODO: IAN - HIGH process this
+		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
+				.hasNext();)
+		{
+			ScoredRoute route = iterator.next();
+
+			@SuppressWarnings("unused")
+			Point startP = route.theRoute.getStartPoint();
+			@SuppressWarnings("unused")
+			Point endP = route.theRoute.getEndPoint();
+
+			@SuppressWarnings("unused")
+			double thisScore = route.theScore;
+
+			// TODO: Akash, draw a line between these points, colour coded according
+			// to the score
+		}
+
 	}
 
+	private void plotPossibleRoutes(Collection<LineString> possibleRoutes)
+	{
+		for (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
+				.hasNext();)
+		{
+			LineString line = iterator.next();
+
+			// Point startP = line.getStartPoint();
+			// Point endP = line.getEndPoint();
+
+			// TODO: Akash, draw a line between these points
+			// System.out.println(" r:" + startP.getCoordinate() + " " +
+			// endP.getCoordinate());
+
+			plotTheseCoordsAsALine("" + (_numCycles++), line.getCoordinates());
+
+		}
+
+	}
 }

@@ -518,7 +518,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 	}
 
-	private static boolean called = false;
+	private static int called = 0;
 
 	@Test
 	public void testWholeCycle()
@@ -546,31 +546,26 @@ public class GenerateCandidatesTest extends ModelTestBase
 		{
 			public void solutionsReady(CompositeRoute[] routes)
 			{
-				called = true;
+				called++;
 			}
 
-			@Override
-			public void legsGenerated(ArrayList<CoreLeg> theLegs)
-			{
-				// TODO: IAN - LOW, test this
-			}
 
 			@Override
 			public void legsScored(ArrayList<CoreLeg> theLegs)
 			{
-				// TODO: IAN - LOW, test this
+				called++;
 			}
 
 		});
 
 		// ok, get it to run
-		assertFalse("not called yet", called);
+		assertEquals("not called yet",0, called);
 
 		// ok, get firing
 		genny.statesBounded(boundsManager);
 
 		// ok, get it to run
-		assertTrue("now called yet", called);
+		assertEquals("now called ",2, called);
 	}
 
 }

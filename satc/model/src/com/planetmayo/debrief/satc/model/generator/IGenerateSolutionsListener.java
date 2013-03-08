@@ -9,14 +9,6 @@ public interface IGenerateSolutionsListener
 {
 
 	/**
-	 * we've generated the routes
-	 * 
-	 * @param theLegs
-	 * 
-	 */
-	void legsGenerated(ArrayList<CoreLeg> theLegs);
-
-	/**
 	 * we've sorted out the leg scores
 	 * 
 	 * @param theLegs

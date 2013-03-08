@@ -37,16 +37,7 @@ public class SteppingAdapter implements
 	}
 
 	@Override
-	public void legsGenerated(ArrayList<CoreLeg> theLegs)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void legsScored(ArrayList<CoreLeg> theLegs)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 }

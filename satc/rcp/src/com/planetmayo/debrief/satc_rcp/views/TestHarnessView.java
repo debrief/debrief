@@ -167,6 +167,16 @@ public class TestHarnessView extends ViewPart
 						btn6.getSelection());
 			}
 		});
+		final Button btn7 = new Button(group2, SWT.CHECK);
+		btn7.setText("Show recommended solution");
+		btn7.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				GeoSupport.getSolutionDiagnostics().setShowRecommendedSolutions(
+						btn6.getSelection());
+			}
+		});
 
 		// and get the form to handle it's layout
 		form.pack();

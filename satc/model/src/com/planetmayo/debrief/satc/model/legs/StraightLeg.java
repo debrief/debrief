@@ -272,6 +272,8 @@ public class StraightLeg extends CoreLeg
 					BaseContribution thisC = (BaseContribution) iter.next();
 					thisScore += thisC.calculateErrorScoreFor(theRoute);
 				}
+				
+				theRoute.setScore(thisScore);
 			}
 		};
 		applyToRoutes(calcError);

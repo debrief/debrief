@@ -15,73 +15,73 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 public interface IBoundsManager
 {
 	/**
-	 * subscribe to contribution set events  
-	 */		
+	 * subscribe to contribution set events
+	 */
 	void addContributionsListener(IContributionsChangedListener newListener);
-	
+
 	/**
-	 * unsubscribe from contribution set events  
-	 */	
+	 * unsubscribe from contribution set events
+	 */
 	void removeContributionsListener(IContributionsChangedListener newListener);
-	
+
 	/**
-	 * subscribe to progress events 
-	 */	
+	 * subscribe to progress events
+	 */
 	void addBoundStatesListener(IConstrainSpaceListener newListener);
 
 	/**
-	 * unsubscribe from progress events 
-	 */	
+	 * unsubscribe from progress events
+	 */
 	void removeSteppingListener(IConstrainSpaceListener newListener);
-	
+
 	/**
-	 * add contribution which will be used in constraint phase	
+	 * add contribution which will be used in constraint phase
 	 */
 	void addContribution(BaseContribution contribution);
 
 	/**
-	 * remove contribution from constraint phase	
-	 */	
+	 * remove contribution from constraint phase
+	 */
 	void removeContribution(BaseContribution contribution);
-	
-	/** 
+
+	/**
 	 * @return contributions which are used to contraint the problem space
 	 */
 	Collection<BaseContribution> getContributions();
-	
+
 	/**
 	 * store the vehicle type, restart the process if started
 	 * 
 	 * @param v
 	 *          the new vehicle type
 	 */
-	void setVehicleType(VehicleType v);	
-	
+	void setVehicleType(VehicleType v);
+
 	/**
 	 * specify whether we should do a 'run' after each contribution change
 	 * 
 	 * @param checked
 	 */
 	void setLiveRunning(boolean checked);
-	
+
 	/**
 	 * indicate whether we do 'run' after each contribution change
 	 * 
 	 * @return
 	 */
 	boolean isLiveEnabled();
-	
+
 	/**
 	 * restart the set of contributions
 	 * 
 	 */
 	void restart();
-	
+
 	/**
 	 * clear problem space and remove all contributions
 	 * 
 	 */
-	void clear();	
+	void clear();
 
 	/**
 	 * run through the remaining contributions
@@ -94,78 +94,94 @@ public interface IBoundsManager
 	 * 
 	 */
 	void step();
-	
+
 	/**
 	 * @return contribution which was processed on current step
 	 */
 	BaseContribution getCurrentContribution();
-	
+
 	/**
 	 * @return current step number
 	 */
 	int getCurrentStep();
-	
+
 	/**
 	 * @return constrained problem space on current space
 	 */
 	ProblemSpace getSpace();
-	
+
 	/**
 	 * 
-	 * @return is bounds manager already processed all contributions 
+	 * @return is bounds manager already processed all contributions
 	 */
 	boolean isCompleted();
-	
 
-	/** control what diagnostic data is broadcast during constrain problem space phase
+	/**
+	 * control what diagnostic data is broadcast during constrain problem space
+	 * phase
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	public static interface IShowBoundProblemSpaceDiagnostics
 	{
-		/** broadcast all of the bounded states
+		/**
+		 * broadcast all of the bounded states
 		 * 
 		 * @param onOff
 		 */
 		public void setShowAllBounds(boolean onOff);
-		
-		/** broadcast just the leg end states
+
+		/**
+		 * broadcast just the leg end states
 		 * 
 		 * @param onOff
 		 */
 		public void setShowLegEndBounds(boolean onOff);
 	}
 
-	/** control what diagnostic data is broadcast during generate solutions phase
+	/**
+	 * control what diagnostic data is broadcast during generate solutions phase
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
 	public static interface IShowGenerateSolutionsDiagnostics
 	{
-		/** broadcast the list of generated grid points
+		/**
+		 * whether to show the whole grid of start/end points
 		 * 
-		 * @param routes
+		 * @param onOff
 		 */
 		public void setShowPoints(boolean onOff);
-		
-		/** broadcast the list of achievable grid points
+
+		/**
+		 * whether to just show the achievable start/end points
 		 * 
-		 * @param routes
+		 * @param onOff
 		 */
 		public void setShowAchievablePoints(boolean onOff);
-		
-		/** show the achievable routes inside legs
+
+		/**
+		 * whether to show the achievable routes inside legs
 		 * 
-		 * @param routes
+		 * @param onOff
 		 */
 		public void setShowRoutes(boolean onOff);
-		
-		/** show the processed routes, including scores
+
+		/**
+		 * whether to show the processed routes, including scores
 		 * 
-		 * @param routes
+		 * @param onOff
 		 */
 		public void setShowRoutesWithScores(boolean onOff);
+
+		/**
+		 * whether to show the final recommended solution(s)
+		 * 
+		 * @param onOff
+		 */
+		public void setShowRecommendedSolutions(boolean onOff);
+
 	}
 }
