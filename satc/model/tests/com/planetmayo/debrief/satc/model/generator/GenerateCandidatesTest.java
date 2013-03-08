@@ -20,7 +20,7 @@ import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContributio
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.SolutionGenerator.ISolutionsReadyListener;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
@@ -542,11 +542,29 @@ public class GenerateCandidatesTest extends ModelTestBase
 		}
 
 		SolutionGenerator genny = new SolutionGenerator();
-		genny.addReadyListener(new ISolutionsReadyListener()
+		genny.addReadyListener(new IGenerateSolutionsListener()
 		{
 			public void solutionsReady(CompositeRoute[] routes)
 			{
 				called = true;
+			}
+
+			@Override
+			public void legsDiced()
+			{
+				// TODO: IAN - LOW, test this
+			}
+
+			@Override
+			public void legsGenerated()
+			{
+				// TODO: IAN - LOW, test this
+			}
+
+			@Override
+			public void legsScored()
+			{
+				// TODO: IAN - LOW, test this
 			}
 		});
 
@@ -554,7 +572,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertFalse("not called yet", called);
 
 		// ok, get firing
-		genny.complete(boundsManager);
+		genny.run(boundsManager);
 
 		// ok, get it to run
 		assertTrue("now called yet", called);

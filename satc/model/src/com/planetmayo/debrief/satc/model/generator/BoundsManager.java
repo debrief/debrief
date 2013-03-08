@@ -11,11 +11,11 @@ import java.util.TreeSet;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 
 /**
  * the top level manager object that handles the generation of bounded
@@ -24,8 +24,7 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
  * @author ian
  * 
  */
-public class BoundsManager implements IBoundsManager,
-		IBoundsManager.IShowBoundProblemSpaceDiagnostics
+public class BoundsManager implements IBoundsManager
 {
 	public static final String STATES_BOUNDED = "states_bounded";
 
@@ -39,7 +38,7 @@ public class BoundsManager implements IBoundsManager,
 	 * people interested in us stepping
 	 * 
 	 */
-	final private ArrayList<ISteppingListener> _steppingListeners = new ArrayList<ISteppingListener>();
+	final private ArrayList<IConstrainSpaceListener> _steppingListeners = new ArrayList<IConstrainSpaceListener>();
 
 	/**
 	 * the problem space we consider
@@ -102,18 +101,6 @@ public class BoundsManager implements IBoundsManager,
 	private boolean _liveRunning = true;
 
 	/**
-	 * whether to broadcast all bounded states
-	 * 
-	 */
-	private boolean _showAllBounds;
-
-	/**
-	 * whether to broadcast leg end bounded states
-	 * 
-	 */
-	private boolean _showLegEndBounds;
-
-	/**
 	 * Contribution listeners stuff
 	 * 
 	 */
@@ -151,20 +138,20 @@ public class BoundsManager implements IBoundsManager,
 	 * 
 	 */
 	@Override
-	public void addSteppingListener(ISteppingListener newListener)
+	public void addBoundStatesListener(IConstrainSpaceListener newListener)
 	{
 		_steppingListeners.add(newListener);
 	}
 
 	@Override
-	public void removeSteppingListener(ISteppingListener newListener)
+	public void removeSteppingListener(IConstrainSpaceListener newListener)
 	{
 		_steppingListeners.remove(newListener);
 	}
 
 	protected void fireStepped(int thisStep, int totalSteps)
 	{
-		for (ISteppingListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : _steppingListeners)
 		{
 			listener.stepped(this, thisStep, totalSteps);
 		}
@@ -172,15 +159,15 @@ public class BoundsManager implements IBoundsManager,
 
 	protected void fireComplete()
 	{
-		for (ISteppingListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : _steppingListeners)
 		{
-			listener.complete(this);
+			listener.statesBounded(this);
 		}
 	}
 
 	protected void fireRestarted()
 	{
-		for (ISteppingListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : _steppingListeners)
 		{
 			listener.restarted(this);
 		}
@@ -188,7 +175,7 @@ public class BoundsManager implements IBoundsManager,
 
 	protected void fireError(IncompatibleStateException ex)
 	{
-		for (ISteppingListener listener : _steppingListeners)
+		for (IConstrainSpaceListener listener : _steppingListeners)
 		{
 			listener.error(this, ex);
 		}
@@ -362,9 +349,6 @@ public class BoundsManager implements IBoundsManager,
 		{
 			step();
 		}
-
-		// ok, do any broadcasting
-		GeoSupport.showStates(_space.states(), _showAllBounds, _showLegEndBounds);
 	}
 
 	/**
@@ -447,27 +431,4 @@ public class BoundsManager implements IBoundsManager,
 		return _space;
 	}
 
-	@Override
-	public void setShowAllBounds(boolean onOff)
-	{
-		_showAllBounds = onOff;
-	}
-
-	@Override
-	public void setShowLegEndBounds(boolean onOff)
-	{
-		_showLegEndBounds = onOff;
-	}
-
-	@Override
-	public IShowGenerateSolutionsDiagnostics getGeneratorDiagnostics()
-	{
-		return _genny;
-	}
-
-	@Override
-	public IShowBoundProblemSpaceDiagnostics getProblemSpaceDiagnostics()
-	{
-		return this;
-	}
 }

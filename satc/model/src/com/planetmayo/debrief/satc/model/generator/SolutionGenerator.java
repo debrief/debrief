@@ -5,19 +5,17 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SolutionGenerator implements  ISteppingListener,
-		IBoundsManager.IShowGenerateSolutionsDiagnostics
+public class SolutionGenerator
 {
 	/**
 	 * how many cells shall we break the polygons down into?
@@ -29,48 +27,19 @@ public class SolutionGenerator implements  ISteppingListener,
 	 * anybody interested in a new solution being ready?
 	 * 
 	 */
-	private ArrayList<ISolutionsReadyListener> _readyListeners;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showPoints;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showAchievablePoints;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRoutes;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRoutesWithScores;
+	private ArrayList<IGenerateSolutionsListener> _readyListeners;
 
 	public SolutionGenerator()
 	{
-		_readyListeners = new ArrayList<ISolutionsReadyListener>();
+		_readyListeners = new ArrayList<IGenerateSolutionsListener>();
 	}
 
-	public void addReadyListener(ISolutionsReadyListener listener)
+	public void addReadyListener(IGenerateSolutionsListener listener)
 	{
 		_readyListeners.add(listener);
 	}
 
-	@Override
-	public void complete(final IBoundsManager boundsManager)
+	public void run(final IBoundsManager boundsManager)
 	{
 		// ok - it's complete. now we can process it
 		ProblemSpace space = boundsManager.getSpace();
@@ -97,14 +66,10 @@ public class SolutionGenerator implements  ISteppingListener,
 		CompositeRoute[] routes = generateCandidates(theLegs);
 
 		// and we're done, share the good news!
-		for (ISolutionsReadyListener listener : _readyListeners)
+		for (IGenerateSolutionsListener listener : _readyListeners)
 		{
 			listener.solutionsReady(routes);
 		}
-
-		// and fire the diagnostics to the UI
-		GeoSupport.showRoutes(routes, _showPoints, _showAchievablePoints,
-				_showRoutes, _showRoutesWithScores);
 	}
 
 	/**
@@ -359,24 +324,6 @@ public class SolutionGenerator implements  ISteppingListener,
 		return res;
 	}
 
-	@Override
-	public void restarted(IBoundsManager boundsManager)
-	{
-		// restarted, clear out any temp storage
-	}
-
-	@Override
-	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
-	{
-		// gen contributions failed
-	}
-
-	@Override
-	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
-	{
-		// step forward in generated solutions. We should prob ignore this
-	}
-
 	/**
 	 * utility interface to make it easy to operate on all legs
 	 * 
@@ -393,44 +340,4 @@ public class SolutionGenerator implements  ISteppingListener,
 		public void apply(CoreLeg thisLeg);
 	}
 
-	/**
-	 * listener for someone who wants to know if we've managed to generate some
-	 * routes
-	 * 
-	 * @author Ian
-	 * 
-	 */
-	public static interface ISolutionsReadyListener
-	{
-		/**
-		 * a set of candidate routes have been generated
-		 * 
-		 * @param routes
-		 */
-		public void solutionsReady(CompositeRoute[] routes);
-	}
-
-	@Override
-	public void setShowPoints(boolean onOff)
-	{
-		_showPoints = onOff;
-	}
-
-	@Override
-	public void setShowAchievablePoints(boolean onOff)
-	{
-		_showAchievablePoints = onOff;
-	}
-
-	@Override
-	public void setShowRoutes(boolean onOff)
-	{
-		_showRoutes = onOff;
-	}
-
-	@Override
-	public void setShowRoutesWithScores(boolean onOff)
-	{
-		_showRoutesWithScores = onOff;
-	}
 }

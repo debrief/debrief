@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 /**
@@ -27,12 +28,12 @@ public interface IBoundsManager
 	/**
 	 * subscribe to progress events 
 	 */	
-	void addSteppingListener(ISteppingListener newListener);
+	void addBoundStatesListener(IConstrainSpaceListener newListener);
 
 	/**
 	 * unsubscribe from progress events 
 	 */	
-	void removeSteppingListener(ISteppingListener newListener);
+	void removeSteppingListener(IConstrainSpaceListener newListener);
 	
 	/**
 	 * add contribution which will be used in constraint phase	
@@ -115,14 +116,6 @@ public interface IBoundsManager
 	 * @return is bounds manager already processed all contributions 
 	 */
 	boolean isCompleted();
-	
-	/** return the solution generator object
-	 * 
-	 * @return
-	 */
-	IShowGenerateSolutionsDiagnostics getGeneratorDiagnostics();
-	
-	IShowBoundProblemSpaceDiagnostics getProblemSpaceDiagnostics();
 	
 
 	/** control what diagnostic data is broadcast during constrain problem space phase

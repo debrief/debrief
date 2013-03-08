@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 /**
@@ -10,31 +11,64 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
  */
 public interface ISteppingListener
 {
-	/**
-	 * stepping is complete
-	 * 
-	 */
-	void complete(IBoundsManager boundsManager);
+	public static interface IConstrainSpaceListener
+	{
 
-	/**
-	 * the sequence has restarted
-	 * 
-	 */
-	void restarted(IBoundsManager boundsManager);
-	
-	/**
-	 * error was appeared during processing
-	 * 
-	 */
-	void error(IBoundsManager boundsManager, IncompatibleStateException ex);	
+		/**
+		 * bound the states is complete
+		 * 
+		 */
+		void statesBounded(IBoundsManager boundsManager);
 
-	/**
-	 * a step has been performed
-	 * 
-	 * @param thisStep
-	 *          the index of this step (zero-origin)
-	 * @param totalSteps
-	 *          the total number of steps
-	 */
-	void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps);
+		/**
+		 * the sequence has restarted
+		 * 
+		 */
+		void restarted(IBoundsManager boundsManager);
+
+		/**
+		 * error was appeared during processing
+		 * 
+		 */
+		void error(IBoundsManager boundsManager, IncompatibleStateException ex);
+
+		/**
+		 * a step has been performed
+		 * 
+		 * @param thisStep
+		 *          the index of this step (zero-origin)
+		 * @param totalSteps
+		 *          the total number of steps
+		 */
+		void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps);
+	}
+
+	public static interface IGenerateSolutionsListener
+	{
+		/**
+		 * we've diced up the leg ends
+		 * 
+		 */
+		void legsDiced();
+
+		/**
+		 * we've generated the routes
+		 * 
+		 */
+		void legsGenerated();
+
+		/**
+		 * we've sorted out the leg scores
+		 * 
+		 */
+		void legsScored();
+
+		/**
+		 * we have some solutions
+		 * @param routes 
+		 * 
+		 */
+		void solutionsReady(CompositeRoute[] routes);
+	}
+
 }

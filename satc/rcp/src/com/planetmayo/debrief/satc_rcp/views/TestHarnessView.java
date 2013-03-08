@@ -14,6 +14,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 /**
@@ -105,22 +106,23 @@ public class TestHarnessView extends ViewPart
 		
 		form.setLayout(new FillLayout(SWT.HORIZONTAL));
 		final Button btn1 = new Button(group1, SWT.CHECK);
-		btn1.setText("Show all legs");
+		btn1.setText("Show all bounds");
 		btn1.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.getProblemSpaceDiagnostics().setShowAllBounds(
+				
+				GeoSupport.getProblemDiagnostics().setShowAllBounds(
 						btn1.getSelection());
 			}
 		});
 		final Button btn2 = new Button(group1, SWT.CHECK);
-		btn2.setText("Show leg ends");
+		btn2.setText("Show leg start bounds");
 		btn2.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.getProblemSpaceDiagnostics().setShowLegEndBounds(
+				GeoSupport.getProblemDiagnostics().setShowLegEndBounds(
 						btn2.getSelection());
 			}
 		});
@@ -130,7 +132,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.getGeneratorDiagnostics().setShowPoints(
+				GeoSupport.getSolutionDiagnostics().setShowPoints(
 						btn3.getSelection());
 			}
 		});
@@ -140,7 +142,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.getGeneratorDiagnostics().setShowAchievablePoints(
+				GeoSupport.getSolutionDiagnostics().setShowAchievablePoints(
 						btn4.getSelection());
 			}
 		});
@@ -151,7 +153,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.getGeneratorDiagnostics().setShowRoutes(
+				GeoSupport.getSolutionDiagnostics().setShowRoutes(
 						btn5.getSelection());
 			}
 		});
@@ -161,12 +163,10 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.getGeneratorDiagnostics().setShowRoutesWithScores(
+				GeoSupport.getSolutionDiagnostics().setShowRoutesWithScores(
 						btn6.getSelection());
 			}
 		});
-
-		// TODO: provide the remaining buttons
 
 		// and get the form to handle it's layout
 		form.pack();

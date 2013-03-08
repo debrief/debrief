@@ -37,7 +37,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author ian
  * 
  */
-public class TrackStatesView extends ViewPart implements ISteppingListener
+public class TrackStatesView extends ViewPart implements ISteppingListener.IConstrainSpaceListener
 {
 
 	class NameSorter extends ViewerSorter
@@ -106,9 +106,9 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.TrackStatesView";
-	
+
 	private IBoundsManager boundsManager;
-	
+
 	private TableViewer viewer;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
 
@@ -132,7 +132,8 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		boundsManager = SATC_Activator.getDefault().getService(IBoundsManager.class, true);
+		boundsManager = SATC_Activator.getDefault().getService(
+				IBoundsManager.class, true);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -184,7 +185,8 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 					Geometry myArea = loc.getGeometry();
 					Geometry theBoundary = myArea.convexHull();
 					double theArea = theBoundary.getArea();
-					res = myArea.getCoordinates().length + "pts " + (int) (theArea * 100000);					
+					res = myArea.getCoordinates().length + "pts "
+							+ (int) (theArea * 100000);
 				}
 				else
 					res = "n/a";
@@ -206,7 +208,8 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 				BoundedState bs = (BoundedState) element;
 				SpeedRange range = bs.getSpeed();
 				if (range != null)
-					res = (int) GeoSupport.MSec2kts(range.getMin()) + " - " + (int) GeoSupport.MSec2kts(range.getMax());
+					res = (int) GeoSupport.MSec2kts(range.getMin()) + " - "
+							+ (int) GeoSupport.MSec2kts(range.getMax());
 				else
 					res = "n/a";
 
@@ -227,14 +230,15 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 				BoundedState bs = (BoundedState) element;
 				CourseRange range = bs.getCourse();
 				if (range != null)
-					res = (int) Math.toDegrees(range.getMin()) + " - " + (int) Math.toDegrees(range.getMax());					
+					res = (int) Math.toDegrees(range.getMin()) + " - "
+							+ (int) Math.toDegrees(range.getMax());
 				else
 					res = "n/a";
 
 				return res;
 			}
 		});
-		
+
 		TableViewerColumn col5 = new TableViewerColumn(viewer, SWT.NONE);
 		col5.getColumn().setText("Leg");
 		col5.getColumn().setWidth(100);
@@ -247,15 +251,13 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 				BoundedState bs = (BoundedState) element;
 				String leg = bs.getMemberOf();
 				if (leg != null)
-					res = leg;					
+					res = leg;
 				else
 					res = " ";
 
 				return res;
 			}
 		});
-
-		
 
 		makeActions();
 		contributeToActionBars();
@@ -264,10 +266,8 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 		 * and listen out for track generators
 		 * 
 		 */
-		boundsManager.addSteppingListener(this);
+		boundsManager.addBoundStatesListener(this);
 	}
-	
-	
 
 	@Override
 	public void dispose()
@@ -277,7 +277,7 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 	}
 
 	@Override
-	public void complete(IBoundsManager boundsManager)
+	public void statesBounded(IBoundsManager boundsManager)
 	{
 		viewer.setInput(boundsManager.getSpace().states());
 	}
@@ -285,7 +285,7 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 	@Override
 	public void restarted(IBoundsManager boundsManager)
 	{
-		viewer.setInput(null);		
+		viewer.setInput(null);
 	}
 
 	@Override
@@ -299,16 +299,16 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 		viewer.setInput(null);
 		//
 		// MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-		// "Bounding states", "Incompatible states found");		
+		// "Bounding states", "Incompatible states found");
 	}
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
-		if (_debugMode.isChecked()) 
+		if (_debugMode.isChecked())
 		{
 			viewer.setInput(boundsManager.getSpace().states());
-		}		
+		}
 	}
 
 	private void fillLocalPullDown(IMenuManager manager)
@@ -339,4 +339,5 @@ public class TrackStatesView extends ViewPart implements ISteppingListener
 	{
 		viewer.getControl().setFocus();
 	}
+
 }
