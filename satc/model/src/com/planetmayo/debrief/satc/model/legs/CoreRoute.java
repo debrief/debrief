@@ -40,11 +40,11 @@ public class CoreRoute
 	 * 
 	 */
 	protected ArrayList<State> _myStates = null;
-	/** the identifier for this route
+	/**
+	 * the identifier for this route
 	 * 
 	 */
 	protected final String _name;
-
 
 	protected CoreRoute(Point startP, Point endP, Date startTime, Date endTime,
 			String name)
@@ -63,7 +63,7 @@ public class CoreRoute
 
 	public State last()
 	{
-		return _myStates.get(_myStates.size()-1);
+		return _myStates.get(_myStates.size() - 1);
 	}
 
 	public String getName()
@@ -73,7 +73,17 @@ public class CoreRoute
 
 	public long getElapsedTime()
 	{
-		return (_endTime.getTime() - _startTime.getTime())/1000;
+		return (_endTime.getTime() - _startTime.getTime()) / 1000;
+	}
+
+	public Point getStartPoint()
+	{
+		return _startP;
+	}
+
+	public Point getEndPoing()
+	{
+		return _endP;
 	}
 
 	/**

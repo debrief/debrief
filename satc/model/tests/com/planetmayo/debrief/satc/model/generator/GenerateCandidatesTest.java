@@ -20,7 +20,6 @@ import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContributio
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
@@ -121,13 +120,13 @@ public class GenerateCandidatesTest extends ModelTestBase
 		}
 	}
 
-//	private void writeThisLeg(CoreLeg leg)
-//	{
-//		Date first = leg.getFirst().getTime();
-//		Date last = leg.getLast().getTime();
-//		System.out.println("type:" + leg.getType() + " first:" + first + " last:"
-//				+ last);
-//	}
+	// private void writeThisLeg(CoreLeg leg)
+	// {
+	// Date first = leg.getFirst().getTime();
+	// Date last = leg.getLast().getTime();
+	// System.out.println("type:" + leg.getType() + " first:" + first + " last:"
+	// + last);
+	// }
 
 	@Test
 	public void testJTSWithin() throws ParseException
@@ -203,7 +202,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 		// handraulically force the other point-B (1,3) points to fail
 		sl1.getRoutes()[3][1].setImpossible();
-	//	sl1.getRoutes()[3][0].setImpossible();
+		// sl1.getRoutes()[3][0].setImpossible();
 
 		// now for the second straight leg
 
@@ -294,26 +293,27 @@ public class GenerateCandidatesTest extends ModelTestBase
 		int[][] achievable = genny.calculateAchievableRoutesFor(theLegs);
 
 		// ok, how many start routes are there
-		assertEquals("correct num possible routes", 3, util_CountStartLocations(achievable));
+		assertEquals("correct num possible routes", 3,
+				util_CountStartLocations(achievable));
 
-	//	StraightLegTests.util_writeMatrix("straight 1a", sl1.getRoutes());
+		// StraightLegTests.util_writeMatrix("straight 1a", sl1.getRoutes());
 
 		// ok, check they were all cancelled.
-		assertEquals("all start relevant route location allowable", 9, sl1.getNumAchievable());
-		
+		assertEquals("all start relevant route location allowable", 9,
+				sl1.getNumAchievable());
 
 		// ok, now get it to tidy them
 		genny.cancelUnachievable(theLegs, achievable);
 
-//		StraightLegTests.util_writeMatrix("straight 1b", sl1.getRoutes());
+		// StraightLegTests.util_writeMatrix("straight 1b", sl1.getRoutes());
 
 		// ok, check they were all cancelled.
 		assertEquals("start point routes cancelled", 8, sl1.getNumAchievable());
-		
-	//	StraightLegTests.util_writeMatrix("straight 1", sl1.getRoutes());
-//		StraightLegTests.util_writeMatrix("altering 1", a1.getRoutes());
-//		StraightLegTests.util_writeMatrix("straight 2", sl2.getRoutes());
-//		StraightLegTests.util_writeMatrix("achievable", achievable);
+
+		// StraightLegTests.util_writeMatrix("straight 1", sl1.getRoutes());
+		// StraightLegTests.util_writeMatrix("altering 1", a1.getRoutes());
+		// StraightLegTests.util_writeMatrix("straight 2", sl2.getRoutes());
+		// StraightLegTests.util_writeMatrix("achievable", achievable);
 
 	}
 
@@ -550,29 +550,24 @@ public class GenerateCandidatesTest extends ModelTestBase
 			}
 
 			@Override
-			public void legsDiced()
+			public void legsGenerated(ArrayList<CoreLeg> theLegs)
 			{
 				// TODO: IAN - LOW, test this
 			}
 
 			@Override
-			public void legsGenerated()
+			public void legsScored(ArrayList<CoreLeg> theLegs)
 			{
 				// TODO: IAN - LOW, test this
 			}
 
-			@Override
-			public void legsScored()
-			{
-				// TODO: IAN - LOW, test this
-			}
 		});
 
 		// ok, get it to run
 		assertFalse("not called yet", called);
 
 		// ok, get firing
-		genny.run(boundsManager);
+		genny.statesBounded(boundsManager);
 
 		// ok, get it to run
 		assertTrue("now called yet", called);

@@ -1,5 +1,12 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -14,14 +21,11 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.support.TestSupport;
-
-import static org.junit.Assert.*;
 
 @SuppressWarnings("deprecation")
 public class BoundsManagerTest extends ModelTestBase
@@ -50,7 +54,7 @@ public class BoundsManagerTest extends ModelTestBase
 		boundsManager.addContribution(bearingMeasurementContribution);
 		boundsManager.addContribution(courseForecastContribution);
 		boundsManager
-				.addBoundStatesListener(new ISteppingListener.IConstrainSpaceListener()
+				.addBoundStatesListener(new IConstrainSpaceListener()
 				{
 
 					@Override

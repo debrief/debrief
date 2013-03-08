@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public class SolutionGenerator
+public class SolutionGenerator implements IConstrainSpaceListener,
+		ISolutionGenerator
 {
 	/**
 	 * how many cells shall we break the polygons down into?
@@ -27,19 +29,40 @@ public class SolutionGenerator
 	 * anybody interested in a new solution being ready?
 	 * 
 	 */
-	private ArrayList<IGenerateSolutionsListener> _readyListeners;
+	final private ArrayList<IGenerateSolutionsListener> _readyListeners;
 
 	public SolutionGenerator()
 	{
 		_readyListeners = new ArrayList<IGenerateSolutionsListener>();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.planetmayo.debrief.satc.model.generator.ISolutionGenerator#addReadyListener
+	 * (com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener)
+	 */
+	@Override
 	public void addReadyListener(IGenerateSolutionsListener listener)
 	{
 		_readyListeners.add(listener);
 	}
 
-	public void run(final IBoundsManager boundsManager)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.planetmayo.debrief.satc.model.generator.ISolutionGenerator#
+	 * removeReadyListener
+	 * (com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener)
+	 */
+	@Override
+	public void removeReadyListener(IGenerateSolutionsListener listener)
+	{
+		_readyListeners.remove(listener);
+	}
+
+	public void statesBounded(final IBoundsManager boundsManager)
 	{
 		// ok - it's complete. now we can process it
 		ProblemSpace space = boundsManager.getSpace();
@@ -59,17 +82,20 @@ public class SolutionGenerator
 		// ditch the duff permutations
 		cancelUnachievable(theLegs, achievableRes);
 
+		// share the news
+		fireLegsGenerated(theLegs);
+
 		// score the possible routes
 		calculateOptimalRoutes(boundsManager.getContributions(), theLegs);
+
+		// share the news
+		fireLegsScored(theLegs);
 
 		// generate some candidate solutions
 		CompositeRoute[] routes = generateCandidates(theLegs);
 
 		// and we're done, share the good news!
-		for (IGenerateSolutionsListener listener : _readyListeners)
-		{
-			listener.solutionsReady(routes);
-		}
+		fireSolutionsReady(routes);
 	}
 
 	/**
@@ -338,6 +364,75 @@ public class SolutionGenerator
 		 * @param thisLeg
 		 */
 		public void apply(CoreLeg thisLeg);
+	}
+
+	@Override
+	public void restarted(IBoundsManager boundsManager)
+	{
+		// TODO IAN - clear out any calculated data
+
+	}
+
+	@Override
+	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
+	{
+		// TODO IAN - clear out any calculated data
+	}
+
+	@Override
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
+	{
+		// ignore
+	}
+
+	/**
+	 * we've generated the routes
+	 * @param theLegs 
+	 * 
+	 */
+	private void fireLegsGenerated(ArrayList<CoreLeg> theLegs)
+	{
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.legsGenerated(theLegs);
+		}
+	}
+
+	/**
+	 * we've sorted out the leg scores
+	 * @param theLegs 
+	 * 
+	 */
+	private void fireLegsScored(ArrayList<CoreLeg> theLegs)
+	{
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.legsScored(theLegs);
+		}
+
+	}
+
+	/**
+	 * we have some solutions
+	 * 
+	 * @param routes
+	 * 
+	 */
+	private void fireSolutionsReady(CompositeRoute[] routes)
+	{
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.solutionsReady(routes);
+		}
+
+	}
+
+	@Override
+	public void setPrecision(Precision precision)
+	{
+		// TODO: IAN - HIGH, handle the new precision, used in the gridding
+		// algorithm
+		System.out.println("new selection is:" + precision);
 	}
 
 }

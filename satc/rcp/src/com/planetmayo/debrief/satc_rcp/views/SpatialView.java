@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -25,20 +26,25 @@ import org.jfree.experimental.chart.swt.ChartComposite;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
+import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 
 public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		GeoSupport.GeoPlotter, IShowBoundProblemSpaceDiagnostics,
-		IShowGenerateSolutionsDiagnostics, ISteppingListener.IGenerateSolutionsListener
+		IShowGenerateSolutionsDiagnostics, IGenerateSolutionsListener
 {
 	private static JFreeChart _chart;
 
@@ -96,6 +102,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	 */
 	private Collection<BoundedState> _lastStates = null;
 
+	private ISolutionGenerator solutionGenerator;
+
 	@Override
 	public void clear(String title)
 	{
@@ -144,6 +152,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		boundsManager = SATC_Activator.getDefault().getService(
 				IBoundsManager.class, true);
+		solutionGenerator = SATC_Activator.getDefault().getService(
+				ISolutionGenerator.class, true);
 		// get the data ready
 		_myData = new XYSeriesCollection();
 
@@ -160,6 +170,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		// tell the GeoSupport about us
 		GeoSupport.setPlotter(this, this, this);
 		boundsManager.addBoundStatesListener(this);
+		solutionGenerator.addReadyListener(this);
 	}
 
 	@Override
@@ -239,7 +250,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		String lastSeries = "UNSET";
 		Color thisColor = null;
 		int turnCounter = 1;
-		
+
 		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
 		while (iter.hasNext())
@@ -256,7 +267,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 				// ok, what about the name?
 				String legName = null;
-				
+
 				if (thisSeries != lastSeries)
 				{
 					// right this is the start of a new leg
@@ -265,12 +276,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					if (_showLegEndBounds)
 					{
 						showThisState = true;
-						
-						if(thisSeries != null)
+
+						if (thisSeries != null)
 							legName = thisSeries;
 						else
 							legName = "Turn " + turnCounter++;
-						
+
 					}
 
 					// ok, use new color
@@ -312,9 +323,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 						series.add(new XYDataItem(coordinate.y, coordinate.x));
 					}
 					_myData.addSeries(series);
-					
-					// TODO: Akash - we have to do some fancy JFreeChart to set the color for this data series.
-					// I think we may have to retrieve the series index, get the renderer, then set the color
+
+					// TODO: Akash - we have to do some fancy JFreeChart to set the color
+					// for this data series.
+					// I think we may have to retrieve the series index, get the renderer,
+					// then set the color
 					// (or something like that)
 				}
 			}
@@ -422,27 +435,76 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 
 	@Override
-	public void legsDiced()
-	{
-		// TODO: IAN - HIGH process this		
-	}
-
-	@Override
-	public void legsGenerated()
-	{
-		// TODO: IAN - HIGH process this		
-	}
-
-	@Override
-	public void legsScored()
-	{
-		// TODO: IAN - HIGH process this		
-	}
-
-	@Override
 	public void solutionsReady(CompositeRoute[] routes)
 	{
-		// TODO: IAN - HIGH process this		
+		// TODO: IAN - HIGH process this
+	}
+
+	@Override
+	public void legsGenerated(ArrayList<CoreLeg> theLegs)
+	{
+		// hey, are we showing points?
+		if (_showPoints || _showAchievablePoints)
+		{
+			Collection<Point> res = new ArrayList<Point>();
+
+			// ok, loop trough
+			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+			{
+				CoreLeg coreLeg = (CoreLeg) iterator.next();
+
+				// ok, get the points
+				CoreRoute[][] routes = coreLeg.getRoutes();
+
+				// go through the start points
+				int numStart = routes.length;
+				int numEnd = routes[0].length;
+
+				// sort out the start points first
+				for (int i = 0; i < numStart; i++)
+				{
+					CoreRoute[] thisStart = routes[i];
+
+					// ok, are we showing all?
+					Point startPoint = thisStart[0].getStartPoint();
+					if (_showPoints)
+					{
+						// ok, just add it to the list
+						res.add(startPoint);
+					}
+					else
+					{
+						if (_showAchievablePoints)
+						{
+							boolean isPossible = true;
+
+							for (int j = 0; j < numEnd; j++)
+							{
+								CoreRoute thisRoute = thisStart[j];
+
+								if (!thisRoute.isPossible())
+								{
+									isPossible = false;
+									break;
+								}
+							}
+
+							// ok, add it to the list
+							if (isPossible)
+								res.add(startPoint);
+
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	@Override
+	public void legsScored(ArrayList<CoreLeg> theLegs)
+	{
+		// TODO: IAN - HIGH process this
 	}
 
 }

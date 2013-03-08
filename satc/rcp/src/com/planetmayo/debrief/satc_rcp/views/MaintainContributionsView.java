@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -49,6 +50,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
+import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
@@ -122,6 +124,11 @@ public class MaintainContributionsView extends ViewPart implements
 	 */
 	private HashMap<BaseContribution, BaseContributionView<?>> _myControls = new HashMap<BaseContribution, BaseContributionView<?>>();
 
+	/** the solution generator
+	 * 
+	 */
+	private ISolutionGenerator solutionGenerator;
+
 	@Override
 	public void added(BaseContribution contribution)
 	{
@@ -185,6 +192,8 @@ public class MaintainContributionsView extends ViewPart implements
 				.getService(IVehicleTypesManager.class, true);
 		boundsManager = SATC_Activator.getDefault().getService(
 				IBoundsManager.class, true);
+		solutionGenerator = SATC_Activator.getDefault().getService(
+				ISolutionGenerator.class, true);
 
 		initUI(parent);
 		populateContributionList(contributionsManager.getAvailableContributions());
@@ -337,6 +346,18 @@ public class MaintainContributionsView extends ViewPart implements
 			public String getText(Object element)
 			{
 				return ((Precision) element).getLabel();
+			}
+		});
+		precisionsCombo.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+			
+			@Override
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				ISelection sel = precisionsCombo.getSelection();
+				IStructuredSelection cSel = (IStructuredSelection) sel;
+				Precision precision = (Precision) cSel.getFirstElement();
+				solutionGenerator.setPrecision(precision);
 			}
 		});
 

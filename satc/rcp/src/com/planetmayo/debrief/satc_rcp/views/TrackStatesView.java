@@ -21,7 +21,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
+import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -37,7 +37,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author ian
  * 
  */
-public class TrackStatesView extends ViewPart implements ISteppingListener.IConstrainSpaceListener
+public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 {
 
 	class NameSorter extends ViewerSorter

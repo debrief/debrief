@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 /**
