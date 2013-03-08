@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +19,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
 public class SolutionGenerator implements IConstrainSpaceListener,
-		ISolutionGenerator
+		ISolutionGenerator, PropertyChangeListener
 {
 	/**
 	 * how many cells shall we break the polygons down into?
@@ -30,6 +32,18 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 * 
 	 */
 	final private ArrayList<IGenerateSolutionsListener> _readyListeners;
+
+	/**
+	 * the current set of legs
+	 * 
+	 */
+	private ArrayList<CoreLeg> _theLegs;
+
+	/**
+	 * the source of states plus contributions
+	 * 
+	 */
+	private IBoundsManager _boundsManager;
 
 	public SolutionGenerator()
 	{
@@ -64,35 +78,58 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	public void statesBounded(final IBoundsManager boundsManager)
 	{
+		_boundsManager = boundsManager;
+
 		// ok - it's complete. now we can process it
-		ProblemSpace space = boundsManager.getSpace();
+		ProblemSpace mySpace = boundsManager.getSpace();
+
+		// clear the legs
+		if (_theLegs != null)
+			_theLegs.clear();
 
 		// get the legs
-		ArrayList<CoreLeg> theLegs = getTheLegs(space.states());
+		_theLegs = getTheLegs(mySpace.states());
 
 		// get the legs to dice themselves up
-		generateRoutes(theLegs);
+		generateRoutes(_theLegs);
 
 		// get the legs to sort out what is achievable
-		decideAchievable(theLegs);
+		decideAchievable(_theLegs);
 
 		// do the fancy multiplication
-		int[][] achievableRes = calculateAchievableRoutesFor(theLegs);
+		int[][] achievableRes = calculateAchievableRoutesFor(_theLegs);
 
 		// ditch the duff permutations
-		cancelUnachievable(theLegs, achievableRes);
+		cancelUnachievable(_theLegs, achievableRes);
 
 		// share the news
-		fireLegsGenerated(theLegs);
+		fireLegsGenerated(_theLegs);
+
+		// ok, look for the top performer
+		recalculateTopLegs();
+	}
+
+	/**
+	 * calculate the top performer. this method is refactored on its own since it
+	 * may get called when an estimate has changed - so the algorithm doesn't need
+	 * to re-do all the leg definition bits
+	 */
+	private void recalculateTopLegs()
+	{
+		System.out.println("recalculate top legs!!");
+		
+		// just check we have data
+		if (_boundsManager == null || _theLegs == null)
+			return;
 
 		// score the possible routes
-		calculateOptimalRoutes(boundsManager.getContributions(), theLegs);
+		calculateOptimalRoutes(_boundsManager.getContributions(), _theLegs);
 
 		// share the news
-		fireLegsScored(theLegs);
+		fireLegsScored(_theLegs);
 
 		// generate some candidate solutions
-		CompositeRoute[] routes = generateCandidates(theLegs);
+		CompositeRoute[] routes = generateCandidates(_theLegs);
 
 		// and we're done, share the good news!
 		fireSolutionsReady(routes);
@@ -369,14 +406,20 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	@Override
 	public void restarted(IBoundsManager boundsManager)
 	{
-		// TODO IAN - clear out any calculated data
-
+		clearCalcs();
 	}
 
 	@Override
 	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
 	{
-		// TODO IAN - clear out any calculated data
+		clearCalcs();
+	}
+
+	private void clearCalcs()
+	{
+		_theLegs.clear();
+		_theLegs = null;
+		_boundsManager = null;
 	}
 
 	@Override
@@ -387,7 +430,8 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	/**
 	 * we've generated the routes
-	 * @param theLegs 
+	 * 
+	 * @param theLegs
 	 * 
 	 */
 	private void fireLegsGenerated(ArrayList<CoreLeg> theLegs)
@@ -400,7 +444,8 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	/**
 	 * we've sorted out the leg scores
-	 * @param theLegs 
+	 * 
+	 * @param theLegs
 	 * 
 	 */
 	private void fireLegsScored(ArrayList<CoreLeg> theLegs)
@@ -433,6 +478,13 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		// TODO: IAN - HIGH, handle the new precision, used in the gridding
 		// algorithm
 		System.out.println("new selection is:" + precision);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		// ok, we need to do a partial recalt
+		recalculateTopLegs();
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -44,6 +45,24 @@ public class BoundsManager implements IBoundsManager
 				run();
 		}
 	};
+	
+	/**
+	 * property listener = so we know about estimates changing
+	 * 
+	 */
+	private final PropertyChangeListener _estimateListener = new PropertyChangeListener()
+	{
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0)
+		{
+			for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners.iterator(); iterator.hasNext();)
+			{
+				PropertyChangeListener thisL = iterator.next();
+				thisL.propertyChange(arg0);
+			}
+		}
+	};
+
 
 	/**
 	 * the set of contributions we listen to. They are ordered, so that we have
@@ -61,8 +80,9 @@ public class BoundsManager implements IBoundsManager
 	 * 
 	 */
 	final private ArrayList<IContributionsChangedListener> _contributionListeners = new ArrayList<IContributionsChangedListener>();
-	
-	/** the contribution that we're currently processing
+
+	/**
+	 * the contribution that we're currently processing
 	 * 
 	 */
 	private BaseContribution _currentContribution = null;
@@ -97,6 +117,11 @@ public class BoundsManager implements IBoundsManager
 	 */
 	final private ArrayList<IConstrainSpaceListener> _steppingListeners = new ArrayList<IConstrainSpaceListener>();
 
+	/** keep track of folks interested in estimate changes
+	 * 
+	 */
+	private Collection<PropertyChangeListener> _estimateChangedListeners = new ArrayList<PropertyChangeListener>();
+
 	/**
 	 * Stepping listeners stuff
 	 * 
@@ -118,12 +143,20 @@ public class BoundsManager implements IBoundsManager
 		// remember it
 		_contribs.add(contribution);
 
-		// start listening to it
+		// start listening to our interesting properties
 		for (String property : _interestingProperties)
 		{
 			contribution.addPropertyChangeListener(property, _contribListener);
 		}
+		
+		contribution.addPropertyChangeListener(BaseContribution.ESTIMATE, _estimateListener);
+
 		fireContributionAdded(contribution);
+	}
+
+	public void addEstimateChangedListener(PropertyChangeListener listener)
+	{
+		_estimateChangedListeners.add(listener);
 	}
 
 	/**

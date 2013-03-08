@@ -80,6 +80,7 @@ public class SATC_Activator extends AbstractUIPlugin
 				boundsM, new Hashtable<String, Object>());
 		SolutionGenerator solutionG = new SolutionGenerator();
 		boundsM.addBoundStatesListener(solutionG);
+		boundsM.addEstimateChangedListener(solutionG);
 		context.registerService(ISolutionGenerator.class, 
 				solutionG, new Hashtable<String, Object>());
 	}
