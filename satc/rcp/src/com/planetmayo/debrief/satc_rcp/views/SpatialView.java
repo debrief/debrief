@@ -412,9 +412,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// TODO: AKASH: configure the renderer to not show lines, but as points
 		// (large/small)
-		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1.0f, new float[]
-				{ 10.0f, 6.0f }, 0.0f));
+		_renderer.setSeriesShapesVisible(num, true);
+		_renderer.setSeriesLinesVisible(num, false);
+		
+		// TODO: AKASH - there's some probem with the logic here. It really looks like I'm
+		// using the wrong index num, since it looks like one of the bounded state lines
+		// gets switched to be symbols.
+		
 	}
 
 	private int addSeries(String title, Coordinate[] coords)
