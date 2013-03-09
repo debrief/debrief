@@ -29,12 +29,12 @@
 		<link>
 			<name>model</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/model/src</locationURI>
+			<location>C:/Users/Akash-Gupta/Documents/GitHub/SATC_DEB/deb_satc/model/src</location>
 		</link>
 		<link>
 			<name>tests</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/model/tests</locationURI>
+			<location>C:/Users/Akash-Gupta/Documents/GitHub/SATC_DEB/deb_satc/model/tests</location>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -2,7 +2,9 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.jface.action.Action;
@@ -53,7 +55,6 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 
 	private IBoundsManager boundsManager;
 
-
 	@Override
 	public void clear(String title)
 	{
@@ -77,12 +78,12 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 	 * 
 	 * @param _myData2
 	 */
-	
-	private  JFreeChart createChart(XYDataset _myData2)
+
+	private JFreeChart createChart(XYDataset _myData2)
 	{
 		// tell it to draw joined series
 		_renderer = new XYLineAndShapeRenderer(true, false);
-	
+
 		_chart = ChartFactory.createScatterPlot("States", "Lat", "Lon", _myData2,
 				PlotOrientation.HORIZONTAL, true, false, false);
 		_plot = (XYPlot) _chart.getPlot();
@@ -92,7 +93,7 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		_plot.setNoDataMessage("No data available");
 		_plot.setRenderer(_renderer);
 		_chart.getLegend().setVisible(false);
-	
+
 		return _chart;
 	}
 
@@ -154,8 +155,7 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		};
 		_showLegend.setText("Show Legend");
 		_showLegend.setChecked(false);
-		_showLegend
-				.setToolTipText("Show the legend");
+		_showLegend.setToolTipText("Show the legend");
 
 		_resizeButton = new Action("Resize", SWT.NONE)
 		{
@@ -191,9 +191,9 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		}
 		// clear the data
 		// _myData.removeAllSeries();
-		
-		String lastSeries = null;
-		Color thisColor = null;
+
+		ArrayList<String> legType = new ArrayList<String>();
+		HashMap<Comparable, String> keyToLegTypeMapping = new HashMap<Comparable, String>();
 
 		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
@@ -207,23 +207,12 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 				// ok, we've got a new series
 				XYSeries series = new XYSeries(thisS.getTime().toString() + "_"
 						+ _numCycles++, false);
-				
-				// ok, color code the series
-				String thisSeries = thisS.getMemberOf();
-				
-				if(thisSeries != lastSeries)
-				{
-					// ok, use new color
-					
-					// TODO: generate a new color. We should prob allow up to 20 colors, I welcome 
-					// a strategy for generateNewColor()
-					// thisColor = generateNewColor()
-					
-					// and remember the new series
-					lastSeries = thisSeries;
-					
-				}
-				
+
+				if (!legType.contains(thisS.getMemberOf()))
+					legType.add(thisS.getMemberOf());
+
+				// map containing key of series and leg type value.
+				keyToLegTypeMapping.put(series.getKey(), thisS.getMemberOf());
 
 				// get the shape
 				Geometry geometry = loc.getGeometry();
@@ -234,12 +223,33 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 					series.add(new XYDataItem(coordinate.y, coordinate.x));
 				}
 				_myData.addSeries(series);
-				
+
 				// TODO set the color of this series
-			// might be:	_plot.getRenderer(_myData.getSeriesCount()).setPaint(thisColor);
+				// might be:
+				// _plot.getRenderer(_myData.getSeriesCount()).setPaint(thisColor);
 
 			}
 		}
+
+		// get a array of colors according to different variations of leg types
+		Color[] colorsList = getDifferentColors(legType.size());
+
+		// paint each series with color depending on leg type.
+		for (Comparable key : keyToLegTypeMapping.keySet())
+		{
+			_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
+					colorsList[legType.indexOf(keyToLegTypeMapping.get(key))]);
+
+		}
+
+	}
+
+	public static Color[] getDifferentColors(int n)
+	{
+		Color[] cols = new Color[n];
+		for (int i = 0; i < n; i++)
+			cols[i] = Color.getHSBColor((float) (n - i) / n, 1, 1);
+		return cols;
 	}
 
 	@Override
