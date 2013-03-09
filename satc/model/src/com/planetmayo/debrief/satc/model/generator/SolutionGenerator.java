@@ -1,9 +1,12 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
@@ -14,10 +17,9 @@ import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SolutionGenerator implements  ISteppingListener,
-		IBoundsManager.IShowGenerateSolutionsDiagnostics
+public class SolutionGenerator implements IConstrainSpaceListener,
+		ISolutionGenerator, PropertyChangeListener
 {
 	/**
 	 * how many cells shall we break the polygons down into?
@@ -29,82 +31,103 @@ public class SolutionGenerator implements  ISteppingListener,
 	 * anybody interested in a new solution being ready?
 	 * 
 	 */
-	private ArrayList<ISolutionsReadyListener> _readyListeners;
+	final private ArrayList<IGenerateSolutionsListener> _readyListeners;
 
 	/**
-	 * level of diagnostics for user
+	 * the current set of legs
 	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
 	 */
-	private boolean _showPoints;
+	private ArrayList<CoreLeg> _theLegs;
 
 	/**
-	 * level of diagnostics for user
+	 * the source of states plus contributions
 	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
 	 */
-	private boolean _showAchievablePoints;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRoutes;
-
-	/**
-	 * level of diagnostics for user
-	 * 
-	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
-	 */
-	private boolean _showRoutesWithScores;
+	private IBoundsManager _boundsManager;
 
 	public SolutionGenerator()
 	{
-		_readyListeners = new ArrayList<ISolutionsReadyListener>();
+		_readyListeners = new ArrayList<IGenerateSolutionsListener>();
 	}
 
-	public void addReadyListener(ISolutionsReadyListener listener)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.planetmayo.debrief.satc.model.generator.ISolutionGenerator#addReadyListener
+	 * (com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener)
+	 */
+	@Override
+	public void addReadyListener(IGenerateSolutionsListener listener)
 	{
 		_readyListeners.add(listener);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.planetmayo.debrief.satc.model.generator.ISolutionGenerator#
+	 * removeReadyListener
+	 * (com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener)
+	 */
 	@Override
-	public void complete(final IBoundsManager boundsManager)
+	public void removeReadyListener(IGenerateSolutionsListener listener)
 	{
+		_readyListeners.remove(listener);
+	}
+
+	public void statesBounded(final IBoundsManager boundsManager)
+	{
+		_boundsManager = boundsManager;
+
 		// ok - it's complete. now we can process it
-		ProblemSpace space = boundsManager.getSpace();
+		ProblemSpace mySpace = boundsManager.getSpace();
+
+		// clear the legs
+		if (_theLegs != null)
+			_theLegs.clear();
 
 		// get the legs
-		ArrayList<CoreLeg> theLegs = getTheLegs(space.states());
+		_theLegs = getTheLegs(mySpace.states());
 
 		// get the legs to dice themselves up
-		generateRoutes(theLegs);
+		generateRoutes(_theLegs);
 
 		// get the legs to sort out what is achievable
-		decideAchievable(theLegs);
+		decideAchievable(_theLegs);
 
 		// do the fancy multiplication
-		int[][] achievableRes = calculateAchievableRoutesFor(theLegs);
+		int[][] achievableRes = calculateAchievableRoutesFor(_theLegs);
 
 		// ditch the duff permutations
-		cancelUnachievable(theLegs, achievableRes);
+		cancelUnachievable(_theLegs, achievableRes);
+
+		// ok, look for the top performer
+		recalculateTopLegs();
+	}
+
+	/**
+	 * calculate the top performer. this method is refactored on its own since it
+	 * may get called when an estimate has changed - so the algorithm doesn't need
+	 * to re-do all the leg definition bits
+	 */
+	private void recalculateTopLegs()
+	{
+		// just check we have data
+		if (_boundsManager == null || _theLegs == null)
+			return;
 
 		// score the possible routes
-		calculateOptimalRoutes(boundsManager.getContributions(), theLegs);
+		calculateOptimalRoutes(_boundsManager.getContributions(), _theLegs);
+
+		// share the news
+		fireLegsScored(_theLegs);
 
 		// generate some candidate solutions
-		CompositeRoute[] routes = generateCandidates(theLegs);
+		CompositeRoute[] routes = generateCandidates(_theLegs);
 
 		// and we're done, share the good news!
-		for (ISolutionsReadyListener listener : _readyListeners)
-		{
-			listener.solutionsReady(routes);
-		}
-
-		// and fire the diagnostics to the UI
-		GeoSupport.showRoutes(routes, _showPoints, _showAchievablePoints,
-				_showRoutes, _showRoutesWithScores);
+		fireSolutionsReady(routes);
 	}
 
 	/**
@@ -359,24 +382,6 @@ public class SolutionGenerator implements  ISteppingListener,
 		return res;
 	}
 
-	@Override
-	public void restarted(IBoundsManager boundsManager)
-	{
-		// restarted, clear out any temp storage
-	}
-
-	@Override
-	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
-	{
-		// gen contributions failed
-	}
-
-	@Override
-	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
-	{
-		// step forward in generated solutions. We should prob ignore this
-	}
-
 	/**
 	 * utility interface to make it easy to operate on all legs
 	 * 
@@ -393,44 +398,74 @@ public class SolutionGenerator implements  ISteppingListener,
 		public void apply(CoreLeg thisLeg);
 	}
 
+	@Override
+	public void restarted(IBoundsManager boundsManager)
+	{
+		clearCalcs();
+	}
+
+	@Override
+	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
+	{
+		clearCalcs();
+	}
+
+	private void clearCalcs()
+	{
+		_theLegs.clear();
+		_theLegs = null;
+		_boundsManager = null;
+	}
+
+	@Override
+	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
+	{
+		// ignore
+	}
+
 	/**
-	 * listener for someone who wants to know if we've managed to generate some
-	 * routes
+	 * we've sorted out the leg scores
 	 * 
-	 * @author Ian
+	 * @param theLegs
 	 * 
 	 */
-	public static interface ISolutionsReadyListener
+	private void fireLegsScored(ArrayList<CoreLeg> theLegs)
 	{
-		/**
-		 * a set of candidate routes have been generated
-		 * 
-		 * @param routes
-		 */
-		public void solutionsReady(CompositeRoute[] routes);
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.legsScored(theLegs);
+		}
+
+	}
+
+	/**
+	 * we have some solutions
+	 * 
+	 * @param routes
+	 * 
+	 */
+	private void fireSolutionsReady(CompositeRoute[] routes)
+	{
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.solutionsReady(routes);
+		}
+
 	}
 
 	@Override
-	public void setShowPoints(boolean onOff)
+	public void setPrecision(Precision precision)
 	{
-		_showPoints = onOff;
+		// TODO: IAN - HIGH, handle the new precision, used in the gridding
+		// algorithm
+		System.out.println("new selection is:" + precision);
 	}
 
 	@Override
-	public void setShowAchievablePoints(boolean onOff)
+	public void propertyChange(PropertyChangeEvent evt)
 	{
-		_showAchievablePoints = onOff;
+		// ok, we need to do a partial recalt
+		recalculateTopLegs();
 	}
 
-	@Override
-	public void setShowRoutes(boolean onOff)
-	{
-		_showRoutes = onOff;
-	}
-
-	@Override
-	public void setShowRoutesWithScores(boolean onOff)
-	{
-		_showRoutesWithScores = onOff;
-	}
 }

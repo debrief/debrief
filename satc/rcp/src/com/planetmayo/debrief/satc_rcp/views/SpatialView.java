@@ -25,7 +25,15 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
+import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
+import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -33,9 +41,12 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 
-public class SpatialView extends ViewPart implements ISteppingListener,
-		GeoSupport.GeoPlotter
+public class SpatialView extends ViewPart implements IConstrainSpaceListener,
+		GeoSupport.GeoPlotter, IShowBoundProblemSpaceDiagnostics,
+		IShowGenerateSolutionsDiagnostics, IGenerateSolutionsListener
 {
 	private static JFreeChart _chart;
 
@@ -55,6 +66,68 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 
 	private IBoundsManager boundsManager;
 
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowBoundProblemSpaceDiagnostics
+	 */
+	private boolean _showLegEndBounds;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowBoundProblemSpaceDiagnostics
+	 */
+	private boolean _showAllBounds;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showPoints;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showAchievablePoints;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showRoutes;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	private boolean _showRoutesWithScores;
+
+	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */
+	@SuppressWarnings("unused")
+	private boolean _showRecommendedSolutions;
+
+	/**
+	 * the last set of states we plotted
+	 * 
+	 */
+	private Collection<BoundedState> _lastStates = null;
+
+	private ISolutionGenerator solutionGenerator;
+
+	private ArrayList<CoreLeg> _lastSetOfScoredLegs;
+
+	private CompositeRoute[] _lastSetOfSolutions;
+
 	@Override
 	public void clear(String title)
 	{
@@ -68,9 +141,10 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 	}
 
 	@Override
-	public void complete(IBoundsManager boundsManager)
+	public void statesBounded(IBoundsManager boundsManager)
 	{
-		showData(boundsManager.getSpace().states());
+		_lastStates = boundsManager.getSpace().states();
+		showBoundedStates(_lastStates);
 	}
 
 	/**
@@ -102,6 +176,8 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 	{
 		boundsManager = SATC_Activator.getDefault().getService(
 				IBoundsManager.class, true);
+		solutionGenerator = SATC_Activator.getDefault().getService(
+				ISolutionGenerator.class, true);
 		// get the data ready
 		_myData = new XYSeriesCollection();
 
@@ -116,8 +192,9 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		bars.getToolBarManager().add(_resizeButton);
 
 		// tell the GeoSupport about us
-		GeoSupport.setPlotter(this);
-		boundsManager.addSteppingListener(this);
+		GeoSupport.setPlotter(this, this, this);
+		boundsManager.addBoundStatesListener(this);
+		solutionGenerator.addReadyListener(this);
 	}
 
 	@Override
@@ -163,8 +240,7 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 			@Override
 			public void run()
 			{
-
-				// TODO: resize the plot
+				// TODO: Akash - resize the plot to show all the data
 			}
 
 		};
@@ -183,17 +259,23 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 	{
 	}
 
-	private void showData(Collection<BoundedState> newStates)
+	private void showBoundedStates(Collection<BoundedState> newStates)
 	{
 		if (newStates.isEmpty())
 		{
 			return;
 		}
-		// clear the data
-		// _myData.removeAllSeries();
 
+		// just double-check that we're showing any states
+		if (!_showLegEndBounds && !_showAllBounds)
+			return;
+
+		String lastSeries = "UNSET";
+		int turnCounter = 1;
+		
 		ArrayList<String> legType = new ArrayList<String>();
 		HashMap<Comparable, String> keyToLegTypeMapping = new HashMap<Comparable, String>();
+
 
 		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
@@ -204,44 +286,94 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 			LocationRange loc = thisS.getLocation();
 			if (loc != null)
 			{
-				// ok, we've got a new series
-				XYSeries series = new XYSeries(thisS.getTime().toString() + "_"
-						+ _numCycles++, false);
+				boolean showThisState = false;
 
-				if (!legType.contains(thisS.getMemberOf()))
-					legType.add(thisS.getMemberOf());
+				// ok, color code the series
+				String thisSeries = thisS.getMemberOf();
 
-				// map containing key of series and leg type value.
-				keyToLegTypeMapping.put(series.getKey(), thisS.getMemberOf());
+				// ok, what about the name?
+				String legName = null;
 
-				// get the shape
-				Geometry geometry = loc.getGeometry();
-				Coordinate[] boundary = geometry.getCoordinates();
-				for (int i = 0; i < boundary.length; i++)
+				if (thisSeries != lastSeries)
 				{
-					Coordinate coordinate = boundary[i];
-					series.add(new XYDataItem(coordinate.y, coordinate.x));
+					// right this is the start of a new leg
+
+					// are we storing leg ends?
+					if (_showLegEndBounds)
+					{
+						showThisState = true;
+
+						if (thisSeries != null)
+							legName = thisSeries;
+						else
+							legName = "Turn " + turnCounter++;
+
+					}
+
+					// ok, use new color
+
+					// TODO: generate a new color. We should prob allow up to 20 colors, I
+					// welcome
+					// a strategy for generateNewColor()
+
+					// and remember the new series
+					lastSeries = thisSeries;
+
 				}
-				_myData.addSeries(series);
 
-				// TODO set the color of this series
-				// might be:
-				// _plot.getRenderer(_myData.getSeriesCount()).setPaint(thisColor);
+				// are we adding this leg?
+				if (!showThisState)
+				{
+					// no, but are we showing mid=leg states?
+					if (_showAllBounds)
+					{
+						// yes - we do want mid-way stats, better add it.
+						showThisState = true;
+						legName = thisS.getTime().toString();
+					}
+				}
 
+				// right then do we create a shape (series) for this one?
+				if (showThisState)
+				{
+					// ok, we've got a new series
+					XYSeries series = new XYSeries(legName, false);
+
+					// get the shape
+					Geometry geometry = loc.getGeometry();
+					Coordinate[] boundary = geometry.getCoordinates();
+					for (int i = 0; i < boundary.length; i++)
+					{
+						Coordinate coordinate = boundary[i];
+						series.add(new XYDataItem(coordinate.y, coordinate.x));
+					}
+					
+					if (!legType.contains(legName))
+						legType.add(legName);
+					
+					keyToLegTypeMapping.put(series.getKey(),legName);
+
+					
+					_myData.addSeries(series);
+
+					// TODO: Akash - we have to do some fancy JFreeChart to set the color
+					// for this data series.
+					// I think we may have to retrieve the series index, get the renderer,
+					// then set the color
+					// (or something like that)
+				}
 			}
 		}
-
-		// get a array of colors according to different variations of leg types
+		
 		Color[] colorsList = getDifferentColors(legType.size());
+		
+	// paint each series with color depending on leg type.
+			for (Comparable key : keyToLegTypeMapping.keySet())
+			{
+				_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
+						colorsList[legType.indexOf(keyToLegTypeMapping.get(key))]);
 
-		// paint each series with color depending on leg type.
-		for (Comparable key : keyToLegTypeMapping.keySet())
-		{
-			_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
-					colorsList[legType.indexOf(keyToLegTypeMapping.get(key))]);
-
-		}
-
+			}
 	}
 
 	public static Color[] getDifferentColors(int n)
@@ -260,6 +392,49 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 		if (!_debugMode.isChecked())
 			return;
 
+		plotTheseCoordsAsALine(title, coords);
+
+	}
+
+	private void plotTheseCoordsAsALine(String title, Coordinate[] coords)
+	{
+		int num = addSeries(title, coords);
+
+		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND, 1.0f, new float[]
+				{ 10.0f, 6.0f }, 0.0f));
+	}
+
+	private void plotTheseCoordsAsAPoints(Collection<Point> points,
+			boolean largePoints)
+	{
+		Collection<Coordinate> coords = new ArrayList<Coordinate>();
+		for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();)
+		{
+			Point point = (Point) iterator.next();
+
+			// ok, add the coordinate of this point
+			coords.add(point.getCoordinate());
+		}
+		Coordinate[] demo = new Coordinate[]
+		{};
+
+		// create the data series, get the index number
+		int num = addSeries("" + _numCycles++, coords.toArray(demo));
+
+		// TODO: AKASH: configure the renderer to not show lines, but as points
+		// (large/small)
+		_renderer.setSeriesShapesVisible(num, true);
+		_renderer.setSeriesLinesVisible(num, false);
+		
+		// TODO: AKASH - there's some probem with the logic here. It really looks like I'm
+		// using the wrong index num, since it looks like one of the bounded state lines
+		// gets switched to be symbols.
+		
+	}
+
+	private int addSeries(String title, Coordinate[] coords)
+	{
 		// ok, we've got a new series
 		XYSeries series = new XYSeries(title, false);
 
@@ -273,17 +448,238 @@ public class SpatialView extends ViewPart implements ISteppingListener,
 
 		// get the series num
 		int num = _myData.getSeriesCount();
-
-		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1.0f, new float[]
-				{ 10.0f, 6.0f }, 0.0f));
-
+		return num;
 	}
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked())
-			showData(boundsManager.getSpace().states());
+			showBoundedStates(boundsManager.getSpace().states());
+	}
+
+	@Override
+	public void setShowAllBounds(boolean onOff)
+	{
+		_showAllBounds = onOff;
+
+		redoChart();
+	}
+
+	@Override
+	public void setShowLegEndBounds(boolean onOff)
+	{
+		_showLegEndBounds = onOff;
+
+		redoChart();
+	}
+
+	@Override
+	public void setShowRecommendedSolutions(boolean onOff)
+	{
+		_showRecommendedSolutions = onOff;
+
+		redoChart();
+	}
+
+	private void redoChart()
+	{
+		// clear the UI
+		clear(null);
+
+		// and replot
+		if (_lastStates != null)
+			showBoundedStates(_lastStates);
+		if (_lastSetOfScoredLegs != null)
+			legsScored(_lastSetOfScoredLegs);
+		if (_lastSetOfSolutions != null)
+			solutionsReady(_lastSetOfSolutions);
+	}
+
+	@Override
+	public void setShowPoints(boolean onOff)
+	{
+		_showPoints = onOff;
+
+		redoChart();
+	}
+
+	@Override
+	public void setShowAchievablePoints(boolean onOff)
+	{
+		_showAchievablePoints = onOff;
+		redoChart();
+	}
+
+	@Override
+	public void setShowRoutes(boolean onOff)
+	{
+		_showRoutes = onOff;
+		redoChart();
+	}
+
+	@Override
+	public void setShowRoutesWithScores(boolean onOff)
+	{
+		_showRoutesWithScores = onOff;
+		redoChart();
+	}
+
+	@Override
+	public void solutionsReady(CompositeRoute[] routes)
+	{
+		_lastSetOfSolutions = routes;
+
+		// TODO: IAN - HIGH present the optimal solutions
+	}
+
+	private static class ScoredRoute
+	{
+		private LineString theRoute;
+		private double theScore;
+
+		public ScoredRoute(LineString route, double score)
+		{
+			theRoute = route;
+			theScore = score;
+		}
+	}
+
+	@Override
+	public void legsScored(ArrayList<CoreLeg> theLegs)
+	{
+		_lastSetOfScoredLegs = theLegs;
+
+		// hey, are we showing points?
+		if (_showPoints || _showAchievablePoints || _showRoutes)
+		{
+			Collection<Point> allPoints = new ArrayList<Point>();
+			Collection<Point> possiblePoints = new ArrayList<Point>();
+			Collection<LineString> possibleRoutes = new ArrayList<LineString>();
+			Collection<ScoredRoute> scoredRoutes = new ArrayList<ScoredRoute>();
+
+			// ok, loop trough
+			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+			{
+				CoreLeg thisLeg = (CoreLeg) iterator.next();
+
+				// ok, get the points
+				CoreRoute[][] routes = thisLeg.getRoutes();
+
+				// go through the start points
+				int numStart = routes.length;
+				int numEnd = routes[0].length;
+
+				// sort out the start points first
+				for (int i = 0; i < numStart; i++)
+				{
+					CoreRoute[] thisStart = routes[i];
+
+					// ok, are we showing all?
+					Point startPoint = thisStart[0].getStartPoint();
+					if (_showPoints)
+					{
+						// ok, just add it to the list
+						allPoints.add(startPoint);
+					}
+
+					// ok - do we need to check which ones have any valid points?
+					if (_showAchievablePoints || _showRoutes)
+					{
+						boolean isPossible = false;
+
+						for (int j = 0; j < numEnd; j++)
+						{
+							CoreRoute thisRoute = thisStart[j];
+
+							if (thisRoute.isPossible())
+							{
+								isPossible = true;
+
+								// we're only currently going to draw lines for straight legs
+								if (thisLeg.getType() == LegType.STRAIGHT)
+								{
+									if (_showRoutes || _showRoutesWithScores)
+									{
+										Coordinate[] coords = new Coordinate[]
+										{ thisRoute.getStartPoint().getCoordinate(),
+												thisRoute.getEndPoing().getCoordinate() };
+										LineString newR = GeoSupport.getFactory().createLineString(
+												coords);
+
+										if (_showRoutes)
+											possibleRoutes.add(newR);
+
+										if (_showRoutesWithScores)
+											scoredRoutes.add(new ScoredRoute(newR, thisRoute
+													.getScore()));
+									}
+								}
+							}
+						}
+
+						// ok, add it to the list
+						if (isPossible)
+						{
+
+							if (_showAchievablePoints)
+								possiblePoints.add(startPoint);
+						}
+					}
+
+				}
+			}
+
+			System.out.println("num all points:" + allPoints.size());
+			System.out.println("num achievable points:" + possiblePoints.size());
+
+			plotTheseCoordsAsAPoints(allPoints, false);
+			plotTheseCoordsAsAPoints(possiblePoints, true);
+			plotPossibleRoutes(possibleRoutes);
+			plotRoutesWithScores(scoredRoutes);
+
+		}
+
+	}
+
+	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
+	{
+		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
+				.hasNext();)
+		{
+			ScoredRoute route = iterator.next();
+
+			@SuppressWarnings("unused")
+			Point startP = route.theRoute.getStartPoint();
+			@SuppressWarnings("unused")
+			Point endP = route.theRoute.getEndPoint();
+
+			@SuppressWarnings("unused")
+			double thisScore = route.theScore;
+
+			// TODO: Akash, draw a line between these points, colour coded according
+			// to the score
+		}
+
+	}
+
+	private void plotPossibleRoutes(Collection<LineString> possibleRoutes)
+	{
+		for (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
+				.hasNext();)
+		{
+			LineString line = iterator.next();
+
+			// Point startP = line.getStartPoint();
+			// Point endP = line.getEndPoint();
+
+			// TODO: Akash, draw a line between these points
+			// System.out.println(" r:" + startP.getCoordinate() + " " +
+			// endP.getCoordinate());
+
+			plotTheseCoordsAsALine("" + (_numCycles++), line.getCoordinates());
+
+		}
+
 	}
 }

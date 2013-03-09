@@ -2,31 +2,26 @@ package com.planetmayo.debrief.satc.model.generator;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
-/**
- * interface for anybody that wants to know about a stepping generator
- * 
- * @author ian
- * 
- */
-public interface ISteppingListener
+public interface IConstrainSpaceListener
 {
+
 	/**
-	 * stepping is complete
+	 * bound the states is complete
 	 * 
 	 */
-	void complete(IBoundsManager boundsManager);
+	void statesBounded(IBoundsManager boundsManager);
 
 	/**
 	 * the sequence has restarted
 	 * 
 	 */
 	void restarted(IBoundsManager boundsManager);
-	
+
 	/**
 	 * error was appeared during processing
 	 * 
 	 */
-	void error(IBoundsManager boundsManager, IncompatibleStateException ex);	
+	void error(IBoundsManager boundsManager, IncompatibleStateException ex);
 
 	/**
 	 * a step has been performed

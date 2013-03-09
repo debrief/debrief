@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -15,7 +16,6 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
-import com.planetmayo.debrief.satc.util.GeoSupport;
 
 /**
  * the top level manager object that handles the generation of bounded
@@ -24,51 +24,9 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
  * @author ian
  * 
  */
-public class BoundsManager implements IBoundsManager,
-		IBoundsManager.IShowBoundProblemSpaceDiagnostics
+public class BoundsManager implements IBoundsManager
 {
 	public static final String STATES_BOUNDED = "states_bounded";
-
-	/**
-	 * people interested in contributions
-	 * 
-	 */
-	final private ArrayList<IContributionsChangedListener> _contributionListeners = new ArrayList<IContributionsChangedListener>();
-
-	/**
-	 * people interested in us stepping
-	 * 
-	 */
-	final private ArrayList<ISteppingListener> _steppingListeners = new ArrayList<ISteppingListener>();
-
-	/**
-	 * the problem space we consider
-	 */
-	final private ProblemSpace _space = new ProblemSpace();
-	
-	/** the solution generator module
-	 * 
-	 */
-	final private SolutionGenerator _genny = new SolutionGenerator();
-
-	/**
-	 * the set of contributions we listen to. They are ordered, so that we have
-	 * data-producing contributions before those that purely perform analysis.
-	 * Because of BaseContribution.compareTo, the contribs will be in this order:
-	 * 1. Measurement 2. Forecast 3. Analysis
-	 * 
-	 * This is because we need some data before we start analysing it.
-	 * 
-	 */
-	private final TreeSet<BaseContribution> _contribs = new TreeSet<BaseContribution>();
-
-	/**
-	 * the set of contribution properties that we're interested in
-	 * 
-	 */
-	private final String[] _interestingProperties =
-	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
-			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
 
 	/**
 	 * property listener = so we know about contibutions changing
@@ -87,111 +45,91 @@ public class BoundsManager implements IBoundsManager,
 				run();
 		}
 	};
+	
+	/**
+	 * property listener = so we know about estimates changing
+	 * 
+	 */
+	private final PropertyChangeListener _estimateListener = new PropertyChangeListener()
+	{
+		@Override
+		public void propertyChange(PropertyChangeEvent arg0)
+		{
+			for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners.iterator(); iterator.hasNext();)
+			{
+				PropertyChangeListener thisL = iterator.next();
+				thisL.propertyChange(arg0);
+			}
+		}
+	};
+
+
+	/**
+	 * the set of contributions we listen to. They are ordered, so that we have
+	 * data-producing contributions before those that purely perform analysis.
+	 * Because of BaseContribution.compareTo, the contribs will be in this order:
+	 * 1. Measurement 2. Forecast 3. Analysis
+	 * 
+	 * This is because we need some data before we start analysing it.
+	 * 
+	 */
+	private final TreeSet<BaseContribution> _contribs = new TreeSet<BaseContribution>();
+
+	/**
+	 * people interested in contributions
+	 * 
+	 */
+	final private ArrayList<IContributionsChangedListener> _contributionListeners = new ArrayList<IContributionsChangedListener>();
+
+	/**
+	 * the contribution that we're currently processing
+	 * 
+	 */
+	private BaseContribution _currentContribution = null;
 
 	/**
 	 * current step number and current step contribution
 	 * 
 	 */
 	private int _currentStep = 0;
-	private BaseContribution _currentContribution = null;
+
+	/**
+	 * the set of contribution properties that we're interested in
+	 * 
+	 */
+	private final String[] _interestingProperties =
+	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
+			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
 
 	/**
 	 * whether we auto=run after each contribution chagne
 	 * 
 	 */
 	private boolean _liveRunning = true;
+	/**
+	 * the problem space we consider
+	 */
+	final private ProblemSpace _space = new ProblemSpace();
 
 	/**
-	 * whether to broadcast all bounded states
+	 * people interested in us stepping
 	 * 
 	 */
-	private boolean _showAllBounds;
+	final private ArrayList<IConstrainSpaceListener> _steppingListeners = new ArrayList<IConstrainSpaceListener>();
 
-	/**
-	 * whether to broadcast leg end bounded states
+	/** keep track of folks interested in estimate changes
 	 * 
 	 */
-	private boolean _showLegEndBounds;
-
-	/**
-	 * Contribution listeners stuff
-	 * 
-	 */
-	@Override
-	public void addContributionsListener(IContributionsChangedListener newListener)
-	{
-		_contributionListeners.add(newListener);
-	}
-
-	@Override
-	public void removeContributionsListener(
-			IContributionsChangedListener newListener)
-	{
-		_contributionListeners.remove(newListener);
-	}
-
-	protected void fireContributionAdded(BaseContribution contribution)
-	{
-		for (IContributionsChangedListener listener : _contributionListeners)
-		{
-			listener.added(contribution);
-		}
-	}
-
-	protected void fireContributionRemoved(BaseContribution contribution)
-	{
-		for (IContributionsChangedListener listener : _contributionListeners)
-		{
-			listener.removed(contribution);
-		}
-	}
+	private Collection<PropertyChangeListener> _estimateChangedListeners = new ArrayList<PropertyChangeListener>();
 
 	/**
 	 * Stepping listeners stuff
 	 * 
 	 */
 	@Override
-	public void addSteppingListener(ISteppingListener newListener)
+	public void addBoundStatesListener(IConstrainSpaceListener newListener)
 	{
 		_steppingListeners.add(newListener);
-	}
-
-	@Override
-	public void removeSteppingListener(ISteppingListener newListener)
-	{
-		_steppingListeners.remove(newListener);
-	}
-
-	protected void fireStepped(int thisStep, int totalSteps)
-	{
-		for (ISteppingListener listener : _steppingListeners)
-		{
-			listener.stepped(this, thisStep, totalSteps);
-		}
-	}
-
-	protected void fireComplete()
-	{
-		for (ISteppingListener listener : _steppingListeners)
-		{
-			listener.complete(this);
-		}
-	}
-
-	protected void fireRestarted()
-	{
-		for (ISteppingListener listener : _steppingListeners)
-		{
-			listener.restarted(this);
-		}
-	}
-
-	protected void fireError(IncompatibleStateException ex)
-	{
-		for (ISteppingListener listener : _steppingListeners)
-		{
-			listener.error(this, ex);
-		}
 	}
 
 	/**
@@ -205,12 +143,30 @@ public class BoundsManager implements IBoundsManager,
 		// remember it
 		_contribs.add(contribution);
 
-		// start listening to it
+		// start listening to our interesting properties
 		for (String property : _interestingProperties)
 		{
 			contribution.addPropertyChangeListener(property, _contribListener);
 		}
+		
+		contribution.addPropertyChangeListener(BaseContribution.ESTIMATE, _estimateListener);
+
 		fireContributionAdded(contribution);
+	}
+
+	public void addEstimateChangedListener(PropertyChangeListener listener)
+	{
+		_estimateChangedListeners.add(listener);
+	}
+
+	/**
+	 * Contribution listeners stuff
+	 * 
+	 */
+	@Override
+	public void addContributionsListener(IContributionsChangedListener newListener)
+	{
+		_contributionListeners.add(newListener);
 	}
 
 	/**
@@ -225,49 +181,6 @@ public class BoundsManager implements IBoundsManager,
 				_contribs))
 		{
 			this.removeContribution(contribution);
-		}
-	}
-
-	@Override
-	public Collection<BaseContribution> getContributions()
-	{
-		return Collections.unmodifiableSet(_contribs);
-	}
-
-	@Override
-	public int getCurrentStep()
-	{
-		return _currentStep;
-	}
-
-	@Override
-	public BaseContribution getCurrentContribution()
-	{
-		return _currentContribution;
-	}
-
-	protected void performSingleStep(final BaseContribution theContrib,
-			final int stepIndex)
-	{
-		try
-		{
-			if (theContrib.isActive())
-			{
-				theContrib.actUpon(_space);
-			}
-			fireStepped(stepIndex, _contribs.size());
-		}
-		catch (IncompatibleStateException e)
-		{
-			SupportServices.INSTANCE.getLog().error(
-					"Failed applying bounds:" + theContrib.getName());
-			fireError(e);
-		}
-		catch (Exception re)
-		{
-			SupportServices.INSTANCE.getLog().error(
-					"unknown error:" + theContrib.getName(), re);
-			throw new RuntimeException(re);
 		}
 	}
 
@@ -312,6 +225,119 @@ public class BoundsManager implements IBoundsManager,
 		}
 	}
 
+	protected void fireComplete()
+	{
+		for (IConstrainSpaceListener listener : _steppingListeners)
+		{
+			listener.statesBounded(this);
+		}
+	}
+
+	protected void fireContributionAdded(BaseContribution contribution)
+	{
+		for (IContributionsChangedListener listener : _contributionListeners)
+		{
+			listener.added(contribution);
+		}
+	}
+
+	protected void fireContributionRemoved(BaseContribution contribution)
+	{
+		for (IContributionsChangedListener listener : _contributionListeners)
+		{
+			listener.removed(contribution);
+		}
+	}
+
+	protected void fireError(IncompatibleStateException ex)
+	{
+		for (IConstrainSpaceListener listener : _steppingListeners)
+		{
+			listener.error(this, ex);
+		}
+	}
+
+	protected void fireRestarted()
+	{
+		for (IConstrainSpaceListener listener : _steppingListeners)
+		{
+			listener.restarted(this);
+		}
+	}
+
+	protected void fireStepped(int thisStep, int totalSteps)
+	{
+		for (IConstrainSpaceListener listener : _steppingListeners)
+		{
+			listener.stepped(this, thisStep, totalSteps);
+		}
+	}
+
+	@Override
+	public Collection<BaseContribution> getContributions()
+	{
+		return Collections.unmodifiableSet(_contribs);
+	}
+
+	@Override
+	public BaseContribution getCurrentContribution()
+	{
+		return _currentContribution;
+	}
+
+	@Override
+	public int getCurrentStep()
+	{
+		return _currentStep;
+	}
+
+	@Override
+	public ProblemSpace getSpace()
+	{
+		return _space;
+	}
+
+	@Override
+	public boolean isCompleted()
+	{
+		return _currentStep >= _contribs.size();
+	}
+
+	/**
+	 * indicate whether we do 'run' after each contribution change
+	 * 
+	 * @return
+	 */
+	public boolean isLiveEnabled()
+	{
+		return _liveRunning;
+	}
+
+	protected void performSingleStep(final BaseContribution theContrib,
+			final int stepIndex)
+	{
+		try
+		{
+			if (theContrib.isActive())
+			{
+				theContrib.actUpon(_space);
+			}
+			fireStepped(stepIndex, _contribs.size());
+		}
+		catch (IncompatibleStateException e)
+		{
+			SupportServices.INSTANCE.getLog().error(
+					"Failed applying bounds:" + theContrib.getName());
+			fireError(e);
+		}
+		catch (Exception re)
+		{
+			SupportServices.INSTANCE.getLog().error(
+					"unknown error:" + theContrib.getName(), re);
+			throw new RuntimeException(re);
+		}
+	}
+
 	/**
 	 * remove this contribution
 	 * 
@@ -334,6 +360,19 @@ public class BoundsManager implements IBoundsManager,
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
 		fireContributionRemoved(contribution);
+	}
+
+	@Override
+	public void removeContributionsListener(
+			IContributionsChangedListener newListener)
+	{
+		_contributionListeners.remove(newListener);
+	}
+
+	@Override
+	public void removeSteppingListener(IConstrainSpaceListener newListener)
+	{
+		_steppingListeners.remove(newListener);
 	}
 
 	@Override
@@ -362,19 +401,6 @@ public class BoundsManager implements IBoundsManager,
 		{
 			step();
 		}
-
-		// ok, do any broadcasting
-		GeoSupport.showStates(_space.states(), _showAllBounds, _showLegEndBounds);
-	}
-
-	/**
-	 * indicate whether we do 'run' after each contribution change
-	 * 
-	 * @return
-	 */
-	public boolean isLiveEnabled()
-	{
-		return _liveRunning;
 	}
 
 	/**
@@ -385,6 +411,24 @@ public class BoundsManager implements IBoundsManager,
 	public void setLiveRunning(boolean checked)
 	{
 		_liveRunning = checked;
+	}
+
+	/**
+	 * store the vehicle type
+	 * 
+	 * @param v
+	 *          the new vehicle type
+	 */
+	@Override
+	public void setVehicleType(VehicleType v)
+	{
+		// store the new value
+		_space.setVehicleType(v);
+
+		// and get ourselves to re-run, to reflect this change
+		PropertyChangeEvent pce = new PropertyChangeEvent(this,
+				ProblemSpace.VEHICLE_TYPE, null, v);
+		_contribListener.propertyChange(pce);
 	}
 
 	@Override
@@ -417,57 +461,4 @@ public class BoundsManager implements IBoundsManager,
 		}
 	}
 
-	@Override
-	public boolean isCompleted()
-	{
-		return _currentStep >= _contribs.size();
-	}
-
-	/**
-	 * store the vehicle type
-	 * 
-	 * @param v
-	 *          the new vehicle type
-	 */
-	@Override
-	public void setVehicleType(VehicleType v)
-	{
-		// store the new value
-		_space.setVehicleType(v);
-
-		// and get ourselves to re-run, to reflect this change
-		PropertyChangeEvent pce = new PropertyChangeEvent(this,
-				ProblemSpace.VEHICLE_TYPE, null, v);
-		_contribListener.propertyChange(pce);
-	}
-
-	@Override
-	public ProblemSpace getSpace()
-	{
-		return _space;
-	}
-
-	@Override
-	public void setShowAllBounds(boolean onOff)
-	{
-		_showAllBounds = onOff;
-	}
-
-	@Override
-	public void setShowLegEndBounds(boolean onOff)
-	{
-		_showLegEndBounds = onOff;
-	}
-
-	@Override
-	public IShowGenerateSolutionsDiagnostics getGeneratorDiagnostics()
-	{
-		return _genny;
-	}
-
-	@Override
-	public IShowBoundProblemSpaceDiagnostics getProblemSpaceDiagnostics()
-	{
-		return this;
-	}
 }

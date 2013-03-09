@@ -12,6 +12,8 @@ import org.osgi.framework.ServiceReference;
 
 import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.SolutionGenerator;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
@@ -73,8 +75,14 @@ public class SATC_Activator extends AbstractUIPlugin
 				new MockVehicleTypesManager(), new Hashtable<String, Object>());
 		context.registerService(IContributionsManager.class, 
 				new ContributionsManagerImpl(), new Hashtable<String, Object>());
+		BoundsManager boundsM = new BoundsManager();
 		context.registerService(IBoundsManager.class, 
-				new BoundsManager(), new Hashtable<String, Object>());
+				boundsM, new Hashtable<String, Object>());
+		SolutionGenerator solutionG = new SolutionGenerator();
+		boundsM.addBoundStatesListener(solutionG);
+		boundsM.addEstimateChangedListener(solutionG);
+		context.registerService(ISolutionGenerator.class, 
+				solutionG, new Hashtable<String, Object>());
 	}
 
 	@Override

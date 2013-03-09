@@ -1,12 +1,18 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.util.ArrayList;
+
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
-public class SteppingAdapter implements ISteppingListener
+public class SteppingAdapter implements
+		IConstrainSpaceListener,
+		IGenerateSolutionsListener
 {
 
 	@Override
-	public void complete(IBoundsManager boundsManager)
+	public void statesBounded(IBoundsManager boundsManager)
 	{
 	}
 
@@ -22,6 +28,16 @@ public class SteppingAdapter implements ISteppingListener
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
+	{
+	}
+
+	@Override
+	public void solutionsReady(CompositeRoute[] routes)
+	{
+	}
+
+	@Override
+	public void legsScored(ArrayList<CoreLeg> theLegs)
 	{
 	}
 }

@@ -10,7 +10,7 @@ public class SATC_Perspective implements IPerspectiveFactory {
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		layout.addView("com.planetmayo.debrief.satc_rcp.views.TestHarnessView", IPageLayout.LEFT, 0.4f, editorArea);
-		layout.addView("com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView", IPageLayout.BOTTOM, 0.1f, "com.planetmayo.debrief.satc_rcp.views.TestHarnessView");
+		layout.addView("com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView", IPageLayout.BOTTOM, 0.3f, "com.planetmayo.debrief.satc_rcp.views.TestHarnessView");
 
 		// lower spatial panel
 		layout.addView("com.planetmayo.debrief.satc_rcp.views.SpatialView", IPageLayout.BOTTOM, 0.3f, editorArea);

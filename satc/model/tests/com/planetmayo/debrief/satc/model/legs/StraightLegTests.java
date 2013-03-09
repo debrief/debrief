@@ -198,9 +198,9 @@ public class StraightLegTests extends ModelTestBase
 				"100112 122429");
 		StraightRoute thisR = new StraightRoute("sr1", startP, startT, endP, endT);
 		
-		// TODO: produce a set of state objects, invite thisR to segment itself
+		// TODO: IAN - HIGH produce a set of state objects, invite thisR to segment itself
 		ArrayList<BoundedState> theStates = null;
-		thisR.generateSegments(theStates);
+//		thisR.generateSegments(theStates);
 		
 //		double val = bearingMeasurementContribution.calculateErrorScoreFor(thisR);	
 //		assertEquals("calculated something", 1, val, 0.0001);

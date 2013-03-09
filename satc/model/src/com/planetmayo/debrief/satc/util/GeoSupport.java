@@ -1,11 +1,10 @@
 package com.planetmayo.debrief.satc.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -50,6 +49,10 @@ public class GeoSupport
 	private static GeoPlotter _plotter;
 
 	private static boolean _writeToConsole = false;
+
+	private static IShowGenerateSolutionsDiagnostics _solutionDiagnostics;
+
+	private static IShowBoundProblemSpaceDiagnostics _problemDiagnostics;
 
 	public static void clearOutput(String title)
 	{
@@ -140,9 +143,22 @@ public class GeoSupport
 		return m_sec / 0.514444444;
 	}
 
-	public static void setPlotter(GeoPlotter plotter)
+	public static void setPlotter(GeoPlotter plotter, IShowBoundProblemSpaceDiagnostics problemD, IShowGenerateSolutionsDiagnostics solutionD)
 	{
 		_plotter = plotter;
+		_problemDiagnostics = problemD;
+		_solutionDiagnostics = solutionD;
+	}
+
+	public static IShowBoundProblemSpaceDiagnostics getProblemDiagnostics()
+	{
+		return _problemDiagnostics;
+	}
+
+	public static IShowGenerateSolutionsDiagnostics getSolutionDiagnostics()
+	{
+		return _solutionDiagnostics;
+
 	}
 
 	public static void setToConsole(boolean writeToConsole)
@@ -226,22 +242,22 @@ public class GeoSupport
 		double mod = coord % 1;
 		int intPart = (int) coord;
 
-		degrees = String.valueOf((int)intPart);
+		degrees = String.valueOf((int) intPart);
 
 		coord = mod * 60;
 		mod = coord % 1;
 		intPart = (int) coord;
 
-		minutes = String.valueOf((int)intPart);
+		minutes = String.valueOf((int) intPart);
 
 		coord = mod * 60;
 		intPart = (int) coord;
 
-		seconds = String.valueOf( Math.round( coord * 100.0 ) / 100.0);
+		seconds = String.valueOf(Math.round(coord * 100.0) / 100.0);
 
 		output = degrees + "\u00B0 " + minutes + "' " + seconds + "\" ";
 		return output;
-	
+
 	}
 
 	public static GeoPoint getGeoPointFromString(String latlong)
@@ -294,18 +310,4 @@ public class GeoSupport
 		return MakeGrid.ST_Tile(p_geom, numPoints, p_precision);
 	}
 
-	public static void showStates(Collection<BoundedState> states,
-			boolean showAllBounds, boolean showLegEndBounds)
-	{
-		// TODO: we need to process this list/settings and fire an appropriate
-		// TODO:   set of calls to the GeoPlotter
-	}
-
-	public static void showRoutes(CompositeRoute[] routes, boolean _showPoints,
-			boolean _showAchievablePoints, boolean _showRoutes,
-			boolean _showRoutesWithScores)
-	{
-		// TODO: we need to process this list/settings and fire an appropriate
-		// TODO:   set of calls to the GeoPlotter
-	}
 }
