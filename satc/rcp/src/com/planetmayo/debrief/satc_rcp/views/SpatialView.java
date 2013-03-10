@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Shape;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.util.ShapeUtilities;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
@@ -129,9 +131,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private CompositeRoute[] _lastSetOfSolutions;
 
-	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat("hh:mm:ss");
+	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat(
+			"hh:mm:ss");
 
-	
 	@Override
 	public void clear(String title)
 	{
@@ -276,7 +278,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		String lastSeries = "UNSET";
 		int turnCounter = 1;
-		int colourCounter=0;
+		int colourCounter = 0;
 
 		HashMap<Comparable, Integer> keyToLegTypeMapping = new HashMap<Comparable, Integer>();
 
@@ -312,7 +314,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 							legName = "Turn " + turnCounter++;
 
 					}
-					
+
 					colourCounter++;
 
 					// ok, use new color
@@ -374,7 +376,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		for (Comparable key : keyToLegTypeMapping.keySet())
 		{
 			_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
-					colorsList[keyToLegTypeMapping.get(key)-1]);
+					colorsList[keyToLegTypeMapping.get(key) - 1]);
 
 		}
 	}
@@ -384,10 +386,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		Color[] cols = new Color[n];
 		for (int i = 0; i < n; i++)
 			cols[i] = Color.getHSBColor((float) (n - i) / n, 1, 1);
-		//return cols;
+		// return cols;
 		return randomizeArray(cols);
 	}
-	
+
 	public static Color[] randomizeArray(Color[] array)
 	{
 		for (int i = array.length - 1; i > array.length / 2; i--)
@@ -396,10 +398,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			array[i] = array[array.length - 1 - i];
 			array[array.length - 1 - i] = temp;
 		}
-		System.out.println(array);
 		return array;
 	}
-
 
 	@Override
 	public void showGeometry(String title, Coordinate[] coords)
@@ -426,11 +426,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			boolean largePoints)
 	{
 		Collection<Coordinate> coords = new ArrayList<Coordinate>();
-		for (Iterator<Point> iterator = points.iterator(); iterator.hasNext();)
-		{
-			Point point = (Point) iterator.next();
 
-			// ok, add the coordinate of this point
+		for (Point point : points)
+		{
 			coords.add(point.getCoordinate());
 		}
 		Coordinate[] demo = new Coordinate[]
@@ -439,12 +437,18 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		// create the data series, get the index number
 		int num = addSeries("" + _numCycles++, coords.toArray(demo));
 
-		// TODO: AKASH: configure the renderer to not show lines, but as points
+		// DONE: AKASH: configure the renderer to not show lines, but as points
 		// (large/small)
+		_chart.setNotify(false); 
 		_renderer.setSeriesShapesVisible(num, true);
 		_renderer.setSeriesLinesVisible(num, false);
+		
+		Shape triangle = ShapeUtilities.createDownTriangle(largePoints?5:2);
+		_renderer.setSeriesShape(num, triangle);
+		
+		_chart.setNotify(true); 
 
-		// TODO: AKASH - there's some probem with the logic here. It really looks
+		// DONE: AKASH - there's some probem with the logic here. It really looks
 		// like I'm
 		// using the wrong index num, since it looks like one of the bounded state
 		// lines
@@ -467,7 +471,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// get the series num
 		int num = _myData.getSeriesCount();
-		return num;
+		return num - 1;
 	}
 
 	@Override
