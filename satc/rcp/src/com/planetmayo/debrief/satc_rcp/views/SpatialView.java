@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -128,6 +129,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private CompositeRoute[] _lastSetOfSolutions;
 
+	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat("hh:mm:ss");
+
+	
 	@Override
 	public void clear(String title)
 	{
@@ -272,10 +276,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		String lastSeries = "UNSET";
 		int turnCounter = 1;
-		
+
 		ArrayList<String> legType = new ArrayList<String>();
 		HashMap<Comparable, String> keyToLegTypeMapping = new HashMap<Comparable, String>();
-
 
 		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
@@ -292,7 +295,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				String thisSeries = thisS.getMemberOf();
 
 				// ok, what about the name?
-				String legName = null;
+				String legName = "";
 
 				if (thisSeries != lastSeries)
 				{
@@ -322,16 +325,18 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 
 				// are we adding this leg?
-				if (!showThisState)
+				// if (!showThisState)
+				// {
+				// no, but are we showing mid=leg states?
+				if (_showAllBounds)
 				{
-					// no, but are we showing mid=leg states?
-					if (_showAllBounds)
-					{
-						// yes - we do want mid-way stats, better add it.
-						showThisState = true;
-						legName = thisS.getTime().toString();
-					}
+					// yes - we do want mid-way stats, better add it.
+					showThisState = true;
+					if (legName.length() > 0)
+						legName = "(" + legName + ") ";
+					legName += _legendDateFormat.format(thisS.getTime());
 				}
+				// }
 
 				// right then do we create a shape (series) for this one?
 				if (showThisState)
@@ -347,13 +352,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 						Coordinate coordinate = boundary[i];
 						series.add(new XYDataItem(coordinate.y, coordinate.x));
 					}
-					
+
 					if (!legType.contains(legName))
 						legType.add(legName);
-					
-					keyToLegTypeMapping.put(series.getKey(),legName);
 
-					
+					keyToLegTypeMapping.put(series.getKey(), legName);
+
 					_myData.addSeries(series);
 
 					// TODO: Akash - we have to do some fancy JFreeChart to set the color
@@ -364,16 +368,16 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 			}
 		}
-		
-		Color[] colorsList = getDifferentColors(legType.size());
-		
-	// paint each series with color depending on leg type.
-			for (Comparable key : keyToLegTypeMapping.keySet())
-			{
-				_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
-						colorsList[legType.indexOf(keyToLegTypeMapping.get(key))]);
 
-			}
+		Color[] colorsList = getDifferentColors(legType.size());
+
+		// paint each series with color depending on leg type.
+		for (Comparable key : keyToLegTypeMapping.keySet())
+		{
+			_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
+					colorsList[legType.indexOf(keyToLegTypeMapping.get(key))]);
+
+		}
 	}
 
 	public static Color[] getDifferentColors(int n)
@@ -426,11 +430,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		// (large/small)
 		_renderer.setSeriesShapesVisible(num, true);
 		_renderer.setSeriesLinesVisible(num, false);
-		
-		// TODO: AKASH - there's some probem with the logic here. It really looks like I'm
-		// using the wrong index num, since it looks like one of the bounded state lines
+
+		// TODO: AKASH - there's some probem with the logic here. It really looks
+		// like I'm
+		// using the wrong index num, since it looks like one of the bounded state
+		// lines
 		// gets switched to be symbols.
-		
+
 	}
 
 	private int addSeries(String title, Coordinate[] coords)
