@@ -276,9 +276,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		String lastSeries = "UNSET";
 		int turnCounter = 1;
+		int colourCounter=0;
 
-		ArrayList<String> legType = new ArrayList<String>();
-		HashMap<Comparable, String> keyToLegTypeMapping = new HashMap<Comparable, String>();
+		HashMap<Comparable, Integer> keyToLegTypeMapping = new HashMap<Comparable, Integer>();
 
 		// and plot the new data
 		Iterator<BoundedState> iter = newStates.iterator();
@@ -312,6 +312,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 							legName = "Turn " + turnCounter++;
 
 					}
+					
+					colourCounter++;
 
 					// ok, use new color
 
@@ -353,10 +355,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 						series.add(new XYDataItem(coordinate.y, coordinate.x));
 					}
 
-					if (!legType.contains(legName))
-						legType.add(legName);
-
-					keyToLegTypeMapping.put(series.getKey(), legName);
+					keyToLegTypeMapping.put(series.getKey(), colourCounter);
 
 					_myData.addSeries(series);
 
@@ -369,13 +368,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			}
 		}
 
-		Color[] colorsList = getDifferentColors(legType.size());
+		Color[] colorsList = getDifferentColors(colourCounter);
 
 		// paint each series with color depending on leg type.
 		for (Comparable key : keyToLegTypeMapping.keySet())
 		{
 			_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
-					colorsList[legType.indexOf(keyToLegTypeMapping.get(key))]);
+					colorsList[keyToLegTypeMapping.get(key)-1]);
 
 		}
 	}
@@ -385,8 +384,22 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		Color[] cols = new Color[n];
 		for (int i = 0; i < n; i++)
 			cols[i] = Color.getHSBColor((float) (n - i) / n, 1, 1);
-		return cols;
+		//return cols;
+		return randomizeArray(cols);
 	}
+	
+	public static Color[] randomizeArray(Color[] array)
+	{
+		for (int i = array.length - 1; i > array.length / 2; i--)
+		{
+			Color temp = array[i];
+			array[i] = array[array.length - 1 - i];
+			array[array.length - 1 - i] = temp;
+		}
+		System.out.println(array);
+		return array;
+	}
+
 
 	@Override
 	public void showGeometry(String title, Coordinate[] coords)
