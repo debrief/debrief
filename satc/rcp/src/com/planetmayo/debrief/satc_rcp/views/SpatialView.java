@@ -362,6 +362,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					keyToLegTypeMapping.put(series.getKey(), colourCounter);
 
 					_myData.addSeries(series);
+					
+					int seriesIndex = _myData.getSeriesCount()-1;
+					
+					_renderer.setSeriesShapesVisible(seriesIndex, false);
+					_renderer.setSeriesLinesVisible(seriesIndex, true);
+					
+					_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
 
 					// DONE: Akash - we have to do some fancy JFreeChart to set the color
 					// for this data series.
@@ -445,7 +452,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		_renderer.setSeriesShapesVisible(num, true);
 		_renderer.setSeriesLinesVisible(num, false);
 		
-		Shape triangle = ShapeUtilities.createDownTriangle(largePoints?5:2);
+		Shape triangle = ShapeUtilities.createRegularCross(largePoints?5:2, largePoints?5:2);
 		_renderer.setSeriesShape(num, triangle);
 		
 		_chart.setNotify(true); 
