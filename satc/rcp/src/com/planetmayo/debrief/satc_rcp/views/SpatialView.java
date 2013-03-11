@@ -52,6 +52,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		IShowGenerateSolutionsDiagnostics, IGenerateSolutionsListener
 {
 	private static JFreeChart _chart;
+	private static ChartComposite _chartComposite;
 
 	private static XYPlot _plot;
 	private static XYLineAndShapeRenderer _renderer;
@@ -188,7 +189,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		_myData = new XYSeriesCollection();
 
 		JFreeChart chart = createChart(_myData);
-		new ChartComposite(parent, SWT.NONE, chart, true);
+		_chartComposite = new ChartComposite(parent, SWT.NONE, chart, true);
 
 		makeActions();
 
@@ -246,7 +247,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			@Override
 			public void run()
 			{
-				// TODO: Akash - resize the plot to show all the data
+				_chartComposite.restoreAutoBounds();
+				// DONE: Akash - resize the plot to show all the data
 			}
 
 		};
@@ -319,7 +321,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 					// ok, use new color
 
-					// TODO: generate a new color. We should prob allow up to 20 colors, I
+					// DONE: generate a new color. We should prob allow up to 20 colors, I
 					// welcome
 					// a strategy for generateNewColor()
 
@@ -361,7 +363,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 					_myData.addSeries(series);
 
-					// TODO: Akash - we have to do some fancy JFreeChart to set the color
+					// DONE: Akash - we have to do some fancy JFreeChart to set the color
 					// for this data series.
 					// I think we may have to retrieve the series index, get the renderer,
 					// then set the color
