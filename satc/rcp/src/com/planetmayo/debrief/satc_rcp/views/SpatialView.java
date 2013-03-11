@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
@@ -362,12 +363,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					keyToLegTypeMapping.put(series.getKey(), colourCounter);
 
 					_myData.addSeries(series);
-					
-					int seriesIndex = _myData.getSeriesCount()-1;
-					
+
+					int seriesIndex = _myData.getSeriesCount() - 1;
+
 					_renderer.setSeriesShapesVisible(seriesIndex, false);
 					_renderer.setSeriesLinesVisible(seriesIndex, true);
-					
+
 					_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
 
 					// DONE: Akash - we have to do some fancy JFreeChart to set the color
@@ -431,7 +432,57 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				{ 10.0f, 6.0f }, 0.0f));
 	}
 
-	private void plotTheseCoordsAsAPoints(Collection<Point> points,
+	private void plotTheseCoordsAsAPoints(ArrayList<ArrayList<Point>> points,
+			boolean largePoints)
+	{
+		List<Integer> listOfIndexes = new ArrayList<Integer>();
+
+		for (ArrayList<Point> pointsList : points)
+		{
+			Collection<Coordinate> coords = new ArrayList<Coordinate>();
+
+			for (Point point : pointsList)
+			{
+				coords.add(point.getCoordinate());
+			}
+			Coordinate[] demo = new Coordinate[]
+			{};
+
+			// create the data series, get the index number
+			int num = addSeries("" + _numCycles++, coords.toArray(demo));
+
+			listOfIndexes.add(num);
+
+			// DONE: AKASH: configure the renderer to not show lines, but as points
+			// (large/small)
+			_chart.setNotify(false);
+			_renderer.setSeriesShapesVisible(num, true);
+			_renderer.setSeriesLinesVisible(num, false);
+
+			Shape triangle = ShapeUtilities.createRegularCross(largePoints ? 5 : 2,
+					largePoints ? 5 : 2);
+			_renderer.setSeriesShape(num, triangle);
+
+			_chart.setNotify(true);
+
+		}
+
+		Color[] colorsList = getDifferentColors(listOfIndexes.size());
+
+		for (int i = 0; i < listOfIndexes.size(); i++)
+		{
+			_renderer.setSeriesPaint(listOfIndexes.get(i), colorsList[i]);
+		}
+
+		// DONE: AKASH - there's some probem with the logic here. It really looks
+		// like I'm
+		// using the wrong index num, since it looks like one of the bounded state
+		// lines
+		// gets switched to be symbols.
+
+	}
+
+	/*private void plotTheseCoordsAsAPoints(Collection<Point> points,
 			boolean largePoints)
 	{
 		Collection<Coordinate> coords = new ArrayList<Coordinate>();
@@ -448,14 +499,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// DONE: AKASH: configure the renderer to not show lines, but as points
 		// (large/small)
-		_chart.setNotify(false); 
+		_chart.setNotify(false);
 		_renderer.setSeriesShapesVisible(num, true);
 		_renderer.setSeriesLinesVisible(num, false);
-		
-		Shape triangle = ShapeUtilities.createRegularCross(largePoints?5:2, largePoints?5:2);
+
+		Shape triangle = ShapeUtilities.createRegularCross(largePoints ? 5 : 2,
+				largePoints ? 5 : 2);
 		_renderer.setSeriesShape(num, triangle);
-		
-		_chart.setNotify(true); 
+
+		_chart.setNotify(true);
 
 		// DONE: AKASH - there's some probem with the logic here. It really looks
 		// like I'm
@@ -463,7 +515,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		// lines
 		// gets switched to be symbols.
 
-	}
+	}*/
 
 	private int addSeries(String title, Coordinate[] coords)
 	{
@@ -585,14 +637,16 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		// hey, are we showing points?
 		if (_showPoints || _showAchievablePoints || _showRoutes)
 		{
-			Collection<Point> allPoints = new ArrayList<Point>();
-			Collection<Point> possiblePoints = new ArrayList<Point>();
+			ArrayList<ArrayList<Point>> allPoints = new ArrayList<ArrayList<Point>>();
+			ArrayList<ArrayList<Point>> allPossiblePoints = new ArrayList<ArrayList<Point>>();
 			Collection<LineString> possibleRoutes = new ArrayList<LineString>();
 			Collection<ScoredRoute> scoredRoutes = new ArrayList<ScoredRoute>();
 
 			// ok, loop trough
 			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 			{
+				ArrayList<Point> points = new ArrayList<Point>();
+				ArrayList<Point> possiblePoints = new ArrayList<Point>();
 				CoreLeg thisLeg = (CoreLeg) iterator.next();
 
 				// ok, get the points
@@ -612,7 +666,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					if (_showPoints)
 					{
 						// ok, just add it to the list
-						allPoints.add(startPoint);
+						points.add(startPoint);
 					}
 
 					// ok - do we need to check which ones have any valid points?
@@ -656,17 +710,21 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 							if (_showAchievablePoints)
 								possiblePoints.add(startPoint);
+
 						}
 					}
 
 				}
+				allPoints.add(points);
+				allPossiblePoints.add(possiblePoints);
 			}
 
-			System.out.println("num all points:" + allPoints.size());
-			System.out.println("num achievable points:" + possiblePoints.size());
+			// System.out.println("num all points:" + allPoints.size());
+			// System.out.println("num achievable points:" +
+			// allPossiblePoints.size());
 
 			plotTheseCoordsAsAPoints(allPoints, false);
-			plotTheseCoordsAsAPoints(possiblePoints, true);
+			plotTheseCoordsAsAPoints(allPossiblePoints, true);
 			plotPossibleRoutes(possibleRoutes);
 			plotRoutesWithScores(scoredRoutes);
 
