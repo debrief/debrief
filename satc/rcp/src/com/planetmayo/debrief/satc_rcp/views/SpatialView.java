@@ -737,6 +737,24 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
 	{
+		double max = 0, min = 10000;
+		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
+				.hasNext();)
+		{
+			ScoredRoute route = iterator.next();
+			// Ensure thisScore is between 0-100
+			double thisScore = route.theScore;
+			if(max<thisScore)
+			{
+				max = thisScore;
+			}
+			if(min> thisScore)
+			{
+				min = thisScore;
+			}
+
+		}
+		
 		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 				.hasNext();)
 		{
@@ -746,7 +764,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			Point endP = route.theRoute.getEndPoint();
 
 			// Ensure thisScore is between 0-100
-			double thisScore = route.theScore;
+			double thisScore = (route.theScore - min)/(max-min)*100;
 
 			XYSeries series = new XYSeries("" + (_numCycles++), false);
 			series.add(new XYDataItem(startP.getY(), startP.getX()));
