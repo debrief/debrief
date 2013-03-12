@@ -22,11 +22,6 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 public class SolutionGenerator implements IConstrainSpaceListener,
 		ISolutionGenerator, PropertyChangeListener
 {
-	/**
-	 * how many cells shall we break the polygons down into?
-	 * 
-	 */
-	final int NUM_CELLS = 20;
 
 	/**
 	 * anybody interested in a new solution being ready?
@@ -45,6 +40,12 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 * 
 	 */
 	private IBoundsManager _boundsManager;
+
+	/**
+	 * how precisely to do the calcs
+	 * 
+	 */
+	private Precision _myPrecision = Precision.LOW;
 
 	public SolutionGenerator()
 	{
@@ -156,11 +157,32 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	public void generateRoutes(ArrayList<CoreLeg> theLegs)
 	{
+		final int tmpNum;
+		switch (_myPrecision)
+			{
+			case LOW:
+				tmpNum = 20;
+				break;
+			case MEDIUM:
+				tmpNum = 40;
+				break;
+			case HIGH:
+				tmpNum = 60;
+				break;
+
+			default:
+				throw new RuntimeException(
+						"We've failed to implement case for a precision type");
+			}
+		;
+
+		final int numCells = tmpNum;
+
 		operateOn(theLegs, new LegOperation()
 		{
 			public void apply(CoreLeg thisLeg)
 			{
-				thisLeg.generateRoutes(NUM_CELLS);
+				thisLeg.generateRoutes(numCells);
 			}
 		});
 	}
@@ -481,9 +503,11 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	@Override
 	public void setPrecision(Precision precision)
 	{
-		// TODO: IAN - HIGH, handle the new precision, used in the gridding
-		// algorithm
-		System.out.println("new selection is:" + precision);
+		_myPrecision = precision;
+
+		// ok, re-do the whole process
+		if (_boundsManager != null)
+			statesBounded(_boundsManager);
 	}
 
 	@Override
