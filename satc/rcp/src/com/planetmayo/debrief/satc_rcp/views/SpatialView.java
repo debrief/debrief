@@ -248,7 +248,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			public void run()
 			{
 				_chartComposite.restoreAutoBounds();
-				// DONE: Akash - resize the plot to show all the data
 			}
 
 		};
@@ -371,11 +370,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 					_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
 
-					// DONE: Akash - we have to do some fancy JFreeChart to set the color
-					// for this data series.
-					// I think we may have to retrieve the series index, get the renderer,
-					// then set the color
-					// (or something like that)
 				}
 			}
 		}
@@ -427,9 +421,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		int num = addSeries(title, coords);
 
-		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND, 1.0f, new float[]
-				{ 10.0f, 6.0f }, 0.0f));
+		_renderer.setSeriesStroke(num, new BasicStroke(0.0f));
 
 		return num;
 	}
@@ -462,8 +454,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 			listOfIndexes.add(num);
 
-			// DONE: AKASH: configure the renderer to not show lines, but as points
-			// (large/small)
 			_chart.setNotify(false);
 			_renderer.setSeriesShapesVisible(num, true);
 			_renderer.setSeriesLinesVisible(num, false);
@@ -483,40 +473,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_renderer.setSeriesPaint(listOfIndexes.get(i), colorsList[i]);
 		}
 
-		// DONE: AKASH - there's some probem with the logic here. It really looks
-		// like I'm
-		// using the wrong index num, since it looks like one of the bounded state
-		// lines
-		// gets switched to be symbols.
-
 	}
-
-	/*
-	 * private void plotTheseCoordsAsAPoints(Collection<Point> points, boolean
-	 * largePoints) { Collection<Coordinate> coords = new ArrayList<Coordinate>();
-	 * 
-	 * for (Point point : points) { coords.add(point.getCoordinate()); }
-	 * Coordinate[] demo = new Coordinate[] {};
-	 * 
-	 * // create the data series, get the index number int num = addSeries("" +
-	 * _numCycles++, coords.toArray(demo));
-	 * 
-	 * // DONE: AKASH: configure the renderer to not show lines, but as points //
-	 * (large/small) _chart.setNotify(false);
-	 * _renderer.setSeriesShapesVisible(num, true);
-	 * _renderer.setSeriesLinesVisible(num, false);
-	 * 
-	 * Shape triangle = ShapeUtilities.createRegularCross(largePoints ? 5 : 2,
-	 * largePoints ? 5 : 2); _renderer.setSeriesShape(num, triangle);
-	 * 
-	 * _chart.setNotify(true);
-	 * 
-	 * // DONE: AKASH - there's some probem with the logic here. It really looks
-	 * // like I'm // using the wrong index num, since it looks like one of the
-	 * bounded state // lines // gets switched to be symbols.
-	 * 
-	 * }
-	 */
 
 	private int addSeries(String title, Coordinate[] coords)
 	{
@@ -799,12 +756,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_myData.addSeries(series);
 
 			// get the series num
-			int num = _myData.getSeriesCount()-1;
+			int num = _myData.getSeriesCount() - 1;
 			_renderer.setSeriesPaint(num, getHeatMapColorFor(thisScore));
 			_renderer.setSeriesStroke(num, new BasicStroke(), false);
 
-			// DONE: Akash, draw a line between these points, colour coded according
-			// to the score
 		}
 
 	}
@@ -827,7 +782,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_myData.addSeries(series);
 
 			// get the series num
-			int num = _myData.getSeriesCount()-1;
+			int num = _myData.getSeriesCount() - 1;
 			_renderer.setSeriesPaint(num, Color.green);
 			_renderer.setSeriesStroke(num, new BasicStroke(3), false);
 		}
@@ -840,8 +795,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private Color getHeatMapColorFor(double thisScore)
 	{
 		// put the score into the 50-100 domain, to make it more feint
-		thisScore = 50 + thisScore /2;
-		
+		thisScore = 50 + thisScore / 2;
+
 		float red = (float) (thisScore / 100);
 		float blue = (float) ((100 - thisScore) / 100);
 
@@ -865,23 +820,4 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		}
 
 	}
-
-	/*
-	 * OLD IMPLEMENTATION - WILL REMOVE ONCE FUNCTIONALITY IS STABLE. private void
-	 * plotPossibleRoutes(Collection<LineString> possibleRoutes) { for
-	 * (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
-	 * .hasNext();) { LineString line = iterator.next();
-	 * 
-	 * // Point startP = line.getStartPoint(); // Point endP = line.getEndPoint();
-	 * 
-	 * // TODO: Akash, draw a line between these points //
-	 * System.out.println(" r:" + startP.getCoordinate() + " " + //
-	 * endP.getCoordinate());
-	 * 
-	 * plotTheseCoordsAsALine("" + (_numCycles++), line.getCoordinates());
-	 * 
-	 * }
-	 * 
-	 * }
-	 */
 }
