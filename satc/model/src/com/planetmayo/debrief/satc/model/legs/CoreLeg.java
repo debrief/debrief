@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Point;
 
@@ -124,12 +125,12 @@ public abstract class CoreLeg
 	{
 		return _name;
 	}
-	
+
 	final public ArrayList<BoundedState> getStates()
 	{
 		return _states;
 	}
-	
+
 	/**
 	 * produce the set of constituent routes for this leg
 	 * 
@@ -145,18 +146,18 @@ public abstract class CoreLeg
 		if ((firstLoc == null) || (lastLoc == null))
 			throw new IllegalArgumentException(
 					"The end states must have location bounds");
-		
-		final int tmpNum;
+
+		final double delta;
 		switch (precision)
 			{
 			case LOW:
-				tmpNum = 20;
+				delta = GeoSupport.m2deg(800);
 				break;
 			case MEDIUM:
-				tmpNum = 40;
+				delta = GeoSupport.m2deg(600);
 				break;
 			case HIGH:
-				tmpNum = 60;
+				delta = GeoSupport.m2deg(200);
 				break;
 
 			default:
@@ -165,14 +166,20 @@ public abstract class CoreLeg
 			}
 		;
 
-		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc.getGeometry(), tmpNum,
-				6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), tmpNum, 6);
+		// right, what's the area of the start?
+		double startArea = firstLoc.getGeometry().getArea();
+		double endArea = lastLoc.getGeometry().getArea();
+
+		final int numStart = (int) (startArea / (delta * delta));
+		final int numEnd = (int) (endArea / (delta * delta));
+
+		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc.getGeometry(),
+				numStart, 6);
+		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), numEnd, 6);
 
 		// now calculate the routes through these points
 		calculatePerms(startP, endP);
 	}
-
 
 	public void calculatePerms(ArrayList<Point> startP, ArrayList<Point> endP)
 	{
@@ -182,7 +189,7 @@ public abstract class CoreLeg
 
 		// create the target results object
 		createRouteStructure(_startLen, _endLen);
-		
+
 		// now populate it
 		int ctr = 1;
 		for (int i = 0; i < _startLen; i++)
@@ -194,7 +201,7 @@ public abstract class CoreLeg
 			}
 		}
 	}
-	
+
 	abstract protected void createRouteStructure(int startLen, int endLen);
 
 	/**
@@ -204,7 +211,6 @@ public abstract class CoreLeg
 	 */
 	abstract public LegType getType();
 
-
 	/**
 	 * determine which legs are achievable
 	 * 
@@ -213,7 +219,8 @@ public abstract class CoreLeg
 
 	abstract public CoreRoute[][] getRoutes();
 
-	/** create a leg of the correct type between these points, and store it
+	/**
+	 * create a leg of the correct type between these points, and store it
 	 * 
 	 * @param startP
 	 * @param endP
@@ -224,9 +231,11 @@ public abstract class CoreLeg
 	abstract protected void createAndStoreLeg(ArrayList<Point> startP,
 			ArrayList<Point> endP, int i, int j, String thisName);
 
-	/** return the routes in this leg, in descending order
+	/**
+	 * return the routes in this leg, in descending order
 	 * 
-	 * @param i how many legs to retrieve
+	 * @param i
+	 *          how many legs to retrieve
 	 * @return
 	 */
 	abstract public SortedSet<CoreRoute> getTopRoutes();
