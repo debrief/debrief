@@ -272,6 +272,7 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 * @param space
 	 * @return
 	 */
+	@SuppressWarnings("null")
 	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 
