@@ -49,12 +49,20 @@ public abstract class BaseContribution extends ModelObject implements
 	final public double calculateErrorScoreFor(CoreRoute route)
 	{
 		double res = 0;
-		
+
+		// make sure we're allowed to calc an error score
 		if (_active)
 			if (_weight > 0)
 			{
-				res = _weight * scoreFor(route);
+				// make sure there's something to decide the score on
+				if (route != null)
+					if (route.getStates() != null)
+						if (route.getStates().size() > 0)
+						{
+							res = _weight * scoreFor(route);
+						}
 			}
+		// ok, done.
 		return res;
 	}
 
