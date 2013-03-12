@@ -187,6 +187,97 @@ public class TestSupport
 		st.setName("Straight prediction");
 		getGenerator().addContribution(st);
 
+		// and our analysis contributions
+		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
+		speedA.setActive(false);
+		getGenerator().addContribution(speedA);
+		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
+		courseA.setActive(false);
+		getGenerator().addContribution(courseA);
+		getGenerator().addContribution(new LocationAnalysisContribution());
+	
+	}
+
+
+	public void loadGoodData()
+	{
+		// clear the geneartor first
+		getGenerator().clear();
+
+		// now load some data
+		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		bmc.setName("Measured bearing");
+		bmc.setAutoDetect(false);
+//		RangeForecastContribution rangeF = new RangeForecastContribution();
+//		rangeF.setName("Measured range");
+		ArrayList<String> rows = getLongData();
+
+		try
+		{
+			// populate the bearing data
+			bmc.loadFrom(rows);
+			getGenerator().addContribution(bmc);
+
+			// and populate the range data
+//			rangeF.loadFrom(rows);
+//			getGenerator().addContribution(rangeF);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		// sort out the legs
+		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
+		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121330"));
+		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123030"));
+		st1.setName("Straight leg one");
+		getGenerator().addContribution(st1);
+
+		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
+		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
+		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130500"));
+		st2.setName("Straight leg two");
+		getGenerator().addContribution(st2);
+
+		
+//		SpeedForecastContribution speed = new SpeedForecastContribution();
+//		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121331"));
+//		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122025"));
+//		speed.setMinSpeed(GeoSupport.kts2MSec(12d));
+//		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
+//		speed.setName("Initial speed obs");
+//		getGenerator().addContribution(speed);
+//
+//		// try a location forecast
+//		LocationForecastContribution locF = new LocationForecastContribution();
+//		locF.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121300"));
+//		locF.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121700"));
+//		locF.setLocation(new GeoPoint(0.03, -30.0));
+//		locF.setLimit(3000d);
+//		locF.setName("Last known location");
+//		locF.setActive(false);
+//		getGenerator().addContribution(locF);
+//		
+//		// hey, how about a time-bounded course constraint?
+//		CourseForecastContribution course = new CourseForecastContribution();
+//		course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121231"));
+//		course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122525"));
+//		course.setMinCourse(Math.toRadians(225));
+//		course.setMaxCourse(Math.toRadians(315));
+//		course.setName("Last known course");
+//		getGenerator().addContribution(course);
+//
+//		// hey, how about a time-bounded course constraint?
+//		SpeedForecastContribution speed2 = new SpeedForecastContribution();
+//		speed2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122500"));
+//		speed2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123100"));
+//		speed2.setMinSpeed(GeoSupport.kts2MSec(8d));
+//		speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
+//		speed2.setName("Later speed obs");
+//		getGenerator().addContribution(speed2);
+		
+
 		// and an altering leg forecasts
 //		AlterationLegForecastContribution al = new AlterationLegForecastContribution();
 //		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
@@ -204,7 +295,7 @@ public class TestSupport
 		getGenerator().addContribution(new LocationAnalysisContribution());
 	
 	}
-
+	
 	public void nextTest()
 	{
 		// clear the bounded states
