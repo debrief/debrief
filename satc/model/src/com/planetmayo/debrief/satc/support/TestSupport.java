@@ -238,7 +238,7 @@ public class TestSupport
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
 		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
-		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130500"));
+		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
 		st2.setName("Straight leg two");
 		getGenerator().addContribution(st2);
 
