@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedSet;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -190,8 +191,28 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 */
 	CompositeRoute[] generateCandidates(ArrayList<CoreLeg> theLegs)
 	{
-		// TODO generate the candidate solutions
-		return null;
+		CompositeRoute res = new CompositeRoute();
+
+		// PHASE 1 = just do it for straight legs
+		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+		{
+			CoreLeg coreLeg = iterator.next();
+
+			// get the top solutions
+			SortedSet<CoreRoute> topR = coreLeg.getTopRoutes();
+
+			// have we found any?
+			if (topR != null)
+				if (topR.size() > 0)
+				{
+					// and remember it the top one
+					res.add(topR.first());
+				}
+		}
+
+		// and return the top route
+		return new CompositeRoute[]
+		{ res };
 	}
 
 	void cancelUnachievable(ArrayList<CoreLeg> theLegs, int[][] routes)
@@ -413,8 +434,11 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	private void clearCalcs()
 	{
-		_theLegs.clear();
-		_theLegs = null;
+		if (_theLegs != null)
+		{
+			_theLegs.clear();
+			_theLegs = null;
+		}
 		_boundsManager = null;
 	}
 
