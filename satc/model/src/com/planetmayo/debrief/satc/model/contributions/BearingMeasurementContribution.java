@@ -147,6 +147,10 @@ public class BearingMeasurementContribution extends BaseContribution
 		if (thisS == null)
 			return res;
 
+		// hey, if our error is zero we may as well cancel too!
+		if (this.getWeight() == 0)
+			return res;
+
 		// ok. work through the bearings
 		Iterator<BMeasurement> iter = _measurements.iterator();
 		while (iter.hasNext())
