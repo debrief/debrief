@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.generator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -15,7 +16,9 @@ import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
@@ -23,13 +26,16 @@ import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContri
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg.ScaledPolygons;
 import com.planetmayo.debrief.satc.model.legs.StraightLegTests;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -90,6 +96,69 @@ public class GenerateCandidatesTest extends ModelTestBase
 
 	}
 
+	private ArrayList<CoreLeg> _scoredLegs = null;
+	
+	@Test
+	public void testLegScores()
+	{
+		boundsManager.run();
+
+		// create a solution generator
+		SolutionGenerator genny = new SolutionGenerator();
+		
+		// TODO: IAN, set the weight or bearing meas to zero, to cancel it out
+		bearingMeasurementContribution.setWeight(0);
+		
+		// but, add our 'special' generator
+		boundsManager.addContribution(new PredicableForecastContribution());
+		
+		// get listening
+		genny.addReadyListener(new IGenerateSolutionsListener()
+		{
+			@Override
+			public void solutionsReady(CompositeRoute[] routes)
+			{
+			}
+			
+			@Override
+			public void legsScored(ArrayList<CoreLeg> theLegs)
+			{
+				_scoredLegs = theLegs;
+			}
+		});
+		
+		assertNull("legs not there yet", _scoredLegs);
+		
+		genny.statesBounded(boundsManager);
+		
+		// check the calc got called
+		assertNotNull(_scoredLegs);
+		
+		// work out the total
+		double total = 0;
+		for (Iterator<CoreLeg> iterator = _scoredLegs.iterator(); iterator.hasNext();)
+		{
+			CoreLeg thisL = iterator.next();
+			
+			// and get the routes
+			CoreRoute[][] routes = thisL.getRoutes();
+			for(int i=0;i<routes.length;i++)
+				for(int j=0;j<routes[0].length;j++)
+				{
+					CoreRoute thisR = routes[i][j];
+					double thisScore = thisR.getScore();
+					if(thisScore < 0)
+					{
+						System.out.println("here");
+					}
+					total += thisScore;
+				}
+		}
+		assertEquals("have some scores", 100, total, 0.0001);
+		
+		
+	}
+	
 	@Test
 	public void testExtractLegs()
 	{
@@ -541,6 +610,8 @@ public class GenerateCandidatesTest extends ModelTestBase
 					boundedState.getLocation());
 		}
 
+		// create a special contribution, that produces a predictable score
+		
 		SolutionGenerator genny = new SolutionGenerator();
 		genny.addReadyListener(new IGenerateSolutionsListener()
 		{
@@ -568,4 +639,41 @@ public class GenerateCandidatesTest extends ModelTestBase
 		assertEquals("now called ",2, called);
 	}
 
+	private static class PredicableForecastContribution extends BaseContribution
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+
+
+		@Override
+		public void actUpon(ProblemSpace space) throws IncompatibleStateException
+		{
+			// TODO Auto-generated method stub
+		}
+		
+		
+
+		@Override
+		public double calculateErrorScoreFor(CoreRoute route)
+		{
+			int code = route.getName().hashCode();
+			double score = Math.abs(code % 10);
+			if(score < 0)
+				System.out.println("here 2");
+			return score;
+		}
+
+
+
+		@Override
+		public ContributionDataType getDataType()
+		{
+			return ContributionDataType.FORECAST;
+		}
+		
+	}
 }
