@@ -174,7 +174,7 @@ public class TestHarnessView extends ViewPart
 			public void widgetSelected(SelectionEvent arg0)
 			{
 				GeoSupport.getSolutionDiagnostics().setShowRecommendedSolutions(
-						btn6.getSelection());
+						btn7.getSelection());
 			}
 		});
 
