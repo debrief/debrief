@@ -131,11 +131,13 @@ public class BearingMeasurementContribution extends BaseContribution
 			}
 		}
 	}
+	
+	
 
 	@Override
-	public double calculateErrorScoreFor(final CoreRoute route)
+	protected double scoreFor(CoreRoute route)
 	{
-		double res = super.calculateErrorScoreFor(route);
+		double res = 0;
 		ArrayList<State> states = route.getStates();
 		Iterator<State> sIter = states.iterator();
 		State thisS = null;
@@ -145,10 +147,6 @@ public class BearingMeasurementContribution extends BaseContribution
 
 		// if the list is empty, drop out
 		if (thisS == null)
-			return res;
-
-		// hey, if our error is zero we may as well cancel too!
-		if (this.getWeight() == 0)
 			return res;
 
 		// ok. work through the bearings

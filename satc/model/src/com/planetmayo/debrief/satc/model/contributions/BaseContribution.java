@@ -18,7 +18,7 @@ public abstract class BaseContribution extends ModelObject implements
 	public static final String FINISH_DATE = "finishDate";
 	public static final String ACTIVE = "active";
 	public static final String ESTIMATE = "estimate";
-	
+
 	public static final String HARD_CONSTRAINTS = "hardConstraint";
 
 	protected String _name;
@@ -41,16 +41,29 @@ public abstract class BaseContribution extends ModelObject implements
 	 */
 	public abstract void actUpon(ProblemSpace space)
 			throws IncompatibleStateException;
-	
-	/** generate the error for this route
+
+	/**
+	 * generate the error for this route
 	 * 
 	 */
-	public double calculateErrorScoreFor(CoreRoute route)
+	final public double calculateErrorScoreFor(CoreRoute route)
+	{
+		double res = 0;
+		
+		if (_active)
+			if (_weight > 0)
+				res = scoreFor(route);
+		
+		return res;
+	}
+
+	protected double scoreFor(CoreRoute route)
 	{
 		return 0;
 	}
 
-	/** are my constraints valid for the supplied period?
+	/**
+	 * are my constraints valid for the supplied period?
 	 * 
 	 * @param route
 	 * @return
@@ -59,7 +72,7 @@ public abstract class BaseContribution extends ModelObject implements
 	{
 		return true;
 	}
-	
+
 	/**
 	 * check if this specified time is between our start/finish times, if we have
 	 * them
