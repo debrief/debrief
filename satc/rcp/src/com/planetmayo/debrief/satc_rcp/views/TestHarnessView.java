@@ -55,6 +55,7 @@ public class TestHarnessView extends ViewPart
 	private Action _playAction;
 	private Action _populateShortAction;
 	private Action _populateLongAction;
+	private Action _populateGoodAction;
 	private Action _liveAction;
 	private Action _testOne;
 
@@ -188,6 +189,7 @@ public class TestHarnessView extends ViewPart
 		_clearAction.setEnabled(enabled);
 		_populateShortAction.setEnabled(enabled);
 		_populateLongAction.setEnabled(enabled);
+		_populateGoodAction.setEnabled(enabled);
 		_restartAction.setEnabled(enabled);
 		_stepAction.setEnabled(enabled);
 		_playAction.setEnabled(enabled);
@@ -201,6 +203,7 @@ public class TestHarnessView extends ViewPart
 		manager.add(_restartAction);
 		manager.add(_populateShortAction);
 		manager.add(_populateLongAction);
+		manager.add(_populateGoodAction);
 		manager.add(_stepAction);
 		manager.add(_playAction);
 		manager.add(_liveAction);
@@ -211,6 +214,11 @@ public class TestHarnessView extends ViewPart
 	{
 		_testSupport.loadSampleData(useLong);
 	}
+	private void loadGoodData()
+	{
+		_testSupport.loadGoodData();
+	}
+
 
 	private void makeActions()
 	{
@@ -222,7 +230,7 @@ public class TestHarnessView extends ViewPart
 				loadSampleData(false);
 			}
 		};
-		_populateShortAction.setText("Populate Short");
+		_populateShortAction.setText("Pop Short");
 		_populateShortAction.setToolTipText("Load some sample data");
 
 		_populateLongAction = new Action()
@@ -233,8 +241,19 @@ public class TestHarnessView extends ViewPart
 				loadSampleData(true);
 			}
 		};
-		_populateLongAction.setText("Populate");
+		_populateLongAction.setText("Pop Long");
 		_populateLongAction.setToolTipText("Load some sample data");
+		
+		_populateGoodAction = new Action()
+		{
+			@Override
+			public void run()
+			{
+				loadGoodData();
+			}
+		};
+		_populateGoodAction.setText("Pop Good");
+		_populateGoodAction.setToolTipText("Load some good data");
 
 		_clearAction = new Action()
 		{
