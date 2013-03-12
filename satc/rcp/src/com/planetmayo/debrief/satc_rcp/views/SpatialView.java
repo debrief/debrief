@@ -482,40 +482,32 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	}
 
-	/*private void plotTheseCoordsAsAPoints(Collection<Point> points,
-			boolean largePoints)
-	{
-		Collection<Coordinate> coords = new ArrayList<Coordinate>();
-
-		for (Point point : points)
-		{
-			coords.add(point.getCoordinate());
-		}
-		Coordinate[] demo = new Coordinate[]
-		{};
-
-		// create the data series, get the index number
-		int num = addSeries("" + _numCycles++, coords.toArray(demo));
-
-		// DONE: AKASH: configure the renderer to not show lines, but as points
-		// (large/small)
-		_chart.setNotify(false);
-		_renderer.setSeriesShapesVisible(num, true);
-		_renderer.setSeriesLinesVisible(num, false);
-
-		Shape triangle = ShapeUtilities.createRegularCross(largePoints ? 5 : 2,
-				largePoints ? 5 : 2);
-		_renderer.setSeriesShape(num, triangle);
-
-		_chart.setNotify(true);
-
-		// DONE: AKASH - there's some probem with the logic here. It really looks
-		// like I'm
-		// using the wrong index num, since it looks like one of the bounded state
-		// lines
-		// gets switched to be symbols.
-
-	}*/
+	/*
+	 * private void plotTheseCoordsAsAPoints(Collection<Point> points, boolean
+	 * largePoints) { Collection<Coordinate> coords = new ArrayList<Coordinate>();
+	 * 
+	 * for (Point point : points) { coords.add(point.getCoordinate()); }
+	 * Coordinate[] demo = new Coordinate[] {};
+	 * 
+	 * // create the data series, get the index number int num = addSeries("" +
+	 * _numCycles++, coords.toArray(demo));
+	 * 
+	 * // DONE: AKASH: configure the renderer to not show lines, but as points //
+	 * (large/small) _chart.setNotify(false);
+	 * _renderer.setSeriesShapesVisible(num, true);
+	 * _renderer.setSeriesLinesVisible(num, false);
+	 * 
+	 * Shape triangle = ShapeUtilities.createRegularCross(largePoints ? 5 : 2,
+	 * largePoints ? 5 : 2); _renderer.setSeriesShape(num, triangle);
+	 * 
+	 * _chart.setNotify(true);
+	 * 
+	 * // DONE: AKASH - there's some probem with the logic here. It really looks
+	 * // like I'm // using the wrong index num, since it looks like one of the
+	 * bounded state // lines // gets switched to be symbols.
+	 * 
+	 * }
+	 */
 
 	private int addSeries(String title, Coordinate[] coords)
 	{
@@ -739,18 +731,39 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		{
 			ScoredRoute route = iterator.next();
 
-			@SuppressWarnings("unused")
 			Point startP = route.theRoute.getStartPoint();
-			@SuppressWarnings("unused")
 			Point endP = route.theRoute.getEndPoint();
 
-			@SuppressWarnings("unused")
+			// Ensure thisScore is between 0-100
 			double thisScore = route.theScore;
 
-			// TODO: Akash, draw a line between these points, colour coded according
+			XYSeries series = new XYSeries("" + (_numCycles++), false);
+			series.add(new XYDataItem(startP.getY(), startP.getX()));
+			series.add(new XYDataItem(endP.getY(), endP.getX()));
+
+			// get the shape
+			_myData.addSeries(series);
+
+			// get the series num
+			int num = _myData.getSeriesCount();
+			_renderer.setSeriesPaint(num, getHeatMapColorFor(thisScore));
+			_renderer.setSeriesStroke(num, new BasicStroke(), false);
+
+			// DONE: Akash, draw a line between these points, colour coded according
 			// to the score
 		}
 
+	}
+
+	/*
+	 * Ensure thisScore is between 0-100
+	 */
+	private Color getHeatMapColorFor(double thisScore)
+	{
+		float red = (float) (thisScore / 100);
+		float blue = (float) ((100 - thisScore) / 100);
+
+		return new Color(red, 0, blue);
 	}
 
 	private void plotPossibleRoutes(Collection<LineString> possibleRoutes)
