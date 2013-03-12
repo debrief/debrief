@@ -176,12 +176,19 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void clear()
 	{
-		this.restart();
+		// ditch the contributions
 		for (BaseContribution contribution : new ArrayList<BaseContribution>(
 				_contribs))
 		{
 			this.removeContribution(contribution);
 		}
+		
+		// clear the probelm space
+		_space.clear();
+
+		// tell everyone we've restarted
+		this.restart();
+
 	}
 
 	protected void createInitialBoundedStates()

@@ -196,6 +196,8 @@ public class TestSupport
 		getGenerator().addContribution(courseA);
 		getGenerator().addContribution(new LocationAnalysisContribution());
 	
+		// ok, and get it to go for it
+		getGenerator().run();
 	}
 
 
@@ -276,24 +278,19 @@ public class TestSupport
 //		speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
 //		speed2.setName("Later speed obs");
 //		getGenerator().addContribution(speed2);
-		
-
-		// and an altering leg forecasts
-//		AlterationLegForecastContribution al = new AlterationLegForecastContribution();
-//		al.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123000"));
-//		al.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
-//		al.setName("Alteration prediction");
-//		getGenerator().addContribution(al);
 
 		// and our analysis contributions
 		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
-		speedA.setActive(false);
+		speedA.setActive(true);
 		getGenerator().addContribution(speedA);
 		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
-		courseA.setActive(false);
+		courseA.setActive(true);
 		getGenerator().addContribution(courseA);
 		getGenerator().addContribution(new LocationAnalysisContribution());
 	
+		// ok, and get it to go for it
+		getGenerator().run();
+
 	}
 	
 	public void nextTest()
