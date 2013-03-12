@@ -171,9 +171,6 @@ public class BearingMeasurementContribution extends BaseContribution
 			// what's the difference between that and my measurement
 			double thisError = Math.abs(bearing - m._bearingAngle);
 
-			// apply the weighting factor
-			thisError *= this.getWeight();
-
 			// and accumulate it
 			res += thisError;
 

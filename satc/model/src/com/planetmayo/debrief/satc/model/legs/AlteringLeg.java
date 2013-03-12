@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
+import java.util.SortedSet;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
@@ -199,6 +200,13 @@ public class AlteringLeg extends CoreLeg
 
 		// and store the route
 		myRoutes[i][j] = newRoute;
+	}
+
+	@Override
+	public SortedSet<CoreRoute> getTopRoutes()
+	{
+		// TODO IAN - sort out altering leg identification
+		return null;
 	}
 
 }

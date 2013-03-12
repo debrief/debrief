@@ -1,6 +1,7 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
+import java.util.SortedSet;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -202,5 +203,12 @@ public abstract class CoreLeg
 	 */
 	abstract protected void createAndStoreLeg(ArrayList<Point> startP,
 			ArrayList<Point> endP, int i, int j, String thisName);
+
+	/** return the routes in this leg, in descending order
+	 * 
+	 * @param i how many legs to retrieve
+	 * @return
+	 */
+	abstract public SortedSet<CoreRoute> getTopRoutes();
 
 }

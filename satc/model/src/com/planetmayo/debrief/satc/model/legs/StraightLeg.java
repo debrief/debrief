@@ -2,7 +2,10 @@ package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -34,7 +37,6 @@ public class StraightLeg extends CoreLeg
 	{
 		super(name, states);
 	}
-
 
 	@Override
 	protected void createAndStoreLeg(ArrayList<Point> startP,
@@ -264,7 +266,7 @@ public class StraightLeg extends CoreLeg
 			public void process(StraightRoute theRoute)
 			{
 				Double thisScore = 0d;
-				
+
 				// loop through the contribs
 				Iterator<BaseContribution> iter = contribs.iterator();
 				while (iter.hasNext())
@@ -272,7 +274,7 @@ public class StraightLeg extends CoreLeg
 					BaseContribution thisC = (BaseContribution) iter.next();
 					thisScore += thisC.calculateErrorScoreFor(theRoute);
 				}
-				
+
 				theRoute.setScore(thisScore);
 			}
 		};
@@ -281,9 +283,43 @@ public class StraightLeg extends CoreLeg
 
 	@Override
 	protected void createRouteStructure(int startLen, int endLen)
-	{ 
+	{
 		// ok, create the array
 		myRoutes = new StraightRoute[_startLen][_endLen];
+	}
+
+	@Override
+	public SortedSet<CoreRoute> getTopRoutes()
+	{
+		// ok, we need to sort our routes in descending order
+		Comparator<CoreRoute> comparator = new Comparator<CoreRoute>()
+		{
+
+			@Override
+			public int compare(CoreRoute arg0, CoreRoute arg1)
+			{
+				Double score1 = arg0.getScore();
+				Double score2 = arg1.getScore();
+				return score1.compareTo(score2);
+			}
+		};
+		final SortedSet<CoreRoute> topRoutes = new TreeSet<CoreRoute>(comparator);
+
+		RouteOperator addIt = new RouteOperator()
+		{
+
+			@Override
+			public void process(StraightRoute theRoute)
+			{
+				if (theRoute.isPossible())
+					topRoutes.add(theRoute);
+			}
+		};
+		
+		// ok, run the operation across all the routes
+		applyToRoutes(addIt);
+
+		return topRoutes;
 	}
 
 }

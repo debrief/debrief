@@ -23,7 +23,7 @@ public abstract class BaseContribution extends ModelObject implements
 
 	protected String _name;
 	protected boolean _active = true;
-	protected int _weight = 1;
+	private int _weight = 1;
 	protected Date _startDate;
 	protected Date _finishDate;
 
@@ -52,8 +52,9 @@ public abstract class BaseContribution extends ModelObject implements
 		
 		if (_active)
 			if (_weight > 0)
-				res = scoreFor(route);
-		
+			{
+				res = _weight * scoreFor(route);
+			}
 		return res;
 	}
 
