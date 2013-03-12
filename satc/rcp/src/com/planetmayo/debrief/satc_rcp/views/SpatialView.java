@@ -423,13 +423,22 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	}
 
-	private void plotTheseCoordsAsALine(String title, Coordinate[] coords)
+	private int plotTheseCoordsAsALine(String title, Coordinate[] coords)
 	{
 		int num = addSeries(title, coords);
 
 		_renderer.setSeriesStroke(num, new BasicStroke(2.0f, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND, 1.0f, new float[]
 				{ 10.0f, 6.0f }, 0.0f));
+
+		return num;
+	}
+
+	private void plotTheseCoordsAsALine(String title, Coordinate[] coords,
+			Color color)
+	{
+		int index = plotTheseCoordsAsALine(title, coords);
+		_renderer.setSeriesPaint(index, color);
 	}
 
 	private void plotTheseCoordsAsAPoints(ArrayList<ArrayList<Point>> points,
@@ -631,7 +640,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		{
 			ArrayList<ArrayList<Point>> allPoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<Point>> allPossiblePoints = new ArrayList<ArrayList<Point>>();
-			Collection<LineString> possibleRoutes = new ArrayList<LineString>();
+			ArrayList<ArrayList<LineString>> allPossibleRoutes = new ArrayList<ArrayList<LineString>>();
 			Collection<ScoredRoute> scoredRoutes = new ArrayList<ScoredRoute>();
 
 			// ok, loop trough
@@ -639,6 +648,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			{
 				ArrayList<Point> points = new ArrayList<Point>();
 				ArrayList<Point> possiblePoints = new ArrayList<Point>();
+				ArrayList<LineString> possibleRoutes = new ArrayList<LineString>();
 				CoreLeg thisLeg = (CoreLeg) iterator.next();
 
 				// ok, get the points
@@ -709,6 +719,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 				allPoints.add(points);
 				allPossiblePoints.add(possiblePoints);
+				allPossibleRoutes.add(possibleRoutes);
 			}
 
 			// System.out.println("num all points:" + allPoints.size());
@@ -717,7 +728,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 			plotTheseCoordsAsAPoints(allPoints, false);
 			plotTheseCoordsAsAPoints(allPossiblePoints, true);
-			plotPossibleRoutes(possibleRoutes);
+			plotPossibleRoutes(allPossibleRoutes);
 			plotRoutesWithScores(scoredRoutes);
 
 		}
@@ -766,23 +777,39 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		return new Color(red, 0, blue);
 	}
 
-	private void plotPossibleRoutes(Collection<LineString> possibleRoutes)
+	private void plotPossibleRoutes(
+			ArrayList<ArrayList<LineString>> allPossibleRoutes)
 	{
-		for (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
-				.hasNext();)
+
+		Color[] list = getDifferentColors(allPossibleRoutes.size());
+
+		for (int i = 0; i < allPossibleRoutes.size(); i++)
 		{
-			LineString line = iterator.next();
-
-			// Point startP = line.getStartPoint();
-			// Point endP = line.getEndPoint();
-
-			// TODO: Akash, draw a line between these points
-			// System.out.println(" r:" + startP.getCoordinate() + " " +
-			// endP.getCoordinate());
-
-			plotTheseCoordsAsALine("" + (_numCycles++), line.getCoordinates());
+			for (LineString lineString : allPossibleRoutes.get(i))
+			{
+				plotTheseCoordsAsALine("" + (_numCycles++),
+						lineString.getCoordinates(), list[i]);
+			}
 
 		}
 
 	}
+
+	/* OLD IMPLEMENTATION - WILL REMOVE ONCE FUNCTIONALITY IS STABLE.
+	 * private void plotPossibleRoutes(Collection<LineString> possibleRoutes) {
+	 * for (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
+	 * .hasNext();) { LineString line = iterator.next();
+	 * 
+	 * // Point startP = line.getStartPoint(); // Point endP = line.getEndPoint();
+	 * 
+	 * // TODO: Akash, draw a line between these points //
+	 * System.out.println(" r:" + startP.getCoordinate() + " " + //
+	 * endP.getCoordinate());
+	 * 
+	 * plotTheseCoordsAsALine("" + (_numCycles++), line.getCoordinates());
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
 }
