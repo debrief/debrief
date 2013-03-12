@@ -118,7 +118,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	 * 
 	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
 	 */
-	@SuppressWarnings("unused")
 	private boolean _showRecommendedSolutions;
 
 	/**
@@ -283,6 +282,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		int turnCounter = 1;
 		int colourCounter = 0;
 
+		@SuppressWarnings("rawtypes")
 		HashMap<Comparable, Integer> keyToLegTypeMapping = new HashMap<Comparable, Integer>();
 
 		// and plot the new data
@@ -383,7 +383,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		Color[] colorsList = getDifferentColors(colourCounter);
 
 		// paint each series with color depending on leg type.
-		for (Comparable key : keyToLegTypeMapping.keySet())
+		for (Comparable<?> key : keyToLegTypeMapping.keySet())
 		{
 			_renderer.setSeriesPaint(_myData.getSeriesIndex(key),
 					colorsList[keyToLegTypeMapping.get(key) - 1]);
@@ -576,9 +576,24 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		if (_lastStates != null)
 			showBoundedStates(_lastStates);
 		if (_lastSetOfScoredLegs != null)
-			legsScored(_lastSetOfScoredLegs);
+			showLegsWithScores(_lastSetOfScoredLegs);
 		if (_lastSetOfSolutions != null)
-			solutionsReady(_lastSetOfSolutions);
+			showTopSolutions(_lastSetOfSolutions);
+	}
+
+	private void showTopSolutions(CompositeRoute[] lastSetOfSolutions2)
+	{
+		// just draw in these solutions
+		if (_showRecommendedSolutions)
+		{
+			for (int i = 0; i < lastSetOfSolutions2.length; i++)
+			{
+				CompositeRoute compositeRoute = lastSetOfSolutions2[i];
+				// ok, loop through the legs
+				Collection<CoreRoute> legs = compositeRoute.getLegs();
+				plotTopRoutes(legs);
+			}
+		}
 	}
 
 	@Override
@@ -615,7 +630,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		_lastSetOfSolutions = routes;
 
-		// TODO: IAN - HIGH present the optimal solutions
+		redoChart();
 	}
 
 	private static class ScoredRoute
@@ -635,8 +650,16 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		_lastSetOfScoredLegs = theLegs;
 
+		redoChart();
+	}
+
+	private void showLegsWithScores(ArrayList<CoreLeg> theLegs)
+	{
+		_lastSetOfScoredLegs = theLegs;
+
 		// hey, are we showing points?
-		if (_showPoints || _showAchievablePoints || _showRoutes)
+		if (_showPoints || _showAchievablePoints || _showRoutes
+				|| _showRoutesWithScores)
 		{
 			ArrayList<ArrayList<Point>> allPoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<Point>> allPossiblePoints = new ArrayList<ArrayList<Point>>();
@@ -649,7 +672,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				ArrayList<Point> points = new ArrayList<Point>();
 				ArrayList<Point> possiblePoints = new ArrayList<Point>();
 				ArrayList<LineString> possibleRoutes = new ArrayList<LineString>();
-				CoreLeg thisLeg = (CoreLeg) iterator.next();
+				CoreLeg thisLeg = iterator.next();
 
 				// ok, get the points
 				CoreRoute[][] routes = thisLeg.getRoutes();
@@ -672,7 +695,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					}
 
 					// ok - do we need to check which ones have any valid points?
-					if (_showAchievablePoints || _showRoutes)
+					if (_showAchievablePoints || _showRoutes || _showRoutesWithScores)
 					{
 						boolean isPossible = false;
 
@@ -737,24 +760,26 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
 	{
-		double max = 0, min = 10000;
+		double max = 0, min = Double.MAX_VALUE;
 		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 				.hasNext();)
 		{
 			ScoredRoute route = iterator.next();
 			// Ensure thisScore is between 0-100
 			double thisScore = route.theScore;
-			if(max<thisScore)
+			if (max < thisScore)
 			{
 				max = thisScore;
 			}
-			if(min> thisScore)
+			if (min > thisScore)
 			{
 				min = thisScore;
 			}
 
 		}
-		
+
+		System.out.println("min:" + (int) min + " max:" + (int) max);
+
 		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 				.hasNext();)
 		{
@@ -764,7 +789,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			Point endP = route.theRoute.getEndPoint();
 
 			// Ensure thisScore is between 0-100
-			double thisScore = (route.theScore - min)/(max-min)*100;
+			double thisScore = (route.theScore - min) / (max - min) * 100;
 
 			XYSeries series = new XYSeries("" + (_numCycles++), false);
 			series.add(new XYDataItem(startP.getY(), startP.getX()));
@@ -774,7 +799,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_myData.addSeries(series);
 
 			// get the series num
-			int num = _myData.getSeriesCount();
+			int num = _myData.getSeriesCount()-1;
 			_renderer.setSeriesPaint(num, getHeatMapColorFor(thisScore));
 			_renderer.setSeriesStroke(num, new BasicStroke(), false);
 
@@ -784,11 +809,39 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	}
 
+	private void plotTopRoutes(Collection<CoreRoute> scoredRoutes)
+	{
+		for (Iterator<CoreRoute> iterator = scoredRoutes.iterator(); iterator
+				.hasNext();)
+		{
+			CoreRoute route = iterator.next();
+
+			Point startP = route.getStartPoint();
+			Point endP = route.getEndPoing();
+
+			XYSeries series = new XYSeries("" + (_numCycles++), false);
+			series.add(new XYDataItem(startP.getY(), startP.getX()));
+			series.add(new XYDataItem(endP.getY(), endP.getX()));
+
+			// get the shape
+			_myData.addSeries(series);
+
+			// get the series num
+			int num = _myData.getSeriesCount()-1;
+			_renderer.setSeriesPaint(num, Color.green);
+			_renderer.setSeriesStroke(num, new BasicStroke(3), false);
+		}
+
+	}
+
 	/*
 	 * Ensure thisScore is between 0-100
 	 */
 	private Color getHeatMapColorFor(double thisScore)
 	{
+		// put the score into the 50-100 domain, to make it more feint
+		thisScore = 50 + thisScore /2;
+		
 		float red = (float) (thisScore / 100);
 		float blue = (float) ((100 - thisScore) / 100);
 
@@ -813,9 +866,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	}
 
-	/* OLD IMPLEMENTATION - WILL REMOVE ONCE FUNCTIONALITY IS STABLE.
-	 * private void plotPossibleRoutes(Collection<LineString> possibleRoutes) {
-	 * for (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
+	/*
+	 * OLD IMPLEMENTATION - WILL REMOVE ONCE FUNCTIONALITY IS STABLE. private void
+	 * plotPossibleRoutes(Collection<LineString> possibleRoutes) { for
+	 * (Iterator<LineString> iterator = possibleRoutes.iterator(); iterator
 	 * .hasNext();) { LineString line = iterator.next();
 	 * 
 	 * // Point startP = line.getStartPoint(); // Point endP = line.getEndPoint();
