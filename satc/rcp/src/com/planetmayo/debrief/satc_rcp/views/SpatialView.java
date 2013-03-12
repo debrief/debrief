@@ -151,7 +151,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void statesBounded(IBoundsManager boundsManager)
 	{
 		_lastStates = boundsManager.getSpace().states();
-		
+
 		redoChart();
 	}
 
@@ -279,6 +279,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			return;
 
 		String lastSeries = "UNSET";
+		BoundedState lastState = null;
 		int turnCounter = 1;
 		int colourCounter = 0;
 
@@ -290,24 +291,24 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		while (iter.hasNext())
 		{
 			BoundedState thisS = iter.next();
+
 			// get the poly
 			LocationRange loc = thisS.getLocation();
+
+			// ok, color code the series
+			String thisSeries = thisS.getMemberOf();
+
 			if (loc != null)
 			{
 				boolean showThisState = false;
-
-				// ok, color code the series
-				String thisSeries = thisS.getMemberOf();
 
 				// ok, what about the name?
 				String legName = "";
 
 				if (thisSeries != lastSeries)
 				{
-					// right this is the start of a new leg
-
 					// are we storing leg ends?
-					if (_showLegEndBounds)
+					if (_showLegEndBounds || (lastSeries == null))
 					{
 						showThisState = true;
 
@@ -315,16 +316,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 							legName = thisSeries;
 						else
 							legName = "Turn " + turnCounter++;
-
 					}
 
 					colourCounter++;
-
-					// ok, use new color
-
-					// DONE: generate a new color. We should prob allow up to 20 colors, I
-					// welcome
-					// a strategy for generateNewColor()
 
 					// and remember the new series
 					lastSeries = thisSeries;
@@ -348,6 +342,19 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				// right then do we create a shape (series) for this one?
 				if (showThisState)
 				{
+					// right, but do we show it for the new, or old state
+					if (thisS.getMemberOf() == null)
+					{
+						// right, we're already in a turn. use the last one
+						if (lastState != null)
+							loc = lastState.getLocation();
+					}
+					else
+					{
+						// right this is the first point in a new leg. use this one
+						loc = thisS.getLocation();
+					}
+
 					// ok, we've got a new series
 					XYSeries series = new XYSeries(legName, false);
 
@@ -366,16 +373,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 					int seriesIndex = _myData.getSeriesCount() - 1;
 
-					_renderer.setSeriesShapesVisible(seriesIndex, false);
-					_renderer.setSeriesLinesVisible(seriesIndex, true);
-
 					_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
-					_renderer.setSeriesLinesVisible(seriesIndex,true);
+					_renderer.setSeriesLinesVisible(seriesIndex, true);
 					_renderer.setSeriesShapesVisible(seriesIndex, false);
-
 
 				}
 			}
+
+			// and move on
+			lastState = thisS;
 		}
 
 		Color[] colorsList = getDifferentColors(colourCounter);
@@ -426,7 +432,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		int num = addSeries(title, coords);
 
 		_renderer.setSeriesStroke(num, new BasicStroke(0.0f));
-		_renderer.setSeriesLinesVisible(num,true);
+		_renderer.setSeriesLinesVisible(num, true);
 		_renderer.setSeriesShapesVisible(num, false);
 
 		return num;
@@ -437,14 +443,14 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		int index = plotTheseCoordsAsALine(title, coords);
 		_renderer.setSeriesPaint(index, color);
-		
+
 		_renderer.setSeriesShapesVisible(index, false);
 		_renderer.setSeriesLinesVisible(index, true);
 
 	}
 
-	private void plotTheseCoordsAsAPoints(String name, ArrayList<ArrayList<Point>> points,
-			boolean largePoints)
+	private void plotTheseCoordsAsAPoints(String name,
+			ArrayList<ArrayList<Point>> points, boolean largePoints)
 	{
 		List<Integer> listOfIndexes = new ArrayList<Integer>();
 
@@ -460,7 +466,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			{};
 
 			// create the data series, get the index number
-			int num = addSeries(name	 + _numCycles++, coords.toArray(demo));
+			int num = addSeries(name + _numCycles++, coords.toArray(demo));
 
 			listOfIndexes.add(num);
 
@@ -727,9 +733,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
 	{
-		if(scoredRoutes.size() == 0)
+		if (scoredRoutes.size() == 0)
 			return;
-		
+
 		double max = 0, min = Double.MAX_VALUE;
 		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 				.hasNext();)
@@ -772,7 +778,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			int num = _myData.getSeriesCount() - 1;
 			_renderer.setSeriesPaint(num, getHeatMapColorFor(thisScore));
 			_renderer.setSeriesStroke(num, new BasicStroke(), false);
-			_renderer.setSeriesLinesVisible(num,true);
+			_renderer.setSeriesLinesVisible(num, true);
 			_renderer.setSeriesShapesVisible(num, false);
 
 		}
@@ -800,7 +806,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			int num = _myData.getSeriesCount() - 1;
 			_renderer.setSeriesPaint(num, Color.black);
 			_renderer.setSeriesStroke(num, new BasicStroke(3), false);
-			_renderer.setSeriesLinesVisible(num,true);
+			_renderer.setSeriesLinesVisible(num, true);
 			_renderer.setSeriesShapesVisible(num, false);
 		}
 
