@@ -136,6 +136,22 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 		// work out the total
 		double total = 0;
+		total = calcLegScore(total);
+		
+		assertEquals("have some scores", 6063, total, 0.0001);
+		
+		// ok, check that we can turn BMC back on
+		bearingMeasurementContribution.setWeight(1);
+		
+		// and run the calcs again
+		genny.statesBounded(boundsManager);
+		total = calcLegScore(total);
+		
+		assertEquals("have some more scores", 179194, (int)total);
+	}
+
+	private double calcLegScore(double total)
+	{
 		for (Iterator<CoreLeg> iterator = _scoredLegs.iterator(); iterator.hasNext();)
 		{
 			CoreLeg thisL = iterator.next();
@@ -154,9 +170,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 					total += thisScore;
 				}
 		}
-		assertEquals("have some scores", 100, total, 0.0001);
-		
-		
+		return total;
 	}
 	
 	@Test
@@ -658,7 +672,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 
 		@Override
-		public double calculateErrorScoreFor(CoreRoute route)
+		protected double scoreFor(CoreRoute route)
 		{
 			int code = route.getName().hashCode();
 			double score = Math.abs(code % 10);
