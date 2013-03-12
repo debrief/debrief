@@ -19,12 +19,6 @@ import com.vividsolutions.jts.math.Vector2D;
 public class StraightRoute extends CoreRoute
 {
 	/**
-	 * the sum of errors representing the performance of this route
-	 * 
-	 */
-	private double _errorSum;
-
-	/**
 	 * the course followed for this route
 	 */
 	private double _course;
@@ -131,12 +125,6 @@ public class StraightRoute extends CoreRoute
 		}
 
 	}
-
-	public double getErrorSum()
-	{
-		return _errorSum;
-	}
-
 	/**
 	 * get the length of this route
 	 * 
