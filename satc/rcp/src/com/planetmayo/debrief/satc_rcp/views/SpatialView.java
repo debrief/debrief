@@ -370,6 +370,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					_renderer.setSeriesLinesVisible(seriesIndex, true);
 
 					_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
+					_renderer.setSeriesLinesVisible(seriesIndex,true);
+					_renderer.setSeriesShapesVisible(seriesIndex, false);
+
 
 				}
 			}
@@ -423,6 +426,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		int num = addSeries(title, coords);
 
 		_renderer.setSeriesStroke(num, new BasicStroke(0.0f));
+		_renderer.setSeriesLinesVisible(num,true);
+		_renderer.setSeriesShapesVisible(num, false);
 
 		return num;
 	}
@@ -767,6 +772,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			int num = _myData.getSeriesCount() - 1;
 			_renderer.setSeriesPaint(num, getHeatMapColorFor(thisScore));
 			_renderer.setSeriesStroke(num, new BasicStroke(), false);
+			_renderer.setSeriesLinesVisible(num,true);
+			_renderer.setSeriesShapesVisible(num, false);
 
 		}
 
@@ -791,8 +798,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 			// get the series num
 			int num = _myData.getSeriesCount() - 1;
-			_renderer.setSeriesPaint(num, Color.green);
+			_renderer.setSeriesPaint(num, Color.black);
 			_renderer.setSeriesStroke(num, new BasicStroke(3), false);
+			_renderer.setSeriesLinesVisible(num,true);
+			_renderer.setSeriesShapesVisible(num, false);
 		}
 
 	}
