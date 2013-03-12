@@ -210,8 +210,8 @@ public class TestSupport
 		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		bmc.setName("Measured bearing");
 		bmc.setAutoDetect(false);
-//		RangeForecastContribution rangeF = new RangeForecastContribution();
-//		rangeF.setName("Measured range");
+		RangeForecastContribution rangeF = new RangeForecastContribution();
+		rangeF.setName("Measured range");
 		ArrayList<String> rows = getLongData();
 
 		try
@@ -221,8 +221,8 @@ public class TestSupport
 			getGenerator().addContribution(bmc);
 
 			// and populate the range data
-//			rangeF.loadFrom(rows);
-//			getGenerator().addContribution(rangeF);
+			rangeF.loadFrom(rows);
+			getGenerator().addContribution(rangeF);
 		}
 		catch (Exception e)
 		{
@@ -237,19 +237,21 @@ public class TestSupport
 		getGenerator().addContribution(st1);
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
-		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123500"));
+		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123600"));
 		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
 		st2.setName("Straight leg two");
 		getGenerator().addContribution(st2);
 
 		
-//		SpeedForecastContribution speed = new SpeedForecastContribution();
-//		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121331"));
-//		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122025"));
-//		speed.setMinSpeed(GeoSupport.kts2MSec(12d));
-//		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
-//		speed.setName("Initial speed obs");
-//		getGenerator().addContribution(speed);
+		SpeedForecastContribution speed = new SpeedForecastContribution();
+		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121330"));
+		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
+		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
+		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
+		speed.setEstimate(GeoSupport.kts2MSec(8d));
+		speed.setName("Initial speed forecast");
+		getGenerator().addContribution(speed);
+				
 //
 //		// try a location forecast
 //		LocationForecastContribution locF = new LocationForecastContribution();
