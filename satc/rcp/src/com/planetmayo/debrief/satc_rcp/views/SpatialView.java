@@ -151,7 +151,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void statesBounded(IBoundsManager boundsManager)
 	{
 		_lastStates = boundsManager.getSpace().states();
-		showBoundedStates(_lastStates);
+		
+		redoChart();
 	}
 
 	/**
@@ -721,6 +722,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
 	{
+		if(scoredRoutes.size() == 0)
+			return;
+		
 		double max = 0, min = Double.MAX_VALUE;
 		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 				.hasNext();)
