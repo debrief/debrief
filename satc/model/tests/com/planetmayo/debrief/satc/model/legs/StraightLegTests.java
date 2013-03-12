@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg.RouteOperator;
@@ -259,14 +260,14 @@ public class StraightLegTests extends ModelTestBase
 		StraightLeg s1 = new StraightLeg("Straight_1", sList1);
 		StraightLeg s2 = new StraightLeg("Straight_2", sList2);
 
-		s1.generateRoutes(12);
-		s2.generateRoutes(8);
+		s1.generateRoutes(Precision.LOW);
+		s2.generateRoutes(Precision.LOW);
 
 		assertNotNull("created leg", s1);
 
 		// check we're still achievable
-		assertEquals("all still achievable", 180, s1.getNumAchievable());
-		assertEquals("all still achievable", 96, s2.getNumAchievable());
+		assertEquals("all still achievable", 504, s1.getNumAchievable());
+		assertEquals("all still achievable", 504, s2.getNumAchievable());
 
 		// generate the routes
 		// ok, check what's achievable
@@ -274,8 +275,8 @@ public class StraightLegTests extends ModelTestBase
 		s2.decideAchievableRoutes();
 
 		// check some knocked off
-		assertEquals("fewer achievable", 65, s1.getNumAchievable());
-		assertEquals("fewer achievable", 26, s2.getNumAchievable());
+		assertEquals("fewer achievable", 165, s1.getNumAchievable());
+		assertEquals("fewer achievable", 129, s2.getNumAchievable());
 
 		// writeMatrix("s1",s1.getRoutes());
 		// System.out.println("==========");

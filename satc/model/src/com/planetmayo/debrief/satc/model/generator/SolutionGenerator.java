@@ -157,32 +157,11 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	public void generateRoutes(ArrayList<CoreLeg> theLegs)
 	{
-		final int tmpNum;
-		switch (_myPrecision)
-			{
-			case LOW:
-				tmpNum = 20;
-				break;
-			case MEDIUM:
-				tmpNum = 40;
-				break;
-			case HIGH:
-				tmpNum = 60;
-				break;
-
-			default:
-				throw new RuntimeException(
-						"We've failed to implement case for a precision type");
-			}
-		;
-
-		final int numCells = tmpNum;
-
 		operateOn(theLegs, new LegOperation()
 		{
 			public void apply(CoreLeg thisLeg)
 			{
-				thisLeg.generateRoutes(numCells);
+				thisLeg.generateRoutes(_myPrecision);
 			}
 		});
 	}

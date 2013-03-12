@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -50,7 +51,7 @@ public class AlteringLegTests extends ModelTestBase
 		assertNull("no routes yet", leg.getRoutes());
 
 		// generate them
-		leg.generateRoutes(20);
+		leg.generateRoutes(Precision.LOW);
 
 		// check they have arrived
 		assertEquals("have routes", 504, leg.getRoutes().length

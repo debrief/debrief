@@ -3,6 +3,7 @@ package com.planetmayo.debrief.satc.model.legs;
 import java.util.ArrayList;
 import java.util.SortedSet;
 
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.MakeGrid;
@@ -132,10 +133,10 @@ public abstract class CoreLeg
 	/**
 	 * produce the set of constituent routes for this leg
 	 * 
-	 * @param gridNum
+	 * @param precision
 	 *          how many grid cells to dissect the area into
 	 */
-	public void generateRoutes(int gridNum)
+	public void generateRoutes(Precision precision)
 	{
 		// produce the grid of cells
 		LocationRange firstLoc = getFirst().getLocation();
@@ -144,10 +145,29 @@ public abstract class CoreLeg
 		if ((firstLoc == null) || (lastLoc == null))
 			throw new IllegalArgumentException(
 					"The end states must have location bounds");
+		
+		final int tmpNum;
+		switch (precision)
+			{
+			case LOW:
+				tmpNum = 20;
+				break;
+			case MEDIUM:
+				tmpNum = 40;
+				break;
+			case HIGH:
+				tmpNum = 60;
+				break;
 
-		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc.getGeometry(), gridNum,
+			default:
+				throw new RuntimeException(
+						"We've failed to implement case for a precision type");
+			}
+		;
+
+		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc.getGeometry(), tmpNum,
 				6);
-		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), gridNum, 6);
+		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), tmpNum, 6);
 
 		// now calculate the routes through these points
 		calculatePerms(startP, endP);
