@@ -196,16 +196,18 @@ public class StraightLegTests extends ModelTestBase
 				new Coordinate(-30.03, 0.025));
 		Date endT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
 				"100112 122429");
+		@SuppressWarnings("unused")
 		StraightRoute thisR = new StraightRoute("sr1", startP, startT, endP, endT);
 		
 		// TODO: IAN - HIGH produce a set of state objects, invite thisR to segment itself
+		@SuppressWarnings("unused")
 		ArrayList<BoundedState> theStates = null;
 //		thisR.generateSegments(theStates);
 		
 //		double val = bearingMeasurementContribution.calculateErrorScoreFor(thisR);	
 //		assertEquals("calculated something", 1, val, 0.0001);
 		
-		// TODO: test how bearing measurement works, especially how it find the right measurement to 
+		// TODO: IAN test how bearing measurement works, especially how it find the right measurement to 
 		// compare against.
 		
 	}
