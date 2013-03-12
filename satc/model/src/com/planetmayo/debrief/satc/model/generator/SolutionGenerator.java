@@ -111,7 +111,7 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 * may get called when an estimate has changed - so the algorithm doesn't need
 	 * to re-do all the leg definition bits
 	 */
-	private void recalculateTopLegs()
+	void recalculateTopLegs()
 	{
 		// just check we have data
 		if (_boundsManager == null || _theLegs == null)
