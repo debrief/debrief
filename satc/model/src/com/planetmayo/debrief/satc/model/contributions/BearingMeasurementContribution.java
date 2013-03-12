@@ -124,7 +124,7 @@ public class BearingMeasurementContribution extends BaseContribution
 			{
 				BoundedState boundedState = iterator.next();
 				ctr++;
-				if (ctr >= 0 && ctr <= 2)
+				if (ctr >= 0 && ctr <= 3)
 				{
 					boundedState.setMemberOf("test MDA leg");
 				}
