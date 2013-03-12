@@ -431,9 +431,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		int index = plotTheseCoordsAsALine(title, coords);
 		_renderer.setSeriesPaint(index, color);
+		
+		_renderer.setSeriesShapesVisible(index, false);
+		_renderer.setSeriesLinesVisible(index, true);
+
 	}
 
-	private void plotTheseCoordsAsAPoints(ArrayList<ArrayList<Point>> points,
+	private void plotTheseCoordsAsAPoints(String name, ArrayList<ArrayList<Point>> points,
 			boolean largePoints)
 	{
 		List<Integer> listOfIndexes = new ArrayList<Integer>();
@@ -450,7 +454,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			{};
 
 			// create the data series, get the index number
-			int num = addSeries("" + _numCycles++, coords.toArray(demo));
+			int num = addSeries(name	 + _numCycles++, coords.toArray(demo));
 
 			listOfIndexes.add(num);
 
@@ -706,8 +710,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			// System.out.println("num achievable points:" +
 			// allPossiblePoints.size());
 
-			plotTheseCoordsAsAPoints(allPoints, false);
-			plotTheseCoordsAsAPoints(allPossiblePoints, true);
+			plotTheseCoordsAsAPoints("all_", allPoints, false);
+			plotTheseCoordsAsAPoints("poss_", allPossiblePoints, true);
 			plotPossibleRoutes(allPossibleRoutes);
 			plotRoutesWithScores(scoredRoutes);
 
