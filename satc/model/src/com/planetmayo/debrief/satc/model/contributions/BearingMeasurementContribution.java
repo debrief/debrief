@@ -131,8 +131,6 @@ public class BearingMeasurementContribution extends BaseContribution
 			}
 		}
 	}
-	
-	
 
 	@Override
 	protected double scoreFor(CoreRoute route)
@@ -142,6 +140,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		Iterator<State> sIter = states.iterator();
 		State thisS = null;
 
+		// move to the first state
 		if (sIter.hasNext())
 			thisS = sIter.next();
 
@@ -155,24 +154,39 @@ public class BearingMeasurementContribution extends BaseContribution
 		{
 			BearingMeasurementContribution.BMeasurement m = (BearingMeasurementContribution.BMeasurement) iter
 					.next();
-			Date time = m._time;
+			Date time = m._time;		
 
+			// ok, find the state that matches this bearing measurement
 			while (thisS.getTime().before(time) && sIter.hasNext())
 			{
 				thisS = sIter.next();
 			}
 
-			// now find the error from this location
-			Point loc = thisS.getLocation();
+			// check we haven't shot past the end of the states
+			if (time.after(thisS.getTime()))
+				break;
 
-			// what's the bearing from this origin?
-			double bearing = m._origin.bearingTo(loc);
+			// ok, we're at the state which is on or after this measurement.
+			// but is it on?
+			if (thisS.getTime().equals(time))
+			{
+				
+				// now find the error from this location
+				Point loc = thisS.getLocation();
 
-			// what's the difference between that and my measurement
-			double thisError = Math.abs(bearing - m._bearingAngle);
+				// what's the bearing from this origin?
+				double bearing = m._origin.bearingTo(loc);
 
-			// and accumulate it
-			res += thisError;
+//				System.out.println("testing brg:" + time + 
+//						" against state:" + thisS.getTime()
+//					 + " brg:" + Math.toDegrees(bearing) + " should be:" + Math.toDegrees(m._bearingAngle));
+				
+				// what's the difference between that and my measurement
+				double thisError = Math.abs(bearing - m._bearingAngle);			
+				
+				// and accumulate it
+				res += thisError;
+			}
 
 		}
 		return res;
