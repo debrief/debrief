@@ -672,7 +672,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		
 
 		@Override
-		protected double scoreFor(CoreRoute route)
+		protected double cumulativeScoreFor(CoreRoute route)
 		{
 			int code = route.getName().hashCode();
 			double score = Math.abs(code % 10);

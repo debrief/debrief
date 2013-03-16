@@ -4,6 +4,7 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 
 public class CourseForecastContribution extends BaseContribution
 {
@@ -28,6 +29,13 @@ public class CourseForecastContribution extends BaseContribution
 		{
 			state.constrainTo(courseRange);
 		}
+	}
+	
+	@Override
+	protected double calcError(State thisState)
+	{
+		// TODO IAN HIGH calculate the course error (making sure they're in the same 'domain')
+		return super.calcError(thisState);
 	}
 
 	@Override

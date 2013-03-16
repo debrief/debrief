@@ -133,7 +133,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	}
 
 	@Override
-	protected double scoreFor(CoreRoute route)
+	protected double cumulativeScoreFor(CoreRoute route)
 	{
 		double res = 0;
 		ArrayList<State> states = route.getStates();

@@ -1,11 +1,14 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.ModelObject;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 
 public abstract class BaseContribution extends ModelObject implements
 		Comparable<BaseContribution>
@@ -59,14 +62,66 @@ public abstract class BaseContribution extends ModelObject implements
 					if (route.getStates() != null)
 						if (route.getStates().size() > 0)
 						{
-							res =  scoreFor(route) / _weight;
+							res = cumulativeScoreFor(route) / _weight;
 						}
 			}
 		// ok, done.
 		return res;
 	}
 
-	protected double scoreFor(CoreRoute route)
+	/**
+	 * calculate the cumulative error score for this route
+	 * 
+	 * @param route
+	 * @return
+	 */
+	protected double cumulativeScoreFor(CoreRoute route)
+	{
+		double res = 0;
+
+		// ok, go for it
+		ArrayList<State> states = route.getStates();
+		Iterator<State> sIter = states.iterator();
+
+		// ok. work through the bearings
+		while (sIter.hasNext())
+		{
+			State thisState = sIter.next();
+			double delta = 0;
+
+			Date time = thisState.getTime();
+
+			// check if our time period relates to this time
+			boolean isValid = true;
+
+			// check the time values
+			if (this.getStartDate() != null)
+				if (this.getStartDate().after(time))
+					isValid = false;
+			if (this.getFinishDate() != null)
+				if (this.getFinishDate().before(time))
+					isValid = false;
+
+			if (isValid)
+			{
+				// ok, everything matches up = calculate this error
+				delta = calcError(thisState);
+			}
+
+			// and accumulate it
+			res += delta;
+
+		}
+		return res;
+	}
+
+	/**
+	 * calculate the error value for this particular state
+	 * 
+	 * @param thisState
+	 * @return
+	 */
+	protected double calcError(State thisState)
 	{
 		return 0;
 	}
@@ -143,14 +198,14 @@ public abstract class BaseContribution extends ModelObject implements
 	private int getScore()
 	{
 		switch (getDataType())
-		{
-		case MEASUREMENT:
-			return 0;
-		case FORECAST:
-			return 1;
-		default:
-			return 2;
-		}
+			{
+			case MEASUREMENT:
+				return 0;
+			case FORECAST:
+				return 1;
+			default:
+				return 2;
+			}
 	}
 
 	public Date getStartDate()

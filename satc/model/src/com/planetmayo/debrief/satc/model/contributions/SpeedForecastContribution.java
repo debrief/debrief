@@ -1,10 +1,5 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-
-import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -41,51 +36,15 @@ public class SpeedForecastContribution extends BaseContribution
 		}
 	}
 
-	@Override
-	protected double scoreFor(CoreRoute route)
+	protected double calcError(State thisState)
 	{
-		double res = 0;
-		ArrayList<State> states = route.getStates();
-		Iterator<State> sIter = states.iterator();
-		State thisS = null;
+		double delta = 0;
 
-		if (sIter.hasNext())
-			thisS = sIter.next();
-
-		// if the list is empty, drop out
-		if (thisS == null)
-			return res;
-		
 		// do we have an estimate?
-		if(getEstimate() == null)
-			return res;
+		if (getEstimate() != null)
+			delta = Math.abs(this.getEstimate() - thisState.getSpeed());
 
-		// ok. work through the bearings
-		while (sIter.hasNext())
-		{
-			State m = sIter.next();
-			Date time = m.getTime();
-
-			// check if our time period relates to this time
-			boolean isValid = true;
-
-			// check the time values
-			if (this.getStartDate() != null)
-				if (this.getStartDate().after(time))
-					isValid = false;
-			if (this.getFinishDate() != null)
-				if (this.getFinishDate().before(time))
-					isValid = false;
-
-			double delta = 0;
-			if (isValid)
-				delta = Math.abs(this.getEstimate() - m.getSpeed());
-
-			// and accumulate it
-			res += delta;
-
-		}
-		return res;
+		return delta;
 	}
 
 	@Override
