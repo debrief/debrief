@@ -177,6 +177,10 @@ public abstract class CoreLeg
 				numStart, 6);
 		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), numEnd, 6);
 
+		// just check we've been able to create some points
+		if((startP.size() == 0) || (endP.size() == 0))
+				throw new RuntimeException("Unable to generate enough points for leg:" + this.getName());
+		
 		// now calculate the routes through these points
 		calculatePerms(startP, endP);
 	}
