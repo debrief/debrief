@@ -445,10 +445,14 @@ public class ImportReplay extends PlainImporterBase
 	public HiResDate readLine(String theLine) throws java.io.IOException
 	{
 		HiResDate res = null;
-
+		
 		// is this line valid?
 		if (theLine.length() > 0)
 		{
+			
+			// ok, trim any leading/trailing whitespace
+			theLine = theLine.trim();
+			
 			// what type of item is this?
 			PlainLineImporter thisOne = getImporterFor(theLine);
 
@@ -470,7 +474,7 @@ public class ImportReplay extends PlainImporterBase
 
 			// now read it in.
 			Object thisObject = null;
-
+			
 			thisObject = thisOne.readThisLine(theLine);
 
 			// see if we are going to do any special processing
