@@ -184,4 +184,10 @@ public interface IBoundsManager
 		public void setShowRecommendedSolutions(boolean onOff);
 
 	}
+
+	/** whether solutions should be generated after the bounds have been constrained
+	 * 
+	 * @param selection
+	 */
+	void setGenerateSolutions(boolean selection);
 }

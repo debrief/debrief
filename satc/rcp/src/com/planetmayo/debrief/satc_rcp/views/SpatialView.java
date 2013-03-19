@@ -355,28 +355,31 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 						loc = thisS.getLocation();
 					}
 
-					// ok, we've got a new series
-					XYSeries series = new XYSeries(legName, false);
-
-					// get the shape
-					Geometry geometry = loc.getGeometry();
-					Coordinate[] boundary = geometry.getCoordinates();
-					for (int i = 0; i < boundary.length; i++)
+					// check we've found a shape
+					if (loc != null)
 					{
-						Coordinate coordinate = boundary[i];
-						series.add(new XYDataItem(coordinate.y, coordinate.x));
+						// ok, we've got a new series
+						XYSeries series = new XYSeries(legName, false);
+
+						Geometry geometry = loc.getGeometry();
+						Coordinate[] boundary = geometry.getCoordinates();
+						for (int i = 0; i < boundary.length; i++)
+						{
+							Coordinate coordinate = boundary[i];
+							series.add(new XYDataItem(coordinate.y, coordinate.x));
+						}
+
+						keyToLegTypeMapping.put(series.getKey(), colourCounter);
+
+						_myData.addSeries(series);
+
+						int seriesIndex = _myData.getSeriesCount() - 1;
+
+						_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
+						_renderer.setSeriesLinesVisible(seriesIndex, true);
+						_renderer.setSeriesShapesVisible(seriesIndex, false);
+
 					}
-
-					keyToLegTypeMapping.put(series.getKey(), colourCounter);
-
-					_myData.addSeries(series);
-
-					int seriesIndex = _myData.getSeriesCount() - 1;
-
-					_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
-					_renderer.setSeriesLinesVisible(seriesIndex, true);
-					_renderer.setSeriesShapesVisible(seriesIndex, false);
-
 				}
 			}
 

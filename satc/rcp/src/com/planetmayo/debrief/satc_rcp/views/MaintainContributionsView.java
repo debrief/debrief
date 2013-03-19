@@ -109,7 +109,7 @@ public class MaintainContributionsView extends ViewPart implements
 
 	private Composite main;
 
-	private Button displayBoundedStates;
+	private Button generateSolutions;
 	private Button displaySolutions;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
@@ -320,9 +320,20 @@ public class MaintainContributionsView extends ViewPart implements
 		group.setLayout(layout);
 		group.setText("Preferences");
 
-		displayBoundedStates = new Button(group, SWT.CHECK);
-		displayBoundedStates.setText("Display Bounded States");
-		displayBoundedStates.setLayoutData(new GridData(
+		generateSolutions = new Button(group, SWT.CHECK);
+		generateSolutions.setText("Audo generate solutions");
+		generateSolutions.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				super.widgetSelected(e);
+				boundsManager.setGenerateSolutions(generateSolutions.getSelection());
+			}
+			
+		});
+		generateSolutions.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
 
 		Composite precisionPanel = new Composite(group, SWT.NONE);
@@ -361,10 +372,10 @@ public class MaintainContributionsView extends ViewPart implements
 			}
 		});
 
-		displaySolutions = new Button(group, SWT.CHECK);
-		displaySolutions.setText("Display Solutions");
-		displaySolutions.setLayoutData(new GridData(
-				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+//		displaySolutions = new Button(group, SWT.CHECK);
+//		displaySolutions.setText("Display Solutions");
+//		displaySolutions.setLayoutData(new GridData(
+//				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
 	}
 
 	private void initUI(Composite parent)

@@ -45,7 +45,7 @@ public class BoundsManager implements IBoundsManager
 				run();
 		}
 	};
-	
+
 	/**
 	 * property listener = so we know about estimates changing
 	 * 
@@ -55,14 +55,14 @@ public class BoundsManager implements IBoundsManager
 		@Override
 		public void propertyChange(PropertyChangeEvent arg0)
 		{
-			for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners.iterator(); iterator.hasNext();)
+			for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners
+					.iterator(); iterator.hasNext();)
 			{
 				PropertyChangeListener thisL = iterator.next();
 				thisL.propertyChange(arg0);
 			}
 		}
 	};
-
 
 	/**
 	 * the set of contributions we listen to. They are ordered, so that we have
@@ -117,10 +117,15 @@ public class BoundsManager implements IBoundsManager
 	 */
 	final private ArrayList<IConstrainSpaceListener> _steppingListeners = new ArrayList<IConstrainSpaceListener>();
 
-	/** keep track of folks interested in estimate changes
+	/**
+	 * keep track of folks interested in estimate changes
 	 * 
 	 */
 	private Collection<PropertyChangeListener> _estimateChangedListeners = new ArrayList<PropertyChangeListener>();
+
+	private IConstrainSpaceListener _mysolGenny;
+
+	private boolean _generateSolutions = false;
 
 	/**
 	 * Stepping listeners stuff
@@ -148,8 +153,9 @@ public class BoundsManager implements IBoundsManager
 		{
 			contribution.addPropertyChangeListener(property, _contribListener);
 		}
-		
-		contribution.addPropertyChangeListener(BaseContribution.ESTIMATE, _estimateListener);
+
+		contribution.addPropertyChangeListener(BaseContribution.ESTIMATE,
+				_estimateListener);
 
 		fireContributionAdded(contribution);
 	}
@@ -182,7 +188,7 @@ public class BoundsManager implements IBoundsManager
 		{
 			this.removeContribution(contribution);
 		}
-		
+
 		// clear the probelm space
 		_space.clear();
 
@@ -466,6 +472,26 @@ public class BoundsManager implements IBoundsManager
 			// tell any listeners that the final bounds have been updated
 			fireComplete();
 		}
+
+		// do we have a solution generator?
+		if (_generateSolutions && (_mysolGenny != null))
+			_mysolGenny.statesBounded(this);
+	}
+
+	/**
+	 * assign the solution generator
+	 * 
+	 * @param solutionG
+	 */
+	public void setGenerator(IConstrainSpaceListener solutionG)
+	{
+		_mysolGenny = solutionG;
+	}
+
+	@Override
+	public void setGenerateSolutions(boolean doIt)
+	{
+		_generateSolutions = doIt;
 	}
 
 }
