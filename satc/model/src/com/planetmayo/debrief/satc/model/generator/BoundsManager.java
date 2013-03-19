@@ -492,6 +492,10 @@ public class BoundsManager implements IBoundsManager
 	public void setGenerateSolutions(boolean doIt)
 	{
 		_generateSolutions = doIt;
+		
+		if (_generateSolutions && (_mysolGenny != null))
+			_mysolGenny.statesBounded(this);
+
 	}
 
 }
