@@ -110,7 +110,7 @@ public class MaintainContributionsView extends ViewPart implements
 	private Composite main;
 
 	private Button generateSolutions;
-	private Button displaySolutions;
+//	private Button displaySolutions;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
 	private Composite contList;
@@ -321,7 +321,7 @@ public class MaintainContributionsView extends ViewPart implements
 		group.setText("Preferences");
 
 		generateSolutions = new Button(group, SWT.CHECK);
-		generateSolutions.setText("Audo generate solutions");
+		generateSolutions.setText("Auto generate solutions");
 		generateSolutions.addSelectionListener(new SelectionAdapter()
 		{
 

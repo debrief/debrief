@@ -150,6 +150,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void statesBounded(IBoundsManager boundsManager)
 	{
+		// we have to clear the other values when this happens, since 
+		// they're no longer valid
+		_lastSetOfScoredLegs = null;
+		_lastSetOfSolutions = null;
+		
 		_lastStates = boundsManager.getSpace().states();
 
 		redoChart();
