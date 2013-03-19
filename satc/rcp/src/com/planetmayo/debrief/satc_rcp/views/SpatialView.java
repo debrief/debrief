@@ -629,6 +629,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void legsScored(ArrayList<CoreLeg> theLegs)
 	{
+		// forget the solutions, they're no longer valid
+		_lastSetOfSolutions = null;
+
 		_lastSetOfScoredLegs = theLegs;
 
 		redoChart();
