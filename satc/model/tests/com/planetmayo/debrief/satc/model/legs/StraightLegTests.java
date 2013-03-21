@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -163,6 +164,31 @@ public class StraightLegTests extends ModelTestBase
 				ctr++;
 		}
 		assertEquals("ran correct num times", 8, ctr);
+		
+		Collection<Integer> list = new ArrayList<Integer>();
+		list.add(1);
+		list.add(2);
+		list.add(2);
+		list.add(2);
+		list.add(2);
+		list.add(2);
+		list.add(2);
+		list.add(2);
+
+		assertEquals("correct length", 8, list.size());
+		
+		ctr = 0;
+		freq = 3;
+		for (int i = 0; i < 8; i++)
+		{
+			if (((i % freq) == 0) || (i == list.size()-1))
+			{
+				ctr++;
+			}
+		}
+		assertEquals("ran correct num times (including hte last instance", 4, ctr);
+		
+		
 	}
 
 	@Test
