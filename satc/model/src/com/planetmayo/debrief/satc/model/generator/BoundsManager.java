@@ -55,11 +55,15 @@ public class BoundsManager implements IBoundsManager
 		@Override
 		public void propertyChange(PropertyChangeEvent arg0)
 		{
-			for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners
-					.iterator(); iterator.hasNext();)
+			// ok, are we generating solutions?
+			if (_generateSolutions)
 			{
-				PropertyChangeListener thisL = iterator.next();
-				thisL.propertyChange(arg0);
+				for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners
+						.iterator(); iterator.hasNext();)
+				{
+					PropertyChangeListener thisL = iterator.next();
+					thisL.propertyChange(arg0);
+				}
 			}
 		}
 	};
@@ -471,11 +475,13 @@ public class BoundsManager implements IBoundsManager
 		{
 			// tell any listeners that the final bounds have been updated
 			fireComplete();
+
+			// do we have a solution generator?
+			if (_generateSolutions && (_mysolGenny != null))
+				_mysolGenny.statesBounded(this);
+
 		}
 
-		// do we have a solution generator?
-		if (_generateSolutions && (_mysolGenny != null))
-			_mysolGenny.statesBounded(this);
 	}
 
 	/**
@@ -492,7 +498,7 @@ public class BoundsManager implements IBoundsManager
 	public void setGenerateSolutions(boolean doIt)
 	{
 		_generateSolutions = doIt;
-		
+
 		if (_generateSolutions && (_mysolGenny != null))
 			_mysolGenny.statesBounded(this);
 
