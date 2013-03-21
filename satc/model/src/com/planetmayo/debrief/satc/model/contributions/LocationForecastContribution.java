@@ -41,7 +41,7 @@ public class LocationForecastContribution extends BaseContribution
 			return;			
 		}
 		Coordinate coordinate = new Coordinate(_location.getLon(), _location.getLat());
-		Geometry geometry = GeoSupport.getFactory().createPoint(coordinate).buffer(GeoSupport.m2deg(_limit));
+		Geometry geometry = GeoSupport.doBuffer( GeoSupport.getFactory().createPoint(coordinate), GeoSupport.m2deg(_limit));
 		LocationRange range = new LocationRange((Polygon) geometry);
 		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
 		{

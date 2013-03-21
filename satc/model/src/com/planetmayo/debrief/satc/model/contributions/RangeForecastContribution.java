@@ -101,8 +101,8 @@ public class RangeForecastContribution extends BaseContribution
 			// and create a polygon for it.
 			Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
 
-		//	GeoSupport.writeGeometry("rng_" + ctr, thePoly);
-			
+			// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
+
 			// create a LocationRange for the poly
 			// now define the polygon
 			final LocationRange myRa = new LocationRange(thePoly);
@@ -175,7 +175,7 @@ public class RangeForecastContribution extends BaseContribution
 		else
 		{
 			// ok, now we create the inner circle
-			res = (LinearRing) pt.buffer(theRange).getBoundary();
+			res = (LinearRing) GeoSupport.doBuffer(pt, theRange).getBoundary();
 
 		}
 
@@ -207,7 +207,7 @@ public class RangeForecastContribution extends BaseContribution
 		}
 
 		// ok, now we create the inner circle
-		Geometry geom = pt.buffer(theRange);
+		Geometry geom =  GeoSupport.doBuffer(pt, theRange);
 		LinearRing res = (LinearRing) geom.getBoundary();
 		return res;
 	}
@@ -304,7 +304,7 @@ public class RangeForecastContribution extends BaseContribution
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
 	}
-	
+
 	/**
 	 * utility class for storing a measurement
 	 * 

@@ -52,7 +52,7 @@ public class LocationForecastContributionTest extends ForecastContributionTestBa
 		ProblemSpace space = createTestSpace();
 		contribution.actUpon(space);
 		int withLocation = 0;
-		Geometry expected = GeoSupport.getFactory().createPoint(new Coordinate(-2, 2)).buffer(2);
+		Geometry expected = GeoSupport.doBuffer( GeoSupport.getFactory().createPoint(new Coordinate(-2, 2)), 2);
 		for (BoundedState state : space.states()) 
 		{
 			if (state.getLocation() != null)
