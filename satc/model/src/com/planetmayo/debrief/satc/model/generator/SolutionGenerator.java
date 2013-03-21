@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 
@@ -81,7 +82,7 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	public void statesBounded(final IBoundsManager boundsManager)
 	{
 		
-		System.out.println("running generator ");
+		System.out.println("running generator at:" + new Date());
 		
 		_boundsManager = boundsManager;
 
