@@ -231,7 +231,7 @@ public class TestSupport
 
 		// sort out the legs
 		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
-		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121330"));
+		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121430"));
 		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123029"));
 		st1.setName("Straight leg one");
 		getGenerator().addContribution(st1);
@@ -253,7 +253,7 @@ public class TestSupport
 		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121330"));
 		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
-		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
+		speed.setMaxSpeed(GeoSupport.kts2MSec(14d));
 		speed.setEstimate(GeoSupport.kts2MSec(8d));
 		speed.setName("Initial speed forecast");
 		getGenerator().addContribution(speed);
