@@ -498,8 +498,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_renderer.setSeriesVisibleInLegend(num, false);
 
 			int offset = largePoints ? -1 : 0;
-			int size = largePoints? 3 : 1;
-			
+			int size = largePoints ? 3 : 1;
+
 			Shape triangle = new Rectangle(offset, offset, size, size);
 			_renderer.setSeriesShape(num, triangle);
 
@@ -679,67 +679,70 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				CoreRoute[][] routes = thisLeg.getRoutes();
 
 				// go through the start points
-				int numStart = routes.length;
-				int numEnd = routes[0].length;
-
-				// sort out the start points first
-				for (int i = 0; i < numStart; i++)
+				if (routes != null)
 				{
-					CoreRoute[] thisStart = routes[i];
+					int numStart = routes.length;
+					int numEnd = routes[0].length;
 
-					// ok, are we showing all?
-					Point startPoint = thisStart[0].getStartPoint();
-					if (_showPoints)
+					// sort out the start points first
+					for (int i = 0; i < numStart; i++)
 					{
-						// ok, just add it to the list
-						points.add(startPoint);
-					}
+						CoreRoute[] thisStart = routes[i];
 
-					// ok - do we need to check which ones have any valid points?
-					if (_showAchievablePoints || _showRoutes || _showRoutesWithScores)
-					{
-						boolean isPossible = false;
-
-						for (int j = 0; j < numEnd; j++)
+						// ok, are we showing all?
+						Point startPoint = thisStart[0].getStartPoint();
+						if (_showPoints)
 						{
-							CoreRoute thisRoute = thisStart[j];
+							// ok, just add it to the list
+							points.add(startPoint);
+						}
 
-							if (thisRoute.isPossible())
+						// ok - do we need to check which ones have any valid points?
+						if (_showAchievablePoints || _showRoutes || _showRoutesWithScores)
+						{
+							boolean isPossible = false;
+
+							for (int j = 0; j < numEnd; j++)
 							{
-								isPossible = true;
+								CoreRoute thisRoute = thisStart[j];
 
-								// we're only currently going to draw lines for straight legs
-								if (thisLeg.getType() == LegType.STRAIGHT)
+								if (thisRoute.isPossible())
 								{
-									if (_showRoutes || _showRoutesWithScores)
+									isPossible = true;
+
+									// we're only currently going to draw lines for straight legs
+									if (thisLeg.getType() == LegType.STRAIGHT)
 									{
-										Coordinate[] coords = new Coordinate[]
-										{ thisRoute.getStartPoint().getCoordinate(),
-												thisRoute.getEndPoing().getCoordinate() };
-										LineString newR = GeoSupport.getFactory().createLineString(
-												coords);
+										if (_showRoutes || _showRoutesWithScores)
+										{
+											Coordinate[] coords = new Coordinate[]
+											{ thisRoute.getStartPoint().getCoordinate(),
+													thisRoute.getEndPoing().getCoordinate() };
+											LineString newR = GeoSupport.getFactory()
+													.createLineString(coords);
 
-										if (_showRoutes)
-											possibleRoutes.add(newR);
+											if (_showRoutes)
+												possibleRoutes.add(newR);
 
-										if (_showRoutesWithScores)
-											scoredRoutes.add(new ScoredRoute(newR, thisRoute
-													.getScore()));
+											if (_showRoutesWithScores)
+												scoredRoutes.add(new ScoredRoute(newR, thisRoute
+														.getScore()));
+										}
 									}
 								}
 							}
+
+							// ok, add it to the list
+							if (isPossible)
+							{
+
+								if (_showAchievablePoints)
+									possiblePoints.add(startPoint);
+
+							}
 						}
 
-						// ok, add it to the list
-						if (isPossible)
-						{
-
-							if (_showAchievablePoints)
-								possiblePoints.add(startPoint);
-
-						}
 					}
-
 				}
 				allPoints.add(points);
 				allPossiblePoints.add(possiblePoints);
@@ -809,7 +812,6 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_renderer.setSeriesLinesVisible(num, true);
 			_renderer.setSeriesShapesVisible(num, false);
 			_renderer.setSeriesVisibleInLegend(num, false);
-
 
 		}
 
