@@ -132,6 +132,7 @@ public class LocationAnalysisContribution extends
 				// GeoSupport.writeGeometry("trimmed", trimmed);
 
 				Geometry geom = trimmed.convexHull();
+				
 				if (!(geom instanceof LineString))
 				{
 					// is it a multi-point?
@@ -165,7 +166,7 @@ public class LocationAnalysisContribution extends
 			{
 				// TODO: speedP is actually two circles = we probably need to process
 				// both circles
-				achievable = (LineString) speedP.getExteriorRing().clone();
+				achievable = (LineString) speedP.getExteriorRing();
 			}
 		}
 		else
@@ -222,7 +223,7 @@ public class LocationAnalysisContribution extends
 						}
 
 						// and put it back into a linestring
-						Geometry translated = GeoSupport.getFactory().createLinearRing(
+						LinearRing translated = GeoSupport.getFactory().createLinearRing(
 								newCoords);
 
 						// GeoSupport.writeGeometry("shape:" + i, translated);
@@ -234,9 +235,17 @@ public class LocationAnalysisContribution extends
 						else
 						{
 							// now we need to combine the two geometries
-							Geometry geom = res.union(translated);
-							Geometry geom2 = geom.convexHull();
-							res = (LinearRing) geom2.getBoundary();
+							
+							// start off by wrapping them in polygons
+							Polygon poly1 = GeoSupport.getFactory().createPolygon(res);
+							Polygon poly2 = GeoSupport.getFactory().createPolygon(translated);
+							
+							// now generate the multi-polygon
+							Geometry combined = GeoSupport.getFactory().createMultiPolygon(new Polygon[]{poly1,poly2});
+							
+							// and the convex hull for it
+							Geometry outer = combined.convexHull();
+							res = (LinearRing) outer.getBoundary();
 						}
 					}
 
@@ -413,40 +422,40 @@ public class LocationAnalysisContribution extends
 		double maxR = getMaxRangeDegs(sRange, timeMillis);
 
 		// and create an outer ring to represent it
-		Geometry tmpGeom = pt.buffer(maxR).getBoundary();
+		Geometry tmpGeom = pt.buffer(maxR,2).getBoundary();
 		LinearRing outer = (LinearRing) tmpGeom;
 
 		// ok, and the minimum
-		final LinearRing[] inner;
+		LinearRing[] inner = null;
 
-		// do we have a speed val?
-		if (sRange != null)
-		{
-			// yes, get calculating
-			double minR = sRange.getMin() * timeMillis / 1000d;
-			// convert to degs
-			minR = GeoSupport.m2deg(minR);
-
-			// aaah, just double check the two ranges aren't equal - it causes trouble
-			if (minR == maxR)
-			{
-				minR = maxR - GeoSupport.m2deg(10);
-			}
-
-			// just check we don't have a zero min speed
-			if (minR > 0)
-			{
-				inner = new LinearRing[]
-				{ (LinearRing) pt.buffer(minR).getBoundary() };
-			}
-			else
-				inner = null;
-		}
-		else
-		{
-			// with a zero min speed, we don't have any holes
-			inner = null;
-		}
+//		// do we have a speed val?
+//		if (sRange != null)
+//		{
+//			// yes, get calculating
+//			double minR = sRange.getMin() * timeMillis / 1000d;
+//			// convert to degs
+//			minR = GeoSupport.m2deg(minR);
+//
+//			// aaah, just double check the two ranges aren't equal - it causes trouble
+//			if (minR == maxR)
+//			{
+//				minR = maxR - GeoSupport.m2deg(10);
+//			}
+//
+//			// just check we don't have a zero min speed
+//			if (minR > 0)
+//			{
+//				inner = new LinearRing[]
+//				{ (LinearRing) pt.buffer(minR).getBoundary() };
+//			}
+//			else
+//				inner = null;
+//		}
+//		else
+//		{
+//			// with a zero min speed, we don't have any holes
+//			inner = null;
+//		}
 
 		// and now a polygon to represent them both
 		Polygon res = GeoSupport.getFactory().createPolygon(outer, inner);
