@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc_rcp.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.util.ShapeUtilities;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
@@ -150,11 +150,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void statesBounded(IBoundsManager boundsManager)
 	{
-		// we have to clear the other values when this happens, since 
+		// we have to clear the other values when this happens, since
 		// they're no longer valid
 		_lastSetOfScoredLegs = null;
 		_lastSetOfSolutions = null;
-		
+
 		_lastStates = boundsManager.getSpace().states();
 
 		redoChart();
@@ -380,7 +380,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 						int seriesIndex = _myData.getSeriesCount() - 1;
 
-						_renderer.setSeriesStroke(seriesIndex, new BasicStroke());
+						final float dash1[] =
+						{ 10f, 10f };
+						final BasicStroke dashed = new BasicStroke(1.0f,
+								BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1,
+								0.0f);
+
+						_renderer.setSeriesStroke(seriesIndex, dashed);
+
+						// _renderer.setSeriesStroke(seriesIndex, new BasicStroke());
 						_renderer.setSeriesLinesVisible(seriesIndex, true);
 						_renderer.setSeriesShapesVisible(seriesIndex, false);
 
@@ -439,9 +447,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		int num = addSeries(title, coords);
 
-		_renderer.setSeriesStroke(num, new BasicStroke(0.0f));
+		final float dash1[] =
+		{ 10f, 10f };
+		final BasicStroke dashed = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
+				BasicStroke.JOIN_MITER, 10.0f, dash1, 0.0f);
+
+		_renderer.setSeriesStroke(num, dashed);
 		_renderer.setSeriesLinesVisible(num, true);
 		_renderer.setSeriesShapesVisible(num, false);
+		_renderer.setSeriesVisibleInLegend(num, false);
 
 		return num;
 	}
@@ -481,9 +495,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_chart.setNotify(false);
 			_renderer.setSeriesShapesVisible(num, true);
 			_renderer.setSeriesLinesVisible(num, false);
+			_renderer.setSeriesVisibleInLegend(num, false);
 
-			Shape triangle = ShapeUtilities.createRegularCross(largePoints ? 5 : 2,
-					largePoints ? 5 : 2);
+			int offset = largePoints ? -1 : 0;
+			int size = largePoints? 3 : 1;
+			
+			Shape triangle = new Rectangle(offset, offset, size, size);
 			_renderer.setSeriesShape(num, triangle);
 
 			_chart.setNotify(true);
@@ -791,6 +808,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			_renderer.setSeriesStroke(num, new BasicStroke(), false);
 			_renderer.setSeriesLinesVisible(num, true);
 			_renderer.setSeriesShapesVisible(num, false);
+			_renderer.setSeriesVisibleInLegend(num, false);
+
 
 		}
 
