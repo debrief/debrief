@@ -232,17 +232,23 @@ public class TestSupport
 		// sort out the legs
 		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
 		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121330"));
-		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123030"));
+		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123029"));
 		st1.setName("Straight leg one");
 		getGenerator().addContribution(st1);
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
-		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123600"));
-		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
+		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123329"));
+		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 124829"));
 		st2.setName("Straight leg two");
 		getGenerator().addContribution(st2);
 
-		
+
+		StraightLegForecastContribution st3 = new StraightLegForecastContribution();
+		st3.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 125100"));
+		st3.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
+		st3.setName("Straight leg three");
+		getGenerator().addContribution(st3);
+
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121330"));
 		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
