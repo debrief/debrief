@@ -93,6 +93,11 @@ public class GeoSupport
 
 		return _factory;
 	}
+	
+	public static Geometry doBuffer(Geometry geom, double distance)
+	{
+		return geom.buffer(distance, 3);
+	}
 
 	public static Distance computeDistance(Geometry geo1, Geometry geo2)
 	{
