@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
@@ -67,8 +68,66 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 		assertEquals(3, withSpeed);
 	}
 
+	protected int _callCount = 0;
+
 	@Test
 	public void testErrorCalc()
+	{
+		@SuppressWarnings("serial")
+		SpeedForecastContribution speed = new SpeedForecastContribution()
+		{
+			@Override
+			protected double calcError(State thisState)
+			{
+				_callCount++;
+				return super.calcError(thisState);
+			}
+		};
+		speed.setStartDate( new Date(112, 11, 27, 0, 50));
+		speed.setFinishDate(new Date(112, 11, 27, 1, 44));
+		speed.setMinSpeed(2d);
+		speed.setWeight(3);
+		speed.setMaxSpeed(GeoSupport.kts2MSec(200d));
+		// use the speed value that StraightRoute calculates for 1 deg in 1 hour.
+		speed.setEstimate(30.88888888888889);
+		speed.setActive(true);
+
+		// ok, create the route at about the right speed
+		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(1, 0));
+		Date startTime = new Date(112, 11, 27, 1, 00);
+		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(2, 0));
+		Date endTime = new Date(112, 11, 27, 2, 00);
+		StraightRoute theGoodRoute = new StraightRoute("goodR", startP, startTime,
+				endP, endTime);
+
+		// we'll need some states, so the route can correctly segment itself
+		ArrayList<BoundedState> states = new ArrayList<BoundedState>();
+		states.add(new BoundedState(new Date(112, 11, 27, 0, 30)));
+		states.add(new BoundedState(new Date(112, 11, 27, 1, 00)));
+		states.add(new BoundedState(new Date(112, 11, 27, 1, 15)));
+		states.add(new BoundedState(new Date(112, 11, 27, 1, 30)));
+		states.add(new BoundedState(new Date(112, 11, 27, 1, 45)));
+		states.add(new BoundedState(new Date(112, 11, 27, 2, 00)));
+		states.add(new BoundedState(new Date(112, 11, 27, 2, 15)));
+
+		// ok, dice up the route
+		theGoodRoute.generateSegments(states);
+
+		assertEquals("not called yet", 0, _callCount);
+
+		double thisScore = speed.calculateErrorScoreFor(theGoodRoute);
+		
+		// did it get called the correct num of times?
+		assertEquals("correct num calls", 3, _callCount);
+		
+		assertEquals("good speed is low", 0.0,thisScore, 0.0001);
+
+		
+		
+	}
+
+	@Test
+	public void testErrorCalcScore()
 	{
 		SpeedForecastContribution speed = (SpeedForecastContribution) createContribution();
 		speed.setMaxSpeed(GeoSupport.kts2MSec(200d));
@@ -99,7 +158,6 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 		StraightRoute theFastRoute = new StraightRoute("fastR", startP, startTime,
 				endP, endTime);
 
-
 		// we'll need some states, so the route can correctly segment itself
 		ArrayList<BoundedState> states = new ArrayList<BoundedState>();
 		states.add(new BoundedState(new Date(112, 11, 27, 0, 30)));
@@ -115,9 +173,12 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 		theSlowRoute.generateSegments(states);
 		theFastRoute.generateSegments(states);
 
-		assertEquals("good speed is low", 0.0148, speed.calculateErrorScoreFor(theGoodRoute), 0.0001);
-		assertEquals("slow score is high", 9.2592, speed.calculateErrorScoreFor(theSlowRoute), 0.0001);
-		assertEquals("fast score is high", 20.600, speed.calculateErrorScoreFor(theFastRoute), 0.0001);
-		
+		assertEquals("good speed is low", 0.0148,
+				speed.calculateErrorScoreFor(theGoodRoute), 0.0001);
+		assertEquals("slow score is high", 9.2592,
+				speed.calculateErrorScoreFor(theSlowRoute), 0.0001);
+		assertEquals("fast score is high", 20.600,
+				speed.calculateErrorScoreFor(theFastRoute), 0.0001);
+
 	}
 }
