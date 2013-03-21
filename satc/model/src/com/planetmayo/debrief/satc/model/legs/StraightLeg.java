@@ -93,6 +93,15 @@ public class StraightLeg extends CoreLeg
 			// how long is the total run?
 			long elapsed = theRoute.getElapsedTime();
 
+			// allow for multiple fidelity processing
+			int ctr = 0;
+
+			// how frequently shall we process the polygons?
+			// calculating the scaled polygons is really expensive. this
+			// give us most of the benefits, at a third of the speed (well,
+			// with a freq of '3' it does)
+			final int freq = 3;
+
 			// loop through our states
 			Iterator<BoundedState> iter = _myStates.iterator();
 			while (iter.hasNext())
@@ -111,32 +120,38 @@ public class StraightLeg extends CoreLeg
 					// is this our first state
 					if (tDelta > 0)
 					{
-						double scale = (1d * elapsed) / tDelta;
+						// ok, we've got a location - increment the counter
+						ctr++;
 
-						// ok, project the shape forwards
-						AffineTransformation st = AffineTransformation.scaleInstance(scale,
-								scale, startCoord.x, startCoord.y);
-
-						// ok, apply the transform to the location
-						Geometry originalGeom = thisL.getGeometry();
-						Geometry newGeom = st.transform(originalGeom);
-
-						// see if the end point is in the new geometry
-						if (endPt.coveredBy(newGeom))
+						// is this one we're going to process?
+						if (((ctr % freq) == 0) || ctr == _myStates.size() - 1)
 						{
-							// cool, this route works
-						}
-						else
-						{
-							// bugger, can't do this one
-							theRoute.setImpossible();
-							break;
+							double scale = (1d * elapsed) / tDelta;
+
+							// ok, project the shape forwards
+							AffineTransformation st = AffineTransformation.scaleInstance(
+									scale, scale, startCoord.x, startCoord.y);
+
+							// ok, apply the transform to the location
+							Geometry originalGeom = thisL.getGeometry();
+							Geometry newGeom = st.transform(originalGeom);
+
+							// see if the end point is in the new geometry
+							if (endPt.coveredBy(newGeom))
+							{
+								// cool, this route works
+							}
+							else
+							{
+								// bugger, can't do this one
+								theRoute.setImpossible();
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -315,7 +330,7 @@ public class StraightLeg extends CoreLeg
 					topRoutes.add(theRoute);
 			}
 		};
-		
+
 		// ok, run the operation across all the routes
 		applyToRoutes(addIt);
 
