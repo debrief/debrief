@@ -80,6 +80,9 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	public void statesBounded(final IBoundsManager boundsManager)
 	{
+		
+		System.out.println("running generator ");
+		
 		_boundsManager = boundsManager;
 
 		// ok - it's complete. now we can process it
