@@ -135,6 +135,37 @@ public class StraightLegTests extends ModelTestBase
 	}
 
 	@Test
+	public void testFreqAssumption()
+	{
+		int ctr = 0;
+		int freq = 3;
+		for (int i = 0; i < 8; i++)
+		{
+			if ((i % freq) == 0)
+				ctr++;
+		}
+		assertEquals("ran correct num times", 3, ctr);
+
+		ctr = 0;
+		freq = 2;
+		for (int i = 0; i < 8; i++)
+		{
+			if ((i % freq) == 0)
+				ctr++;
+		}
+		assertEquals("ran correct num times", 4, ctr);
+
+		ctr = 0;
+		freq = 1;
+		for (int i = 0; i < 8; i++)
+		{
+			if ((i % freq) == 0)
+				ctr++;
+		}
+		assertEquals("ran correct num times", 8, ctr);
+	}
+
+	@Test
 	public void testRouteCourseAndSpeed()
 	{
 		Date startD = new Date(2012, 5, 5, 12, 0, 0);
@@ -180,9 +211,12 @@ public class StraightLegTests extends ModelTestBase
 				.getFactory().createPoint(new Coordinate(5, 50))), 0.0001);
 		assertEquals("correct bearing", Math.PI / 4, g1.bearingTo(GeoSupport
 				.getFactory().createPoint(new Coordinate(5, 51))), 0.0001);
-		assertEquals("correct bearing",Math.PI + Math.PI / 4, g1.bearingTo(GeoSupport
-				.getFactory().createPoint(new Coordinate(3, 49))), 0.0001);
-		assertEquals("correct bearing",-  Math.PI / 2, g1.bearingTo(GeoSupport
+		assertEquals(
+				"correct bearing",
+				Math.PI + Math.PI / 4,
+				g1.bearingTo(GeoSupport.getFactory().createPoint(new Coordinate(3, 49))),
+				0.0001);
+		assertEquals("correct bearing", -Math.PI / 2, g1.bearingTo(GeoSupport
 				.getFactory().createPoint(new Coordinate(3, 50))), 0.0001);
 	}
 
@@ -199,18 +233,21 @@ public class StraightLegTests extends ModelTestBase
 				"100112 122429");
 		@SuppressWarnings("unused")
 		StraightRoute thisR = new StraightRoute("sr1", startP, startT, endP, endT);
-		
-		// TODO: IAN - HIGH produce a set of state objects, invite thisR to segment itself
+
+		// TODO: IAN - HIGH produce a set of state objects, invite thisR to segment
+		// itself
 		@SuppressWarnings("unused")
 		ArrayList<BoundedState> theStates = null;
-//		thisR.generateSegments(theStates);
-		
-//		double val = bearingMeasurementContribution.calculateErrorScoreFor(thisR);	
-//		assertEquals("calculated something", 1, val, 0.0001);
-		
-		// TODO: IAN test how bearing measurement works, especially how it find the right measurement to 
+		// thisR.generateSegments(theStates);
+
+		// double val =
+		// bearingMeasurementContribution.calculateErrorScoreFor(thisR);
+		// assertEquals("calculated something", 1, val, 0.0001);
+
+		// TODO: IAN test how bearing measurement works, especially how it find the
+		// right measurement to
 		// compare against.
-		
+
 	}
 
 	@Test
