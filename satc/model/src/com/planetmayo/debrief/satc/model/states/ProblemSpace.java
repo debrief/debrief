@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.states;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TreeMap;
@@ -11,13 +12,13 @@ import com.planetmayo.debrief.satc.util.ObjectUtils;
 public class ProblemSpace
 {
 	public static final String VEHICLE_TYPE = "vType";
-	
+
 	/**
 	 * this map of bounded states, stored by time
 	 * 
 	 */
 	private TreeMap<Date, BoundedState> _boundedStates;
-	
+
 	/**
 	 * the performance characeristics of the subject vehicle
 	 * 
@@ -36,7 +37,7 @@ public class ProblemSpace
 	 */
 	public void setVehicleType(VehicleType vType)
 	{
-		_vType = vType;		
+		_vType = vType;
 	}
 
 	/**
@@ -71,12 +72,13 @@ public class ProblemSpace
 		}
 		else
 		{
-			if (getBoundedStateAt(newState.getTime()) != null) 
+			if (getBoundedStateAt(newState.getTime()) != null)
 			{
-				throw new IllegalArgumentException("We already have bounded state at " + newState.getTime());
+				throw new IllegalArgumentException("We already have bounded state at "
+						+ newState.getTime());
 			}
-			_boundedStates.put(newState.getTime(), newState);			
-		}			
+			_boundedStates.put(newState.getTime(), newState);
+		}
 
 		// ok, constrain the new state to our vehicle performance, if we have one
 		if (_vType != null)
@@ -106,7 +108,7 @@ public class ProblemSpace
 	{
 		return _boundedStates.get(theTime);
 	}
-	
+
 	/**
 	 * return the bounded state at this time (or null)
 	 * 
@@ -114,18 +116,28 @@ public class ProblemSpace
 	 *          the time we're searching for
 	 * @return
 	 */
-	public Collection<BoundedState> getBoundedStatesBetween(Date startDate, Date finishDate)
+	public Collection<BoundedState> getBoundedStatesBetween(Date startDate,
+			Date finishDate)
 	{
-		if (_boundedStates.isEmpty()) 
+		if (_boundedStates.isEmpty())
 		{
 			return _boundedStates.values();
 		}
+
+		// just check we have legitimate dates
+		if (!startDate.before(finishDate))
+		{
+			// ok, start date invalid - just return empty list, so the algs don't trip over
+			return new ArrayList<BoundedState>();
+		}
+
 		startDate = ObjectUtils.safe(startDate, _boundedStates.firstKey());
 		finishDate = ObjectUtils.safe(finishDate, _boundedStates.lastKey());
 		// inclusive toKey - gwt compliant version
 		finishDate = new Date(finishDate.getTime() + 1);
+
 		return _boundedStates.subMap(startDate, finishDate).values();
-	}	
+	}
 
 	public Date getFinishDate()
 	{
@@ -151,8 +163,9 @@ public class ProblemSpace
 	{
 		return _boundedStates.values();
 	}
-	
-	/** provide the date times
+
+	/**
+	 * provide the date times
 	 * 
 	 * @return
 	 */
@@ -160,9 +173,10 @@ public class ProblemSpace
 	{
 		return _boundedStates.keySet();
 	}
-	
-	public Collection<BoundedState> statesAfter(BoundedState state) 
+
+	public Collection<BoundedState> statesAfter(BoundedState state)
 	{
-		return _boundedStates.tailMap(new Date(state.getTime().getTime() + 1)).values();
+		return _boundedStates.tailMap(new Date(state.getTime().getTime() + 1))
+				.values();
 	}
 }
