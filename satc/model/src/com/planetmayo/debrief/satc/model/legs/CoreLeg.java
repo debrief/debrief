@@ -151,13 +151,13 @@ public abstract class CoreLeg
 		switch (precision)
 			{
 			case LOW:
-				delta = GeoSupport.m2deg(800);
-				break;
-			case MEDIUM:
 				delta = GeoSupport.m2deg(600);
 				break;
+			case MEDIUM:
+				delta = GeoSupport.m2deg(300);
+				break;
 			case HIGH:
-				delta = GeoSupport.m2deg(200);
+				delta = GeoSupport.m2deg(100);
 				break;
 
 			default:
