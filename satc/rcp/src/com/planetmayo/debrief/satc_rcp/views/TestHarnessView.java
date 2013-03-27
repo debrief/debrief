@@ -1,21 +1,50 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.BaseAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
+import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.thoughtworks.xstream.XStream;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -61,6 +90,9 @@ public class TestHarnessView extends ViewPart
 
 	private TestSupport _testSupport;
 
+	private XStream _xStream;
+	private Shell _shell;
+
 	/**
 	 * The constructor.
 	 */
@@ -81,10 +113,10 @@ public class TestHarnessView extends ViewPart
 	@Override
 	public void createPartControl(Composite parent)
 	{
+		_shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		initializeXstream();
+
 		Composite form = new Composite(parent, SWT.NONE);
-
-		// new Label(parent, SWT.None);
-
 		_testSupport = new TestSupport();
 
 		makeActions();
@@ -95,26 +127,29 @@ public class TestHarnessView extends ViewPart
 				IBoundsManager.class, true);
 		startListeningTo();
 
+		Composite checkBoxForm = new Composite(form, SWT.NONE);
+
+		FillLayout verticalLayout = new FillLayout(SWT.VERTICAL);
+
 		// insert the diagnostics panels
-		Group group1 = new Group(form, SWT.SHADOW_ETCHED_IN);
-		group1.setLayout(new FillLayout(SWT.VERTICAL));
+		Group group1 = new Group(checkBoxForm, SWT.SHADOW_ETCHED_IN);
+		group1.setLayout(verticalLayout);
 		group1.setText("Constrain problem space");
 
-		Group group2 = new Group(form, SWT.SHADOW_ETCHED_IN);
-		group2.setLayout(new FillLayout(SWT.VERTICAL));
+		Group group2 = new Group(checkBoxForm, SWT.SHADOW_ETCHED_IN);
+		group2.setLayout(verticalLayout);
 		group2.setText("Generate Solutions");
-		
-		
-		form.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+		checkBoxForm.setLayout(new FillLayout(SWT.HORIZONTAL));
 		final Button btn1 = new Button(group1, SWT.CHECK);
 		btn1.setText("Show all bounds");
 		btn1.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				
-				GeoSupport.getProblemDiagnostics().setShowAllBounds(
-						btn1.getSelection());
+
+				GeoSupport.getProblemDiagnostics()
+						.setShowAllBounds(btn1.getSelection());
 			}
 		});
 		final Button btn2 = new Button(group1, SWT.CHECK);
@@ -133,8 +168,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowPoints(
-						btn3.getSelection());
+				GeoSupport.getSolutionDiagnostics().setShowPoints(btn3.getSelection());
 			}
 		});
 		final Button btn4 = new Button(group2, SWT.CHECK);
@@ -154,8 +188,7 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRoutes(
-						btn5.getSelection());
+				GeoSupport.getSolutionDiagnostics().setShowRoutes(btn5.getSelection());
 			}
 		});
 		final Button btn6 = new Button(group2, SWT.CHECK);
@@ -179,8 +212,166 @@ public class TestHarnessView extends ViewPart
 			}
 		});
 
+		Group saveLoadGroup = new Group(form, SWT.SHADOW_ETCHED_IN);
+		saveLoadGroup.setLayout(new RowLayout());
+		saveLoadGroup.setText("Save/Load Analysis");
+		form.setLayout(verticalLayout);
+
+		Button save = new Button(saveLoadGroup, SWT.BUTTON1);
+		save.setText("Save");
+		save.addMouseListener(new MouseListener()
+		{
+
+			@Override
+			public void mouseUp(MouseEvent e)
+			{
+
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e)
+			{
+				String xml = _xStream.toXML(boundsManager.getContributions());
+				String filename = "";
+				try
+				{
+					FileDialog dialog = new FileDialog(_shell, SWT.SAVE);
+					dialog.setFilterExtensions(new String[]
+					{ "*.xml" });
+
+					filename = dialog.open();
+					if (filename == null)
+					{
+						return;
+					}
+				}
+				catch (Exception E)
+				{
+					E.printStackTrace();
+				}
+
+				try
+				{
+					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+
+					// Write out the specified string to the file
+					out.write(xml);
+
+					// flushes and closes the stream
+					out.close();
+				}
+				catch (IOException ex)
+				{
+					ex.printStackTrace();
+				}
+				// Object obj = xStream.fromXML(xml);
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e)
+			{
+
+			}
+		});
+
+		Button load = new Button(saveLoadGroup, SWT.BUTTON1);
+		load.setText("Load");
+		load.addMouseListener(new MouseListener()
+		{
+
+			@Override
+			public void mouseUp(MouseEvent e)
+			{
+
+			}
+
+			@Override
+			public void mouseDown(MouseEvent e)
+			{
+				FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
+				dialog.setFilterExtensions(new String[]
+				{ "*.xml" });
+				String fileSelected = dialog.open();
+
+				if (fileSelected != null)
+				{
+					try
+					{
+						FileInputStream fstream = new FileInputStream(fileSelected);
+						Object stream = _xStream.fromXML(fstream);
+						Collection<BaseContribution> contributionList = null;
+						if (stream instanceof Collection)
+						{
+							contributionList = (Collection<BaseContribution>) stream;
+						}
+
+						boundsManager.clear();
+						for (BaseContribution contribution : contributionList)
+						{
+							boundsManager.addContribution(contribution);
+
+						}
+					}
+					catch (Exception ex)
+					{
+						ex.printStackTrace();
+					}
+
+				}
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e)
+			{
+
+			}
+		});
 		// and get the form to handle it's layout
 		form.pack();
+
+	}
+
+	private void initializeXstream()
+	{
+		_xStream = new XStream();
+		_xStream.alias(AlterationLegForecastContribution.class.getSimpleName(),
+				AlterationLegForecastContribution.class);
+		_xStream.alias(ATBForecastContribution.class.getSimpleName(),
+				ATBForecastContribution.class);
+		_xStream.alias(BaseAnalysisContribution.class.getSimpleName(),
+				BaseAnalysisContribution.class);
+		_xStream.alias(BaseContribution.class.getSimpleName(),
+				BaseContribution.class);
+		_xStream.alias(BearingMeasurementContribution.class.getSimpleName(),
+				BearingMeasurementContribution.class);
+		_xStream.alias(ContributionBuilder.class.getSimpleName(),
+				ContributionBuilder.class);
+		_xStream.alias(ContributionDataType.class.getSimpleName(),
+				ContributionDataType.class);
+		_xStream.alias(CourseAnalysisContribution.class.getSimpleName(),
+				CourseAnalysisContribution.class);
+		_xStream.alias(CourseForecastContribution.class.getSimpleName(),
+				CourseForecastContribution.class);
+		_xStream.alias(FrequencyMeasurementContribution.class.getSimpleName(),
+				FrequencyMeasurementContribution.class);
+		_xStream.alias(LocationAnalysisContribution.class.getSimpleName(),
+				LocationAnalysisContribution.class);
+		_xStream.alias(LocationForecastContribution.class.getSimpleName(),
+				LocationForecastContribution.class);
+		_xStream.alias(RangeForecastContribution.class.getSimpleName(),
+				RangeForecastContribution.class);
+		_xStream.alias(SpeedAnalysisContribution.class.getSimpleName(),
+				SpeedAnalysisContribution.class);
+		_xStream.alias(SpeedForecastContribution.class.getSimpleName(),
+				SpeedForecastContribution.class);
+		_xStream.alias(StraightLegForecastContribution.class.getSimpleName(),
+				StraightLegForecastContribution.class);
+		/*_xStream.aliasField(BaseContribution.NAME, BaseContribution.class, "_name");
+		_xStream.aliasField(BaseContribution.WEIGHT, BaseContribution.class, "_weight");
+		_xStream.aliasField(BaseContribution.START_DATE, BaseContribution.class, "_startDate");
+		_xStream.aliasField(BaseContribution.FINISH_DATE, BaseContribution.class, "_finishDate");
+		_xStream.aliasField(BaseContribution.ACTIVE, BaseContribution.class, "_active");
+		_xStream.aliasField(BaseContribution.ESTIMATE, BaseContribution.class, "_name");*/
 
 	}
 
@@ -214,11 +405,11 @@ public class TestHarnessView extends ViewPart
 	{
 		_testSupport.loadSampleData(useLong);
 	}
+
 	private void loadGoodData()
 	{
 		_testSupport.loadGoodData();
 	}
-
 
 	private void makeActions()
 	{
@@ -243,7 +434,7 @@ public class TestHarnessView extends ViewPart
 		};
 		_populateLongAction.setText("Pop Long");
 		_populateLongAction.setToolTipText("Load some sample data");
-		
+
 		_populateGoodAction = new Action()
 		{
 			@Override

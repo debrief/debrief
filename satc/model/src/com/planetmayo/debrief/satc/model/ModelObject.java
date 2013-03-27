@@ -8,7 +8,7 @@ public abstract class ModelObject implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(
+	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(
 			this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener)
