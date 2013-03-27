@@ -8,8 +8,18 @@ public abstract class ModelObject implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(
-			this);
+	private transient PropertyChangeSupport changeSupport;
+
+	/** note: we provide this method so that we can correctly initialise the 
+	 * transient changeSupport object when we're deserialising a model object
+	 * 
+	 * @return this
+	 */
+	private Object readResolve()
+	{
+		changeSupport = new PropertyChangeSupport(this);
+		return this;
+	}
 
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
@@ -21,8 +31,8 @@ public abstract class ModelObject implements Serializable
 	{
 		changeSupport.addPropertyChangeListener(propertyName, listener);
 	}
-	
-	public int getPropertyChangeListenersCount() 
+
+	public int getPropertyChangeListenersCount()
 	{
 		return changeSupport.getPropertyChangeListeners().length;
 	}
