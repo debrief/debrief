@@ -26,7 +26,7 @@ public class LocationForecastContribution extends BaseContribution
 
 	private transient PropertyChangeListener locationDetailsListener;
 
-	private void initListeners()
+	private void initForecastListeners()
 	{
 		if (locationDetailsListener == null)
 			locationDetailsListener = new PropertyChangeListener()
@@ -49,7 +49,7 @@ public class LocationForecastContribution extends BaseContribution
 	 */
 	private Object readResolve()
 	{
-		initListeners();
+		initForecastListeners();
 		return this;
 	}
 
@@ -94,13 +94,13 @@ public class LocationForecastContribution extends BaseContribution
 		_location = location;
 		if (oldEstimate != null)
 		{
-			initListeners();
+			initForecastListeners();
 
 			oldEstimate.removePropertyChangeListener(locationDetailsListener);
 		}
 		if (location != null)
 		{
-			initListeners();
+			initForecastListeners();
 
 			location.addPropertyChangeListener(locationDetailsListener);
 		}
