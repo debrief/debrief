@@ -8,7 +8,7 @@ public abstract class ModelObject implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 
-	private transient PropertyChangeSupport changeSupport;
+	private transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	/** note: we provide this method so that we can correctly initialise the 
 	 * transient changeSupport object when we're deserialising a model object

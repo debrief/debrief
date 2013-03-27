@@ -24,7 +24,7 @@ public class LocationForecastContribution extends BaseContribution
 
 	private GeoPoint _location = new GeoPoint(0, 0);
 
-	private PropertyChangeListener locationDetailsListener = new PropertyChangeListener()
+	private transient PropertyChangeListener locationDetailsListener = new PropertyChangeListener()
 	{
 
 		@Override
@@ -34,16 +34,40 @@ public class LocationForecastContribution extends BaseContribution
 		}
 	};
 
+	/**
+	 * note: we provide this method so that we can correctly initialise the
+	 * transient changeSupport object when we're deserialising a model object
+	 * 
+	 * @return this
+	 */
+	private Object readResolve()
+	{
+		locationDetailsListener = new PropertyChangeListener()
+		{
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _location);
+			}
+		};
+		return this;
+	}
+
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		if (_limit == null) {
-			return;			
+		if (_limit == null)
+		{
+			return;
 		}
-		Coordinate coordinate = new Coordinate(_location.getLon(), _location.getLat());
-		Geometry geometry = GeoSupport.doBuffer( GeoSupport.getFactory().createPoint(coordinate), GeoSupport.m2deg(_limit));
+		Coordinate coordinate = new Coordinate(_location.getLon(),
+				_location.getLat());
+		Geometry geometry = GeoSupport.doBuffer(GeoSupport.getFactory()
+				.createPoint(coordinate), GeoSupport.m2deg(_limit));
 		LocationRange range = new LocationRange((Polygon) geometry);
-		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
+		for (BoundedState state : space.getBoundedStatesBetween(_startDate,
+				_finishDate))
 		{
 			state.constrainTo(range);
 		}
