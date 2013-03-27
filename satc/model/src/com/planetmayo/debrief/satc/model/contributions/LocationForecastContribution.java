@@ -24,15 +24,22 @@ public class LocationForecastContribution extends BaseContribution
 
 	private GeoPoint _location = new GeoPoint(0, 0);
 
-	private transient PropertyChangeListener locationDetailsListener = new PropertyChangeListener()
-	{
+	private transient PropertyChangeListener locationDetailsListener;
 
-		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _location);
-		}
-	};
+	private void initListeners()
+	{
+		if (locationDetailsListener == null)
+			locationDetailsListener = new PropertyChangeListener()
+			{
+
+				@Override
+				public void propertyChange(PropertyChangeEvent evt)
+				{
+					firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _location);
+				}
+			};
+
+	}
 
 	/**
 	 * note: we provide this method so that we can correctly initialise the
@@ -42,15 +49,7 @@ public class LocationForecastContribution extends BaseContribution
 	 */
 	private Object readResolve()
 	{
-		locationDetailsListener = new PropertyChangeListener()
-		{
-
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _location);
-			}
-		};
+		initListeners();
 		return this;
 	}
 
@@ -95,10 +94,14 @@ public class LocationForecastContribution extends BaseContribution
 		_location = location;
 		if (oldEstimate != null)
 		{
+			initListeners();
+
 			oldEstimate.removePropertyChangeListener(locationDetailsListener);
 		}
 		if (location != null)
 		{
+			initListeners();
+
 			location.addPropertyChangeListener(locationDetailsListener);
 		}
 		firePropertyChange(LOCATION, oldEstimate, location);
