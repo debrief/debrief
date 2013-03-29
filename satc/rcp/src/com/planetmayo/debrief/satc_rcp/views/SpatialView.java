@@ -10,7 +10,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 
+import org.eclipse.jface.action.AbstractGroupMarker;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -135,6 +137,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat(
 			"hh:mm:ss");
 
+	/**
+	 * how many routes to display
+	 * 
+	 */
+	private int _numRoutes = Integer.MAX_VALUE;
+
 	@Override
 	public void clear(String title)
 	{
@@ -204,6 +212,17 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
 
+
+		bars.getMenuManager().add(new AbstractGroupMarker("num")
+		{
+		});
+		bars.getMenuManager().appendToGroup("num", new RouteNumSelector(10));
+		bars.getMenuManager().appendToGroup("num",new RouteNumSelector(50));
+		bars.getMenuManager().appendToGroup("num",new RouteNumSelector(100));
+		bars.getMenuManager().appendToGroup("num",new RouteNumSelector());
+
+		// add some handlers to sort out how many routes to shw
+
 		// tell the GeoSupport about us
 		GeoSupport.setPlotter(this, this, this);
 		boundsManager.addBoundStatesListener(this);
@@ -215,6 +234,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		boundsManager.removeSteppingListener(this);
 		super.dispose();
+	}
+
+	private void setNumRoutes(int _myNum)
+	{
+		_numRoutes = _myNum;
+
+		redoChart();
 	}
 
 	@Override
@@ -631,6 +657,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		redoChart();
 	}
 
+	/** store the collection of a line with its name plus score value
+	 * 
+	 * @author Ian
+	 *
+	 */
 	private static class ScoredRoute
 	{
 		private final LineString theRoute;
@@ -673,96 +704,116 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			// ok, loop trough
 			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 			{
-				ArrayList<Point> points = new ArrayList<Point>();
-				ArrayList<Point> possiblePoints = new ArrayList<Point>();
-				ArrayList<LineString> possibleRoutes = new ArrayList<LineString>();
-				CoreLeg thisLeg = iterator.next();
+				final CoreLeg thisLeg = iterator.next();
 
-				// ok, get the points
-				CoreRoute[][] routes = thisLeg.getRoutes();
-
-				// go through the start points
-				if (routes != null)
+				// start off with the ponts
+				if (_showPoints || _showAchievablePoints)
 				{
-					int numStart = routes.length;
-					int numEnd = routes[0].length;
+					ArrayList<Point> points = new ArrayList<Point>();
+					ArrayList<Point> possiblePoints = new ArrayList<Point>();
 
-					// sort out the start points first
-					for (int i = 0; i < numStart; i++)
+					// ok, we need to look at all of the routes to sort out which points
+					// are achievable
+					CoreRoute[][] routes = thisLeg.getRoutes();
+
+					// go through the start points
+					if (routes != null)
 					{
-						CoreRoute[] thisStart = routes[i];
+						int numStart = routes.length;
+						int numEnd = routes[0].length;
 
-						// ok, are we showing all?
-						Point startPoint = thisStart[0].getStartPoint();
-						if (_showPoints)
+						// sort out the start points first
+						for (int i = 0; i < numStart; i++)
 						{
-							// ok, just add it to the list
-							points.add(startPoint);
-						}
+							CoreRoute[] thisStart = routes[i];
 
-						// ok - do we need to check which ones have any valid points?
-						if (_showAchievablePoints || _showRoutes || _showRoutesWithScores)
-						{
-							boolean isPossible = false;
-
-							for (int j = 0; j < numEnd; j++)
+							// ok, are we showing all?
+							Point startPoint = thisStart[0].getStartPoint();
+							if (_showPoints)
 							{
-								CoreRoute thisRoute = thisStart[j];
+								// ok, just add it to the list
+								points.add(startPoint);
+							}
+							// ok - do we need to check which ones have any valid points?
+							if (_showAchievablePoints)
+							{
+								boolean isPossible = false;
 
-								if (thisRoute.isPossible())
+								for (int j = 0; j < numEnd; j++)
 								{
-									isPossible = true;
+									CoreRoute thisRoute = thisStart[j];
 
-									// we're only currently going to draw lines for straight legs
-									if (thisLeg.getType() == LegType.STRAIGHT)
+									if (thisRoute.isPossible())
 									{
-										if (_showRoutes || _showRoutesWithScores)
-										{
-											Coordinate[] coords = new Coordinate[]
-											{ thisRoute.getStartPoint().getCoordinate(),
-													thisRoute.getEndPoing().getCoordinate() };
-											LineString newR = GeoSupport.getFactory()
-													.createLineString(coords);
-
-											if (_showRoutes)
-												possibleRoutes.add(newR);
-
-											if (_showRoutesWithScores)
-											{
-												// do we have a collection for this leg
-												ArrayList<ScoredRoute> thisLegRes = scoredRoutes
-														.get(thisLeg);
-												if (thisLegRes == null)
-												{
-													// nope, better create one then
-													thisLegRes = new ArrayList<ScoredRoute>();
-													scoredRoutes.put(thisLeg, thisLegRes);
-												}
-
-												thisLegRes.add(new ScoredRoute(newR, thisRoute
-														.getName(), thisRoute.getScore()));
-
-											}
-										}
+										isPossible = true;
+										break;
 									}
 								}
-							}
-
-							// ok, add it to the list
-							if (isPossible)
-							{
-
-								if (_showAchievablePoints)
+								// ok, add it to the list
+								if (isPossible)
+								{
 									possiblePoints.add(startPoint);
+								}
+							}
+						}
+					}
+					allPoints.add(points);
+					allPossiblePoints.add(possiblePoints);
+
+				}
+
+				// and now for the routes
+				if (_showRoutes || _showRoutesWithScores)
+				{
+
+					ArrayList<LineString> possibleRoutes = new ArrayList<LineString>();
+
+					// we're only currently going to draw lines for straight legs
+					if (thisLeg.getType() == LegType.STRAIGHT)
+					{
+						SortedSet<CoreRoute> theRoutes = thisLeg.getTopRoutes();
+
+						int routeCounter = 0;
+
+						for (Iterator<CoreRoute> rIter = theRoutes.iterator(); rIter
+								.hasNext();)
+						{
+							CoreRoute thisRoute = rIter.next();
+
+							routeCounter++;
+
+							if (routeCounter > _numRoutes)
+								break;
+
+							Coordinate[] coords = new Coordinate[]
+							{ thisRoute.getStartPoint().getCoordinate(),
+									thisRoute.getEndPoing().getCoordinate() };
+							LineString newR = GeoSupport.getFactory()
+									.createLineString(coords);
+
+							if (_showRoutes)
+								possibleRoutes.add(newR);
+
+							if (_showRoutesWithScores)
+							{
+								// do we have a collection for this leg
+								ArrayList<ScoredRoute> thisLegRes = scoredRoutes.get(thisLeg);
+								if (thisLegRes == null)
+								{
+									// nope, better create one then
+									thisLegRes = new ArrayList<ScoredRoute>();
+									scoredRoutes.put(thisLeg, thisLegRes);
+								}
+
+								thisLegRes.add(new ScoredRoute(newR, thisRoute.getName(),
+										thisRoute.getScore()));
 
 							}
 						}
-
 					}
+					allPossibleRoutes.add(possibleRoutes);
+
 				}
-				allPoints.add(points);
-				allPossiblePoints.add(possiblePoints);
-				allPossibleRoutes.add(possibleRoutes);
 			}
 
 			// System.out.println("num all points:" + allPoints.size());
@@ -811,8 +862,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 			}
 
-			// System.out.println(" for leg: " + thisL.getName() + " min:" + min
-			// + " max:" + max);
+			 System.out.println(" for leg: " + thisL.getName() + " min:" + min
+			 + " max:" + max);
 
 			for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 					.hasNext();)
@@ -842,8 +893,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				int num = _myData.getSeriesCount() - 1;
 				_renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
 
-				final float dash[];
+				// make the line width inversely proportional to the score, with a max width of 2 pixels
 				final float width = (float) (2f - 2 * thisColorScore);
+
+				// make the top score solid, and worse scores increasingly sparse
+				final float dash[];
 				if (thisScore == min)
 				{
 					dash = null;
@@ -856,6 +910,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					dash = tmpDash;
 				}
 
+				// and put this line thickness, dashing into a stroke object
 				BasicStroke stroke = new BasicStroke(width, BasicStroke.CAP_BUTT,
 						BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
 
@@ -936,4 +991,36 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		// don't worry about it.
 	}
+	
+
+	/** utility class to allow us to specify how many routes to be displayed
+	 * 
+	 * @author Ian
+	 *
+	 */
+	private class RouteNumSelector extends Action
+	{
+
+		private int _myNum;
+
+		private RouteNumSelector(int num)
+		{
+			super(num + " points");
+			_myNum = num;
+		}
+
+		protected RouteNumSelector()
+		{
+			super("All points");
+			_myNum = Integer.MAX_VALUE;
+		}
+
+		@Override
+		public void run()
+		{
+			setNumRoutes(_myNum);
+		}
+
+	}
+
 }
