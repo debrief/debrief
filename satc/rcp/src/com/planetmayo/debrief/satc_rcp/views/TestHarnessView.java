@@ -366,12 +366,6 @@ public class TestHarnessView extends ViewPart
 				SpeedForecastContribution.class);
 		_xStream.alias(StraightLegForecastContribution.class.getSimpleName(),
 				StraightLegForecastContribution.class);
-		/*_xStream.aliasField(BaseContribution.NAME, BaseContribution.class, "_name");
-		_xStream.aliasField(BaseContribution.WEIGHT, BaseContribution.class, "_weight");
-		_xStream.aliasField(BaseContribution.START_DATE, BaseContribution.class, "_startDate");
-		_xStream.aliasField(BaseContribution.FINISH_DATE, BaseContribution.class, "_finishDate");
-		_xStream.aliasField(BaseContribution.ACTIVE, BaseContribution.class, "_active");
-		_xStream.aliasField(BaseContribution.ESTIMATE, BaseContribution.class, "_name");*/
 
 	}
 

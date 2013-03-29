@@ -57,7 +57,7 @@ public class RangeForecastContribution extends BaseContribution
 		{
 			RangeForecastContribution.ROrigin origin = iter.next();
 
-			Date thisT = origin._time;
+			Date thisT = origin.time;
 
 			boolean useIt = true;
 			// is it in time?
@@ -79,7 +79,7 @@ public class RangeForecastContribution extends BaseContribution
 			if (!useIt)
 				continue;
 
-			Point pt = origin._origin.asPoint();
+			Point pt = origin.origin.asPoint();
 
 			// yes, ok we can centre our donut on that
 			LinearRing outer = getOuterRing(pt);
@@ -108,12 +108,12 @@ public class RangeForecastContribution extends BaseContribution
 			final LocationRange myRa = new LocationRange(thePoly);
 
 			// is there already a bounded state at this time?
-			BoundedState thisS = space.getBoundedStateAt(origin._time);
+			BoundedState thisS = space.getBoundedStateAt(origin.time);
 
 			if (thisS == null)
 			{
 				// nope, better create it
-				thisS = new BoundedState(origin._time);
+				thisS = new BoundedState(origin.time);
 				space.add(thisS);
 			}
 
@@ -132,16 +132,16 @@ public class RangeForecastContribution extends BaseContribution
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
 		{
-			this.setStartDate(measure._time);
-			this.setFinishDate(measure._time);
+			this.setStartDate(measure.time);
+			this.setFinishDate(measure.time);
 		}
 		else
 		{
-			long newTime = measure._time.getTime();
+			long newTime = measure.time.getTime();
 			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure._time);
+				this.setStartDate(measure.time);
 			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure._time);
+				this.setFinishDate(measure.time);
 		}
 
 		measurements.add(measure);
@@ -313,13 +313,13 @@ public class RangeForecastContribution extends BaseContribution
 	 */
 	public static class ROrigin
 	{
-		private final GeoPoint _origin;
-		private final Date _time;
+		private final GeoPoint origin;
+		private final Date time;
 
 		public ROrigin(GeoPoint loc, Date time)
 		{
-			_origin = loc;
-			_time = time;
+			this.origin = loc;
+			this.time = time;
 		}
 	}
 }

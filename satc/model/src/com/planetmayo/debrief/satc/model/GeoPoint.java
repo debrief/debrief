@@ -14,8 +14,8 @@ public class GeoPoint extends ModelObject
 	public static final String LAT = "lat";
 	public static final String LON = "lon";
 
-	private double _lat;
-	private double _lon;
+	private double lat;
+	private double lon;
 
 	public GeoPoint(final double lat, final double lon)
 	{
@@ -25,48 +25,48 @@ public class GeoPoint extends ModelObject
 
 	public Point asPoint()
 	{
-		Coordinate coord = new Coordinate(_lon, _lat);
+		Coordinate coord = new Coordinate(lon, lat);
 		return GeoSupport.getFactory().createPoint(coord);
 	}
 
 	public double getLat()
 	{
-		return _lat;
+		return lat;
 	}
 
 	public double getLon()
 	{
-		return _lon;
+		return lon;
 	}
 
-	public void setLat(double lat)
+	public void setLat(double newLat)
 	{
-		double oldLat = _lat;
-		this._lat = lat;
-		firePropertyChange(LAT, oldLat, lat);
+		double oldLat = lat;
+		this.lat = newLat;
+		firePropertyChange(LAT, oldLat, newLat);
 	}
 
-	public void setLon(double lon)
+	public void setLon(double newLon)
 	{
-		double oldLon = _lon;
-		this._lon = lon;
-		firePropertyChange(LON, oldLon, lon);
+		double oldLon = lon;
+		this.lon = newLon;
+		firePropertyChange(LON, oldLon, newLon);
 	}
 
 	@Override
 	public String toString()
 	{
 		DecimalFormat format = new DecimalFormat("0.00");
-		String latitudeStr = format.format(Math.abs(_lat)) + (_lat < 0 ? "S" : "N");
-		String longitudeStr = format.format(Math.abs(_lon))
-				+ (_lon < 0 ? "W" : "E");
+		String latitudeStr = format.format(Math.abs(lat)) + (lat < 0 ? "S" : "N");
+		String longitudeStr = format.format(Math.abs(lon))
+				+ (lon < 0 ? "W" : "E");
 		return latitudeStr + " " + longitudeStr;
 	}
 
 	public double bearingTo(Point loc)
 	{
-		double deltaX = loc.getX() - _lon;
-		double deltaY = loc.getY() - _lat;
+		double deltaX = loc.getX() - lon;
+		double deltaY = loc.getY() - lat;
 		return Math.PI/2 - Math.atan2(deltaY, deltaX);
 	}
 }

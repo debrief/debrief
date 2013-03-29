@@ -41,16 +41,16 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 	 */
 	protected static class SwitchableIterator
 	{
-		private final boolean _fwd;
+		private final boolean fwd;
 
 		protected SwitchableIterator(boolean fwd)
 		{
-			_fwd = fwd;
+			this.fwd = fwd;
 		}
 
 		protected ListIterator<BoundedState> getIterator(ArrayList<BoundedState> states )
 		{
-			if(_fwd)
+			if(fwd)
 				return states.listIterator();
 			else
 				return states.listIterator(states.size());
@@ -58,7 +58,7 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		
 		protected BoundedState next(ListIterator<BoundedState> iter)
 		{
-			if (_fwd)
+			if (fwd)
 				return iter.next();
 			else
 				return iter.previous();
@@ -66,7 +66,7 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 
 		protected boolean canStep(ListIterator<BoundedState> iter)
 		{
-			if (_fwd)
+			if (fwd)
 				return iter.hasNext();
 			else
 				return iter.hasPrevious();

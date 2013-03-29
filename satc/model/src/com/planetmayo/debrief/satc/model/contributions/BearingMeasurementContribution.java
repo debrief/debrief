@@ -61,9 +61,9 @@ public class BearingMeasurementContribution extends BaseContribution
 		{
 			BearingMeasurementContribution.BMeasurement measurement = iter.next();
 			// ok, create the polygon for this measurement
-			GeoPoint origin = measurement._origin;
-			double bearing = measurement._bearingAngle;
-			double range = measurement._theRange;
+			GeoPoint origin = measurement.origin;
+			double bearing = measurement.bearingAngle;
+			double range = measurement.theRange;
 
 			// ok, generate the polygon
 			Coordinate[] coords = new Coordinate[5];
@@ -99,11 +99,11 @@ public class BearingMeasurementContribution extends BaseContribution
 			LocationRange lr = new LocationRange(poly);
 
 			// do we have a bounds at this time?
-			BoundedState thisState = space.getBoundedStateAt(measurement._time);
+			BoundedState thisState = space.getBoundedStateAt(measurement.time);
 			if (thisState == null)
 			{
 				// ok, do the bounds
-				thisState = new BoundedState(measurement._time);
+				thisState = new BoundedState(measurement.time);
 				// and store it
 				space.add(thisState);
 			}
@@ -156,7 +156,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		{
 			BearingMeasurementContribution.BMeasurement m = (BearingMeasurementContribution.BMeasurement) iter
 					.next();
-			Date time = m._time;
+			Date time = m.time;
 
 			// ok, find the state that matches this bearing measurement
 			while (thisS.getTime().before(time) && sIter.hasNext())
@@ -177,7 +177,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				Point loc = thisS.getLocation();
 
 				// what's the bearing from this origin?
-				double bearing = m._origin.bearingTo(loc);
+				double bearing = m.origin.bearingTo(loc);
 
 				// System.out.println("testing brg:" + time +
 				// " against state:" + thisS.getTime()
@@ -185,7 +185,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				// Math.toDegrees(m._bearingAngle));
 
 				// what's the difference between that and my measurement
-				double thisError = Math.abs(bearing - m._bearingAngle);
+				double thisError = Math.abs(bearing - m.bearingAngle);
 
 				// and accumulate it
 				res += thisError;
@@ -215,16 +215,16 @@ public class BearingMeasurementContribution extends BaseContribution
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
 		{
-			this.setStartDate(measure._time);
-			this.setFinishDate(measure._time);
+			this.setStartDate(measure.time);
+			this.setFinishDate(measure.time);
 		}
 		else
 		{
-			long newTime = measure._time.getTime();
+			long newTime = measure.time.getTime();
 			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure._time);
+				this.setStartDate(measure.time);
 			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure._time);
+				this.setFinishDate(measure.time);
 		}
 
 		measurements.add(measure);
@@ -350,21 +350,21 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	public static class BMeasurement
 	{
-		private final GeoPoint _origin;
-		private final double _bearingAngle;
-		private final Date _time;
+		private final GeoPoint origin;
+		private final double bearingAngle;
+		private final Date time;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
-		private final Double _theRange;
+		private final Double theRange;
 
 		public BMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
-			_origin = loc;
-			_bearingAngle = bearing;
-			_time = time;
-			_theRange = theRange;
+			this.origin = loc;
+			this.bearingAngle = bearing;
+			this.time = time;
+			this.theRange = theRange;
 		}
 	}
 }
