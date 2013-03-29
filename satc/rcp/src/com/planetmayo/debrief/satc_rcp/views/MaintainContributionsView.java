@@ -1,6 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,10 +50,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
-import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
-import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
@@ -205,26 +201,6 @@ public class MaintainContributionsView extends ViewPart implements
 		populateVehicleTypesList(vehicleManager.getAllTypes());
 
 		boundsManager.addContributionsListener(this);
-		solutionGenerator.addReadyListener(new IGenerateSolutionsListener()
-		{
-			public void startingGeneration()
-			{
-				// the process is starting, enable the cancel button
-				configCancelOperation(true);
-			}
-			
-			@Override
-			public void solutionsReady(CompositeRoute[] routes)
-			{
-			}
-			
-			@Override
-			public void legsScored(ArrayList<CoreLeg> theLegs)
-			{
-				// process is complete, the button can be disabled
-				configCancelOperation(false);
-			}
-		});
 	}
 
 	@Override
@@ -237,11 +213,6 @@ public class MaintainContributionsView extends ViewPart implements
 	@Override
 	public void setFocus()
 	{
-	}
-	
-	private void configCancelOperation(boolean enabled)
-	{
-		// TODO: this is where the cancel button is enabled/disabled
 	}
 
 	private void fillAnalystContributionsGroup(Composite parent)
@@ -364,11 +335,6 @@ public class MaintainContributionsView extends ViewPart implements
 		});
 		generateSolutions.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
-		
-		// TODO: Akash - I suggest this is where the "Cancel" button is inserted
-		// the button will make this call: 
-		// solutionGenerator.interruptGeneration();
-		
 
 		Composite precisionPanel = new Composite(group, SWT.NONE);
 		precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
