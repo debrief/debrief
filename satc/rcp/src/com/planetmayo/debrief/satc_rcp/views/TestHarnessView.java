@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -29,14 +31,17 @@ import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastCont
 import com.planetmayo.debrief.satc.model.contributions.BaseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
@@ -45,6 +50,7 @@ import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -222,6 +228,8 @@ public class TestHarnessView extends ViewPart
 		save.addMouseListener(new MouseListener()
 		{
 
+			private List<BaseContribution> contributions;
+
 			@Override
 			public void mouseUp(MouseEvent e)
 			{
@@ -231,7 +239,14 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void mouseDown(MouseEvent e)
 			{
-				String xml = _xStream.toXML(boundsManager.getContributions());
+				contributions = new ArrayList<BaseContribution>();
+				for (BaseContribution baseContribution : boundsManager
+						.getContributions())
+				{
+					contributions.add(baseContribution);
+				}
+
+				String xml = _xStream.toXML(contributions);
 				String filename = "";
 				try
 				{
@@ -253,18 +268,13 @@ public class TestHarnessView extends ViewPart
 				try
 				{
 					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-
-					// Write out the specified string to the file
 					out.write(xml);
-
-					// flushes and closes the stream
 					out.close();
 				}
 				catch (IOException ex)
 				{
 					ex.printStackTrace();
 				}
-				// Object obj = xStream.fromXML(xml);
 			}
 
 			@Override
@@ -366,7 +376,9 @@ public class TestHarnessView extends ViewPart
 				SpeedForecastContribution.class);
 		_xStream.alias(StraightLegForecastContribution.class.getSimpleName(),
 				StraightLegForecastContribution.class);
-
+		_xStream.alias(BMeasurement.class.getSimpleName(), BMeasurement.class);
+		_xStream.alias(ROrigin.class.getSimpleName(), ROrigin.class);
+		_xStream.alias(FMeasurement.class.getSimpleName(), FMeasurement.class);
 	}
 
 	private void enableControls(boolean enabled)
