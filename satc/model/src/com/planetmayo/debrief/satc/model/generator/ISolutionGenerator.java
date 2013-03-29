@@ -22,12 +22,4 @@ public interface ISolutionGenerator
 	 * @param precision
 	 */
 	public void setPrecision(Precision precision);
-
-	
-	/** cancel the solution generation process, if it's running
-	 * 
-	 */
-	public void interruptGeneration();
-
-
 }
