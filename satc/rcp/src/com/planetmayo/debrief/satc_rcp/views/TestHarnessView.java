@@ -319,8 +319,9 @@ public class TestHarnessView extends ViewPart
 						{
 							contributionList = (Collection<BaseContribution>) stream;
 						}
-						
-						// TODO: Akash - I guess this is where we'd need some kind of version test
+
+						// TODO: Akash - I guess this is where we'd need some kind of
+						// version test
 						// https://bitbucket.org/ianmayo/deb_satc/issue/84
 
 						if (contributionList != null)
@@ -332,6 +333,9 @@ public class TestHarnessView extends ViewPart
 
 							}
 						}
+
+						// ok, get the bounds manager to run, now that it's got it's data
+						boundsManager.run();
 					}
 					catch (Exception ex)
 					{
