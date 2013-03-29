@@ -633,13 +633,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private static class ScoredRoute
 	{
-		private LineString theRoute;
-		private double theScore;
+		private final LineString theRoute;
+		private final double theScore;
+		private final String theName;
 
-		public ScoredRoute(LineString route, double score)
+		public ScoredRoute(LineString route, String name, double score)
 		{
 			theRoute = route;
 			theScore = score;
+			theName = name;
 		}
 	}
 
@@ -665,7 +667,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			ArrayList<ArrayList<Point>> allPoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<Point>> allPossiblePoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<LineString>> allPossibleRoutes = new ArrayList<ArrayList<LineString>>();
-			Collection<ScoredRoute> scoredRoutes = new ArrayList<ScoredRoute>();
+			HashMap<CoreLeg, ArrayList<ScoredRoute>> scoredRoutes = new HashMap<CoreLeg, ArrayList<ScoredRoute>>();
 
 			// ok, loop trough
 			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
@@ -725,8 +727,21 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 												possibleRoutes.add(newR);
 
 											if (_showRoutesWithScores)
-												scoredRoutes.add(new ScoredRoute(newR, thisRoute
-														.getScore()));
+											{
+												// do we have a collection for this leg
+												ArrayList<ScoredRoute> thisLegRes = scoredRoutes
+														.get(thisLeg);
+												if (thisLegRes == null)
+												{
+													// nope, better create one then
+													thisLegRes = new ArrayList<ScoredRoute>();
+													scoredRoutes.put(thisLeg, thisLegRes);
+												}
+
+												thisLegRes.add(new ScoredRoute(newR, thisRoute
+														.getName(), thisRoute.getScore()));
+
+											}
 										}
 									}
 								}
@@ -762,57 +777,91 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	}
 
-	private void plotRoutesWithScores(Collection<ScoredRoute> scoredRoutes)
+	private void plotRoutesWithScores(
+			HashMap<CoreLeg, ArrayList<ScoredRoute>> legRoutes)
 	{
-		if (scoredRoutes.size() == 0)
+		if (legRoutes.size() == 0)
 			return;
 
-		double max = 0, min = Double.MAX_VALUE;
-		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
-				.hasNext();)
+		// work through the legs
+		Iterator<CoreLeg> lIter = legRoutes.keySet().iterator();
+		while (lIter.hasNext())
 		{
-			ScoredRoute route = iterator.next();
-			// Ensure thisScore is between 0-100
-			double thisScore = route.theScore;
-			if (max < thisScore)
+			final CoreLeg thisL = lIter.next();
+			final ArrayList<ScoredRoute> scoredRoutes = legRoutes.get(thisL);
+
+			double max = 0, min = Double.MAX_VALUE;
+			for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
+					.hasNext();)
 			{
-				max = thisScore;
+				ScoredRoute route = iterator.next();
+				// Ensure thisScore is between 0-100
+				double thisScore = route.theScore;
+
+				thisScore = Math.log(thisScore);
+
+				if (max < thisScore)
+				{
+					max = thisScore;
+				}
+				if (min > thisScore)
+				{
+					min = thisScore;
+				}
 			}
-			if (min > thisScore)
+
+//			System.out.println(" for leg: " + thisL.getName() + " min:" + min
+//					+ " max:" + max);
+
+			for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
+					.hasNext();)
 			{
-				min = thisScore;
+				ScoredRoute route = iterator.next();
+
+				Point startP = route.theRoute.getStartPoint();
+				Point endP = route.theRoute.getEndPoint();
+
+				// Ensure thisScore is between 0-100
+				double thisScore = route.theScore;
+				thisScore = Math.log(thisScore);
+
+				double thisColorScore = (thisScore - min) / (max - min) * 100;
+
+				// System.out.println("this s:" + (int) thisScore + " was:"
+				// + route.theScore);
+
+				XYSeries series = new XYSeries("" + (_numCycles++), false);
+				series.add(new XYDataItem(startP.getY(), startP.getX()));
+				series.add(new XYDataItem(endP.getY(), endP.getX()));
+
+				// get the shape
+				_myData.addSeries(series);
+
+				// get the series num
+				int num = _myData.getSeriesCount() - 1;
+				_renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
+
+				final float dash[];
+				if (thisScore == min)
+				{
+					dash = null;
+				}
+				else
+				{
+					float[] tmpDash =
+					{3f,  (float) ( 1f + Math.exp(thisScore - min)/3) };
+					dash = tmpDash;
+				}
+
+				BasicStroke stroke = new BasicStroke(0f, BasicStroke.CAP_BUTT,
+						BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
+
+				_renderer.setSeriesStroke(num, stroke, false);
+				_renderer.setSeriesLinesVisible(num, true);
+				_renderer.setSeriesShapesVisible(num, false);
+				_renderer.setSeriesVisibleInLegend(num, false);
+
 			}
-
-		}
-
-		System.out.println("min:" + (int) min + " max:" + (int) max);
-
-		for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
-				.hasNext();)
-		{
-			ScoredRoute route = iterator.next();
-
-			Point startP = route.theRoute.getStartPoint();
-			Point endP = route.theRoute.getEndPoint();
-
-			// Ensure thisScore is between 0-100
-			double thisScore = (route.theScore - min) / (max - min) * 100;
-
-			XYSeries series = new XYSeries("" + (_numCycles++), false);
-			series.add(new XYDataItem(startP.getY(), startP.getX()));
-			series.add(new XYDataItem(endP.getY(), endP.getX()));
-
-			// get the shape
-			_myData.addSeries(series);
-
-			// get the series num
-			int num = _myData.getSeriesCount() - 1;
-			_renderer.setSeriesPaint(num, getHeatMapColorFor(thisScore));
-			_renderer.setSeriesStroke(num, new BasicStroke(), false);
-			_renderer.setSeriesLinesVisible(num, true);
-			_renderer.setSeriesShapesVisible(num, false);
-			_renderer.setSeriesVisibleInLegend(num, false);
-
 		}
 
 	}
