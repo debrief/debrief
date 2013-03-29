@@ -635,6 +635,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		private final LineString theRoute;
 		private final double theScore;
+		@SuppressWarnings("unused")
 		private final String theName;
 
 		public ScoredRoute(LineString route, String name, double score)
@@ -810,8 +811,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 			}
 
-//			System.out.println(" for leg: " + thisL.getName() + " min:" + min
-//					+ " max:" + max);
+			// System.out.println(" for leg: " + thisL.getName() + " min:" + min
+			// + " max:" + max);
 
 			for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 					.hasNext();)
@@ -825,7 +826,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				double thisScore = route.theScore;
 				thisScore = Math.log(thisScore);
 
-				double thisColorScore = (thisScore - min) / (max - min) * 100;
+				double thisColorScore = (thisScore - min) / (max - min);
 
 				// System.out.println("this s:" + (int) thisScore + " was:"
 				// + route.theScore);
@@ -842,18 +843,20 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				_renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
 
 				final float dash[];
+				final float width = (float) (2f - 2 * thisColorScore);
 				if (thisScore == min)
 				{
 					dash = null;
 				}
 				else
 				{
+					float thisWid = (float) (1f + Math.exp(thisScore - min) / 3);
 					float[] tmpDash =
-					{3f,  (float) ( 1f + Math.exp(thisScore - min)/3) };
+					{ 4, thisWid };
 					dash = tmpDash;
 				}
 
-				BasicStroke stroke = new BasicStroke(0f, BasicStroke.CAP_BUTT,
+				BasicStroke stroke = new BasicStroke(width, BasicStroke.CAP_BUTT,
 						BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
 
 				_renderer.setSeriesStroke(num, stroke, false);
@@ -886,7 +889,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			// get the series num
 			int num = _myData.getSeriesCount() - 1;
 			_renderer.setSeriesPaint(num, Color.black);
-			_renderer.setSeriesStroke(num, new BasicStroke(3), false);
+			_renderer.setSeriesStroke(num, new BasicStroke(5), false);
 			_renderer.setSeriesLinesVisible(num, true);
 			_renderer.setSeriesShapesVisible(num, false);
 		}
@@ -894,17 +897,20 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 
 	/*
-	 * Ensure thisScore is between 0-100
+	 * produce a heat map color score for this value
+	 * 
+	 * @param thisScore value between 0 & 1
 	 */
 	private Color getHeatMapColorFor(double thisScore)
 	{
-		// put the score into the 50-100 domain, to make it more feint
-		thisScore = 50 + thisScore / 2;
+		final float range = 0.8f;
+		final float offset = 0.2f;
 
-		float red = (float) (thisScore / 100);
-		float blue = (float) ((100 - thisScore) / 100);
+		float red = (float) (1f - 0.8 * thisScore);
+		float green = (float) (thisScore * 0.7);
+		float blue = (float) (offset + range * thisScore);
 
-		return new Color(red, 0, blue);
+		return new Color(red, green, blue);
 	}
 
 	private void plotPossibleRoutes(
@@ -923,5 +929,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		}
 
+	}
+
+	@Override
+	public void startingGeneration()
+	{
+		// don't worry about it.
 	}
 }
