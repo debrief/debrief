@@ -82,6 +82,24 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	public void statesBounded(final IBoundsManager boundsManager)
 	{
 		
+		// TODO: Akash - I guess this is a good place to wrap the solution generation
+		// in an interruptable thread
+		
+		doGenerateSolutions(boundsManager);
+	}
+	
+	@Override
+	public void interruptGeneration()
+	{
+		// TODO: Akash - a user has asked us to stop generating solutions,
+		
+		// I guess we start off by checking if the thread is running
+		
+		// TODO: Ian, we need to do some cleanup after solution generation has been interrupted
+	}
+
+	private void doGenerateSolutions(final IBoundsManager boundsManager)
+	{
 		System.out.println("running generator at:" + new Date());
 		
 		// spread the good news
