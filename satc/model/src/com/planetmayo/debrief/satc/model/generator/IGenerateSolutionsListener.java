@@ -22,4 +22,9 @@ public interface IGenerateSolutionsListener
 	 * 
 	 */
 	void solutionsReady(CompositeRoute[] routes);
+	
+	/** we're about to start generating solutions
+	 * 
+	 */
+	void startingGeneration();
 }

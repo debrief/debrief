@@ -84,6 +84,9 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		
 		System.out.println("running generator at:" + new Date());
 		
+		// spread the good news
+		fireStartingGeneration();
+		
 		_boundsManager = boundsManager;
 
 		// ok - it's complete. now we can process it
@@ -466,6 +469,21 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 			listener.legsScored(theLegs);
 		}
 
+	}
+
+
+	/**
+	 * we've sorted out the leg scores
+	 * 
+	 * @param theLegs
+	 * 
+	 */
+	private void fireStartingGeneration()
+	{
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.startingGeneration();
+		}
 	}
 
 	/**

@@ -40,4 +40,9 @@ public class SteppingAdapter implements
 	public void legsScored(ArrayList<CoreLeg> theLegs)
 	{
 	}
+
+	@Override
+	public void startingGeneration()
+	{
+	}
 }

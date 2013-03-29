@@ -97,6 +97,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 	}
 
 	private ArrayList<CoreLeg> _scoredLegs = null;
+	private boolean _started = false;
 	
 	@Test
 	public void testLegScores()
@@ -125,20 +126,28 @@ public class GenerateCandidatesTest extends ModelTestBase
 			{
 				_scoredLegs = theLegs;
 			}
+
+			@Override
+			public void startingGeneration()
+			{
+				_started = true;
+			}
 		});
 		
 		assertNull("legs not there yet", _scoredLegs);
+		assertFalse("not started yet", _started);
 		
 		genny.statesBounded(boundsManager);
 		
 		// check the calc got called
 		assertNotNull(_scoredLegs);
+		assertTrue("has started", _started);
 		
 		// work out the total
 		double total = 0;
 		total = calcLegScore(total);
 		
-		assertEquals("have some scores", 6063, total, 0.0001);
+		assertEquals("have some scores", 9091, total, 0.0001);
 		
 		// ok, check that we can turn BMC back on
 		bearingMeasurementContribution.setWeight(1);
@@ -147,7 +156,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 		genny.statesBounded(boundsManager);
 		total = calcLegScore(total);
 		
-		assertEquals("have some more scores", 179194, (int)total);
+		assertEquals("have some more scores", 62441, (int)total);
 	}
 
 	private double calcLegScore(double total)
@@ -641,15 +650,24 @@ public class GenerateCandidatesTest extends ModelTestBase
 				called++;
 			}
 
+
+			@Override
+			public void startingGeneration()
+			{
+				_started = true;;
+			}
+
 		});
 
 		// ok, get it to run
 		assertEquals("not called yet",0, called);
+		_started = false;
 
 		// ok, get firing
 		genny.statesBounded(boundsManager);
 
 		// ok, get it to run
+		assertTrue("has started", _started);
 		assertEquals("now called ",2, called);
 	}
 
