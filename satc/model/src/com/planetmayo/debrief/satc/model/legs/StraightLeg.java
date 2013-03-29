@@ -26,6 +26,12 @@ public class StraightLeg extends CoreLeg
 	StraightRoute[][] myRoutes;
 
 	/**
+	 * the routes, sorted according to their performance
+	 * 
+	 */
+	SortedSet<CoreRoute> topRoutes;
+
+	/**
 	 * create a straight leg.
 	 * 
 	 * @param name
@@ -273,8 +279,23 @@ public class StraightLeg extends CoreLeg
 	 * score(s)
 	 * 
 	 */
-	public void calculateOptimum(final Collection<BaseContribution> contribs)
+	public void calculateRouteScores(final Collection<BaseContribution> contribs)
 	{
+		// ok, we need to be able to sort our routes in descending order
+		Comparator<CoreRoute> comparator = new Comparator<CoreRoute>()
+		{
+			@Override
+			public int compare(CoreRoute arg0, CoreRoute arg1)
+			{
+				Double score1 = arg0.getScore();
+				Double score2 = arg1.getScore();
+				return score1.compareTo(score2);
+			}
+		};
+
+		// we also wish to put them in order, so get ready to remember them
+		topRoutes = new TreeSet<CoreRoute>(comparator);
+
 		RouteOperator calcError = new RouteOperator()
 		{
 			@Override
@@ -282,15 +303,22 @@ public class StraightLeg extends CoreLeg
 			{
 				Double thisScore = 0d;
 
-				// loop through the contribs
-				Iterator<BaseContribution> iter = contribs.iterator();
-				while (iter.hasNext())
+				// is this one achievable?
+				if (theRoute.isPossible())
 				{
-					BaseContribution thisC = (BaseContribution) iter.next();
-					thisScore += thisC.calculateErrorScoreFor(theRoute);
-				}
+					// loop through the contribs
+					Iterator<BaseContribution> iter = contribs.iterator();
+					while (iter.hasNext())
+					{
+						BaseContribution thisC = (BaseContribution) iter.next();
+						thisScore += thisC.calculateErrorScoreFor(theRoute);
+					}
 
-				theRoute.setScore(thisScore);
+					theRoute.setScore(thisScore);
+
+					// ok, add it to the list
+					topRoutes.add(theRoute);
+				}
 			}
 		};
 		applyToRoutes(calcError);
@@ -306,34 +334,6 @@ public class StraightLeg extends CoreLeg
 	@Override
 	public SortedSet<CoreRoute> getTopRoutes()
 	{
-		// ok, we need to sort our routes in descending order
-		Comparator<CoreRoute> comparator = new Comparator<CoreRoute>()
-		{
-
-			@Override
-			public int compare(CoreRoute arg0, CoreRoute arg1)
-			{
-				Double score1 = arg0.getScore();
-				Double score2 = arg1.getScore();
-				return score1.compareTo(score2);
-			}
-		};
-		final SortedSet<CoreRoute> topRoutes = new TreeSet<CoreRoute>(comparator);
-
-		RouteOperator addIt = new RouteOperator()
-		{
-
-			@Override
-			public void process(StraightRoute theRoute)
-			{
-				if (theRoute.isPossible())
-					topRoutes.add(theRoute);
-			}
-		};
-
-		// ok, run the operation across all the routes
-		applyToRoutes(addIt);
-
 		return topRoutes;
 	}
 

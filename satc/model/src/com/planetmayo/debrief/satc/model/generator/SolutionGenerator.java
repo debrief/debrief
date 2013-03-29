@@ -81,30 +81,24 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 	public void statesBounded(final IBoundsManager boundsManager)
 	{
-		
-		// TODO: Akash - I guess this is a good place to wrap the solution generation
-		// in an interruptable thread
-		
 		doGenerateSolutions(boundsManager);
-	}
-	
-	@Override
-	public void interruptGeneration()
-	{
-		// TODO: Akash - a user has asked us to stop generating solutions,
-		
-		// I guess we start off by checking if the thread is running
-		
-		// TODO: Ian, we need to do some cleanup after solution generation has been interrupted
 	}
 
 	private void doGenerateSolutions(final IBoundsManager boundsManager)
 	{
 		System.out.println("running generator at:" + new Date());
-		
+
+		// TODO: Akash - we should put each of these major steps into sequential
+		// Eclipse jobs, then
+		// the users are in the picture for how long things take to process
+		// here's an overview article:
+		// ==> http://www.eclipse.org/articles/Article-Concurrency/jobs-api.html
+		// here's a Stack Overflow on sequencing them:
+		// ==> http://stackoverflow.com/questions/13476908
+
 		// spread the good news
 		fireStartingGeneration();
-		
+
 		_boundsManager = boundsManager;
 
 		// ok - it's complete. now we can process it
@@ -114,22 +108,22 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		if (_theLegs != null)
 			_theLegs.clear();
 
-		// get the legs
+		// get the legs (JOB)
 		_theLegs = getTheLegs(mySpace.states());
 
-		// get the legs to dice themselves up
+		// get the legs to dice themselves up (JOB)
 		generateRoutes(_theLegs);
 
-		// get the legs to sort out what is achievable
+		// get the legs to sort out what is achievable (JOB)
 		decideAchievable(_theLegs);
 
-		// do the fancy multiplication
+		// do the fancy multiplication (JOB)
 		int[][] achievableRes = calculateAchievableRoutesFor(_theLegs);
 
-		// ditch the duff permutations
+		// ditch the duff permutations (JOB)
 		cancelUnachievable(_theLegs, achievableRes);
 
-		// ok, look for the top performer
+		// ok, look for the top performer (JOB)
 		recalculateTopLegs();
 	}
 
@@ -145,7 +139,7 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 			return;
 
 		// score the possible routes
-		calculateOptimalRoutes(_boundsManager.getContributions(), _theLegs);
+		calculateRouteScores(_boundsManager.getContributions(), _theLegs);
 
 		// share the news
 		fireLegsScored(_theLegs);
@@ -164,8 +158,8 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 *          the c
 	 * @param theLegs
 	 */
-	public void calculateOptimalRoutes(
-			final Collection<BaseContribution> contribs, ArrayList<CoreLeg> theLegs)
+	public void calculateRouteScores(final Collection<BaseContribution> contribs,
+			ArrayList<CoreLeg> theLegs)
 	{
 		operateOn(theLegs, new LegOperation()
 		{
@@ -174,7 +168,7 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 				if (thisLeg.getType() == LegType.STRAIGHT)
 				{
 					StraightLeg leg = (StraightLeg) thisLeg;
-					leg.calculateOptimum(contribs);
+					leg.calculateRouteScores(contribs);
 				}
 			}
 		});
@@ -244,33 +238,37 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	void cancelUnachievable(ArrayList<CoreLeg> theLegs, int[][] routes)
 	{
 
-		// get the routes for the first leg
-		CoreLeg firstLeg = theLegs.get(0);
-
-		// get the routes
-		CoreRoute[][] firstRoutes = firstLeg.getRoutes();
-
-		for (int x = 0; x < routes.length; x++)
+		// check we've got some legs
+		if (theLegs.size() > 0)
 		{
-			boolean possible = false;
-			for (int y = 0; y < routes[0].length; y++)
-			{
+			// get the routes for the first leg
+			CoreLeg firstLeg = theLegs.get(0);
 
-				if (routes[x][y] > 0)
-				{
-					// this one is possible, drop out
-					possible = true;
-					break;
-				}
-			}
-			if (!possible)
+			// get the routes
+			CoreRoute[][] firstRoutes = firstLeg.getRoutes();
+
+			for (int x = 0; x < routes.length; x++)
 			{
-				// mark all of that route impossible
-				CoreRoute[] thisSet = firstRoutes[x];
-				for (int i = 0; i < thisSet.length; i++)
+				boolean possible = false;
+				for (int y = 0; y < routes[0].length; y++)
 				{
-					CoreRoute thisRoute = thisSet[i];
-					thisRoute.setImpossible();
+
+					if (routes[x][y] > 0)
+					{
+						// this one is possible, drop out
+						possible = true;
+						break;
+					}
+				}
+				if (!possible)
+				{
+					// mark all of that route impossible
+					CoreRoute[] thisSet = firstRoutes[x];
+					for (int i = 0; i < thisSet.length; i++)
+					{
+						CoreRoute thisRoute = thisSet[i];
+						thisRoute.setImpossible();
+					}
 				}
 			}
 		}
@@ -488,7 +486,6 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		}
 
 	}
-
 
 	/**
 	 * we've sorted out the leg scores
