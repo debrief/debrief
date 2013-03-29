@@ -34,25 +34,25 @@ public class BearingMeasurementContribution extends BaseContribution
 	 * the allowable bearing error (in radians)
 	 * 
 	 */
-	private Double _bearingError = 0d;
+	private Double bearingError = 0d;
 
 	/**
 	 * flag for whether this contribution should run an MDA on the data
 	 * 
 	 */
-	private boolean _runMDA = true;
+	private boolean runMDA = true;
 
 	/**
 	 * the set of measurements we store
 	 * 
 	 */
-	private ArrayList<BMeasurement> _measurements = new ArrayList<BMeasurement>();
+	private ArrayList<BMeasurement> measurements = new ArrayList<BMeasurement>();
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// ok, here we really go for it!
-		Iterator<BMeasurement> iter = _measurements.iterator();
+		Iterator<BMeasurement> iter = measurements.iterator();
 
 		// sort out a geometry factory
 		GeometryFactory factory = GeoSupport.getFactory();
@@ -75,16 +75,18 @@ public class BearingMeasurementContribution extends BaseContribution
 			coords[0] = new Coordinate(lon, lat);
 
 			// now the top-left
-			coords[1] = new Coordinate(lon + Math.sin(bearing - _bearingError)
-					* range, lat + Math.cos(bearing - _bearingError) * range);
+			coords[1] = new Coordinate(
+					lon + Math.sin(bearing - bearingError) * range, lat
+							+ Math.cos(bearing - bearingError) * range);
 
 			// now the centre bearing
 			coords[2] = new Coordinate(lon + Math.sin(bearing) * range, lat
 					+ Math.cos(bearing) * range);
 
 			// now the top-right
-			coords[3] = new Coordinate(lon + Math.sin(bearing + _bearingError)
-					* range, lat + Math.cos(bearing + _bearingError) * range);
+			coords[3] = new Coordinate(
+					lon + Math.sin(bearing + bearingError) * range, lat
+							+ Math.cos(bearing + bearingError) * range);
 
 			// and back to the start
 			coords[4] = new Coordinate(coords[0]);
@@ -149,12 +151,12 @@ public class BearingMeasurementContribution extends BaseContribution
 			return res;
 
 		// ok. work through the bearings
-		Iterator<BMeasurement> iter = _measurements.iterator();
+		Iterator<BMeasurement> iter = measurements.iterator();
 		while (iter.hasNext())
 		{
 			BearingMeasurementContribution.BMeasurement m = (BearingMeasurementContribution.BMeasurement) iter
 					.next();
-			Date time = m._time;		
+			Date time = m._time;
 
 			// ok, find the state that matches this bearing measurement
 			while (thisS.getTime().before(time) && sIter.hasNext())
@@ -170,20 +172,21 @@ public class BearingMeasurementContribution extends BaseContribution
 			// but is it on?
 			if (thisS.getTime().equals(time))
 			{
-				
+
 				// now find the error from this location
 				Point loc = thisS.getLocation();
 
 				// what's the bearing from this origin?
 				double bearing = m._origin.bearingTo(loc);
 
-//				System.out.println("testing brg:" + time + 
-//						" against state:" + thisS.getTime()
-//					 + " brg:" + Math.toDegrees(bearing) + " should be:" + Math.toDegrees(m._bearingAngle));
-				
+				// System.out.println("testing brg:" + time +
+				// " against state:" + thisS.getTime()
+				// + " brg:" + Math.toDegrees(bearing) + " should be:" +
+				// Math.toDegrees(m._bearingAngle));
+
 				// what's the difference between that and my measurement
-				double thisError = Math.abs(bearing - m._bearingAngle);			
-				
+				double thisError = Math.abs(bearing - m._bearingAngle);
+
 				// and accumulate it
 				res += thisError;
 			}
@@ -198,8 +201,8 @@ public class BearingMeasurementContribution extends BaseContribution
 		GeoPoint loc = new GeoPoint(lat, lon);
 		BMeasurement measure = new BMeasurement(loc, brg, date, range);
 		addThis(measure);
-		firePropertyChange(OBSERVATIONS_NUMBER, _measurements.size(),
-				_measurements.size());
+		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
+				measurements.size());
 	}
 
 	/**
@@ -224,7 +227,7 @@ public class BearingMeasurementContribution extends BaseContribution
 				this.setFinishDate(measure._time);
 		}
 
-		_measurements.add(measure);
+		measurements.add(measure);
 	}
 
 	@Override
@@ -235,7 +238,7 @@ public class BearingMeasurementContribution extends BaseContribution
 
 	public int getNumObservations()
 	{
-		return _measurements.size();
+		return measurements.size();
 	}
 
 	/**
@@ -245,7 +248,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	public boolean hasData()
 	{
-		return _measurements.size() > 0;
+		return measurements.size() > 0;
 	}
 
 	public void loadFrom(List<String> lines)
@@ -314,21 +317,21 @@ public class BearingMeasurementContribution extends BaseContribution
 
 	public Double getBearingError()
 	{
-		return _bearingError;
+		return bearingError;
 	}
 
 	public void setBearingError(Double errorDegs)
 	{
-		Double old = _bearingError;
-		this._bearingError = errorDegs;
+		Double old = bearingError;
+		this.bearingError = errorDegs;
 		firePropertyChange(BEARING_ERROR, old, errorDegs);
 		firePropertyChange(HARD_CONSTRAINTS, old, errorDegs);
 	}
 
 	public void setAutoDetect(boolean onAuto)
 	{
-		boolean previous = _runMDA;
-		_runMDA = onAuto;
+		boolean previous = runMDA;
+		runMDA = onAuto;
 		firePropertyChange(RUN_MDA, previous, onAuto);
 		firePropertyChange(HARD_CONSTRAINTS, previous, onAuto);
 
@@ -336,7 +339,7 @@ public class BearingMeasurementContribution extends BaseContribution
 
 	public boolean getAutoDetect()
 	{
-		return _runMDA;
+		return runMDA;
 	}
 
 	/**

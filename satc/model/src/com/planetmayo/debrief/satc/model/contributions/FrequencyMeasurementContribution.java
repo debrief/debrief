@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
@@ -20,13 +20,13 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	 * the allowable frequency error (in hertz)
 	 * 
 	 */
-	private Double _frequencyError = 0d;
+	private Double frequencyError = 0d;
 
 	/**
 	 * the set of measurements we store
 	 * 
 	 */
-	private ArrayList<FMeasurement> _measurements = new ArrayList<FMeasurement>();
+	private ArrayList<FMeasurement> measurements = new ArrayList<FMeasurement>();
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -40,7 +40,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		GeoPoint loc = new GeoPoint(lat, lon);
 		FMeasurement measure = new FMeasurement(loc, brg, date, range);
 		addThis(measure);
-		firePropertyChange(ESTIMATE, _measurements.size(), _measurements.size());
+		firePropertyChange(ESTIMATE, measurements.size(), measurements.size());
 	}
 
 	/**
@@ -53,24 +53,24 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		// extend the time period accordingly
 		if (this.getStartDate() == null)
 		{
-			this.setStartDate(measure._time);
-			this.setFinishDate(measure._time);
+			this.setStartDate(measure.time);
+			this.setFinishDate(measure.time);
 		}
 		else
 		{
-			long newTime = measure._time.getTime();
+			long newTime = measure.time.getTime();
 			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(measure._time);
+				this.setStartDate(measure.time);
 			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(measure._time);
+				this.setFinishDate(measure.time);
 		}
 
-		_measurements.add(measure);
+		measurements.add(measure);
 	}
 
 	public double getFrequencyError()
 	{
-		return _frequencyError;
+		return frequencyError;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 
 	public int getEstimate()
 	{
-		return _measurements.size();
+		return measurements.size();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	 */
 	public boolean hasData()
 	{
-		return _measurements.size() > 0;
+		return measurements.size() > 0;
 	}
 
 	public void loadFrom(List<String> lines)
@@ -158,12 +158,12 @@ public class FrequencyMeasurementContribution extends BaseContribution
 		this.setFrequencyError(2d);
 	}
 
-	public void setFrequencyError(double frequencyError)
+	public void setFrequencyError(double newFrequencyError)
 	{
-		double old = _frequencyError;
-		this._frequencyError = frequencyError;
-		firePropertyChange(FREQUENCY_ERROR, old, frequencyError);
-		firePropertyChange(HARD_CONSTRAINTS, old, frequencyError);
+		double old = frequencyError;
+		this.frequencyError = newFrequencyError;
+		firePropertyChange(FREQUENCY_ERROR, old, newFrequencyError);
+		firePropertyChange(HARD_CONSTRAINTS, old, newFrequencyError);
 	}
 	
 	/**
@@ -175,23 +175,23 @@ public class FrequencyMeasurementContribution extends BaseContribution
 	public static class FMeasurement
 	{
 		@SuppressWarnings("unused")
-		private final GeoPoint _origin;
+		private final GeoPoint origin;
 		@SuppressWarnings("unused")
-		private final double _bearingAngle;
-		private final Date _time;
+		private final double bearingAngle;
+		private final Date time;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
 		 */
 		@SuppressWarnings("unused")
-		private final Double _theRange;
+		private final Double theRange;
 
 		public FMeasurement(GeoPoint loc, double bearing, Date time, Double theRange)
 		{
-			_origin = loc;
-			_bearingAngle = bearing;
-			_time = time;
-			_theRange = theRange;
+			this.origin = loc;
+			this.bearingAngle = bearing;
+			this.time = time;
+			this.theRange = theRange;
 		}
 	}	
 }

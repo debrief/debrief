@@ -10,9 +10,9 @@ public class ATBForecastContribution extends BaseContribution
 	public static final String MIN_ANGLE = "minAngle";	
 	public static final String MAX_ANGLE = "maxAngle";
 	
-	private Double _minAngle = 0d;
-	private Double _maxAngle = 2 * Math.PI;
-	private Double _estimate;
+	private Double minAngle = 0d;
+	private Double maxAngle = 2 * Math.PI;
+	private Double estimate;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
@@ -28,39 +28,39 @@ public class ATBForecastContribution extends BaseContribution
 
 	public Double getMinAngle()
 	{
-		return _minAngle;
+		return minAngle;
 	}
 
-	public void setMinAngle(Double minAngle)
+	public void setMinAngle(Double newMinAngle)
 	{
-		Double old = _minAngle;
-		_minAngle = minAngle;
-		firePropertyChange(MIN_ANGLE, old, minAngle);
-		firePropertyChange(HARD_CONSTRAINTS, old, minAngle);		
+		Double old = minAngle;
+		minAngle = newMinAngle;
+		firePropertyChange(MIN_ANGLE, old, newMinAngle);
+		firePropertyChange(HARD_CONSTRAINTS, old, newMinAngle);		
 	}
 
 	public Double getMaxAngle()
 	{
-		return _maxAngle;
+		return maxAngle;
 	}
 
-	public void setMaxAngle(Double maxAngle)
+	public void setMaxAngle(Double newMaxAngle)
 	{
-		Double old = _maxAngle;		
-		_maxAngle = maxAngle;
-		firePropertyChange(MAX_ANGLE, old, maxAngle);
-		firePropertyChange(HARD_CONSTRAINTS, old, maxAngle);
+		Double old = maxAngle;		
+		maxAngle = newMaxAngle;
+		firePropertyChange(MAX_ANGLE, old, newMaxAngle);
+		firePropertyChange(HARD_CONSTRAINTS, old, newMaxAngle);
 	}
 
 	public Double getEstimate()
 	{
-		return _estimate;
+		return estimate;
 	}
 
-	public void setEstimate(Double estimate)
+	public void setEstimate(Double newEstimate)
 	{
-		Double old = _estimate;
-		_estimate = estimate;
-		firePropertyChange(ESTIMATE, old, estimate);
+		Double old = estimate;
+		estimate = newEstimate;
+		firePropertyChange(ESTIMATE, old, newEstimate);
 	}
 }

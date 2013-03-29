@@ -34,17 +34,17 @@ public class RangeForecastContribution extends BaseContribution
 
 	private static final double ABSOLUTELY_HUGE_RANGE_DEGS = 2;
 
-	protected Double _minRangeM = 0d;
+	protected Double minRangeM = 0d;
 
-	protected Double _maxRangeM = 0d;
+	protected Double maxRangeM = 0d;
 
-	protected Double _estimate = 0d;
+	protected Double estimate = 0d;
 
 	/**
 	 * the set of measurements we store
 	 * 
 	 */
-	private ArrayList<ROrigin> _measurements = new ArrayList<ROrigin>();
+	private ArrayList<ROrigin> measurements = new ArrayList<ROrigin>();
 
 	@Override
 	public void actUpon(final ProblemSpace space)
@@ -52,7 +52,7 @@ public class RangeForecastContribution extends BaseContribution
 	{
 
 		// loop through our measurements
-		Iterator<ROrigin> iter = _measurements.iterator();
+		Iterator<ROrigin> iter = measurements.iterator();
 		while (iter.hasNext())
 		{
 			RangeForecastContribution.ROrigin origin = iter.next();
@@ -144,7 +144,7 @@ public class RangeForecastContribution extends BaseContribution
 				this.setFinishDate(measure._time);
 		}
 
-		_measurements.add(measure);
+		measurements.add(measure);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class RangeForecastContribution extends BaseContribution
 
 	public Double getEstimate()
 	{
-		return _estimate;
+		return estimate;
 	}
 
 	private LinearRing getInnerRing(Point pt)
@@ -184,12 +184,12 @@ public class RangeForecastContribution extends BaseContribution
 
 	public Double getMaxRange()
 	{
-		return _maxRangeM;
+		return maxRangeM;
 	}
 
 	public Double getMinRange()
 	{
-		return _minRangeM;
+		return minRangeM;
 	}
 
 	private LinearRing getOuterRing(Point pt)
@@ -282,25 +282,25 @@ public class RangeForecastContribution extends BaseContribution
 		// TODO: set the start/end times = just for tidiness
 	}
 
-	public void setEstimate(Double estimate)
+	public void setEstimate(Double newEstimate)
 	{
-		Double oldEstimate = _estimate;
-		this._estimate = estimate;
-		firePropertyChange(ESTIMATE, oldEstimate, estimate);
+		Double oldEstimate = estimate;
+		this.estimate = newEstimate;
+		firePropertyChange(ESTIMATE, oldEstimate, newEstimate);
 	}
 
 	public void setMaxRange(Double maxRngM)
 	{
-		Double oldMaxRange = _maxRangeM;
-		this._maxRangeM = maxRngM;
+		Double oldMaxRange = maxRangeM;
+		this.maxRangeM = maxRngM;
 		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldMaxRange, maxRngM);
 	}
 
 	public void setMinRange(Double minRngM)
 	{
-		Double oldMinRange = _minRangeM;
-		this._minRangeM = minRngM;
+		Double oldMinRange = minRangeM;
+		this.minRangeM = minRngM;
 		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
 		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
 	}

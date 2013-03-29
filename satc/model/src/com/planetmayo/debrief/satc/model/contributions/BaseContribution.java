@@ -24,11 +24,11 @@ public abstract class BaseContribution extends ModelObject implements
 
 	public static final String HARD_CONSTRAINTS = "hardConstraint";
 
-	protected String _name;
-	protected boolean _active = true;
-	private int _weight = 1;
-	protected Date _startDate;
-	protected Date _finishDate;
+	protected String name;
+	protected boolean active = true;
+	private int weight = 1;
+	protected Date startDate;
+	protected Date finishDate;
 
 	protected BaseContribution()
 	{
@@ -54,15 +54,15 @@ public abstract class BaseContribution extends ModelObject implements
 		double res = 0;
 
 		// make sure we're allowed to calc an error score
-		if (_active)
-			if (_weight > 0)
+		if (active)
+			if (weight > 0)
 			{
 				// make sure there's something to decide the score on
 				if (route != null)
 					if (route.getStates() != null)
 						if (route.getStates().size() > 0)
 						{
-							res = cumulativeScoreFor(route) / _weight;
+							res = cumulativeScoreFor(route) / weight;
 						}
 			}
 		// ok, done.
@@ -187,12 +187,12 @@ public abstract class BaseContribution extends ModelObject implements
 
 	public Date getFinishDate()
 	{
-		return _finishDate;
+		return finishDate;
 	}
 
 	public String getName()
 	{
-		return _name;
+		return name;
 	}
 
 	private int getScore()
@@ -210,51 +210,51 @@ public abstract class BaseContribution extends ModelObject implements
 
 	public Date getStartDate()
 	{
-		return _startDate;
+		return startDate;
 	}
 
 	public int getWeight()
 	{
-		return _weight;
+		return weight;
 	}
 
 	public boolean isActive()
 	{
-		return _active;
+		return active;
 	}
 
-	public void setActive(boolean active)
+	public void setActive(boolean isActive)
 	{
-		boolean oldActive = _active;
-		this._active = active;
-		firePropertyChange(ACTIVE, oldActive, active);
+		boolean oldActive = active;
+		this.active = isActive;
+		firePropertyChange(ACTIVE, oldActive, isActive);
 	}
 
-	public void setFinishDate(Date finishDate)
+	public void setFinishDate(Date newFinishDate)
 	{
-		Date oldFinishDate = _finishDate;
-		this._finishDate = finishDate;
-		firePropertyChange(FINISH_DATE, oldFinishDate, finishDate);
+		Date oldFinishDate = finishDate;
+		this.finishDate = newFinishDate;
+		firePropertyChange(FINISH_DATE, oldFinishDate, newFinishDate);
 	}
 
-	public void setName(String name)
+	public void setName(String newName)
 	{
-		String oldName = _name;
-		_name = name;
-		firePropertyChange(NAME, oldName, name);
+		String oldName = this.name;
+		this.name = newName;
+		firePropertyChange(NAME, oldName, newName);
 	}
 
-	public void setStartDate(Date startDate)
+	public void setStartDate(Date newStartDate)
 	{
-		Date oldStartDate = _startDate;
-		this._startDate = startDate;
-		firePropertyChange(START_DATE, oldStartDate, startDate);
+		Date oldStartDate = startDate;
+		this.startDate = newStartDate;
+		firePropertyChange(START_DATE, oldStartDate, newStartDate);
 	}
 
-	public void setWeight(int weight)
+	public void setWeight(int newWeight)
 	{
-		int oldWeight = _weight;
-		this._weight = weight;
-		firePropertyChange(WEIGHT, oldWeight, weight);
+		int oldWeight = weight;
+		this.weight = newWeight;
+		firePropertyChange(WEIGHT, oldWeight, newWeight);
 	}
 }

@@ -2,17 +2,17 @@ package com.planetmayo.debrief.satc.model.contributions;
 
 public abstract class ContributionBuilder
 {
-	private String _description;
-	
-	public ContributionBuilder(String description) 
+	private String description;
+
+	public ContributionBuilder(String description)
 	{
-		_description = description;
+		this.description = description;
 	}
-	
-	public String getDescription() 
+
+	public String getDescription()
 	{
-		return _description;
+		return this.description;
 	}
-	
+
 	public abstract BaseContribution create();
 }

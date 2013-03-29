@@ -20,9 +20,9 @@ public class LocationForecastContribution extends BaseContribution
 	public static final String LOCATION = "location";
 	public static final String LIMIT = "limit";
 
-	private Double _limit;
+	private Double limit;
 
-	private GeoPoint _location = new GeoPoint(0, 0);
+	private GeoPoint location = new GeoPoint(0, 0);
 
 	private transient PropertyChangeListener locationDetailsListener;
 
@@ -35,7 +35,7 @@ public class LocationForecastContribution extends BaseContribution
 				@Override
 				public void propertyChange(PropertyChangeEvent evt)
 				{
-					firePropertyChange(ESTIMATE, new GeoPoint(0, 9), _location);
+					firePropertyChange(ESTIMATE, new GeoPoint(0, 9), location);
 				}
 			};
 
@@ -56,17 +56,16 @@ public class LocationForecastContribution extends BaseContribution
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
-		if (_limit == null)
+		if (limit == null)
 		{
 			return;
 		}
-		Coordinate coordinate = new Coordinate(_location.getLon(),
-				_location.getLat());
+		Coordinate coordinate = new Coordinate(location.getLon(), location.getLat());
 		Geometry geometry = GeoSupport.doBuffer(GeoSupport.getFactory()
-				.createPoint(coordinate), GeoSupport.m2deg(_limit));
+				.createPoint(coordinate), GeoSupport.m2deg(limit));
 		LocationRange range = new LocationRange((Polygon) geometry);
-		for (BoundedState state : space.getBoundedStatesBetween(_startDate,
-				_finishDate))
+		for (BoundedState state : space.getBoundedStatesBetween(startDate,
+				finishDate))
 		{
 			state.constrainTo(range);
 		}
@@ -80,39 +79,39 @@ public class LocationForecastContribution extends BaseContribution
 
 	public GeoPoint getLocation()
 	{
-		return _location;
+		return location;
 	}
 
 	public Double getLimit()
 	{
-		return _limit;
+		return limit;
 	}
 
-	public void setLocation(GeoPoint location)
+	public void setLocation(GeoPoint newLocation)
 	{
-		GeoPoint oldEstimate = _location;
-		_location = location;
+		GeoPoint oldEstimate = location;
+		location = newLocation;
 		if (oldEstimate != null)
 		{
 			initForecastListeners();
 
 			oldEstimate.removePropertyChangeListener(locationDetailsListener);
 		}
-		if (location != null)
+		if (newLocation != null)
 		{
 			initForecastListeners();
 
-			location.addPropertyChangeListener(locationDetailsListener);
+			newLocation.addPropertyChangeListener(locationDetailsListener);
 		}
-		firePropertyChange(LOCATION, oldEstimate, location);
-		firePropertyChange(HARD_CONSTRAINTS, oldEstimate, location);
+		firePropertyChange(LOCATION, oldEstimate, newLocation);
+		firePropertyChange(HARD_CONSTRAINTS, oldEstimate, newLocation);
 	}
 
-	public void setLimit(Double limit)
+	public void setLimit(Double newLimit)
 	{
-		Double oldLimit = _limit;
-		_limit = limit;
-		firePropertyChange(LIMIT, oldLimit, limit);
-		firePropertyChange(HARD_CONSTRAINTS, oldLimit, limit);
+		Double oldLimit = limit;
+		limit = newLimit;
+		firePropertyChange(LIMIT, oldLimit, newLimit);
+		firePropertyChange(HARD_CONSTRAINTS, oldLimit, newLimit);
 	}
 }

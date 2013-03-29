@@ -14,18 +14,18 @@ public class CourseForecastContribution extends BaseContribution
 
 	public static final String MAX_COURSE = "maxCourse";
 
-	protected Double _minCourse = 0d;
+	protected Double minCourse = 0d;
 
-	protected Double _maxCourse = 2 * Math.PI;
+	protected Double maxCourse = 2 * Math.PI;
 
-	protected Double _estimate = 0d;
+	protected Double estimate = 0d;
 
 	@Override
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 		// create a bounded state representing our values
-		final CourseRange courseRange = new CourseRange(_minCourse, _maxCourse);
-		for (BoundedState state : space.getBoundedStatesBetween(_startDate, _finishDate))
+		final CourseRange courseRange = new CourseRange(minCourse, maxCourse);
+		for (BoundedState state : space.getBoundedStatesBetween(startDate, finishDate))
 		{
 			state.constrainTo(courseRange);
 		}
@@ -46,40 +46,40 @@ public class CourseForecastContribution extends BaseContribution
 
 	public Double getEstimate()
 	{
-		return _estimate;
+		return estimate;
 	}
 
 	public Double getMaxCourse()
 	{
-		return _maxCourse;
+		return maxCourse;
 	}
 
 	public Double getMinCourse()
 	{
-		return _minCourse;
+		return minCourse;
 	}
 
-	public void setEstimate(Double estimate)
+	public void setEstimate(Double newEstimate)
 	{
-		Double oldEstimate = _estimate;
-		this._estimate = estimate;
-		firePropertyChange(ESTIMATE, oldEstimate, estimate);
+		Double oldEstimate = estimate;
+		this.estimate = newEstimate;
+		firePropertyChange(ESTIMATE, oldEstimate, newEstimate);
 	}
 
-	public void setMaxCourse(Double maxCourse)
+	public void setMaxCourse(Double newMaxCourse)
 	{
-		Double oldMaxCourse = _maxCourse;
-		this._maxCourse = maxCourse;
-		firePropertyChange(MAX_COURSE, oldMaxCourse, maxCourse);
-		firePropertyChange(HARD_CONSTRAINTS,  oldMaxCourse, maxCourse);
+		Double oldMaxCourse = maxCourse;
+		this.maxCourse = newMaxCourse;
+		firePropertyChange(MAX_COURSE, oldMaxCourse, newMaxCourse);
+		firePropertyChange(HARD_CONSTRAINTS,  oldMaxCourse, newMaxCourse);
 	}
 
-	public void setMinCourse(Double minCourse)
+	public void setMinCourse(Double newMinCourse)
 	{
-		Double oldMinCourse = _minCourse;
-		this._minCourse = minCourse;
-		firePropertyChange(MIN_COURSE, oldMinCourse, minCourse);
-		firePropertyChange(HARD_CONSTRAINTS,  oldMinCourse, minCourse);
+		Double oldMinCourse = minCourse;
+		this.minCourse = newMinCourse;
+		firePropertyChange(MIN_COURSE, oldMinCourse, newMinCourse);
+		firePropertyChange(HARD_CONSTRAINTS,  oldMinCourse, newMinCourse);
 	}
 
 }

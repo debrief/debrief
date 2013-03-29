@@ -12,8 +12,8 @@ public class StraightLegForecastContribution extends BaseContribution
 	public void actUpon(ProblemSpace space) throws IncompatibleStateException
 	{
 
-		for (BoundedState state : space.getBoundedStatesBetween(_startDate,
-				_finishDate))
+		for (BoundedState state : space.getBoundedStatesBetween(startDate,
+				finishDate))
 		{
 			// just double-check that this doesn't already have a leg - we can't
 			// let them overlap

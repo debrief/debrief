@@ -19,9 +19,9 @@ public class SpeedForecastContribution extends BaseContribution
 
 	public static final String MAX_SPEED = "maxSpeed";
 
-	protected Double _minSpeed = 0d;
-	protected Double _maxSpeed = MAX_SPEED_VALUE_MS;
-	protected Double _estimate;
+	protected Double minSpeed = 0d;
+	protected Double maxSpeed = MAX_SPEED_VALUE_MS;
+	protected Double estimate;
 
 	@Override
 	public void actUpon(final ProblemSpace space)
@@ -29,8 +29,8 @@ public class SpeedForecastContribution extends BaseContribution
 	{
 		// create a bounded state representing our values
 		final SpeedRange speedRange = new SpeedRange(getMinSpeed(), getMaxSpeed());
-		for (BoundedState state : space.getBoundedStatesBetween(_startDate,
-				_finishDate))
+		for (BoundedState state : space.getBoundedStatesBetween(startDate,
+				finishDate))
 		{
 			state.constrainTo(speedRange);
 		}
@@ -55,40 +55,40 @@ public class SpeedForecastContribution extends BaseContribution
 
 	public Double getEstimate()
 	{
-		return _estimate;
+		return estimate;
 	}
 
 	public Double getMaxSpeed()
 	{
-		return _maxSpeed;
+		return maxSpeed;
 	}
 
 	public Double getMinSpeed()
 	{
-		return _minSpeed;
+		return minSpeed;
 	}
 
-	public void setEstimate(Double estimate)
+	public void setEstimate(Double newEstimate)
 	{
-		Double oldEstimate = _estimate;
-		this._estimate = estimate;
-		firePropertyChange(ESTIMATE, oldEstimate, estimate);
+		Double oldEstimate = estimate;
+		this.estimate = newEstimate;
+		firePropertyChange(ESTIMATE, oldEstimate, newEstimate);
 	}
 
-	public void setMaxSpeed(Double maxSpeed)
+	public void setMaxSpeed(Double newMaxSpeed)
 	{
-		Double oldMaxSpeed = _maxSpeed;
-		this._maxSpeed = maxSpeed;
-		firePropertyChange(MAX_SPEED, oldMaxSpeed, maxSpeed);
-		firePropertyChange(HARD_CONSTRAINTS, oldMaxSpeed, maxSpeed);
+		Double oldMaxSpeed = maxSpeed;
+		this.maxSpeed = newMaxSpeed;
+		firePropertyChange(MAX_SPEED, oldMaxSpeed, newMaxSpeed);
+		firePropertyChange(HARD_CONSTRAINTS, oldMaxSpeed, newMaxSpeed);
 	}
 
-	public void setMinSpeed(Double minSpeed)
+	public void setMinSpeed(Double newMinSpeed)
 	{
-		Double oldMinSpeed = _minSpeed;
-		this._minSpeed = minSpeed;
-		firePropertyChange(MIN_SPEED, oldMinSpeed, minSpeed);
-		firePropertyChange(HARD_CONSTRAINTS, oldMinSpeed, minSpeed);
+		Double oldMinSpeed = minSpeed;
+		this.minSpeed = newMinSpeed;
+		firePropertyChange(MIN_SPEED, oldMinSpeed, newMinSpeed);
+		firePropertyChange(HARD_CONSTRAINTS, oldMinSpeed, newMinSpeed);
 	}
 
 }
