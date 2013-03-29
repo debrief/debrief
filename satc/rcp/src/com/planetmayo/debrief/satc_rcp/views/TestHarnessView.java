@@ -50,7 +50,6 @@ import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -225,9 +224,14 @@ public class TestHarnessView extends ViewPart
 
 		Button save = new Button(saveLoadGroup, SWT.BUTTON1);
 		save.setText("Save");
+
+		// TODO: Akash - could these use selectionListener events? It's tidier than
+		// mouseDown
 		save.addMouseListener(new MouseListener()
 		{
 
+			// TODO: Akash - this can be a variable in the method, it doesn't need to
+			// be class level
 			private List<BaseContribution> contributions;
 
 			@Override
@@ -295,6 +299,7 @@ public class TestHarnessView extends ViewPart
 
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void mouseDown(MouseEvent e)
 			{
@@ -314,12 +319,18 @@ public class TestHarnessView extends ViewPart
 						{
 							contributionList = (Collection<BaseContribution>) stream;
 						}
+						
+						// TODO: Akash - I guess this is where we'd need some kind of version test
+						// https://bitbucket.org/ianmayo/deb_satc/issue/84
 
-						boundsManager.clear();
-						for (BaseContribution contribution : contributionList)
+						if (contributionList != null)
 						{
-							boundsManager.addContribution(contribution);
+							boundsManager.clear();
+							for (BaseContribution contribution : contributionList)
+							{
+								boundsManager.addContribution(contribution);
 
+							}
 						}
 					}
 					catch (Exception ex)
@@ -340,6 +351,11 @@ public class TestHarnessView extends ViewPart
 		form.pack();
 
 	}
+
+	// TODO: Akash - it's unfortunate that we hard-code all of these classes.
+	// could you investigate if its possible to configure xstream to do this
+	// whatever the class name? This looks close:
+	// http://stackoverflow.com/questions/15542989/how-can-i-make-block-of-code-generic
 
 	private void initializeXstream()
 	{
@@ -379,6 +395,13 @@ public class TestHarnessView extends ViewPart
 		_xStream.alias(BMeasurement.class.getSimpleName(), BMeasurement.class);
 		_xStream.alias(ROrigin.class.getSimpleName(), ROrigin.class);
 		_xStream.alias(FMeasurement.class.getSimpleName(), FMeasurement.class);
+
+		// TODO: Akash - could you do some xstream fiddling so that BMeasurement,
+		// ROrigin, and FMeasurement
+		// all store their children as attributes. It will make it easier to view
+		// the measurements all at once
+		// since they will appear as columns. This appears to be the method:
+		// http://xstream.codehaus.org/alias-tutorial.html#attributes
 	}
 
 	private void enableControls(boolean enabled)
