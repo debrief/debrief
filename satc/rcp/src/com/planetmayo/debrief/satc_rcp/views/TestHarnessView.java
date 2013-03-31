@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
@@ -26,6 +25,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseAnalysisContribution;
@@ -73,6 +73,8 @@ public class TestHarnessView extends ViewPart
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.SampleView";
+
+	public static int version = 2;
 
 	/*
 	 * The content provider class is responsible for providing objects to the
@@ -250,7 +252,7 @@ public class TestHarnessView extends ViewPart
 					contributions.add(baseContribution);
 				}
 
-				String xml = _xStream.toXML(contributions);
+				String xml = _xStream.toXML(new XstreamVersionHandler(contributions));
 				String filename = "";
 				try
 				{
@@ -314,10 +316,17 @@ public class TestHarnessView extends ViewPart
 					{
 						FileInputStream fstream = new FileInputStream(fileSelected);
 						Object stream = _xStream.fromXML(fstream);
-						Collection<BaseContribution> contributionList = null;
-						if (stream instanceof Collection)
+						List<BaseContribution> contributionList = null;
+						if (stream instanceof XstreamVersionHandler)
 						{
-							contributionList = (Collection<BaseContribution>) stream;
+							XstreamVersionHandler handler = (XstreamVersionHandler) stream;
+							if (TestHarnessView.version != handler.getVersion())
+							{
+								System.out.println("Version mismatch, current version is "
+										+ version + ", while the xml version is "
+										+ handler.getVersion());
+							}
+							contributionList = handler.getCollection();
 						}
 
 						// TODO: Akash - I guess this is where we'd need some kind of
@@ -399,6 +408,26 @@ public class TestHarnessView extends ViewPart
 		_xStream.alias(BMeasurement.class.getSimpleName(), BMeasurement.class);
 		_xStream.alias(ROrigin.class.getSimpleName(), ROrigin.class);
 		_xStream.alias(FMeasurement.class.getSimpleName(), FMeasurement.class);
+
+		_xStream.useAttributeFor(BMeasurement.class, "origin");
+		_xStream.useAttributeFor(BMeasurement.class, "bearingAngle");
+		_xStream.useAttributeFor(BMeasurement.class, "time");
+		_xStream.useAttributeFor(BMeasurement.class, "theRange");
+
+		_xStream.useAttributeFor(ROrigin.class, "origin");
+		_xStream.useAttributeFor(ROrigin.class, "time");
+
+		_xStream.useAttributeFor(FMeasurement.class, "origin");
+		_xStream.useAttributeFor(FMeasurement.class, "bearingAngle");
+		_xStream.useAttributeFor(FMeasurement.class, "origin");
+		_xStream.useAttributeFor(FMeasurement.class, "theRange");
+
+		_xStream.useAttributeFor(GeoPoint.class, "lat");
+		_xStream.useAttributeFor(GeoPoint.class, "lon");
+
+		_xStream.alias(XstreamVersionHandler.class.getSimpleName(),
+				XstreamVersionHandler.class);
+		_xStream.useAttributeFor(XstreamVersionHandler.class, "version");
 
 		// TODO: Akash - could you do some xstream fiddling so that BMeasurement,
 		// ROrigin, and FMeasurement
@@ -570,6 +599,38 @@ public class TestHarnessView extends ViewPart
 	{
 		// ok, we can disable our buttons
 		enableControls(false);
+	}
+
+	static class XstreamVersionHandler
+	{
+		private int version;
+		private List<BaseContribution> collection;
+
+		public void setVersion(int version)
+		{
+			this.version = version;
+		}
+
+		public XstreamVersionHandler(List<BaseContribution> collection)
+		{
+			this.collection = collection;
+			this.version = TestHarnessView.version;
+		}
+
+		public List<BaseContribution> getCollection()
+		{
+			return collection;
+		}
+
+		public void setCollection(List<BaseContribution> collection)
+		{
+			this.collection = collection;
+		}
+
+		public int getVersion()
+		{
+			return version;
+		}
 	}
 
 }
