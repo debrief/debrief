@@ -10,16 +10,16 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
@@ -74,7 +74,7 @@ public class TestHarnessView extends ViewPart
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.SampleView";
 
-	public static int version = 2;
+	public static int version = 1;
 
 	/*
 	 * The content provider class is responsible for providing objects to the
@@ -227,23 +227,14 @@ public class TestHarnessView extends ViewPart
 		Button save = new Button(saveLoadGroup, SWT.BUTTON1);
 		save.setText("Save");
 
-		// TODO: Akash - could these use selectionListener events? It's tidier than
+		// DONE: Akash - could these use selectionListener events? It's tidier than
 		// mouseDown
-		save.addMouseListener(new MouseListener()
+
+		save.addListener(SWT.MouseDown, new Listener()
 		{
+			List<BaseContribution> contributions;
 
-			// TODO: Akash - this can be a variable in the method, it doesn't need to
-			// be class level
-			private List<BaseContribution> contributions;
-
-			@Override
-			public void mouseUp(MouseEvent e)
-			{
-
-			}
-
-			@Override
-			public void mouseDown(MouseEvent e)
+			public void handleEvent(Event e)
 			{
 				contributions = new ArrayList<BaseContribution>();
 				for (BaseContribution baseContribution : boundsManager
@@ -252,7 +243,7 @@ public class TestHarnessView extends ViewPart
 					contributions.add(baseContribution);
 				}
 
-				String xml = _xStream.toXML(new XstreamVersionHandler(contributions));
+				String xml = "";
 				String filename = "";
 				try
 				{
@@ -273,6 +264,7 @@ public class TestHarnessView extends ViewPart
 
 				try
 				{
+					xml = _xStream.toXML(new XstreamVersionHandler(contributions));
 					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 					out.write(xml);
 					out.close();
@@ -281,30 +273,20 @@ public class TestHarnessView extends ViewPart
 				{
 					ex.printStackTrace();
 				}
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e)
-			{
 
 			}
 		});
 
 		Button load = new Button(saveLoadGroup, SWT.BUTTON1);
 		load.setText("Load");
-		load.addMouseListener(new MouseListener()
+
+		load.addListener(SWT.MouseDown, new Listener()
 		{
 
 			@Override
-			public void mouseUp(MouseEvent e)
+			public void handleEvent(Event event)
 			{
 
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void mouseDown(MouseEvent e)
-			{
 				FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
 				dialog.setFilterExtensions(new String[]
 				{ "*.xml" });
@@ -329,7 +311,7 @@ public class TestHarnessView extends ViewPart
 							contributionList = handler.getCollection();
 						}
 
-						// TODO: Akash - I guess this is where we'd need some kind of
+						// DONE: Akash - I guess this is where we'd need some kind of
 						// version test
 						// https://bitbucket.org/ianmayo/deb_satc/issue/84
 
@@ -339,7 +321,6 @@ public class TestHarnessView extends ViewPart
 							for (BaseContribution contribution : contributionList)
 							{
 								boundsManager.addContribution(contribution);
-
 							}
 						}
 
@@ -350,16 +331,11 @@ public class TestHarnessView extends ViewPart
 					{
 						ex.printStackTrace();
 					}
-
 				}
 			}
 
-			@Override
-			public void mouseDoubleClick(MouseEvent e)
-			{
-
-			}
 		});
+
 		// and get the form to handle it's layout
 		form.pack();
 
@@ -429,7 +405,7 @@ public class TestHarnessView extends ViewPart
 				XstreamVersionHandler.class);
 		_xStream.useAttributeFor(XstreamVersionHandler.class, "version");
 
-		// TODO: Akash - could you do some xstream fiddling so that BMeasurement,
+		// DONE: Akash - could you do some xstream fiddling so that BMeasurement,
 		// ROrigin, and FMeasurement
 		// all store their children as attributes. It will make it easier to view
 		// the measurements all at once
