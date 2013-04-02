@@ -287,10 +287,6 @@ public class TestHarnessView extends ViewPart
 		}
 	}
 	
-	// TODO: Akash - it's unfortunate that we hard-code all of these classes.
-	// could you investigate if its possible to configure xstream to do this
-	// whatever the class name? This looks close:
-	// http://stackoverflow.com/questions/15542989/how-can-i-make-block-of-code-generic
 
 	private void initializeXstream()
 	{
@@ -347,18 +343,13 @@ public class TestHarnessView extends ViewPart
 		_xStream.useAttributeFor(GeoPoint.class, "lat");
 		_xStream.useAttributeFor(GeoPoint.class, "lon");
 
+		// use human-readable name for contributions
 		_xStream.alias("AnalystContributions",
 				XstreamVersionHandler.class);
 		_xStream.useAttributeFor(XstreamVersionHandler.class, "version");
 		
+		// make the contributions appear directly beneath the parent member
 		_xStream.addImplicitCollection(XstreamVersionHandler.class, "collection");
-
-		// DONE: Akash - could you do some xstream fiddling so that BMeasurement,
-		// ROrigin, and FMeasurement
-		// all store their children as attributes. It will make it easier to view
-		// the measurements all at once
-		// since they will appear as columns. This appears to be the method:
-		// http://xstream.codehaus.org/alias-tutorial.html#attributes
 	}
 
 	private void enableControls(boolean enabled)
