@@ -16,10 +16,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
@@ -226,114 +224,28 @@ public class TestHarnessView extends ViewPart
 
 		Button save = new Button(saveLoadGroup, SWT.BUTTON1);
 		save.setText("Save");
-
-		// DONE: Akash - could these use selectionListener events? It's tidier than
-		// mouseDown
-
-		save.addListener(SWT.MouseDown, new Listener()
+		save.addSelectionListener(new SelectionAdapter()
 		{
-			List<BaseContribution> contributions;
-
-			public void handleEvent(Event e)
+			@Override
+			public void widgetSelected(SelectionEvent e)
 			{
-				contributions = new ArrayList<BaseContribution>();
-				for (BaseContribution baseContribution : boundsManager
-						.getContributions())
-				{
-					contributions.add(baseContribution);
-				}
 
-				String xml = "";
-				String filename = "";
-				try
-				{
-					FileDialog dialog = new FileDialog(_shell, SWT.SAVE);
-					dialog.setFilterExtensions(new String[]
-					{ "*.xml" });
-
-					filename = dialog.open();
-					if (filename == null)
-					{
-						return;
-					}
-				}
-				catch (Exception E)
-				{
-					E.printStackTrace();
-				}
-
-				try
-				{
-					xml = _xStream.toXML(new XstreamVersionHandler(contributions));
-					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-					out.write(xml);
-					out.close();
-				}
-				catch (IOException ex)
-				{
-					ex.printStackTrace();
-				}
-
+				doSave();
 			}
+
 		});
 
 		Button load = new Button(saveLoadGroup, SWT.BUTTON1);
 		load.setText("Load");
 
-		load.addListener(SWT.MouseDown, new Listener()
+		load.addSelectionListener(new SelectionAdapter()
 		{
 
 			@Override
-			public void handleEvent(Event event)
+			public void widgetSelected(SelectionEvent e)
 			{
-
-				FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
-				dialog.setFilterExtensions(new String[]
-				{ "*.xml" });
-				String fileSelected = dialog.open();
-
-				if (fileSelected != null)
-				{
-					try
-					{
-						FileInputStream fstream = new FileInputStream(fileSelected);
-						Object stream = _xStream.fromXML(fstream);
-						List<BaseContribution> contributionList = null;
-						if (stream instanceof XstreamVersionHandler)
-						{
-							XstreamVersionHandler handler = (XstreamVersionHandler) stream;
-							if (TestHarnessView.version != handler.getVersion())
-							{
-								System.out.println("Version mismatch, current version is "
-										+ version + ", while the xml version is "
-										+ handler.getVersion());
-							}
-							contributionList = handler.getCollection();
-						}
-
-						// DONE: Akash - I guess this is where we'd need some kind of
-						// version test
-						// https://bitbucket.org/ianmayo/deb_satc/issue/84
-
-						if (contributionList != null)
-						{
-							boundsManager.clear();
-							for (BaseContribution contribution : contributionList)
-							{
-								boundsManager.addContribution(contribution);
-							}
-						}
-
-						// ok, get the bounds manager to run, now that it's got it's data
-						boundsManager.run();
-					}
-					catch (Exception ex)
-					{
-						ex.printStackTrace();
-					}
-				}
+				doLoad();
 			}
-
 		});
 
 		// and get the form to handle it's layout
@@ -341,6 +253,40 @@ public class TestHarnessView extends ViewPart
 
 	}
 
+	
+
+	private void doSave()
+	{
+		List<BaseContribution> contributions = new ArrayList<BaseContribution>();
+		for (BaseContribution baseContribution : boundsManager
+				.getContributions())
+		{
+			contributions.add(baseContribution);
+		}
+
+		FileDialog dialog = new FileDialog(_shell, SWT.SAVE);
+		dialog.setFilterExtensions(new String[]
+		{ "*.xml" });
+
+		String filename = dialog.open();
+		if (filename == null)
+		{
+			return;
+		}
+
+		try
+		{
+			String xml = _xStream.toXML(new XstreamVersionHandler(contributions));
+			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+			out.write(xml);
+			out.close();
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
 	// TODO: Akash - it's unfortunate that we hard-code all of these classes.
 	// could you investigate if its possible to configure xstream to do this
 	// whatever the class name? This looks close:
@@ -401,9 +347,11 @@ public class TestHarnessView extends ViewPart
 		_xStream.useAttributeFor(GeoPoint.class, "lat");
 		_xStream.useAttributeFor(GeoPoint.class, "lon");
 
-		_xStream.alias(XstreamVersionHandler.class.getSimpleName(),
+		_xStream.alias("AnalystContributions",
 				XstreamVersionHandler.class);
 		_xStream.useAttributeFor(XstreamVersionHandler.class, "version");
+		
+		_xStream.addImplicitCollection(XstreamVersionHandler.class, "collection");
 
 		// DONE: Akash - could you do some xstream fiddling so that BMeasurement,
 		// ROrigin, and FMeasurement
@@ -575,6 +523,52 @@ public class TestHarnessView extends ViewPart
 	{
 		// ok, we can disable our buttons
 		enableControls(false);
+	}
+
+	private void doLoad()
+	{
+		FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
+		dialog.setFilterExtensions(new String[]
+		{ "*.xml" });
+		String fileSelected = dialog.open();
+
+		if (fileSelected != null)
+		{
+			try
+			{
+				FileInputStream fstream = new FileInputStream(fileSelected);
+				Object stream = _xStream.fromXML(fstream);
+				List<BaseContribution> contributionList = null;
+				if (stream instanceof XstreamVersionHandler)
+				{
+					XstreamVersionHandler handler = (XstreamVersionHandler) stream;
+					if (TestHarnessView.version != handler.getVersion())
+					{
+						// TODO: Akash - could you make this appear in a popup, instead of the console?
+						System.out.println("Version mismatch, current version is "
+								+ version + ", while the xml version is "
+								+ handler.getVersion());
+					}
+					contributionList = handler.getCollection();
+				}
+
+				if (contributionList != null)
+				{
+					boundsManager.clear();
+					for (BaseContribution contribution : contributionList)
+					{
+						boundsManager.addContribution(contribution);
+					}
+				}
+
+				// ok, get the bounds manager to run, now that it's got it's data
+				boundsManager.run();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	static class XstreamVersionHandler
