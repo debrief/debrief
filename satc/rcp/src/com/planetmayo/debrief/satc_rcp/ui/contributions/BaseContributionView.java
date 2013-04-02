@@ -14,6 +14,7 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -34,6 +35,8 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
@@ -398,34 +401,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		weightSpinner.setIncrement(1);
 		weightSpinner.setPageIncrement(1);
 		
-		
-		final ToolBar toolBar = new ToolBar(header, SWT.NONE);
-		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_END);
-		gridData.widthHint = 10;
-		//toolBar.setLayoutData(gridData);
-		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-		final Menu _addContMenu = new Menu(header);
-		//SET MAY BE A GEAR IMAGE TO THE TOOLBAR
-		//item.setImage(new Ima)
-		item.addListener(SWT.Selection, new Listener()
-		{
-			@Override
-			public void handleEvent(Event event)
-			{
-				if (event.detail == SWT.ARROW)
-				{
-					Rectangle rect = item.getBounds();
-					Point pt = new Point(rect.x, rect.y + rect.height);
-					pt = toolBar.toDisplay(pt);
-					_addContMenu.setLocation(pt.x, pt.y);
-					_addContMenu.setVisible(true);
-				}
-			}
-		});
-		
-		MenuItem menuItem = new MenuItem(_addContMenu, SWT.PUSH);
-		menuItem.setText("Delete");
-		menuItem.addSelectionListener(new SelectionAdapter()
+		Button button = new Button(header, SWT.PUSH);
+    button.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
+    button.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent arg0)
@@ -433,6 +411,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				boundsManager.removeContribution(contribution);
 			}
 		});
+	
 
 	}
 
