@@ -181,6 +181,8 @@ public class MaintainContributionsView extends ViewPart implements
 		{
 			System.err.println("failed to find UI for:" + contribution);
 		}
+		
+		contList.layout(true);
 	}
 
 	@Override
