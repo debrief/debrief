@@ -14,6 +14,8 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -21,13 +23,21 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.NullToBooleanConverter;
@@ -70,11 +80,16 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
+	
+	private IBoundsManager boundsManager;
+
 
 	public BaseContributionView(final Composite parent, final T contribution)
 	{
 		this.controlParent = parent;
 		this.contribution = contribution;
+		boundsManager = SATC_Activator.getDefault().getService(
+				IBoundsManager.class, true);
 	}
 
 	protected PropertyChangeListener attachTitleChangeListener(
@@ -360,7 +375,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		});
 
 		Composite nested = UIUtils.createEmptyComposite(header, UIUtils
-				.createGridLayoutWithoutMargins(3, true), new GridData(
+				.createGridLayoutWithoutMargins(4, true), new GridData(
 				GridData.FILL_HORIZONTAL));
 		activeCheckBox = new Button(nested, SWT.CHECK);
 		activeCheckBox.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
@@ -374,7 +389,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		estimateLabel.setText("Estimate");
 		estimateLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		weightSpinner = new Spinner(header, SWT.BORDER);
+		weightSpinner = new Spinner(nested, SWT.BORDER);
 		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_END);
 		data.widthHint = 10;
 		weightSpinner.setLayoutData(data);
@@ -382,6 +397,43 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		weightSpinner.setMaximum(10);
 		weightSpinner.setIncrement(1);
 		weightSpinner.setPageIncrement(1);
+		
+		
+		final ToolBar toolBar = new ToolBar(header, SWT.NONE);
+		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		gridData.widthHint = 10;
+		//toolBar.setLayoutData(gridData);
+		final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+		final Menu _addContMenu = new Menu(header);
+		//SET MAY BE A GEAR IMAGE TO THE TOOLBAR
+		//item.setImage(new Ima)
+		item.addListener(SWT.Selection, new Listener()
+		{
+			@Override
+			public void handleEvent(Event event)
+			{
+				if (event.detail == SWT.ARROW)
+				{
+					Rectangle rect = item.getBounds();
+					Point pt = new Point(rect.x, rect.y + rect.height);
+					pt = toolBar.toDisplay(pt);
+					_addContMenu.setLocation(pt.x, pt.y);
+					_addContMenu.setVisible(true);
+				}
+			}
+		});
+		
+		MenuItem menuItem = new MenuItem(_addContMenu, SWT.PUSH);
+		menuItem.setText("Delete");
+		menuItem.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				boundsManager.removeContribution(contribution);
+			}
+		});
+
 	}
 
 	protected void createLimitAndEstimateSliders()

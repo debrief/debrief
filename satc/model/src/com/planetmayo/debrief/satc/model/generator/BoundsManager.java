@@ -162,6 +162,12 @@ public class BoundsManager implements IBoundsManager
 				_estimateListener);
 
 		fireContributionAdded(contribution);
+		
+		//TODO: IAN NPE being thrown at line 481, I tried putting NPE check, functionality was still bugged.
+		/*if(isLiveEnabled())
+		{
+			run();
+		}*/
 	}
 
 	public void addEstimateChangedListener(PropertyChangeListener listener)
@@ -377,6 +383,13 @@ public class BoundsManager implements IBoundsManager
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
 		fireContributionRemoved(contribution);
+		
+	//TODO: IAN NPE being thrown at line 480, I tried putting NPE check, functionality was still bugged.
+	/*	if(isLiveEnabled())
+		{
+			run();
+		}*/
+		
 	}
 
 	@Override
