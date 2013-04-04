@@ -15,13 +15,6 @@
             class="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView"
             id="com.planetmayo.debrief.satc_rcp.views.MaintainContributionsView">
       </view>
-   </extension>
-         <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="Debrief SATC"
-            id="com.planetmayo.debrief.satc">
-      </category>
       <view
             name="Spatial View"
             icon="icons/sample.gif"
@@ -29,13 +22,6 @@
             class="com.planetmayo.debrief.satc_rcp.views.SpatialView"
             id="com.planetmayo.debrief.satc_rcp.views.SpatialView">
       </view>
-   </extension>
-      <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="Debrief SATC"
-            id="com.planetmayo.debrief.satc">
-      </category>
       <view
             name="Track States"
             icon="icons/sample.gif"
@@ -43,13 +29,6 @@
             class="com.planetmayo.debrief.satc_rcp.views.TrackStatesView"
             id="com.planetmayo.debrief.satc_rcp.views.TrackStatesView">
       </view>
-   </extension>
-      <extension
-         point="org.eclipse.ui.views">
-      <category
-            name="Debrief SATC"
-            id="com.planetmayo.debrief.satc">
-      </category>
       <view
             name="Test Harness"
             icon="icons/sample.gif"
