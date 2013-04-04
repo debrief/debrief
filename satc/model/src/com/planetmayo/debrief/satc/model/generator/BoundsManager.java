@@ -162,12 +162,11 @@ public class BoundsManager implements IBoundsManager
 				_estimateListener);
 
 		fireContributionAdded(contribution);
-		
-		//TODO: IAN NPE being thrown at line 481, I tried putting NPE check, functionality was still bugged.
-		/*if(isLiveEnabled())
+
+		if (isLiveEnabled())
 		{
 			run();
-		}*/
+		}
 	}
 
 	public void addEstimateChangedListener(PropertyChangeListener listener)
@@ -196,7 +195,7 @@ public class BoundsManager implements IBoundsManager
 		for (BaseContribution contribution : new ArrayList<BaseContribution>(
 				_contribs))
 		{
-			this.removeContribution(contribution);
+			this.removeContribution(contribution, false);
 		}
 
 		// clear the probelm space
@@ -369,10 +368,20 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void removeContribution(BaseContribution contribution)
 	{
+		this.removeContribution(contribution, true);
+	}
+
+	private void removeContribution(BaseContribution contribution,
+			boolean runAfterwards)
+	{
 		if (!_contribs.contains(contribution))
 		{
+			SupportServices.INSTANCE.getLog().error(
+					"We're trying to delete " + contribution
+							+ " but its not one of ours!");
 			return;
 		}
+
 		// remember it
 		_contribs.remove(contribution);
 
@@ -383,13 +392,17 @@ public class BoundsManager implements IBoundsManager
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
 		fireContributionRemoved(contribution);
-		
-	//TODO: IAN NPE being thrown at line 480, I tried putting NPE check, functionality was still bugged.
-	/*	if(isLiveEnabled())
+
+		if (runAfterwards && isLiveEnabled())
 		{
+			// TODO: IAN - problem here. When we do a "clear", we keep on running the
+			// contribution. we don't want to.
+			restart();
+
+			// and run through
 			run();
-		}*/
-		
+		}
+
 	}
 
 	@Override
@@ -477,22 +490,27 @@ public class BoundsManager implements IBoundsManager
 		// get next contribution
 		_currentContribution = SupportServices.INSTANCE.getUtilsService()
 				.higherElement(_contribs, _currentContribution);
-		// ok, go for it.
-		performSingleStep(_currentContribution, _currentStep);
 
-		// now increment the counter and contribution
-		_currentStep++;
-
-		// are we now complete?
-		if (_currentStep == _contribs.size())
+		if (_currentContribution != null)
 		{
-			// tell any listeners that the final bounds have been updated
-			fireComplete();
 
-			// do we have a solution generator?
-			if (_generateSolutions && (_mysolGenny != null))
-				_mysolGenny.statesBounded(this);
+			// ok, go for it.
+			performSingleStep(_currentContribution, _currentStep);
 
+			// now increment the counter and contribution
+			_currentStep++;
+
+			// are we now complete?
+			if (_currentStep == _contribs.size())
+			{
+				// tell any listeners that the final bounds have been updated
+				fireComplete();
+
+				// do we have a solution generator?
+				if (_generateSolutions && (_mysolGenny != null))
+					_mysolGenny.statesBounded(this);
+
+			}
 		}
 
 	}
