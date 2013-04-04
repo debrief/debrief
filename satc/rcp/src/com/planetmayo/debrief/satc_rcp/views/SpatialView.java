@@ -212,14 +212,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		bars.getToolBarManager().add(_debugMode);
 		bars.getToolBarManager().add(_resizeButton);
 
-
 		bars.getMenuManager().add(new AbstractGroupMarker("num")
 		{
 		});
 		bars.getMenuManager().appendToGroup("num", new RouteNumSelector(10));
-		bars.getMenuManager().appendToGroup("num",new RouteNumSelector(50));
-		bars.getMenuManager().appendToGroup("num",new RouteNumSelector(100));
-		bars.getMenuManager().appendToGroup("num",new RouteNumSelector());
+		bars.getMenuManager().appendToGroup("num", new RouteNumSelector(50));
+		bars.getMenuManager().appendToGroup("num", new RouteNumSelector(100));
+		bars.getMenuManager().appendToGroup("num", new RouteNumSelector());
 
 		// add some handlers to sort out how many routes to shw
 
@@ -657,10 +656,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		redoChart();
 	}
 
-	/** store the collection of a line with its name plus score value
+	/**
+	 * store the collection of a line with its name plus score value
 	 * 
 	 * @author Ian
-	 *
+	 * 
 	 */
 	private static class ScoredRoute
 	{
@@ -728,31 +728,38 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 							CoreRoute[] thisStart = routes[i];
 
 							// ok, are we showing all?
-							Point startPoint = thisStart[0].getStartPoint();
-							if (_showPoints)
+							CoreRoute firstRoute = findFirstValidRoute(thisStart);
+							if (firstRoute != null)
 							{
-								// ok, just add it to the list
-								points.add(startPoint);
-							}
-							// ok - do we need to check which ones have any valid points?
-							if (_showAchievablePoints)
-							{
-								boolean isPossible = false;
-
-								for (int j = 0; j < numEnd; j++)
+								Point startPoint = firstRoute.getStartPoint();
+								if (_showPoints)
 								{
-									CoreRoute thisRoute = thisStart[j];
-
-									if (thisRoute.isPossible())
-									{
-										isPossible = true;
-										break;
-									}
+									// ok, just add it to the list
+									points.add(startPoint);
 								}
-								// ok, add it to the list
-								if (isPossible)
+								// ok - do we need to check which ones have any valid points?
+								if (_showAchievablePoints)
 								{
-									possiblePoints.add(startPoint);
+									boolean isPossible = false;
+
+									for (int j = 0; j < numEnd; j++)
+									{
+										CoreRoute thisRoute = thisStart[j];
+
+										if (thisRoute != null)
+										{
+											if (thisRoute.isPossible())
+											{
+												isPossible = true;
+												break;
+											}
+										}
+									}
+									// ok, add it to the list
+									if (isPossible)
+									{
+										possiblePoints.add(startPoint);
+									}
 								}
 							}
 						}
@@ -829,6 +836,17 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	}
 
+	private CoreRoute findFirstValidRoute(CoreRoute[] thisStart)
+	{
+		for (int i = 0; i < thisStart.length; i++)
+		{
+			CoreRoute coreRoute = thisStart[i];
+			if (coreRoute != null)
+				return coreRoute;
+		}
+		return null;
+	}
+
 	private void plotRoutesWithScores(
 			HashMap<CoreLeg, ArrayList<ScoredRoute>> legRoutes)
 	{
@@ -862,8 +880,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 			}
 
-			 System.out.println(" for leg: " + thisL.getName() + " min:" + min
-			 + " max:" + max);
+			System.out.println(" for leg: " + thisL.getName() + " min:" + min
+					+ " max:" + max);
 
 			for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
 					.hasNext();)
@@ -893,7 +911,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				int num = _myData.getSeriesCount() - 1;
 				_renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
 
-				// make the line width inversely proportional to the score, with a max width of 2 pixels
+				// make the line width inversely proportional to the score, with a max
+				// width of 2 pixels
 				final float width = (float) (2f - 2 * thisColorScore);
 
 				// make the top score solid, and worse scores increasingly sparse
@@ -991,12 +1010,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		// don't worry about it.
 	}
-	
 
-	/** utility class to allow us to specify how many routes to be displayed
+	/**
+	 * utility class to allow us to specify how many routes to be displayed
 	 * 
 	 * @author Ian
-	 *
+	 * 
 	 */
 	private class RouteNumSelector extends Action
 	{

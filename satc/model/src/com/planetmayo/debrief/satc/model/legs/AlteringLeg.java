@@ -29,30 +29,30 @@ public class AlteringLeg extends CoreLeg
 
 	}
 
-//	@Override
-//	public void generateRoutes(int gridNum)
-//	{
-//		// TODO: generate the routes through the leg?
-//		// produce the grid of cells
-//		ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
-//				.getGeometry(), gridNum, 6);
-//		ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
-//				.getGeometry(), gridNum, 6);
-//
-//		// ok, now generate the array of routes
-//		_startLen = startP.size();
-//		_endLen = endP.size();
-//
-//		// now populate it
-//		int ctr = 1;
-//		for (int i = 0; i < _startLen; i++)
-//		{
-//			for (int j = 0; j < _endLen; j++)
-//			{
-//				String thisName = _name + "_" + ctr++;
-//			}
-//		}
-//	}
+	// @Override
+	// public void generateRoutes(int gridNum)
+	// {
+	// // TODO: generate the routes through the leg?
+	// // produce the grid of cells
+	// ArrayList<Point> startP = MakeGrid.ST_Tile(getFirst().getLocation()
+	// .getGeometry(), gridNum, 6);
+	// ArrayList<Point> endP = MakeGrid.ST_Tile(getLast().getLocation()
+	// .getGeometry(), gridNum, 6);
+	//
+	// // ok, now generate the array of routes
+	// _startLen = startP.size();
+	// _endLen = endP.size();
+	//
+	// // now populate it
+	// int ctr = 1;
+	// for (int i = 0; i < _startLen; i++)
+	// {
+	// for (int j = 0; j < _endLen; j++)
+	// {
+	// String thisName = _name + "_" + ctr++;
+	// }
+	// }
+	// }
 
 	/**
 	 * use a simple speed/time decision to decide if it's possible to navigate a
@@ -102,7 +102,9 @@ public class AlteringLeg extends CoreLeg
 			for (int j = 0; j < _endLen; j++)
 			{
 				AlteringRoute thisR = myRoutes[i][j];
-				operator.process(thisR);
+				// allow for potentially null routes
+				if (thisR != null)
+					operator.process(thisR);
 			}
 		}
 	}

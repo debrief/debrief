@@ -205,7 +205,9 @@ public class StraightLeg extends CoreLeg
 		{
 			for (int j = 0; j < _endLen; j++)
 			{
-				operator.process(myRoutes[i][j]);
+				StraightRoute theRoute = myRoutes[i][j];
+				if (theRoute != null)
+					operator.process(theRoute);
 			}
 		}
 	}

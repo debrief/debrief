@@ -125,6 +125,9 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 
 		// ok, look for the top performer (JOB)
 		recalculateTopLegs();
+
+		System.out.println(" - generator complete at:" + new Date());
+
 	}
 
 	/**
@@ -267,7 +270,8 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 					for (int i = 0; i < thisSet.length; i++)
 					{
 						CoreRoute thisRoute = thisSet[i];
-						thisRoute.setImpossible();
+						if (thisRoute != null)
+							thisRoute.setImpossible();
 					}
 				}
 			}
@@ -317,7 +321,6 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 * @param space
 	 * @return
 	 */
-	@SuppressWarnings("null")
 	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates)
 	{
 

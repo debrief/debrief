@@ -6,6 +6,7 @@ import java.util.SortedSet;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Point;
@@ -64,7 +65,13 @@ public abstract class CoreLeg
 		for (int x = 0; x < xLen; x++)
 			for (int y = 0; y < yLen; y++)
 			{
-				boolean isPoss = myRoutes[x][y].isPossible();
+				CoreRoute thisR = myRoutes[x][y];
+				boolean isPoss;
+				if(thisR == null)
+					isPoss = false;
+				else
+					isPoss = thisR.isPossible();
+				
 				res[x][y] = (isPoss ? 1 : 0);
 			}
 		return res;
@@ -191,19 +198,34 @@ public abstract class CoreLeg
 		_startLen = startP.size();
 		_endLen = endP.size();
 
+		// control the max num of perms
+		final int maxPerms = 50000;
+
 		// create the target results object
 		createRouteStructure(_startLen, _endLen);
+		
+		
 
 		// now populate it
 		int ctr = 1;
+		permLoop:
 		for (int i = 0; i < _startLen; i++)
 		{
 			for (int j = 0; j < _endLen; j++)
 			{
 				String thisName = _name + "_" + ctr++;
 				createAndStoreLeg(startP, endP, i, j, thisName);
+				
+				// check we're still within the reasonable limits
+				if(ctr > maxPerms)
+				{
+					System.err.println("Dropped out!");
+					SupportServices.INSTANCE.getLog().warn("Terminating permutation generation for " + this.getName() + " at " + maxPerms + " perms");
+					break permLoop;
+				}
 			}
 		}
+		
 	}
 
 	abstract protected void createRouteStructure(int startLen, int endLen);
