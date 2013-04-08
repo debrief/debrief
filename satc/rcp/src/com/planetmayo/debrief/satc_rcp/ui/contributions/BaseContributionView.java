@@ -124,11 +124,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		}
 		context.bindValue(sliderEnabled, modelValue, null, 
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
-		context.bindValue(checkBoxValue, modelValue, 
+		context.bindValue(checkBoxValue, modelValue,
 				UIUtils.converterStrategy(checkBoxValueConverter),
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
 		context.bindValue(labelValue, modelValue, null,
-				UIUtils.converterStrategy(labelValueConverter));	
+				UIUtils.converterStrategy(labelValueConverter));
 	}
 	
 	protected void bindMaxMinEstimate(final IObservableValue estimate, final IObservableValue min, final IObservableValue max) {
