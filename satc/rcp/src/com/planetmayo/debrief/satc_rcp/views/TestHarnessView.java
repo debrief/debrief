@@ -25,7 +25,6 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -291,8 +290,6 @@ public class TestHarnessView extends ViewPart
 	private void initializeXstream()
 	{
 		_xStream = new XStream();
-		_xStream.alias(AlterationLegForecastContribution.class.getSimpleName(),
-				AlterationLegForecastContribution.class);
 		_xStream.alias(ATBForecastContribution.class.getSimpleName(),
 				ATBForecastContribution.class);
 		_xStream.alias(BaseAnalysisContribution.class.getSimpleName(),
