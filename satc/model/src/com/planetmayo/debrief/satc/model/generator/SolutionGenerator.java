@@ -19,6 +19,7 @@ import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class SolutionGenerator implements IConstrainSpaceListener,
 		ISolutionGenerator, PropertyChangeListener
@@ -406,7 +407,11 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 			}
 
 			// ok, we've got the leg - now add the state
-			currentLeg.add(thisS);
+			if (currentLeg == null)
+				SupportServices.INSTANCE.getLog().error(
+						"Logic problem, currentLeg should not be null");
+			else
+				currentLeg.add(thisS);
 
 			// and remember it
 			previousState = thisS;
