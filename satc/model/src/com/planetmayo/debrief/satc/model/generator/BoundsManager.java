@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -43,28 +42,6 @@ public class BoundsManager implements IBoundsManager
 			// aah, but are we auto-running?
 			if (_liveRunning)
 				run();
-		}
-	};
-
-	/**
-	 * property listener = so we know about estimates changing
-	 * 
-	 */
-	private final PropertyChangeListener _estimateListener = new PropertyChangeListener()
-	{
-		@Override
-		public void propertyChange(PropertyChangeEvent arg0)
-		{
-			// ok, are we generating solutions?
-			if (_generateSolutions)
-			{
-				for (Iterator<PropertyChangeListener> iterator = _estimateChangedListeners
-						.iterator(); iterator.hasNext();)
-				{
-					PropertyChangeListener thisL = iterator.next();
-					thisL.propertyChange(arg0);
-				}
-			}
 		}
 	};
 
@@ -121,12 +98,6 @@ public class BoundsManager implements IBoundsManager
 	 */
 	final private ArrayList<IConstrainSpaceListener> _steppingListeners = new ArrayList<IConstrainSpaceListener>();
 
-	/**
-	 * keep track of folks interested in estimate changes
-	 * 
-	 */
-	private Collection<PropertyChangeListener> _estimateChangedListeners = new ArrayList<PropertyChangeListener>();
-
 	private IConstrainSpaceListener _mysolGenny;
 
 	private boolean _generateSolutions = false;
@@ -158,20 +129,12 @@ public class BoundsManager implements IBoundsManager
 			contribution.addPropertyChangeListener(property, _contribListener);
 		}
 
-		contribution.addPropertyChangeListener(BaseContribution.ESTIMATE,
-				_estimateListener);
-
 		fireContributionAdded(contribution);
 
 		if (isLiveEnabled())
 		{
 			run();
 		}
-	}
-
-	public void addEstimateChangedListener(PropertyChangeListener listener)
-	{
-		_estimateChangedListeners.add(listener);
 	}
 
 	/**
@@ -391,6 +354,7 @@ public class BoundsManager implements IBoundsManager
 			String thisProp = _interestingProperties[i];
 			contribution.removePropertyChangeListener(thisProp, _contribListener);
 		}
+
 		fireContributionRemoved(contribution);
 
 		if (runAfterwards && isLiveEnabled())

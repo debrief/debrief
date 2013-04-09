@@ -22,7 +22,7 @@ import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class SolutionGenerator implements IConstrainSpaceListener,
-		ISolutionGenerator, PropertyChangeListener
+		ISolutionGenerator, IContributionsChangedListener
 {
 
 	/**
@@ -49,9 +49,29 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 */
 	private Precision _myPrecision = Precision.LOW;
 
+	/**
+	 * the set of contribution properties that we're interested in
+	 * 
+	 */
+	private final String[] _interestingProperties =
+	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
+
+	private PropertyChangeListener _contListener;
+
 	public SolutionGenerator()
 	{
 		_readyListeners = new ArrayList<IGenerateSolutionsListener>();
+
+		_contListener = new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent arg0)
+			{
+				// ok, the way the scores are calculated may have changed, recalculate
+				// the scores
+				recalculateTopLegs();
+			}
+		};
 	}
 
 	/*
@@ -535,10 +555,22 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt)
+	public void added(BaseContribution contribution)
+	{ // start listening to our interesting properties
+		for (String property : _interestingProperties)
+		{
+			contribution.addPropertyChangeListener(property, _contListener);
+		}
+	}
+
+	@Override
+	public void removed(BaseContribution contribution)
 	{
-		// ok, we need to do a partial recalt
-		recalculateTopLegs();
+		// stop listening to our interesting properties
+		for (String property : _interestingProperties)
+		{
+			contribution.removePropertyChangeListener(property, _contListener);
+		}
 	}
 
 }
