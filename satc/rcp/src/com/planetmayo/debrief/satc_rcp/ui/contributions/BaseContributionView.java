@@ -387,7 +387,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_END);
 		data.widthHint = 10;
 		weightSpinner.setLayoutData(data);
-		weightSpinner.setMinimum(0);
+		weightSpinner.setMinimum(1);
 		weightSpinner.setMaximum(10);
 		weightSpinner.setIncrement(1);
 		weightSpinner.setPageIncrement(1);
