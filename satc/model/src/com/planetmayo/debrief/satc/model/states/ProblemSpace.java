@@ -124,11 +124,17 @@ public class ProblemSpace
 			return _boundedStates.values();
 		}
 
-		// just check we have legitimate dates
-		if (!startDate.before(finishDate))
+		// just check that we have non-null dates
+		if ((startDate != null) && (finishDate != null))
 		{
-			// ok, start date invalid - just return empty list, so the algs don't trip over
-			return new ArrayList<BoundedState>();
+			// we do have dates, now just check that they're correctly sequenced
+			if (!startDate.before(finishDate))
+			{
+				// ok, start date invalid - just return empty list, so the algs don't
+				// trip
+				// over
+				return new ArrayList<BoundedState>();
+			}
 		}
 
 		startDate = ObjectUtils.safe(startDate, _boundedStates.firstKey());
