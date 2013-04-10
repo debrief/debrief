@@ -136,7 +136,7 @@ public class BoundsManager implements IBoundsManager
 	 * 
 	 */
 	@Override
-	public void addBoundStatesListener(IConstrainSpaceListener newListener)
+	public void addConstrainSpaceListener(IConstrainSpaceListener newListener)
 	{
 		_steppingListeners.add(newListener);
 	}
@@ -413,7 +413,7 @@ public class BoundsManager implements IBoundsManager
 	}
 
 	@Override
-	public void removeSteppingListener(IConstrainSpaceListener newListener)
+	public void removeConstrainSpaceListener(IConstrainSpaceListener newListener)
 	{
 		_steppingListeners.remove(newListener);
 	}

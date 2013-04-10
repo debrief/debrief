@@ -55,6 +55,7 @@ import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastContributionView;
@@ -128,6 +129,7 @@ public class MaintainContributionsView extends ViewPart implements
 	 * 
 	 */
 	private ISolutionGenerator solutionGenerator;
+	private IContributionsChangedListener contributionsChangedListener;
 
 	@Override
 	public void added(BaseContribution contribution)
@@ -202,13 +204,15 @@ public class MaintainContributionsView extends ViewPart implements
 		populatePrecisionsList(Precision.values());
 		populateVehicleTypesList(vehicleManager.getAllTypes());
 
-		boundsManager.addContributionsListener(this);
+		contributionsChangedListener = UIListener.wrap(parent.getDisplay(), 
+				IContributionsChangedListener.class, this);
+		boundsManager.addContributionsListener(contributionsChangedListener);
 	}
 
 	@Override
 	public void dispose()
 	{
-		boundsManager.removeContributionsListener(this);
+		boundsManager.removeContributionsListener(contributionsChangedListener);
 		super.dispose();
 	}
 

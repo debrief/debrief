@@ -45,6 +45,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -136,7 +137,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat(
 			"hh:mm:ss");
-
+	
+	private IConstrainSpaceListener constrainSpaceListener;
+	private IGenerateSolutionsListener generateSolutionsListener;
 	/**
 	 * how many routes to display
 	 * 
@@ -224,14 +227,19 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// tell the GeoSupport about us
 		GeoSupport.setPlotter(this, this, this);
-		boundsManager.addBoundStatesListener(this);
-		solutionGenerator.addReadyListener(this);
+		constrainSpaceListener = UIListener.wrap(parent.getDisplay(), 
+				IConstrainSpaceListener.class, this);
+		generateSolutionsListener = UIListener.wrap(parent.getDisplay(), 
+				IGenerateSolutionsListener.class, this);
+		boundsManager.addConstrainSpaceListener(constrainSpaceListener);
+		solutionGenerator.addReadyListener(generateSolutionsListener);
 	}
 
 	@Override
 	public void dispose()
 	{
-		boundsManager.removeSteppingListener(this);
+		boundsManager.removeConstrainSpaceListener(constrainSpaceListener);
+		solutionGenerator.removeReadyListener(generateSolutionsListener);
 		super.dispose();
 	}
 

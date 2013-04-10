@@ -54,7 +54,7 @@ public class BoundsManagerTest extends ModelTestBase
 		boundsManager.addContribution(bearingMeasurementContribution);
 		boundsManager.addContribution(courseForecastContribution);
 		boundsManager
-				.addBoundStatesListener(new IConstrainSpaceListener()
+				.addConstrainSpaceListener(new IConstrainSpaceListener()
 				{
 
 					@Override
@@ -189,7 +189,7 @@ public class BoundsManagerTest extends ModelTestBase
 		{ 0 };
 		final int[] eventCounter =
 		{ 0 };
-		boundsManager.addBoundStatesListener(new SteppingAdapter()
+		boundsManager.addConstrainSpaceListener(new SteppingAdapter()
 		{
 
 			@Override

@@ -27,12 +27,12 @@ public interface IBoundsManager
 	/**
 	 * subscribe to progress events
 	 */
-	void addBoundStatesListener(IConstrainSpaceListener newListener);
+	void addConstrainSpaceListener(IConstrainSpaceListener newListener);
 
 	/**
 	 * unsubscribe from progress events
 	 */
-	void removeSteppingListener(IConstrainSpaceListener newListener);
+	void removeConstrainSpaceListener(IConstrainSpaceListener newListener);
 
 	/**
 	 * add contribution which will be used in constraint phase

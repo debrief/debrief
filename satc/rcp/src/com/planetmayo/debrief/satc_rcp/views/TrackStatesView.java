@@ -29,6 +29,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -112,6 +113,7 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	private TableViewer viewer;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
 
+	private IConstrainSpaceListener constrainSpaceListener;
 	/**
 	 * let user indicate whether we wish to display intermediate bounded states
 	 * 
@@ -262,17 +264,15 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 		makeActions();
 		contributeToActionBars();
 
-		/**
-		 * and listen out for track generators
-		 * 
-		 */
-		boundsManager.addBoundStatesListener(this);
+		constrainSpaceListener = UIListener.wrap(parent.getDisplay(), 
+				IConstrainSpaceListener.class, this);
+		boundsManager.addConstrainSpaceListener(constrainSpaceListener);
 	}
 
 	@Override
 	public void dispose()
 	{
-		boundsManager.removeSteppingListener(this);
+		boundsManager.removeConstrainSpaceListener(constrainSpaceListener);
 		super.dispose();
 	}
 
