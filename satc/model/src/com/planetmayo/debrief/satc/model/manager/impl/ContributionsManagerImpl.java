@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
@@ -81,14 +80,6 @@ public class ContributionsManagerImpl implements IContributionsManager
 				public BaseContribution create()
 				{
 					return new StraightLegForecastContribution();
-				}
-			});
-			availableContributions.add(new ContributionBuilder("Alteration Leg Forecast")
-			{
-				@Override
-				public BaseContribution create()
-				{
-					return new AlterationLegForecastContribution();
 				}
 			});
 			availableContributions.add(new ContributionBuilder("ATB Forecast")

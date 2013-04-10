@@ -26,7 +26,7 @@ public abstract class BaseContribution extends ModelObject implements
 
 	protected String name;
 	protected boolean active = true;
-	private int weight = 1;
+	private int weight = 5;
 	protected Date startDate;
 	protected Date finishDate;
 

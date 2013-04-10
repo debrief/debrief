@@ -36,7 +36,6 @@ import org.eclipse.ui.part.ViewPart;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.AlterationLegForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
@@ -58,7 +57,6 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.ATBForecastContributionView;
-import com.planetmayo.debrief.satc_rcp.ui.contributions.AlterationLegForecastContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.AnalysisContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BaseContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.BearingMeasurementContributionView;
@@ -84,8 +82,6 @@ public class MaintainContributionsView extends ViewPart implements
 	static
 	{
 		CONTRIBUTION_PANELS = new HashMap<Class<? extends BaseContribution>, Class<? extends BaseContributionView<?>>>();
-		CONTRIBUTION_PANELS.put(AlterationLegForecastContribution.class,
-				AlterationLegForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(ATBForecastContribution.class,
 				ATBForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(BearingMeasurementContribution.class,
