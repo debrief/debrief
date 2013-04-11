@@ -26,13 +26,13 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
+import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SpatialView extends Composite implements ISteppingListener
+public class SpatialView extends Composite implements IConstrainSpaceListener
 {
 
 	interface SpatialViewUiBinder extends UiBinder<Widget, SpatialView>
@@ -114,7 +114,7 @@ public class SpatialView extends Composite implements ISteppingListener
 
 	
 	@Override
-	public void complete(IBoundsManager boundsManager)
+	public void statesBounded(IBoundsManager boundsManager)
 	{
 		plotThis(boundsManager.getSpace().states());		
 	}

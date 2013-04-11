@@ -52,8 +52,8 @@ public class RootLayout extends Composite
 		testHarness.setGenerator(boundsManager);
 		testHarness.setTestSupport(testP);
 
-		boundsManager.addSteppingListener(tabularStates);
-		boundsManager.addSteppingListener(spatialStates);
+		boundsManager.addConstrainSpaceListener(tabularStates);
+		boundsManager.addConstrainSpaceListener(spatialStates);
 	}
 
 }

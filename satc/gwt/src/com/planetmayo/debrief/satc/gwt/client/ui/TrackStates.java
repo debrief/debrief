@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.ISteppingListener;
+import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -22,7 +22,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class TrackStates extends Composite implements ISteppingListener
+public class TrackStates extends Composite implements IConstrainSpaceListener
 {
 
 	private static final String EMPTY_STATE = "===";
@@ -92,10 +92,8 @@ public class TrackStates extends Composite implements ISteppingListener
 		errorPanel.setText(EMPTY_STATE); // This clears the error label
 	}
 
-	
-	
 	@Override
-	public void complete(IBoundsManager boundsManager)
+	public void statesBounded(IBoundsManager boundsManager)
 	{
 		clearGrid();
 		Collection<BoundedState> states = boundsManager.getSpace().states();
@@ -131,7 +129,7 @@ public class TrackStates extends Composite implements ISteppingListener
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
-	{	
+	{
 	}
 
 	@Override
