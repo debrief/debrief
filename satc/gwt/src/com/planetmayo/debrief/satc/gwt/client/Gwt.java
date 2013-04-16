@@ -4,16 +4,26 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.planetmayo.debrief.satc.gwt.client.jobs.GWTJobsManager;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTUtilsService;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTIOService;
 import com.planetmayo.debrief.satc.gwt.client.services.GWTLogService;
 import com.planetmayo.debrief.satc.gwt.client.ui.RootLayout;
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.impl.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.impl.Contributions;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.IJobsManager;
+import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.impl.SolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.Solver;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class Gwt implements EntryPoint {
@@ -27,13 +37,19 @@ public class Gwt implements EntryPoint {
 	private final EventBus eventBus = new SimpleEventBus();
 	private IVehicleTypesManager vehicleTypesManager;
 	private IContributionsManager contributionsManager;
-	private IBoundsManager boundsManager;	
+	private ISolver solver;	
 	
 	private void initializeManagers() 
 	{
 		vehicleTypesManager = new MockVehicleTypesManager();
 		contributionsManager = new ContributionsManagerImpl();
-		boundsManager = new BoundsManager();
+		
+		ProblemSpace problemSpace = new ProblemSpace();
+		IJobsManager jobsManager = new GWTJobsManager();
+		IContributions contributions = new Contributions();		
+		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
+		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new ProblemSpaceView(problemSpace));
+		solver = new Solver(contributions, problemSpace, boundsManager, generator, jobsManager);
 	}
 	
 	public EventBus getEventBus()
@@ -51,20 +67,19 @@ public class Gwt implements EntryPoint {
 		return contributionsManager;
 	}
 
-	public IBoundsManager getBoundsManager()
+	public ISolver getBoundsManager()
 	{
-		return boundsManager;
+		return solver;
 	}
 
 	@Override
 	public void onModuleLoad() {
 		instance = this;
-		initializeManagers();
-		RootPanel.get().add(new RootLayout());
 
 		SupportServices.INSTANCE.initialize(new GWTLogService(),
 				new GWTUtilsService(), new GWTIOService());
-
+		initializeManagers();
+		RootPanel.get().add(new RootLayout());
 		/*
 		 * 
 		 * // the MaintainContributions is the only 'presenter' in the app. we

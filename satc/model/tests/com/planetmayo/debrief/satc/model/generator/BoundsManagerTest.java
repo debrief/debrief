@@ -38,7 +38,7 @@ public class BoundsManagerTest extends ModelTestBase
 	private boolean complete;
 	private IncompatibleStateException error;
 
-	@Before
+/*	@Before
 	public void prepareBoundsManager()
 	{
 		bearingMeasurementContribution = new BearingMeasurementContribution();
@@ -304,6 +304,6 @@ public class BoundsManagerTest extends ModelTestBase
 		assertNull(hasError());
 		boundsManager.step();
 		assertNotNull(hasError());
-	}
+	}*/
 
 }

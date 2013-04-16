@@ -17,7 +17,7 @@ public abstract class BaseRange<T extends BaseRange<?>>
 		private final String _message;
 		private final BaseRange<?> _existingRange;
 		private final BaseRange<?> _newRange;
-		private BoundedState _failingState;
+		private volatile BoundedState _failingState;
 
 		/**
 		 * 

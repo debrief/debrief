@@ -9,17 +9,21 @@ public interface ISolutionGenerator
 	 * 
 	 * @param listener
 	 */
-	public abstract void addReadyListener(IGenerateSolutionsListener listener);
+	void addReadyListener(IGenerateSolutionsListener listener);
 
 	/** someone's no longer interested in solution generation
 	 * 
 	 * @param listener
 	 */
-	public abstract void removeReadyListener(IGenerateSolutionsListener listener);
+	void removeReadyListener(IGenerateSolutionsListener listener);
 	
 	/** specify how detailed the maths should be
 	 * 
 	 * @param precision
 	 */
-	public void setPrecision(Precision precision);
+	void setPrecision(Precision precision);
+	
+	void clear();
+	
+	void generateSolutions();
 }

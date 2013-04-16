@@ -83,4 +83,14 @@ public class UIUtils
 	{
 		return createLabel(parent, "", layoutData);
 	}
+	
+	public static void setEnabled(Control ctrl, boolean enabled) {
+	   if (ctrl instanceof Composite) {
+	      Composite comp = (Composite) ctrl;
+	      for (Control c : comp.getChildren())
+	         setEnabled(c, enabled);
+	   } else {
+	      ctrl.setEnabled(enabled);
+	   }
+	}	
 }

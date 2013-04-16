@@ -13,18 +13,19 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
 public class TestSupport
 {
 
-	private IBoundsManager _genny;
+	private ISolver solver;
 
-	private IBoundsManager getGenerator()
+	private ISolver getGenerator()
 	{
-		return _genny;
+		return solver;
 	}
 
 	public static ArrayList<String> getLongData()
@@ -112,6 +113,7 @@ public class TestSupport
 
 	public void loadSampleData(boolean useLong)
 	{
+		IContributions contributions = getGenerator().getContributions();
 		// clear the geneartor first
 		getGenerator().clear();
 
@@ -133,11 +135,11 @@ public class TestSupport
 		{
 			// populate the bearing data
 			bmc.loadFrom(rows);
-			getGenerator().addContribution(bmc);
+			getGenerator().getContributions().addContribution(bmc);
 
 			// and populate the range data
 			rangeF.loadFrom(rows);
-			getGenerator().addContribution(rangeF);
+			getGenerator().getContributions().addContribution(rangeF);
 		}
 		catch (Exception e)
 		{
@@ -150,7 +152,7 @@ public class TestSupport
 		speed.setMinSpeed(GeoSupport.kts2MSec(12d));
 		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
 		speed.setName("Initial speed obs");
-		getGenerator().addContribution(speed);
+		contributions.addContribution(speed);
 
 		// try a location forecast
 		LocationForecastContribution locF = new LocationForecastContribution();
@@ -160,7 +162,7 @@ public class TestSupport
 		locF.setLimit(3000d);
 		locF.setName("Last known location");
 		locF.setActive(false);
-		getGenerator().addContribution(locF);
+		contributions.addContribution(locF);
 		
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
@@ -169,7 +171,7 @@ public class TestSupport
 		course.setMinCourse(Math.toRadians(225));
 		course.setMaxCourse(Math.toRadians(315));
 		course.setName("Last known course");
-		getGenerator().addContribution(course);
+		contributions.addContribution(course);
 
 		// hey, how about a time-bounded course constraint?
 		SpeedForecastContribution speed2 = new SpeedForecastContribution();
@@ -178,23 +180,23 @@ public class TestSupport
 		speed2.setMinSpeed(GeoSupport.kts2MSec(8d));
 		speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
 		speed2.setName("Later speed obs");
-		getGenerator().addContribution(speed2);
+		contributions.addContribution(speed2);
 		
 		// that's nothing - we can now do straight leg forecasts
 		StraightLegForecastContribution st = new StraightLegForecastContribution();
 		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122100"));
 		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122800"));
 		st.setName("Straight prediction");
-		getGenerator().addContribution(st);
+		contributions.addContribution(st);
 
 		// and our analysis contributions
 		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
 		speedA.setActive(false);
-		getGenerator().addContribution(speedA);
+		contributions.addContribution(speedA);
 		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
 		courseA.setActive(false);
-		getGenerator().addContribution(courseA);
-		getGenerator().addContribution(new LocationAnalysisContribution());
+		contributions.addContribution(courseA);
+		contributions.addContribution(new LocationAnalysisContribution());
 	
 		// ok, and get it to go for it
 		getGenerator().run();
@@ -203,6 +205,7 @@ public class TestSupport
 
 	public void loadGoodData()
 	{
+		IContributions contributions = getGenerator().getContributions();		
 		// clear the geneartor first
 		getGenerator().clear();
 
@@ -218,11 +221,11 @@ public class TestSupport
 		{
 			// populate the bearing data
 			bmc.loadFrom(rows);
-			getGenerator().addContribution(bmc);
+			contributions.addContribution(bmc);
 
 			// and populate the range data
 			rangeF.loadFrom(rows);
-			getGenerator().addContribution(rangeF);
+			contributions.addContribution(rangeF);
 		}
 		catch (Exception e)
 		{
@@ -234,20 +237,20 @@ public class TestSupport
 		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121430"));
 		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123029"));
 		st1.setName("Straight leg one");
-		getGenerator().addContribution(st1);
+		contributions.addContribution(st1);
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
 		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123329"));
 		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 124829"));
 		st2.setName("Straight leg two");
-		getGenerator().addContribution(st2);
+		contributions.addContribution(st2);
 
 
 		StraightLegForecastContribution st3 = new StraightLegForecastContribution();
 		st3.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 125100"));
 		st3.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 130429"));
 		st3.setName("Straight leg three");
-		getGenerator().addContribution(st3);
+		contributions.addContribution(st3);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 121330"));
@@ -256,7 +259,7 @@ public class TestSupport
 		speed.setMaxSpeed(GeoSupport.kts2MSec(14d));
 		speed.setEstimate(GeoSupport.kts2MSec(8d));
 		speed.setName("Initial speed forecast");
-		getGenerator().addContribution(speed);
+		contributions.addContribution(speed);
 				
 //
 //		// try a location forecast
@@ -290,11 +293,11 @@ public class TestSupport
 		// and our analysis contributions
 		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
 		speedA.setActive(true);
-		getGenerator().addContribution(speedA);
+		contributions.addContribution(speedA);
 		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
 		courseA.setActive(true);
-		getGenerator().addContribution(courseA);
-		getGenerator().addContribution(new LocationAnalysisContribution());
+		contributions.addContribution(courseA);
+		contributions.addContribution(new LocationAnalysisContribution());
 	
 		// ok, and get it to go for it
 		getGenerator().run();
@@ -316,9 +319,9 @@ public class TestSupport
 		}
 	}
 
-	public void setGenerator(IBoundsManager genny)
+	public void setGenerator(ISolver genny)
 	{
-		_genny = genny;
+		solver = genny;
 	}
 
 }

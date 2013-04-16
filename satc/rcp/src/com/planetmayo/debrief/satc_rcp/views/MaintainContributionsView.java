@@ -47,9 +47,10 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.support.SupportServices;
@@ -113,7 +114,7 @@ public class MaintainContributionsView extends ViewPart implements
 	private Composite contList;
 	private Menu _addContMenu;
 
-	private IBoundsManager boundsManager;
+	private ISolver solver;
 
 	/**
 	 * remember which contributions we're displaying
@@ -124,8 +125,9 @@ public class MaintainContributionsView extends ViewPart implements
 	/** the solution generator
 	 * 
 	 */
-	private ISolutionGenerator solutionGenerator;
 	private IContributionsChangedListener contributionsChangedListener;
+	
+	private IGenerateSolutionsListener generateSolutionsListener;
 
 	@Override
 	public void added(BaseContribution contribution)
@@ -184,16 +186,14 @@ public class MaintainContributionsView extends ViewPart implements
 	}
 
 	@Override
-	public void createPartControl(Composite parent)
+	public void createPartControl(final Composite parent)
 	{
 		IContributionsManager contributionsManager = SATC_Activator.getDefault()
 				.getService(IContributionsManager.class, true);
 		IVehicleTypesManager vehicleManager = SATC_Activator.getDefault()
 				.getService(IVehicleTypesManager.class, true);
-		boundsManager = SATC_Activator.getDefault().getService(
-				IBoundsManager.class, true);
-		solutionGenerator = SATC_Activator.getDefault().getService(
-				ISolutionGenerator.class, true);
+		solver = SATC_Activator.getDefault().getService(
+				ISolver.class, true);
 
 		initUI(parent);
 		populateContributionList(contributionsManager.getAvailableContributions());
@@ -202,13 +202,30 @@ public class MaintainContributionsView extends ViewPart implements
 
 		contributionsChangedListener = UIListener.wrap(parent.getDisplay(), 
 				IContributionsChangedListener.class, this);
-		boundsManager.addContributionsListener(contributionsChangedListener);
+		generateSolutionsListener = UIListener.wrap(parent.getDisplay(), 
+				IGenerateSolutionsListener.class, new SteppingAdapter() {
+
+					@Override
+					public void startingGeneration()
+					{
+						UIUtils.setEnabled(parent, false);
+					}
+
+					@Override
+					public void finishedGeneration()
+					{
+						UIUtils.setEnabled(parent, true);
+					}
+		});
+		solver.getContributions().addContributionsChangedListener(contributionsChangedListener);
+		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
 	}
 
 	@Override
 	public void dispose()
 	{
-		boundsManager.removeContributionsListener(contributionsChangedListener);
+		solver.getContributions().removeContributionsChangedListener(contributionsChangedListener);
+		solver.getSolutionGenerator().removeReadyListener(generateSolutionsListener);
 		super.dispose();
 	}
 
@@ -333,7 +350,7 @@ public class MaintainContributionsView extends ViewPart implements
 			public void widgetSelected(SelectionEvent e)
 			{
 				super.widgetSelected(e);
-				boundsManager.setGenerateSolutions(generateSolutions.getSelection());
+				solver.setAutoGenerateSolutions(generateSolutions.getSelection());
 			}
 			
 		});
@@ -372,7 +389,7 @@ public class MaintainContributionsView extends ViewPart implements
 				ISelection sel = precisionsCombo.getSelection();
 				IStructuredSelection cSel = (IStructuredSelection) sel;
 				Precision precision = (Precision) cSel.getFirstElement();
-				solutionGenerator.setPrecision(precision);
+				solver.getSolutionGenerator().setPrecision(precision);
 			}
 		});
 
@@ -428,14 +445,14 @@ public class MaintainContributionsView extends ViewPart implements
 			@Override
 			public void selectionChanged(SelectionChangedEvent event)
 			{
-				if (boundsManager != null)
+				if (solver != null)
 				{
 					ISelection selection = event.getSelection();
 					if (selection instanceof StructuredSelection)
 					{
 						VehicleType type = (VehicleType) ((StructuredSelection) selection)
 								.getFirstElement();
-						boundsManager.setVehicleType(type);
+						solver.setVehicleType(type);
 					}
 				}
 			}
@@ -453,7 +470,7 @@ public class MaintainContributionsView extends ViewPart implements
 				@Override
 				public void widgetSelected(SelectionEvent arg0)
 				{
-					boundsManager.addContribution(item.create());
+					solver.getContributions().addContribution(item.create());
 				}
 			});
 		}

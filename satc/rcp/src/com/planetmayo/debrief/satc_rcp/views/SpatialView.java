@@ -35,7 +35,7 @@ import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProb
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
-import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
@@ -72,7 +72,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private Action _showLegend;
 
-	private IBoundsManager boundsManager;
+	private ISolver solver;
 
 	/**
 	 * level of diagnostics for user
@@ -129,9 +129,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	 */
 	private Collection<BoundedState> _lastStates = null;
 
-	private ISolutionGenerator solutionGenerator;
-
-	private ArrayList<CoreLeg> _lastSetOfScoredLegs;
+	private List<CoreLeg> _lastSetOfScoredLegs;
 
 	private CompositeRoute[] _lastSetOfSolutions;
 
@@ -166,7 +164,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		_lastSetOfScoredLegs = null;
 		_lastSetOfSolutions = null;
 
-		_lastStates = boundsManager.getSpace().states();
+		_lastStates = solver.getProblemSpace().states();
 
 		redoChart();
 	}
@@ -198,10 +196,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		boundsManager = SATC_Activator.getDefault().getService(
-				IBoundsManager.class, true);
-		solutionGenerator = SATC_Activator.getDefault().getService(
-				ISolutionGenerator.class, true);
+		solver = SATC_Activator.getDefault().getService(ISolver.class, true);
+
 		// get the data ready
 		_myData = new XYSeriesCollection();
 
@@ -231,15 +227,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				IConstrainSpaceListener.class, this);
 		generateSolutionsListener = UIListener.wrap(parent.getDisplay(), 
 				IGenerateSolutionsListener.class, this);
-		boundsManager.addConstrainSpaceListener(constrainSpaceListener);
-		solutionGenerator.addReadyListener(generateSolutionsListener);
+		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
+		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
 	}
 
 	@Override
 	public void dispose()
 	{
-		boundsManager.removeConstrainSpaceListener(constrainSpaceListener);
-		solutionGenerator.removeReadyListener(generateSolutionsListener);
+		solver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
+		solver.getSolutionGenerator().removeReadyListener(generateSolutionsListener);
 		super.dispose();
 	}
 
@@ -571,7 +567,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_debugMode.isChecked())
-			showBoundedStates(boundsManager.getSpace().states());
+			showBoundedStates(solver.getProblemSpace().states());
 	}
 
 	@Override
@@ -686,7 +682,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 
 	@Override
-	public void legsScored(ArrayList<CoreLeg> theLegs)
+	public void legsScored(List<CoreLeg> theLegs)
 	{
 		// forget the solutions, they're no longer valid
 		_lastSetOfSolutions = null;
@@ -696,7 +692,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		redoChart();
 	}
 
-	private void showLegsWithScores(ArrayList<CoreLeg> theLegs)
+	private void showLegsWithScores(List<CoreLeg> theLegs)
 	{
 		_lastSetOfScoredLegs = theLegs;
 
@@ -1017,6 +1013,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void startingGeneration()
 	{
 		// don't worry about it.
+	}
+	
+	@Override
+	public void finishedGeneration()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

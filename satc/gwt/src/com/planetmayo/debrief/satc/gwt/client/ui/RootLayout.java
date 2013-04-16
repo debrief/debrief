@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.planetmayo.debrief.satc.gwt.client.Gwt;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.support.TestSupport;
 
 /**
@@ -38,22 +39,22 @@ public class RootLayout extends Composite
 	private static RootLayoutUiBinder uiBinder = GWT
 			.create(RootLayoutUiBinder.class);
 	
-	IBoundsManager boundsManager;
+	ISolver solver;
 
 	public RootLayout()
 	{
-		boundsManager = Gwt.getInstance().getBoundsManager();
+		solver = Gwt.getInstance().getBoundsManager();
 		initWidget(uiBinder.createAndBindUi(this));
 
 		// HERE YOU CAN PUT YOUR LOGIC
 		TestSupport testP = new TestSupport();
-		testP.setGenerator(boundsManager);
+		testP.setGenerator(solver);
 
-		testHarness.setGenerator(boundsManager);
+		testHarness.setGenerator(solver);
 		testHarness.setTestSupport(testP);
 
-		boundsManager.addConstrainSpaceListener(tabularStates);
-		boundsManager.addConstrainSpaceListener(spatialStates);
+		solver.getBoundsManager().addConstrainSpaceListener(tabularStates);
+		solver.getBoundsManager().addConstrainSpaceListener(spatialStates);
 	}
 
 }

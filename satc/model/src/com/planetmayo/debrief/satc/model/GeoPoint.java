@@ -14,8 +14,8 @@ public class GeoPoint extends ModelObject
 	public static final String LAT = "lat";
 	public static final String LON = "lon";
 
-	private double lat;
-	private double lon;
+	private volatile double lat;
+	private volatile double lon;
 
 	public GeoPoint(final double lat, final double lon)
 	{

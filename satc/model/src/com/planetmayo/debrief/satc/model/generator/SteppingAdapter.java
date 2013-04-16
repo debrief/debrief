@@ -1,6 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
@@ -37,12 +37,17 @@ public class SteppingAdapter implements
 	}
 
 	@Override
-	public void legsScored(ArrayList<CoreLeg> theLegs)
+	public void legsScored(List<CoreLeg> theLegs)
 	{
 	}
 
 	@Override
 	public void startingGeneration()
+	{
+	}
+
+	@Override
+	public void finishedGeneration()
 	{
 	}
 }

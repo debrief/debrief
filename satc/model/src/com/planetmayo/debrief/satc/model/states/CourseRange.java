@@ -8,8 +8,8 @@ package com.planetmayo.debrief.satc.model.states;
  */
 public class CourseRange extends BaseRange<CourseRange>
 {
-	private double _min;
-	private double _max;
+	private volatile double _min;
+	private volatile double _max;
 
 	public String toDebugString()
 	{

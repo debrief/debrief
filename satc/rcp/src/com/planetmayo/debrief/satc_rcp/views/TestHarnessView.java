@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -43,6 +47,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -80,7 +85,7 @@ public class TestHarnessView extends ViewPart
 	 * ignore it and always show the same content (like Task List, for example).
 	 */
 
-	private IBoundsManager boundsManager;
+	private ISolver solver;
 
 	private Action _restartAction;
 	private Action _stepAction;
@@ -127,8 +132,8 @@ public class TestHarnessView extends ViewPart
 		contributeToActionBars();
 
 		// disable our controls, until we find a genny
-		boundsManager = SATC_Activator.getDefault().getService(
-				IBoundsManager.class, true);
+		solver = SATC_Activator.getDefault().getService(
+				ISolver.class, true);
 		startListeningTo();
 
 		Composite checkBoxForm = new Composite(form, SWT.NONE);
@@ -243,7 +248,27 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				doLoad();
+				//doLoad();
+				Job job = new Job("Generate Solutions") {
+					
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
+						monitor.beginTask(getName(), 10);
+						double a = 0;
+						for (int i = 0; i < 10; i++) {
+							try {
+								Thread.sleep(3000);
+							} catch (InterruptedException ex) {
+								//....
+							}
+							a += 1d;
+							monitor.internalWorked(a);
+							monitor.subTask("Part " + (i + 1) + " of 10: Generate Routes");
+						}
+						return Status.OK_STATUS;
+					}
+				};
+				job.schedule();
 			}
 		});
 
@@ -257,8 +282,7 @@ public class TestHarnessView extends ViewPart
 	private void doSave()
 	{
 		List<BaseContribution> contributions = new ArrayList<BaseContribution>();
-		for (BaseContribution baseContribution : boundsManager
-				.getContributions())
+		for (BaseContribution baseContribution : solver.getContributions())
 		{
 			contributions.add(baseContribution);
 		}
@@ -426,7 +450,7 @@ public class TestHarnessView extends ViewPart
 			public void run()
 			{
 				// clear the bounded states
-				boundsManager.clear();
+				solver.clear();
 			}
 		};
 		_clearAction.setText("Clear");
@@ -448,7 +472,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				boundsManager.setLiveRunning(_liveAction.isChecked());
+				//solver.setLiveRunning(_liveAction.isChecked());
 			}
 		};
 		_liveAction.setChecked(true);
@@ -459,7 +483,7 @@ public class TestHarnessView extends ViewPart
 			public void run()
 			{
 				// clear the bounded states
-				boundsManager.restart();
+				solver.getBoundsManager().restart();
 			}
 		};
 		_restartAction.setText("Restart");
@@ -470,7 +494,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				boundsManager.step();
+				solver.getBoundsManager().step();
 			}
 		};
 		_stepAction.setText("Step");
@@ -481,7 +505,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				boundsManager.run();
+				solver.run();
 			}
 		};
 		_playAction.setText("Play");
@@ -501,10 +525,10 @@ public class TestHarnessView extends ViewPart
 	{
 		enableControls(true);
 
-		_testSupport.setGenerator(boundsManager);
+		_testSupport.setGenerator(solver);
 
 		// sort out the 'live' setting
-		_liveAction.setChecked(boundsManager.isLiveEnabled());
+		//_liveAction.setChecked(boundsManager.isLiveEnabled());
 	}
 
 	protected void stopListeningTo()
@@ -515,7 +539,7 @@ public class TestHarnessView extends ViewPart
 
 	private void doLoad()
 	{
-		FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
+		/*FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
 		dialog.setFilterExtensions(new String[]
 		{ "*.xml" });
 		String fileSelected = dialog.open();
@@ -556,7 +580,7 @@ public class TestHarnessView extends ViewPart
 			{
 				ex.printStackTrace();
 			}
-		}
+		}*/
 	}
 
 	static class XstreamVersionHandler

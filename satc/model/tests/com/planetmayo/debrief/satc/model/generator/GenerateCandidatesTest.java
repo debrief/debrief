@@ -53,7 +53,7 @@ public class GenerateCandidatesTest extends ModelTestBase
 	private BearingMeasurementContribution bearingMeasurementContribution;
 	private CourseForecastContribution courseForecastContribution;
 
-	@Before
+	/*@Before
 	public void prepareBoundsManager()
 	{
 		boundsManager = new BoundsManager();
@@ -674,9 +674,6 @@ public class GenerateCandidatesTest extends ModelTestBase
 	private static class PredicableForecastContribution extends BaseContribution
 	{
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 
@@ -707,5 +704,5 @@ public class GenerateCandidatesTest extends ModelTestBase
 			return ContributionDataType.FORECAST;
 		}
 		
-	}
+	}*/
 }

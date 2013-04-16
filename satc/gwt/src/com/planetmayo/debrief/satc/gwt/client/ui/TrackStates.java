@@ -13,8 +13,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.gwt.client.Gwt;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -60,9 +62,12 @@ public class TrackStates extends Composite implements IConstrainSpaceListener
 
 	// TODO: Akash - this will actually be a GWT uiField, a toggle button
 	Boolean _inDebug = false;
+	
+	ISolver solver;
 
 	public TrackStates()
 	{
+		solver = Gwt.getInstance().getBoundsManager();
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
@@ -96,7 +101,7 @@ public class TrackStates extends Composite implements IConstrainSpaceListener
 	public void statesBounded(IBoundsManager boundsManager)
 	{
 		clearGrid();
-		Collection<BoundedState> states = boundsManager.getSpace().states();
+		Collection<BoundedState> states = solver.getProblemSpace().states();
 		// do we have states?
 		if ((states != null) && states.size() > 0)
 		{

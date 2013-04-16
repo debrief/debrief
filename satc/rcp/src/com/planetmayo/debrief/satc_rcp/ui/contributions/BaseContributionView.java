@@ -30,7 +30,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
@@ -75,15 +76,15 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
 	
-	private IBoundsManager boundsManager;
+	private IContributions contributions;
 
 
 	public BaseContributionView(final Composite parent, final T contribution)
 	{
 		this.controlParent = parent;
 		this.contribution = contribution;
-		boundsManager = SATC_Activator.getDefault().getService(
-				IBoundsManager.class, true);
+		contributions = SATC_Activator.getDefault().getService(
+				ISolver.class, true).getContributions();
 	}
 
 	protected PropertyChangeListener attachTitleChangeListener(
@@ -400,7 +401,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			@Override
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				boundsManager.removeContribution(contribution);
+				contributions.removeContribution(contribution);
 			}
 		});
 	

@@ -1,47 +1,54 @@
-package com.planetmayo.debrief.satc.model.generator;
+package com.planetmayo.debrief.satc.model.generator.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
+import com.planetmayo.debrief.satc.model.generator.IJobsManager;
+import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.jobs.Job;
+import com.planetmayo.debrief.satc.model.generator.jobs.ProgressMonitor;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
-public class SolutionGenerator implements IConstrainSpaceListener,
-		ISolutionGenerator, IContributionsChangedListener
+public class SolutionGenerator implements ISolutionGenerator
 {
 
+	private final IContributions contributions;
+	
+	private final IJobsManager jobsManager;
+	
+	private final ProblemSpaceView problemSpaceView;
+	
 	/**
 	 * anybody interested in a new solution being ready?
 	 * 
 	 */
-	final private ArrayList<IGenerateSolutionsListener> _readyListeners;
+	final private Set<IGenerateSolutionsListener> _readyListeners;
 
 	/**
 	 * the current set of legs
 	 * 
 	 */
 	private ArrayList<CoreLeg> _theLegs;
-
-	/**
-	 * the source of states plus contributions
-	 * 
-	 */
-	private IBoundsManager _boundsManager;
 
 	/**
 	 * how precisely to do the calcs
@@ -56,22 +63,44 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	private final String[] _interestingProperties =
 	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
 
-	private PropertyChangeListener _contListener;
-
-	public SolutionGenerator()
+	public SolutionGenerator(IContributions contributions, IJobsManager jobsManager, ProblemSpaceView problemSpace)
 	{
-		_readyListeners = new ArrayList<IGenerateSolutionsListener>();
+		this.jobsManager = jobsManager;
+		this.contributions = contributions;
+		this.problemSpaceView = problemSpace;
+		_readyListeners = SupportServices.INSTANCE.getUtilsService()
+				.newConcurrentSet();
 
-		_contListener = new PropertyChangeListener()
+		for (String property : _interestingProperties)
 		{
-			@Override
-			public void propertyChange(PropertyChangeEvent arg0)
+			contributions.addPropertyListener(property, new PropertyChangeListener()
 			{
-				// ok, the way the scores are calculated may have changed, recalculate
-				// the scores
-				recalculateTopLegs();
-			}
-		};
+				@Override
+				public void propertyChange(PropertyChangeEvent arg0)
+				{
+					// ok, the way the scores are calculated may have changed, recalculate
+					// the scores
+					fireStartingGeneration();
+					SolutionGenerator.this.jobsManager.schedule(new Job<Void, Void>("Recalculate Top Legs") {
+
+						@Override
+						protected <E> Void run(ProgressMonitor monitor,
+								Job<Void, E> previous) throws InterruptedException
+						{
+							recalculateTopLegs();
+							return null;
+						}
+
+						@Override
+						protected void onComplete()
+						{
+							fireFinishedGeneration();
+						}
+						
+					});
+				}
+			});
+		}
 	}
 
 	/*
@@ -100,55 +129,100 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		_readyListeners.remove(listener);
 	}
 
-	public void statesBounded(final IBoundsManager boundsManager)
-	{
-		doGenerateSolutions(boundsManager);
-	}
-
-	private void doGenerateSolutions(final IBoundsManager boundsManager)
+	@Override
+	public void generateSolutions()
 	{
 		System.out.println("running generator at:" + new Date());
 
-		// TODO: Akash - we should put each of these major steps into sequential
-		// Eclipse jobs, then
-		// the users are in the picture for how long things take to process
-		// here's an overview article:
-		// ==> http://www.eclipse.org/articles/Article-Concurrency/jobs-api.html
-		// here's a Stack Overflow on sequencing them:
-		// ==> http://stackoverflow.com/questions/13476908
-
 		// spread the good news
 		fireStartingGeneration();
-
-		_boundsManager = boundsManager;
-
-		// ok - it's complete. now we can process it
-		ProblemSpace mySpace = boundsManager.getSpace();
 
 		// clear the legs
 		if (_theLegs != null)
 			_theLegs.clear();
 
 		// get the legs (JOB)
-		_theLegs = getTheLegs(mySpace.states());
+		Job<Void, Void> getLegsJob = jobsManager.schedule(new Job<Void, Void>("Get the legs")
+		{
 
-		// get the legs to dice themselves up (JOB)
-		generateRoutes(_theLegs);
+			@Override
+			public <E> Void run(ProgressMonitor monitor, Job<Void, E> previous)
+			{
+				monitor.beginTask(getName(), 1);
+				_theLegs = getTheLegs(problemSpaceView.states());
+				monitor.done();
+				return null;
+			}
+		});
+		
 
-		// get the legs to sort out what is achievable (JOB)
-		decideAchievable(_theLegs);
+		Job<Void, Void> generateRoutesJob = jobsManager.scheduleAfter(new Job<Void, Void>("Generate routes") 
+		{
 
-		// do the fancy multiplication (JOB)
-		int[][] achievableRes = calculateAchievableRoutesFor(_theLegs);
+			@Override
+			public <E> Void run(ProgressMonitor monitor, Job<Void, E> previous)
+			{
+				monitor.beginTask(getName(), 1);
+				generateRoutes(_theLegs);
+				monitor.done();
+				return null;
+			}			
+		}, getLegsJob);
+		
+		Job<Void, Void> decideAchievableJob = jobsManager.scheduleAfter(new Job<Void, Void>("Decide achievable routes") 
+		{
 
-		// ditch the duff permutations (JOB)
-		cancelUnachievable(_theLegs, achievableRes);
+			@Override
+			public <E> Void run(ProgressMonitor monitor, Job<Void, E> previous)
+			{
+				monitor.beginTask(getName(), 1);
+				decideAchievable(_theLegs);
+				monitor.done();
+				return null;
+			}			
+		}, generateRoutesJob);		
+		
+		Job<int[][], Void> achievableResJob = jobsManager.scheduleAfter(new Job<int[][], Void>("achievableRes") 
+		{
 
-		// ok, look for the top performer (JOB)
-		recalculateTopLegs();
+			@Override
+			public <E> int[][] run(ProgressMonitor monitor, Job<Void, E> previous)
+			{
+				monitor.beginTask(getName(), 1);
+				return calculateAchievableRoutesFor(_theLegs);
+			}			
+		}, decideAchievableJob);
+		
+		Job<Void, int[][]> cancelUnachievableJob = jobsManager.scheduleAfter(new Job<Void, int[][]>("Cancel unachievable routes") 
+		{
 
-		System.out.println(" - generator complete at:" + new Date());
+			@Override
+			public <E> Void run(ProgressMonitor monitor, Job<int[][], E> previous)
+			{
+				monitor.beginTask(getName(), 1);
+				cancelUnachievable(_theLegs, previous.getResult());
+				return null;
+			}			
+		}, achievableResJob);				
 
+		jobsManager.scheduleAfter(new Job<Void, Void>("Recalculate top legs") 
+		{
+
+			@Override
+			public <E> Void run(ProgressMonitor monitor, Job<Void, E> previous)
+			{
+				monitor.beginTask(getName(), 1);
+				recalculateTopLegs();
+				System.out.println(" - generator complete at:" + new Date());
+				return null;
+			}
+
+			@Override
+			protected void onComplete()
+			{
+				fireFinishedGeneration();
+			}
+		}, cancelUnachievableJob);
 	}
 
 	/**
@@ -159,11 +233,11 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	void recalculateTopLegs()
 	{
 		// just check we have data
-		if (_boundsManager == null || _theLegs == null)
+		if (_theLegs == null)
 			return;
 
 		// score the possible routes
-		calculateRouteScores(_boundsManager.getContributions(), _theLegs);
+		calculateRouteScores(contributions.getContributions(), _theLegs);
 
 		// share the news
 		fireLegsScored(_theLegs);
@@ -456,48 +530,14 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		return res;
 	}
 
-	/**
-	 * utility interface to make it easy to operate on all legs
-	 * 
-	 * @author Ian
-	 * 
-	 */
-	public static interface LegOperation
-	{
-		/**
-		 * operate on this leg
-		 * 
-		 * @param thisLeg
-		 */
-		public void apply(CoreLeg thisLeg);
-	}
-
 	@Override
-	public void restarted(IBoundsManager boundsManager)
-	{
-		clearCalcs();
-	}
-
-	@Override
-	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
-	{
-		clearCalcs();
-	}
-
-	private void clearCalcs()
+	public void clear()
 	{
 		if (_theLegs != null)
 		{
 			_theLegs.clear();
 			_theLegs = null;
 		}
-		_boundsManager = null;
-	}
-
-	@Override
-	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
-	{
-		// ignore
 	}
 
 	/**
@@ -508,9 +548,10 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 	 */
 	private void fireLegsScored(ArrayList<CoreLeg> theLegs)
 	{
+		List<CoreLeg> legs = Collections.unmodifiableList(new ArrayList<CoreLeg>(theLegs));
 		for (IGenerateSolutionsListener listener : _readyListeners)
 		{
-			listener.legsScored(theLegs);
+			listener.legsScored(legs);
 		}
 
 	}
@@ -528,6 +569,20 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 			listener.startingGeneration();
 		}
 	}
+	
+	/**
+	 * we've sorted out the leg scores
+	 * 
+	 * @param theLegs
+	 * 
+	 */
+	private void fireFinishedGeneration()
+	{
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			listener.finishedGeneration();
+		}
+	}	
 
 	/**
 	 * we have some solutions
@@ -550,27 +605,23 @@ public class SolutionGenerator implements IConstrainSpaceListener,
 		_myPrecision = precision;
 
 		// ok, re-do the whole process
-		if (_boundsManager != null)
-			statesBounded(_boundsManager);
+		if (problemSpaceView.size() != 0)
+			generateSolutions();
 	}
-
-	@Override
-	public void added(BaseContribution contribution)
-	{ // start listening to our interesting properties
-		for (String property : _interestingProperties)
-		{
-			contribution.addPropertyChangeListener(property, _contListener);
-		}
-	}
-
-	@Override
-	public void removed(BaseContribution contribution)
+	
+	/**
+	 * utility interface to make it easy to operate on all legs
+	 * 
+	 * @author Ian
+	 * 
+	 */
+	public static interface LegOperation
 	{
-		// stop listening to our interesting properties
-		for (String property : _interestingProperties)
-		{
-			contribution.removePropertyChangeListener(property, _contListener);
-		}
-	}
-
+		/**
+		 * operate on this leg
+		 * 
+		 * @param thisLeg
+		 */
+		public void apply(CoreLeg thisLeg);
+	}	
 }

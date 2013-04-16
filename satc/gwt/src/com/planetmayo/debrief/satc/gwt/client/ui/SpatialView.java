@@ -25,8 +25,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
+import com.planetmayo.debrief.satc.gwt.client.Gwt;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -69,12 +71,15 @@ public class SpatialView extends Composite implements IConstrainSpaceListener
 	
 	// TODO: Akash - this will actually be a GWT uiField, a toggle button
 	Boolean _inDebug = false;
+	
+	ISolver solver;
 
 	private static SpatialViewUiBinder uiBinder = GWT
 			.create(SpatialViewUiBinder.class);
 
 	public SpatialView()
 	{
+		solver = Gwt.getInstance().getBoundsManager();
 		initWidget(uiBinder.createAndBindUi(this));
 
 		// format the plot
@@ -116,7 +121,7 @@ public class SpatialView extends Composite implements IConstrainSpaceListener
 	@Override
 	public void statesBounded(IBoundsManager boundsManager)
 	{
-		plotThis(boundsManager.getSpace().states());		
+		plotThis(solver.getProblemSpace().states());		
 	}
 
 	@Override
@@ -125,14 +130,14 @@ public class SpatialView extends Composite implements IConstrainSpaceListener
 		// ok, do a clear, so we redraw afresh
 		clearPlot();
 		
-		plotThis(boundsManager.getSpace().states());		
+		plotThis(solver.getProblemSpace().states());		
 	}
 
 	@Override
 	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
 	{
 		if (_inDebug)
-			plotThis(boundsManager.getSpace().states());		
+			plotThis(solver.getProblemSpace().states());		
 	}
 
 	@Override

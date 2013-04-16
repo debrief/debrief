@@ -17,13 +17,13 @@ public class ProblemSpace
 	 * this map of bounded states, stored by time
 	 * 
 	 */
-	private TreeMap<Date, BoundedState> _boundedStates;
+	private final TreeMap<Date, BoundedState> _boundedStates;
 
 	/**
 	 * the performance characeristics of the subject vehicle
 	 * 
 	 */
-	private VehicleType _vType;
+	private volatile VehicleType _vType;
 
 	public ProblemSpace()
 	{

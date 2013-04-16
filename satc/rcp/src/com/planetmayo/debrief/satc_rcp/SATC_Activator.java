@@ -10,15 +10,23 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import com.planetmayo.debrief.satc.model.generator.BoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
-import com.planetmayo.debrief.satc.model.generator.SolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.impl.BoundsManager;
+import com.planetmayo.debrief.satc.model.generator.impl.Contributions;
+import com.planetmayo.debrief.satc.model.generator.impl.SolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.Solver;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
+import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
 import com.planetmayo.debrief.satc.support.SupportServices;
+import com.planetmayo.debrief.satc_rcp.jobs.RCPJobsManager;
 import com.planetmayo.debrief.satc_rcp.services.RCPUtilsService;
 import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
 import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
@@ -71,18 +79,19 @@ public class SATC_Activator extends AbstractUIPlugin
 
 	private void registerServices(BundleContext context)
 	{
+		ProblemSpace problemSpace = new ProblemSpace();
+		IContributions contributions = new Contributions();	
+		IJobsManager jobsManager = new RCPJobsManager();
+		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
+		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new ProblemSpaceView(problemSpace));
+		ISolver solver = new Solver(contributions, problemSpace, boundsManager, generator, jobsManager);
+		
 		context.registerService(IVehicleTypesManager.class,
 				new MockVehicleTypesManager(), new Hashtable<String, Object>());
 		context.registerService(IContributionsManager.class, 
 				new ContributionsManagerImpl(), new Hashtable<String, Object>());
-		BoundsManager boundsM = new BoundsManager();
-		context.registerService(IBoundsManager.class, 
-				boundsM, new Hashtable<String, Object>());
-		SolutionGenerator solutionG = new SolutionGenerator();
-		boundsM.setGenerator(solutionG);
-		boundsM.addContributionsListener(solutionG);
-		context.registerService(ISolutionGenerator.class, 
-				solutionG, new Hashtable<String, Object>());
+		context.registerService(ISolver.class, 
+				solver, new Hashtable<String, Object>());
 	}
 
 	@Override

@@ -8,8 +8,8 @@ package com.planetmayo.debrief.satc.model.states;
  */
 public class SpeedRange extends BaseRange<SpeedRange>
 {
-	private double _minSpeed;
-	private double _maxSpeed;
+	private volatile double _minSpeed;
+	private volatile double _maxSpeed;
 
 	public SpeedRange(double minSpd, double maxSpd)
 	{

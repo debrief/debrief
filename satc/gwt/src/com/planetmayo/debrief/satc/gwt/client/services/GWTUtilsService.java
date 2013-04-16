@@ -1,7 +1,9 @@
 package com.planetmayo.debrief.satc.gwt.client.services;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -24,7 +26,7 @@ public class GWTUtilsService implements UtilsService
 	}
 
 	@Override
-	public <T> T higherElement(TreeSet<T> set, T currentElement)
+	public <T> T higherElement(SortedSet<T> set, T currentElement)
 	{
 		if (set == null || set.isEmpty())
 		{
@@ -42,5 +44,15 @@ public class GWTUtilsService implements UtilsService
 		Iterator<T> iterator = tail.iterator();
 		iterator.next();
 		return iterator.next();
+	}
+
+	@Override
+	public <T> SortedSet<T> newConcurrentSortedSet() {
+		return new TreeSet<T>();
+	}
+
+	@Override
+	public <T> Set<T> newConcurrentSet() {
+		return new HashSet<T>();
 	}
 }

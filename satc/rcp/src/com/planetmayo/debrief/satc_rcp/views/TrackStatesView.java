@@ -22,6 +22,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
@@ -108,7 +109,7 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.TrackStatesView";
 
-	private IBoundsManager boundsManager;
+	private ISolver solver;
 
 	private TableViewer viewer;
 	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
@@ -134,8 +135,8 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	@Override
 	public void createPartControl(Composite parent)
 	{
-		boundsManager = SATC_Activator.getDefault().getService(
-				IBoundsManager.class, true);
+		solver = SATC_Activator.getDefault().getService(
+				ISolver.class, true);
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -266,20 +267,20 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 
 		constrainSpaceListener = UIListener.wrap(parent.getDisplay(), 
 				IConstrainSpaceListener.class, this);
-		boundsManager.addConstrainSpaceListener(constrainSpaceListener);
+		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
 	}
 
 	@Override
 	public void dispose()
 	{
-		boundsManager.removeConstrainSpaceListener(constrainSpaceListener);
+		solver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
 		super.dispose();
 	}
 
 	@Override
 	public void statesBounded(IBoundsManager boundsManager)
 	{
-		viewer.setInput(boundsManager.getSpace().states());
+		viewer.setInput(solver.getProblemSpace().states());
 	}
 
 	@Override
@@ -307,7 +308,7 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	{
 		if (_debugMode.isChecked())
 		{
-			viewer.setInput(boundsManager.getSpace().states());
+			viewer.setInput(solver.getProblemSpace().states());
 		}
 	}
 

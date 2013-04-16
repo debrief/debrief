@@ -14,7 +14,7 @@ public class LocationRange extends BaseRange<LocationRange>
 	 * the range of locations we allow
 	 * 
 	 */
-	private Geometry _myArea;
+	private volatile Geometry _myArea;
 
 	/**
 	 * copy constructor

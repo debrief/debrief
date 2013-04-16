@@ -1,7 +1,8 @@
 package com.planetmayo.debrief.satc.support;
 
 import java.util.Date;
-import java.util.TreeSet;
+import java.util.Set;
+import java.util.SortedSet;
 
 public interface UtilsService
 {
@@ -10,5 +11,9 @@ public interface UtilsService
 
 	Date parseDate(String pattern, String text);
 
-	<T> T higherElement(TreeSet<T> set, T currentElement);
+	<T> T higherElement(SortedSet<T> set, T currentElement);
+	
+	<T> SortedSet<T> newConcurrentSortedSet();
+	
+	<T> Set<T> newConcurrentSet();
 }

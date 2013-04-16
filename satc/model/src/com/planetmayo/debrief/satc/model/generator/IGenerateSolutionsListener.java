@@ -1,6 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
@@ -14,7 +14,7 @@ public interface IGenerateSolutionsListener
 	 * @param theLegs
 	 * 
 	 */
-	void legsScored(ArrayList<CoreLeg> theLegs);
+	void legsScored(List<CoreLeg> theLegs);
 
 	/**
 	 * we have some solutions
@@ -27,4 +27,6 @@ public interface IGenerateSolutionsListener
 	 * 
 	 */
 	void startingGeneration();
+	
+	void finishedGeneration();
 }

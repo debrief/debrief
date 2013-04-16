@@ -41,8 +41,8 @@ import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribut
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
 
 public class MaintainContributionsView extends Composite implements IContributionsChangedListener
 {
@@ -84,7 +84,7 @@ public class MaintainContributionsView extends Composite implements IContributio
 	@UiField
 	HTMLPanel analystContributions;	
 	
-	private IBoundsManager boundsManager;
+	private ISolver solver;
 
 	private HashMap<BaseContribution, IsWidget> _uiInstances = new HashMap<BaseContribution, IsWidget>();
 
@@ -92,7 +92,7 @@ public class MaintainContributionsView extends Composite implements IContributio
 
 	public MaintainContributionsView()
 	{
-		boundsManager = Gwt.getInstance().getBoundsManager();
+		solver = Gwt.getInstance().getBoundsManager();
 		initWidget(uiBinder.createAndBindUi(this));
 		header.setCellWidth(active, "20%");
 		header.setCellWidth(estimate, "30%");
@@ -102,7 +102,7 @@ public class MaintainContributionsView extends Composite implements IContributio
 		populateContributionList(Gwt.getInstance().getContributionsManager().getAvailableContributions());
 		populatePrecisionsList(Precision.values());
 		populateVehicleTypesList(Gwt.getInstance().getVehicleTypesManager().getAllTypes());
-		boundsManager.addContributionsListener(this);
+		solver.getContributions().addContributionsChangedListener(this);
 	}
 
 
@@ -160,7 +160,7 @@ public class MaintainContributionsView extends Composite implements IContributio
 	{
 		// get the particular type
 		VehicleType vType = _theVehicleTypes.get(vehicleTypes.getSelectedIndex());
-		boundsManager.setVehicleType(vType);		
+		solver.setVehicleType(vType);		
 	}
 
 	@UiHandler("add")
@@ -182,7 +182,7 @@ public class MaintainContributionsView extends Composite implements IContributio
 				@Override
 				public void onClick(ClickEvent event)
 				{
-					boundsManager.addContribution(contributionBuilder.create());
+					solver.getContributions().addContribution(contributionBuilder.create());
 					contextMenu.hide();
 				}
 			});
