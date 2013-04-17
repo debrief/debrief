@@ -7,10 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -46,7 +42,6 @@ import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -248,27 +243,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				//doLoad();
-				Job job = new Job("Generate Solutions") {
-					
-					@Override
-					protected IStatus run(IProgressMonitor monitor) {
-						monitor.beginTask(getName(), 10);
-						double a = 0;
-						for (int i = 0; i < 10; i++) {
-							try {
-								Thread.sleep(3000);
-							} catch (InterruptedException ex) {
-								//....
-							}
-							a += 1d;
-							monitor.internalWorked(a);
-							monitor.subTask("Part " + (i + 1) + " of 10: Generate Routes");
-						}
-						return Status.OK_STATUS;
-					}
-				};
-				job.schedule();
+				doLoad();
 			}
 		});
 
@@ -539,7 +514,7 @@ public class TestHarnessView extends ViewPart
 
 	private void doLoad()
 	{
-		/*FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
+		FileDialog dialog = new FileDialog(_shell, SWT.OPEN);
 		dialog.setFilterExtensions(new String[]
 		{ "*.xml" });
 		String fileSelected = dialog.open();
@@ -566,21 +541,21 @@ public class TestHarnessView extends ViewPart
 
 				if (contributionList != null)
 				{
-					boundsManager.clear();
+					solver.clear();
 					for (BaseContribution contribution : contributionList)
 					{
-						boundsManager.addContribution(contribution);
+						solver.getContributions().addContribution(contribution);
 					}
 				}
 
 				// ok, get the bounds manager to run, now that it's got it's data
-				boundsManager.run();
+				solver.run();
 			}
 			catch (Exception ex)
 			{
 				ex.printStackTrace();
 			}
-		}*/
+		}
 	}
 
 	static class XstreamVersionHandler
