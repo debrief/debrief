@@ -42,7 +42,37 @@ public class SpeedForecastContribution extends BaseContribution
 
 		// do we have an estimate?
 		if (getEstimate() != null)
-			delta = Math.abs(this.getEstimate() - thisState.getSpeed());
+		{
+			delta = this.getEstimate() - thisState.getSpeed();
+			
+			// ok - we 'normalise' this speed according to the max/min
+			Double limit;
+			
+			// is the state lower than the estimate?
+			if (delta > 0)
+			{
+				// ok, do we have a min value
+				limit = getMinSpeed();
+			}
+			else
+			{
+				// higher, use max
+				limit = getMaxSpeed();
+			}
+			
+			// do we have a relevant limit?
+			if (limit != null)
+			{
+				// what's the range from the estimate to the limit
+				double allowable = getEstimate() - limit;
+
+				// ok, and how far through this are we
+				delta = delta / allowable;
+			}
+
+			// ok, make it absolute
+			delta = Math.abs(delta);
+		}
 
 		return delta;
 	}

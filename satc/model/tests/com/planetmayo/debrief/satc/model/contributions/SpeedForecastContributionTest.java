@@ -49,6 +49,24 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 		return contribution;
 	}
 
+
+	@Test
+	public void testProportionalErrorCalc() throws Exception
+	{
+		SpeedForecastContribution sf = (SpeedForecastContribution) createContribution();
+		sf.setMaxSpeed(10d);
+		sf.setMinSpeed(2d);
+		sf.setEstimate(7d);
+		assertEquals("correct calc",1.2, sf.calcError(new State(sf.getStartDate(), null, 0, 1)), 0.001);
+		assertEquals("correct calc",1, sf.calcError(new State(sf.getStartDate(), null, 0, 2)), 0.001);
+		assertEquals("correct calc",0.6, sf.calcError(new State(sf.getStartDate(), null, 0, 4)), 0.001);
+		assertEquals("correct calc",0, sf.calcError(new State(sf.getStartDate(), null, 0, 7)), 0.001);
+		assertEquals("correct calc",0.33333, sf.calcError(new State(sf.getStartDate(), null, 0, 8)), 0.001);
+		assertEquals("correct calc",1, sf.calcError(new State(sf.getStartDate(), null, 0, 10)), 0.001);
+		assertEquals("correct calc",1.6666, sf.calcError(new State(sf.getStartDate(), null, 0, 12)), 0.001);
+	
+	}
+	
 	@Test
 	public void testActUpon() throws Exception
 	{
@@ -118,7 +136,7 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 		double thisScore = speed.calculateErrorScoreFor(theGoodRoute);
 		
 		// did it get called the correct num of times?
-		assertEquals("correct num calls", 3, _callCount);
+		assertEquals("correct num calls", 1, _callCount);
 		
 		assertEquals("good speed is low", 0.0,thisScore, 0.0001);
 
@@ -173,11 +191,11 @@ public class SpeedForecastContributionTest extends ForecastContributionTestBase
 		theSlowRoute.generateSegments(states);
 		theFastRoute.generateSegments(states);
 
-		assertEquals("good speed is low", 0.0148,
+		assertEquals("good speed is low", 0.0001,
 				speed.calculateErrorScoreFor(theGoodRoute), 0.0001);
-		assertEquals("slow score is high", 9.2592,
+		assertEquals("slow score is high", 0.3207,
 				speed.calculateErrorScoreFor(theSlowRoute), 0.0001);
-		assertEquals("fast score is high", 20.600,
+		assertEquals("fast score is high", 0.2860,
 				speed.calculateErrorScoreFor(theFastRoute), 0.0001);
 
 	}
