@@ -130,5 +130,17 @@ public interface IBoundsManager
 		 */
 		public void setShowRecommendedSolutions(boolean onOff);
 
+		/** whether to show time labels for the generated points
+		 * 
+		 * @param onOff
+		 */
+		void setShowRoutePointLabels(boolean onOff);
+
+		/** whether to show the generated points
+		 * 
+		 * @param onOff
+		 */
+		void setShowRoutePoints(boolean onOff);
+
 	}
 }

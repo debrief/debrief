@@ -195,14 +195,34 @@ public class TestHarnessView extends ViewPart
 				GeoSupport.getSolutionDiagnostics().setShowRoutes(btn5.getSelection());
 			}
 		});
-		final Button btn6 = new Button(group2, SWT.CHECK);
-		btn6.setText("Show routes with scores");
-		btn6.addSelectionListener(new SelectionAdapter()
+		final Button btn6a = new Button(group2, SWT.CHECK);
+		btn6a.setText("Show routes with scores");
+		btn6a.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
 				GeoSupport.getSolutionDiagnostics().setShowRoutesWithScores(
-						btn6.getSelection());
+						btn6a.getSelection());
+			}
+		});
+		final Button btn6b = new Button(group2, SWT.CHECK);
+		btn6b.setText("Show generated points");
+		btn6b.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				GeoSupport.getSolutionDiagnostics().setShowRoutePoints(
+						btn6b.getSelection());
+			}
+		});
+		final Button btn6c = new Button(group2, SWT.CHECK);
+		btn6c.setText("Show labels for generated points");
+		btn6c.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				GeoSupport.getSolutionDiagnostics().setShowRoutePointLabels(
+						btn6c.getSelection());
 			}
 		});
 		final Button btn7 = new Button(group2, SWT.CHECK);

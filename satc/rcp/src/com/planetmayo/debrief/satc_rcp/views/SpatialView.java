@@ -654,12 +654,14 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		redoChart();
 	}
 
+	@Override
 	public void setShowRoutePointLabels(boolean onOff)
 	{
 		_showRoutePointLabels = onOff;
 		redoChart();
 	}
 
+	@Override
 	public void setShowRoutePoints(boolean onOff)
 	{
 		_showRoutePoints = onOff;
@@ -971,57 +973,58 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				_renderer.setSeriesVisibleInLegend(num, false);
 
 				// ok, we'll also show the route points
-				if (_showRoutePoints)
+				XYSeries series2 = new XYSeries("" + (_numCycles++), false);
+
+				ArrayList<String> theseLabels = new ArrayList<String>();
+
+				// loop through the points
+				Iterator<State> stIter = route.rawRoute.getStates().iterator();
+				while (stIter.hasNext())
 				{
-					XYSeries series2 = new XYSeries("" + (_numCycles++), false);
-
-					ArrayList<String> theseLabels = new ArrayList<String>();
-
-					// loop through the points
-					Iterator<State> stIter = route.rawRoute.getStates().iterator();
-					while (stIter.hasNext())
-					{
-						State state = (State) stIter.next();
-						Point loc = state.getLocation();
-						XYDataItem newPt = new XYDataItem(loc.getY(), loc.getX());
-						series2.add(newPt);
-						// and store the label for this point
-						theseLabels.add(labelTimeFormat.format(state.getTime()));
-					}
-
-					// get the shape
-					_myData.addSeries(series2);
-					//
-					// // get the series num
-					num = _myData.getSeriesCount() - 1;
-
-					// ok, we now need to put hte series into the right slot
-					_scoredRouteLabels.put(num, theseLabels);
-
-					if (_showRoutePointLabels)
-					{
-						_renderer.setBaseItemLabelGenerator(new XYItemLabelGenerator()
-						{
-
-							@Override
-							public String generateLabel(XYDataset arg0, int arg1, int arg2)
-							{
-								String res = null;
-								ArrayList<String> thisList = _scoredRouteLabels.get(arg1);
-								if (thisList != null)
-								{
-									res = thisList.get(arg2);
-								}
-								return res;
-							}
-						});
-					}
-					// _renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
-					_renderer.setBaseItemLabelsVisible(true);
-					_renderer.setSeriesLinesVisible(num, false);
-					_renderer.setSeriesShapesVisible(num, true);
-					_renderer.setSeriesVisibleInLegend(num, false);
+					State state = (State) stIter.next();
+					Point loc = state.getLocation();
+					XYDataItem newPt = new XYDataItem(loc.getY(), loc.getX());
+					series2.add(newPt);
+					// and store the label for this point
+					theseLabels.add(labelTimeFormat.format(state.getTime()));
 				}
+
+				// get the shape
+				_myData.addSeries(series2);
+				//
+				// // get the series num
+				num = _myData.getSeriesCount() - 1;
+
+				// ok, we now need to put hte series into the right slot
+				_scoredRouteLabels.put(num, theseLabels);
+
+				if (_showRoutePointLabels)
+				{
+					_renderer.setSeriesItemLabelGenerator(num, new XYItemLabelGenerator()
+					{
+
+						@Override
+						public String generateLabel(XYDataset arg0, int arg1, int arg2)
+						{
+							String res = null;
+							ArrayList<String> thisList = _scoredRouteLabels.get(arg1);
+							if (thisList != null)
+							{
+								res = thisList.get(arg2);
+							}
+							return res;
+						}
+					});
+					_renderer.setSeriesItemLabelPaint(num,
+							getHeatMapColorFor(thisColorScore));
+				}
+
+				// _renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
+				_renderer.setSeriesItemLabelsVisible(num, _showRoutePointLabels);
+				_renderer.setSeriesLinesVisible(num, false);
+				_renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
+				_renderer.setSeriesShapesVisible(num, _showRoutePoints);
+				_renderer.setSeriesVisibleInLegend(num, false);
 
 			}
 		}

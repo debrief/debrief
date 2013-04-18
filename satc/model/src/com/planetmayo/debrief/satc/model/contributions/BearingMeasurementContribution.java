@@ -150,6 +150,9 @@ public class BearingMeasurementContribution extends BaseContribution
 		if (thisS == null)
 			return res;
 
+		// keep track of how many errors we calculate
+		int errCtr = 0;
+		
 		// ok. work through the bearings
 		Iterator<BMeasurement> iter = measurements.iterator();
 		while (iter.hasNext())
@@ -186,11 +189,19 @@ public class BearingMeasurementContribution extends BaseContribution
 
 				// what's the difference between that and my measurement
 				double thisError = Math.abs(bearing - m.bearingAngle);
-
+				
+				// we now need to 'normalise' this error.  The analyst has entered a 
+				// bearing error value. So, all points must be within that error range
+				
 				// and accumulate it
 				res += thisError;
+				
+				errCtr++;
 			}
 
+			// ok, we now need to calculate the mean error
+	//		res /= (double) errCtr;
+			
 		}
 		return res;
 	}

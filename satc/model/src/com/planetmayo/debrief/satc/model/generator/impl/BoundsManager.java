@@ -51,8 +51,8 @@ public class BoundsManager implements IBoundsManager
 	 * the problem space we consider
 	 */
 	private final ProblemSpace _space;
-	
-	/** 
+
+	/**
 	 * contributions
 	 */
 	private final IContributions _contributions;
@@ -63,16 +63,17 @@ public class BoundsManager implements IBoundsManager
 	 */
 	private final Set<IConstrainSpaceListener> _steppingListeners;
 
-//	private IConstrainSpaceListener _mysolGenny;
+	// private IConstrainSpaceListener _mysolGenny;
 
-//	private boolean _generateSolutions = false;
+	// private boolean _generateSolutions = false;
 
 	public BoundsManager(IContributions contributions, ProblemSpace space)
 	{
-		_steppingListeners = SupportServices.INSTANCE.getUtilsService().newConcurrentSet();
+		_steppingListeners = SupportServices.INSTANCE.getUtilsService()
+				.newConcurrentSet();
 		this._contributions = contributions;
 		this._space = space;
-		for (String property : _interestingProperties) 
+		for (String property : _interestingProperties)
 		{
 			_contributions.addPropertyListener(property, new PropertyChangeListener()
 			{
@@ -81,6 +82,9 @@ public class BoundsManager implements IBoundsManager
 				{
 					// let our custom method handle it
 					restart();
+
+					// ok, do a recalc
+					run();
 				}
 			});
 		}
@@ -276,7 +280,8 @@ public class BoundsManager implements IBoundsManager
 		}
 
 		// get next contribution
-		_currentContribution = _contributions.nextContribution(_currentContribution);
+		_currentContribution = _contributions
+				.nextContribution(_currentContribution);
 		if (_currentContribution != null)
 		{
 			// ok, go for it.
