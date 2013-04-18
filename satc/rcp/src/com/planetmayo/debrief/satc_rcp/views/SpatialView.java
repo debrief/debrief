@@ -150,6 +150,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private int _numRoutes = Integer.MAX_VALUE;
 	private boolean _showRoutePointLabels;
 	private boolean _showRoutePoints;
+	private boolean _showTargetSolution;
+	private List<State> _targetSolution;
 
 	@Override
 	public void clear(String title)
@@ -594,6 +596,16 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		redoChart();
 	}
+	
+
+	@Override
+	public void setShowTargetSolution(boolean onOff)
+	{
+		_showTargetSolution = onOff;
+		
+		redoChart();
+	}
+
 
 	@Override
 	public void setShowRecommendedSolutions(boolean onOff)
@@ -615,6 +627,30 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			showLegsWithScores(_lastSetOfScoredLegs);
 		if (_lastSetOfSolutions != null)
 			showTopSolutions(_lastSetOfSolutions);
+		if(_targetSolution != null)
+			plotTargetSolution(_targetSolution);
+	}
+
+	private void plotTargetSolution(List<State> solution)
+	{
+		// ok, get the target solution data
+		if(_showTargetSolution)
+		{
+			Coordinate [] coords = new Coordinate[solution.size()];
+			int ctr = 0;
+			for (Iterator<State> iterator = solution.iterator(); iterator.hasNext();)
+			{
+				State thisState = (State) iterator.next();
+				Coordinate coord = new Coordinate(thisState.getLocation().getY(), thisState.getLocation().getX());
+				coords[ctr++] = coord;
+			}
+			plotTheseCoordsAsALine("Solution", coords, Color.ORANGE);
+			
+			// get the series num
+			int num = _myData.getSeriesCount() - 1;
+			_renderer.setSeriesStroke(num, new BasicStroke(3));
+			
+		}
 	}
 
 	private void showTopSolutions(CompositeRoute[] lastSetOfSolutions2)
@@ -1135,6 +1171,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			setNumRoutes(_myNum);
 		}
 
+	}
+
+	@Override
+	public void setTargetSolution(
+			List<State> solution)
+	{
+		_targetSolution = solution;
 	}
 
 }
