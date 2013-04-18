@@ -173,6 +173,10 @@ public class StraightLeg extends CoreLeg
 			@Override
 			public void process(StraightRoute theRoute)
 			{
+				// do we already know this isn't possible?
+				if (!theRoute.isPossible())
+					return;
+
 				double distance = theRoute.getDistance();
 				double elapsed = theRoute.getElapsedTime();
 				double speed = distance / elapsed;
@@ -194,9 +198,12 @@ public class StraightLeg extends CoreLeg
 			@Override
 			public void process(StraightRoute theRoute)
 			{
+				// do we already know this isn't possible?
+				if (!theRoute.isPossible())
+					return;
 				double thisC = theRoute.getCourse();
 				CourseRange courseR = _states.get(0).getCourse();
-				
+
 				if (courseR == null)
 				{
 					// hey, no prob with me ;-)
