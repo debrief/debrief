@@ -51,14 +51,20 @@ public class CoreRoute
 	 */
 	protected double _myScore;
 	
+	/** whether we're in a straight or altering leg
+	 * 
+	 */
+	private LegType _legType;
+	
 	protected CoreRoute(Point startP, Point endP, Date startTime, Date endTime,
-			String name)
+			String name, LegType legType)
 	{
 		_startP = startP;
 		_endP = endP;
 		_startTime = startTime;
 		_endTime = endTime;
 		_name = name;
+		_legType = legType;
 	}
 
 	public State first()
@@ -108,6 +114,11 @@ public class CoreRoute
 	public ArrayList<State> getStates()
 	{
 		return _myStates;
+	}
+	
+	public LegType getType()
+	{
+		return _legType;
 	}
 
 	public void setScore(Double thisScore)

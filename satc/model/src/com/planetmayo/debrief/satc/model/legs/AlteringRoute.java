@@ -16,7 +16,7 @@ public class AlteringRoute extends CoreRoute
 	public AlteringRoute(String name, Point startP, Date startTime, Point endP,
 			Date endTime)
 	{
-		super(startP, endP, startTime, endTime, name);
+		super(startP, endP, startTime, endTime, name, LegType.ALTERING);
 		
 		// store the straight line distance
 		Vector2D vector = new Vector2D(_startP.getCoordinate(),

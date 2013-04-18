@@ -42,7 +42,7 @@ public class StraightRoute extends CoreRoute
 	 */
 	public StraightRoute(String name, Point startP, Date startTime, Point endP, Date endTime)
 	{
-		super(startP, endP, startTime, endTime, name);
+		super(startP, endP, startTime, endTime, name, LegType.STRAIGHT);
 
 		Vector2D vector = new Vector2D(_startP.getCoordinate(),
 				_endP.getCoordinate());
