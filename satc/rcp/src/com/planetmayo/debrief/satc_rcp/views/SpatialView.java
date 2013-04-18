@@ -420,11 +420,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 						int seriesIndex = _myData.getSeriesCount() - 1;
 
-						final float dash1[] =
-						{ 10f, 10f };
-						final BasicStroke dashed = new BasicStroke(1.0f);// ,
-						// BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1,
-						// 0.0f);
+//						final float dash1[] =
+//						{ 10f, 10f };
+//						final BasicStroke dashed = new BasicStroke(1.0f ,
+//						 BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1,
+//						 0.0f);
+						final BasicStroke dashed = new BasicStroke(1f);
 
 						_renderer.setSeriesStroke(seriesIndex, dashed);
 
@@ -1101,6 +1102,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	 */
 	private Color getHeatMapColorFor(double thisScore)
 	{
+		
 		final float range = 0.8f;
 		final float offset = 0.2f;
 
