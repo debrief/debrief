@@ -248,6 +248,14 @@ public class SolutionGenerator implements ISolutionGenerator
 		// and we're done, share the good news!
 		fireSolutionsReady(routes);
 	}
+	
+	
+
+	@Override
+	public ProblemSpaceView getProblemSpace()
+	{
+		return problemSpaceView;
+	}
 
 	/**
 	 * for the set of generated routes, work out which have the highest score

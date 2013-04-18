@@ -4,7 +4,7 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
 /**
- * interface for how to run a stepping data generator
+ * interface for how to constraint problem space
  * 
  * @author ian
  * 

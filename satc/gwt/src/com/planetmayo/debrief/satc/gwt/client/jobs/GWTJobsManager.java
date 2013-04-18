@@ -22,7 +22,7 @@ public class GWTJobsManager implements IJobsManager {
 		}
 		try 
 		{
-			job.runInternal(new EmptyMonitor(), previous);
+			job.startJob(new EmptyMonitor(), previous);
 		} 
 		catch (InterruptedException ex) 
 		{

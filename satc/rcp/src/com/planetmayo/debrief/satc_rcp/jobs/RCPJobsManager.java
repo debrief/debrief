@@ -104,7 +104,7 @@ public class RCPJobsManager implements IJobsManager
 						SupportServices.INSTANCE.getLog().error("Previous job: " + previous.getName() + " wasn't scheduled");
 						monitor.setCanceled(true);
 					}
-					job.runInternal(wrap(monitor), previous);
+					job.startJob(wrap(monitor), previous);
 					return Status.OK_STATUS;
 				} 
 				catch (InterruptedException ex) 
