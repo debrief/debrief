@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.math.Vector2D;
 
 @SuppressWarnings("deprecation")
 public class StraightLegTests extends ModelTestBase
@@ -164,7 +165,7 @@ public class StraightLegTests extends ModelTestBase
 				ctr++;
 		}
 		assertEquals("ran correct num times", 8, ctr);
-		
+
 		Collection<Integer> list = new ArrayList<Integer>();
 		list.add(1);
 		list.add(2);
@@ -176,19 +177,31 @@ public class StraightLegTests extends ModelTestBase
 		list.add(2);
 
 		assertEquals("correct length", 8, list.size());
-		
+
 		ctr = 0;
 		freq = 3;
 		for (int i = 0; i < 8; i++)
 		{
-			if (((i % freq) == 0) || (i == list.size()-1))
+			if (((i % freq) == 0) || (i == list.size() - 1))
 			{
 				ctr++;
 			}
 		}
 		assertEquals("ran correct num times (including hte last instance", 4, ctr);
-		
-		
+
+	}
+
+	@Test
+	public void testRouteCourseCalc()
+	{
+		// find the course
+		assertEquals("correct course", 45f, Math.toDegrees( new Vector2D(new Coordinate(0, 0),
+				new Coordinate(1, 1)).angle()), 0.0001);
+		// find the course
+		assertEquals("correct course", 0f, ( Math.toDegrees(Math.PI/2 -  new Vector2D(new Coordinate(0, 0),
+				new Coordinate(0, 1)).angle())), 0.0001);
+		assertEquals("correct course", 90f, Math.toDegrees(Math.PI/2 - new Vector2D(new Coordinate(0, 0),
+				new Coordinate(1, 0)).angle()), 0.0001);
 	}
 
 	@Test
