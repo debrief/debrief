@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -43,6 +45,7 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
@@ -133,9 +136,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private CompositeRoute[] _lastSetOfSolutions;
 
+	private final HashMap<Integer, ArrayList<String>> _scoredRouteLabels = new HashMap<Integer, ArrayList<String>>();
+
 	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat(
 			"hh:mm:ss");
-	
+
 	private IConstrainSpaceListener constrainSpaceListener;
 	private IGenerateSolutionsListener generateSolutionsListener;
 	/**
@@ -143,6 +148,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	 * 
 	 */
 	private int _numRoutes = Integer.MAX_VALUE;
+	private boolean _showRoutePointLabels;
+	private boolean _showRoutePoints;
 
 	@Override
 	public void clear(String title)
@@ -223,9 +230,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// tell the GeoSupport about us
 		GeoSupport.setPlotter(this, this, this);
-		constrainSpaceListener = UIListener.wrap(parent.getDisplay(), 
+		constrainSpaceListener = UIListener.wrap(parent.getDisplay(),
 				IConstrainSpaceListener.class, this);
-		generateSolutionsListener = UIListener.wrap(parent.getDisplay(), 
+		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
 				IGenerateSolutionsListener.class, this);
 		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
 		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
@@ -234,8 +241,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void dispose()
 	{
-		solver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
-		solver.getSolutionGenerator().removeReadyListener(generateSolutionsListener);
+		solver.getBoundsManager().removeConstrainSpaceListener(
+				constrainSpaceListener);
+		solver.getSolutionGenerator()
+				.removeReadyListener(generateSolutionsListener);
 		super.dispose();
 	}
 
@@ -411,9 +420,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 						final float dash1[] =
 						{ 10f, 10f };
-						final BasicStroke dashed = new BasicStroke(1.0f,
-								BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1,
-								0.0f);
+						final BasicStroke dashed = new BasicStroke(1.0f);// ,
+						// BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash1,
+						// 0.0f);
 
 						_renderer.setSeriesStroke(seriesIndex, dashed);
 
@@ -645,6 +654,18 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		redoChart();
 	}
 
+	public void setShowRoutePointLabels(boolean onOff)
+	{
+		_showRoutePointLabels = onOff;
+		redoChart();
+	}
+
+	public void setShowRoutePoints(boolean onOff)
+	{
+		_showRoutePoints = onOff;
+		redoChart();
+	}
+
 	@Override
 	public void setShowRoutesWithScores(boolean onOff)
 	{
@@ -672,12 +693,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		private final double theScore;
 		@SuppressWarnings("unused")
 		private final String theName;
+		private CoreRoute rawRoute;
 
-		public ScoredRoute(LineString route, String name, double score)
+		public ScoredRoute(LineString route, String name, double score,
+				CoreRoute rawRoute)
 		{
 			theRoute = route;
 			theScore = score;
 			theName = name;
+			this.rawRoute = rawRoute;
 		}
 	}
 
@@ -817,7 +841,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 								}
 
 								thisLegRes.add(new ScoredRoute(newR, thisRoute.getName(),
-										thisRoute.getScore()));
+										thisRoute.getScore(), thisRoute));
 
 							}
 						}
@@ -856,6 +880,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		if (legRoutes.size() == 0)
 			return;
+
+		// we need to store the point labels. get ready to store them
+		_scoredRouteLabels.clear();
+		final DateFormat labelTimeFormat = new SimpleDateFormat("mm:ss");
 
 		// work through the legs
 		Iterator<CoreLeg> lIter = legRoutes.keySet().iterator();
@@ -942,6 +970,59 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				_renderer.setSeriesShapesVisible(num, false);
 				_renderer.setSeriesVisibleInLegend(num, false);
 
+				// ok, we'll also show the route points
+				if (_showRoutePoints)
+				{
+					XYSeries series2 = new XYSeries("" + (_numCycles++), false);
+
+					ArrayList<String> theseLabels = new ArrayList<String>();
+
+					// loop through the points
+					Iterator<State> stIter = route.rawRoute.getStates().iterator();
+					while (stIter.hasNext())
+					{
+						State state = (State) stIter.next();
+						Point loc = state.getLocation();
+						XYDataItem newPt = new XYDataItem(loc.getY(), loc.getX());
+						series2.add(newPt);
+						// and store the label for this point
+						theseLabels.add(labelTimeFormat.format(state.getTime()));
+					}
+
+					// get the shape
+					_myData.addSeries(series2);
+					//
+					// // get the series num
+					num = _myData.getSeriesCount() - 1;
+
+					// ok, we now need to put hte series into the right slot
+					_scoredRouteLabels.put(num, theseLabels);
+
+					if (_showRoutePointLabels)
+					{
+						_renderer.setBaseItemLabelGenerator(new XYItemLabelGenerator()
+						{
+
+							@Override
+							public String generateLabel(XYDataset arg0, int arg1, int arg2)
+							{
+								String res = null;
+								ArrayList<String> thisList = _scoredRouteLabels.get(arg1);
+								if (thisList != null)
+								{
+									res = thisList.get(arg2);
+								}
+								return res;
+							}
+						});
+					}
+					// _renderer.setSeriesPaint(num, getHeatMapColorFor(thisColorScore));
+					_renderer.setBaseItemLabelsVisible(true);
+					_renderer.setSeriesLinesVisible(num, false);
+					_renderer.setSeriesShapesVisible(num, true);
+					_renderer.setSeriesVisibleInLegend(num, false);
+				}
+
 			}
 		}
 
@@ -1014,12 +1095,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	{
 		// don't worry about it.
 	}
-	
+
 	@Override
 	public void finishedGeneration()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
