@@ -156,14 +156,25 @@ public class TestHarnessView extends ViewPart
 						.setShowAllBounds(btn1.getSelection());
 			}
 		});
-		final Button btn2 = new Button(group1, SWT.CHECK);
-		btn2.setText("Show leg start bounds");
-		btn2.addSelectionListener(new SelectionAdapter()
+		final Button btn2a = new Button(group1, SWT.CHECK);
+		btn2a.setText("Show leg start bounds");
+		btn2a.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
 				GeoSupport.getProblemDiagnostics().setShowLegEndBounds(
-						btn2.getSelection());
+						btn2a.getSelection());
+			}
+		});
+		final Button btn2b = new Button(group1, SWT.CHECK);
+		btn2b.setText("Show target solution");
+		btn2b.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				GeoSupport.getProblemDiagnostics().setTargetSolution(_testSupport.loadSolutionTrack());
+				GeoSupport.getProblemDiagnostics().setShowTargetSolution(
+						btn2b.getSelection());
 			}
 		});
 		final Button btn3 = new Button(group2, SWT.CHECK);

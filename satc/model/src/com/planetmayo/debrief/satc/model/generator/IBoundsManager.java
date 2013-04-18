@@ -1,7 +1,10 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.util.List;
+
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.states.State;
 
 /**
  * interface for how to constraint problem space
@@ -85,6 +88,18 @@ public interface IBoundsManager
 		 * @param onOff
 		 */
 		public void setShowLegEndBounds(boolean onOff);
+
+		/** whether to display the known target solution
+		 * 
+		 * @param selection
+		 */
+		public void setShowTargetSolution(boolean selection);
+		
+		/** provide the real solution to the dataset
+		 * 
+		 * @param solution
+		 */
+		public void setTargetSolution(List<State> solution);
 	}
 
 	/**
