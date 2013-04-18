@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import com.planetmayo.debrief.satc.model.ModelObject;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -83,7 +84,7 @@ public abstract class BaseContribution extends ModelObject implements
 		ArrayList<State> states = route.getStates();
 		Iterator<State> sIter = states.iterator();
 
-		// ok. work through the bearings
+		// ok. work through the states that comprise this leg
 		while (sIter.hasNext())
 		{
 			State thisState = sIter.next();
@@ -106,10 +107,17 @@ public abstract class BaseContribution extends ModelObject implements
 			{
 				// ok, everything matches up = calculate this error
 				delta = calcError(thisState);
-			}
+				
+				// and accumulate it
+				res += delta;
 
-			// and accumulate it
-			res += delta;
+				// hey, SPECIAL CASE!  If we're on a straight leg, and this is a forecast, then we
+				// only use the one calculation
+				if(route.getType().equals(LegType.STRAIGHT) && this.getDataType().equals(ContributionDataType.FORECAST))
+				{
+					break;
+				}
+			}
 
 		}
 		return res;
