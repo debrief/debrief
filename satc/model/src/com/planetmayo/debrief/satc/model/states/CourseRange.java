@@ -127,4 +127,23 @@ public class CourseRange extends BaseRange<CourseRange>
 		}
 		return res;
 	}
+
+	/** does the supplied course fit in my range?
+	 * 
+	 * @param speed the value to test
+	 * @return  yes/no
+	 */
+	public boolean allows(double course)
+	{
+		// put the coursre into my domain
+		while(course < _min)
+			course += 2 * Math.PI;
+		
+		// and just check we're not too high
+		while(course > _max)
+			course -= 2 * Math.PI;
+		
+		// and test
+		return (course >= _min) && (course <= _max);
+	}	
 }

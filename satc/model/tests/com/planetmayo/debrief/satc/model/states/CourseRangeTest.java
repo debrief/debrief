@@ -82,7 +82,28 @@ public class CourseRangeTest extends ModelTestBase
 		CourseRange range2 = new CourseRange(Math.toRadians(320d), Math.toRadians(330d));
 		range1.constrainTo(range2);
 	}
-	
+
+	@Test
+	public void testAllows() 
+	{
+		CourseRange cr = new CourseRange(1.2, 1.9);
+		assertTrue("correct res", cr.allows(1.3));
+		assertFalse("not allowed", cr.allows(1.0));
+		assertFalse("not allowed", cr.allows(1.95));
+		assertTrue("correct res", cr.allows(1.3 - Math.PI * 2));
+		assertTrue("correct res", cr.allows(1.3 + Math.PI * 2));
+		assertTrue("correct res", cr.allows(1.3 - Math.PI * 4));
+		assertTrue("correct res", cr.allows(1.3 + Math.PI * 4));
+		
+		cr = new CourseRange(6.2, 0.3);
+		assertTrue("correct res", cr.allows(0.2));
+		assertFalse("not allowed", cr.allows(1.0));
+		assertFalse("not allowed", cr.allows(6.1));
+		assertTrue("correct res", cr.allows(0.3 - Math.PI * 2));
+		assertTrue("correct res", cr.allows(0.3 + Math.PI * 2));
+		assertTrue("correct res", cr.allows(0.2 - Math.PI * 4));
+		assertTrue("correct res", cr.allows(0.2 + Math.PI * 4));
+	}
 
 	@Test(expected = IncompatibleStateException.class)	
 	public void testIncompatibleStatesB()  throws IncompatibleStateException
