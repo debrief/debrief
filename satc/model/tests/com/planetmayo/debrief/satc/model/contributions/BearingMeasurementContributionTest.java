@@ -150,11 +150,12 @@ public class BearingMeasurementContributionTest extends ModelTestBase
 		badRoute.generateSegments(states);
 
 		score = bmc.calculateErrorScoreFor(goodRoute);
-		assertTrue("still should not be able to calc", 0 != score);
-		System.out.println("good score:" + score);
-		
-		score = bmc.calculateErrorScoreFor(badRoute);
-		assertTrue("still should not be able to calc", 0 != score);
-		System.out.println("bad score:" + score);
+// NOTE: BMC no longer produces an error score.  The bearing isn't a forecast, it's an absolute measurement.
+//		assertTrue("still should not be able to calc", 0 != score);
+//		System.out.println("good score:" + score);
+//		
+//		score = bmc.calculateErrorScoreFor(badRoute);
+//		assertTrue("still should not be able to calc", 0 != score);
+//		System.out.println("bad score:" + score);
 	}
 }
