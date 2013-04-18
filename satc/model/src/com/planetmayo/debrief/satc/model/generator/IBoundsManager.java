@@ -7,7 +7,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.State;
 
 /**
- * interface for how to run a stepping data generator
+ * interface for how to constraint problem space
  * 
  * @author ian
  * 

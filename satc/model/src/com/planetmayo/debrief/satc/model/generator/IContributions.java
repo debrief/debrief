@@ -5,16 +5,20 @@ import java.util.SortedSet;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 
+/**
+ * interface to manage contributions and perfom actions on contributions set  
+ *
+ */
 public interface IContributions extends Iterable<BaseContribution>
 {
 	
 	/**
-	 * add contribution which will be used in constraint phase
+	 * add contribution which will be used 
 	 */	
 	void addContribution(BaseContribution contribution);
 	
 	/**
-	 * remove contribution from constraint phase
+	 * remove contribution 
 	 */	
 	void removeContribution(BaseContribution contribution);
 	
@@ -39,16 +43,22 @@ public interface IContributions extends Iterable<BaseContribution>
 	void removePropertyListener(String property, PropertyChangeListener listener);
 	
 	/**
-	 * clear contributions set
+	 * removes all contributions
 	 */
 	void clear();
 	
 	/**
-	 * get contributions set 
+	 * returns contributions set 
 	 */
 	SortedSet<BaseContribution> getContributions();
 	
+	/**
+	 * returns contribution which should be processed after specified one  
+	 */
 	BaseContribution nextContribution(BaseContribution current);
 	
+	/**
+	 * returns how many contributions do we have now 
+	 */
 	int size();
 }

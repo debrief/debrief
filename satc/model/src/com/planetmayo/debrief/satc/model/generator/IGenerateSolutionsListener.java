@@ -28,5 +28,15 @@ public interface IGenerateSolutionsListener
 	 */
 	void startingGeneration();
 	
+	/**
+	 * solution generator finished generation. 
+	 * 
+	 * If generation job finished successfully it will be called 
+	 * after solutionsReady. 
+	 * 
+	 * If generation job was canceled or finished with error
+	 * this method will be called after jobManager closes 
+	 * all job resources   
+	 */
 	void finishedGeneration();
 }

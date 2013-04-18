@@ -48,7 +48,12 @@ public abstract class Job<T, P>
 		return exception;
 	}
 
-	public final <E> void runInternal(ProgressMonitor monitor, Job<P, E> previous) throws InterruptedException
+	/**
+	 * Runs the job, must be invoked from IJobsManager implementation  
+	 * 
+	 * @throws InterruptedException when job is canceled
+	 */
+	public final <E> void startJob(ProgressMonitor monitor, Job<P, E> previous) throws InterruptedException
 	{
 		try 
 		{
@@ -83,8 +88,23 @@ public abstract class Job<T, P>
 		}
 	}
 	
+	/**
+	 * Every job must override this method and put there job logic 
+	 * 
+	 * @throws InterruptedException when job is canceled
+	 */
 	protected abstract <E> T run(ProgressMonitor monitor, Job<P, E> previous) throws InterruptedException;
 	
+	/**
+	 * this method executes when jobManager processed the job (job goes to complete state)
+	 *
+	 * Override this method in case you need to know when this job was processed,	   
+	 * this is necessary, because Job.run method may not be executed in some cases 
+	 * (for example previous to this job was canceled or finished with errors), 
+	 * but you still need to do some work after job was processed 
+	 * (for example: close resources) 
+	 * 
+	 */
 	protected void onComplete() 
 	{
 	}
