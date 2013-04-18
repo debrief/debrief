@@ -11,10 +11,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.math.Vector2D;
 
-/** a straight line path between two points, with a given speed
+/**
+ * a straight line path between two points, with a given speed
  * 
  * @author Ian
- *
+ * 
  */
 public class StraightRoute extends CoreRoute
 {
@@ -29,7 +30,8 @@ public class StraightRoute extends CoreRoute
 	 */
 	private double _speed;
 
-	/** the length of this route (m)
+	/**
+	 * the length of this route (m)
 	 * 
 	 */
 	private double _length;
@@ -40,15 +42,16 @@ public class StraightRoute extends CoreRoute
 	 * @param endP
 	 * @param endTime
 	 */
-	public StraightRoute(String name, Point startP, Date startTime, Point endP, Date endTime)
+	public StraightRoute(String name, Point startP, Date startTime, Point endP,
+			Date endTime)
 	{
 		super(startP, endP, startTime, endTime, name, LegType.STRAIGHT);
 
 		Vector2D vector = new Vector2D(_startP.getCoordinate(),
 				_endP.getCoordinate());
 
-		// find the course
-		_course = vector.angle();
+		// find the course (converting it to our compass-oriented coordinate system
+		_course = Math.PI / 2 - vector.angle();
 
 		// what is our time period
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
@@ -56,10 +59,10 @@ public class StraightRoute extends CoreRoute
 		// find the speed
 		double lengthDeg = vector.length();
 		_length = GeoSupport.deg2m(lengthDeg);
-		_speed = _length / (elapsed /1000);
+		_speed = _length / (elapsed / 1000);
 
 	}
-	
+
 	public double getCourse()
 	{
 		return _course;
@@ -125,6 +128,7 @@ public class StraightRoute extends CoreRoute
 		}
 
 	}
+
 	/**
 	 * get the length of this route
 	 * 
