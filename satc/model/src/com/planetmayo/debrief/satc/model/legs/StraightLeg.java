@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.CourseRange;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -187,10 +188,30 @@ public class StraightLeg extends CoreLeg
 				}
 			}
 		};
+		StraightLeg.RouteOperator course = new RouteOperator()
+		{
 
+			@Override
+			public void process(StraightRoute theRoute)
+			{
+				double thisC = theRoute.getCourse();
+				CourseRange courseR = _states.get(0).getCourse();
+				
+				if (courseR == null)
+				{
+					// hey, no prob with me ;-)
+				}
+				else if (!courseR.allows(thisC))
+				{
+					theRoute.setImpossible();
+				}
+			}
+
+		};
 		StraightLeg.RouteOperator scaledPolygons = new ScaledPolygons(_states);
 
 		applyToRoutes(speed);
+		applyToRoutes(course);
 		applyToRoutes(scaledPolygons);
 	}
 
