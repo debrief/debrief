@@ -85,6 +85,11 @@ public abstract class Job<T, P>
 				throw new InterruptedException();
 			}			
 		} 
+		catch (InterruptedException e) 
+		{
+			exception = e;
+			throw e;
+		}
 		catch (Throwable e) 
 		{
 			exception = e;
