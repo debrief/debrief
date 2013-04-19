@@ -90,7 +90,7 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 			if (myTargetType.matches(thisTargetType))
 			{
 				// have we already detected it?
-				int tgtId = de.getTarget();
+				int tgtId = de.getHost();// de.getTarget();
 
 				Integer oldVal = _detectionStates.get(tgtId);
 				int detectionState = de.getDetectionState();
@@ -191,39 +191,40 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 			Point pt = dest.toScreen(loc);
 
 			// have we detected him?
-			Color hisColor = Color.red;
+			Color hisColor = null;// Color.red;
 			if (_detectionStates.containsKey(thisP))
 			{
 				Integer theState = _detectionStates.get(thisP);
 
 				switch (theState)
 				{
-					case (DetectionEvent.CLASSIFIED):
-					{
-						hisColor = Color.orange;
-						break;
-					}
-					case (DetectionEvent.DETECTED):
-					{
-						hisColor = Color.yellow;
-						break;
-					}
-					case (DetectionEvent.IDENTIFIED):
-					{
-						hisColor = Color.green;
-						break;
-					}
-					default:
-					{
-						hisColor = Color.red;
-					}
+				case (DetectionEvent.CLASSIFIED):
+				{
+					hisColor = Color.orange;
+					break;
+				}
+				case (DetectionEvent.DETECTED):
+				{
+					hisColor = Color.yellow;
+					break;
+				}
+				case (DetectionEvent.IDENTIFIED):
+				{
+					hisColor = Color.green;
+					break;
+				}
+				default:
+				{
+					hisColor = null;
+				}
 				}
 			}
 
-			dest.setColor(hisColor);
-
-			dest.drawOval(pt.x - 1, pt.y - 1, 3, 3);
-
+			if (hisColor != null)
+			{
+				dest.setColor(hisColor);
+				dest.fillOval(pt.x - 1, pt.y - 1, 3, 3);
+			}
 		}
 
 	}
