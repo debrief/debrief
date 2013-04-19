@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc_rcp.jobs;
 
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -15,7 +16,7 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 public class RCPJobsManager implements IJobsManager
 {
 	@SuppressWarnings("rawtypes")
-	private ConcurrentHashMap<Job, org.eclipse.core.runtime.jobs.Job> jobs = new ConcurrentHashMap<Job,  org.eclipse.core.runtime.jobs.Job>();
+	private final ConcurrentHashMap<Job, org.eclipse.core.runtime.jobs.Job> jobs = new ConcurrentHashMap<Job,  org.eclipse.core.runtime.jobs.Job>();
 
 	private ProgressMonitor wrap(final IProgressMonitor progressMonitor) 
 	{
@@ -34,15 +35,18 @@ public class RCPJobsManager implements IJobsManager
 			}
 
 			@Override
-			public void internalWorked(double work)
-			{
-				progressMonitor.internalWorked(work);				
-			}
-
-			@Override
 			public boolean isCanceled()
 			{
 				return progressMonitor.isCanceled();
+			}
+			
+			@Override
+			public void checkCanceled() throws InterruptedException
+			{
+				if (isCanceled()) 
+				{
+					throw new InterruptedException();
+				}
 			}
 
 			@Override
@@ -75,7 +79,7 @@ public class RCPJobsManager implements IJobsManager
 	public <T, P> Job<T, P> schedule(Job<T, P> job)
 	{
 		return scheduleAfter(job, null);
-	}
+	}	
 
 	@Override
 	public synchronized <T, P, E> Job<T, P> scheduleAfter(final Job<T, P> job, final Job<P, E> previous)
@@ -125,6 +129,47 @@ public class RCPJobsManager implements IJobsManager
 		eclipseJob.schedule();
 		return job;
 	}
-	
-	
+
+	@Override
+	public synchronized <T, P> void cancel(Job<T, P> job)
+	{
+		if (! job.isComplete()) 
+		{		
+			org.eclipse.core.runtime.jobs.Job eclipseJob = jobs.get(job);
+			if (eclipseJob != null) 
+			{
+				eclipseJob.cancel();
+			}
+		}
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public synchronized void cancelGroup(String group)
+	{
+		if (group == null) 
+		{
+			return;
+		}
+		for (Entry<Job, org.eclipse.core.runtime.jobs.Job> entry : jobs.entrySet()) 
+		{
+			if (group.equals(entry.getKey().getGroup())) 
+			{
+				entry.getValue().cancel();
+			}
+		}
+	}
+
+	@Override
+	public <T, P> void waitFor(Job<T, P> job) throws InterruptedException
+	{
+		if (! job.isComplete()) 
+		{
+			org.eclipse.core.runtime.jobs.Job eclipseJob = jobs.get(job);
+			if (eclipseJob != null) 
+			{
+				eclipseJob.join();
+			}
+		}
+	}	
 }

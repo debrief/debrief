@@ -12,8 +12,6 @@ public interface ProgressMonitor
    */  
   void done();
   
-  void internalWorked(double work);
-  
   /** 
    *  Returns whether cancelation of current operation has been requested.
    */  
@@ -23,6 +21,11 @@ public interface ProgressMonitor
    * Sets the cancel state to the given value.
    */  
   void setCanceled(boolean value);
+  
+  /**
+   * checks is this job canceled and throws InterruptedException if yes
+   */
+  void checkCanceled() throws InterruptedException;
 
   /** 
    *  Sets the task name to the given value.

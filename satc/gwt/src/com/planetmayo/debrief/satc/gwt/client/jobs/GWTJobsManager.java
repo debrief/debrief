@@ -8,6 +8,9 @@ import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class GWTJobsManager implements IJobsManager {
 
+	private ProgressMonitor currentMonitor;
+	private Job<?, ?> currentJob;
+	
 	@Override
 	public <T, P> Job<T, P> schedule(Job<T, P> job) {
 		return scheduleAfter(job, null);
@@ -22,7 +25,9 @@ public class GWTJobsManager implements IJobsManager {
 		}
 		try 
 		{
-			job.startJob(new EmptyMonitor(), previous);
+			currentJob = job;
+			currentMonitor = new EmptyMonitor();
+			job.startJob(currentMonitor, previous);			
 		} 
 		catch (InterruptedException ex) 
 		{
@@ -31,12 +36,49 @@ public class GWTJobsManager implements IJobsManager {
 		catch (Exception e) 
 		{
 			log.error(e.getMessage(), e);
-		}		
+		} 
+		finally 
+		{
+			currentJob = null;
+			currentMonitor = null;
+		}
 		return job;
 	}
 	
+	@Override
+	public <T, P> void cancel(Job<T, P> job) 
+	{
+		// because javascript has only one thread, method may be called only when
+		// the job is already finished or from the job itself
+		if (currentJob == job && ! job.isComplete()) 
+		{
+			currentMonitor.setCanceled(true);
+		}
+	}
+	
+	@Override
+	public void cancelGroup(String group) 
+	{
+		if (group == null || currentJob == null) 
+		{
+			return;
+		}
+		if (group.equals(currentJob.getGroup())) 
+		{
+			currentMonitor.setCanceled(true);
+		}
+	}
+
+	@Override
+	public <T, P> void waitFor(Job<T, P> job) throws InterruptedException 
+	{
+		// because javascript has only one thread, method may be called only when
+		// the job is already finished - do nothing	
+	}
+
 	public static class EmptyMonitor implements ProgressMonitor 
 	{
+		private boolean canceled;
 
 		@Override
 		public void beginTask(String name, int totalWork) {	}
@@ -45,13 +87,16 @@ public class GWTJobsManager implements IJobsManager {
 		public void done() {}
 
 		@Override
-		public void internalWorked(double work) {}
+		public boolean isCanceled() 
+		{
+			return canceled; 
+		}
 
 		@Override
-		public boolean isCanceled() { return false; }
-
-		@Override
-		public void setCanceled(boolean value) {}
+		public void setCanceled(boolean value) 
+		{
+			canceled = value;
+		}
 
 		@Override
 		public void setTaskName(String name) {}
@@ -61,5 +106,14 @@ public class GWTJobsManager implements IJobsManager {
 
 		@Override
 		public void worked(int work) {}
+
+		@Override
+		public void checkCanceled() throws InterruptedException 
+		{
+			if (canceled) 
+			{
+				throw new InterruptedException();
+			}
+		}
 	}
 }

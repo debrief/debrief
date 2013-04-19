@@ -2,7 +2,9 @@ package com.planetmayo.debrief.satc.model.generator.jobs;
 
 public abstract class Job<T, P>
 {	
-	private final String name;	
+	private final String name;
+	
+	private final String group;
 	
 	private volatile T result = null;
 	
@@ -12,12 +14,23 @@ public abstract class Job<T, P>
 
 	public Job(String name)
 	{
-		this.name = name;
+		this(name, null);
 	}
+	
+	public Job(String name, String group)
+	{
+		this.name = name;
+		this.group = group;
+	}	
 
 	public String getName()
 	{
 		return name;
+	}
+	
+	public String getGroup()
+	{
+		return group;
 	}
 
 	public final T getResult() 
@@ -37,7 +50,7 @@ public abstract class Job<T, P>
 	public final boolean isFinishedCorrectly() 
 	{
 		return complete && getException() == null;
-	}
+	}	
 	
 	public final Throwable getException()
 	{

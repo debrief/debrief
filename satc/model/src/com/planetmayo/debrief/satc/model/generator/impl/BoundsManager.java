@@ -31,13 +31,13 @@ public class BoundsManager implements IBoundsManager
 	 * the contribution that we're currently processing
 	 * 
 	 */
-	private BaseContribution _currentContribution = null;
+	private volatile BaseContribution _currentContribution = null;
 
 	/**
 	 * current step number and current step contribution
 	 * 
 	 */
-	private int _currentStep = 0;
+	private volatile int _currentStep = 0;
 
 	/**
 	 * the set of contribution properties that we're interested in
@@ -51,7 +51,7 @@ public class BoundsManager implements IBoundsManager
 	 * the problem space we consider
 	 */
 	private final ProblemSpace _space;
-
+	
 	/**
 	 * contributions
 	 */
@@ -62,10 +62,11 @@ public class BoundsManager implements IBoundsManager
 	 * 
 	 */
 	private final Set<IConstrainSpaceListener> _steppingListeners;
-
-	// private IConstrainSpaceListener _mysolGenny;
-
-	// private boolean _generateSolutions = false;
+	
+	/**
+	 * process should be stopped due to restart request
+	 */
+	private volatile boolean stopped; 
 
 	public BoundsManager(IContributions contributions, ProblemSpace space)
 	{
@@ -225,28 +226,37 @@ public class BoundsManager implements IBoundsManager
 	@Override
 	public void restart()
 	{
-		if (_currentStep == 0)
-		{
-			return;
+		stopped = true;
+		synchronized (this) 
+		{ 
+			stopped = false;
+			if (_currentStep == 0)
+			{
+				return;
+			}
+			// clear the states
+			_space.clear();
+
+			// ok, just clear the counter.
+			_currentStep = 0;
+			_currentContribution = null;
+
+			// and tell them about the new bounded states
+			fireRestarted();
 		}
-		// clear the states
-		_space.clear();
-
-		// ok, just clear the counter.
-		_currentStep = 0;
-		_currentContribution = null;
-
-		// and tell them about the new bounded states
-		fireRestarted();
 	}
 
 	@Override
-	public void run()
+	public synchronized void run()
 	{
 		// ok, keep stepping until we're done
 		while (_currentStep < _contributions.size())
 		{
 			step();
+			if (stopped) 
+			{
+				break;
+			}
 		}
 	}
 
@@ -267,7 +277,7 @@ public class BoundsManager implements IBoundsManager
 	}
 
 	@Override
-	public void step()
+	public synchronized void step()
 	{
 		if (_currentStep == 0)
 		{

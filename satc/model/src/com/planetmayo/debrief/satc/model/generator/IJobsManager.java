@@ -23,5 +23,21 @@ public interface IJobsManager
 	 * @param previous
 	 * @return scheduled job
 	 */
-	<T, P, E> Job<T, P> scheduleAfter(final Job<T, P> job, final Job<P, E> previous);
+	<T, P, E> Job<T, P> scheduleAfter(Job<T, P> job, Job<P, E> previous);
+	
+	/**
+	 * cancels job
+	 */
+	<T, P> void cancel(Job<T, P> job);
+	
+	/**
+	 * cancels all jobs from specified group 
+	 */
+	void cancelGroup(String group); 
+	
+	
+	/**
+	 *  waits until specified job is finished
+	 */
+	<T, P> void waitFor(Job<T, P> job) throws InterruptedException;	
 }
