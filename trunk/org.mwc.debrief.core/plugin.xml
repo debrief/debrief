@@ -192,6 +192,10 @@
 				label="&amp;Chart Library" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
 				style="push" />
 
+			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertTrackStore"
+				icon="icons/CloudApp.png" id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackStore"
+				label="Trac&amp;k Store" menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+				style="push" />
 
 			<action class="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
 				icon="icons/etopo.gif" id="org.mwc.debrief.core.creators.chartFeatures.InsertETOPO"
@@ -344,10 +348,15 @@
 	<extension point="org.eclipse.ui.preferencePages">
 		<page class="org.mwc.debrief.core.preferences.PrefsPage" id="org.mwc.debrief.core.preferences.PrefsPage"
 			category="org.mwc.cmap.core.preferences.CMAPPrefsPage" name="Debrief-specific settings" />
+		<page class="org.mwc.debrief.core.preferences.CloudStoragePrefsPage" id="org.mwc.debrief.core.preferences.CloudStoragePrefsPage"
+			category="org.mwc.cmap.core.preferences.CMAPPrefsPage" name="Cloud Storage Locations" />
 	</extension>
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.mwc.debrief.core.preferences.PreferenceInitializer" />
+		<initializer class="org.mwc.debrief.core.preferences.CloudStoragePreferenceInitializer" />
 	</extension>
+	
+	
 	<extension point="org.eclipse.ui.intro">
 		<introProductBinding introId="org.eclipse.ui.intro.universal"
 			productId="org.mwc.debrief.core.Debrief">

@@ -3,18 +3,18 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.Palette.*;
+import Debrief.Wrappers.TrackStoreWrapper;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
 
 /**
  * @author ian.mayo
- *
+ * 
  */
-public class InsertETOPO extends CoreInsertChartFeature
+public class InsertTrackStore extends CoreInsertChartFeature
 {
-	
-	public InsertETOPO()
+
+	public InsertTrackStore()
 	{
 		// tell our parent that we want to be inserted as a top-level layer
 		super(true);
@@ -25,7 +25,7 @@ public class InsertETOPO extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-		return CreateTOPO.load2MinBathyData();
+		return new TrackStoreWrapper();
 	}
 
 }
