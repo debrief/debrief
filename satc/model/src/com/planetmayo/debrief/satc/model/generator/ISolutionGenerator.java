@@ -41,4 +41,9 @@ public interface ISolutionGenerator
 	 * starts generate solutions job
 	 */
 	void generateSolutions();
+	
+	/**
+	 * cancels generate solutions job
+	 */
+	void cancel();
 }

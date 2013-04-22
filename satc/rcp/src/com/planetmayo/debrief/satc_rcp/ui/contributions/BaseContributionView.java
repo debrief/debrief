@@ -4,12 +4,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.DateAndTimeObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -21,8 +23,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
@@ -105,31 +109,61 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		return listener;
 	}
 	
-	protected void bindSliderLabelCheckbox(DataBindingContext context, IObservableValue modelValue,
+	/**
+	 * binds model value to specified slider, label and checkBox with specified converters
+	 * returns writable value which is used to store direct ui value 
+	 */
+	protected WritableValue bindSliderLabelCheckbox(DataBindingContext context, final IObservableValue modelValue,
 			Scale slider, Label label, Button checkBox, PrefixSuffixLabelConverter labelValueConverter, 
 			BooleanToNullConverter<?> checkBoxValueConverter, UnitConverter unitConverter) 
 	{
+		final WritableValue uiProxy = new WritableValue(modelValue.getValue(), modelValue.getValueType());
+		
 		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
 		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
 		IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
+
 		if (unitConverter != null) 
 		{
-			context.bindValue(sliderValue, modelValue,
+			context.bindValue(sliderValue, uiProxy,
 					UIUtils.converterStrategy(unitConverter.getUIToModel()),
 					UIUtils.converterStrategy(unitConverter.getModelToUI()));
 		} 
 		else 
 		{
-			context.bindValue(sliderValue, modelValue);
+			context.bindValue(sliderValue, uiProxy);
 		}
 		context.bindValue(sliderEnabled, modelValue, null, 
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
 		context.bindValue(checkBoxValue, modelValue,
 				UIUtils.converterStrategy(checkBoxValueConverter),
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
-		context.bindValue(labelValue, modelValue, null,
-				UIUtils.converterStrategy(labelValueConverter));
+		
+		context.bindValue(labelValue, uiProxy, null,
+				UIUtils.converterStrategy(labelValueConverter));		
+		context.bindValue(uiProxy, modelValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+		slider.addListener(SWT.MouseUp, new Listener()
+		{
+			@Override
+			public void handleEvent(Event arg0)
+			{
+				modelValue.setValue(uiProxy.getValue());
+			}
+		});
+		slider.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if ((e.stateMask & SWT.BUTTON1) == 0) 
+				{
+					modelValue.setValue(uiProxy.getValue());
+				}
+			}			
+		});
+		return uiProxy;
 	}
 	
 	protected void bindMaxMinEstimate(final IObservableValue estimate, final IObservableValue min, final IObservableValue max) {
@@ -458,6 +492,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		{
 			context.dispose();
 		}
+		mainGroup.dispose();
 	}
 
 	/**

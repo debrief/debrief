@@ -580,6 +580,18 @@ public class SolutionGenerator implements ISolutionGenerator
 			_theLegs = null;
 		}
 	}
+	
+	
+
+	@Override
+	public void cancel()
+	{
+		Job<?, ?> job = mainGenerationJob;
+		if (job != null) 
+		{
+			jobsManager.cancelGroup(SOLUTION_GENERATOR_JOBS_GROUP);
+		}
+	}
 
 	/**
 	 * we've sorted out the leg scores

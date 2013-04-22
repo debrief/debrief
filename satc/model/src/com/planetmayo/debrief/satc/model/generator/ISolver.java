@@ -50,6 +50,11 @@ public interface ISolver
 	void run();
 	
 	/**
+	 * cancels generation job
+	 */
+	void cancel();
+	
+	/**
 	 * specify whether we should do a 'run' after each contribution change
 	 * 
 	 * @param checked

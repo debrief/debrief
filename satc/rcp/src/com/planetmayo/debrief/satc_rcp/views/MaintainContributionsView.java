@@ -108,6 +108,7 @@ public class MaintainContributionsView extends ViewPart implements
 	private Composite main;
 
 	private Button generateSolutions;
+	private Button cancelGeneration;
 //	private Button displaySolutions;
 	private ComboViewer precisionsCombo;
 	private ComboViewer vehiclesCombo;
@@ -172,7 +173,7 @@ public class MaintainContributionsView extends ViewPart implements
 		if (panel != null)
 		{
 			// and remove it
-			panel.getControl().dispose();
+			panel.dispose();
 
 			// and forget it
 			_myControls.remove(contribution);
@@ -209,12 +210,15 @@ public class MaintainContributionsView extends ViewPart implements
 					public void startingGeneration()
 					{
 						UIUtils.setEnabled(parent, false);
+						cancelGeneration.setVisible(true);
+						cancelGeneration.setEnabled(true);
 					}
 
 					@Override
 					public void finishedGeneration()
 					{
 						UIUtils.setEnabled(parent, true);
+						cancelGeneration.setVisible(false);
 					}
 		});
 		solver.getContributions().addContributionsChangedListener(contributionsChangedListener);
@@ -336,7 +340,7 @@ public class MaintainContributionsView extends ViewPart implements
 		gridData.grabExcessHorizontalSpace = true;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		GridLayout layout = new GridLayout(2, true);
+		GridLayout layout = new GridLayout(3, false);
 		group.setLayoutData(gridData);
 		group.setLayout(layout);
 		group.setText("Preferences");
@@ -348,14 +352,26 @@ public class MaintainContributionsView extends ViewPart implements
 
 			@Override
 			public void widgetSelected(SelectionEvent e)
-			{
-				super.widgetSelected(e);
+			{				
 				solver.setAutoGenerateSolutions(generateSolutions.getSelection());
 			}
 			
 		});
 		generateSolutions.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+		
+		cancelGeneration = new Button(group, SWT.PUSH);
+		cancelGeneration.setText("Cancel");
+		cancelGeneration.setVisible(false);
+		cancelGeneration.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				solver.cancel();
+			}
+		});
 
 		Composite precisionPanel = new Composite(group, SWT.NONE);
 		precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END

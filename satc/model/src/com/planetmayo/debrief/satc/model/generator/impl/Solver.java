@@ -15,6 +15,7 @@ import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class Solver implements ISolver
 {
@@ -148,6 +149,12 @@ public class Solver implements ISolver
 	}
 	
 	@Override
+	public void cancel()
+	{
+		solutionGenerator.cancel();
+	}
+
+	@Override
 	public void run()
 	{
 		boundsManager.run();
@@ -162,11 +169,19 @@ public class Solver implements ISolver
 			{
 				return;
 			}
-			boundsManager.restart();			
-			if (liveRunning) 
+			try 
 			{
-				boundsManager.run();
-			}						
+				boundsManager.restart();			
+				if (liveRunning) 
+				{
+					boundsManager.run();
+				}
+			} 
+			catch (Exception ex) 
+			{
+				SupportServices.INSTANCE.getLog().error(
+						"Exception: " + ex.getMessage(), ex);				
+			}
 		}
 		
 		@Override
