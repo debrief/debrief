@@ -26,7 +26,7 @@ import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
+import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class SolutionGenerator implements ISolutionGenerator
@@ -37,7 +37,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	
 	private final IJobsManager jobsManager;
 	
-	private final ProblemSpaceView problemSpaceView;
+	private final SafeProblemSpace problemSpaceView;
 	
 	/**
 	 * anybody interested in a new solution being ready?
@@ -66,7 +66,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	private final String[] _interestingProperties =
 	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
 
-	public SolutionGenerator(IContributions contributions, IJobsManager jobsManager, ProblemSpaceView problemSpace)
+	public SolutionGenerator(IContributions contributions, IJobsManager jobsManager, SafeProblemSpace problemSpace)
 	{
 		this.jobsManager = jobsManager;
 		this.contributions = contributions;
@@ -266,7 +266,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	
 
 	@Override
-	public ProblemSpaceView getProblemSpace()
+	public SafeProblemSpace getProblemSpace()
 	{
 		return problemSpaceView;
 	}

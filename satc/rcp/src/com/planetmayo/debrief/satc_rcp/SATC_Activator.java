@@ -24,7 +24,7 @@ import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
+import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc_rcp.jobs.RCPJobsManager;
 import com.planetmayo.debrief.satc_rcp.services.RCPUtilsService;
@@ -83,7 +83,7 @@ public class SATC_Activator extends AbstractUIPlugin
 		IContributions contributions = new Contributions();	
 		IJobsManager jobsManager = new RCPJobsManager();
 		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
-		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new ProblemSpaceView(problemSpace));
+		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
 		ISolver solver = new Solver(contributions, problemSpace, boundsManager, generator, jobsManager);
 		
 		context.registerService(IVehicleTypesManager.class,

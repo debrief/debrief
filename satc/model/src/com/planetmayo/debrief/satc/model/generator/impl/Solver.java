@@ -14,7 +14,7 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
+import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class Solver implements ISolver
 {
@@ -29,9 +29,19 @@ public class Solver implements ISolver
 	 * whether we auto=run after each contribution change
 	 * 
 	 */
-	private volatile boolean _liveRunning = true;
+	private volatile boolean liveRunning = true;
 	
 	private volatile boolean autoGenerateSolutions = false;
+	
+	private volatile boolean isClear = false;
+	
+	/**
+	 * the set of contribution properties that we're interested in
+	 * 
+	 */
+	private final String[] propertiesToRestartBoundsManager =
+	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
+			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };	
 
 	public Solver(IContributions contributions, ProblemSpace problemSpace,
 			IBoundsManager boundsManager,	ISolutionGenerator solutionGenerator, 
@@ -49,14 +59,13 @@ public class Solver implements ISolver
 	
 	private void attachListeners() 
 	{
-		/*LiveRunningListener liveRunningListener = new LiveRunningListener();
-		String[] properties = { BaseContribution.ACTIVE, BaseContribution.START_DATE,
-				BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
-		for (String property : properties) 
+		LiveRunningListener liveRunningListener = new LiveRunningListener();
+		contributions.addContributionsChangedListener(liveRunningListener);
+		for (String property : propertiesToRestartBoundsManager) 
 		{
 			contributions.addPropertyListener(property, liveRunningListener);
 		}
-		contributions.addContributionsChangedListener(liveRunningListener);*/
+		
 		AutoGenerateSolutionsListener listener = new AutoGenerateSolutionsListener();
 		boundsManager.addConstrainSpaceListener(listener);
 	}
@@ -76,7 +85,7 @@ public class Solver implements ISolver
 	@Override
 	public void setLiveRunning(boolean checked)
 	{
-		_liveRunning = checked;
+		liveRunning = checked;
 	}
 
 	@Override
@@ -94,7 +103,7 @@ public class Solver implements ISolver
 	@Override
 	public boolean isLiveEnabled()
 	{
-		return _liveRunning;
+		return liveRunning;
 	}
 	
 	@Override
@@ -104,9 +113,9 @@ public class Solver implements ISolver
 	}
 
 	@Override
-	public ProblemSpaceView getProblemSpace()
+	public SafeProblemSpace getProblemSpace()
 	{
-		return new ProblemSpaceView(problemSpace);
+		return new SafeProblemSpace(problemSpace);
 	}
 	
 	@Override
@@ -125,9 +134,17 @@ public class Solver implements ISolver
 	@Override
 	public void clear()
 	{
-		contributions.clear();
-		boundsManager.restart();
-		solutionGenerator.clear();
+		isClear = true;
+		try 
+		{
+			contributions.clear();
+			boundsManager.restart();
+			solutionGenerator.clear();
+		} 
+		finally 
+		{
+			isClear = false;
+		}
 	}
 	
 	@Override
@@ -141,9 +158,13 @@ public class Solver implements ISolver
 	{
 		private void run() 
 		{
-			if (_liveRunning) 
+			if (isClear) 
 			{
-				boundsManager.restart();
+				return;
+			}
+			boundsManager.restart();			
+			if (liveRunning) 
+			{
 				boundsManager.run();
 			}						
 		}

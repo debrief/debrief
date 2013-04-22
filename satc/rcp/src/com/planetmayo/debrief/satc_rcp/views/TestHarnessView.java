@@ -478,7 +478,7 @@ public class TestHarnessView extends ViewPart
 			@Override
 			public void run()
 			{
-				//solver.setLiveRunning(_liveAction.isChecked());
+				solver.setLiveRunning(_liveAction.isChecked());
 			}
 		};
 		_liveAction.setChecked(true);
@@ -534,7 +534,7 @@ public class TestHarnessView extends ViewPart
 		_testSupport.setGenerator(solver);
 
 		// sort out the 'live' setting
-		//_liveAction.setChecked(boundsManager.isLiveEnabled());
+		_liveAction.setChecked(solver.isLiveEnabled());
 	}
 
 	protected void stopListeningTo()

@@ -1,7 +1,7 @@
 package com.planetmayo.debrief.satc.model.generator;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
-import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
+import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 /**
  *
@@ -34,7 +34,7 @@ public interface ISolver
 	/**
 	 * get problem space
 	 */
-	ProblemSpaceView getProblemSpace();
+	SafeProblemSpace getProblemSpace();
 	
 	/**
 	 * does full cleaning of parameters of the problem 

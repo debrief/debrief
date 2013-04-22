@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc.model.generator.impl;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.Set;
 
@@ -40,14 +38,6 @@ public class BoundsManager implements IBoundsManager
 	private volatile int _currentStep = 0;
 
 	/**
-	 * the set of contribution properties that we're interested in
-	 * 
-	 */
-	private final String[] _interestingProperties =
-	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
-			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };
-
-	/**
 	 * the problem space we consider
 	 */
 	private final ProblemSpace _space;
@@ -74,21 +64,6 @@ public class BoundsManager implements IBoundsManager
 				.newConcurrentSet();
 		this._contributions = contributions;
 		this._space = space;
-		for (String property : _interestingProperties)
-		{
-			_contributions.addPropertyListener(property, new PropertyChangeListener()
-			{
-				@Override
-				public void propertyChange(PropertyChangeEvent arg0)
-				{
-					// let our custom method handle it
-					restart();
-
-					// ok, do a recalc
-					run();
-				}
-			});
-		}
 	}
 
 	/**
@@ -307,5 +282,17 @@ public class BoundsManager implements IBoundsManager
 				fireComplete();
 			}
 		}
+	}
+
+	@Override
+	public void setLiveRunning(boolean liveRunning)
+	{
+	
+	}
+
+	@Override
+	public boolean isLiveEnabled()
+	{
+		return false;
 	}
 }

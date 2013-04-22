@@ -23,7 +23,7 @@ import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
+import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class Gwt implements EntryPoint {
@@ -48,7 +48,7 @@ public class Gwt implements EntryPoint {
 		IJobsManager jobsManager = new GWTJobsManager();
 		IContributions contributions = new Contributions();		
 		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
-		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new ProblemSpaceView(problemSpace));
+		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
 		solver = new Solver(contributions, problemSpace, boundsManager, generator, jobsManager);
 	}
 	

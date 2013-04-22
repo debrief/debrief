@@ -5,11 +5,11 @@ import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 
-public class ProblemSpaceView
+public class SafeProblemSpace
 {
 	private final ProblemSpace problemSpace;
 
-	public ProblemSpaceView(ProblemSpace problemSpace)
+	public SafeProblemSpace(ProblemSpace problemSpace)
 	{
 		this.problemSpace = problemSpace;
 	}

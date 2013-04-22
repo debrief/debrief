@@ -1,7 +1,7 @@
 package com.planetmayo.debrief.satc.model.generator;
 
 import com.planetmayo.debrief.satc.model.Precision;
-import com.planetmayo.debrief.satc.model.states.ProblemSpaceView;
+import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 /**
  * interface to generate solutions on constrained problem space 
@@ -30,7 +30,7 @@ public interface ISolutionGenerator
 	/**
 	 * returns problem space which is used by solution generator  
 	 */
-	ProblemSpaceView getProblemSpace();
+	SafeProblemSpace getProblemSpace();
 	
 	/**
 	 * clears 
