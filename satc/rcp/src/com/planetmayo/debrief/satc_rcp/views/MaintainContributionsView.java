@@ -89,12 +89,14 @@ public class MaintainContributionsView extends ViewPart implements
 				BearingMeasurementContributionView.class);
 		CONTRIBUTION_PANELS.put(CourseForecastContribution.class,
 				CourseContributionView.class);
-		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class,
-				AnalysisContributionView.class);
-		CONTRIBUTION_PANELS.put(CourseAnalysisContribution.class,
-				AnalysisContributionView.class);
-		CONTRIBUTION_PANELS.put(SpeedAnalysisContribution.class,
-				AnalysisContributionView.class);
+		
+// Note: these views have been commented out, since they have no analyst involvement
+//		CONTRIBUTION_PANELS.put(LocationAnalysisContribution.class,
+//				AnalysisContributionView.class);
+//		CONTRIBUTION_PANELS.put(CourseAnalysisContribution.class,
+//				AnalysisContributionView.class);
+//		CONTRIBUTION_PANELS.put(SpeedAnalysisContribution.class,
+//				AnalysisContributionView.class);
 		CONTRIBUTION_PANELS.put(LocationForecastContribution.class,
 				LocationForecastContributionView.class);
 		CONTRIBUTION_PANELS.put(RangeForecastContribution.class,
