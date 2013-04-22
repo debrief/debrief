@@ -3,5 +3,4 @@
 <module rename-to='nongwt'>
     <inherits name='com.google.gwt.user.User' />
     <source path="satc" />
-    <super-source path="emul" />
 </module>

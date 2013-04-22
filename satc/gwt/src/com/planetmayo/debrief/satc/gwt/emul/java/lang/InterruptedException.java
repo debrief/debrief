@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.emul.java.lang;
+package com.planetmayo.debrief.satc.gwt.emul.java.lang;
 
 public class InterruptedException extends Exception
 {
