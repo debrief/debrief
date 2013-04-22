@@ -65,20 +65,6 @@ public interface IBoundsManager
 	 * @return is bounds manager already processed all contributions
 	 */
 	boolean isCompleted();
-	
-	/**
-	 * specify whether we should do a 'run' after each contribution change
-	 * 
-	 * @param checked
-	 */
-	void setLiveRunning(boolean liveRunning);
-	
-	/**
-	 * indicate whether we do 'run' after each contribution change
-	 * 
-	 * @return
-	 */
-	boolean isLiveEnabled();
 
 	/**
 	 * control what diagnostic data is broadcast during constrain problem space

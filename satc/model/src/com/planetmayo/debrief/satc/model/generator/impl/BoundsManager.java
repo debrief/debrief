@@ -283,16 +283,4 @@ public class BoundsManager implements IBoundsManager
 			}
 		}
 	}
-
-	@Override
-	public void setLiveRunning(boolean liveRunning)
-	{
-	
-	}
-
-	@Override
-	public boolean isLiveEnabled()
-	{
-		return false;
-	}
 }
