@@ -9,11 +9,11 @@ import java.util.List;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -43,6 +43,7 @@ import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -90,7 +91,6 @@ public class TestHarnessView extends ViewPart
 	private Action _populateLongAction;
 	private Action _populateGoodAction;
 	private Action _liveAction;
-	private Action _testOne;
 
 	private TestSupport _testSupport;
 
@@ -127,8 +127,7 @@ public class TestHarnessView extends ViewPart
 		contributeToActionBars();
 
 		// disable our controls, until we find a genny
-		solver = SATC_Activator.getDefault().getService(
-				ISolver.class, true);
+		solver = SATC_Activator.getDefault().getService(ISolver.class, true);
 		startListeningTo();
 
 		Composite checkBoxForm = new Composite(form, SWT.NONE);
@@ -172,7 +171,8 @@ public class TestHarnessView extends ViewPart
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getProblemDiagnostics().setTargetSolution(_testSupport.loadSolutionTrack());
+				GeoSupport.getProblemDiagnostics().setTargetSolution(
+						_testSupport.loadSolutionTrack());
 				GeoSupport.getProblemDiagnostics().setShowTargetSolution(
 						btn2b.getSelection());
 			}
@@ -247,43 +247,16 @@ public class TestHarnessView extends ViewPart
 			}
 		});
 
-		Group saveLoadGroup = new Group(form, SWT.SHADOW_ETCHED_IN);
-		saveLoadGroup.setLayout(new RowLayout());
-		saveLoadGroup.setText("Save/Load Analysis");
+//		Group saveLoadGroup = new Group(form, SWT.SHADOW_ETCHED_IN);
+//		saveLoadGroup.setLayout(new RowLayout());
+//		saveLoadGroup.setText("Save/Load Analysis");
 		form.setLayout(verticalLayout);
 
-		Button save = new Button(saveLoadGroup, SWT.BUTTON1);
-		save.setText("Save");
-		save.addSelectionListener(new SelectionAdapter()
-		{
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-
-				doSave();
-			}
-
-		});
-
-		Button load = new Button(saveLoadGroup, SWT.BUTTON1);
-		load.setText("Load");
-
-		load.addSelectionListener(new SelectionAdapter()
-		{
-
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				doLoad();
-			}
-		});
 
 		// and get the form to handle it's layout
 		form.pack();
 
 	}
-
-	
 
 	private void doSave()
 	{
@@ -315,7 +288,6 @@ public class TestHarnessView extends ViewPart
 			ex.printStackTrace();
 		}
 	}
-	
 
 	private void initializeXstream()
 	{
@@ -371,10 +343,9 @@ public class TestHarnessView extends ViewPart
 		_xStream.useAttributeFor(GeoPoint.class, "lon");
 
 		// use human-readable name for contributions
-		_xStream.alias("AnalystContributions",
-				XstreamVersionHandler.class);
+		_xStream.alias("AnalystContributions", XstreamVersionHandler.class);
 		_xStream.useAttributeFor(XstreamVersionHandler.class, "version");
-		
+
 		// make the contributions appear directly beneath the parent member
 		_xStream.addImplicitCollection(XstreamVersionHandler.class, "collection");
 	}
@@ -396,13 +367,30 @@ public class TestHarnessView extends ViewPart
 	{
 		manager.add(_clearAction);
 		manager.add(_restartAction);
+		manager.add(new Separator());
 		manager.add(_populateShortAction);
 		manager.add(_populateLongAction);
 		manager.add(_populateGoodAction);
+		manager.add(new Separator());
 		manager.add(_stepAction);
 		manager.add(_playAction);
 		manager.add(_liveAction);
-		manager.add(_testOne);
+		manager.add(new Separator());
+		
+		manager.add(new Action("Save"){
+
+			@Override
+			public void run()
+			{
+				doSave();
+			}});
+		manager.add(new Action("Load"){
+
+			@Override
+			public void run()
+			{
+				doLoad();
+			}});
 	}
 
 	private void loadSampleData(boolean useLong)
@@ -461,16 +449,6 @@ public class TestHarnessView extends ViewPart
 		};
 		_clearAction.setText("Clear");
 		_clearAction.setToolTipText("Clear the track generator contributions");
-
-		_testOne = new Action()
-		{
-			@Override
-			public void run()
-			{
-				_testSupport.nextTest();
-			}
-		};
-		_testOne.setText("1");
 
 		_liveAction = new Action("Live", SWT.TOGGLE)
 		{
@@ -562,10 +540,9 @@ public class TestHarnessView extends ViewPart
 					XstreamVersionHandler handler = (XstreamVersionHandler) stream;
 					if (TestHarnessView.version != handler.getVersion())
 					{
-						// TODO: Akash - could you make this appear in a popup, instead of the console?
-						System.out.println("Version mismatch, current version is "
-								+ version + ", while the xml version is "
-								+ handler.getVersion());
+						SupportServices.INSTANCE.getLog().error(
+								"Version mismatch, current version is " + version
+										+ ", while the xml version is " + handler.getVersion());
 					}
 					contributionList = handler.getCollection();
 				}
