@@ -27,13 +27,13 @@
   </BearingMeasurementContribution>
   <CourseForecastContribution>
     <name>Last known course</name>
-    <active>false</active>
+    <active>true</active>
     <weight>5</weight>
     <startDate>2010-01-12 12:13:29.0 UTC</startDate>
     <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
-    <minCourse>0.0</minCourse>
-    <maxCourse>4.974188368183839</maxCourse>
-    <estimate>4.642575810304916</estimate>
+    <minCourse>4.293509959906051</minCourse>
+    <maxCourse>4.9218284906240095</maxCourse>
+    <estimate>4.66002910282486</estimate>
   </CourseForecastContribution>
   <SpeedForecastContribution>
     <name>Initial speed obs</name>
@@ -45,11 +45,18 @@
     <maxSpeed>12.8611111</maxSpeed>
   </SpeedForecastContribution>
   <StraightLegForecastContribution>
-    <name>Straight prediction</name>
+    <name>Straight prediction one</name>
     <active>true</active>
     <weight>5</weight>
     <startDate>2010-01-12 12:13:29.0 UTC</startDate>
-    <finishDate>2010-01-12 12:24:26.0 UTC</finishDate>
+    <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
+  </StraightLegForecastContribution>
+  <StraightLegForecastContribution>
+    <name>Straight prediction two</name>
+    <active>false</active>
+    <weight>5</weight>
+    <startDate>2010-01-12 12:21:29.0 UTC</startDate>
+    <finishDate>2010-01-12 12:24:29.0 UTC</finishDate>
   </StraightLegForecastContribution>
   <CourseAnalysisContribution>
     <name>Course Analysis</name>
