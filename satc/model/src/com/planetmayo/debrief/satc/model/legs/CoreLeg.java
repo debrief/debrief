@@ -13,6 +13,12 @@ import com.vividsolutions.jts.geom.Point;
 
 public abstract class CoreLeg
 {
+	
+	/** the maximum number of points we allow in a leg start/end state before we try to generate solutions
+	 * 
+	 */
+	private static final long MAX_PTS = 5000;
+	
 	/**
 	 * perform matrix multiplication on these two integer arrays taken from:
 	 * http://blog.ryanrampersad.com/2010/01/matrix-multiplication-in-java/
@@ -180,13 +186,21 @@ public abstract class CoreLeg
 		final int numStart = (int) (startArea / (delta * delta));
 		final int numEnd = (int) (endArea / (delta * delta));
 
+		// just check neither of our domains are too large (a typical symptom of a contribution with an invalid time state)
+		if(numStart > MAX_PTS)
+			throw new RuntimeException("Too many start points (" + numStart + ") for leg:" + this.getName());
+		if(numEnd > MAX_PTS)
+			throw new RuntimeException("Too many end points (" + numEnd + ") for leg:" + this.getName());
+
 		ArrayList<Point> startP = MakeGrid.ST_Tile(firstLoc.getGeometry(),
 				numStart, 6);
 		ArrayList<Point> endP = MakeGrid.ST_Tile(lastLoc.getGeometry(), numEnd, 6);
-
+		
 		// just check we've been able to create some points
-		if((startP.size() == 0) || (endP.size() == 0))
-				throw new RuntimeException("Unable to generate enough points for leg:" + this.getName());
+		if(startP.size() == 0) 
+				throw new RuntimeException("Unable to generate any start points for leg:" + this.getName());
+		if(endP.size() == 0)
+			throw new RuntimeException("Unable to generate any end points for leg:" + this.getName());
 		
 		// now calculate the routes through these points
 		calculatePerms(startP, endP);
