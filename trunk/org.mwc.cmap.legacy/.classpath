@@ -13,10 +13,10 @@
 	<classpathentry exported="true" kind="lib" path="libs/jcommon-1.0.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jfreechart-1.0.13.jar" sourcepath="/contribs/jfreechart-1.0.13/source"/>
 	<classpathentry exported="true" kind="lib" path="libs/flanagan.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-core-asl-1.9.4.jar"/>
-	<classpathentry kind="lib" path="libs/jackson-mapper-asl-1.9.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-core-asl-1.9.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-mapper-asl-1.9.4.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.1.jar"/>
-	<classpathentry kind="lib" path="libs/javalite-common-1.2-20120312.200900-220.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-sources.jar">
+	<classpathentry exported="true" kind="lib" path="libs/javalite-common-1.2-20120312.200900-220.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-javadoc.jar!/"/>
 		</attributes>

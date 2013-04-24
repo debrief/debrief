@@ -828,6 +828,7 @@ Export-Package:
  org.codehaus.jackson.sym,
  org.codehaus.jackson.type,
  org.codehaus.jackson.util,
+ org.javalite.http,
  org.jfree,
  org.jfree.base,
  org.jfree.base.config,

@@ -19,8 +19,31 @@
       </contexts>
    </extension>
    
+   
+   <extension point="org.eclipse.ui.actionSets">
+		<actionSet id="org.mwc.debrief.gnd" label="Debrief Cloud Actions">
+			<menu id="org.mwc.debrief.gnd.Data" label="&amp;Cloud Data"
+				path="additions">
+				<groupMarker name="features" />
+				<separator name="sep1" />
+				<groupMarker name="additions" />
+			</menu>
+
+			<action class="org.mwc.debrief.gndmanager.ui.InsertTrackStore"
+				icon="icons/CloudApp.png" id="org.mwc.debrief.core.creators.chartFeatures.InsertTrackStore"
+				label="Trac&amp;k Store" menubarPath="org.mwc.debrief.gnd.Data/features"
+				style="push" />
+				
+		</actionSet>
+	</extension>
+   
+   
+   
      <extension
         point="org.eclipse.ui.preferencePages">
+        		<page class="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage" id="org.mwc.debrief.core.preferences.CloudStoragePrefsPage"
+			category="org.mwc.cmap.core.preferences.CMAPPrefsPage" name="Cloud Storage Locations" />
+        
      <page
            class="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage"
            id="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage"
@@ -30,6 +53,8 @@
   <extension
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.debrief.gndmanager.preferences.GNDPreferenceInitialiser"/>
+     		<initializer class="org.mwc.debrief.core.preferences.CloudStoragePreferenceInitializer" />
+     
   </extension>
 
 </plugin>

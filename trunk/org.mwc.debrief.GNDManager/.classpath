@@ -4,8 +4,14 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/swing2swt.jar"/>
+	<classpathentry kind="lib" path="libs/guava-14.0-rc1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/jackson-core-asl-1.9.4.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/jackson-mapper-asl-1.9.4.jar"/>
+	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/javalite-common-1.2-20120312.200900-220.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
