@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GNDManager
 Bundle-SymbolicName: org.mwc.debrief.GNDManager; singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: org.mwc.debrief.gndmanager.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core;bundle-version="1.0.142",
  org.eclipse.ui.views;bundle-version="3.6.0",
  org.mwc.debrief.legacy;bundle-version="1.0.242",
- org.mwc.cmap.plotViewer;bundle-version="1.0.64"
+ org.mwc.cmap.plotViewer;bundle-version="1.0.64",
+ org.mwc.debrief.core;bundle-version="1.0.191"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,

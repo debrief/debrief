@@ -6,8 +6,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
-
-import Debrief.Wrappers.TrackStoreWrapper;
+import org.mwc.debrief.gndmanager.Tracks.TrackStoreWrapper;
 
 /**
  * This class represents a preference page that is contributed to the
