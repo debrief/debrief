@@ -11,7 +11,6 @@ import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
-import Debrief.Wrappers.TrackStoreWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -57,8 +56,6 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			res = CorePlugin.getImageDescriptor("icons/fix.gif");
 		else if (editable instanceof LabelWrapper)
 			res = CorePlugin.getImageDescriptor("icons/shape.gif");
-		else if (editable instanceof TrackStoreWrapper)
-			res = CorePlugin.getImageDescriptor("icons/CloudApp.png");
 		 
 		return res;
 	}
