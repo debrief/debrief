@@ -662,6 +662,15 @@ public class SolutionGenerator implements ISolutionGenerator
 			generateSolutions();
 	}
 	
+	
+	@Override
+	public Precision getPrecision()
+	{
+		return _myPrecision;
+	}
+
+
+
 	/**
 	 * utility interface to make it easy to operate on all legs
 	 * 

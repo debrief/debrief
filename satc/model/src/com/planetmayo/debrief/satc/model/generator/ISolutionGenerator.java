@@ -28,6 +28,11 @@ public interface ISolutionGenerator
 	void setPrecision(Precision precision);
 	
 	/**
+	 * returns current precision
+	 */
+	Precision getPrecision();
+	
+	/**
 	 * returns problem space which is used by solution generator  
 	 */
 	SafeProblemSpace getProblemSpace();

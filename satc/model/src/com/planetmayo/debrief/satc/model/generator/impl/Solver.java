@@ -2,6 +2,8 @@ package com.planetmayo.debrief.satc.model.generator.impl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -11,6 +13,8 @@ import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.ISolver.Reader;
+import com.planetmayo.debrief.satc.model.generator.ISolver.Writer;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -36,6 +40,9 @@ public class Solver implements ISolver
 	
 	private volatile boolean isClear = false;
 	
+	private LiveRunningListener liveRunningListener;
+	private AutoGenerateSolutionsListener autoGenerateListener;
+	
 	/**
 	 * the set of contribution properties that we're interested in
 	 * 
@@ -60,15 +67,15 @@ public class Solver implements ISolver
 	
 	private void attachListeners() 
 	{
-		LiveRunningListener liveRunningListener = new LiveRunningListener();
+		liveRunningListener = new LiveRunningListener();
 		contributions.addContributionsChangedListener(liveRunningListener);
 		for (String property : propertiesToRestartBoundsManager) 
 		{
 			contributions.addPropertyListener(property, liveRunningListener);
 		}
 		
-		AutoGenerateSolutionsListener listener = new AutoGenerateSolutionsListener();
-		boundsManager.addConstrainSpaceListener(listener);
+		autoGenerateListener = new AutoGenerateSolutionsListener();
+		boundsManager.addConstrainSpaceListener(autoGenerateListener);
 	}
 
 	@Override
@@ -132,7 +139,7 @@ public class Solver implements ISolver
 	}
 	
 	@Override
-	public void clear()
+	public synchronized void clear()
 	{
 		isClear = true;
 		try 
@@ -148,15 +155,48 @@ public class Solver implements ISolver
 	}
 	
 	@Override
-	public void cancel()
+	public synchronized void cancel()
 	{
 		solutionGenerator.cancel();
 	}
 
 	@Override
-	public void run()
+	public synchronized void run()
 	{
 		boundsManager.run();
+	}
+	
+  @Override
+	public synchronized void save(Writer writer)
+	{
+  	List<BaseContribution> contributionsList = new ArrayList<BaseContribution>(
+  			contributions.getContributions());
+  	writer.writeContributions(contributionsList);
+  	writer.writePrecision(solutionGenerator.getPrecision());
+  	writer.writeVehicleType(getVehicleType());  	
+	}
+
+	@Override
+	public synchronized void load(Reader reader)
+	{
+		try 
+		{
+			boundsManager.removeConstrainSpaceListener(autoGenerateListener);
+			contributions.removeContributionsChangedListener(liveRunningListener);
+
+			clear();			
+			for (BaseContribution contribution : reader.readContributions()) 
+			{
+				contributions.addContribution(contribution);
+			}
+			solutionGenerator.setPrecision(reader.readPrecision());
+			setVehicleType(reader.readVehicleType());
+		}
+		finally 
+		{
+			boundsManager.addConstrainSpaceListener(autoGenerateListener);
+			contributions.addContributionsChangedListener(liveRunningListener);
+		}
 	}
 
 	private class LiveRunningListener  
@@ -164,22 +204,25 @@ public class Solver implements ISolver
 	{
 		private void run() 
 		{
-			if (isClear) 
+			synchronized (Solver.this) 
 			{
-				return;
-			}
-			try 
-			{
-				boundsManager.restart();			
-				if (liveRunning) 
+				if (isClear) 
 				{
-					boundsManager.run();
+					return;
 				}
-			} 
-			catch (Exception ex) 
-			{
-				SupportServices.INSTANCE.getLog().error(
-						"Exception: " + ex.getMessage(), ex);				
+				try 
+				{	
+					boundsManager.restart();			
+					if (liveRunning) 
+					{
+						boundsManager.run();
+					}
+				} 
+				catch (Exception ex) 
+				{
+					SupportServices.INSTANCE.getLog().error(
+							"Exception: " + ex.getMessage(), ex);				
+				}
 			}
 		}
 		

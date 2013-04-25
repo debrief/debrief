@@ -1,12 +1,5 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -23,31 +16,13 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.BaseAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.ContributionBuilder;
-import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
-import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
-import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
-import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.thoughtworks.xstream.XStream;
+import com.planetmayo.debrief.satc_rcp.io.XStreamIO;
+import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamReader;
+import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamWriter;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -72,8 +47,6 @@ public class TestHarnessView extends ViewPart
 	 */
 	public static final String ID = "com.planetmayo.debrief.satc.views.SampleView";
 
-	public static int version = 1;
-
 	/*
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
@@ -94,7 +67,6 @@ public class TestHarnessView extends ViewPart
 
 	private TestSupport _testSupport;
 
-	private XStream _xStream;
 	private Shell _shell;
 
 	/**
@@ -118,7 +90,6 @@ public class TestHarnessView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-		initializeXstream();
 
 		Composite form = new Composite(parent, SWT.NONE);
 		_testSupport = new TestSupport();
@@ -260,12 +231,6 @@ public class TestHarnessView extends ViewPart
 
 	private void doSave()
 	{
-		List<BaseContribution> contributions = new ArrayList<BaseContribution>();
-		for (BaseContribution baseContribution : solver.getContributions())
-		{
-			contributions.add(baseContribution);
-		}
-
 		FileDialog dialog = new FileDialog(_shell, SWT.SAVE);
 		dialog.setFilterExtensions(new String[]
 		{ "*.xml" });
@@ -276,78 +241,9 @@ public class TestHarnessView extends ViewPart
 			return;
 		}
 
-		try
-		{
-			String xml = _xStream.toXML(new XstreamVersionHandler(contributions));
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-			out.write(xml);
-			out.close();
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-		}
-	}
-
-	private void initializeXstream()
-	{
-		_xStream = new XStream();
-		_xStream.alias(ATBForecastContribution.class.getSimpleName(),
-				ATBForecastContribution.class);
-		_xStream.alias(BaseAnalysisContribution.class.getSimpleName(),
-				BaseAnalysisContribution.class);
-		_xStream.alias(BaseContribution.class.getSimpleName(),
-				BaseContribution.class);
-		_xStream.alias(BearingMeasurementContribution.class.getSimpleName(),
-				BearingMeasurementContribution.class);
-		_xStream.alias(ContributionBuilder.class.getSimpleName(),
-				ContributionBuilder.class);
-		_xStream.alias(ContributionDataType.class.getSimpleName(),
-				ContributionDataType.class);
-		_xStream.alias(CourseAnalysisContribution.class.getSimpleName(),
-				CourseAnalysisContribution.class);
-		_xStream.alias(CourseForecastContribution.class.getSimpleName(),
-				CourseForecastContribution.class);
-		_xStream.alias(FrequencyMeasurementContribution.class.getSimpleName(),
-				FrequencyMeasurementContribution.class);
-		_xStream.alias(LocationAnalysisContribution.class.getSimpleName(),
-				LocationAnalysisContribution.class);
-		_xStream.alias(LocationForecastContribution.class.getSimpleName(),
-				LocationForecastContribution.class);
-		_xStream.alias(RangeForecastContribution.class.getSimpleName(),
-				RangeForecastContribution.class);
-		_xStream.alias(SpeedAnalysisContribution.class.getSimpleName(),
-				SpeedAnalysisContribution.class);
-		_xStream.alias(SpeedForecastContribution.class.getSimpleName(),
-				SpeedForecastContribution.class);
-		_xStream.alias(StraightLegForecastContribution.class.getSimpleName(),
-				StraightLegForecastContribution.class);
-		_xStream.alias(BMeasurement.class.getSimpleName(), BMeasurement.class);
-		_xStream.alias(ROrigin.class.getSimpleName(), ROrigin.class);
-		_xStream.alias(FMeasurement.class.getSimpleName(), FMeasurement.class);
-
-		_xStream.useAttributeFor(BMeasurement.class, "origin");
-		_xStream.useAttributeFor(BMeasurement.class, "bearingAngle");
-		_xStream.useAttributeFor(BMeasurement.class, "time");
-		_xStream.useAttributeFor(BMeasurement.class, "theRange");
-
-		_xStream.useAttributeFor(ROrigin.class, "origin");
-		_xStream.useAttributeFor(ROrigin.class, "time");
-
-		_xStream.useAttributeFor(FMeasurement.class, "origin");
-		_xStream.useAttributeFor(FMeasurement.class, "bearingAngle");
-		_xStream.useAttributeFor(FMeasurement.class, "origin");
-		_xStream.useAttributeFor(FMeasurement.class, "theRange");
-
-		_xStream.useAttributeFor(GeoPoint.class, "lat");
-		_xStream.useAttributeFor(GeoPoint.class, "lon");
-
-		// use human-readable name for contributions
-		_xStream.alias("AnalystContributions", XstreamVersionHandler.class);
-		_xStream.useAttributeFor(XstreamVersionHandler.class, "version");
-
-		// make the contributions appear directly beneath the parent member
-		_xStream.addImplicitCollection(XstreamVersionHandler.class, "collection");
+  	XStreamWriter writer = XStreamIO.newWriter();
+	  solver.save(writer);
+		writer.process(filename);
 	}
 
 	private void enableControls(boolean enabled)
@@ -530,72 +426,12 @@ public class TestHarnessView extends ViewPart
 
 		if (fileSelected != null)
 		{
-			try
+			XStreamReader reader = XStreamIO.newReader(fileSelected);
+			if (reader.isLoaded()) 
 			{
-				FileInputStream fstream = new FileInputStream(fileSelected);
-				Object stream = _xStream.fromXML(fstream);
-				List<BaseContribution> contributionList = null;
-				if (stream instanceof XstreamVersionHandler)
-				{
-					XstreamVersionHandler handler = (XstreamVersionHandler) stream;
-					if (TestHarnessView.version != handler.getVersion())
-					{
-						SupportServices.INSTANCE.getLog().error(
-								"Version mismatch, current version is " + version
-										+ ", while the xml version is " + handler.getVersion());
-					}
-					contributionList = handler.getCollection();
-				}
-
-				if (contributionList != null)
-				{
-					solver.clear();
-					for (BaseContribution contribution : contributionList)
-					{
-						solver.getContributions().addContribution(contribution);
-					}
-				}
-
-				// ok, get the bounds manager to run, now that it's got it's data
+				solver.load(reader);
 				solver.run();
 			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
 		}
 	}
-
-	static class XstreamVersionHandler
-	{
-		private int version;
-		private List<BaseContribution> collection;
-
-		public void setVersion(int version)
-		{
-			this.version = version;
-		}
-
-		public XstreamVersionHandler(List<BaseContribution> collection)
-		{
-			this.collection = collection;
-			this.version = TestHarnessView.version;
-		}
-
-		public List<BaseContribution> getCollection()
-		{
-			return collection;
-		}
-
-		public void setCollection(List<BaseContribution> collection)
-		{
-			this.collection = collection;
-		}
-
-		public int getVersion()
-		{
-			return version;
-		}
-	}
-
 }

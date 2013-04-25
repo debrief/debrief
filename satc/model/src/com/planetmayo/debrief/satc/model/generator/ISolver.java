@@ -1,6 +1,10 @@
 package com.planetmayo.debrief.satc.model.generator;
 
+import java.util.List;
+
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 /**
@@ -91,4 +95,26 @@ public interface ISolver
    * returns vehicle type which is used in computations 
    */
   VehicleType getVehicleType();
+  
+  void save(Writer writer);
+  
+  void load(Reader reader);
+  
+  public interface Writer 
+  {
+  	void writeContributions(List<BaseContribution> contributions);
+  	
+  	void writeVehicleType(VehicleType vehicleType);
+  	
+  	void writePrecision(Precision precision);
+  }
+  
+  public interface Reader
+  {
+  	List<BaseContribution> readContributions();
+  	
+  	VehicleType readVehicleType();
+  	
+  	Precision readPrecision();
+  }
 }
