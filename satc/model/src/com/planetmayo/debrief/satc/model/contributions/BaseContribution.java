@@ -83,6 +83,9 @@ public abstract class BaseContribution extends ModelObject implements
 		// ok, go for it
 		ArrayList<State> states = route.getStates();
 		Iterator<State> sIter = states.iterator();
+		
+		// keep track of how many errors we generate
+		int _errCtr = 0;
 
 		// ok. work through the states that comprise this leg
 		while (sIter.hasNext())
@@ -110,6 +113,9 @@ public abstract class BaseContribution extends ModelObject implements
 				
 				// and accumulate it
 				res += delta;
+				
+				// remember that we've increased the num of error values
+				_errCtr ++;
 
 				// hey, SPECIAL CASE!  If we're on a straight leg, and this is a forecast, then we
 				// only use the one calculation
@@ -120,6 +126,10 @@ public abstract class BaseContribution extends ModelObject implements
 			}
 
 		}
+		
+		// now turn the error into a mean error
+		res /= _errCtr;
+		
 		return res;
 	}
 

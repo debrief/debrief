@@ -25,17 +25,26 @@ public class CourseForecastContribution extends BaseContribution
 	{
 		// create a bounded state representing our values
 		final CourseRange courseRange = new CourseRange(minCourse, maxCourse);
-		for (BoundedState state : space.getBoundedStatesBetween(startDate, finishDate))
+		for (BoundedState state : space.getBoundedStatesBetween(startDate,
+				finishDate))
 		{
 			state.constrainTo(courseRange);
 		}
 	}
-	
+
 	@Override
 	protected double calcError(State thisState)
 	{
-		// TODO IAN HIGH calculate the course error (making sure they're in the same 'domain')
-		return super.calcError(thisState);
+		double delta = 0;
+
+		// do we have an estimate?
+		if (getEstimate() != null)
+		{
+			CourseRange cr = new CourseRange(minCourse, maxCourse);
+			delta = cr.calcErrorFor(this.getEstimate(), thisState.getCourse());
+		}
+
+		return delta;
 	}
 
 	@Override
@@ -71,7 +80,7 @@ public class CourseForecastContribution extends BaseContribution
 		Double oldMaxCourse = maxCourse;
 		this.maxCourse = newMaxCourse;
 		firePropertyChange(MAX_COURSE, oldMaxCourse, newMaxCourse);
-		firePropertyChange(HARD_CONSTRAINTS,  oldMaxCourse, newMaxCourse);
+		firePropertyChange(HARD_CONSTRAINTS, oldMaxCourse, newMaxCourse);
 	}
 
 	public void setMinCourse(Double newMinCourse)
@@ -79,7 +88,7 @@ public class CourseForecastContribution extends BaseContribution
 		Double oldMinCourse = minCourse;
 		this.minCourse = newMinCourse;
 		firePropertyChange(MIN_COURSE, oldMinCourse, newMinCourse);
-		firePropertyChange(HARD_CONSTRAINTS,  oldMinCourse, newMinCourse);
+		firePropertyChange(HARD_CONSTRAINTS, oldMinCourse, newMinCourse);
 	}
 
 }
