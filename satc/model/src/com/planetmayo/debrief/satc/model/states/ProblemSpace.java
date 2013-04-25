@@ -3,10 +3,11 @@ package com.planetmayo.debrief.satc.model.states;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.TreeMap;
+import java.util.SortedMap;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
 public class ProblemSpace
@@ -17,7 +18,7 @@ public class ProblemSpace
 	 * this map of bounded states, stored by time
 	 * 
 	 */
-	private final TreeMap<Date, BoundedState> _boundedStates;
+	private final SortedMap<Date, BoundedState> _boundedStates;
 
 	/**
 	 * the performance characeristics of the subject vehicle
@@ -27,7 +28,7 @@ public class ProblemSpace
 
 	public ProblemSpace()
 	{
-		_boundedStates = new TreeMap<Date, BoundedState>();
+		_boundedStates = SupportServices.INSTANCE.getUtilsService().newConcurrentSortedMap();
 	}
 
 	/**

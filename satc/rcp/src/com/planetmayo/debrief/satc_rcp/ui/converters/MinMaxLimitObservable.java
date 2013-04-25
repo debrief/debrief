@@ -51,7 +51,6 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 		this(minObservable, maxObservable, null);
 	}
 	
-	@SuppressWarnings("null")
 	public MinMaxLimitObservable(IObservableValue minObservable,
 			IObservableValue maxObservable, UnitConverter siConverter) 
 	{

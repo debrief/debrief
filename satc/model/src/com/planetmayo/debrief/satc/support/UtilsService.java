@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.support;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 public interface UtilsService
@@ -16,4 +17,6 @@ public interface UtilsService
 	<T> SortedSet<T> newConcurrentSortedSet();
 	
 	<T> Set<T> newConcurrentSet();
+	
+	<K, V> SortedMap<K, V> newConcurrentSortedMap();
 }

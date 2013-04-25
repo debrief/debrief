@@ -7,9 +7,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.NavigableSet;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import com.planetmayo.debrief.satc.support.UtilsService;
@@ -76,5 +77,10 @@ public class TestUtilsService implements UtilsService
 	{
 		return Collections.newSetFromMap(new ConcurrentHashMap<T, Boolean>());
 	}
-	
+
+	@Override
+	public <K, V> SortedMap<K, V> newConcurrentSortedMap()
+	{
+		return new ConcurrentSkipListMap<K, V>();
+	}
 }

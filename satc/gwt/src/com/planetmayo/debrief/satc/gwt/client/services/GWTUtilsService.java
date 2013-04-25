@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -54,5 +56,10 @@ public class GWTUtilsService implements UtilsService
 	@Override
 	public <T> Set<T> newConcurrentSet() {
 		return new HashSet<T>();
+	}
+
+	@Override
+	public <K, V> SortedMap<K, V> newConcurrentSortedMap() {
+		return new TreeMap<K, V>();
 	}
 }

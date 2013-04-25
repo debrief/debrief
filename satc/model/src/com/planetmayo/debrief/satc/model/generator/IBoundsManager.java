@@ -31,7 +31,7 @@ public interface IBoundsManager
 	 *          the new vehicle type
 	 */
 	void setVehicleType(VehicleType v);
-
+	
 	/**
 	 * restart the set of contributions
 	 * 

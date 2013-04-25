@@ -128,8 +128,7 @@ public class Solver implements ISolver
 	@Override
 	public VehicleType getVehicleType()
 	{
-		// TODO: implement!
-		return null;
+		return problemSpace.getVehicleType();
 	}
 	
 	@Override
