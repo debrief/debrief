@@ -36,6 +36,56 @@ public class CourseRange extends BaseRange<CourseRange>
 		this._max = maxCourse;
 	}
 
+	public double calcErrorFor(double estimate, double state)
+	{
+		double delta = 0;
+		
+		// put us in the correct domain
+		while(state < _min)
+			state += Math.PI * 2;
+		while(state > _max)
+			state -= Math.PI * 2;
+		
+		while(estimate < _min)
+			estimate += Math.PI * 2;
+		while(estimate > _max)
+			estimate -= Math.PI * 2;
+		
+		// ok, what's the offset?
+		delta = estimate - state;
+		
+		// ok - we 'normalise' this speed according to the max/min
+		Double limit;
+		
+		// is the state lower than the estimate?
+		if (delta > 0)
+		{
+			// ok, do we have a min value
+			limit = _min;
+		}
+		else
+		{
+			// higher, use max
+			limit = _max;
+		}
+		
+		// do we have a relevant limit?
+		if (limit != null)
+		{
+			// what's the range from the estimate to the limit
+			double allowable = estimate - limit;
+
+			// ok, and how far through this are we
+			delta = delta / allowable;
+		}
+
+		// ok, make it absolute
+		delta = Math.abs(delta);
+
+		
+		return delta;
+	}
+
 	@Override
 	public void constrainTo(CourseRange sTwo) throws IncompatibleStateException
 	{
@@ -122,28 +172,30 @@ public class CourseRange extends BaseRange<CourseRange>
 			// generate the inverse angles
 			double newMin = this._min + Math.PI;
 			double newMax = this._max + Math.PI;
-			
+
 			res = new CourseRange(newMin, newMax);
 		}
 		return res;
 	}
 
-	/** does the supplied course fit in my range?
+	/**
+	 * does the supplied course fit in my range?
 	 * 
-	 * @param speed the value to test
-	 * @return  yes/no
+	 * @param speed
+	 *          the value to test
+	 * @return yes/no
 	 */
 	public boolean allows(double course)
 	{
 		// put the coursre into my domain
-		while(course < _min)
+		while (course < _min)
 			course += 2 * Math.PI;
-		
+
 		// and just check we're not too high
-		while(course > _max)
+		while (course > _max)
 			course -= 2 * Math.PI;
-		
+
 		// and test
 		return (course >= _min) && (course <= _max);
-	}	
+	}
 }
