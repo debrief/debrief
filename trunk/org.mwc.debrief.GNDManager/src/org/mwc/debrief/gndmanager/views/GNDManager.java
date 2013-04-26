@@ -19,7 +19,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.debrief.gndmanager.Activator;
-import org.mwc.debrief.gndmanager.preferences.GNDPrefsPage;
+import org.mwc.debrief.gndmanager.Tracks.TrackStoreWrapper;
 import org.mwc.debrief.gndmanager.views.ManagerView.Listener;
 import org.mwc.debrief.gndmanager.views.io.ESearch;
 import org.mwc.debrief.gndmanager.views.io.SearchModel.Facet;
@@ -58,14 +58,14 @@ public class GNDManager extends ViewPart implements Listener
 
 	private static String getDBUrl()
 	{
-		return Activator.getDefault().getPreferenceStore().getString(GNDPrefsPage.PreferenceConstants.DB_URL);
+		return Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.COUCHDB_LOCATION);
 	}
 	
 	
 
 	private static String getIndexUrl()
 	{
-		return Activator.getDefault().getPreferenceStore().getString(GNDPrefsPage.PreferenceConstants.INDEX_URL);
+		return Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.ES_LOCATION);
 	}
 
 	

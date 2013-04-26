@@ -15,7 +15,7 @@ class EndAfter implements ElasticFilter {
 	 */
 	public EndAfter(String date) {
 		checkNotNull(date);
-		this.date = date + "T00:00:00";
+		this.date = date;// + "T00:00:00";
 	}
 
 	@Override

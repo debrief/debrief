@@ -3,15 +3,19 @@
  */
 package org.mwc.debrief.gndmanager.ui;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
+import org.mwc.debrief.gndmanager.Activator;
 import org.mwc.debrief.gndmanager.Tracks.TrackStoreWrapper;
 
 import MWC.GUI.BaseLayer;
@@ -22,6 +26,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Palette.PlainCreate;
 import MWC.GUI.Tools.Palette.PlainCreate.CreateLabelAction;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -55,9 +60,25 @@ public class InsertTrackStore extends CoreEditorAction
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-		TrackStoreWrapper res = new TrackStoreWrapper();
+		TrackStoreWrapper res = new TrackStoreWrapper(Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.COUCHDB_LOCATION),
+				Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.ES_LOCATION));
 		
 		// TODO: IAN - set the time period to that currently visible
+		IChartBasedEditor editor = getEditor();
+		
+		if(editor instanceof EditorPart)
+		{
+			if(editor instanceof IAdaptable)
+			{
+				IAdaptable ad = (IAdaptable) editor;
+				TimeProvider prov = (TimeProvider) ad.getAdapter(TimeProvider.class);
+				if(prov != null)
+				{
+					TimePeriod thePeriod = prov.getPeriod();
+					res.filterListTo(thePeriod.getStartDTG(), thePeriod.getEndDTG());
+				}
+			}
+		}
 		
 		return res;
 	}

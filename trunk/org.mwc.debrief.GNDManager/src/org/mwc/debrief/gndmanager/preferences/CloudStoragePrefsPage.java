@@ -5,7 +5,7 @@ import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.gndmanager.Activator;
 import org.mwc.debrief.gndmanager.Tracks.TrackStoreWrapper;
 
 /**
@@ -36,9 +36,9 @@ public class CloudStoragePrefsPage extends FieldEditorPreferencePage implements
 	 */
 	public void createFieldEditors()
 	{
-		addField(new StringFieldEditor(PreferenceConstants.COUCH_URL,
+		addField(new StringFieldEditor(TrackStoreWrapper.COUCHDB_LOCATION,
 				"&CouchDb Database URL:", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceConstants.ES_URL,
+		addField(new StringFieldEditor(TrackStoreWrapper.ES_LOCATION,
 				"&ElasticSearch index URL:", getFieldEditorParent()));
 	}
 
@@ -50,16 +50,7 @@ public class CloudStoragePrefsPage extends FieldEditorPreferencePage implements
 	 */
 	public void init(IWorkbench workbench)
 	{
-		setPreferenceStore(DebriefPlugin.getDefault().getPreferenceStore());
-	}
-
-	/**
-	 * Constant definitions for plug-in preferences
-	 */
-	public static class PreferenceConstants
-	{
-		public static final String COUCH_URL = TrackStoreWrapper.COUCHDB_LOCATION;
-		public static final String ES_URL = TrackStoreWrapper.ES_LOCATION;
+		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 
 }

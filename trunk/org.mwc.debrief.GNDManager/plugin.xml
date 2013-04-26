@@ -41,19 +41,13 @@
    
      <extension
         point="org.eclipse.ui.preferencePages">
-        		<page class="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage" id="org.mwc.debrief.core.preferences.CloudStoragePrefsPage"
+        		<page class="org.mwc.debrief.gndmanager.preferences.CloudStoragePrefsPage" id="org.mwc.debrief.gndmanager.preferences.CloudStoragePrefsPage"
 			category="org.mwc.cmap.core.preferences.CMAPPrefsPage" name="Cloud Storage Locations" />
         
-     <page
-           class="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage"
-           id="org.mwc.debrief.gndmanager.preferences.GNDPrefsPage"
-           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-           name="GND Data storage"/>
   </extension>
   <extension
         point="org.eclipse.core.runtime.preferences">
-     <initializer class="org.mwc.debrief.gndmanager.preferences.GNDPreferenceInitialiser"/>
-     		<initializer class="org.mwc.debrief.core.preferences.CloudStoragePreferenceInitializer" />
+     		<initializer class="org.mwc.debrief.gndmanager.preferences.CloudStoragePreferenceInitializer" />
      
   </extension>
 

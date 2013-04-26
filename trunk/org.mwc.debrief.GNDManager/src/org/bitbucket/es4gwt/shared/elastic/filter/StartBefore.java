@@ -15,7 +15,7 @@ class StartBefore implements ElasticFilter {
 	 */
 	public StartBefore(String date) {
 		checkNotNull(date);
-		this.date = date + "T23:59:59";
+		this.date = date; // + "T23:59:59";
 	}
 
 	@Override
