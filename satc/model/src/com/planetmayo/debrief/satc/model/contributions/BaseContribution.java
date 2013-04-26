@@ -127,10 +127,8 @@ public abstract class BaseContribution extends ModelObject implements
 
 		}
 		
-		// now turn the error into a mean error
-		res /= _errCtr;
-		
-		return res;
+		// return 0 if no states were processed or mean error otherwise
+		return _errCtr == 0 ? 0 : res / _errCtr;
 	}
 
 	/**
