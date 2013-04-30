@@ -305,16 +305,17 @@ public class MaintainContributionsView extends ViewPart implements
 		gridData.grabExcessVerticalSpace = true;
 
 		Group group = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		group.setLayout(new FillLayout(SWT.VERTICAL));
+		group.setLayout(new GridLayout(1, false));
 		group.setLayoutData(gridData);
 		group.setText("Analyst Contributions");
+		fillAnalystContributionsGroup(group);
 
 		final ScrolledComposite scrolled = new ScrolledComposite(group,
 				SWT.V_SCROLL);
+		scrolled.setLayoutData(new GridData(GridData.FILL_BOTH));
 		contList = UIUtils.createScrolledBody(scrolled, SWT.NONE);
 		contList.setLayout(new GridLayout(1, false));
 
-		fillAnalystContributionsGroup(contList);
 		scrolled.addListener(SWT.Resize, new Listener()
 		{
 
