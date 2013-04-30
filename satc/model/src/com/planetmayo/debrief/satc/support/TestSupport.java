@@ -545,7 +545,7 @@ public class TestSupport
 		// sort out the legs
 		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
 		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
-				"100112 121430"));
+				"100112 121329"));
 		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
 				"100112 123029"));
 		st1.setName("Straight leg one");
@@ -567,9 +567,20 @@ public class TestSupport
 		st3.setName("Straight leg three");
 		contributions.addContribution(st3);
 
+		CourseForecastContribution course = new CourseForecastContribution();
+		course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+				"100112 121329"));
+		course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+				"100112 130429"));
+		course.setMinCourse(Math.toRadians(190));
+		course.setMaxCourse(Math.toRadians(315));
+		course.setEstimate(Math.toRadians(225));
+		course.setName("Initial course forecast");
+		contributions.addContribution(course);
+
 		SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
-				"100112 121330"));
+				"100112 121329"));
 		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
 				"100112 130429"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
@@ -578,6 +589,7 @@ public class TestSupport
 		speed.setName("Initial speed forecast");
 		contributions.addContribution(speed);
 
+		
 		//
 		// // try a location forecast
 		// LocationForecastContribution locF = new LocationForecastContribution();
