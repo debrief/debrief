@@ -70,8 +70,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Label maxLabel;
 	protected Label estimateDetailsLabel;
 
-	//protected Button minActiveCheckbox;
-	//protected Button maxActiveCheckbox;
 	protected Button estimateActiveCheckbox;
 
 	protected Scale minSlider;
