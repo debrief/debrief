@@ -68,7 +68,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Label minLabel;
 	protected Label maxLabel;
 	protected Label estimateDetailsLabel;
-	
+
 	protected Button minActiveCheckbox;
 	protected Button maxActiveCheckbox;
 	protected Button estimateActiveCheckbox;
@@ -76,19 +76,18 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Scale minSlider;
 	protected Scale maxSlider;
 	protected Scale estimateSlider;
-	
+
 	private DataBindingContext context;
 	private PropertyChangeListener titleChangeListener;
-	
-	private IContributions contributions;
 
+	private IContributions contributions;
 
 	public BaseContributionView(final Composite parent, final T contribution)
 	{
 		this.controlParent = parent;
 		this.contribution = contribution;
-		contributions = SATC_Activator.getDefault().getService(
-				ISolver.class, true).getContributions();
+		contributions = SATC_Activator.getDefault().getService(ISolver.class, true)
+				.getContributions();
 	}
 
 	protected PropertyChangeListener attachTitleChangeListener(
@@ -108,41 +107,46 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		contribution.addPropertyChangeListener(BaseContribution.NAME, listener);
 		return listener;
 	}
-	
+
 	/**
-	 * binds model value to specified slider, label and checkBox with specified converters
-	 * returns writable value which is used to store direct ui value 
+	 * binds model value to specified slider, label and checkBox with specified
+	 * converters returns writable value which is used to store direct ui value
 	 */
-	protected WritableValue bindSliderLabelCheckbox(DataBindingContext context, final IObservableValue modelValue,
-			Scale slider, Label label, Button checkBox, PrefixSuffixLabelConverter labelValueConverter, 
-			BooleanToNullConverter<?> checkBoxValueConverter, UnitConverter unitConverter) 
+	protected WritableValue bindSliderLabelCheckbox(DataBindingContext context,
+			final IObservableValue modelValue, Scale slider, Label label,
+			Button checkBox, PrefixSuffixLabelConverter labelValueConverter,
+			BooleanToNullConverter<?> checkBoxValueConverter,
+			UnitConverter unitConverter)
 	{
-		final WritableValue uiProxy = new WritableValue(modelValue.getValue(), modelValue.getValueType());
-		
+		final WritableValue uiProxy = new WritableValue(modelValue.getValue(),
+				modelValue.getValueType());
+
 		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
 		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
-		IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
+		IObservableValue checkBoxValue = WidgetProperties.selection().observe(
+				checkBox);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
 
-		if (unitConverter != null) 
+		if (unitConverter != null)
 		{
 			context.bindValue(sliderValue, uiProxy,
 					UIUtils.converterStrategy(unitConverter.getUIToModel()),
 					UIUtils.converterStrategy(unitConverter.getModelToUI()));
-		} 
-		else 
+		}
+		else
 		{
 			context.bindValue(sliderValue, uiProxy);
 		}
-		context.bindValue(sliderEnabled, modelValue, null, 
+		context.bindValue(sliderEnabled, modelValue, null,
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
 		context.bindValue(checkBoxValue, modelValue,
 				UIUtils.converterStrategy(checkBoxValueConverter),
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
-		
+
 		context.bindValue(labelValue, uiProxy, null,
-				UIUtils.converterStrategy(labelValueConverter));		
-		context.bindValue(uiProxy, modelValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER), null);
+				UIUtils.converterStrategy(labelValueConverter));
+		context.bindValue(uiProxy, modelValue, new UpdateValueStrategy(
+				UpdateValueStrategy.POLICY_NEVER), null);
 		slider.addListener(SWT.MouseUp, new Listener()
 		{
 			@Override
@@ -157,19 +161,21 @@ public abstract class BaseContributionView<T extends BaseContribution>
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				if ((e.stateMask & SWT.BUTTON1) == 0) 
+				if ((e.stateMask & SWT.BUTTON1) == 0)
 				{
 					modelValue.setValue(uiProxy.getValue());
 				}
-			}			
+			}
 		});
 		return uiProxy;
 	}
-	
-	protected void bindMaxMinEstimate(final IObservableValue estimate, final IObservableValue min, final IObservableValue max) {
+
+	protected void bindMaxMinEstimate(final IObservableValue estimate,
+			final IObservableValue min, final IObservableValue max)
+	{
 		estimate.addValueChangeListener(new IValueChangeListener()
 		{
-			
+
 			@Override
 			public void handleValueChange(ValueChangeEvent e)
 			{
@@ -177,78 +183,91 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				final Number oldValue = (Number) e.diff.getOldValue();
 				final Number minValue = (Number) min.getValue();
 				final Number maxValue = (Number) max.getValue();
-				
-				if (newValue == null) {
+
+				if (newValue == null)
+				{
 					return;
 				}
-				double minT = minValue == null ? Double.MIN_VALUE : minValue.doubleValue();
-				double maxT = maxValue == null ? Double.MAX_VALUE : maxValue.doubleValue();
-				if (newValue.doubleValue() < minT || newValue.doubleValue() > maxT) 
+				double minT = minValue == null ? Double.MIN_VALUE : minValue
+						.doubleValue();
+				double maxT = maxValue == null ? Double.MAX_VALUE : maxValue
+						.doubleValue();
+				if (newValue.doubleValue() < minT || newValue.doubleValue() > maxT)
 				{
-					if (minT == maxT) 
+					if (minT == maxT)
 					{
 						max.setValue(newValue);
 						min.setValue(newValue);
-					} 
-					else 
+					}
+					else
 					{
 						controlParent.getDisplay().asyncExec(new Runnable()
 						{
 							public void run()
 							{
-								if (oldValue == null) {
-									estimate.setValue(minValue == null ? maxValue : minValue); 
-								} else {
+								if (oldValue == null)
+								{
+									estimate.setValue(minValue == null ? maxValue : minValue);
+								}
+								else
+								{
 									estimate.setValue(oldValue);
 								}
 							}
-						});						
-					}				
+						});
+					}
 				}
 			}
 		});
 		min.addValueChangeListener(new IValueChangeListener()
 		{
-			
+
 			@Override
 			public void handleValueChange(ValueChangeEvent e)
 			{
 				final Number newValue = (Number) e.diff.getNewValue();
 				final Number estimateValue = (Number) estimate.getValue();
 				final Number maxValue = (Number) max.getValue();
-				if (newValue == null) {
+				if (newValue == null)
+				{
 					return;
 				}
-				if (newValue.doubleValue() > maxValue.doubleValue()) 
+				if (newValue.doubleValue() > maxValue.doubleValue())
 				{
 					max.setValue(newValue);
-				} 
-				if (estimateValue.doubleValue() < newValue.doubleValue()) 
-				{
-					estimate.setValue(newValue);
 				}
+				// note: we may not have an estimate
+				if (estimateValue != null)
+					if (estimateValue.doubleValue() < newValue.doubleValue())
+					{
+						estimate.setValue(newValue);
+					}
 			}
 		});
 		max.addValueChangeListener(new IValueChangeListener()
 		{
-			
+
 			@Override
 			public void handleValueChange(ValueChangeEvent e)
 			{
 				final Number newValue = (Number) e.diff.getNewValue();
 				final Number estimateValue = (Number) estimate.getValue();
 				final Number minValue = (Number) min.getValue();
-				if (newValue == null) {
+				if (newValue == null)
+				{
 					return;
-				}				
-				if (newValue.doubleValue() < minValue.doubleValue()) 
-				{
-					min.setValue(newValue);										
 				}
-				if (estimateValue.doubleValue() > newValue.doubleValue()) 
+				if (newValue.doubleValue() < minValue.doubleValue())
 				{
-					estimate.setValue(newValue);
+					min.setValue(newValue);
 				}
+
+				// note: we may not have an estimate
+				if (estimateValue != null)
+					if (estimateValue.doubleValue() > newValue.doubleValue())
+					{
+						estimate.setValue(newValue);
+					}
 			}
 		});
 	}
@@ -294,10 +313,12 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	 * @param context
 	 * @param labelsConverter
 	 */
-	protected final void bindCommonHeaderWidgets(DataBindingContext context, IObservableValue hardContraints,
-			IObservableValue estimateValue, IConverter labelConverter)
+	protected final void bindCommonHeaderWidgets(DataBindingContext context,
+			IObservableValue hardContraints, IObservableValue estimateValue,
+			IConverter labelConverter)
 	{
-		bindCommonHeaderWidgets(context, hardContraints, estimateValue, labelConverter, labelConverter);
+		bindCommonHeaderWidgets(context, hardContraints, estimateValue,
+				labelConverter, labelConverter);
 	}
 
 	/**
@@ -309,8 +330,9 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	 * @param contribution
 	 * @param labelsConverter
 	 */
-	protected final void bindCommonHeaderWidgets(DataBindingContext context, IObservableValue hardContraint,
-			IObservableValue estimateValue, IConverter estimateConverter, IConverter hardConstraintsConverter)
+	protected final void bindCommonHeaderWidgets(DataBindingContext context,
+			IObservableValue hardContraint, IObservableValue estimateValue,
+			IConverter estimateConverter, IConverter hardConstraintsConverter)
 	{
 		IObservableValue activeValue = BeansObservables.observeValue(contribution,
 				BaseContribution.ACTIVE);
@@ -318,7 +340,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				activeCheckBox);
 		context.bindValue(activeButton, activeValue);
 
-		if (hardContraint != null) 
+		if (hardContraint != null)
 		{
 			IObservableValue hardContraintLabel = WidgetProperties.text().observe(
 					hardConstraintLabel);
@@ -326,7 +348,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 					UIUtils.converterStrategy(hardConstraintsConverter));
 		}
 
-		if (estimateValue != null) 
+		if (estimateValue != null)
 		{
 			IObservableValue estimateLabel = WidgetProperties.text().observe(
 					this.estimateLabel);
@@ -376,7 +398,7 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				new RowLayout(SWT.HORIZONTAL), new GridData());
 		endDate = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.DATE);
 		endTime = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.TIME);
-		
+
 		createLimitAndEstimateSliders();
 	}
 
@@ -426,11 +448,12 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		weightSpinner.setMaximum(10);
 		weightSpinner.setIncrement(1);
 		weightSpinner.setPageIncrement(1);
-		
+
 		Button button = new Button(header, SWT.PUSH);
 		button.setToolTipText("Delete this contribution");
-    button.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
-    button.addSelectionListener(new SelectionAdapter()
+		button.setImage(PlatformUI.getWorkbench().getSharedImages()
+				.getImage(ISharedImages.IMG_TOOL_DELETE));
+		button.addSelectionListener(new SelectionAdapter()
 		{
 			@Override
 			public void widgetSelected(SelectionEvent arg0)
@@ -438,42 +461,47 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				contributions.removeContribution(contribution);
 			}
 		});
-	
 
 	}
 
 	protected void createLimitAndEstimateSliders()
 	{
 		Composite group;
-		
-		UIUtils.createLabel(bodyGroup, "Min:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));		
+
+		UIUtils.createLabel(bodyGroup, "Min:", new GridData(
+				GridData.HORIZONTAL_ALIGN_FILL));
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));		
+		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		minActiveCheckbox = new Button(group, SWT.CHECK);
-		minLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		minLabel = UIUtils.createSpacer(group, new GridData(
+				GridData.FILL_HORIZONTAL));
 		minSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		minSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		minSlider.setPageIncrement(1);
 		minSlider.setIncrement(1);
-		
-		UIUtils.createLabel(bodyGroup, "Max:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+
+		UIUtils.createLabel(bodyGroup, "Max:", new GridData(
+				GridData.HORIZONTAL_ALIGN_FILL));
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));			
+		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		maxActiveCheckbox = new Button(group, SWT.CHECK);
-		maxLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		maxLabel = UIUtils.createSpacer(group, new GridData(
+				GridData.FILL_HORIZONTAL));
 		maxSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		maxSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		maxSlider.setPageIncrement(1);
 		maxSlider.setIncrement(1);
 
-		UIUtils.createLabel(bodyGroup, "Estimate:",	new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(bodyGroup, "Estimate:", new GridData(
+				GridData.HORIZONTAL_ALIGN_FILL));
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));			
+		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		estimateActiveCheckbox = new Button(group, SWT.CHECK);
-		estimateDetailsLabel = UIUtils.createSpacer(group, new GridData(GridData.FILL_HORIZONTAL));
+		estimateDetailsLabel = UIUtils.createSpacer(group, new GridData(
+				GridData.FILL_HORIZONTAL));
 		estimateSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		estimateSlider.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.GRAB_HORIZONTAL));
@@ -483,12 +511,12 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 	public void dispose()
 	{
-		if (titleChangeListener != null) 
+		if (titleChangeListener != null)
 		{
 			contribution.removePropertyChangeListener(BaseContribution.NAME,
 					titleChangeListener);
 		}
-		if (context != null) 
+		if (context != null)
 		{
 			context.dispose();
 		}
@@ -505,12 +533,12 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		return mainGroup;
 	}
 
-	protected void initializeWidgets() 
+	protected void initializeWidgets()
 	{
-		
+
 	}
-	
-	protected String getTitlePrefix() 
+
+	protected String getTitlePrefix()
 	{
 		return "";
 	}
@@ -524,10 +552,11 @@ public abstract class BaseContributionView<T extends BaseContribution>
 
 		createHeader(mainGroup);
 		createBody(mainGroup);
-		
-		titleChangeListener = attachTitleChangeListener(contribution, getTitlePrefix());
+
+		titleChangeListener = attachTitleChangeListener(contribution,
+				getTitlePrefix());
 		initializeWidgets();
-		
+
 		context = new DataBindingContext();
 		bindValues(context);
 	}
