@@ -35,7 +35,6 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 			Scale slider, Label label, Button checkBox, boolean maxValue) {
 		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
 		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
-		IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
 		
 		int[] borders = {0, 1000, 3000, 7000, 17000, 40000};
@@ -47,9 +46,13 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		double defaultValue = maxValue ? RangeForecastContribution.MAX_SELECTABLE_RANGE_M : 0;
 		context.bindValue(sliderEnabled, modelValue, null, 
 				UIUtils.converterStrategy(new NullToBooleanConverter()));
-		context.bindValue(checkBoxValue, modelValue,
-				UIUtils.converterStrategy(new BooleanToNullConverter<Double>(defaultValue)),
-				UIUtils.converterStrategy(new NullToBooleanConverter()));
+		if (checkBox != null) 
+		{
+			IObservableValue checkBoxValue = WidgetProperties.selection().observe(checkBox);
+			context.bindValue(checkBoxValue, modelValue,
+					UIUtils.converterStrategy(new BooleanToNullConverter<Double>(defaultValue)),
+					UIUtils.converterStrategy(new NullToBooleanConverter()));			
+		}
 		context.bindValue(labelValue, modelValue, null,
 				UIUtils.converterStrategy(labelsConverter));		
 	}
@@ -68,8 +71,8 @@ public class RangeForecastContributionView extends BaseContributionView<RangeFor
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelsConverter);
 		bindCommonDates(context);
 		
-		bindSliderForRange(context, minSpeedValue, minSlider, minLabel, minActiveCheckbox, false);
-		bindSliderForRange(context, maxSpeedValue, maxSlider, maxLabel, maxActiveCheckbox, true);
+		bindSliderForRange(context, minSpeedValue, minSlider, minLabel, null, false);
+		bindSliderForRange(context, maxSpeedValue, maxSlider, maxLabel, null, true);
 		bindSliderForRange(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, false);
 		bindMaxMinEstimate(estimateValue, minSpeedValue, maxSpeedValue);
 	}

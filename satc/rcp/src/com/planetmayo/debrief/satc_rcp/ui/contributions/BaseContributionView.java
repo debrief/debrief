@@ -70,8 +70,8 @@ public abstract class BaseContributionView<T extends BaseContribution>
 	protected Label maxLabel;
 	protected Label estimateDetailsLabel;
 
-	protected Button minActiveCheckbox;
-	protected Button maxActiveCheckbox;
+	//protected Button minActiveCheckbox;
+	//protected Button maxActiveCheckbox;
 	protected Button estimateActiveCheckbox;
 
 	protected Scale minSlider;
@@ -109,6 +109,19 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		return listener;
 	}
 
+
+	/**
+	 * binds model value to specified slider and label with specified
+	 * converters returns writable value which is used to store direct ui value
+	 */	
+	protected WritableValue bindSliderLabel(DataBindingContext context,
+			final IObservableValue modelValue, Scale slider, Label label,
+			PrefixSuffixLabelConverter labelValueConverter,	UnitConverter unitConverter) 
+	{
+		return bindSliderLabelCheckbox(context, modelValue, slider, label, 
+				null, labelValueConverter, null, unitConverter);
+	}
+	
 	/**
 	 * binds model value to specified slider, label and checkBox with specified
 	 * converters returns writable value which is used to store direct ui value
@@ -123,9 +136,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 				modelValue.getValueType());
 
 		IObservableValue sliderValue = WidgetProperties.selection().observe(slider);
-		IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);
-		IObservableValue checkBoxValue = WidgetProperties.selection().observe(
-				checkBox);
 		IObservableValue labelValue = WidgetProperties.text().observe(label);
 
 		if (unitConverter != null)
@@ -138,11 +148,17 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		{
 			context.bindValue(sliderValue, uiProxy);
 		}
-		context.bindValue(sliderEnabled, modelValue, null,
-				UIUtils.converterStrategy(new NullToBooleanConverter()));
-		context.bindValue(checkBoxValue, modelValue,
-				UIUtils.converterStrategy(checkBoxValueConverter),
-				UIUtils.converterStrategy(new NullToBooleanConverter()));
+		if (checkBox != null) 
+		{
+			IObservableValue sliderEnabled = WidgetProperties.enabled().observe(slider);			
+			IObservableValue checkBoxValue = WidgetProperties.selection().observe(
+					checkBox);
+			context.bindValue(checkBoxValue, modelValue,
+					UIUtils.converterStrategy(checkBoxValueConverter),
+					UIUtils.converterStrategy(new NullToBooleanConverter()));
+			context.bindValue(sliderEnabled, modelValue, null,
+					UIUtils.converterStrategy(new NullToBooleanConverter()));			
+		}
 
 		context.bindValue(labelValue, uiProxy, null,
 				UIUtils.converterStrategy(labelValueConverter));
@@ -470,7 +486,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
-		minActiveCheckbox = new Button(group, SWT.CHECK);
 		minLabel = UIUtils.createSpacer(group, new GridData(
 				GridData.FILL_HORIZONTAL));
 		minSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
@@ -483,7 +498,6 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		group = new Composite(bodyGroup, SWT.NONE);
 		group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
-		maxActiveCheckbox = new Button(group, SWT.CHECK);
 		maxLabel = UIUtils.createSpacer(group, new GridData(
 				GridData.FILL_HORIZONTAL));
 		maxSlider = new Scale(bodyGroup, SWT.HORIZONTAL);

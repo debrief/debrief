@@ -40,10 +40,8 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelConverter);
 		bindCommonDates(context);
 		
-		bindSliderLabelCheckbox(context, minCourseValue, minSlider, minLabel, minActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
-		bindSliderLabelCheckbox(context, maxCourseValue, maxSlider, maxLabel, maxActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Double>(2 * Math.PI), UnitConverter.ANGLE_DEG);
+		bindSliderLabel(context, minCourseValue, minSlider, minLabel,	labelConverter, UnitConverter.ANGLE_DEG);
+		bindSliderLabel(context, maxCourseValue, maxSlider, maxLabel, labelConverter, UnitConverter.ANGLE_DEG);
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
 				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);		
 		

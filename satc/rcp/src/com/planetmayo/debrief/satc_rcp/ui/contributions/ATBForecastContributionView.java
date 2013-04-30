@@ -33,10 +33,8 @@ public class ATBForecastContributionView extends BaseContributionView<ATBForecas
 		bindCommonHeaderWidgets(context, hardContraints,  estimateValue, labelConverter);
 		bindCommonDates(context);
 
-		bindSliderLabelCheckbox(context, minValue, minSlider, minLabel, minActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
-		bindSliderLabelCheckbox(context, maxValue, maxSlider, maxLabel, maxActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Double>(2 * Math.PI), UnitConverter.ANGLE_DEG);
+		bindSliderLabel(context, minValue, minSlider, minLabel,	labelConverter, UnitConverter.ANGLE_DEG);
+		bindSliderLabel(context, maxValue, maxSlider, maxLabel,	labelConverter, UnitConverter.ANGLE_DEG);
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
 				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
 		

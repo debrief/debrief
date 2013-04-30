@@ -35,11 +35,8 @@ public class SpeedContributionView extends BaseContributionView<SpeedForecastCon
 				UnitConverter.SPEED_KTS), estimateValue, labelsConverter);
 		bindCommonDates(context);
 
-		bindSliderLabelCheckbox(context, minSpeedValue, minSlider, minLabel, 
-				minActiveCheckbox, labelsConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.SPEED_KTS);
-		bindSliderLabelCheckbox(context, maxSpeedValue, maxSlider, maxLabel, 
-				maxActiveCheckbox, labelsConverter, 
-				new BooleanToNullConverter<Double>(SpeedForecastContribution.MAX_SPEED_VALUE_MS), UnitConverter.SPEED_KTS);
+		bindSliderLabel(context, minSpeedValue, minSlider, minLabel, labelsConverter, UnitConverter.SPEED_KTS);
+		bindSliderLabel(context, maxSpeedValue, maxSlider, maxLabel, labelsConverter, UnitConverter.SPEED_KTS);
 		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, 
 				estimateActiveCheckbox, labelsConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.SPEED_KTS);		
 		
