@@ -31,7 +31,9 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		applyAnalysisConstraints(space, new SwitchableIterator(true));
 		
 		// and now a reverse pass
-		applyAnalysisConstraints(space, new SwitchableIterator(false));
+		// NOTE: we've commented this out, since it's cancelling legitimate solutions.
+		// reinstate as required in the future.
+	//	applyAnalysisConstraints(space, new SwitchableIterator(false));
 	}
 
 	/** support class that lets use move either forwards or backwards through a list
