@@ -213,7 +213,7 @@ public class MaintainContributionsView extends ViewPart implements
 					}
 
 					@Override
-					public void finishedGeneration()
+					public void finishedGeneration(Throwable error)
 					{
 						UIUtils.setEnabled(parent, true);
 						cancelGeneration.setVisible(false);

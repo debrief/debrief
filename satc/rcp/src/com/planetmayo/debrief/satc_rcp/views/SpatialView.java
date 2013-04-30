@@ -17,6 +17,7 @@ import org.eclipse.jface.action.AbstractGroupMarker;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartFactory;
@@ -38,6 +39,7 @@ import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateS
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationException;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
@@ -1138,10 +1140,16 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 
 	@Override
-	public void finishedGeneration()
+	public void finishedGeneration(Throwable error)
 	{
-		// TODO Auto-generated method stub
-
+		if (error instanceof GenerationException) 
+		{
+			GenerationException ex = (GenerationException) error;
+			MessageBox messageBox = new MessageBox(_chartComposite.getShell(), SWT.ICON_WARNING | SWT.OK);
+			messageBox.setMessage(ex.getMessage());
+			messageBox.setText("Error during generation");
+			messageBox.open();
+		}
 	}
 
 	/**

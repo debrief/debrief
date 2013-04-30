@@ -17,6 +17,7 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationException;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
 import com.planetmayo.debrief.satc.model.generator.jobs.ProgressMonitor;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
@@ -109,7 +110,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			@Override
 			protected void onComplete()
 			{
-				fireFinishedGeneration();
+				fireFinishedGeneration(getException());
 				synchronized (SolutionGenerator.this) 
 				{
 					mainGenerationJob = null;
@@ -230,7 +231,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			@Override
 			protected void onComplete()
 			{
-				fireFinishedGeneration();
+				fireFinishedGeneration(getException());
 				synchronized (SolutionGenerator.this) 
 				{
 					mainGenerationJob = null;
@@ -432,7 +433,14 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
 			monitor.checkCanceled();
-			theStepper.apply(thisLeg);
+			try 
+			{
+				theStepper.apply(thisLeg);
+			} 
+			catch (RuntimeException ex) 
+			{
+				throw new GenerationException(ex.getMessage());
+			}
 		}
 	}
 
@@ -629,11 +637,11 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * @param theLegs
 	 * 
 	 */
-	private void fireFinishedGeneration()
+	private void fireFinishedGeneration(Throwable error)
 	{
 		for (IGenerateSolutionsListener listener : _readyListeners)
 		{
-			listener.finishedGeneration();
+			listener.finishedGeneration(error);
 		}
 	}	
 

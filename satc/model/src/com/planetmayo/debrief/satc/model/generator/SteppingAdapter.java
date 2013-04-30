@@ -47,7 +47,7 @@ public class SteppingAdapter implements
 	}
 
 	@Override
-	public void finishedGeneration()
+	public void finishedGeneration(Throwable error)
 	{
 	}
 }

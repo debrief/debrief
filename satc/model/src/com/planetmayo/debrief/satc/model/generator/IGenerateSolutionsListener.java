@@ -38,5 +38,5 @@ public interface IGenerateSolutionsListener
 	 * this method will be called after jobManager closes 
 	 * all job resources   
 	 */
-	void finishedGeneration();
+	void finishedGeneration(Throwable error);
 }
