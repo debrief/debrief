@@ -416,6 +416,8 @@ public class TestSupport
 	{
 		IContributions contributions = getGenerator().getContributions();
 		// clear the geneartor first
+		boolean live = getGenerator().isLiveEnabled();
+		getGenerator().setLiveRunning(false);
 		getGenerator().clear();
 
 		// now load some data
@@ -510,6 +512,7 @@ public class TestSupport
 		contributions.addContribution(new LocationAnalysisContribution());
 
 		// ok, and get it to go for it
+		getGenerator().setLiveRunning(live);
 		getGenerator().run();
 	}
 
@@ -517,6 +520,8 @@ public class TestSupport
 	{
 		IContributions contributions = getGenerator().getContributions();
 		// clear the geneartor first
+		boolean live = getGenerator().isLiveEnabled();
+		getGenerator().setLiveRunning(false);		
 		getGenerator().clear();
 
 		// now load some data
@@ -631,6 +636,7 @@ public class TestSupport
 		contributions.addContribution(new LocationAnalysisContribution());
 
 		// ok, and get it to go for it
+		getGenerator().setLiveRunning(live);
 		getGenerator().run();
 
 	}

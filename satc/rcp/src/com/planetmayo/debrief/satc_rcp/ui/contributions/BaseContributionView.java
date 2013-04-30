@@ -18,6 +18,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -385,19 +386,15 @@ public abstract class BaseContributionView<T extends BaseContribution>
 		contributionNameText = new Text(bodyGroup, SWT.BORDER);
 		contributionNameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		UIUtils.createLabel(bodyGroup, "Start:", new GridData());
+		UIUtils.createLabel(bodyGroup, "Dates:", new GridData());
 		UIUtils.createSpacer(bodyGroup, new GridData());
-		Composite startDateGroup = UIUtils.createEmptyComposite(bodyGroup,
+		Composite datesGroup = UIUtils.createEmptyComposite(bodyGroup,
 				new RowLayout(SWT.HORIZONTAL), new GridData());
-		startDate = new DateTime(startDateGroup, SWT.DROP_DOWN | SWT.DATE);
-		startTime = new DateTime(startDateGroup, SWT.DROP_DOWN | SWT.TIME);
-
-		UIUtils.createLabel(bodyGroup, "Finish:", new GridData());
-		UIUtils.createSpacer(bodyGroup, new GridData());
-		Composite endDateGroup = UIUtils.createEmptyComposite(bodyGroup,
-				new RowLayout(SWT.HORIZONTAL), new GridData());
-		endDate = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.DATE);
-		endTime = new DateTime(endDateGroup, SWT.DROP_DOWN | SWT.TIME);
+		startDate = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.DATE);
+		startTime = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.TIME);
+		UIUtils.createLabel(datesGroup, "  -  ", new RowData());
+		endDate = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.DATE);
+		endTime = new DateTime(datesGroup, SWT.DROP_DOWN | SWT.TIME);
 
 		createLimitAndEstimateSliders();
 	}
