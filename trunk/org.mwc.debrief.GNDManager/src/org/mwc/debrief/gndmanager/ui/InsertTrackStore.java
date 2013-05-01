@@ -116,6 +116,8 @@ public class InsertTrackStore extends CoreEditorAction
 	protected void execute()
 	{
 		final PlainChart theChart = getChart();
+		
+		// find out the required time period
 
 		CreateLabelAction res = createAction(theChart);
 

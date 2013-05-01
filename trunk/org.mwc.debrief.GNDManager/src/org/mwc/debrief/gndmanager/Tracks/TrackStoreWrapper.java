@@ -1,10 +1,5 @@
 package org.mwc.debrief.gndmanager.Tracks;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
@@ -36,14 +31,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.javalite.http.Get;
 import org.javalite.http.Post;
-import org.junit.Before;
-import org.junit.Test;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -98,8 +92,44 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 	}
 
-	private class CouchTrack implements Serializable
+	public class CouchTrack implements Serializable, Plottable
 	{
+
+		public class CouchTrackInfo extends Editable.EditorType
+		{
+
+			public CouchTrackInfo(CouchTrack data)
+			{
+				super(data, data.getName(), "");
+			}
+
+			public PropertyDescriptor[] getPropertyDescriptors()
+			{
+				try
+				{
+					PropertyDescriptor[] res =
+					{ prop("Visible", "the Layer visibility", VISIBILITY),
+							prop("Color", "the color for this track", FORMAT) };
+
+					return res;
+
+				}
+				catch (IntrospectionException e)
+				{
+					return super.getPropertyDescriptors();
+				}
+			}
+
+			@SuppressWarnings("rawtypes")
+			public MethodDescriptor[] getMethodDescriptors()
+			{
+				Class c = CouchTrack.class;
+				MethodDescriptor mds[] =
+				{ method(c, "importTrack", null, "Import as Debrief Track") };
+				return mds;
+
+			}
+		}
 
 		/**
 		 * 
@@ -109,7 +139,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		private TimePeriod _myCoverage;
 		private ArrayList<Long> _timeVals;
 		private ArrayNode _latArray;
+		private Color _thisTrackColor = null;
+		private boolean _isVisible = true;
 		private ArrayNode _longArray;
+		private WorldArea _myBounds = null;
+		private String _myName = null;
+		private EditorType _myEditor = null;
 
 		public CouchTrack(JsonNode theDoc)
 		{
@@ -123,7 +158,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		public int length()
 		{
-			return getTimes().size();
+			int res = 0;
+			if (getTimes() != null)
+				res = getTimes().size();
+			return res;
 		}
 
 		private ArrayNode getArray(String arrName)
@@ -170,20 +208,22 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				_timeVals = new ArrayList<Long>();
 
 				ArrayNode timeArray = getArray("time");
-				try
-				{
-					for (int i = 0; i < timeArray.size(); i++)
+
+				if (timeArray != null)
+					try
 					{
-						String thisT = timeArray.get(i).asText();
-						Date thisD;
-						thisD = iso.parse(thisT);
-						_timeVals.add(thisD.getTime());
+						for (int i = 0; i < timeArray.size(); i++)
+						{
+							String thisT = timeArray.get(i).asText();
+							Date thisD;
+							thisD = iso.parse(thisT);
+							_timeVals.add(thisD.getTime());
+						}
 					}
-				}
-				catch (ParseException e)
-				{
-					e.printStackTrace();
-				}
+					catch (ParseException e)
+					{
+						e.printStackTrace();
+					}
 			}
 
 			return _timeVals;
@@ -196,10 +236,13 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			if (_myCoverage == null)
 			{
 				ArrayList<Long> times = getTimes();
-				Date fDate = new Date(times.get(0));
-				Date lDate = new Date(times.get(times.size() - 1));
-				_myCoverage = new TimePeriod.BaseTimePeriod(new HiResDate(fDate),
-						new HiResDate(lDate));
+				if (times != null && times.size() > 0)
+				{
+					Date fDate = new Date(times.get(0));
+					Date lDate = new Date(times.get(times.size() - 1));
+					_myCoverage = new TimePeriod.BaseTimePeriod(new HiResDate(fDate),
+							new HiResDate(lDate));
+				}
 			}
 
 			if (_myCoverage != null)
@@ -233,15 +276,38 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		public String getName()
 		{
-			String res = "N/A";
-			JsonNode metadata = _doc.get("metadata");
-			if (metadata != null)
+			if (_myName == null)
 			{
-				res = metadata.get("platform").asText();
+				final String theID = _doc.get("_id").asText();
+				JsonNode metadata = _doc.get("metadata");
+				if (metadata != null)
+				{
+					JsonNode pNode = metadata.get("platform");
+					if (pNode != null && pNode.asText().length() > 0)
+						_myName = pNode.asText();
+
+					if (_myName == null)
+					{
+						_myName = theID.substring(theID.length() - 7, theID.length());
+					}
+					else
+						_myName = _myName + "-"
+								+ theID.substring(theID.length() - 5, theID.length());
+				}
 			}
 
-			return res;
+			return _myName;
+		}
 
+		@SuppressWarnings("unused")
+		public void importTrack()
+		{
+			System.err.println("IMPORT TRACK TO DEBRIEF!!!!");
+		}
+
+		public String toString()
+		{
+			return getName();
 		}
 
 		public TimePeriod getPeriod()
@@ -255,6 +321,163 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				res = new TimePeriod.BaseTimePeriod(start, end);
 			}
 			return res;
+		}
+
+		@Override
+		public boolean hasEditor()
+		{
+			return true;
+		}
+
+		@Override
+		public EditorType getInfo()
+		{
+			if (_myEditor == null)
+				_myEditor = new CouchTrackInfo(this);
+			return _myEditor;
+		}
+
+		@Override
+		public int compareTo(Plottable arg0)
+		{
+			return getName().compareTo(arg0.getName());
+		}
+
+		@Override
+		public void paint(CanvasType dest)
+		{
+			if (!getVisible())
+				return;
+
+			dest.setColor(getColor());
+
+			long startTime = _currentFilterPeriod.getStartDTG().getDate().getTime();
+			long endTime = _currentFilterPeriod.getEndDTG().getDate().getTime();
+
+			int len = length();
+			ArrayList<Long> times = getTimes();
+
+			// if we don't have time, there's just no point!
+			if (times == null)
+				return;
+
+			// loop through the track times
+			int ctr = 0;
+			while ((ctr < len) && (times.get(ctr) <= startTime))
+			{
+				ctr++;
+			}
+
+			// we're at the first entry that's inside. do we have a previous one?
+			if (ctr > 0)
+				ctr--;
+
+			// cool, we're at the first point on or before the start date
+			WorldLocation thisL = getLocationAt(ctr);
+
+			if (thisL == null)
+			{
+				// hey, it's not a spatial track
+				return;
+			}
+
+			// and convert a screen point
+			Point lastLoc = dest.toScreen(thisL);
+
+			// is this the first location?
+			if (_showTrackName)
+				dest.drawText(getName(), lastLoc.x + 10, lastLoc.y + 5);
+
+			// now we can continue forward
+			while ((ctr < len - 1) && (times.get(++ctr) < endTime))
+			{
+
+				// put in a marker
+				dest.drawRect(lastLoc.x - 1, lastLoc.y - 1, 3, 3);
+
+				// get the
+				thisL = getLocationAt(ctr);
+
+				// do we have a location?
+				if (thisL != null)
+				{
+					// convert to screen coords
+					Point thisLoc = dest.toScreen(thisL);
+
+					// draw teh line
+					dest.drawLine(lastLoc.x, lastLoc.y, thisLoc.x, thisLoc.y);
+
+					// remember this location
+					lastLoc = new Point(thisLoc);
+				}
+			}
+		}
+
+		@Override
+		public WorldArea getBounds()
+		{
+			if (_myBounds == null)
+			{
+				ArrayList<Long> times = getTimes();
+				if ((times != null && (times.size() > 0)))
+				{
+					for (int i = 0; i < times.size(); i++)
+					{
+						WorldLocation thisLoc = getLocationAt(i);
+						if (_myBounds == null)
+							_myBounds = new WorldArea(thisLoc, thisLoc);
+						else
+							_myBounds.extend(thisLoc);
+					}
+				}
+			}
+			return _myBounds;
+		}
+
+		public Color getColor()
+		{
+			Color res = _thisTrackColor;
+			if(_thisTrackColor == null)
+				res = _myColor;
+			return res;
+		}
+
+		@FireReformatted
+		public void setColor(Color val)
+		{
+			_thisTrackColor = val;
+		}
+
+		@Override
+		public boolean getVisible()
+		{
+			return _isVisible;
+		}
+
+		@Override
+		@FireReformatted
+		public void setVisible(boolean val)
+		{
+			_isVisible = val;
+		}
+
+		@Override
+		public double rangeFrom(WorldLocation other)
+		{
+			// are we vis?
+			if (!getVisible())
+				return Plottable.INVALID_RANGE;
+
+			double thisD = Double.MAX_VALUE;
+			int len = length();
+			for (int i = 0; i < len; i++)
+			{
+				WorldLocation thisL = getLocationAt(i);
+				double thisR = thisL.rangeFrom(other);
+				thisD = Math.min(thisD, thisR);
+			}
+
+			return thisD;
 		}
 	}
 
@@ -271,12 +494,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * 
 	 */
 	private boolean _includeInBounds = false;
-
-	/**
-	 * area of coverage for the currently visible tracks
-	 * 
-	 */
-	private WorldArea _myBounds = null;
 
 	/**
 	 * whether we should highlight the currente position when stepping through
@@ -299,7 +516,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	@Override
 	public void filterListTo(final HiResDate start, final HiResDate end)
 	{
-
 		// remember what hte current filter is
 		_currentFilterPeriod = new TimePeriod.BaseTimePeriod(start, end);
 
@@ -392,7 +608,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 						JsonNode theNode = rows.get(i);
 						JsonNode theDoc = theNode.get("doc");
 						CouchTrack track = new CouchTrack(theDoc);
+
+						// put in our local hashmap
 						_myCache.put(track.getId(), track);
+
+						// and store in the parent
+						super.add(track);
 
 					}
 				}
@@ -514,9 +735,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		}
 
-		// reinitialise the bounds object
-		_myBounds = null;
-
 		// ok, loop through my tracks
 		Iterator<CouchTrack> iter = _myCache.values().iterator();
 		while (iter.hasNext())
@@ -527,81 +745,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			if (thisT.overlaps(_currentFilterPeriod))
 			{
 				// yes. get painting
-				paintThisTrack(dest, thisT, _currentFilterPeriod);
-			}
-
-		}
-	}
-
-	private void paintThisTrack(CanvasType dest, CouchTrack thisT,
-			BaseTimePeriod _currentFilterPeriod2)
-	{
-
-		dest.setColor(_myColor);
-
-		long startTime = _currentFilterPeriod2.getStartDTG().getDate().getTime();
-		long endTime = _currentFilterPeriod2.getEndDTG().getDate().getTime();
-
-		int len = thisT.length();
-		ArrayList<Long> times = thisT.getTimes();
-
-		// loop through the track times
-		int ctr = 0;
-		while ((ctr < len) && (times.get(ctr) <= startTime))
-		{
-			ctr++;
-		}
-
-		// we're at the first entry that's inside. do we have a previous one?
-		if (ctr > 0)
-			ctr--;
-
-		// cool, we're at the first point on or before the start date
-		WorldLocation thisL = thisT.getLocationAt(ctr);
-
-		if (thisL == null)
-		{
-			// hey, it's not a spatial track
-			return;
-		}
-
-		// hey, we've got a valid point! include it
-		if (_myBounds == null)
-			_myBounds = new WorldArea(thisL, thisL);
-		else
-			_myBounds.extend(thisL);
-
-		// and convert a screen point
-		Point lastLoc = dest.toScreen(thisL);
-
-		// is this the first location?
-		if (_showTrackName)
-			dest.drawText(thisT.getName(), lastLoc.x + 10, lastLoc.y + 5);
-
-		// now we can continue forward
-		while ((ctr < len - 1) && (times.get(++ctr) < endTime))
-		{
-
-			// put in a marker
-			dest.drawRect(lastLoc.x - 1, lastLoc.y - 1, 3, 3);
-
-			// get the
-			thisL = thisT.getLocationAt(ctr);
-
-			// hey, we've got a valid point! include it
-			_myBounds.extend(thisL);
-
-			// do we have a location?
-			if (thisL != null)
-			{
-				// convert to screen coords
-				Point thisLoc = dest.toScreen(thisL);
-
-				// draw teh line
-				dest.drawLine(lastLoc.x, lastLoc.y, thisLoc.x, thisLoc.y);
-
-				// remember this location
-				lastLoc = new Point(thisLoc);
+				thisT.paint(dest);
 			}
 		}
 	}
@@ -690,10 +834,26 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	@Override
 	public WorldArea getBounds()
 	{
+		WorldArea res = null;
 		if (_includeInBounds)
-			return _myBounds;
-		else
-			return null;
+		{
+			Iterator<CouchTrack> iter = _myCache.values().iterator();
+			while (iter.hasNext())
+			{
+				TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
+						.next();
+				WorldArea thisB = thisT.getBounds();
+				if (thisB != null)
+				{
+					if (res == null)
+						res = new WorldArea(thisB);
+					else
+						res.extend(thisB);
+				}
+			}
+		}
+
+		return res;
 	}
 
 	@Override
@@ -754,53 +914,58 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				// in period?
 				TimePeriod thisP = thisT.getPeriod();
 
-				if (thisP.contains(DTG))
-				{
-					// find nearest point
-					ArrayList<Long> times = thisT.getTimes();
-					int ctr = 0;
-					while (ctr < times.size() - 1)
+				if (thisP != null)
+
+					if (thisP.contains(DTG))
 					{
-						Long tNow = times.get(ctr);
-						if (tNow > DTG.getDate().getTime())
+						// find nearest point
+						ArrayList<Long> times = thisT.getTimes();
+						if (times != null)
 						{
-							break;
+							int ctr = 0;
+							while (ctr < times.size() - 1)
+							{
+								Long tNow = times.get(ctr);
+								if (tNow > DTG.getDate().getTime())
+								{
+									break;
+								}
+								ctr++;
+							}
+							if (ctr < times.size() - 1)
+							{
+
+								// right, we're now looking at the time immediately after teh
+								// time
+								if (_interpolatePoints && (ctr > 0))
+								{
+									// ok, dodgy maths to interpolate the location at this time
+									FixWrapper before = new FixWrapper(new Fix(new HiResDate(
+											times.get(ctr - 1)), thisT.getLocationAt(ctr - 1), 0, 0));
+									FixWrapper next = new FixWrapper(new Fix(new HiResDate(
+											times.get(ctr)), thisT.getLocationAt(ctr), 0, 0));
+
+									if (before.getTime().greaterThan(DTG))
+										System.err.println("not before");
+									if (next.getTime().lessThan(DTG))
+										System.err.println("not after");
+
+									FixWrapper newFix = FixWrapper.interpolateFix(before, next,
+											new HiResDate(DTG));
+									newFix.setColor(_myColor);
+									res.add(newFix);
+
+								}
+								else
+								{
+									// easy, just return the point immediately after the indicated
+									// time
+									res.add(new FixWrapper(new Fix(new HiResDate(times.get(ctr)),
+											thisT.getLocationAt(ctr), 0, 0)));
+								}
+							}
 						}
-						ctr++;
 					}
-					if (ctr < times.size() - 1)
-					{
-
-						// right, we're now looking at the time immediately after teh time
-						if (_interpolatePoints && (ctr > 0))
-						{
-							// ok, dodgy maths to interpolate the location at this time
-							FixWrapper before = new FixWrapper(new Fix(new HiResDate(
-									times.get(ctr - 1)), thisT.getLocationAt(ctr - 1), 0, 0));
-							FixWrapper next = new FixWrapper(new Fix(new HiResDate(
-									times.get(ctr)), thisT.getLocationAt(ctr), 0, 0));
-
-							if (before.getTime().greaterThan(DTG))
-								System.err.println("not before");
-							if (next.getTime().lessThan(DTG))
-								System.err.println("not after");
-
-							FixWrapper newFix = FixWrapper.interpolateFix(before, next,
-									new HiResDate(DTG));
-							newFix.setColor(_myColor);
-							res.add(newFix);
-
-						}
-						else
-						{
-							// easy, just return the point immediately after the indicated
-							// time
-							res.add(new FixWrapper(new Fix(new HiResDate(times.get(ctr)),
-									thisT.getLocationAt(ctr), 0, 0)));
-						}
-
-					}
-				}
 
 			}
 		}
@@ -831,117 +996,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	public PlainSymbol getSnailShape()
 	{
 		return null;
-	}
-
-	@SuppressWarnings("deprecation")
-	public static void main(String[] args)
-	{
-
-		TrackStoreWrapper tsw = new TrackStoreWrapper(
-				"http://gnd.iriscouch.com:5984",
-				"http://0d9fd05438a44abe882139135eb01048.found.no:9200");
-		HiResDate startDate = new HiResDate(new Date(112, 6, 3, 12, 15, 14));
-		HiResDate endDate = new HiResDate(new Date(112, 6, 8, 12, 18, 14));
-
-		String tt = tsw.collateDateFilter(startDate, endDate);
-		System.out.println(tt);
-
-		tsw.filterListTo(startDate, endDate);
-
-	}
-
-	public static class TestTrackStore
-	{
-		private TrackStoreWrapper tts;
-		private HiResDate startDate;
-		private HiResDate endDate;
-
-		@SuppressWarnings("deprecation")
-		@Before
-		public void setup()
-		{
-			tts = new TrackStoreWrapper("http://gnd.iriscouch.com:5984",
-					"http://0d9fd05438a44abe882139135eb01048.found.no:9200");
-
-			startDate = new HiResDate(new Date(112, 6, 3, 12, 15, 14));
-			endDate = new HiResDate(new Date(112, 6, 7, 12, 15, 14));
-
-		}
-
-		@Test
-		public void testFormat()
-		{
-			SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-			@SuppressWarnings("deprecation")
-			String dateTest = iso.format(new Date(112, 6, 3, 12, 15, 14));
-			System.out.println(dateTest);
-		}
-
-		@Test
-		public void testFilter()
-		{
-			String st = tts.collateDateFilter(startDate, endDate);
-			assertEquals(
-					"correct string",
-					"{\"size\":400,\"fields\":[],\"query\":{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"and\":[{\"range\":{\"end\":{\"gte\":\"2012-07-03T11:15:14\"}}},{\"range\":{\"start\":{\"lte\":\"2012-07-07T11:15:14\"}}}]}}},\"facets\":{}}",
-					st);
-		}
-
-		@Test
-		public void testRunSearch()
-		{
-			// start off with duff period (where we don't have dates)
-			String st = tts.collateDateFilter(startDate, endDate);
-			ArrayList<String> theList = tts.getDownloadList(st);
-
-			assertNotNull("should have found list", theList);
-			assertEquals("fount correct num", 36, theList.size());
-		}
-
-		@SuppressWarnings("deprecation")
-		@Test
-		public void testGetDocuments()
-		{
-			// start off with duff period (where we don't have dates)
-			String st = tts.collateDateFilter(startDate, endDate);
-			ArrayList<String> theList = tts.getDownloadList(st);
-
-			assertNotNull("should have found list", theList);
-			assertEquals("fount correct num", 36, theList.size());
-
-			assertEquals("starts empty", 0, tts._myCache.size());
-
-			tts.doTheDownload(theList);
-
-			assertEquals("has some docs", 36, tts._myCache.size());
-
-			// continue, to test how they work
-			CouchTrack firstDoc = tts._myCache.values().iterator().next();
-
-			// check it's in the period
-
-			assertTrue("does overlap",
-					firstDoc.overlaps(new TimePeriod.BaseTimePeriod(startDate, endDate)));
-			assertFalse("doesn't overlap",
-					firstDoc.overlaps(new TimePeriod.BaseTimePeriod(new HiResDate(
-							new Date(113, 6, 3, 12, 15, 14)), new HiResDate(new Date(113, 6,
-							3, 12, 15, 14)))));
-			assertFalse("doesn't overlap",
-					firstDoc.overlaps(new TimePeriod.BaseTimePeriod(new HiResDate(
-							new Date(111, 6, 3, 12, 15, 14)), new HiResDate(new Date(111, 6,
-							3, 12, 15, 14)))));
-			assertTrue("does overlap",
-					firstDoc.overlaps(new TimePeriod.BaseTimePeriod(new HiResDate(
-							new Date(111, 6, 3, 12, 15, 14)), new HiResDate(new Date(113, 6,
-							3, 12, 15, 14)))));
-
-			// try to get a location
-			WorldLocation loc = firstDoc.getLocationAt(0);
-			assertNotNull("should have produced loc", loc);
-			System.out.println("location is " + loc);
-		}
-
 	}
 
 	public class TrackStoreInfo extends Editable.EditorType
@@ -988,18 +1042,18 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			}
 		}
 
-		@SuppressWarnings("rawtypes")
-		public MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			Class c = BaseLayer.class;
-			MethodDescriptor mds[] =
-			{ method(c, "exportShape", null, "Export Shape"),
-					method(c, "hideChildren", null, "Hide all children"),
-					method(c, "revealChildren", null, "Reveal all children") };
-			return mds;
-
-		}
+		// @SuppressWarnings("rawtypes")
+		// public MethodDescriptor[] getMethodDescriptors()
+		// {
+		// // just add the reset color field first
+		// Class c = BaseLayer.class;
+		// MethodDescriptor mds[] =
+		// { method(c, "exportShape", null, "Export Shape"),
+		// method(c, "hideChildren", null, "Hide all children"),
+		// method(c, "revealChildren", null, "Reveal all children") };
+		// return mds;
+		//
+		// }
 	}
 
 }
