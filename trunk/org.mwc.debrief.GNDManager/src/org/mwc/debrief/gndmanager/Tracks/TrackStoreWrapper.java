@@ -40,10 +40,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
@@ -53,6 +54,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 
 public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		Serializable
@@ -189,8 +191,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		public boolean overlaps(BaseTimePeriod targetPeriod)
 		{
-			// TODO: ACTUALLY CHECK THE METADATA PERIOD, IF WE HAVE IT!
-
 			boolean overlaps = false;
 
 			if (_myCoverage == null)
@@ -207,8 +207,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				overlaps = _myCoverage.overlaps(targetPeriod);
 			}
 
-			// return overlaps;
-			return true;
+			return overlaps;
 		}
 
 		public WorldLocation getLocationAt(int i)
@@ -231,14 +230,71 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			}
 			return res;
 		}
+
+		public String getName()
+		{
+			String res = "N/A";
+			JsonNode metadata = _doc.get("metadata");
+			if (metadata != null)
+			{
+				res = metadata.get("platform").asText();
+			}
+
+			return res;
+
+		}
+
+		public TimePeriod getPeriod()
+		{
+			TimePeriod res = null;
+			ArrayList<Long> times = getTimes();
+			if (times != null)
+			{
+				HiResDate start = new HiResDate(times.get(0));
+				HiResDate end = new HiResDate(times.get(times.size() - 1));
+				res = new TimePeriod.BaseTimePeriod(start, end);
+			}
+			return res;
+		}
 	}
 
 	private transient HashMap<String, CouchTrack> _myCache = new HashMap<String, CouchTrack>();
 
-	/** our color
+	/**
+	 * our color
 	 * 
 	 */
 	private Color _myColor = Color.red;
+
+	/**
+	 * whether these tracks should be made avaialble to bounds calculations
+	 * 
+	 */
+	private boolean _includeInBounds = false;
+
+	/**
+	 * area of coverage for the currently visible tracks
+	 * 
+	 */
+	private WorldArea _myBounds = null;
+
+	/**
+	 * whether we should highlight the currente position when stepping through
+	 * 
+	 */
+	private boolean _includeInTimeStep = false;
+
+	/**
+	 * whether we should show the track name at the start
+	 * 
+	 */
+	private boolean _showTrackName;
+
+	/**
+	 * whether we should interpolate the track points when stepping through
+	 * 
+	 */
+	private boolean _interpolatePoints = false;
 
 	@Override
 	public void filterListTo(final HiResDate start, final HiResDate end)
@@ -246,10 +302,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		// remember what hte current filter is
 		_currentFilterPeriod = new TimePeriod.BaseTimePeriod(start, end);
-
-		// here's where we re-query
-		System.err.println("Filtering my documents to period:" + start.toString()
-				+ " to " + end);
 
 		// are we already storing more than this?
 		if (_dataLoaded != null)
@@ -261,13 +313,13 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			}
 		}
 
-		// make this processing async	
-		Display.getDefault().asyncExec(new Runnable(){
+		// make this processing async
+		Display.getDefault().asyncExec(new Runnable()
+		{
 
 			@Override
 			public void run()
 			{
-				// TODO Auto-generated method stub
 				// ok, collate the time fields
 				String myFilter = collateDateFilter(start, end);
 
@@ -283,17 +335,18 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 				// extend our period of coverage
 				if (_dataLoaded == null)
-					_dataLoaded = new TimePeriod.BaseTimePeriod(
-							_currentFilterPeriod.getStartDTG(), _currentFilterPeriod.getEndDTG());
+					_dataLoaded = new TimePeriod.BaseTimePeriod(_currentFilterPeriod
+							.getStartDTG(), _currentFilterPeriod.getEndDTG());
 				else
 				{
 					_dataLoaded.extend(_currentFilterPeriod.getStartDTG());
 					_dataLoaded.extend(_currentFilterPeriod.getEndDTG());
 				}
-				
+
 				// and trigger size-updated
 				firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
-			}});
+			}
+		});
 	}
 
 	private void doTheDownload(ArrayList<String> docsToDownload)
@@ -320,9 +373,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			String cStr = root.toString();
 			byte[] content = cStr.getBytes();
 			uri = _couchURL + "/tracks/_all_docs?include_docs=true";
-			System.err.println("Sending:  " + content);
-			System.err.println("  to:  " + uri);
-			Post doIt = new Post(uri, content, 1000, 10000);
+			CorePlugin.logError(Status.INFO, "CouchDb get: " + uri, null);
+			Post doIt = new Post(uri, content, 5000, 10000);
 			doIt.header("Content-Type", "application/json");
 			int result = doIt.responseCode();
 			if (result == 200)
@@ -341,6 +393,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 						JsonNode theDoc = theNode.get("doc");
 						CouchTrack track = new CouchTrack(theDoc);
 						_myCache.put(track.getId(), track);
+
 					}
 				}
 			}
@@ -376,7 +429,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		ArrayList<String> docsToDownload = new ArrayList<String>();
 		try
 		{
-			System.out.println("doing GET on :" + uri);
+			CorePlugin.logError(Status.INFO, "ElasticSearch get: " + uri, null);
+
 			Get doIt = new Get(uri, 1000, 10000);
 			doIt.header("Content-Type", "application/json");
 			int result = doIt.responseCode();
@@ -460,6 +514,9 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		}
 
+		// reinitialise the bounds object
+		_myBounds = null;
+
 		// ok, loop through my tracks
 		Iterator<CouchTrack> iter = _myCache.values().iterator();
 		while (iter.hasNext())
@@ -476,11 +533,11 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		}
 	}
 
-	private static void paintThisTrack(CanvasType dest, CouchTrack thisT,
+	private void paintThisTrack(CanvasType dest, CouchTrack thisT,
 			BaseTimePeriod _currentFilterPeriod2)
 	{
 
-		dest.setColor(Color.red);
+		dest.setColor(_myColor);
 
 		long startTime = _currentFilterPeriod2.getStartDTG().getDate().getTime();
 		long endTime = _currentFilterPeriod2.getEndDTG().getDate().getTime();
@@ -508,8 +565,18 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			return;
 		}
 
+		// hey, we've got a valid point! include it
+		if (_myBounds == null)
+			_myBounds = new WorldArea(thisL, thisL);
+		else
+			_myBounds.extend(thisL);
+
 		// and convert a screen point
 		Point lastLoc = dest.toScreen(thisL);
+
+		// is this the first location?
+		if (_showTrackName)
+			dest.drawText(thisT.getName(), lastLoc.x + 10, lastLoc.y + 5);
 
 		// now we can continue forward
 		while ((ctr < len - 1) && (times.get(++ctr) < endTime))
@@ -521,10 +588,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			// get the
 			thisL = thisT.getLocationAt(ctr);
 
+			// hey, we've got a valid point! include it
+			_myBounds.extend(thisL);
+
 			// do we have a location?
 			if (thisL != null)
 			{
-
 				// convert to screen coords
 				Point thisLoc = dest.toScreen(thisL);
 
@@ -540,64 +609,91 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	@Override
 	public boolean hasEditor()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return true;
+	}
+
+	/**
+	 * whether to return bounds objects for the tracks when requested (both
+	 * temporal & spatial)
+	 * 
+	 */
+	public void setIncludeInBounds(boolean val)
+	{
+		_includeInBounds = val;
+	}
+
+	/**
+	 * whether to return bounds objects for the tracks when requested (both
+	 * temporal & spatial)
+	 * 
+	 */
+	public boolean getIncludeInBounds()
+	{
+		return _includeInBounds;
+	}
+
+	/**
+	 * whether to interpolate the point marker when in time-stepping mode
+	 * 
+	 */
+	public void setInterpolatePoints(boolean val)
+	{
+		_interpolatePoints = val;
+	}
+
+	/**
+	 * whether to interpolate the point marker when in time-stepping mode
+	 * 
+	 * @return
+	 */
+	public boolean getInterpolatePoints()
+	{
+		return _interpolatePoints;
+	}
+
+	/**
+	 * whether to return time step results, for time stepper
+	 * 
+	 */
+	public void setIncludeInTimeStep(boolean val)
+	{
+		_includeInTimeStep = val;
+	}
+
+	/**
+	 * whether to return time step results, for time stepper
+	 * 
+	 */
+	public boolean getIncludeInTimeStep()
+	{
+		return _includeInTimeStep;
+	}
+
+	/**
+	 * whether to plot the track name
+	 * 
+	 */
+	public boolean getShowTrackName()
+	{
+		return _showTrackName;
+	}
+
+	/**
+	 * whether to plot the track name
+	 * 
+	 */
+	public void setShowTrackName(boolean showTrackName)
+	{
+		this._showTrackName = showTrackName;
 	}
 
 	@Override
 	public WorldArea getBounds()
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void exportShape()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void append(Layer other)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setName(String val)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean hasOrderedChildren()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int getLineThickness()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void add(Editable point)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeElement(Editable point)
-	{
-		// TODO Auto-generated method stub
-
+		if (_includeInBounds)
+			return _myBounds;
+		else
+			return null;
 	}
 
 	@Override
@@ -611,8 +707,9 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	{
 		HiResDate res = null;
 
-		if (_dataLoaded != null)
-			res = _dataLoaded.getStartDTG();
+		if (_includeInBounds)
+			if (_dataLoaded != null)
+				res = _dataLoaded.getStartDTG();
 
 		return res;
 	}
@@ -622,46 +719,112 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	{
 		HiResDate res = null;
 
-		if (_dataLoaded != null)
-			res = _dataLoaded.getEndDTG();
+		if (_includeInBounds)
+			if (_dataLoaded != null)
+				res = _dataLoaded.getEndDTG();
 
 		return res;
 	}
 
 	@Override
+	public EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new TrackStoreInfo(this);
+
+		return _myEditor;
+	}
+
+	@Override
 	public Watchable[] getNearestTo(HiResDate DTG)
 	{
-		return new Watchable[]
-		{};
+		ArrayList<Watchable> res = new ArrayList<Watchable>();
+
+		if (_includeInTimeStep)
+		{
+			// find items near this time
+
+			// loop through our tracks
+			Iterator<CouchTrack> iter = _myCache.values().iterator();
+
+			while (iter.hasNext())
+			{
+				TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
+						.next();
+				// in period?
+				TimePeriod thisP = thisT.getPeriod();
+
+				if (thisP.contains(DTG))
+				{
+					// find nearest point
+					ArrayList<Long> times = thisT.getTimes();
+					int ctr = 0;
+					while (ctr < times.size() - 1)
+					{
+						Long tNow = times.get(ctr);
+						if (tNow > DTG.getDate().getTime())
+						{
+							break;
+						}
+						ctr++;
+					}
+					if (ctr < times.size() - 1)
+					{
+
+						// right, we're now looking at the time immediately after teh time
+						if (_interpolatePoints && (ctr > 0))
+						{
+							// ok, dodgy maths to interpolate the location at this time
+							FixWrapper before = new FixWrapper(new Fix(new HiResDate(
+									times.get(ctr - 1)), thisT.getLocationAt(ctr - 1), 0, 0));
+							FixWrapper next = new FixWrapper(new Fix(new HiResDate(
+									times.get(ctr)), thisT.getLocationAt(ctr), 0, 0));
+
+							if (before.getTime().greaterThan(DTG))
+								System.err.println("not before");
+							if (next.getTime().lessThan(DTG))
+								System.err.println("not after");
+
+							FixWrapper newFix = FixWrapper.interpolateFix(before, next,
+									new HiResDate(DTG));
+							newFix.setColor(_myColor);
+							res.add(newFix);
+
+						}
+						else
+						{
+							// easy, just return the point immediately after the indicated
+							// time
+							res.add(new FixWrapper(new Fix(new HiResDate(times.get(ctr)),
+									thisT.getLocationAt(ctr), 0, 0)));
+						}
+
+					}
+				}
+
+			}
+		}
+
+		return res.toArray(new Watchable[]
+		{});
 	}
 
 	@Override
 	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	
 	public void setColor(Color col)
 	{
 		_myColor = col;
-		
+
 	}
-	
+
 	@Override
 	public Color getColor()
 	{
-		return _myColor ;
-	}
-
-	
-	
-	@Override
-	public double rangeFrom(WorldLocation other)
-	{
-		// TODO: find the nearest (visible) track point
-		return super.rangeFrom(other);
+		return _myColor;
 	}
 
 	@Override
@@ -781,17 +944,14 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 	}
 
-	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
 	public class TrackStoreInfo extends Editable.EditorType
 	{
-	
-		public TrackStoreInfo(BaseLayer data)
+
+		public TrackStoreInfo(TrackStoreWrapper data)
 		{
 			super(data, data.getName(), "");
 		}
-	
+
 		public PropertyDescriptor[] getPropertyDescriptors()
 		{
 			try
@@ -802,22 +962,32 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 						prop("Name", "the name of the Layer", FORMAT),
 						prop("LineThickness", "the thickness of lines in this layer",
 								FORMAT),
-						prop("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT),
+						prop(
+								"Buffered",
+								"whether to double-buffer Layer. ('Yes' for better performance)",
+								FORMAT),
 						prop("Color", "the color to plot the tracks", FORMAT),
-						};
-	
+						prop("IncludeInBounds",
+								"include these tracks in spatial/temporal bounds calcs", FORMAT),
+						prop("ShowTrackName",
+								"show the track name at alongside the first point", FORMAT),
+						prop("InterpolatePoints",
+								"interpolate location markers when time stepping", FORMAT),
+						prop("IncludeInTimeStep", "include these tracks in time stepping",
+								TEMPORAL), };
+
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
-	
+
 				return res;
-	
+
 			}
 			catch (IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
 		}
-	
+
 		@SuppressWarnings("rawtypes")
 		public MethodDescriptor[] getMethodDescriptors()
 		{
@@ -828,8 +998,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 					method(c, "hideChildren", null, "Hide all children"),
 					method(c, "revealChildren", null, "Reveal all children") };
 			return mds;
+
 		}
-	
 	}
 
 }
