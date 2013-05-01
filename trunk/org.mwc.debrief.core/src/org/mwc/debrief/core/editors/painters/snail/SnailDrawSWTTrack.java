@@ -139,6 +139,10 @@ final class SnailDrawSWTTrack
 		// get the fix and the track
 		final FixWrapper theFix = (FixWrapper) watch;
 		TrackWrapper trk = theFix.getTrackWrapper();
+		
+		// does this object return a track?
+		if(trk == null)
+			return thisR;
 
 		// declare the Vector of track points we are using
 		final Collection<Editable> dotPoints;

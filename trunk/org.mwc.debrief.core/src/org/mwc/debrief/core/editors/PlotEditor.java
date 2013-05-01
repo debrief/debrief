@@ -1021,19 +1021,23 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							if (tNow != null)
 							{
 								Watchable[] wList = list.getNearestTo(tNow);
-								Watchable watch = null;
-								if (wList.length > 0)
-									watch = wList[0];
-
-								if (watch != null)
+								for (int i = 0; i < wList.length; i++)
 								{
-									// aah, is this the primary?
-									boolean isPrimary = (list == _trackDataProvider
-											.getPrimaryTrack());
+									Watchable watch = wList[i];
+									// if (wList.length > 0)
+									// watch = wList[0];
 
-									// plot it
-									_layerPainterManager.getCurrentHighlighter().highlightIt(
-											dest.getProjection(), dest, list, watch, isPrimary);
+									if (watch != null)
+									{
+										// aah, is this the primary?
+										boolean isPrimary = (list == _trackDataProvider
+												.getPrimaryTrack());
+
+										// plot it
+										_layerPainterManager.getCurrentHighlighter().highlightIt(
+												dest.getProjection(), dest, list, watch, isPrimary);
+									}
+
 								}
 							} // whether we have a current time...
 						}
@@ -1450,8 +1454,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 			catch (CoreException e)
 			{
-				CorePlugin
-				.logError(Status.ERROR, "Refresh failed after saving new file", e);
+				CorePlugin.logError(Status.ERROR,
+						"Refresh failed after saving new file", e);
 			}
 			finally
 			{

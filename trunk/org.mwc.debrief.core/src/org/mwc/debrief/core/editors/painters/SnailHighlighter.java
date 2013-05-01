@@ -45,8 +45,8 @@ public class SnailHighlighter implements TemporalLayerPainter
 	public static interface drawSWTHighLight
 	{
 		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-				CanvasType dest, WatchableList list, Watchable watch, SnailHighlighter parent,
-				HiResDate dtg, Color backColor);
+				CanvasType dest, WatchableList list, Watchable watch,
+				SnailHighlighter parent, HiResDate dtg, Color backColor);
 
 		public boolean canPlot(Watchable wt);
 	}
@@ -88,8 +88,10 @@ public class SnailHighlighter implements TemporalLayerPainter
 		_myHighlightPlotters.addElement(_mySnailPlotter);
 		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
 		_myHighlightPlotters.addElement(new SnailDrawSWTAnnotation());
-		_myHighlightPlotters.addElement(new SnailDrawSWTSensorContact(_mySnailPlotter));
-		_myHighlightPlotters.addElement(new SnailDrawSWTTMAContact(_mySnailPlotter));
+		_myHighlightPlotters.addElement(new SnailDrawSWTSensorContact(
+				_mySnailPlotter));
+		_myHighlightPlotters
+				.addElement(new SnailDrawSWTTMAContact(_mySnailPlotter));
 
 		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
 		_mySnailPlotter.setVectorStretch(1);
@@ -113,14 +115,15 @@ public class SnailHighlighter implements TemporalLayerPainter
 		_mySnailPlotter.setVectorStretch(val);
 	}
 
-	/** accessor for the snail properties
+	/**
+	 * accessor for the snail properties
 	 * 
 	 */
 	public SnailDrawSWTFix getSnailProperties()
 	{
 		return _mySnailPlotter;
 	}
-	
+
 	/**
 	 * ok, paint this layer, adding highlights where applicable
 	 * 
@@ -133,7 +136,8 @@ public class SnailHighlighter implements TemporalLayerPainter
 		// right, none of that fannying around painting the whole layer.
 
 		// start off by finding the non-watchables for this layer
-		final Vector<Plottable> nonWatches = SnailPainter.getNonWatchables(theLayer);
+		final Vector<Plottable> nonWatches = SnailPainter
+				.getNonWatchables(theLayer);
 
 		// cool, draw them
 		final Enumeration<Plottable> iter = nonWatches.elements();
@@ -163,20 +167,22 @@ public class SnailHighlighter implements TemporalLayerPainter
 
 			// ok, clear the nearest items
 			Watchable[] wList = list.getNearestTo(newDTG);
-			Watchable watch = null;
-			if (wList.length > 0)
-				watch = wList[0];
-
-			if (watch != null)
+			for (int i = 0; i < wList.length; i++)
 			{
-				// plot it
-				highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest.getBackgroundColor());
+				Watchable watch = wList[i];
+				if (watch != null)
+				{
+					// plot it
+					highlightIt(dest.getProjection(), dest, list, watch, newDTG,
+							dest.getBackgroundColor());
+				}
 			}
 		}
 	}
 
 	private void highlightIt(PlainProjection projection, CanvasType dest,
-			WatchableList list, Watchable watch, HiResDate newDTG, Color backgroundColor)
+			WatchableList list, Watchable watch, HiResDate newDTG,
+			Color backgroundColor)
 	{
 		// set the highlight colour
 		dest.setColor(Color.white);
@@ -200,7 +206,8 @@ public class SnailHighlighter implements TemporalLayerPainter
 					}
 				}
 
-				plotter.drawMe(projection, dest, list, watch, this, newDTG, backgroundColor);
+				plotter.drawMe(projection, dest, list, watch, this, newDTG,
+						backgroundColor);
 
 				// and drop out of the loop
 				break;

@@ -122,7 +122,7 @@ public interface SWTPlotHighlighter extends Editable {
 				if (watch instanceof FixWrapper) {
 					FixWrapper fw = (FixWrapper) watch;
 					TrackWrapper tw = fw.getTrackWrapper();
-					if (tw.getPlotArrayCentre()) {
+					if ((tw != null) && (tw.getPlotArrayCentre())) {
 						Enumeration<Editable> enumer = tw.getSensors()
 								.elements();
 						while (enumer.hasMoreElements()) {
