@@ -7,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -30,19 +33,18 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
 import org.javalite.http.Get;
 import org.javalite.http.Post;
 import org.junit.Before;
 import org.junit.Test;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.gndmanager.views.GNDManager;
 
-import Debrief.GUI.Frames.Application;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -205,7 +207,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				overlaps = _myCoverage.overlaps(targetPeriod);
 			}
 
-			return overlaps;
+			// return overlaps;
+			return true;
 		}
 
 		public WorldLocation getLocationAt(int i)
@@ -232,8 +235,13 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 	private transient HashMap<String, CouchTrack> _myCache = new HashMap<String, CouchTrack>();
 
+	/** our color
+	 * 
+	 */
+	private Color _myColor = Color.red;
+
 	@Override
-	public void filterListTo(HiResDate start, HiResDate end)
+	public void filterListTo(final HiResDate start, final HiResDate end)
 	{
 
 		// remember what hte current filter is
@@ -253,29 +261,39 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			}
 		}
 
-		// ok, collate the time fields
-		String myFilter = collateDateFilter(start, end);
+		// make this processing async	
+		Display.getDefault().asyncExec(new Runnable(){
 
-		// hmm, which tracks match our current time period?
-		ArrayList<String> docsToDownload = getDownloadList(myFilter);
+			@Override
+			public void run()
+			{
+				// TODO Auto-generated method stub
+				// ok, collate the time fields
+				String myFilter = collateDateFilter(start, end);
 
-		// now get any new items
-		if (docsToDownload.size() > 0)
-		{
-			// ok, we need some - go get them
-			doTheDownload(docsToDownload);
-		}
+				// hmm, which tracks match our current time period?
+				ArrayList<String> docsToDownload = getDownloadList(myFilter);
 
-		// extend our period of coverage
-		if (_dataLoaded == null)
-			_dataLoaded = new TimePeriod.BaseTimePeriod(
-					_currentFilterPeriod.getStartDTG(), _currentFilterPeriod.getEndDTG());
-		else
-		{
-			_dataLoaded.extend(_currentFilterPeriod.getStartDTG());
-			_dataLoaded.extend(_currentFilterPeriod.getEndDTG());
-		}
+				// now get any new items
+				if (docsToDownload.size() > 0)
+				{
+					// ok, we need some - go get them
+					doTheDownload(docsToDownload);
+				}
 
+				// extend our period of coverage
+				if (_dataLoaded == null)
+					_dataLoaded = new TimePeriod.BaseTimePeriod(
+							_currentFilterPeriod.getStartDTG(), _currentFilterPeriod.getEndDTG());
+				else
+				{
+					_dataLoaded.extend(_currentFilterPeriod.getStartDTG());
+					_dataLoaded.extend(_currentFilterPeriod.getEndDTG());
+				}
+				
+				// and trigger size-updated
+				firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
+			}});
 	}
 
 	private void doTheDownload(ArrayList<String> docsToDownload)
@@ -286,6 +304,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		ObjectNode root = mapper.createObjectNode();
 		ArrayNode keys = mapper.createArrayNode();
 		Iterator<String> iter = docsToDownload.iterator();
+
+		// TESTING - just do a single id
+		// keys.add("0d9500c05ef3a901397b5d7dda14d956");
+
 		while (iter.hasNext())
 		{
 			String id = (String) iter.next();
@@ -340,6 +362,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int size()
+	{
+		return _myCache.size();
 	}
 
 	private ArrayList<String> getDownloadList(String myFilter)
@@ -473,8 +501,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 		// cool, we're at the first point on or before the start date
 		WorldLocation thisL = thisT.getLocationAt(ctr);
-		
-		if(thisL == null)
+
+		if (thisL == null)
 		{
 			// hey, it's not a spatial track
 			return;
@@ -486,33 +514,27 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		// now we can continue forward
 		while ((ctr < len - 1) && (times.get(++ctr) < endTime))
 		{
+
+			// put in a marker
+			dest.drawRect(lastLoc.x - 1, lastLoc.y - 1, 3, 3);
+
 			// get the
 			thisL = thisT.getLocationAt(ctr);
 
+			// do we have a location?
 			if (thisL != null)
 			{
 
+				// convert to screen coords
 				Point thisLoc = dest.toScreen(thisL);
 
 				// draw teh line
 				dest.drawLine(lastLoc.x, lastLoc.y, thisLoc.x, thisLoc.y);
 
+				// remember this location
 				lastLoc = new Point(thisLoc);
 			}
 		}
-		// are we in the period?
-
-		// create a location at this time step
-
-		// create a point for this location
-
-		// is this the first point?
-		// store it
-
-		// draw a line to the new location
-
-		// remember this location
-
 	}
 
 	@Override
@@ -581,7 +603,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	@Override
 	public String getName()
 	{
-		return "Track Store (" + _myCache.size() + " tracks)";
+		return "Cloud Track Store";
 	}
 
 	@Override
@@ -620,17 +642,31 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		return null;
 	}
 
+	
+	public void setColor(Color col)
+	{
+		_myColor = col;
+		
+	}
+	
 	@Override
 	public Color getColor()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return _myColor ;
+	}
+
+	
+	
+	@Override
+	public double rangeFrom(WorldLocation other)
+	{
+		// TODO: find the nearest (visible) track point
+		return super.rangeFrom(other);
 	}
 
 	@Override
 	public PlainSymbol getSnailShape()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -743,6 +779,57 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			System.out.println("location is " + loc);
 		}
 
+	}
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class TrackStoreInfo extends Editable.EditorType
+	{
+	
+		public TrackStoreInfo(BaseLayer data)
+		{
+			super(data, data.getName(), "");
+		}
+	
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						prop("Visible", "the Layer visibility", VISIBILITY),
+						prop("Name", "the name of the Layer", FORMAT),
+						prop("LineThickness", "the thickness of lines in this layer",
+								FORMAT),
+						prop("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT),
+						prop("Color", "the color to plot the tracks", FORMAT),
+						};
+	
+				res[2]
+						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+	
+				return res;
+	
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	
+		@SuppressWarnings("rawtypes")
+		public MethodDescriptor[] getMethodDescriptors()
+		{
+			// just add the reset color field first
+			Class c = BaseLayer.class;
+			MethodDescriptor mds[] =
+			{ method(c, "exportShape", null, "Export Shape"),
+					method(c, "hideChildren", null, "Hide all children"),
+					method(c, "revealChildren", null, "Reveal all children") };
+			return mds;
+		}
+	
 	}
 
 }
