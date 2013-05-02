@@ -3,7 +3,6 @@ package org.mwc.debrief.gndmanager.Tracks;
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
-import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,6 +33,7 @@ import org.javalite.http.Post;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -118,16 +118,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				{
 					return super.getPropertyDescriptors();
 				}
-			}
-
-			@SuppressWarnings("rawtypes")
-			public MethodDescriptor[] getMethodDescriptors()
-			{
-				Class c = CouchTrack.class;
-				MethodDescriptor mds[] =
-				{ method(c, "importTrack", null, "Import as Debrief Track") };
-				return mds;
-
 			}
 		}
 
@@ -299,12 +289,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			return _myName;
 		}
 
-		@SuppressWarnings("unused")
-		public void importTrack()
-		{
-			System.err.println("IMPORT TRACK TO DEBRIEF!!!!");
-		}
-
 		public String toString()
 		{
 			return getName();
@@ -437,7 +421,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		public Color getColor()
 		{
 			Color res = _thisTrackColor;
-			if(_thisTrackColor == null)
+			if (_thisTrackColor == null)
 				res = _myColor;
 			return res;
 		}
@@ -479,6 +463,39 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 			return thisD;
 		}
+
+		public TrackWrapper toDebriefTrack()
+		{
+			TrackWrapper res = null;
+			// just check we have some data
+			if (length() > 0)
+			{
+				if (getLocationAt(0) != null)
+				{
+					res = new TrackWrapper();
+					res.setName(getName());
+					ArrayNode courses = getArray("course");
+					ArrayNode speeds = getArray("speed");
+					for (int i = 0; i < length(); i++)
+					{
+						Long thisT = getTimes().get(i);
+						WorldLocation loc = getLocationAt(i);
+						double crse = 0;
+						double spd = 0;
+						// see if we have course data
+						if (courses != null && courses.size() > 0)
+						{
+							crse = courses.get(i).asDouble();
+							spd = speeds.get(i).asDouble();
+						}
+						Fix newF = new Fix(new HiResDate(thisT), loc, crse, spd);
+						FixWrapper fw = new FixWrapper(newF);
+						res.addFix(fw);
+					}
+				}
+			}
+			return res;
+		}
 	}
 
 	private transient HashMap<String, CouchTrack> _myCache = new HashMap<String, CouchTrack>();
@@ -512,6 +529,33 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * 
 	 */
 	private boolean _interpolatePoints = false;
+
+	@Override
+	public void add(Editable thePlottable)
+	{
+		if (thePlottable instanceof CouchTrack)
+		{
+			CouchTrack ct = (CouchTrack) thePlottable;
+			_myCache.put(ct.getId(), ct);
+			super.add(thePlottable);
+		}
+		else
+			CorePlugin.logError(Status.ERROR, "Track store cannot add this element:" + thePlottable, null);
+	}
+
+	@Override
+	public void removeElement(Editable p)
+	{
+		if (p instanceof CouchTrack)
+		{
+			super.removeElement(p);
+
+			// also remove the item
+			_myCache.remove(((CouchTrack) p).getId());
+		}
+		else
+			CorePlugin.logError(Status.ERROR, "Track store cannot remove this element:" + p, null);
+	}
 
 	@Override
 	public void filterListTo(final HiResDate start, final HiResDate end)
