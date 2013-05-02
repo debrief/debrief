@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Display;
 import org.javalite.http.Get;
 import org.javalite.http.Post;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.gndmanager.Activator;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -54,6 +55,11 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		Serializable
 {
 
+	/** the maximum number of tracks that we download in one go
+	 * 
+	 */
+	private static final int MAX_ROWS_TO_IMPORT = 200;
+
 	private final ObjectMapper _mapper;
 
 	/**
@@ -74,6 +80,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	private TimePeriod.BaseTimePeriod _dataLoaded = null;
 
 	private final SimpleDateFormat iso;
+
 
 	public TrackStoreWrapper(String couchURL, String esURL)
 	{
@@ -540,7 +547,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			super.add(thePlottable);
 		}
 		else
-			CorePlugin.logError(Status.ERROR, "Track store cannot add this element:" + thePlottable, null);
+			CorePlugin.logError(Status.ERROR, "Track store cannot add this element:"
+					+ thePlottable, null);
 	}
 
 	@Override
@@ -554,7 +562,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			_myCache.remove(((CouchTrack) p).getId());
 		}
 		else
-			CorePlugin.logError(Status.ERROR, "Track store cannot remove this element:" + p, null);
+			CorePlugin.logError(Status.ERROR,
+					"Track store cannot remove this element:" + p, null);
 	}
 
 	@Override
@@ -591,16 +600,16 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				{
 					// ok, we need some - go get them
 					doTheDownload(docsToDownload);
-				}
-
-				// extend our period of coverage
-				if (_dataLoaded == null)
-					_dataLoaded = new TimePeriod.BaseTimePeriod(_currentFilterPeriod
-							.getStartDTG(), _currentFilterPeriod.getEndDTG());
-				else
-				{
-					_dataLoaded.extend(_currentFilterPeriod.getStartDTG());
-					_dataLoaded.extend(_currentFilterPeriod.getEndDTG());
+					
+					// extend our period of coverage
+					if (_dataLoaded == null)
+						_dataLoaded = new TimePeriod.BaseTimePeriod(_currentFilterPeriod
+								.getStartDTG(), _currentFilterPeriod.getEndDTG());
+					else
+					{
+						_dataLoaded.extend(_currentFilterPeriod.getStartDTG());
+						_dataLoaded.extend(_currentFilterPeriod.getEndDTG());
+					}
 				}
 
 				// and trigger size-updated
@@ -713,22 +722,30 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				if (rawRows.isArray())
 				{
 					ArrayNode rows = (ArrayNode) rawRows;
-					for (int i = 0; i < rows.size(); i++)
+					int rowCount = rows.size();
+					Activator.logError(Status.INFO, "ES found " + rowCount + " rows",
+							null);
+					if (rowCount < MAX_ROWS_TO_IMPORT)
 					{
-						JsonNode theNode = rows.get(i);
-						String theDoc = theNode.get("_id").asText();
+						for (int i = 0; i < rowCount; i++)
+						{
+							JsonNode theNode = rows.get(i);
+							String theDoc = theNode.get("_id").asText();
 
-						// do we already have this document
-						if (_myCache.containsKey(theDoc))
-						{
-							// don't worry, we've already got it
-						}
-						else
-						{
-							// we do want to load this file
-							docsToDownload.add(theDoc.toString());
+							// do we already have this document
+							if (_myCache.containsKey(theDoc))
+							{
+								// don't worry, we've already got it
+							}
+							else
+							{
+								// we do want to load this file
+								docsToDownload.add(theDoc.toString());
+							}
 						}
 					}
+					else
+						Activator.logError(Status.WARNING, "More than "+MAX_ROWS_TO_IMPORT+" rows returned!", null);
 				}
 
 			}
@@ -771,6 +788,9 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	@Override
 	public void paint(CanvasType dest)
 	{
+		// set the line thickness
+		dest.setLineWidth(super.getLineThickness());
+		
 		// check we have a filter
 		if (_currentFilterPeriod == null)
 		{
@@ -786,11 +806,12 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
 					.next();
 			// ok, check it's visible at all
-			if (thisT.overlaps(_currentFilterPeriod))
-			{
-				// yes. get painting
-				thisT.paint(dest);
-			}
+			if (thisT.getVisible())
+				if (thisT.overlaps(_currentFilterPeriod))
+				{
+					// yes. get painting
+					thisT.paint(dest);
+				}
 		}
 	}
 
@@ -958,58 +979,61 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				// in period?
 				TimePeriod thisP = thisT.getPeriod();
 
-				if (thisP != null)
-
-					if (thisP.contains(DTG))
-					{
-						// find nearest point
-						ArrayList<Long> times = thisT.getTimes();
-						if (times != null)
+				if (thisT.getVisible())
+					if (thisP != null)
+						if (thisP.contains(DTG))
 						{
-							int ctr = 0;
-							while (ctr < times.size() - 1)
+							// find nearest point
+							ArrayList<Long> times = thisT.getTimes();
+							if (times != null)
 							{
-								Long tNow = times.get(ctr);
-								if (tNow > DTG.getDate().getTime())
+								int ctr = 0;
+								while (ctr < times.size() - 1)
 								{
-									break;
+									Long tNow = times.get(ctr);
+									if (tNow > DTG.getDate().getTime())
+									{
+										break;
+									}
+									ctr++;
 								}
-								ctr++;
-							}
-							if (ctr < times.size() - 1)
-							{
-
-								// right, we're now looking at the time immediately after teh
-								// time
-								if (_interpolatePoints && (ctr > 0))
+								if (ctr < times.size() - 1)
 								{
-									// ok, dodgy maths to interpolate the location at this time
-									FixWrapper before = new FixWrapper(new Fix(new HiResDate(
-											times.get(ctr - 1)), thisT.getLocationAt(ctr - 1), 0, 0));
-									FixWrapper next = new FixWrapper(new Fix(new HiResDate(
-											times.get(ctr)), thisT.getLocationAt(ctr), 0, 0));
 
-									if (before.getTime().greaterThan(DTG))
-										System.err.println("not before");
-									if (next.getTime().lessThan(DTG))
-										System.err.println("not after");
-
-									FixWrapper newFix = FixWrapper.interpolateFix(before, next,
-											new HiResDate(DTG));
-									newFix.setColor(_myColor);
-									res.add(newFix);
-
-								}
-								else
-								{
-									// easy, just return the point immediately after the indicated
+									// right, we're now looking at the time immediately after teh
 									// time
-									res.add(new FixWrapper(new Fix(new HiResDate(times.get(ctr)),
-											thisT.getLocationAt(ctr), 0, 0)));
+									if (_interpolatePoints && (ctr > 0))
+									{
+										// ok, dodgy maths to interpolate the location at this time
+										FixWrapper before = new FixWrapper(
+												new Fix(new HiResDate(times.get(ctr - 1)),
+														thisT.getLocationAt(ctr - 1), 0, 0));
+										FixWrapper next = new FixWrapper(new Fix(new HiResDate(
+												times.get(ctr)), thisT.getLocationAt(ctr), 0, 0));
+
+										if (before.getTime().greaterThan(DTG))
+											System.err.println("not before");
+										if (next.getTime().lessThan(DTG))
+											System.err.println("not after");
+
+										FixWrapper newFix = FixWrapper.interpolateFix(before, next,
+												new HiResDate(DTG));
+										newFix.setColor(_myColor);
+										res.add(newFix);
+
+									}
+									else
+									{
+										// easy, just return the point immediately after the
+										// indicated
+										// time
+										res.add(new FixWrapper(new Fix(
+												new HiResDate(times.get(ctr)),
+												thisT.getLocationAt(ctr), 0, 0)));
+									}
 								}
 							}
 						}
-					}
 
 			}
 		}
