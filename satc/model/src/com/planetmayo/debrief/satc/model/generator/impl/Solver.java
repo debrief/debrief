@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
@@ -13,8 +14,6 @@ import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.generator.ISolver.Reader;
-import com.planetmayo.debrief.satc.model.generator.ISolver.Writer;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
@@ -50,7 +49,9 @@ public class Solver implements ISolver
 	private final String[] propertiesToRestartBoundsManager =
 	{ BaseContribution.ACTIVE, BaseContribution.START_DATE,
 			BaseContribution.FINISH_DATE, BaseContribution.HARD_CONSTRAINTS };	
-
+	private final String[] propertiesToRestartSolutionGenerator =
+	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
+	
 	public Solver(IContributions contributions, ProblemSpace problemSpace,
 			IBoundsManager boundsManager,	ISolutionGenerator solutionGenerator, 
 			IJobsManager jobsManager)
@@ -75,6 +76,10 @@ public class Solver implements ISolver
 		}
 		
 		autoGenerateListener = new AutoGenerateSolutionsListener();
+		for (String property : propertiesToRestartSolutionGenerator) 
+		{
+			contributions.addPropertyListener(property, autoGenerateListener);
+		}		
 		boundsManager.addConstrainSpaceListener(autoGenerateListener);
 	}
 
@@ -138,6 +143,18 @@ public class Solver implements ISolver
 		return problemSpace.getVehicleType();
 	}
 	
+	@Override
+	public void setPrecision(Precision precision)
+	{
+		solutionGenerator.setPrecision(precision);
+	}
+
+	@Override
+	public Precision getPrecision()
+	{
+		return solutionGenerator.getPrecision();
+	}
+
 	@Override
 	public synchronized void clear()
 	{
@@ -245,7 +262,7 @@ public class Solver implements ISolver
 		}
 	}
 	
-	private class AutoGenerateSolutionsListener extends SteppingAdapter 
+	private class AutoGenerateSolutionsListener extends SteppingAdapter implements PropertyChangeListener
 	{
 
 		@Override
@@ -253,7 +270,7 @@ public class Solver implements ISolver
 		{
 			if (autoGenerateSolutions) 
 			{
-				solutionGenerator.generateSolutions();
+				solutionGenerator.generateSolutions(true);
 			}
 		}
 
@@ -268,6 +285,15 @@ public class Solver implements ISolver
 				IncompatibleStateException ex)
 		{
 			solutionGenerator.clear();
+		}
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt)
+		{
+			if (autoGenerateSolutions && boundsManager.isCompleted()) 
+			{
+				solutionGenerator.generateSolutions(false);
+			}			
 		}
 	}
 }

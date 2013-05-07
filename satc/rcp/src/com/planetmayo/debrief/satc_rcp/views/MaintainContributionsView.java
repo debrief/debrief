@@ -23,6 +23,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -203,10 +204,12 @@ public class MaintainContributionsView extends ViewPart implements
 				IContributionsChangedListener.class, this);
 		generateSolutionsListener = UIListener.wrap(parent.getDisplay(), 
 				IGenerateSolutionsListener.class, new SteppingAdapter() {
-
+					Control focused = null;
+			
 					@Override
 					public void startingGeneration()
 					{
+						focused = parent.getDisplay().getFocusControl();
 						UIUtils.setEnabled(parent, false);
 						cancelGeneration.setVisible(true);
 						cancelGeneration.setEnabled(true);
@@ -217,6 +220,7 @@ public class MaintainContributionsView extends ViewPart implements
 					{
 						UIUtils.setEnabled(parent, true);
 						cancelGeneration.setVisible(false);
+						focused.setFocus();
 					}
 		});
 		solver.getContributions().addContributionsChangedListener(contributionsChangedListener);
@@ -404,7 +408,7 @@ public class MaintainContributionsView extends ViewPart implements
 				ISelection sel = precisionsCombo.getSelection();
 				IStructuredSelection cSel = (IStructuredSelection) sel;
 				Precision precision = (Precision) cSel.getFirstElement();
-				solver.getSolutionGenerator().setPrecision(precision);
+				solver.setPrecision(precision);
 			}
 		});
 

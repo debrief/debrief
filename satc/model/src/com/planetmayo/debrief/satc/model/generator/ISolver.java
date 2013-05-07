@@ -96,6 +96,10 @@ public interface ISolver
    */
   VehicleType getVehicleType();
   
+  void setPrecision(Precision precision);
+  
+  Precision getPrecision();
+  
   void save(Writer writer);
   
   void load(Reader reader);

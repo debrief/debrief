@@ -1,7 +1,5 @@
 package com.planetmayo.debrief.satc.model.generator.impl;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,13 +58,6 @@ public class SolutionGenerator implements ISolutionGenerator
 	
 	private volatile Job<?, ?> mainGenerationJob = null;
 
-	/**
-	 * the set of contribution properties that we're interested in
-	 * 
-	 */
-	private final String[] _interestingProperties =
-	{ BaseContribution.WEIGHT, BaseContribution.ESTIMATE };
-
 	public SolutionGenerator(IContributions contributions, IJobsManager jobsManager, SafeProblemSpace problemSpace)
 	{
 		this.jobsManager = jobsManager;
@@ -74,29 +65,10 @@ public class SolutionGenerator implements ISolutionGenerator
 		this.problemSpaceView = problemSpace;
 		_readyListeners = SupportServices.INSTANCE.getUtilsService()
 				.newConcurrentSet();
-
-		for (String property : _interestingProperties)
-		{
-			contributions.addPropertyListener(property, new PropertyChangeListener()
-			{
-				@Override
-				public void propertyChange(PropertyChangeEvent arg0)
-				{
-					startRecalculateTopLegsJobs();
-				}
-			});
-		}
 	}
 	
 	private synchronized void startRecalculateTopLegsJobs() 
 	{
-		// ok, the way the scores are calculated may have changed, recalculate
-		// the scores
-		if (mainGenerationJob != null)
-		{
-			return;
-		}
-		fireStartingGeneration();
 		mainGenerationJob = jobsManager.schedule(new SolutionGeneratorJob<Void, Void>("Recalculate Top Legs") {
 
 			@Override
@@ -146,7 +118,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	}
 
 	@Override
-	public synchronized void generateSolutions()
+	public synchronized void generateSolutions(boolean fullRerun)
 	{
 		if (mainGenerationJob != null) 
 		{
@@ -159,7 +131,17 @@ public class SolutionGenerator implements ISolutionGenerator
 
 		// clear the legs
 		if (_theLegs != null)
-			_theLegs.clear();
+		{
+			if (! fullRerun) 
+			{
+				startRecalculateTopLegsJobs();
+				return; 
+			}
+			else 
+			{
+				_theLegs.clear();
+			}			
+		}
 
 		// get the legs (JOB)
 		Job<Void, Void> getLegsJob = jobsManager.schedule(new SolutionGeneratorJob<Void, Void>("Get the legs")
@@ -664,10 +646,10 @@ public class SolutionGenerator implements ISolutionGenerator
 	public void setPrecision(Precision precision)
 	{
 		_myPrecision = precision;
-
-		// ok, re-do the whole process
-		if (problemSpaceView.size() != 0)
-			generateSolutions();
+		if (_theLegs != null) 
+		{
+			generateSolutions(true);
+		}
 	}
 	
 	
