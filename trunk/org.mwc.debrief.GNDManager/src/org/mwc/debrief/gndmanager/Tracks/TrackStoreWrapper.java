@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -49,13 +50,15 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 
 public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		Serializable
 {
 
-	/** the maximum number of tracks that we download in one go
+	/**
+	 * the maximum number of tracks that we download in one go
 	 * 
 	 */
 	private static final int MAX_ROWS_TO_IMPORT = 200;
@@ -79,8 +82,16 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 	private TimePeriod.BaseTimePeriod _dataLoaded = null;
 
-	private final SimpleDateFormat iso;
-
+	/**
+	 * sort out a GMT-syncd date formatter
+	 * 
+	 */
+	private static final SimpleDateFormat iso;
+	static
+	{
+		iso = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+		iso.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
 
 	public TrackStoreWrapper(String couchURL, String esURL)
 	{
@@ -89,9 +100,6 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		_couchURL = couchURL;
 		_esURL = esURL;
 
-		iso = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
-		iso.setTimeZone(TimeZone.getTimeZone("GMT"));
-
 		if (_couchURL == "")
 			throw new RuntimeException("database URL missing");
 		if (_esURL == "")
@@ -99,7 +107,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 	}
 
-	public class CouchTrack implements Serializable, Plottable
+	public static class CouchTrack implements Serializable, Plottable
 	{
 
 		public class CouchTrackInfo extends Editable.EditorType
@@ -142,10 +150,117 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		private WorldArea _myBounds = null;
 		private String _myName = null;
 		private EditorType _myEditor = null;
+		private ObjectMapper _mapper = new ObjectMapper();
+		private TrackStoreWrapper _parent;
 
-		public CouchTrack(JsonNode theDoc)
+		public CouchTrack(JsonNode theDoc, TrackStoreWrapper parent)
 		{
+			_parent = parent;
 			_doc = theDoc;
+		}
+
+		/**
+		 * self-populate from this track
+		 * 
+		 * @param tw
+		 */
+		public CouchTrack(TrackWrapper tw)
+		{
+			_doc = _mapper.createObjectNode();
+			
+			ObjectNode oNode = (ObjectNode) _doc;
+
+			// ok, start off with the points
+			Enumeration<Editable> posits = tw.getPositions();
+
+			ArrayNode locs = _mapper.createArrayNode();
+			ArrayNode times = _mapper.createArrayNode();
+			ArrayNode courses = _mapper.createArrayNode();
+			ArrayNode speeds = _mapper.createArrayNode();
+
+			TimePeriod extent = null;
+			WorldArea area = null;
+			
+			while (posits.hasMoreElements())
+			{
+				Editable editable = (Editable) posits.nextElement();
+				FixWrapper fw = (FixWrapper) editable;
+
+				// first the time
+				times.add(iso.format(fw.getDateTimeGroup().getDate()));
+
+				// location first
+				ArrayNode thisLoc = _mapper.createArrayNode();
+				thisLoc.add(fw.getLocation().getLong());
+				thisLoc.add(fw.getLocation().getLat());
+				locs.add(thisLoc);
+
+				// now the course/speed
+				courses.add(fw.getCourseDegs());
+				speeds.add(new WorldSpeed(fw.getSpeed() / 3d, WorldSpeed.ft_sec)
+						.getValueIn(WorldSpeed.M_sec));
+				
+				if(extent == null)
+				{
+					extent = new TimePeriod.BaseTimePeriod(fw.getDateTimeGroup(), fw.getDateTimeGroup());
+					area = new WorldArea(fw.getLocation(), fw.getLocation());
+				}
+				else
+				{
+					extent.extend(fw.getDateTimeGroup());
+					area.extend(fw.getLocation());
+				}
+				
+			}
+
+			// wrap the location
+			ObjectNode locHolder = _mapper.createObjectNode();
+			locHolder.put("type", "MultiPoint");
+			locHolder.put("coordinates", locs);
+
+			// the metadata bounds
+			ObjectNode timeB = _mapper.createObjectNode();
+			timeB.put("start", iso.format(extent.getStartDTG().getDate()));
+			timeB.put("end", iso.format(extent.getEndDTG().getDate()));
+
+			ArrayNode boundsCoords = _mapper.createArrayNode();
+			ArrayNode tlCoord = _mapper.createArrayNode();
+			ArrayNode brCoord = _mapper.createArrayNode();
+			tlCoord.add(area.getTopLeft().getLong());
+			tlCoord.add(area.getTopLeft().getLat());
+			brCoord.add(area.getBottomRight().getLong());
+			brCoord.add(area.getBottomRight().getLat());
+			boundsCoords.add(tlCoord);
+			boundsCoords.add(brCoord);
+			ObjectNode geoB = _mapper.createObjectNode();
+			geoB.put("type", "envelope");
+			geoB.put("coordinates", boundsCoords);
+			
+			// now the metadata
+			ObjectNode metadata = _mapper.createObjectNode();
+			ArrayNode dataTypes = _mapper.createArrayNode();
+			dataTypes.add("location");
+			dataTypes.add("course");
+			dataTypes.add("speed");
+			dataTypes.add("time");
+			metadata.put("data_type", dataTypes);
+			metadata.put("platform", tw.getName());
+			metadata.put("platform_type", "vehicle");
+			metadata.put("trial", "analysis");
+			metadata.put("sensor", "unknown");
+			metadata.put("sensor_type", "location");
+			metadata.put("type", "track");
+			metadata.put("name", "unknown");
+			
+			metadata.put("time_bounds", timeB);
+			metadata.put("geo_bounds", geoB);
+			
+			// insert the objects
+			oNode.put("location", locHolder);
+			oNode.put("course", courses);
+			oNode.put("speed", speeds);
+			oNode.put("time", times);
+			oNode.put("metadata", metadata);
 		}
 
 		public String getId()
@@ -342,8 +457,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 			dest.setColor(getColor());
 
-			long startTime = _currentFilterPeriod.getStartDTG().getDate().getTime();
-			long endTime = _currentFilterPeriod.getEndDTG().getDate().getTime();
+			long startTime = _parent._currentFilterPeriod.getStartDTG().getDate()
+					.getTime();
+			long endTime = _parent._currentFilterPeriod.getEndDTG().getDate()
+					.getTime();
 
 			int len = length();
 			ArrayList<Long> times = getTimes();
@@ -376,7 +493,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			Point lastLoc = dest.toScreen(thisL);
 
 			// is this the first location?
-			if (_showTrackName)
+			if (_parent._showTrackName)
 				dest.drawText(getName(), lastLoc.x + 10, lastLoc.y + 5);
 
 			// now we can continue forward
@@ -429,7 +546,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		{
 			Color res = _thisTrackColor;
 			if (_thisTrackColor == null)
-				res = _myColor;
+				res = _parent._myColor;
 			return res;
 		}
 
@@ -502,6 +619,11 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				}
 			}
 			return res;
+		}
+
+		public JsonNode getDocument()
+		{
+			return _doc;
 		}
 	}
 
@@ -600,7 +722,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 				{
 					// ok, we need some - go get them
 					doTheDownload(docsToDownload);
-					
+
 					// extend our period of coverage
 					if (_dataLoaded == null)
 						_dataLoaded = new TimePeriod.BaseTimePeriod(_currentFilterPeriod
@@ -660,7 +782,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 					{
 						JsonNode theNode = rows.get(i);
 						JsonNode theDoc = theNode.get("doc");
-						CouchTrack track = new CouchTrack(theDoc);
+						CouchTrack track = new CouchTrack(theDoc, this);
 
 						// put in our local hashmap
 						_myCache.put(track.getId(), track);
@@ -745,7 +867,8 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 						}
 					}
 					else
-						Activator.logError(Status.WARNING, "More than "+MAX_ROWS_TO_IMPORT+" rows returned!", null);
+						Activator.logError(Status.WARNING, "More than "
+								+ MAX_ROWS_TO_IMPORT + " rows returned!", null);
 				}
 
 			}
@@ -790,7 +913,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	{
 		// set the line thickness
 		dest.setLineWidth(super.getLineThickness());
-		
+
 		// check we have a filter
 		if (_currentFilterPeriod == null)
 		{

@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.osgi.framework.BundleContext;
@@ -11,7 +12,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin{
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.mwc.debrief.GNDManager"; //$NON-NLS-1$
@@ -48,6 +49,7 @@ public class Activator extends AbstractUIPlugin {
 		
 		// register tehe track generator
 		RightClickSupport.addRightClickGenerator(new ConvertToDebriefTrack());
+		RightClickSupport.addRightClickGenerator(new ExportToCloud());
 	}
 
 	/*
@@ -105,5 +107,4 @@ public class Activator extends AbstractUIPlugin {
 		if (exception != null)
 			exception.printStackTrace();
 	}
-	
 }
