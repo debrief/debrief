@@ -3,8 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Satc_interface
 Bundle-SymbolicName: org.mwc.debrief.satc_interface; singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: satc_interface.SATC_Activator
+Bundle-Activator: org.mwc.debrief.satc_interface.SATC_Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.mwc.cmap.legacy;bundle-version="1.0.163",
+ org.mwc.debrief.legacy;bundle-version="1.0.243",
+ org.mwc.cmap.core;bundle-version="1.0.150",
+ org.mwc.debrief.core;bundle-version="1.0.193",
+ com.planetmayo.debrief.satc;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

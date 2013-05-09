@@ -1,7 +1,9 @@
-package satc_interface;
+package org.mwc.debrief.satc_interface;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.debrief.satc_interface.actions.CreateSolutionFromSensorData;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -27,6 +29,11 @@ public class SATC_Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		// register ourselves as a right-click helper
+		RightClickSupport.addRightClickGenerator(new CreateSolutionFromSensorData());
+
+		
 		plugin = this;
 	}
 
