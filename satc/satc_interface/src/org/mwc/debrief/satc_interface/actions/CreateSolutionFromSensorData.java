@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.satc_interface.data.ContributionWrapper;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
@@ -29,10 +28,14 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
@@ -73,9 +76,9 @@ public class CreateSolutionFromSensorData implements
 		{
 			final String title;
 			if (validCuts.size() > 1)
-				title = "Add sensor cuts";
+				title = "sensor cuts";
 			else
-				title = "Add sensor cut";
+				title = "sensor cut";
 
 			// right,stick in a separator
 			parent.add(new Separator());
@@ -92,21 +95,16 @@ public class CreateSolutionFromSensorData implements
 				{
 					final SATC_Solution layer = existingSolutions[i];
 
-					// ok, go for it.
-					final String title2 = title + " to existing solution:"
-							+ layer.getName();
-
+					final String title2 = "Add bearing measurement from " + title
+							+ " to existing solution:" + layer.getName();
 					// yes, create the action
 					Action addToExisting = new Action(title2)
 					{
 						public void run()
 						{
-							// sort it out as an operation
-							IUndoableOperation convertToTrack1 = new NewSolutionFromCuts(
-									layer, title2, finalCuts, null);
-
 							// ok, stick it on the buffer
-							runIt(convertToTrack1);
+							runIt(new BearingMeasurementContributionFromCuts(layer, title2,
+									finalCuts, null));
 						}
 					};
 
@@ -116,24 +114,35 @@ public class CreateSolutionFromSensorData implements
 			}
 
 			// yes, create the action
+			final String thisT = "Add bearing measurement from " + title
+					+ " to new solution";
 			// ok, go for it.
-			final String title2 = title + " to new solution";
-			Action addToNew = new Action(title2)
+			Action addToNew = new Action(thisT)
 			{
 				public void run()
 				{
-					
-					// sort it out as an operation
-					IUndoableOperation addToNewSolution = new NewSolutionFromCuts(null,
-							title2, finalCuts, theLayers);
-
-					// ok, stick it on the buffer
-					runIt(addToNewSolution);
+					runIt(new BearingMeasurementContributionFromCuts(null, thisT,
+							finalCuts, theLayers));
 				}
 			};
-
 			// ok - flash up the menu item
 			parent.add(addToNew);
+
+			// yes, create the action
+			final String thisT2 = "Add Speed Forecast from " + title
+					+ " to new solution";
+			// ok, go for it.
+			addToNew = new Action(thisT2)
+			{
+				public void run()
+				{
+					runIt(new SpeedForecastContributionFromCuts(null, thisT2, finalCuts,
+							theLayers));
+				}
+			};
+			// ok - flash up the menu item
+			parent.add(addToNew);
+
 		}
 	}
 
@@ -173,21 +182,105 @@ public class CreateSolutionFromSensorData implements
 		return list;
 	}
 
-	private static class NewSolutionFromCuts extends CMAPOperation
+	private static class BearingMeasurementContributionFromCuts extends
+			CoreSolutionFromCuts
+	{
+		private final ArrayList<SensorContactWrapper> _validCuts;
+
+		public BearingMeasurementContributionFromCuts(
+				SATC_Solution existingSolution, String title,
+				ArrayList<SensorContactWrapper> validCuts, Layers theLayers)
+		{
+			super(existingSolution, title, theLayers);
+			_validCuts = validCuts;
+		}
+
+		protected BearingMeasurementContribution createContribution(String contName)
+		{
+			// ok, now collate the contriubtion
+			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+			bmc.setName(contName);
+
+			// add the bearing data
+			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
+			while (iter.hasNext())
+			{
+				SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+				WorldLocation theOrigin = scw.getOrigin();
+				GeoPoint loc;
+
+				if (theOrigin == null)
+					theOrigin = scw.getCalculatedOrigin(scw.getSensor().getHost());
+
+				loc = conversions.toPoint(theOrigin);
+
+				double brg = Math.toRadians(scw.getBearing());
+				Date date = scw.getDTG().getDate();
+				Double theRange = null;
+				if (scw.getRange() != null)
+					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
+
+				BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
+				bmc.addThis(thisM);
+			}
+			return bmc;
+		}
+
+		@Override
+		String getDefaultSolutionName()
+		{ // grab a name
+			Date firstCutDate = _validCuts.get(0).getDTG().getDate();
+			String formattedName = FormatRNDateTime.toString(firstCutDate.getTime());
+			return formattedName;
+		}
+	}
+
+	private static class SpeedForecastContributionFromCuts extends
+			CoreSolutionFromCuts
+	{
+		private final ArrayList<SensorContactWrapper> _validCuts;
+
+		public SpeedForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, ArrayList<SensorContactWrapper> validCuts,
+				Layers theLayers)
+		{
+			super(existingSolution, title, theLayers);
+			_validCuts = validCuts;
+		}
+
+		protected SpeedForecastContribution createContribution(String contName)
+		{
+			// ok, now collate the contriubtion
+			SpeedForecastContribution bmc = new SpeedForecastContribution();
+			bmc.setName(contName);
+
+			return bmc;
+		}
+
+		@Override
+		String getDefaultSolutionName()
+		{ // grab a name
+			Date firstCutDate = _validCuts.get(0).getDTG().getDate();
+			String formattedName = FormatRNDateTime.toString(firstCutDate.getTime());
+			return formattedName;
+		}
+	}
+
+	private abstract static class CoreSolutionFromCuts extends CMAPOperation
 	{
 
 		private SATC_Solution _targetSolution;
-		private final ArrayList<SensorContactWrapper> _validCuts;
 		private final Layers _theLayers;
 
-		public NewSolutionFromCuts(SATC_Solution existingSolution, String title,
-				ArrayList<SensorContactWrapper> validCuts, Layers theLayers)
+		public CoreSolutionFromCuts(SATC_Solution existingSolution, String title,
+				Layers theLayers)
 		{
 			super(title);
 			_targetSolution = existingSolution;
-			_validCuts = validCuts;
 			_theLayers = theLayers;
 		}
+
+		abstract String getDefaultSolutionName();
 
 		@Override
 		public boolean canUndo()
@@ -199,51 +292,38 @@ public class CreateSolutionFromSensorData implements
 				throws ExecutionException
 		{
 
-			// grab a name
-			// create input box dialog
-			InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
-					"New contribution", "What is the name of this contribution",
-					"name here", null);
-
-			// did he cancel?
-			if (inp.open() == InputDialog.OK)
+			// ok, do we have an existing solution
+			if (_targetSolution == null)
 			{
-				// get the results
-				String contName = inp.getValue();
+				String solutionName = getDefaultSolutionName();
+				_targetSolution = new SATC_Solution(solutionName);
+				_theLayers.addThisLayer(_targetSolution);
 
-				// ok, do we have an existing solution
-				if (_targetSolution == null)
+				// grab a name
+				// create input box dialog
+				InputDialog inp = new InputDialog(
+						Display.getCurrent().getActiveShell(), "New contribution",
+						"What is the name of this contribution", "name here", null);
+
+				// did he cancel?
+				if (inp.open() == InputDialog.OK)
 				{
-					_targetSolution = new SATC_Solution();
-					_theLayers.addThisLayer(_targetSolution);
+					// get the results
+					String contName = inp.getValue();
+
+					// ok = now get our specific contribution
+					BaseContribution bmc = createContribution(contName);
+
+					// and store it - if it worked
+					if (bmc != null)
+						_targetSolution.addContribution(bmc);
 				}
-
-				// ok, now collate the contriubtion
-				BearingMeasurementContribution bmc = new BearingMeasurementContribution();
-				bmc.setName(contName);
-
-				// add the bearing data
-				Iterator<SensorContactWrapper> iter = _validCuts.iterator();
-				while (iter.hasNext())
-				{
-					SensorContactWrapper scw = (SensorContactWrapper) iter.next();
-					GeoPoint loc = conversions.toPoint(scw.getOrigin());
-					double brg = Math.toRadians(scw.getBearing());
-					Date date = scw.getDTG().getDate();
-					Double theRange = null;
-					if (scw.getRange() != null)
-						theRange = scw.getRange().getValueIn(WorldDistance.METRES);
-
-					BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
-					bmc.addThis(thisM);
-				}
-
-				_targetSolution.add(new ContributionWrapper(bmc));
-
 			}
 
 			return Status.OK_STATUS;
 		}
+
+		abstract protected BaseContribution createContribution(String contName);
 
 		@Override
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)

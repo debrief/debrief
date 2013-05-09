@@ -13,3 +13,6 @@ Require-Bundle: org.eclipse.ui,
  com.planetmayo.debrief.satc;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: libs/jts-1.13.jar,
+ .,
+ model/
