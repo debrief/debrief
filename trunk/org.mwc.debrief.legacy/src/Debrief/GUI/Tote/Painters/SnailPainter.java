@@ -428,18 +428,23 @@ public class SnailPainter extends TotePainter
 				final Enumeration<Editable> iter = thisLayer.elements();
 				while (iter.hasMoreElements())
 				{
-					final Plottable p = (Plottable) iter.nextElement();
-					if (p instanceof WatchableList)
-					{
-						// look at the date date
-						WatchableList wl = (WatchableList) p;
-						HiResDate startDTG = wl.getStartDTG();
 
-						// is it a real date?
-						if (startDTG != null)
+					Editable thisE = iter.nextElement();
+					if (thisE instanceof Plottable)
+					{
+						final Plottable p = (Plottable) thisE;
+						if (p instanceof WatchableList)
 						{
-							// yup, add to list
-							res.addElement(p);
+							// look at the date date
+							WatchableList wl = (WatchableList) p;
+							HiResDate startDTG = wl.getStartDTG();
+
+							// is it a real date?
+							if (startDTG != null)
+							{
+								// yup, add to list
+								res.addElement(p);
+							}
 						}
 					}
 				}
@@ -708,8 +713,8 @@ public class SnailPainter extends TotePainter
 					final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter = getCurrentPrimaryHighlighter();
 					if (thisHighlighter.getName().equals("Range Rings"))
 					{
-						thisHighlighter.highlightIt(canvas.getProjection(), dest, _theTote
-								.getPrimary(), oldPrimary, true);
+						thisHighlighter.highlightIt(canvas.getProjection(), dest,
+								_theTote.getPrimary(), oldPrimary, true);
 					}
 				}
 
@@ -768,8 +773,8 @@ public class SnailPainter extends TotePainter
 			if (thisHighlighter.getName().equals("Range Rings"))
 			{
 
-				thisHighlighter.highlightIt(canvas.getProjection(), dest, _theTote
-						.getPrimary(), newPrimary, true);
+				thisHighlighter.highlightIt(canvas.getProjection(), dest,
+						_theTote.getPrimary(), newPrimary, true);
 			}
 		}
 

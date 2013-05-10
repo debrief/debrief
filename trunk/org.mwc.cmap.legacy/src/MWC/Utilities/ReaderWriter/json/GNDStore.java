@@ -19,6 +19,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.codehaus.jackson.node.TextNode;
 import org.javalite.http.Get;
 import org.javalite.http.Http;
 import org.javalite.http.Post;
@@ -43,7 +44,7 @@ public class GNDStore
 			IOException
 	{
 		String res = null;
-		String ONE_TRACK = "_design/tracks/_view/track_listing?limit=1";
+		String ONE_TRACK = "_design/" + _dbName +  "/_view/track_listing?limit=1";
 		String theURL = _url + "/" + _dbName + "/" + ONE_TRACK;
 		String theList = Http.get(theURL).text();
 		ObjectMapper mapper = new ObjectMapper();
@@ -184,7 +185,8 @@ public class GNDStore
 
 	}
 
-	public void bulkPut(ArrayList<JsonNode> theTracks,int batchSize) throws IOException
+	public void bulkPut(ArrayList<JsonNode> theTracks, int batchSize)
+			throws IOException
 	{
 		// hmm, how many tracks are there?
 		int len = theTracks.size();
@@ -199,7 +201,7 @@ public class GNDStore
 
 			for (int j = i; j < i + batchSize && j < len; j++)
 			{
-					trackArray.add(theTracks.get(j));
+				trackArray.add(theTracks.get(j));
 			}
 
 			// trackArray.addAll(theTracks);
@@ -208,7 +210,7 @@ public class GNDStore
 			// ok, now formulate the URL
 			String THE_URL = _url + "/" + _dbName + "/_bulk_docs";
 			String theDoc = GNDDocHandler.asString(root);
-			
+
 			System.out.println("ABOUT TO PUT:" + theDoc.length() + " chars");
 
 			Post post = Http.post(THE_URL, theDoc).header("Content-type",
@@ -219,10 +221,20 @@ public class GNDStore
 				System.out.println("PUT complete");
 				JsonParser jp = mapper.getJsonFactory().createJsonParser(post.text());
 				ArrayNode docs = (ArrayNode) mapper.readTree(jp);
-				if (trackArray.size() != docs.size())
+				for (int k = 0; k < docs.size(); k++)
 				{
-					MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
-							post.text(), null);
+					JsonNode thisD = docs.get(k);
+					TextNode reason = (TextNode) thisD.get("reason");
+					if (reason != null)
+						MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
+								"Upload failed:" + reason.asText(), null);
+					else
+					{
+						
+						String logMsg = "Post successful, added document:" +  thisD.get("id");
+						MWC.GUI.LoggingService.INSTANCE().logError(ErrorLogger.INFO,
+								logMsg, null);
+					}
 				}
 			}
 			else

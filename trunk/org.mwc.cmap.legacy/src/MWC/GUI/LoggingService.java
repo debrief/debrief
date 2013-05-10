@@ -1,6 +1,5 @@
 package MWC.GUI;
 
-
 /**
  * logging service that accomodates a surrogate - so the fancy RCP gui can
  * register as a logger with the legacy ASSET code
@@ -27,14 +26,15 @@ public class LoggingService implements ErrorLogger
 		else
 		{
 			System.err.println("Error:" + text);
-			e.printStackTrace();
+			if (e != null)
+				e.printStackTrace();
 		}
 
 	}
 
 	public static LoggingService INSTANCE()
 	{
-		if (_singleton != null)
+		if (_singleton == null)
 			_singleton = new LoggingService();
 
 		return _singleton;

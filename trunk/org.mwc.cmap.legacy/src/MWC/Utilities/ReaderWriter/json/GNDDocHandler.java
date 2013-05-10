@@ -25,6 +25,7 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -44,21 +45,6 @@ public class GNDDocHandler
 		times.put("end", timeFor(last));
 
 		return times;
-	}
-
-	private static WorldArea geoBoundsFor(Track track)
-	{
-		WorldArea bounds = null;
-		Enumeration<Fix> fixes = track.getFixes();
-		while (fixes.hasMoreElements())
-		{
-			Fix fix = fixes.nextElement();
-			if (bounds == null)
-				bounds = new WorldArea(fix.getLocation(), fix.getLocation());
-			else
-				bounds.extend(fix.getLocation());
-		}
-		return bounds;
 	}
 
 	private static String timeFor(Date date)
@@ -85,48 +71,23 @@ public class GNDDocHandler
 		mapper.configure(Feature.ALLOW_SINGLE_QUOTES, true);
 		ObjectNode root = mapper.createObjectNode();
 
-		// sort out the metadata
-		ObjectNode metadata = doMetadata(name, platform, platformType, sensor,
-				sensorType, trial, mapper);
-
-		// store the metadata
-		root.put("metadata", metadata);
-
-		// now the type specific stuff
-		metadata.put("type", "track");
-		ArrayNode types = mapper.createArrayNode();
-		types.add("lat");
-		types.add("lon");
-		types.add("time");
-		types.add("elevation");
-		types.add("heading");
-		types.add("speed");
-		metadata.put("data_type", types);
-
-		// now the location bounds
-		WorldArea theArea = geoBoundsFor(track);
-		ObjectNode gBounds = mapper.createObjectNode();
-		gBounds.put("tl", locationFor(theArea.getTopLeft(), mapper));
-		gBounds.put("br", locationFor(theArea.getBottomRight(), mapper));
-		metadata.put("geo_bounds", gBounds);
-
-		// and the time bounds
-		metadata.put("time_bounds", timeBoundsFor(track, mapper));
-
 		// now the data arrays
-		ArrayNode latArr = mapper.createArrayNode();
-		ArrayNode longArr = mapper.createArrayNode();
+		ArrayNode locationArr = mapper.createArrayNode();
 		ArrayNode timeArr = mapper.createArrayNode();
 		ArrayNode eleArr = mapper.createArrayNode();
 		ArrayNode headArr = mapper.createArrayNode();
 		ArrayNode speedArr = mapper.createArrayNode();
 
+		WorldArea area = null;
+		TimePeriod extent = null;
 		Enumeration<Fix> fixes = track.getFixes();
 		while (fixes.hasMoreElements())
 		{
 			Fix fix = fixes.nextElement();
-			latArr.add(fix.getLocation().getLat());
-			longArr.add(fix.getLocation().getLong());
+			ArrayNode arr = mapper.createArrayNode();
+			arr.add(fix.getLocation().getLong());
+			arr.add(fix.getLocation().getLat());
+			locationArr.add(arr);
 			timeArr.add(timeFor(fix.getTime().getDate()));
 			eleArr.add(-fix.getLocation().getDepth());
 			headArr.add(fix.getCourse());
@@ -136,14 +97,59 @@ public class GNDDocHandler
 			double kts = MWC.Algorithms.Conversions.Yps2Kts(yps);
 			double m_sec = MWC.Algorithms.Conversions.Kts2Mps(kts);
 			speedArr.add(m_sec);
+			
+			if(area == null)
+			{
+				area = new WorldArea(fix.getLocation(), fix.getLocation());
+				extent = new TimePeriod.BaseTimePeriod(fix.getTime(), fix.getTime());
+			}
+			else
+			{
+				area.extend(fix.getLocation());
+				extent.extend(fix.getTime());
+			}
 		}
 
-		root.put("lat", latArr);
-		root.put("lon", longArr);
+		ObjectNode locHolder = mapper.createObjectNode();
+		locHolder.put("type", "MultiPoint");
+		locHolder.put("coordinates", locationArr);
+		
+		root.put("location", locHolder);
 		root.put("time", timeArr);
 		root.put("elevation", eleArr);
 		root.put("heading", headArr);
 		root.put("speed", speedArr);
+		
+		
+		// sort out the metadata
+		ObjectNode metadata = doMetadata(name, platform, platformType, sensor,
+				sensorType, trial, mapper);
+		
+
+		// store the metadata
+		root.put("metadata", metadata);
+
+		// now the type specific stuff
+		metadata.put("type", "track");
+		ArrayNode types = mapper.createArrayNode();
+		types.add("location");
+		types.add("time");
+		types.add("elevation");
+		types.add("heading");
+		types.add("speed");
+		metadata.put("data_type", types);
+
+		// now the location bounds
+		ObjectNode gBounds = mapper.createObjectNode();
+		ArrayNode coords = mapper.createArrayNode();
+		coords.add( locationFor(area.getTopLeft(), mapper));
+		coords.add( locationFor(area.getBottomRight(), mapper));
+		gBounds.put("coordinates", coords);
+		gBounds.put("type", "envelope");
+		metadata.put("geo_bounds", gBounds);
+
+		// and the time bounds
+		metadata.put("time_bounds", timeBoundsFor(track, mapper));
 
 		return root;
 	}
