@@ -4,9 +4,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -46,10 +44,6 @@ public class Activator extends AbstractUIPlugin{
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
-		// register tehe track generator
-		RightClickSupport.addRightClickGenerator(new ConvertToDebriefTrack());
-		RightClickSupport.addRightClickGenerator(new ExportToCloud());
 	}
 
 	/*

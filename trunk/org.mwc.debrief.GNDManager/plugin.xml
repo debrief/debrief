@@ -50,5 +50,14 @@
      		<initializer class="org.mwc.debrief.gndmanager.preferences.CloudStoragePreferenceInitializer" />
      
   </extension>
+  <extension
+        point="org.mwc.cmap.core.RightClickSupport">
+     <helper
+           class="org.mwc.debrief.gndmanager.ConvertToDebriefTrack">
+     </helper>
+     <helper
+           class="org.mwc.debrief.gndmanager.ExportToCloud">
+     </helper>
+  </extension>
 
 </plugin>

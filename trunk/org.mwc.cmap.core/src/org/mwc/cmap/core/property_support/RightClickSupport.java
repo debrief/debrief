@@ -7,14 +7,20 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -23,6 +29,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 
@@ -42,11 +49,30 @@ import MWC.TacticalData.Fix;
 public class RightClickSupport
 {
 
+	/** fixed strings for the right click support extension
+	 * 
+	 */
+	private static final String EXTENSION_POINT_ID = "RightClickSupport";
+
+	private static final String EXTENSION_TAG = "helper";
+
+	private static final String EXTENSION_TAG_LABEL_ATTRIB = "class";
+
+	// Plug-in ID from <plugin> tag in plugin.xml
+	private static final String PLUGIN_ID = "org.mwc.cmap.core";
+
+	
+	
 	private static final String MULTIPLE_ITEMS_STR = "Multiple items";
 	/**
 	 * list of actions to be added to context-menu on right-click
 	 */
 	private static Vector<RightClickContextItemGenerator> _additionalRightClickItems = null;
+	
+	/** whether we've checked for any one that extends teh right click support via plugin xml
+	 * 
+	 */
+	private static boolean _rightClickExtensionsChecked = false;
 
 	/**
 	 * add a right-click generator item to the list we manage
@@ -192,6 +218,15 @@ public class RightClickSupport
 			manager.add(new Separator());
 		}
 
+		if(!_rightClickExtensionsChecked)
+		{
+			loadLoaderExtensions();
+			
+			// ok, done
+			_rightClickExtensionsChecked = true;
+		}
+		
+		
 		// hmm, do we have any right-click generators?
 		if (_additionalRightClickItems != null)
 		{
@@ -210,6 +245,35 @@ public class RightClickSupport
 					// and log the error
 					CorePlugin.logError(Status.ERROR,
 							"failed whilst creating context menu", e);
+				}
+			}
+		}
+	}
+
+	private static void loadLoaderExtensions()
+	{
+		IExtensionPoint point = Platform.getExtensionRegistry()
+				.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
+
+		IExtension[] extensions = point.getExtensions();
+		for (int i = 0; i < extensions.length; i++)
+		{
+			IExtension iExtension = extensions[i];
+			IConfigurationElement[] confE = iExtension.getConfigurationElements();
+			for (int j = 0; j < confE.length; j++)
+			{
+				IConfigurationElement iConfigurationElement = confE[j];
+				RightClickContextItemGenerator newInstance;
+				try
+				{
+					newInstance = (RightClickContextItemGenerator) iConfigurationElement
+							.createExecutableExtension("class");
+					addRightClickGenerator(newInstance);
+				}
+				catch (CoreException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
