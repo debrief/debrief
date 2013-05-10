@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
@@ -86,64 +87,64 @@ public class CreateSolutionFromSensorData implements
 			// see if there's an existing solution in there.
 			SATC_Solution[] existingSolutions = findExistingSolutionsIn(theLayers);
 
-			// take a safe copy of the cuts
-			final ArrayList<SensorContactWrapper> finalCuts = validCuts;
-
 			if ((existingSolutions != null) && (existingSolutions.length > 0))
 			{
 				for (int i = 0; i < existingSolutions.length; i++)
 				{
 					final SATC_Solution layer = existingSolutions[i];
 
-					final String title2 = "Add bearing measurement from " + title
-							+ " to existing solution:" + layer.getName();
-					// yes, create the action
-					Action addToExisting = new Action(title2)
-					{
-						public void run()
-						{
-							// ok, stick it on the buffer
-							runIt(new BearingMeasurementContributionFromCuts(layer, title2,
-									finalCuts, null));
-						}
-					};
+					// create a top level menu item
+					MenuManager thisD = new MenuManager("Add to " + layer.getName());
+					parent.add(thisD);
 
-					parent.add(addToExisting);
-
+					// add the child items
+					addItemsTo(layer, thisD, validCuts, title, null, "");
 				}
 			}
 
-			// yes, create the action
-			final String thisT = "Add bearing measurement from " + title
-					+ " to new solution";
-			// ok, go for it.
-			Action addToNew = new Action(thisT)
-			{
-				public void run()
-				{
-					runIt(new BearingMeasurementContributionFromCuts(null, thisT,
-							finalCuts, theLayers));
-				}
-			};
-			// ok - flash up the menu item
-			parent.add(addToNew);
+			// and the new solution
+			MenuManager thisD = new MenuManager("Create new solution");
+			parent.add(thisD);
 
-			// yes, create the action
-			final String thisT2 = "Add Speed Forecast from " + title
-					+ " to new solution";
-			// ok, go for it.
-			addToNew = new Action(thisT2)
-			{
-				public void run()
-				{
-					runIt(new SpeedForecastContributionFromCuts(null, thisT2, finalCuts,
-							theLayers));
-				}
-			};
-			// ok - flash up the menu item
-			parent.add(addToNew);
+			// add the child items
+			addItemsTo(null, thisD, validCuts, title, theLayers, "Using ");
 
 		}
+	}
+
+	protected void addItemsTo(final SATC_Solution solution,
+			final MenuManager parent,
+			final ArrayList<SensorContactWrapper> validItems, final String title,
+			Layers layers,
+			String verb1)
+	{
+
+		String actionTitle = "Add new contribution";
+
+		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
+				new BearingMeasurementContributionFromCuts(solution, actionTitle,
+						validItems, layers)));
+		parent.add(new DoIt(verb1 + "Speed Forecast from " + title,
+				new SpeedForecastContributionFromCuts(solution, actionTitle,
+						validItems, layers)));
+	}
+
+	protected static class DoIt extends Action
+	{
+		private final IUndoableOperation _myOperation;
+
+		DoIt(String title, IUndoableOperation operation)
+		{
+			super(title);
+			_myOperation = operation;
+		}
+
+		@Override
+		public void run()
+		{
+			CorePlugin.run(_myOperation);
+		}
+
 	}
 
 	/**
