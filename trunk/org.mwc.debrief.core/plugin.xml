@@ -90,7 +90,7 @@
 	</requires>
 	<extension-point id="DebriefPlotLoader" name="Plot Loader"
 		schema="schema/DebriefPlotLoader.exsd" />
- <extension-point id="XMLLayerHanler" name="XMLLayerHandler" schema="schema/XMLLayerHandler.exsd"/>
+ <extension-point id="XMLLayerHandler" name="XMLLayerHandler" schema="schema/XMLLayerHandler.exsd"/>
 	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
 		<loader class="org.mwc.debrief.core.loaders.ReplayLoader"
 			extensions="rep;dsf;dtf" name="ReplayLoader" />
