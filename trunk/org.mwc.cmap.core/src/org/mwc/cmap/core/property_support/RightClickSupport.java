@@ -7,7 +7,6 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -29,18 +28,17 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -49,27 +47,24 @@ import MWC.TacticalData.Fix;
 public class RightClickSupport
 {
 
-	/** fixed strings for the right click support extension
+	/**
+	 * fixed strings for the right click support extension
 	 * 
 	 */
 	private static final String EXTENSION_POINT_ID = "RightClickSupport";
 
-	private static final String EXTENSION_TAG = "helper";
-
-	private static final String EXTENSION_TAG_LABEL_ATTRIB = "class";
-
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.cmap.core";
 
-	
-	
 	private static final String MULTIPLE_ITEMS_STR = "Multiple items";
 	/**
 	 * list of actions to be added to context-menu on right-click
 	 */
 	private static Vector<RightClickContextItemGenerator> _additionalRightClickItems = null;
-	
-	/** whether we've checked for any one that extends teh right click support via plugin xml
+
+	/**
+	 * whether we've checked for any one that extends teh right click support via
+	 * plugin xml
 	 * 
 	 */
 	private static boolean _rightClickExtensionsChecked = false;
@@ -218,15 +213,14 @@ public class RightClickSupport
 			manager.add(new Separator());
 		}
 
-		if(!_rightClickExtensionsChecked)
+		if (!_rightClickExtensionsChecked)
 		{
 			loadLoaderExtensions();
-			
+
 			// ok, done
 			_rightClickExtensionsChecked = true;
 		}
-		
-		
+
 		// hmm, do we have any right-click generators?
 		if (_additionalRightClickItems != null)
 		{
@@ -250,10 +244,14 @@ public class RightClickSupport
 		}
 	}
 
+	/**
+	 * see if any extra right click handlers are defined
+	 * 
+	 */
 	private static void loadLoaderExtensions()
 	{
-		IExtensionPoint point = Platform.getExtensionRegistry()
-				.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
+				PLUGIN_ID, EXTENSION_POINT_ID);
 
 		IExtension[] extensions = point.getExtensions();
 		for (int i = 0; i < extensions.length; i++)
@@ -272,8 +270,8 @@ public class RightClickSupport
 				}
 				catch (CoreException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					CorePlugin.logError(Status.ERROR,
+							"Trouble whilst loading right-click handler extensions", e);
 				}
 			}
 		}
