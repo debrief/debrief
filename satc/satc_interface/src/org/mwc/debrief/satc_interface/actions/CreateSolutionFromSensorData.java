@@ -48,6 +48,9 @@ public class CreateSolutionFromSensorData implements
 	{
 		ArrayList<SensorContactWrapper> validCuts = null;
 
+		IMenuManager thisMenu = new MenuManager("SemiAuto TMA");
+		parent.add(thisMenu);
+
 		for (int i = 0; i < subjects.length; i++)
 		{
 			Editable thisItem = subjects[i];
@@ -82,7 +85,7 @@ public class CreateSolutionFromSensorData implements
 				title = "sensor cut";
 
 			// right,stick in a separator
-			parent.add(new Separator());
+			thisMenu.add(new Separator());
 
 			// see if there's an existing solution in there.
 			SATC_Solution[] existingSolutions = findExistingSolutionsIn(theLayers);
@@ -95,7 +98,7 @@ public class CreateSolutionFromSensorData implements
 
 					// create a top level menu item
 					MenuManager thisD = new MenuManager("Add to " + layer.getName());
-					parent.add(thisD);
+					thisMenu.add(thisD);
 
 					// add the child items
 					addItemsTo(layer, thisD, validCuts, title, null, "");
@@ -104,7 +107,7 @@ public class CreateSolutionFromSensorData implements
 
 			// and the new solution
 			MenuManager thisD = new MenuManager("Create new solution");
-			parent.add(thisD);
+			thisMenu.add(thisD);
 
 			// add the child items
 			addItemsTo(null, thisD, validCuts, title, theLayers, "Using ");
@@ -115,8 +118,7 @@ public class CreateSolutionFromSensorData implements
 	protected void addItemsTo(final SATC_Solution solution,
 			final MenuManager parent,
 			final ArrayList<SensorContactWrapper> validItems, final String title,
-			Layers layers,
-			String verb1)
+			Layers layers, String verb1)
 	{
 
 		String actionTitle = "Add new contribution";
@@ -299,26 +301,26 @@ public class CreateSolutionFromSensorData implements
 				String solutionName = getDefaultSolutionName();
 				_targetSolution = new SATC_Solution(solutionName);
 				_theLayers.addThisLayer(_targetSolution);
+			}
 
-				// grab a name
-				// create input box dialog
-				InputDialog inp = new InputDialog(
-						Display.getCurrent().getActiveShell(), "New contribution",
-						"What is the name of this contribution", "name here", null);
+			// grab a name
+			// create input box dialog
+			InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
+					"New contribution", "What is the name of this contribution",
+					"name here", null);
 
-				// did he cancel?
-				if (inp.open() == InputDialog.OK)
-				{
-					// get the results
-					String contName = inp.getValue();
+			// did he cancel?
+			if (inp.open() == InputDialog.OK)
+			{
+				// get the results
+				String contName = inp.getValue();
 
-					// ok = now get our specific contribution
-					BaseContribution bmc = createContribution(contName);
+				// ok = now get our specific contribution
+				BaseContribution bmc = createContribution(contName);
 
-					// and store it - if it worked
-					if (bmc != null)
-						_targetSolution.addContribution(bmc);
-				}
+				// and store it - if it worked
+				if (bmc != null)
+					_targetSolution.addContribution(bmc);
 			}
 
 			return Status.OK_STATUS;

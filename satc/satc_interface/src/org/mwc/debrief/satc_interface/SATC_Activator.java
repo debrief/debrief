@@ -31,7 +31,7 @@ public class SATC_Activator extends AbstractUIPlugin {
 		super.start(context);
 		
 		// register ourselves as a right-click helper
-		RightClickSupport.addRightClickGenerator(new CreateSolutionFromSensorData());
+	//	RightClickSupport.addRightClickGenerator(new CreateSolutionFromSensorData());
 
 		
 		plugin = this;
