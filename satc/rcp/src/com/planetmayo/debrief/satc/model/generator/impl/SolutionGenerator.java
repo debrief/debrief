@@ -8,7 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -26,7 +28,6 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
-import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class SolutionGenerator implements ISolutionGenerator
 {
@@ -63,8 +64,8 @@ public class SolutionGenerator implements ISolutionGenerator
 		this.jobsManager = jobsManager;
 		this.contributions = contributions;
 		this.problemSpaceView = problemSpace;
-		_readyListeners = SupportServices.INSTANCE.getUtilsService()
-				.newConcurrentSet();
+		_readyListeners = Collections.newSetFromMap(
+				new ConcurrentHashMap<IGenerateSolutionsListener, Boolean>()); 
 	}
 	
 	private synchronized void startRecalculateTopLegsJobs() 
@@ -520,7 +521,7 @@ public class SolutionGenerator implements ISolutionGenerator
 
 			// ok, we've got the leg - now add the state
 			if (currentLeg == null)
-				SupportServices.INSTANCE.getLog().error(
+				LogFactory.getLog().error(
 						"Logic problem, currentLeg should not be null");
 			else
 				currentLeg.add(thisS);
@@ -561,7 +562,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			} 
 			catch (InterruptedException ex) 
 			{
-				SupportServices.INSTANCE.getLog().error("Thread was interrupted", ex);
+				LogFactory.getLog().error("Thread was interrupted", ex);
 			}
 		}
 		if (_theLegs != null)

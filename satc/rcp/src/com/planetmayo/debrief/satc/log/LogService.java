@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc.support;
+package com.planetmayo.debrief.satc.log;
 
 public interface LogService
 {

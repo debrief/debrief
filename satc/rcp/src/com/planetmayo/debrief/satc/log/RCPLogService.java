@@ -1,13 +1,12 @@
-package com.planetmayo.debrief.satc_rcp.services;
+package com.planetmayo.debrief.satc.log;
 
 import org.eclipse.core.runtime.IStatus;
 
-import com.planetmayo.debrief.satc.support.LogService;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class RCPLogService implements LogService
 {
-
+	
 	@Override
 	public void error(String message)
 	{

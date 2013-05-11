@@ -23,7 +23,6 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
@@ -264,12 +263,10 @@ public class StraightLegTests extends ModelTestBase
 	{
 		Point startP = GeoSupport.getFactory().createPoint(
 				new Coordinate(-30.003, 0));
-		Date startT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
-				"100112 121329");
+		Date startT = parseDate("yyMMdd HHmmss", "100112 121329");
 		Point endP = GeoSupport.getFactory().createPoint(
 				new Coordinate(-30.03, 0.025));
-		Date endT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
-				"100112 122429");
+		Date endT = parseDate("yyMMdd HHmmss", "100112 122429");
 		@SuppressWarnings("unused")
 		StraightRoute thisR = new StraightRoute("sr1", startP, startT, endP, endT);
 

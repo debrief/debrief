@@ -1,8 +1,11 @@
 package com.planetmayo.debrief.satc.model.generator.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
@@ -12,7 +15,6 @@ import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.support.SupportServices;
 
 /**
  * the top level manager object that handles the generation of bounded
@@ -60,8 +62,7 @@ public class BoundsManager implements IBoundsManager
 
 	public BoundsManager(IContributions contributions, ProblemSpace space)
 	{
-		_steppingListeners = SupportServices.INSTANCE.getUtilsService()
-				.newConcurrentSet();
+		_steppingListeners = Collections.newSetFromMap(new ConcurrentHashMap<IConstrainSpaceListener, Boolean>());
 		this._contributions = contributions;
 		this._space = space;
 	}
@@ -180,13 +181,13 @@ public class BoundsManager implements IBoundsManager
 		}
 		catch (IncompatibleStateException e)
 		{
-			SupportServices.INSTANCE.getLog().error(
+			LogFactory.getLog().error(
 					"Failed applying bounds:" + theContrib.getName());
 			fireError(e);
 		}
 		catch (Exception re)
 		{
-			SupportServices.INSTANCE.getLog().error(
+			LogFactory.getLog().error(
 					"unknown error:" + theContrib.getName(), re);
 			throw new RuntimeException(re);
 		}

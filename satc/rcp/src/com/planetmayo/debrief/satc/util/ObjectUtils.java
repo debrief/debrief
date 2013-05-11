@@ -1,5 +1,9 @@
 package com.planetmayo.debrief.satc.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+
 public class ObjectUtils
 {
 	
@@ -19,5 +23,17 @@ public class ObjectUtils
 			return false;
 		}
 		return obj1.equals(obj2);
-	}	
+	}
+	
+	public static Date safeParseDate(DateFormat dateFormat, String date) 
+	{
+		try 
+		{
+			return dateFormat.parse(date);
+		}
+		catch (ParseException ex)
+		{
+			return null;
+		}
+	}
 }

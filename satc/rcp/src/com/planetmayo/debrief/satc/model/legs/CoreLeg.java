@@ -3,10 +3,10 @@ package com.planetmayo.debrief.satc.model.legs;
 import java.util.ArrayList;
 import java.util.SortedSet;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MakeGrid;
 import com.vividsolutions.jts.geom.Point;
@@ -234,7 +234,7 @@ public abstract class CoreLeg
 				if(ctr > maxPerms)
 				{
 					System.err.println("Dropped out!");
-					SupportServices.INSTANCE.getLog().warn("Terminating permutation generation for " + this.getName() + " at " + maxPerms + " perms");
+					LogFactory.getLog().warn("Terminating permutation generation for " + this.getName() + " at " + maxPerms + " perms");
 					break permLoop;
 				}
 			}

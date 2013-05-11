@@ -6,27 +6,30 @@ import java.beans.PropertyChangeSupport;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.ContributionChangedAdapter;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class Contributions implements IContributions
 {	
 	private final Set<IContributionsChangedListener> contributionListeners;
 
-	private final SortedSet<BaseContribution> contributions;
+	private final NavigableSet<BaseContribution> contributions;
 	
 	private final PropertyChangeSupport support;
 	
 	public Contributions()
 	{
-		contributions = SupportServices.INSTANCE.getUtilsService().newConcurrentSortedSet();
-		contributionListeners = SupportServices.INSTANCE.getUtilsService().newConcurrentSet();
+		contributions = new ConcurrentSkipListSet<BaseContribution>();
+		contributionListeners = Collections.newSetFromMap(new ConcurrentHashMap<IContributionsChangedListener, Boolean>());;
 		support = new PropertyChangeSupport(this);
 	}
 
@@ -61,7 +64,7 @@ public class Contributions implements IContributions
 	{
 		if (!contributions.contains(contribution))
 		{
-			SupportServices.INSTANCE.getLog().error(
+			LogFactory.getLog().error(
 					"We're trying to delete " + contribution
 							+ " but its not one of ours!");
 			return;
@@ -180,8 +183,11 @@ public class Contributions implements IContributions
 	@Override
 	public BaseContribution nextContribution(BaseContribution current) 
 	{
-		return SupportServices.INSTANCE.getUtilsService()
-					.higherElement(contributions, current);
+		if (current == null) 
+		{
+			return contributions.first();
+		}
+		return contributions.higher(current);
 	}
 
 	protected void fireContributionAdded(BaseContribution contribution)

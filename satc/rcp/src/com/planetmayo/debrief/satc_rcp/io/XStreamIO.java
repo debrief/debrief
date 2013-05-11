@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -28,7 +29,6 @@ import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContrib
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.thoughtworks.xstream.XStream;
 
 public class XStreamIO
@@ -124,7 +124,7 @@ public class XStreamIO
 			}
 			catch (IOException ex) 
 			{
-				SupportServices.INSTANCE.getLog().error("Can't save file", ex);
+				LogFactory.getLog().error("Can't save file", ex);
 			}
 			finally 
 			{
@@ -150,7 +150,7 @@ public class XStreamIO
 					description = (TaskDescription) object;
 					if (description.getVersion() != CURRENT_VERSION) 
 					{
-						SupportServices.INSTANCE.getLog().warn("Version of " + fileName + 
+						LogFactory.getLog().warn("Version of " + fileName + 
 								" is " + description.getVersion() + ", but current version is " + CURRENT_VERSION);
 					} 
 					loaded = true;
@@ -164,7 +164,7 @@ public class XStreamIO
 			catch (IOException ex)
 			{
 				description = null;
-				SupportServices.INSTANCE.getLog().error("Can't load task from xml", ex);
+				LogFactory.getLog().error("Can't load task from xml", ex);
 			}
 			finally 
 			{

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.SortedMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
 public class ProblemSpace
@@ -28,7 +28,7 @@ public class ProblemSpace
 
 	public ProblemSpace()
 	{
-		_boundedStates = SupportServices.INSTANCE.getUtilsService().newConcurrentSortedMap();
+		_boundedStates = new ConcurrentSkipListMap<Date, BoundedState>();
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.support;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
@@ -81,8 +83,8 @@ public class TestSupport
 			String speed = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", date
-					+ " " + time);
+			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"), 
+					date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -450,9 +452,9 @@ public class TestSupport
 		}
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		speed.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121331"));
-		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		speed.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 122025"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(12d));
 		speed.setMaxSpeed(GeoSupport.kts2MSec(25d));
@@ -461,9 +463,9 @@ public class TestSupport
 
 		// try a location forecast
 		LocationForecastContribution locF = new LocationForecastContribution();
-		locF.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		locF.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121300"));
-		locF.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		locF.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121700"));
 		locF.setLocation(new GeoPoint(0.03, -30.0));
 		locF.setLimit(3000d);
@@ -473,9 +475,9 @@ public class TestSupport
 
 		// hey, how about a time-bounded course constraint?
 		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		course.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121231"));
-		course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		course.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 122525"));
 		course.setMinCourse(Math.toRadians(225));
 		course.setMaxCourse(Math.toRadians(315));
@@ -484,9 +486,9 @@ public class TestSupport
 
 		// hey, how about a time-bounded course constraint?
 		SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		speed2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		speed2.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 122500"));
-		speed2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		speed2.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 123100"));
 		speed2.setMinSpeed(GeoSupport.kts2MSec(8d));
 		speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
@@ -495,9 +497,9 @@ public class TestSupport
 
 		// that's nothing - we can now do straight leg forecasts
 		StraightLegForecastContribution st = new StraightLegForecastContribution();
-		st.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 122100"));
-		st.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 122800"));
 		st.setName("Straight prediction");
 		contributions.addContribution(st);
@@ -549,33 +551,33 @@ public class TestSupport
 
 		// sort out the legs
 		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
-		st1.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st1.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121329"));
-		st1.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st1.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 123029"));
 		st1.setName("Straight leg one");
 		contributions.addContribution(st1);
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
-		st2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st2.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 123329"));
-		st2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st2.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 124829"));
 		st2.setName("Straight leg two");
 		contributions.addContribution(st2);
 
 		StraightLegForecastContribution st3 = new StraightLegForecastContribution();
-		st3.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st3.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 125100"));
-		st3.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		st3.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 130429"));
 		st3.setName("Straight leg three");
 		contributions.addContribution(st3);
 
 		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		course.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121329"));
-		course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		course.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 130429"));
 		course.setMinCourse(Math.toRadians(190));
 		course.setMaxCourse(Math.toRadians(315));
@@ -584,9 +586,9 @@ public class TestSupport
 		contributions.addContribution(course);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		speed.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121329"));
-		speed.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		speed.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 130429"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
 		speed.setMaxSpeed(GeoSupport.kts2MSec(14d));

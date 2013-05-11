@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.part.ViewPart;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
@@ -51,7 +52,6 @@ import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
@@ -136,7 +136,7 @@ public class MaintainContributionsView extends ViewPart implements
 		BaseContributionView<?> panel = null;
 		if (!CONTRIBUTION_PANELS.containsKey(contribution.getClass()))
 		{
-			SupportServices.INSTANCE.getLog().error(
+			LogFactory.getLog().error(
 					"Failed to generate panel for " + contribution);
 			return;
 		}
@@ -157,7 +157,7 @@ public class MaintainContributionsView extends ViewPart implements
 		}
 		catch (Exception ex)
 		{
-			SupportServices.INSTANCE.getLog().error(
+			LogFactory.getLog().error(
 					"Failed to generate panel for " + contribution);
 		}
 	}

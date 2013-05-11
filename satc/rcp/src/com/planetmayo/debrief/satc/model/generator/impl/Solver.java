@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -18,7 +19,6 @@ import com.planetmayo.debrief.satc.model.generator.SteppingAdapter;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
-import com.planetmayo.debrief.satc.support.SupportServices;
 
 public class Solver implements ISolver
 {
@@ -237,7 +237,7 @@ public class Solver implements ISolver
 				} 
 				catch (Exception ex) 
 				{
-					SupportServices.INSTANCE.getLog().error(
+					LogFactory.getLog().error(
 							"Exception: " + ex.getMessage(), ex);				
 				}
 			}

@@ -25,11 +25,7 @@ import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc_rcp.jobs.RCPJobsManager;
-import com.planetmayo.debrief.satc_rcp.services.RCPUtilsService;
-import com.planetmayo.debrief.satc_rcp.services.RCPIOService;
-import com.planetmayo.debrief.satc_rcp.services.RCPLogService;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -97,8 +93,6 @@ public class SATC_Activator extends AbstractUIPlugin
 	@Override
 	public void start(BundleContext context) throws Exception
 	{
-		SupportServices.INSTANCE.initialize(new RCPLogService(),
-				new RCPUtilsService(), new RCPIOService());
 		super.start(context);
 		this.context = context;
 		plugin = this;

@@ -7,10 +7,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
 import com.planetmayo.debrief.satc.model.generator.jobs.ProgressMonitor;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class RCPJobsManager implements IJobsManager
@@ -105,7 +105,7 @@ public class RCPJobsManager implements IJobsManager
 					}					
 					if (previous != null && !previous.isComplete()) 
 					{
-						SupportServices.INSTANCE.getLog().error("Previous job: " + previous.getName() + " wasn't scheduled");
+						LogFactory.getLog().error("Previous job: " + previous.getName() + " wasn't scheduled");
 						monitor.setCanceled(true);
 					}
 					job.startJob(wrap(monitor), previous);

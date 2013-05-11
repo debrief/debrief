@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -14,9 +15,9 @@ import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
-import com.planetmayo.debrief.satc.support.SupportServices;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -74,20 +75,20 @@ public class BearingMeasurementContributionTest extends ModelTestBase
 
 		// ok, create a well-performing route to use
 		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(-30.005, 0.010));
-		Date startT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		Date startT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121300");
 		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(-30.075, 0.010));
-		Date endT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		Date endT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 122836");
 		StraightRoute goodRoute = new StraightRoute("rName", startP, startT, endP,
 				endT);
 
 		// and a performing route to use
 		startP = GeoSupport.getFactory().createPoint(new Coordinate(-30.003, -0.05));
-		startT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
+		startT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
 				"100112 121300");
 		endP = GeoSupport.getFactory().createPoint(new Coordinate(-30.075, 0.010));
-		endT = SupportServices.INSTANCE.parseDate("yyMMdd HHmmss", "100112 122836");
+		endT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"), "100112 122836");
 		StraightRoute badRoute = new StraightRoute("rName", startP, startT, endP,
 				endT);
 
@@ -95,34 +96,24 @@ public class BearingMeasurementContributionTest extends ModelTestBase
 		ArrayList<BoundedState> states = new ArrayList<BoundedState>();
 
 		// inject some early states for which there isn't a measurement
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 121300")));
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 121301")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 121300")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 121301")));
 
 		// now for our real states
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 121459")));
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 121629")));
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 121814")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 121459")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 121629")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 121814")));
 
 		// inject a state for which there isn't a measurement
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 122300")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 122300")));
 
 		// and carry on
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 122329")));
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 122829")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 122329")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 122829")));
 
 		// inject some late states for which there isn't a measurement
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 122832")));
-		states.add(new BoundedState(SupportServices.INSTANCE.parseDate(
-				"yyMMdd HHmmss", "100112 122836")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 122832")));
+		states.add(new BoundedState(parseDate("yyMMdd HHmmss", "100112 122836")));
 
 		// test when we shouldn't run
 		bmc.setActive(false);
