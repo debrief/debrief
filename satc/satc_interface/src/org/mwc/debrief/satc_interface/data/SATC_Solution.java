@@ -11,8 +11,6 @@ public class SATC_Solution extends BaseLayer
 
 	private ArrayList<BaseContribution> _myContributions = new ArrayList<BaseContribution>();
 	
-	
-	
 	public SATC_Solution(String solName)
 	{
 		super.setName(solName);
