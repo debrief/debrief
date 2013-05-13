@@ -22,6 +22,7 @@ import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
+import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
@@ -37,6 +38,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
 	private static final String EXTENSION_POINT_ID = "XMLLayerHandler";
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
+	private static ArrayList<LayerHandlerExtension> _extensionLoaders;
 
 	public SessionHandler(Layers _theLayers, final IControllableViewport view,
 			PlotEditor plot)
@@ -107,35 +109,39 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 	 * see if any extra right click handlers are defined
 	 * 
 	 */
-	private ArrayList<LayerHandlerExtension> loadLoaderExtensions(Layers theLayers)
+	private static ArrayList<LayerHandlerExtension> loadLoaderExtensions(Layers theLayers)
 	{
-		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
-				PLUGIN_ID, EXTENSION_POINT_ID);
-		ArrayList<LayerHandlerExtension> res = new ArrayList<LayerHandlerExtension>();
-
-		IExtension[] extensions = point.getExtensions();
-		for (int i = 0; i < extensions.length; i++)
+		if (_extensionLoaders == null)
 		{
-			IExtension iExtension = extensions[i];
-			IConfigurationElement[] confE = iExtension.getConfigurationElements();
-			for (int j = 0; j < confE.length; j++)
+			_extensionLoaders = new ArrayList<LayerHandlerExtension>();
+
+			IExtensionPoint point = Platform.getExtensionRegistry()
+					.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
+
+			IExtension[] extensions = point.getExtensions();
+			for (int i = 0; i < extensions.length; i++)
 			{
-				IConfigurationElement iConfigurationElement = confE[j];
-				LayerHandlerExtension newInstance;
-				try
+				IExtension iExtension = extensions[i];
+				IConfigurationElement[] confE = iExtension.getConfigurationElements();
+				for (int j = 0; j < confE.length; j++)
 				{
-					newInstance = (LayerHandlerExtension) iConfigurationElement
-							.createExecutableExtension("class");
-					res.add(newInstance);
-				}
-				catch (CoreException e)
-				{
-					CorePlugin.logError(Status.ERROR,
-							"Trouble whilst loading right-click handler extensions", e);
+					IConfigurationElement iConfigurationElement = confE[j];
+					LayerHandlerExtension newInstance;
+					try
+					{
+						newInstance = (LayerHandlerExtension) iConfigurationElement
+								.createExecutableExtension("class");
+						_extensionLoaders.add(newInstance);
+					}
+					catch (CoreException e)
+					{
+						CorePlugin.logError(Status.ERROR,
+								"Trouble whilst loading right-click handler extensions", e);
+					}
 				}
 			}
 		}
-		return res;
+		return _extensionLoaders;
 	}
 
 	public final void elementClosed()
@@ -159,7 +165,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 		org.w3c.dom.Element eSession = doc.createElement("session");
 
 		// now the Layers
-		DebriefLayersHandler.exportThis(theLayers, eSession, doc);
+		DebriefLayersHandler.exportThis(theLayers, eSession, doc, loadLoaderExtensions(theLayers));
 
 		// now the projection
 		final PlainProjection proj;
