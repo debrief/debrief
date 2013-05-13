@@ -45,4 +45,5 @@ Export-Package: com.planetmayo.debrief.satc.log,
  com.planetmayo.debrief.satc_rcp.ui.converters,
  com.planetmayo.debrief.satc_rcp.ui.converters.units,
  com.planetmayo.debrief.satc_rcp.ui.widgets,
- com.planetmayo.debrief.satc_rcp.views
+ com.planetmayo.debrief.satc_rcp.views,
+ com.vividsolutions.jts.geom
