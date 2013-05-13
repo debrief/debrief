@@ -81,7 +81,7 @@ public class MWCXMLReader extends DefaultHandler {
 	public final void reportNotHandledErrors(final boolean val) {
 		this._reportNotHandled = val;
 	}
-
+	
 	/**
 	 * the actual data for this type of object
 	 */
@@ -157,7 +157,7 @@ public class MWCXMLReader extends DefaultHandler {
 	 * process this stream of characters
 	 */
 	@Override
-	public final void characters(final char[] ch, final int start,
+	public  void characters(final char[] ch, final int start,
 			final int length) throws SAXException {
 		// accumulate the contents into a buffer.
 		contents.write(ch, start, length);
