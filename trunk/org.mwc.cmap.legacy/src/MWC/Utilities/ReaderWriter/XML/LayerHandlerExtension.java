@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.loaders.xml_handlers;
+package MWC.Utilities.ReaderWriter.XML;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
