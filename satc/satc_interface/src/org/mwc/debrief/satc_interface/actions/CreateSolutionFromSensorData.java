@@ -203,7 +203,8 @@ public class CreateSolutionFromSensorData implements
 			// ok, now collate the contriubtion
 			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 			bmc.setName(contName);
-
+			bmc.setBearingError(3.0);
+			
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
 			while (iter.hasNext())
@@ -221,7 +222,7 @@ public class CreateSolutionFromSensorData implements
 				Date date = scw.getDTG().getDate();
 				Double theRange = null;
 				if (scw.getRange() != null)
-					theRange = scw.getRange().getValueIn(WorldDistance.METRES);
+					theRange = scw.getRange().getValueIn(WorldDistance.DEGS);
 
 				BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
 				bmc.addThis(thisM);

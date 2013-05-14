@@ -1,9 +1,9 @@
 package com.planetmayo.debrief.satc_rcp.io;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
@@ -16,27 +16,27 @@ import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution.FMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.thoughtworks.xstream.XStream;
 
 public class XStreamIO
 {
-	public static final int CURRENT_VERSION = 1; 
-	
+	public static final int CURRENT_VERSION = 1;
+
 	private static final XStream xstream;
-	static 
+	static
 	{
 		xstream = new XStream();
 		xstream.processAnnotations(TaskDescription.class);
@@ -52,11 +52,11 @@ public class XStreamIO
 		aliasFor(xstream, SpeedAnalysisContribution.class);
 		aliasFor(xstream, SpeedForecastContribution.class);
 		aliasFor(xstream, StraightLegForecastContribution.class);
-		
+
 		xstream.alias("bmeasurement", BMeasurement.class);
 		xstream.alias("rorigin", ROrigin.class);
 		xstream.alias("fmeasurement", FMeasurement.class);
-		
+
 		xstream.useAttributeFor(BMeasurement.class, "origin");
 		xstream.useAttributeFor(BMeasurement.class, "bearingAngle");
 		xstream.useAttributeFor(BMeasurement.class, "time");
@@ -72,29 +72,31 @@ public class XStreamIO
 
 		xstream.useAttributeFor(GeoPoint.class, "lat");
 		xstream.useAttributeFor(GeoPoint.class, "lon");
-	}	
-	
-	private static void aliasFor(XStream xstream, Class<?> klass) 
+	}
+
+	private static void aliasFor(XStream xstream, Class<?> klass)
 	{
 		String simpleName = klass.getSimpleName();
-		xstream.alias(Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1), klass);
+		xstream.alias(
+				Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1),
+				klass);
 	}
-	
-	public static XStreamWriter newWriter() 
+
+	public static XStreamWriter newWriter()
 	{
 		return new XStreamWriter();
 	}
-	
-	public static XStreamReader newReader(String fileName) 
+
+	public static XStreamReader newReader(InputStream inputStream, String filename)
 	{
-		return new XStreamReader(fileName);
-	}	
-	
-	public static class XStreamWriter implements ISolver.Writer 
+		return new XStreamReader(inputStream, filename);
+	}
+
+	public static class XStreamWriter implements ISolver.Writer
 	{
 
-		private final TaskDescription description = new TaskDescription(); 
-		
+		private final TaskDescription description = new TaskDescription();
+
 		@Override
 		public void writeContributions(List<BaseContribution> contributions)
 		{
@@ -112,66 +114,65 @@ public class XStreamIO
 		{
 			description.setPrecision(precision);
 		}
-		
-		public void process(String fileName)
+
+		public void process(OutputStream outputStream)
 		{
 			description.setVersion(CURRENT_VERSION);
-			FileOutputStream outputStream = null;
 			try
 			{
-				outputStream = new FileOutputStream(fileName);				
-				xstream.toXML(description, new OutputStreamWriter(outputStream, "utf-8"));
+				xstream.toXML(description,
+						new OutputStreamWriter(outputStream, "utf-8"));
 			}
-			catch (IOException ex) 
+			catch (IOException ex)
 			{
 				LogFactory.getLog().error("Can't save file", ex);
 			}
-			finally 
+			finally
 			{
 				IOUtils.closeQuietly(outputStream);
 			}
 		}
 	}
-	
-	public static class XStreamReader implements ISolver.Reader 
+
+	public static class XStreamReader implements ISolver.Reader
 	{
 		private TaskDescription description;
 		private boolean loaded;
 
-		public XStreamReader(String fileName) 
+		public XStreamReader(InputStream inputStream, String fileName)
 		{
-			FileInputStream inputStream = null;
-			try 
+			try
 			{
-				inputStream = new FileInputStream(fileName);
-				Object object = xstream.fromXML(new InputStreamReader(inputStream, "utf-8"));
-				if (object instanceof TaskDescription) 
+				Object object = xstream.fromXML(new InputStreamReader(inputStream,
+						"utf-8"));
+				if (object instanceof TaskDescription)
 				{
 					description = (TaskDescription) object;
-					if (description.getVersion() != CURRENT_VERSION) 
+					if (description.getVersion() != CURRENT_VERSION)
 					{
-						LogFactory.getLog().warn("Version of " + fileName + 
-								" is " + description.getVersion() + ", but current version is " + CURRENT_VERSION);
-					} 
+						LogFactory.getLog().warn(
+								"Version of " + fileName + " is " + description.getVersion()
+										+ ", but current version is " + CURRENT_VERSION);
+					}
 					loaded = true;
 				}
-				else 
-				{					
+				else
+				{
 					throw new IOException();
 				}
-				
+
 			}
 			catch (IOException ex)
 			{
 				description = null;
 				LogFactory.getLog().error("Can't load task from xml", ex);
 			}
-			finally 
+			finally
 			{
 				IOUtils.closeQuietly(inputStream);
 			}
 		}
-		
+
 		public boolean isLoaded()
 		{
 			return loaded;
@@ -194,7 +195,7 @@ public class XStreamIO
 		{
 			return description.getPrecision();
 		}
-		
+
 	}
-	
+
 }

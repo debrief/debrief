@@ -1,5 +1,10 @@
 package com.planetmayo.debrief.satc_rcp.views;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -16,6 +21,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -243,7 +249,14 @@ public class TestHarnessView extends ViewPart
 
   	XStreamWriter writer = XStreamIO.newWriter();
 	  solver.save(writer);
-		writer.process(filename);
+		try
+		{
+			writer.process(new FileOutputStream(filename));
+		}
+		catch (FileNotFoundException e)
+		{
+			LogFactory.getLog().error("Can't find output file", e);
+		}
 	}
 
 	private void enableControls(boolean enabled)
@@ -426,12 +439,22 @@ public class TestHarnessView extends ViewPart
 
 		if (fileSelected != null)
 		{
-			XStreamReader reader = XStreamIO.newReader(fileSelected);
-			if (reader.isLoaded()) 
+			InputStream inputStream;
+			try
 			{
-				solver.load(reader);
-				solver.run();
+				inputStream = new FileInputStream(fileSelected);
+				XStreamReader reader = XStreamIO.newReader(inputStream, fileSelected);
+				if (reader.isLoaded()) 
+				{
+					solver.load(reader);
+					solver.run();
+				}
 			}
+			catch (FileNotFoundException e)
+			{
+				LogFactory.getLog().error("Can't read input file:" + fileSelected, e);
+			}
+
 		}
 	}
 }
