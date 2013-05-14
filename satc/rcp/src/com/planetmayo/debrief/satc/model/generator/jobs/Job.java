@@ -1,5 +1,7 @@
 package com.planetmayo.debrief.satc.model.generator.jobs;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 public abstract class Job<T, P>
 {	
 	private final String name;
@@ -66,7 +68,7 @@ public abstract class Job<T, P>
 	 * 
 	 * @throws InterruptedException when job is canceled
 	 */
-	public final <E> void startJob(ProgressMonitor monitor, Job<P, E> previous) throws InterruptedException
+	public final <E> void startJob(IProgressMonitor monitor, Job<P, E> previous) throws InterruptedException
 	{
 		try 
 		{
@@ -111,7 +113,7 @@ public abstract class Job<T, P>
 	 * 
 	 * @throws InterruptedException when job is canceled
 	 */
-	protected abstract <E> T run(ProgressMonitor monitor, Job<P, E> previous) throws InterruptedException;
+	protected abstract <E> T run(IProgressMonitor monitor, Job<P, E> previous) throws InterruptedException;
 	
 	/**
 	 * this method executes when jobManager processed the job (job goes to complete state)

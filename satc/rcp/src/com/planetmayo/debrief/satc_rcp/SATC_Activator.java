@@ -19,13 +19,13 @@ import com.planetmayo.debrief.satc.model.generator.impl.BoundsManager;
 import com.planetmayo.debrief.satc.model.generator.impl.Contributions;
 import com.planetmayo.debrief.satc.model.generator.impl.SolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.Solver;
+import com.planetmayo.debrief.satc.model.generator.jobs.RCPJobsManager;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.manager.impl.ContributionsManagerImpl;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
-import com.planetmayo.debrief.satc_rcp.jobs.RCPJobsManager;
 
 /**
  * The activator class controls the plug-in life cycle

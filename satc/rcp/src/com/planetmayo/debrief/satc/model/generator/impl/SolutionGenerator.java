@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
@@ -19,7 +21,6 @@ import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationException;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
-import com.planetmayo.debrief.satc.model.generator.jobs.ProgressMonitor;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
@@ -73,7 +74,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		mainGenerationJob = jobsManager.schedule(new SolutionGeneratorJob<Void, Void>("Recalculate Top Legs") {
 
 			@Override
-			protected <E> Void doRun(ProgressMonitor monitor,
+			protected <E> Void doRun(IProgressMonitor monitor,
 					Job<Void, E> previous) throws InterruptedException
 			{
 				recalculateTopLegs(monitor);
@@ -149,7 +150,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 
 			@Override
-			public <E> Void doRun(ProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
+			public <E> Void doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
 				_theLegs = getTheLegs(problemSpaceView.states(), monitor);
 				return null;
@@ -161,7 +162,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 
 			@Override
-			public <E> Void doRun(ProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
+			public <E> Void doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
 				generateRoutes(_theLegs, monitor);
 				return null;
@@ -172,7 +173,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 
 			@Override
-			public <E> Void doRun(ProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
+			public <E> Void doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
 				decideAchievable(_theLegs, monitor);
 				return null;
@@ -183,7 +184,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 
 			@Override
-			public <E> int[][] doRun(ProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
+			public <E> int[][] doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
 				return calculateAchievableRoutesFor(_theLegs, monitor);
 			}			
@@ -193,7 +194,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 
 			@Override
-			public <E> Void doRun(ProgressMonitor monitor, Job<int[][], E> previous) throws InterruptedException
+			public <E> Void doRun(IProgressMonitor monitor, Job<int[][], E> previous) throws InterruptedException
 			{
 				cancelUnachievable(_theLegs, previous.getResult(), monitor);
 				return null;
@@ -204,7 +205,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{
 
 			@Override
-			public <E> Void doRun(ProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
+			public <E> Void doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
 				recalculateTopLegs(monitor);
 				System.out.println(" - generator complete at:" + new Date());
@@ -228,7 +229,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * may get called when an estimate has changed - so the algorithm doesn't need
 	 * to re-do all the leg definition bits
 	 */
-	void recalculateTopLegs(ProgressMonitor monitor) throws InterruptedException
+	void recalculateTopLegs(IProgressMonitor monitor) throws InterruptedException
 	{
 		// just check we have data
 		if (_theLegs == null)
@@ -263,7 +264,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * @param theLegs
 	 */
 	public void calculateRouteScores(final Collection<BaseContribution> contribs,
-			ArrayList<CoreLeg> theLegs, ProgressMonitor monitor) throws InterruptedException
+			ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
 		operateOn(theLegs, monitor, new LegOperation()
 		{
@@ -278,7 +279,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		});
 	}
 
-	public void generateRoutes(ArrayList<CoreLeg> theLegs, ProgressMonitor monitor) throws InterruptedException
+	public void generateRoutes(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
 		operateOn(theLegs, monitor, new LegOperation()
 		{
@@ -294,7 +295,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * 
 	 * @param theLegs
 	 */
-	public void decideAchievable(ArrayList<CoreLeg> theLegs, ProgressMonitor monitor) throws InterruptedException
+	public void decideAchievable(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
 		operateOn(theLegs, monitor, new LegOperation()
 		{
@@ -313,14 +314,14 @@ public class SolutionGenerator implements ISolutionGenerator
 	 *          the set of legs we're looking at
 	 * @return a set of routes through the data
 	 */
-	CompositeRoute[] generateCandidates(ArrayList<CoreLeg> theLegs, ProgressMonitor monitor) throws InterruptedException
+	CompositeRoute[] generateCandidates(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
 		CompositeRoute res = new CompositeRoute();
 
 		// PHASE 1 = just do it for straight legs
 		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
-			monitor.checkCanceled();
+			if (monitor.isCanceled()) throw new InterruptedException();
 			CoreLeg coreLeg = iterator.next();
 
 			// get the top solutions
@@ -340,7 +341,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		{ res };
 	}
 
-	void cancelUnachievable(ArrayList<CoreLeg> theLegs, int[][] routes, ProgressMonitor monitor) throws InterruptedException
+	void cancelUnachievable(ArrayList<CoreLeg> theLegs, int[][] routes, IProgressMonitor monitor) throws InterruptedException
 	{
 
 		// check we've got some legs
@@ -357,7 +358,7 @@ public class SolutionGenerator implements ISolutionGenerator
 				boolean possible = false;
 				for (int y = 0; y < routes[0].length; y++)
 				{
-					monitor.checkCanceled();
+					if (monitor.isCanceled()) throw new InterruptedException();
 					if (routes[x][y] > 0)
 					{
 						// this one is possible, drop out
@@ -371,7 +372,7 @@ public class SolutionGenerator implements ISolutionGenerator
 					CoreRoute[] thisSet = firstRoutes[x];
 					for (int i = 0; i < thisSet.length; i++)
 					{
-						monitor.checkCanceled();
+						if (monitor.isCanceled()) throw new InterruptedException();
 						CoreRoute thisRoute = thisSet[i];
 						if (thisRoute != null)
 							thisRoute.setImpossible();
@@ -381,13 +382,13 @@ public class SolutionGenerator implements ISolutionGenerator
 		}
 	}
 
-	int[][] calculateAchievableRoutesFor(ArrayList<CoreLeg> theLegs, ProgressMonitor monitor) throws InterruptedException
+	int[][] calculateAchievableRoutesFor(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
 		// ok, loop through the legs, doing the multiplication
 		int[][] res = null;
 		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
-			monitor.checkCanceled();
+			if (monitor.isCanceled()) throw new InterruptedException();
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
 			int[][] mat = thisLeg.asMatrix();
 
@@ -409,13 +410,13 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * @param theLegs
 	 * @param theStepper
 	 */
-	private static void operateOn(ArrayList<CoreLeg> theLegs, ProgressMonitor monitor,
+	private static void operateOn(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor,
 			LegOperation theStepper) throws InterruptedException
 	{
 		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
 			CoreLeg thisLeg = (CoreLeg) iterator.next();
-			monitor.checkCanceled();
+			if (monitor.isCanceled()) throw new InterruptedException();
 			try 
 			{
 				theStepper.apply(thisLeg);
@@ -433,7 +434,7 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * @param space
 	 * @return
 	 */
-	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates, ProgressMonitor monitor) throws InterruptedException
+	ArrayList<CoreLeg> getTheLegs(Collection<BoundedState> theStates, IProgressMonitor monitor) throws InterruptedException
 	{
 
 		// extract the straight legs
@@ -452,7 +453,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		Iterator<BoundedState> iterator = theStates.iterator();
 		while (iterator.hasNext())
 		{
-			monitor.checkCanceled();
+			if (monitor.isCanceled()) throw new InterruptedException();
 			
 			BoundedState thisS = iterator.next();
 			String thisLegName = thisS.getMemberOf();
@@ -686,10 +687,10 @@ public class SolutionGenerator implements ISolutionGenerator
 			super(name, SOLUTION_GENERATOR_JOBS_GROUP);
 		}
 		
-		protected abstract <E> T doRun(ProgressMonitor monitor, Job<P, E> previous) throws InterruptedException;
+		protected abstract <E> T doRun(IProgressMonitor monitor, Job<P, E> previous) throws InterruptedException;
 
 		@Override
-		protected final <E> T run(ProgressMonitor monitor, Job<P, E> previous)
+		protected final <E> T run(IProgressMonitor monitor, Job<P, E> previous)
 				throws InterruptedException
 		{
 			monitor.beginTask(getName(), 1);

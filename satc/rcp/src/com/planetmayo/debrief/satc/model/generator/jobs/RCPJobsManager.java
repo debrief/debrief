@@ -1,4 +1,4 @@
-package com.planetmayo.debrief.satc_rcp.jobs;
+package com.planetmayo.debrief.satc.model.generator.jobs;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,71 +9,12 @@ import org.eclipse.core.runtime.Status;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
-import com.planetmayo.debrief.satc.model.generator.jobs.Job;
-import com.planetmayo.debrief.satc.model.generator.jobs.ProgressMonitor;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class RCPJobsManager implements IJobsManager
 {
 	@SuppressWarnings("rawtypes")
 	private final ConcurrentHashMap<Job, org.eclipse.core.runtime.jobs.Job> jobs = new ConcurrentHashMap<Job,  org.eclipse.core.runtime.jobs.Job>();
-
-	private ProgressMonitor wrap(final IProgressMonitor progressMonitor) 
-	{
-		return new ProgressMonitor() {
-
-			@Override
-			public void beginTask(String name, int totalWork)
-			{
-				progressMonitor.beginTask(name, totalWork);
-			}
-
-			@Override
-			public void done()
-			{
-				progressMonitor.done();				
-			}
-
-			@Override
-			public boolean isCanceled()
-			{
-				return progressMonitor.isCanceled();
-			}
-			
-			@Override
-			public void checkCanceled() throws InterruptedException
-			{
-				if (isCanceled()) 
-				{
-					throw new InterruptedException();
-				}
-			}
-
-			@Override
-			public void setCanceled(boolean value)
-			{
-				progressMonitor.setCanceled(value);
-			}
-
-			@Override
-			public void setTaskName(String name)
-			{
-				progressMonitor.setTaskName(name);
-			}
-
-			@Override
-			public void subTask(String name)
-			{
-				progressMonitor.subTask(name);
-			}
-
-			@Override
-			public void worked(int work)
-			{
-				progressMonitor.worked(work);
-			}
-		};
-	}
 	
 	@Override
 	public <T, P> Job<T, P> schedule(Job<T, P> job)
@@ -108,7 +49,7 @@ public class RCPJobsManager implements IJobsManager
 						LogFactory.getLog().error("Previous job: " + previous.getName() + " wasn't scheduled");
 						monitor.setCanceled(true);
 					}
-					job.startJob(wrap(monitor), previous);
+					job.startJob(monitor, previous);
 					return Status.OK_STATUS;
 				} 
 				catch (InterruptedException ex) 
