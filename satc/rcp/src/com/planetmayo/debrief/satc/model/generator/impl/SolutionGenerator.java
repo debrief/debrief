@@ -222,6 +222,10 @@ public class SolutionGenerator implements ISolutionGenerator
 				}
 			}
 		}, cancelUnachievableJob);
+		if (mainGenerationJob != null && mainGenerationJob.isComplete()) 
+		{
+			mainGenerationJob = null;
+		}
 	}
 
 	/**
