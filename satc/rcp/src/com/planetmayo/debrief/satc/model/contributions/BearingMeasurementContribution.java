@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Status;
+
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -15,6 +17,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -137,84 +140,86 @@ public class BearingMeasurementContribution extends BaseContribution
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
 		double res = 0;
-		
+
 		// Note: we no longer calculate the cumulative score for BMC
-		// all we know is that the subject is inside the bearing polygon somewhere.  
+		// all we know is that the subject is inside the bearing polygon somewhere.
 		// So, all solutions put the vehicle inside the bearing polygons.
-		// There isn't merit in determining how close it is to the centre bearing of the area.
-		
-//		
-//		
-//		ArrayList<State> states = route.getStates();
-//		Iterator<State> sIter = states.iterator();
-//		State thisS = null;
-//
-//		// move to the first state
-//		if (sIter.hasNext())
-//			thisS = sIter.next();
-//
-//		// if the list is empty, drop out
-//		if (thisS == null)
-//			return res;
-//
-//		// keep track of how many errors we calculate
-//		int errCtr = 0;
-//
-//		// ok. work through the bearings
-//		Iterator<BMeasurement> iter = measurements.iterator();
-//		while (iter.hasNext())
-//		{
-//			BearingMeasurementContribution.BMeasurement m = (BearingMeasurementContribution.BMeasurement) iter
-//					.next();
-//			Date time = m.time;
-//
-//			// ok, find the state that matches this bearing measurement
-//			while (thisS.getTime().before(time) && sIter.hasNext())
-//			{
-//				thisS = sIter.next();
-//			}
-//
-//			// check we haven't shot past the end of the states
-//			if (time.after(thisS.getTime()))
-//				break;
-//
-//			// ok, we're at the state which is on or after this measurement.
-//			// but is it on?
-//			if (thisS.getTime().equals(time))
-//			{
-//
-//				// now find the error from this location
-//				Point loc = thisS.getLocation();
-//
-//				// what's the bearing from this origin?
-//				double bearing = m.origin.bearingTo(loc);
-//
-//				// System.out.println("testing brg:" + time +
-//				// " against state:" + thisS.getTime()
-//				// + " brg:" + Math.toDegrees(bearing) + " should be:" +
-//				// Math.toDegrees(m._bearingAngle));
-//
-//				// what's the difference between that and my measurement
-//				double thisError = Math.abs(bearing - m.bearingAngle);
-//				
-//				// what's my measurement error
-//				final double errorRange = Math.toRadians(1);
-//				thisError /= errorRange;
-//
-//				// we now need to 'normalise' this error. The analyst has entered a
-//				// bearing error value. So, all points must be within that error range
-//
-//				// and accumulate it
-////				res += thisError;
-//
-//				errCtr++;
-//			}
-//
-//			// ok, we now need to calculate the mean error
-//			if (errCtr > 0)
-//				res /= (double) errCtr;
-//
-//		}
+		// There isn't merit in determining how close it is to the centre bearing of
+		// the area.
+
+		//
+		//
+		// ArrayList<State> states = route.getStates();
+		// Iterator<State> sIter = states.iterator();
+		// State thisS = null;
+		//
+		// // move to the first state
+		// if (sIter.hasNext())
+		// thisS = sIter.next();
+		//
+		// // if the list is empty, drop out
+		// if (thisS == null)
+		// return res;
+		//
+		// // keep track of how many errors we calculate
+		// int errCtr = 0;
+		//
+		// // ok. work through the bearings
+		// Iterator<BMeasurement> iter = measurements.iterator();
+		// while (iter.hasNext())
+		// {
+		// BearingMeasurementContribution.BMeasurement m =
+		// (BearingMeasurementContribution.BMeasurement) iter
+		// .next();
+		// Date time = m.time;
+		//
+		// // ok, find the state that matches this bearing measurement
+		// while (thisS.getTime().before(time) && sIter.hasNext())
+		// {
+		// thisS = sIter.next();
+		// }
+		//
+		// // check we haven't shot past the end of the states
+		// if (time.after(thisS.getTime()))
+		// break;
+		//
+		// // ok, we're at the state which is on or after this measurement.
+		// // but is it on?
+		// if (thisS.getTime().equals(time))
+		// {
+		//
+		// // now find the error from this location
+		// Point loc = thisS.getLocation();
+		//
+		// // what's the bearing from this origin?
+		// double bearing = m.origin.bearingTo(loc);
+		//
+		// // System.out.println("testing brg:" + time +
+		// // " against state:" + thisS.getTime()
+		// // + " brg:" + Math.toDegrees(bearing) + " should be:" +
+		// // Math.toDegrees(m._bearingAngle));
+		//
+		// // what's the difference between that and my measurement
+		// double thisError = Math.abs(bearing - m.bearingAngle);
+		//
+		// // what's my measurement error
+		// final double errorRange = Math.toRadians(1);
+		// thisError /= errorRange;
+		//
+		// // we now need to 'normalise' this error. The analyst has entered a
+		// // bearing error value. So, all points must be within that error range
+		//
+		// // and accumulate it
+		// // res += thisError;
+		//
+		// errCtr++;
+		// }
+		//
+		// // ok, we now need to calculate the mean error
+		// if (errCtr > 0)
+		// res /= (double) errCtr;
+		//
+		// }
 		return res;
 	}
 
@@ -315,8 +320,8 @@ public class BearingMeasurementContribution extends BaseContribution
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"), 
-					date	+ " " + time);
+			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
@@ -338,17 +343,34 @@ public class BearingMeasurementContribution extends BaseContribution
 		this.setBearingError(Math.toRadians(3d));
 	}
 
+	/**
+	 * get the bearing error
+	 * 
+	 * @param errorRads
+	 *          (in radians)
+	 */
 	public Double getBearingError()
 	{
 		return bearingError;
 	}
 
-	public void setBearingError(Double errorDegs)
+	/**
+	 * provide the bearing error
+	 * 
+	 * @return (in radians)
+	 */
+	public void setBearingError(Double errorRads)
 	{
+
+		// IDIOT CHECK - CHECK WE HAVEN'T ACCIDENTALLY GOT DEGREES
+		if (errorRads > 2)
+			SATC_Activator.log(Status.WARNING,
+					"Looks like error is being presented in Degs", null);
+
 		Double old = bearingError;
-		this.bearingError = errorDegs;
-		firePropertyChange(BEARING_ERROR, old, errorDegs);
-		firePropertyChange(HARD_CONSTRAINTS, old, errorDegs);
+		this.bearingError = errorRads;
+		firePropertyChange(BEARING_ERROR, old, errorRads);
+		firePropertyChange(HARD_CONSTRAINTS, old, errorRads);
 	}
 
 	public void setAutoDetect(boolean onAuto)
