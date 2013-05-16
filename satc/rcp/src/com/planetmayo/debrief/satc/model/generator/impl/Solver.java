@@ -25,6 +25,7 @@ public class Solver implements ISolver
 	private final IContributions contributions;
 	private final IBoundsManager boundsManager;
 	private final ISolutionGenerator solutionGenerator;
+	@SuppressWarnings("unused")
 	private final IJobsManager jobsManager;	
 	
 	private final ProblemSpace problemSpace;
