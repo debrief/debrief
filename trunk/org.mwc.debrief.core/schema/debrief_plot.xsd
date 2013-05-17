@@ -698,6 +698,7 @@
 				<xs:attribute name="Inner" type="xs:string" />
 				<xs:attribute name="Outer" type="xs:string" />
 				<xs:attribute name="SpokeSize" type="xs:string" />
+				<xs:attribute name="Orientation" type="xs:int" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

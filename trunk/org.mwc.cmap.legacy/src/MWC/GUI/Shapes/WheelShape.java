@@ -135,6 +135,7 @@ public class WheelShape extends PlainShape implements Editable
 						prop("EmptyInner",
 								"whether to keep the inner circle clear of spokes"),
 						prop("RadiusOuter", "the Outer radius of the wheel (yds)"),
+						prop("Orientation", "the orientation of the wheel"),
 						prop("Centre", "the centre of the Wheel") };
 
 				return res;
@@ -201,6 +202,11 @@ public class WheelShape extends PlainShape implements Editable
 	 * the size of each spoke (in degs)
 	 */
 	private int _theSpokeSize = 60;
+	/**
+	 * The (clockwise) orientation of the wheel : that is, the 
+	 * rotation of the spokes of the wheel.
+	 */
+	private int _orientation=0;
 
 	/**
 	 * our editor
@@ -368,6 +374,15 @@ public class WheelShape extends PlainShape implements Editable
 	{
 		return _emptyInner;
 	}
+	
+	
+	public Integer getOrientation() {
+		return _orientation;
+	}
+
+	public void setOrientation(Integer orientation) {
+		this._orientation = orientation;
+	}
 
 	/**
 	 * paint the object
@@ -415,7 +430,9 @@ public class WheelShape extends PlainShape implements Editable
 		// check that the axis is in the correct direction (we may be in relative
 		// projection)
 		int axis = (int) MWC.Algorithms.Conversions.Rads2Degs(Math.atan2(dx, -dy));
-
+		//Add the orientation to offest the spokes correctly
+		axis += _orientation;
+		
 		// now draw the spokes, working out either side from the axis
 		double thisSpoke = 0; // on the axis
 		double spokeRads1 = 0;

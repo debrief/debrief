@@ -24,6 +24,8 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 
 	private static final String INNER_RADIUS = "Inner";
 	private static final String EMPTY_INNER = "EmptyInner";
+	
+	private static final String ORIENTATION = "Orientation";
 
 	MWC.GenericData.WorldLocation _centre;
 
@@ -31,6 +33,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 	WorldDistance _outerDist;
 
 	Integer _spokeSize = null; // degs
+	Integer _orientation=null; //degs
 	Boolean _emptyInner = null;
 	
 	public WheelHandler()
@@ -110,6 +113,13 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 				_spokeSize = Integer.valueOf(val);
 			}
 		});
+		addAttributeHandler(new HandleAttribute(ORIENTATION)
+		{
+			public void setValue(String name, String val)
+			{
+				_orientation = Integer.valueOf(val);
+			}
+		});
 
 	}
 
@@ -126,6 +136,11 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 		MWC.GUI.Shapes.WheelShape ls = new MWC.GUI.Shapes.WheelShape(_centre, _innerDist, _outerDist);
 		if(_spokeSize != null)
 			 ls.setSpokeSize(new SteppingBoundedInteger(_spokeSize.intValue(), 0,10, 1));
+		
+		if(_orientation != null){
+			ls.setOrientation(_orientation);
+			_orientation=null;
+		}
 		
 		if(_emptyInner != null)
 			ls.setEmptyInner(_emptyInner);
@@ -156,6 +171,7 @@ abstract public class WheelHandler extends ShapeHandler implements PlottableExpo
 					WorldDistance.YARDS)));
 			ePlottable.setAttribute(EMPTY_INNER,writeThis(cs.isEmptyInner()));
 			ePlottable.setAttribute("SpokeSize", writeThis(cs.getSpokeSize().getCurrent()));
+			ePlottable.setAttribute(ORIENTATION, writeThis(cs.getOrientation()));
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCentre(),
 					"centre", ePlottable, doc);
 			WorldDistanceHandler.exportDistance(INNER_RADIUS, cs.getRadiusInner(), ePlottable, doc);
