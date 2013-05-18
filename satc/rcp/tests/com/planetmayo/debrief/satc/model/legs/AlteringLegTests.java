@@ -40,7 +40,7 @@ public class AlteringLegTests extends ModelTestBase
 		courseForecastContribution.setMaxCourse(100d);
 	}
 
-	@Test
+/*	@Test
 	public void testAchievableTest() throws ParseException,
 			IncompatibleStateException
 	{
@@ -62,7 +62,7 @@ public class AlteringLegTests extends ModelTestBase
 
 		// how many are achievalbe?
 		assertEquals("correct achievable", 73, leg.getNumAchievable());
-	}
+	}*/
 
 	private ArrayList<BoundedState> createStates(double minS, double maxS,
 			boolean reverseOrder) throws ParseException, IncompatibleStateException

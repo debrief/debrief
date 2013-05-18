@@ -1,9 +1,6 @@
 package com.planetmayo.debrief.satc.model.generator;
 
-import java.util.List;
-
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
-import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 
 public class SteppingAdapter implements
@@ -33,11 +30,6 @@ public class SteppingAdapter implements
 
 	@Override
 	public void solutionsReady(CompositeRoute[] routes)
-	{
-	}
-
-	@Override
-	public void legsScored(List<CoreLeg> theLegs)
 	{
 	}
 

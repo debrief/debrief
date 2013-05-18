@@ -28,7 +28,6 @@ import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
-import com.planetmayo.debrief.satc.model.legs.StraightLeg.ScaledPolygons;
 import com.planetmayo.debrief.satc.model.legs.StraightLegTests;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.manager.mock.MockVehicleTypesManager;

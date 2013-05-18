@@ -2,7 +2,9 @@ package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.vividsolutions.jts.geom.Point;
 
@@ -129,6 +131,11 @@ public class CoreRoute
 	public double getScore()
 	{
 		return _myScore;
+	}
+	
+	public void generateSegments(final List<BoundedState> states) 
+	{
+		
 	}
 
 }
