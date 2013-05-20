@@ -16,6 +16,7 @@ import MWC.GenericData.WorldLocation;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
@@ -52,10 +53,26 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 	private void listenToSolver(ISolver solver)
 	{
+		solver.getContributions().addContributionsChangedListener(
+				new IContributionsChangedListener()
+				{
+
+					@Override
+					public void removed(BaseContribution contribution)
+					{
+						fireRepaint();
+					}
+
+					@Override
+					public void added(BaseContribution contribution)
+					{
+						fireRepaint();
+					}
+				});
+
 		solver.getBoundsManager().addConstrainSpaceListener(
 				new IConstrainSpaceListener()
 				{
-
 					@Override
 					public void stepped(IBoundsManager boundsManager, int thisStep,
 							int totalSteps)
@@ -102,7 +119,8 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
 	{
-		for (Iterator<BoundedState> iterator = states.iterator(); iterator.hasNext();)
+		for (Iterator<BoundedState> iterator = states.iterator(); iterator
+				.hasNext();)
 		{
 			BoundedState thisS = (BoundedState) iterator.next();
 			if (thisS.getLocation() != null)
@@ -120,7 +138,7 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 					{
 						dest.drawLine(lastPt.x, lastPt.y, pt.x, pt.y);
 					}
-					lastPt = pt;
+					lastPt = new Point(pt);
 				}
 			}
 		}
