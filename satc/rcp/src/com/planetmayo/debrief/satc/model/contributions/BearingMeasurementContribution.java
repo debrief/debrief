@@ -1,5 +1,6 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
+import java.awt.geom.Point2D;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.Status;
+import org.geotools.referencing.GeodeticCalculator;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
@@ -62,63 +64,78 @@ public class BearingMeasurementContribution extends BaseContribution
 		while (iter.hasNext())
 		{
 			BearingMeasurementContribution.BMeasurement measurement = iter.next();
-			// ok, create the polygon for this measurement
-			GeoPoint origin = measurement.origin;
-			double bearing = measurement.bearingAngle;
-			double range = measurement.theRange;
 
-			// ok, generate the polygon
-			Coordinate[] coords = new Coordinate[5];
-
-			// start off with the origin
-			final double lon = origin.getLon();
-			final double lat = origin.getLat();
-
-			coords[0] = new Coordinate(lon, lat);
-
-			// now the top-left
-			coords[1] = new Coordinate(
-					lon + Math.sin(bearing - bearingError) * range, lat
-							+ Math.cos(bearing - bearingError) * range);
-
-			// now the centre bearing
-			coords[2] = new Coordinate(lon + Math.sin(bearing) * range, lat
-					+ Math.cos(bearing) * range);
-
-			// now the top-right
-			coords[3] = new Coordinate(
-					lon + Math.sin(bearing + bearingError) * range, lat
-							+ Math.cos(bearing + bearingError) * range);
-
-			// and back to the start
-			coords[4] = new Coordinate(coords[0]);
-
-			CoordinateArraySequence seq = new CoordinateArraySequence(coords);
-
-			// and construct the bounded location object
-			LinearRing ls = new LinearRing(seq, factory);
-			Polygon poly = new Polygon(ls, null, factory);
-			LocationRange lr = new LocationRange(poly);
-
-			// do we have a bounds at this time?
-			BoundedState thisState = space.getBoundedStateAt(measurement.time);
-			if (thisState == null)
+			// is it active?
+			if (measurement.isActive())
 			{
-				// ok, do the bounds
-				thisState = new BoundedState(measurement.time);
-				// and store it
-				space.add(thisState);
-			}
+				// ok, create the polygon for this measurement
+				GeoPoint origin = measurement.origin;
+				double bearing = measurement.bearingAngle;
+				double range = measurement.theRange;
 
-			// well, if we didn't - we do now! Apply it!
-			thisState.constrainTo(lr);
+				// sort out the left/right edges
+				double leftEdge = bearing - bearingError;
+				double rightEdge = bearing + bearingError;
+
+				// ok, generate the polygon
+				Coordinate[] coords = new Coordinate[5];
+
+				// start off with the origin
+				final double lon = origin.getLon();
+				final double lat = origin.getLat();
+
+				coords[0] = new Coordinate(lon, lat);
+
+				// create a utility object to help with calcs
+				GeodeticCalculator calc = new GeodeticCalculator();
+
+				// now the top-left
+				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
+				calc.setDirection(toTrimmedDegs(leftEdge), GeoSupport.deg2m(range));
+				Point2D dest = calc.getDestinationGeographicPoint();
+				coords[1] = new Coordinate(dest.getX(), dest.getY());
+
+				// now the centre bearing
+				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
+				calc.setDirection(toTrimmedDegs(bearing), GeoSupport.deg2m(range));
+				dest = calc.getDestinationGeographicPoint();
+				coords[2] = new Coordinate(dest.getX(), dest.getY());
+
+				// now the top-right
+				calc.setStartingGeographicPoint(new Point2D.Double(lon, lat));
+				calc.setDirection(toTrimmedDegs(rightEdge), GeoSupport.deg2m(range));
+				dest = calc.getDestinationGeographicPoint();
+				coords[3] = new Coordinate(dest.getX(), dest.getY());
+
+				// and back to the start
+				coords[4] = new Coordinate(coords[0]);
+
+				// ok, store the coordinates
+				CoordinateArraySequence seq = new CoordinateArraySequence(coords);
+
+				// and construct the bounded location object
+				LinearRing ls = new LinearRing(seq, factory);
+				Polygon poly = new Polygon(ls, null, factory);
+				LocationRange lr = new LocationRange(poly);
+
+				// do we have a bounds at this time?
+				BoundedState thisState = space.getBoundedStateAt(measurement.time);
+				if (thisState == null)
+				{
+					// ok, do the bounds
+					thisState = new BoundedState(measurement.time);
+					// and store it
+					space.add(thisState);
+				}
+
+				// well, if we didn't - we do now! Apply it!
+				thisState.constrainTo(lr);
+			}
 		}
 
 		// hmm, do we run the MDA?
 		if (getAutoDetect())
 		{
-			System.err.println("Running MDA");
-
 			// get a few bounded states
 			Collection<BoundedState> testStates = space.getBoundedStatesBetween(
 					this.getStartDate(), this.getFinishDate());
@@ -136,6 +153,17 @@ public class BearingMeasurementContribution extends BaseContribution
 		}
 	}
 
+	private double toTrimmedDegs(double rads)
+	{
+		double res = Math.toDegrees(rads);
+		while(res > 180)
+			res -= 360;
+		while(res < -180)
+			res += 360;
+		
+		return res;
+	}
+	
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
@@ -370,7 +398,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		Double old = bearingError;
 		this.bearingError = errorRads;
 		firePropertyChange(BEARING_ERROR, old, errorRads);
-		firePropertyChange(HARD_CONSTRAINTS, old, errorRads);
+		fireHardConstraintsChange();
 	}
 
 	public void setAutoDetect(boolean onAuto)
@@ -398,6 +426,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		private final Date time;
+		private boolean _isActive = true;
 		/**
 		 * the (optional) maximum range for this measurement
 		 * 
@@ -411,5 +440,16 @@ public class BearingMeasurementContribution extends BaseContribution
 			this.time = time;
 			this.theRange = theRange;
 		}
+
+		public boolean isActive()
+		{
+			return _isActive;
+		}
+
+		public void setActive(boolean active)
+		{
+			_isActive = active;
+		}
+
 	}
 }
