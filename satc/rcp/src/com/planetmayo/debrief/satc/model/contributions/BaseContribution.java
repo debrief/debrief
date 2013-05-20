@@ -47,6 +47,15 @@ public abstract class BaseContribution extends ModelObject implements
 			throws IncompatibleStateException;
 
 	/**
+	 * some external factor has changed, that has affected the hard constraints on
+	 * this contribution
+	 */
+	public void fireHardConstraintsChange()
+	{
+		firePropertyChange(HARD_CONSTRAINTS, null, this);
+	}
+
+	/**
 	 * generate the error for this route
 	 * 
 	 */
@@ -83,7 +92,7 @@ public abstract class BaseContribution extends ModelObject implements
 		// ok, go for it
 		ArrayList<State> states = route.getStates();
 		Iterator<State> sIter = states.iterator();
-		
+
 		// keep track of how many errors we generate
 		int _errCtr = 0;
 
@@ -110,23 +119,25 @@ public abstract class BaseContribution extends ModelObject implements
 			{
 				// ok, everything matches up = calculate this error
 				delta = calcError(thisState);
-				
+
 				// and accumulate it
 				res += delta;
-				
-				// remember that we've increased the num of error values
-				_errCtr ++;
 
-				// hey, SPECIAL CASE!  If we're on a straight leg, and this is a forecast, then we
+				// remember that we've increased the num of error values
+				_errCtr++;
+
+				// hey, SPECIAL CASE! If we're on a straight leg, and this is a
+				// forecast, then we
 				// only use the one calculation
-				if(route.getType().equals(LegType.STRAIGHT) && this.getDataType().equals(ContributionDataType.FORECAST))
+				if (route.getType().equals(LegType.STRAIGHT)
+						&& this.getDataType().equals(ContributionDataType.FORECAST))
 				{
 					break;
 				}
 			}
 
 		}
-		
+
 		// return 0 if no states were processed or mean error otherwise
 		return _errCtr == 0 ? 0 : res / _errCtr;
 	}
@@ -214,14 +225,14 @@ public abstract class BaseContribution extends ModelObject implements
 	private int getScore()
 	{
 		switch (getDataType())
-			{
-			case MEASUREMENT:
-				return 0;
-			case FORECAST:
-				return 1;
-			default:
-				return 2;
-			}
+		{
+		case MEASUREMENT:
+			return 0;
+		case FORECAST:
+			return 1;
+		default:
+			return 2;
+		}
 	}
 
 	public Date getStartDate()
