@@ -22,7 +22,11 @@ Bundle-ClassPath: libs/jts-1.13.jar,
  libs/xmlpull-1.1.3.1.jar,
  libs/kxml2-2.3.0.jar,
  libs/watchmaker-framework-0.7.1.jar,
- .
+ .,
+ libs/gt-referencing-8.0-M4.jar,
+ libs/gt-opengis-8.0-M4.jar,
+ libs/jsr-275-1.0-beta-2.jar,
+ libs/gt-metadata-8.0-M4.jar
 Export-Package: com.planetmayo.debrief.satc.log,
  com.planetmayo.debrief.satc.model,
  com.planetmayo.debrief.satc.model.contributions;uses:="com.planetmayo.debrief.satc.model,com.planetmayo.debrief.satc.model.states,junit.framework",
