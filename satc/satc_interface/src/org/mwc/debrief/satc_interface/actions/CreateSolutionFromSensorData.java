@@ -1,5 +1,7 @@
 package org.mwc.debrief.satc_interface.actions;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -28,6 +30,7 @@ import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -201,7 +204,7 @@ public class CreateSolutionFromSensorData implements
 		protected BearingMeasurementContribution createContribution(String contName)
 		{
 			// ok, now collate the contriubtion
-			BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+			final BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 			bmc.setName(contName);
 			bmc.setBearingError(Math.toRadians(3.0));
 			
@@ -209,7 +212,7 @@ public class CreateSolutionFromSensorData implements
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
 			while (iter.hasNext())
 			{
-				SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
 				WorldLocation theOrigin = scw.getOrigin();
 				GeoPoint loc;
 
@@ -224,8 +227,23 @@ public class CreateSolutionFromSensorData implements
 				if (scw.getRange() != null)
 					theRange = scw.getRange().getValueIn(WorldDistance.DEGS);
 
-				BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
+				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
 				bmc.addThis(thisM);
+				
+				// listen out for changes to this sensor cut
+				scw.addPropertyChangeListener(PlainWrapper.VISIBILITY_CHANGED, new PropertyChangeListener()
+				{
+					@Override
+					public void propertyChange(PropertyChangeEvent arg0)
+					{
+						// ok, update the measurement accordingly
+						thisM.setActive(scw.getVisible());
+						
+						// and fire off some kind of update
+						bmc.fireHardConstraintsChange();
+					}
+				});
+				
 			}
 			return bmc;
 		}
