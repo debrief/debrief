@@ -48,7 +48,6 @@ import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 import org.osgi.framework.BundleContext;
 
-import com.sun.j3d.loaders.vrml97.impl.Text;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
