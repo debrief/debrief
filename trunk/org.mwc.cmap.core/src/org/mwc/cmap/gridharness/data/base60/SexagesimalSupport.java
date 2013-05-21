@@ -167,19 +167,19 @@ public class SexagesimalSupport {
 		{
 			WorldLocation loc  = new WorldLocation(1,0,0,'N', 0,0,30, 'E', 0);
 			String res =_DD_MM_MMM.convertToString(loc);
-			assertEquals("correct conversion", "01\u00B000.000\u2032N 000\u00B000.500\u2032E", res);
+			assertEquals("Result was not 1 degree, 0 minutes 0 seconds North, 0 degrees 0 minutes 30 seconds East", "01\u00B000.000\u2032N 000\u00B000.500\u2032E", res);
 			 loc  = new WorldLocation(1,0,0,'N', 1,0,30, 'W', 0);
 			 res =_DD_MM_MMM.convertToString(loc);
-			assertEquals("correct conversion", "01\u00B000.000\u2032N 001\u00B000.500\u2032W", res);
+			assertEquals("Result was not 1 degree, 0 minutes 0 seconds North, 0 degrees 0 minutes 30 seconds West", "01\u00B000.000\u2032N 001\u00B000.500\u2032W", res);
 			 loc  = new WorldLocation(1,0,0,'N', 0,0,30, 'W', 0);
 			 res =_DD_MM_MMM.convertToString(loc);
-			assertEquals("correct conversion", "01\u00B000.000\u2032N 000\u00B000.500\u2032W", res);
+			assertEquals("Result was not 1 degree, 0 minutes 0 seconds North, 0 degrees 0 minutes 30 seconds West", "01\u00B000.000\u2032N 000\u00B000.500\u2032W", res);
 			 loc  = new WorldLocation(0,0,30,'N', 1,0,00, 'W', 0);
 			 res =_DD_MM_MMM.convertToString(loc);
-			assertEquals("correct conversion", "00\u00B000.500\u2032N 001\u00B000.000\u2032W", res);
+			assertEquals("Result was not 0 degree, 0 minutes 30 seconds North, 1 degrees 0 minutes 0 seconds West", "00\u00B000.500\u2032N 001\u00B000.000\u2032W", res);
 			 loc  = new WorldLocation(0,0,30,'N', 0,0,00, 'E', 0);
 			 res =_DD_MM_MMM.convertToString(loc);
-			assertEquals("correct conversion", "00\u00B000.500\u2032N 000\u00B000.000\u2032E", res);
+			assertEquals("Result was not 0 degrees, 0 minutes 30 seconds North, 0 degrees 0 minutes 0 seconds East", "00\u00B000.500\u2032N 000\u00B000.000\u2032E", res);
 			 loc  = new WorldLocation(0.5, -0.5, 0);
 			 res =_DD_MM_MMM.convertToString(loc);
 			assertEquals("correct conversion", "00\u00B030.000\u2032N 000\u00B030.000\u2032W", res);
