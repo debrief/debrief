@@ -48,6 +48,8 @@ import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 import org.osgi.framework.BundleContext;
 
+import com.sun.j3d.loaders.vrml97.impl.Text;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
@@ -437,21 +439,26 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 							"whilst trying to get (lat,long) location off clipboard", e);
 				}
 			}
-			else if (numTokens == 3) {
+			else if (txt.contains("\t")) { //tab delimiter indicates the presence of a property name
 				//Example : Location	 05°17'37.76"N 030°49'45.33"E
-				String property = st.nextToken();
-				String latString = st.nextToken();
-				String longString = st.nextToken();
-				try {
-					//For some reason it is now represented as a " rather than \u2032"
-					Sexagesimal latVal = SexagesimalSupport._DD_MM_SS_SSS.parse(latString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), false);
-					Sexagesimal longVal = SexagesimalSupport._DD_MM_SS_SSS.parse(longString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), true);
-					res = new WorldLocation(latVal.getCombinedDegrees(), longVal.getCombinedDegrees(), 0d);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					CorePlugin.logError(Status.ERROR,
-							"whilst trying to get (lat,long) location off clipboard", e);
+				String subString = txt.substring(txt.indexOf("\t")).trim();
+				StringTokenizer latLong=new StringTokenizer(subString);
+				if(latLong.countTokens() == 2) {
+					String latString = latLong.nextToken();
+					String longString = latLong.nextToken();
+					try {
+						//For some reason it is now represented as a " rather than \u2032"
+						Sexagesimal latVal = SexagesimalSupport._DD_MM_SS_SSS.parse(latString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), false);
+						Sexagesimal longVal = SexagesimalSupport._DD_MM_SS_SSS.parse(longString.replaceAll("\"", "\u2033").replaceAll("'","\u2032"), true);
+						res = new WorldLocation(latVal.getCombinedDegrees(), longVal.getCombinedDegrees(), 0d);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						CorePlugin.logError(Status.ERROR,
+								"whilst trying to get (lat,long) location off clipboard", e);
+					}
 				}
+				
+				
 				
 				
 				
@@ -757,6 +764,11 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			WorldLocation loc  = new WorldLocation(1,0,0,'N', 0,0,30, 'E', 0);
 			String clipboard = "Location\t 26\u00c2\u00b008'04.55\"N 021\u00c2\u00b056'56.52\"E";
 			WorldLocation fromClipboard = fromClipboard(clipboard);
+			assertEquals("Expected 26 degrees, 08 minutes, 0.455 seconds north", 26.134597222222222, fromClipboard.getLat());
+			assertEquals("Expected 21 degrees, 56 minutes, 56.52 seconds north", 21.949033333333333, fromClipboard.getLong());
+			
+			clipboard = "Location Attribute with spaces\t 26\u00c2\u00b008'04.55\"N 021\u00c2\u00b056'56.52\"E";
+			fromClipboard = fromClipboard(clipboard);
 			assertEquals("Expected 26 degrees, 08 minutes, 0.455 seconds north", 26.134597222222222, fromClipboard.getLat());
 			assertEquals("Expected 21 degrees, 56 minutes, 56.52 seconds north", 21.949033333333333, fromClipboard.getLong());
 		}
