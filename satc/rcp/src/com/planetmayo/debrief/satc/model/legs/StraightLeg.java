@@ -142,6 +142,14 @@ public class StraightLeg extends CoreLeg
 		}
 		decideScaledPolygons(route);
 	}
+	
+	@Override
+	public CoreRoute createRoute(String name, Point start, Point end)
+	{
+		StraightRoute route = new StraightRoute(name, start, getFirst().getTime(), end, getLast().getTime());
+		route.generateSegments(_states);
+		return route;
+	}
 
 	@Override
 	public LegType getType()

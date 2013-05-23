@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
+import com.vividsolutions.jts.geom.Point;
 
 public class AlteringLeg extends CoreLeg
 {
@@ -57,5 +58,14 @@ public class AlteringLeg extends CoreLeg
 	{
 		// TODO calculate an optimal solution through this manoeuvre
 
+	}
+
+	@Override
+	public CoreRoute createRoute(String name, Point start, Point end)
+	{
+		AlteringRoute route = new AlteringRoute(name, start, getFirst().getTime(), 
+				end, getLast().getTime());
+		route.generateSegments(_states);
+		return route;
 	}
 }

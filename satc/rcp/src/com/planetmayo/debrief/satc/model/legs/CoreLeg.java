@@ -185,4 +185,6 @@ public abstract class CoreLeg
 	 * 
 	 */
 	abstract public void decideAchievableRoute(CoreRoute route);
+	
+	abstract public CoreRoute createRoute(String name, Point start, Point end);
 }
