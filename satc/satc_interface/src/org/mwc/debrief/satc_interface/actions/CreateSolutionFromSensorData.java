@@ -40,6 +40,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
@@ -128,10 +129,13 @@ public class CreateSolutionFromSensorData implements
 
 		parent.add(new DoIt(verb1 + "Bearing Measurement from " + title,
 				new BearingMeasurementContributionFromCuts(solution, actionTitle,
-						validItems, layers)));
-		parent.add(new DoIt(verb1 + "Speed Forecast from " + title,
-				new SpeedForecastContributionFromCuts(solution, actionTitle,
-						validItems, layers)));
+						layers, validItems)));
+		parent.add(new DoIt(verb1 + "Speed Forecast for period covering " + title,
+				new SpeedForecastContributionFromCuts(solution, actionTitle, layers,
+						validItems)));
+		parent.add(new DoIt(verb1 + "Specify straight leg for period covering "
+				+ title, new StraightLegForecastContributionFromCuts(solution,
+				actionTitle, layers, validItems)));
 	}
 
 	protected static class DoIt extends Action
@@ -188,17 +192,14 @@ public class CreateSolutionFromSensorData implements
 		return list;
 	}
 
-	private static class BearingMeasurementContributionFromCuts extends
+	private class BearingMeasurementContributionFromCuts extends
 			CoreSolutionFromCuts
 	{
-		private final ArrayList<SensorContactWrapper> _validCuts;
-
 		public BearingMeasurementContributionFromCuts(
-				SATC_Solution existingSolution, String title,
-				ArrayList<SensorContactWrapper> validCuts, Layers theLayers)
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
 		{
-			super(existingSolution, title, theLayers);
-			_validCuts = validCuts;
+			super(existingSolution, title, theLayers, validCuts);
 		}
 
 		protected BearingMeasurementContribution createContribution(String contName)
@@ -207,7 +208,7 @@ public class CreateSolutionFromSensorData implements
 			final BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 			bmc.setName(contName);
 			bmc.setBearingError(Math.toRadians(3.0));
-			
+
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
 			while (iter.hasNext())
@@ -229,80 +230,116 @@ public class CreateSolutionFromSensorData implements
 
 				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
 				bmc.addThis(thisM);
-				
+
 				// listen out for changes to this sensor cut
-				scw.addPropertyChangeListener(PlainWrapper.VISIBILITY_CHANGED, new PropertyChangeListener()
-				{
-					@Override
-					public void propertyChange(PropertyChangeEvent arg0)
-					{
-						// ok, update the measurement accordingly
-						thisM.setActive(scw.getVisible());
-						
-						// and fire off some kind of update
-						bmc.fireHardConstraintsChange();
-					}
-				});
-				
+				scw.addPropertyChangeListener(PlainWrapper.VISIBILITY_CHANGED,
+						new PropertyChangeListener()
+						{
+							@Override
+							public void propertyChange(PropertyChangeEvent arg0)
+							{
+								// ok, update the measurement accordingly
+								thisM.setActive(scw.getVisible());
+
+								// and fire off some kind of update
+								bmc.fireHardConstraintsChange();
+							}
+						});
+
 			}
 			return bmc;
 		}
 
-		@Override
-		String getDefaultSolutionName()
-		{ // grab a name
-			Date firstCutDate = _validCuts.get(0).getDTG().getDate();
-			String formattedName = FormatRNDateTime.toString(firstCutDate.getTime());
-			return formattedName;
-		}
 	}
 
-	private static class SpeedForecastContributionFromCuts extends
-			CoreSolutionFromCuts
+	private class SpeedForecastContributionFromCuts extends
+			ForecastContributionFromCuts
 	{
-		private final ArrayList<SensorContactWrapper> _validCuts;
-
 		public SpeedForecastContributionFromCuts(SATC_Solution existingSolution,
-				String title, ArrayList<SensorContactWrapper> validCuts,
-				Layers theLayers)
+				String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
 		{
-			super(existingSolution, title, theLayers);
-			_validCuts = validCuts;
+			super(existingSolution, title, theLayers, validCuts);
 		}
 
-		protected SpeedForecastContribution createContribution(String contName)
+		@Override
+		protected BaseContribution getContribution()
+		{
+			return new SpeedForecastContribution();
+		}
+
+	}
+
+	private class StraightLegForecastContributionFromCuts extends
+			ForecastContributionFromCuts
+	{
+		public StraightLegForecastContributionFromCuts(
+				SATC_Solution existingSolution, String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			return new StraightLegForecastContribution();
+		}
+
+	}
+
+	private abstract class ForecastContributionFromCuts extends
+			CoreSolutionFromCuts
+	{
+		public ForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		protected final BaseContribution createContribution(String contName)
 		{
 			// ok, now collate the contriubtion
-			SpeedForecastContribution bmc = new SpeedForecastContribution();
+			BaseContribution bmc = getContribution();
+
+			// ok, do some formatting
 			bmc.setName(contName);
+
+			// and the dates
+			bmc.setStartDate(_validCuts.get(0).getDTG().getDate());
+			bmc.setFinishDate(_validCuts.get(_validCuts.size() - 1).getDTG()
+					.getDate());
 
 			return bmc;
 		}
 
-		@Override
-		String getDefaultSolutionName()
+		abstract protected BaseContribution getContribution();
+
+	}
+
+	private abstract class CoreSolutionFromCuts extends CMAPOperation
+	{
+
+		private SATC_Solution _targetSolution;
+		private final Layers _theLayers;
+		protected final ArrayList<SensorContactWrapper> _validCuts;
+
+		public CoreSolutionFromCuts(SATC_Solution existingSolution, String title,
+				Layers theLayers, ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(title);
+			_targetSolution = existingSolution;
+			_theLayers = theLayers;
+			_validCuts = validCuts;
+		}
+
+		public String getDefaultSolutionName()
 		{ // grab a name
 			Date firstCutDate = _validCuts.get(0).getDTG().getDate();
 			String formattedName = FormatRNDateTime.toString(firstCutDate.getTime());
 			return formattedName;
 		}
-	}
-
-	private abstract static class CoreSolutionFromCuts extends CMAPOperation
-	{
-
-		private SATC_Solution _targetSolution;
-		private final Layers _theLayers;
-
-		public CoreSolutionFromCuts(SATC_Solution existingSolution, String title,
-				Layers theLayers)
-		{
-			super(title);
-			_targetSolution = existingSolution;
-			_theLayers = theLayers;
-		}
-
-		abstract String getDefaultSolutionName();
 
 		@Override
 		public boolean canUndo()
