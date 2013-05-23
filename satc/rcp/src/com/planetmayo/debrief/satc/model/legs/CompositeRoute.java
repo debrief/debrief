@@ -17,6 +17,18 @@ public class CompositeRoute
 		_legs = new ArrayList<CoreRoute>();
 	}
 	
+	public CompositeRoute(Collection<CoreRoute> legs) 
+	{
+		_legs = new ArrayList<CoreRoute>();
+		for (CoreRoute route : legs)
+		{
+			if (route != null)
+			{
+				_legs.add(route);
+			}
+		}
+	}
+	
 	/** add this leg to our data
 	 * 
 	 * @param topR

@@ -1,13 +1,14 @@
-package com.planetmayo.debrief.satc.model.generator.impl;
+package com.planetmayo.debrief.satc.model.generator.impl.bf;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,7 +51,9 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * the current set of legs
 	 * 
 	 */
-	private ArrayList<CoreLeg> _theLegs;
+	private List<CoreLeg> _theLegs;
+	
+	private List<LegWithRoutes> _routes;	
 
 	/**
 	 * how precisely to do the calcs
@@ -164,7 +167,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			@Override
 			public <E> Void doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
-				generateRoutes(_theLegs, monitor);
+				_routes = generateRoutes(_theLegs, monitor);
 				return null;
 			}			
 		}, getLegsJob);
@@ -175,7 +178,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			@Override
 			public <E> Void doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
-				decideAchievable(_theLegs, monitor);
+				decideAchievable(_routes, monitor);
 				return null;
 			}			
 		}, generateRoutesJob);		
@@ -186,7 +189,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			@Override
 			public <E> int[][] doRun(IProgressMonitor monitor, Job<Void, E> previous) throws InterruptedException
 			{
-				return calculateAchievableRoutesFor(_theLegs, monitor);
+				return calculateAchievableRoutesFor(_routes, monitor);
 			}			
 		}, decideAchievableJob);
 		
@@ -196,7 +199,7 @@ public class SolutionGenerator implements ISolutionGenerator
 			@Override
 			public <E> Void doRun(IProgressMonitor monitor, Job<int[][], E> previous) throws InterruptedException
 			{
-				cancelUnachievable(_theLegs, previous.getResult(), monitor);
+				cancelUnachievable(_routes, previous.getResult(), monitor);
 				return null;
 			}			
 		}, achievableResJob);				
@@ -240,16 +243,16 @@ public class SolutionGenerator implements ISolutionGenerator
 			return;
 
 		// score the possible routes
-		calculateRouteScores(contributions.getContributions(), _theLegs, monitor);
+		Map<StraightLeg, CoreRoute> topScores =
+				calculateRouteScores(contributions.getContributions(), _routes, monitor);
+		
+		CompositeRoute result = new CompositeRoute(topScores.values()); 
 
 		// share the news
-		fireLegsScored(_theLegs);
-
-		// generate some candidate solutions
-		CompositeRoute[] routes = generateCandidates(_theLegs, monitor);
+		fireLegsScored(_routes);
 
 		// and we're done, share the good news!
-		fireSolutionsReady(routes);
+		fireSolutionsReady(new CompositeRoute[] {result});
 	}
 	
 	
@@ -267,31 +270,56 @@ public class SolutionGenerator implements ISolutionGenerator
 	 *          the c
 	 * @param theLegs
 	 */
-	public void calculateRouteScores(final Collection<BaseContribution> contribs,
-			ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
+	public Map<StraightLeg, CoreRoute> calculateRouteScores(final Collection<BaseContribution> contribs,
+			List<LegWithRoutes> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
+		final Map<StraightLeg, CoreRoute> top = new LinkedHashMap<StraightLeg, CoreRoute>();
 		operateOn(theLegs, monitor, new LegOperation()
 		{
-			public void apply(CoreLeg thisLeg)
+			public void apply(LegWithRoutes thisLeg)
 			{
-				if (thisLeg.getType() == LegType.STRAIGHT)
+				if (thisLeg.getLeg().getType() == LegType.STRAIGHT)
 				{
-					StraightLeg leg = (StraightLeg) thisLeg;
-					leg.calculateRouteScores(contribs);
+					CoreRoute minRoute = null;
+					double minScore = Double.MAX_VALUE;
+					CoreRoute[][] routes = thisLeg.getRoutes();
+					for (int i = 0; i < routes.length; i++) 
+					{
+						for (CoreRoute route : routes[i])
+						{
+							if (route == null || !route.isPossible())
+							{
+								continue;
+							}
+							double score = 0;
+							for (BaseContribution contributions : contribs)
+							{
+								score += contributions.calculateErrorScoreFor(route);
+							}
+							route.setScore(score);
+							if (score < minScore) 
+							{
+								minScore = score;
+								minRoute = route;
+							}
+						}
+					}
+					top.put((StraightLeg) thisLeg.getLeg(), minRoute);
 				}
 			}
 		});
+		return top;
 	}
 
-	public void generateRoutes(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
+	public List<LegWithRoutes> generateRoutes(List<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
-		operateOn(theLegs, monitor, new LegOperation()
+		List<LegWithRoutes> result = new ArrayList<LegWithRoutes>(theLegs.size());
+		for (CoreLeg leg : theLegs) 
 		{
-			public void apply(CoreLeg thisLeg) throws InterruptedException
-			{
-				thisLeg.generateRoutes(_myPrecision);
-			}
-		});
+			leg.generatePoints(_myPrecision);
+			result.add(new LegWithRoutes(leg));
+		}
+		return result;
 	}
 
 	/**
@@ -299,71 +327,36 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * 
 	 * @param theLegs
 	 */
-	public void decideAchievable(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
+	public void decideAchievable(List<LegWithRoutes> theLegs, IProgressMonitor monitor) throws InterruptedException
 	{
 		operateOn(theLegs, monitor, new LegOperation()
 		{
-			public void apply(CoreLeg thisLeg) throws InterruptedException
+			public void apply(LegWithRoutes thisLeg) throws InterruptedException
 			{
 				thisLeg.decideAchievableRoutes();
 			}
 		});
 	}
 
-	/**
-	 * using best performing routes through the straight legs, generate a set of
-	 * overall solutions
-	 * 
-	 * @param theLegs
-	 *          the set of legs we're looking at
-	 * @return a set of routes through the data
-	 */
-	CompositeRoute[] generateCandidates(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
-	{
-		CompositeRoute res = new CompositeRoute();
-
-		// PHASE 1 = just do it for straight legs
-		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
-		{
-			if (monitor.isCanceled()) throw new InterruptedException();
-			CoreLeg coreLeg = iterator.next();
-
-			// get the top solutions
-			SortedSet<CoreRoute> topR = coreLeg.getTopRoutes();
-
-			// have we found any?
-			if (topR != null)
-				if (topR.size() > 0)
-				{
-					// and remember it the top one
-					res.add(topR.first());
-				}
-		}
-
-		// and return the top route
-		return new CompositeRoute[]
-		{ res };
-	}
-
-	void cancelUnachievable(ArrayList<CoreLeg> theLegs, int[][] routes, IProgressMonitor monitor) throws InterruptedException
+	void cancelUnachievable(List<LegWithRoutes> routes, int[][] possibleRoutes, IProgressMonitor monitor) throws InterruptedException
 	{
 
 		// check we've got some legs
-		if (theLegs.size() > 0)
+		if (routes.size() > 0)
 		{
 			// get the routes for the first leg
-			CoreLeg firstLeg = theLegs.get(0);
+			LegWithRoutes firstLeg = routes.get(0);
 
 			// get the routes
 			CoreRoute[][] firstRoutes = firstLeg.getRoutes();
 
-			for (int x = 0; x < routes.length; x++)
+			for (int x = 0; x < possibleRoutes.length; x++)
 			{
 				boolean possible = false;
-				for (int y = 0; y < routes[0].length; y++)
+				for (int y = 0; y < possibleRoutes[0].length; y++)
 				{
 					if (monitor.isCanceled()) throw new InterruptedException();
-					if (routes[x][y] > 0)
+					if (possibleRoutes[x][y] > 0)
 					{
 						// this one is possible, drop out
 						possible = true;
@@ -386,14 +379,14 @@ public class SolutionGenerator implements ISolutionGenerator
 		}
 	}
 
-	int[][] calculateAchievableRoutesFor(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor) throws InterruptedException
+	int[][] calculateAchievableRoutesFor(List<LegWithRoutes> routes, IProgressMonitor monitor) throws InterruptedException
 	{
 		// ok, loop through the legs, doing the multiplication
 		int[][] res = null;
-		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+		for (Iterator<LegWithRoutes> iterator = routes.iterator(); iterator.hasNext();)
 		{
 			if (monitor.isCanceled()) throw new InterruptedException();
-			CoreLeg thisLeg = (CoreLeg) iterator.next();
+			LegWithRoutes thisLeg = iterator.next();
 			int[][] mat = thisLeg.asMatrix();
 
 			// is this our first one?
@@ -401,7 +394,7 @@ public class SolutionGenerator implements ISolutionGenerator
 				res = mat;
 			else
 			{
-				res = CoreLeg.multiply(res, mat);
+				res = LegWithRoutes.multiply(res, mat);
 			}
 		}
 
@@ -414,12 +407,12 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * @param theLegs
 	 * @param theStepper
 	 */
-	private static void operateOn(ArrayList<CoreLeg> theLegs, IProgressMonitor monitor,
+	private static void operateOn(List<LegWithRoutes> theLegs, IProgressMonitor monitor,
 			LegOperation theStepper) throws InterruptedException
 	{
-		for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+		for (Iterator<LegWithRoutes> iterator = theLegs.iterator(); iterator.hasNext();)
 		{
-			CoreLeg thisLeg = (CoreLeg) iterator.next();
+			LegWithRoutes thisLeg = iterator.next();
 			if (monitor.isCanceled()) throw new InterruptedException();
 			try 
 			{
@@ -573,7 +566,9 @@ public class SolutionGenerator implements ISolutionGenerator
 		if (_theLegs != null)
 		{
 			_theLegs.clear();
+			_routes.clear();
 			_theLegs = null;
+			_routes = null;
 		}
 	}
 	
@@ -595,12 +590,15 @@ public class SolutionGenerator implements ISolutionGenerator
 	 * @param theLegs
 	 * 
 	 */
-	private void fireLegsScored(ArrayList<CoreLeg> theLegs)
+	private void fireLegsScored(List<LegWithRoutes> routes)
 	{
-		List<CoreLeg> legs = Collections.unmodifiableList(new ArrayList<CoreLeg>(theLegs));
+		List<LegWithRoutes> legs = Collections.unmodifiableList(new ArrayList<LegWithRoutes>(routes));
 		for (IGenerateSolutionsListener listener : _readyListeners)
 		{
-			listener.legsScored(legs);
+			if (listener instanceof IBruteForceSolutionsListener) 
+			{
+				((IBruteForceSolutionsListener) listener).legsScored(legs);
+			}
 		}
 
 	}
@@ -680,7 +678,7 @@ public class SolutionGenerator implements ISolutionGenerator
 		 * 
 		 * @param thisLeg
 		 */
-		public void apply(CoreLeg thisLeg) throws InterruptedException;
+		public void apply(LegWithRoutes thisLeg) throws InterruptedException;
 	}	
 	
 	private abstract class SolutionGeneratorJob<T, P> extends Job<T, P> 

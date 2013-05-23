@@ -1,7 +1,7 @@
 package com.planetmayo.debrief.satc.model.legs;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -31,7 +31,8 @@ public class AlteringRoute extends CoreRoute
 	 * break the line down into a series of points, at the indicated times
 	 * 
 	 */
-	public void generateSegments(final ArrayList<BoundedState> states)
+	@Override	
+	public void generateSegments(final List<BoundedState> states)
 	{
 		 // TODO sort out how to produce a curve through from start to end. actually, we can produce loads!
 	}	

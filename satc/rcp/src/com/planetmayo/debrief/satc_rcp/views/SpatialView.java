@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 
 import org.eclipse.jface.action.AbstractGroupMarker;
 import org.eclipse.jface.action.Action;
@@ -37,11 +36,11 @@ import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
-import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationException;
+import com.planetmayo.debrief.satc.model.generator.impl.bf.IBruteForceSolutionsListener;
+import com.planetmayo.debrief.satc.model.generator.impl.bf.LegWithRoutes;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
-import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
@@ -58,7 +57,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		GeoSupport.GeoPlotter, IShowBoundProblemSpaceDiagnostics,
-		IShowGenerateSolutionsDiagnostics, IGenerateSolutionsListener
+		IShowGenerateSolutionsDiagnostics, IBruteForceSolutionsListener
 {
 	private static JFreeChart _chart;
 	private static ChartComposite _chartComposite;
@@ -134,7 +133,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	 */
 	private Collection<BoundedState> _lastStates = null;
 
-	private List<CoreLeg> _lastSetOfScoredLegs;
+	private List<LegWithRoutes> _lastSetOfScoredLegs;
 
 	private CompositeRoute[] _lastSetOfSolutions;
 
@@ -144,7 +143,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			"hh:mm:ss");
 
 	private IConstrainSpaceListener constrainSpaceListener;
-	private IGenerateSolutionsListener generateSolutionsListener;
+	private IBruteForceSolutionsListener generateSolutionsListener;
 	/**
 	 * how many routes to display
 	 * 
@@ -237,7 +236,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		constrainSpaceListener = UIListener.wrap(parent.getDisplay(),
 				IConstrainSpaceListener.class, this);
 		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
-				IGenerateSolutionsListener.class, this);
+				IBruteForceSolutionsListener.class, this);
 		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
 		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
 	}
@@ -747,7 +746,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 
 	@Override
-	public void legsScored(List<CoreLeg> theLegs)
+	public void legsScored(List<LegWithRoutes> theLegs)
 	{
 		// forget the solutions, they're no longer valid
 		_lastSetOfSolutions = null;
@@ -757,7 +756,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		redoChart();
 	}
 
-	private void showLegsWithScores(List<CoreLeg> theLegs)
+	private void showLegsWithScores(List<LegWithRoutes> theLegs)
 	{
 		_lastSetOfScoredLegs = theLegs;
 
@@ -768,12 +767,12 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			ArrayList<ArrayList<Point>> allPoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<Point>> allPossiblePoints = new ArrayList<ArrayList<Point>>();
 			ArrayList<ArrayList<LineString>> allPossibleRoutes = new ArrayList<ArrayList<LineString>>();
-			HashMap<CoreLeg, ArrayList<ScoredRoute>> scoredRoutes = new HashMap<CoreLeg, ArrayList<ScoredRoute>>();
+			HashMap<LegWithRoutes, ArrayList<ScoredRoute>> scoredRoutes = new HashMap<LegWithRoutes, ArrayList<ScoredRoute>>();
 
 			// ok, loop trough
-			for (Iterator<CoreLeg> iterator = theLegs.iterator(); iterator.hasNext();)
+			for (Iterator<LegWithRoutes> iterator = theLegs.iterator(); iterator.hasNext();)
 			{
-				final CoreLeg thisLeg = iterator.next();
+				final LegWithRoutes thisLeg = iterator.next();
 
 				// start off with the ponts
 				if (_showPoints || _showAchievablePoints)
@@ -782,7 +781,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					ArrayList<Point> possiblePoints = new ArrayList<Point>();
 
 					// ok, we need to look at all of the routes to sort out which points
-					// are achievable
+					// are achievable					
 					CoreRoute[][] routes = thisLeg.getRoutes();
 
 					// go through the start points
@@ -845,45 +844,43 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 					ArrayList<LineString> possibleRoutes = new ArrayList<LineString>();
 
 					// we're only currently going to draw lines for straight legs
-					if (thisLeg.getType() == LegType.STRAIGHT)
+					if (thisLeg.getLeg().getType() == LegType.STRAIGHT)
 					{
-						SortedSet<CoreRoute> theRoutes = thisLeg.getTopRoutes();
-
 						int routeCounter = 0;
-
-						for (Iterator<CoreRoute> rIter = theRoutes.iterator(); rIter
-								.hasNext();)
+						for (CoreRoute[] routes : thisLeg.getRoutes()) 
 						{
-							CoreRoute thisRoute = rIter.next();
-
-							routeCounter++;
-
 							if (routeCounter > _numRoutes)
-								break;
-
-							Coordinate[] coords = new Coordinate[]
-							{ thisRoute.getStartPoint().getCoordinate(),
-									thisRoute.getEndPoing().getCoordinate() };
-							LineString newR = GeoSupport.getFactory()
-									.createLineString(coords);
-
-							if (_showRoutes)
-								possibleRoutes.add(newR);
-
-							if (_showRoutesWithScores)
+								break;							
+							for (CoreRoute route : routes) 
 							{
-								// do we have a collection for this leg
-								ArrayList<ScoredRoute> thisLegRes = scoredRoutes.get(thisLeg);
-								if (thisLegRes == null)
+								routeCounter++;
+								if (routeCounter > _numRoutes)
+									break;
+
+								Coordinate[] coords = new Coordinate[]
+								{ route.getStartPoint().getCoordinate(),
+										route.getEndPoing().getCoordinate() };
+								LineString newR = GeoSupport.getFactory().createLineString(
+										coords);
+
+								if (_showRoutes)
+									possibleRoutes.add(newR);
+								
+								if (_showRoutesWithScores)
 								{
-									// nope, better create one then
-									thisLegRes = new ArrayList<ScoredRoute>();
-									scoredRoutes.put(thisLeg, thisLegRes);
+									// do we have a collection for this leg
+									ArrayList<ScoredRoute> thisLegRes = scoredRoutes.get(thisLeg);
+									if (thisLegRes == null)
+									{
+										// nope, better create one then
+										thisLegRes = new ArrayList<ScoredRoute>();
+										scoredRoutes.put(thisLeg, thisLegRes);
+									}
+
+									thisLegRes.add(new ScoredRoute(newR, route.getName(),
+											route.getScore(), route));
+
 								}
-
-								thisLegRes.add(new ScoredRoute(newR, thisRoute.getName(),
-										thisRoute.getScore(), thisRoute));
-
 							}
 						}
 					}
@@ -917,7 +914,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	}
 
 	private void plotRoutesWithScores(
-			HashMap<CoreLeg, ArrayList<ScoredRoute>> legRoutes)
+			HashMap<LegWithRoutes, ArrayList<ScoredRoute>> legRoutes)
 	{
 		if (legRoutes.size() == 0)
 			return;
@@ -927,10 +924,10 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		final DateFormat labelTimeFormat = new SimpleDateFormat("mm:ss");
 
 		// work through the legs
-		Iterator<CoreLeg> lIter = legRoutes.keySet().iterator();
+		Iterator<LegWithRoutes> lIter = legRoutes.keySet().iterator();
 		while (lIter.hasNext())
 		{
-			final CoreLeg thisL = lIter.next();
+			final LegWithRoutes thisL = lIter.next();
 			final ArrayList<ScoredRoute> scoredRoutes = legRoutes.get(thisL);
 
 			double max = 0, min = Double.MAX_VALUE;
@@ -953,7 +950,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 				}
 			}
 
-			System.out.println(" for leg: " + thisL.getName() + " min:" + min
+			System.out.println(" for leg: " + thisL.getClass().getName() + " min:" + min
 					+ " max:" + max);
 
 			for (Iterator<ScoredRoute> iterator = scoredRoutes.iterator(); iterator
