@@ -213,7 +213,14 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	public boolean canTakeShapes()
+	{
+		return true;
+	}
 	
 	public void append(Layer other)
 	{

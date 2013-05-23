@@ -93,6 +93,15 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		iso.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
 	public TrackStoreWrapper(String couchURL, String esURL)
 	{
 

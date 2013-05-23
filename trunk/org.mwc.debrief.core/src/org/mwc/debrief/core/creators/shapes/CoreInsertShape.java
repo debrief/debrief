@@ -29,7 +29,6 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	private static final String DEFAULT_TARGET_LAYER = "Misc";
 
-	
 	/**
 	 * get a plottable object
 	 * 
@@ -39,7 +38,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-		// get centre of area 
+		// get centre of area
 		WorldLocation centre = getCentre(theChart);
 
 		// create the shape, based on the centre
@@ -101,7 +100,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 			{
 				// yup, store it's name
 				Object[] val = list.getResult();
-				
+
 				// check something got selected
 				if (val.length > 0)
 				{
@@ -168,7 +167,9 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 			Layer thisLayer = (Layer) enumer.nextElement();
 			if (thisLayer instanceof BaseLayer)
 			{
-				res.add(thisLayer.getName());
+				BaseLayer bl = (BaseLayer) thisLayer;
+				if (bl.canTakeShapes())
+					res.add(thisLayer.getName());
 			}
 		}
 

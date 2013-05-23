@@ -91,6 +91,15 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     return _etopo;
   }
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
   ////////////////////////////////////
   // layer support methods
   public String getName()

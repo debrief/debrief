@@ -461,8 +461,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 			thePlottable.getInfo().addPropertyChangeListener(
 					PlainWrapper.LOCATION_CHANGED, this);
 		}
-		
-		
+
 		// hmm, if it's got bounds, let's clear the world area - that's
 		// if we've got a world area... It may have already been cleared...
 		if (_myArea != null)
@@ -512,8 +511,9 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	private void stopListeningTo(final Editable p)
 	{
-		p.getInfo().removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-				this);
+		EditorType info = p.getInfo();
+		if (info != null)
+			info.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, this);
 	}
 
 	/**
