@@ -17,7 +17,7 @@ public abstract class CoreLeg
 	/** the maximum number of points we allow in a leg start/end state before we try to generate solutions
 	 * 
 	 */
-	private static final long MAX_PTS = 5000;
+	private static final int MAX_PTS = 5000;
 	
 	/**
 	 * how many points there are in the start polygon
@@ -85,12 +85,31 @@ public abstract class CoreLeg
 
 	public List<Point> getStartPoints()
 	{
+		if (startPoints == null)
+		{
+			return null;
+		}
 		return Collections.unmodifiableList(startPoints);
 	}
 
 	public List<Point> getEndPoints()
 	{
+		if (endPoints == null)
+		{
+			return null;
+		}
 		return Collections.unmodifiableList(endPoints);
+	}
+	
+	/**
+	 * produce the set of constituent routes for this leg
+	 * 
+	 * @param precision
+	 *          how many grid cells to dissect the area into
+	 */
+	public void generatePoints(Precision precision) 
+	{
+		generatePoints(precision, MAX_PTS);
 	}
 
 	/**
@@ -98,8 +117,10 @@ public abstract class CoreLeg
 	 * 
 	 * @param precision
 	 *          how many grid cells to dissect the area into
+	 * @param maxPoints 
+	 *          if we have more than maxPoints points for each area throw the exception   
 	 */
-	public void generatePoints(Precision precision)
+	public void generatePoints(Precision precision, int maxPoints)
 	{
 		// produce the grid of cells
 		LocationRange firstLoc = getFirst().getLocation();
@@ -136,9 +157,9 @@ public abstract class CoreLeg
 		final int numEnd = (int) (endArea / (delta * delta));
 
 		// just check neither of our domains are too large (a typical symptom of a contribution with an invalid time state)
-		if(numStart > MAX_PTS)
+		if(numStart > maxPoints)
 			throw new RuntimeException("Too many start points (" + numStart + ") for leg:" + this.getName());
-		if(numEnd > MAX_PTS)
+		if(numEnd > maxPoints)
 			throw new RuntimeException("Too many end points (" + numEnd + ") for leg:" + this.getName());
 
 		startPoints = MakeGrid.ST_Tile(firstLoc.getGeometry(),

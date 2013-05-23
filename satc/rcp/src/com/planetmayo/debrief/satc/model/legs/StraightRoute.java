@@ -52,7 +52,14 @@ public class StraightRoute extends CoreRoute
 				_endP.getCoordinate());
 
 		// find the course (converting it to our compass-oriented coordinate system
-		_course = Math.PI / 2 - vector.angle();
+		if (! startP.equals(endP)) 
+		{
+			_course = Math.PI / 2 - vector.angle();
+		} 
+		else 
+		{
+			_course = 0;
+		}
 
 		// what is our time period
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
