@@ -28,8 +28,8 @@ public class StraightLeg extends CoreLeg
 	{
 		super(name, states);
 	}
-
-	private void decideScaledPolygons(StraightRoute theRoute)
+	
+	void decideScaledPolygons(StraightRoute theRoute)
 	{
 		// do we already know this isn't possible?
 		if (!theRoute.isPossible())
@@ -140,7 +140,8 @@ public class StraightLeg extends CoreLeg
 			route.setImpossible();
 			return;
 		}
-		decideScaledPolygons(route);
+		// looks like there is a bug in this method, because almost all routes becomes unachievable 
+		//decideScaledPolygons(route);
 	}
 	
 	@Override
