@@ -186,7 +186,7 @@ public class SATC_Solution extends BaseLayer
 		return false;
 	}
 
-	public boolean isShowSolutions()
+	public boolean getShowSolutions()
 	{
 		return _showSolutions;
 	}
