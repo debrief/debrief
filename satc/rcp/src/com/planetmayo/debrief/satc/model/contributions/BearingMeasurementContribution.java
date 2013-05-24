@@ -296,6 +296,11 @@ public class BearingMeasurementContribution extends BaseContribution
 	{
 		return measurements.size();
 	}
+	
+	public ArrayList<BMeasurement> getMeasurements()
+	{
+		return measurements;
+	}
 
 	/**
 	 * whether this contribution has any measurements yet
@@ -439,6 +444,11 @@ public class BearingMeasurementContribution extends BaseContribution
 			this.bearingAngle = bearing;
 			this.time = time;
 			this.theRange = theRange;
+		}
+		
+		public Date getDate()
+		{
+			return time;
 		}
 
 		public boolean isActive()
