@@ -5,10 +5,12 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.Status;
+import org.jfree.util.ReadOnlyIterator;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import MWC.GUI.BaseLayer;
@@ -28,9 +30,11 @@ import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -64,6 +68,9 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 		super.setName(solName);
 
 		_mySolver = createSolver();
+		
+		// clear the solver, just to be sure
+		_mySolver.getContributions().clear();
 
 		listenToSolver(_mySolver);
 
@@ -217,20 +224,35 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 					@Override
 					public void removed(BaseContribution contribution)
 					{
-						
+
 						// hey, are we still storing this?
-						Enumeration<Editable> iter = elements();
-						while (iter.hasMoreElements())
+						boolean idiotTest_DidWeFindIt = false;
+
+						// get read-only version of elements
+						ReadOnlyIterator rIter = new ReadOnlyIterator(getData().iterator());
+						while (rIter.hasNext())
 						{
-							Editable editable = (Editable) iter.nextElement();
+							Editable editable = (Editable) rIter.next();
 							ContributionWrapper bc = (ContributionWrapper) editable;
-							if(bc.getContribution() == contribution)
+							if (bc.getContribution() == contribution)
 							{
 								removeElement(bc);
+								idiotTest_DidWeFindIt = true;
 							}
 						}
-						
+
 						fireRepaint();
+
+						// just check that we contained the contribution
+						if (!idiotTest_DidWeFindIt)
+						{
+							SATC_Activator
+									.log(
+											Status.ERROR,
+											"We were asked to remove a contribution, but we didn't have it stored in the Layer",
+											null);
+						}
+
 					}
 
 					@Override
@@ -274,7 +296,8 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 				});
 	}
 
-	/** whether this type of BaseLayer is able to have shapes added to it
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
 	 * 
 	 * @return
 	 */
@@ -283,7 +306,7 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 	{
 		return false;
 	}
-	
+
 	@Override
 	public void paint(CanvasType dest)
 	{
@@ -305,8 +328,36 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 	private void paintThese(CanvasType dest, CompositeRoute[] _newRoutes2)
 	{
-		// TODO Auto-generated method stub
+		dest.setColor(Color.yellow);
+		for (int i = 0; i < _newRoutes2.length; i++)
+		{
+			CompositeRoute thisR = _newRoutes2[i];
+			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+			Point lastPt = null;
 
+			while (legs.hasNext())
+			{
+				CoreRoute thisR2 = (CoreRoute) legs.next();
+				ArrayList<State> states = thisR2.getStates();
+				Iterator<State> stateIter = states.iterator();
+				while (stateIter.hasNext())
+				{
+					State thisState = (State) stateIter.next();
+					com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+					// convert to screen
+					WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
+					Point screenPt = dest.toScreen(wLoc);
+
+					if (lastPt != null)
+					{
+						// draw the line
+						dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
+					}
+
+					lastPt = screenPt;
+				}
+			}
+		}
 	}
 
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
@@ -364,7 +415,10 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 	protected void fireRepaint()
 	{
-		_myLayers.fireModified(this);
+		// note: when first loaded, we 'may' not know the _myLayers object, so best
+		// to check it
+		if (_myLayers != null)
+			_myLayers.fireModified(this);
 	}
 
 	private ISolver createSolver()
@@ -376,8 +430,8 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 	{
 		_mySolver.getContributions().addContribution(cont);
 
-		System.err.println("adding:"+ cont.getName());
-		
+		System.err.println("adding:" + cont.getName());
+
 		super.add(new ContributionWrapper(cont));
 	}
 
