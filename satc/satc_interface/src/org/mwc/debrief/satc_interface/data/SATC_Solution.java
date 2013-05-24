@@ -11,19 +11,19 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.util.ReadOnlyIterator;
+import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
+import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
-import MWC.GUI.Layers;
-import MWC.GUI.Layers.NeedsToKnowAboutLayers;
-import MWC.GUI.Plottable;
-import MWC.GenericData.WorldArea;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.WorldLocation;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
 import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
@@ -38,7 +38,7 @@ import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 
-public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
+public class SATC_Solution extends BaseLayer
 {
 	/**
 	 * 
@@ -46,8 +46,6 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 	private static final long serialVersionUID = 1L;
 
 	private ISolver _mySolver;
-
-	private Layers _myLayers;
 
 	private boolean _showLocationBounds = true;
 
@@ -68,93 +66,12 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 		super.setName(solName);
 
 		_mySolver = createSolver();
-		
+
 		// clear the solver, just to be sure
 		_mySolver.getContributions().clear();
 
 		listenToSolver(_mySolver);
 
-	}
-
-	protected static class ContributionWrapper implements Plottable
-	{
-		private final BaseContribution _myCont;
-
-		public ContributionWrapper(BaseContribution contribution)
-		{
-			_myCont = contribution;
-		}
-
-		public BaseContribution getContribution()
-		{
-			return _myCont;
-		}
-
-		@Override
-		public String toString()
-		{
-			return getName();
-		}
-
-		@Override
-		public String getName()
-		{
-			return _myCont.getName();
-		}
-
-		@Override
-		public boolean hasEditor()
-		{
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public EditorType getInfo()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public int compareTo(Plottable arg0)
-		{
-			ContributionWrapper him = (ContributionWrapper) arg0;
-			return this.getContribution().compareTo(him.getContribution());
-		}
-
-		@Override
-		public void paint(CanvasType dest)
-		{
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public WorldArea getBounds()
-		{
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean getVisible()
-		{
-			return _myCont.isActive();
-		}
-
-		@Override
-		public void setVisible(boolean val)
-		{
-			_myCont.setActive(val);
-		}
-
-		@Override
-		public double rangeFrom(WorldLocation other)
-		{
-			// TODO Auto-generated method stub
-			return 0;
-		}
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -209,6 +126,9 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 					public void solutionsReady(CompositeRoute[] routes)
 					{
 						_newRoutes = routes;
+
+						// hey, trigger repaint
+						fireRepaint();
 					}
 
 					@Override
@@ -305,6 +225,12 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 	public boolean canTakeShapes()
 	{
 		return false;
+	}
+
+	@Override
+	public boolean hasOrderedChildren()
+	{
+		return true;
 	}
 
 	@Override
@@ -415,10 +341,7 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 	protected void fireRepaint()
 	{
-		// note: when first loaded, we 'may' not know the _myLayers object, so best
-		// to check it
-		if (_myLayers != null)
-			_myLayers.fireModified(this);
+		super.firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
 	}
 
 	private ISolver createSolver()
@@ -432,7 +355,12 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 		System.err.println("adding:" + cont.getName());
 
-		super.add(new ContributionWrapper(cont));
+		ContributionWrapper thisW;
+		if (cont instanceof BearingMeasurementContribution)
+			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
+		else
+			thisW = new ContributionWrapper(cont);
+		super.add(thisW);
 	}
 
 	@Override
@@ -443,20 +371,13 @@ public class SATC_Solution extends BaseLayer implements NeedsToKnowAboutLayers
 
 		// get the actual contribution
 		ContributionWrapper cw = (ContributionWrapper) p;
-		BaseContribution bc = cw._myCont;
+		BaseContribution bc = cw.getContribution();
 		_mySolver.getContributions().removeContribution(bc);
 	}
 
 	public ISolver getSolver()
 	{
 		return _mySolver;
-	}
-
-	@Override
-	public void setLayers(Layers parent)
-	{
-		// ok, remember it
-		_myLayers = parent;
 	}
 
 }
