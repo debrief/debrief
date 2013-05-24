@@ -80,6 +80,7 @@ public class SATC_Activator extends AbstractUIPlugin
 		IJobsManager jobsManager = new RCPJobsManager();
 		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
 		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
+		//ISolutionGenerator generator = new com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
 		ISolver solver = new Solver(contributions, problemSpace, boundsManager, generator, jobsManager);
 		
 		context.registerService(IVehicleTypesManager.class,

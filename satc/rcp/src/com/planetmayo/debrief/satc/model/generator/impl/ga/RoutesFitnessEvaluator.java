@@ -10,6 +10,7 @@ import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.vividsolutions.jts.geom.Point;
 
 public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
@@ -34,12 +35,15 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
 		double error = 0;
 		for (int i = 0; i < length; i += 2)
 		{
-			CoreLeg leg = legsIterator.next();
+			CoreLeg leg = legsIterator.next();			
 			CoreRoute route = leg.createRoute("", candidate.get(i), candidate.get(i + 1));
 			leg.decideAchievableRoute(route);
 			if (route.isPossible()) 
 			{
-				candidateRoutes.add(route);
+				if (leg.getType() == LegType.STRAIGHT)
+				{
+					candidateRoutes.add(route);
+				}
 			}
 			else 
 			{
