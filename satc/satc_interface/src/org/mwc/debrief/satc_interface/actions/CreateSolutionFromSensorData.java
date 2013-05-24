@@ -208,6 +208,7 @@ public class CreateSolutionFromSensorData implements
 			final BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 			bmc.setName(contName);
 			bmc.setBearingError(Math.toRadians(3.0));
+			bmc.setAutoDetect(false);
 
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
