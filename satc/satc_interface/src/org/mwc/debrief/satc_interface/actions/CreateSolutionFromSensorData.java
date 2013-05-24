@@ -35,9 +35,13 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
 
 public class CreateSolutionFromSensorData implements
 		RightClickContextItemGenerator
@@ -339,6 +343,9 @@ public class CreateSolutionFromSensorData implements
 				String solutionName = getDefaultSolutionName();
 				_targetSolution = new SATC_Solution(solutionName);
 				_theLayers.addThisLayer(_targetSolution);
+
+				// ok, give it the default contributions
+				initialiseSolver();
 			}
 
 			// grab a name
@@ -362,6 +369,15 @@ public class CreateSolutionFromSensorData implements
 			}
 
 			return Status.OK_STATUS;
+		}
+
+		private void initialiseSolver()
+		{
+			IContributions theConts = _targetSolution.getSolver()
+					.getContributions();
+			theConts.addContribution(new LocationAnalysisContribution());
+			theConts.addContribution(new SpeedAnalysisContribution());
+			theConts.addContribution(new CourseAnalysisContribution());
 		}
 
 		abstract protected BaseContribution createContribution(String contName);
