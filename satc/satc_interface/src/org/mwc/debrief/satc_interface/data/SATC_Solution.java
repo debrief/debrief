@@ -66,6 +66,7 @@ public class SATC_Solution extends BaseLayer
 						prop("ShowLocationBounds", "whether to display location bounds",
 								FORMAT),
 						prop("ShowSolutions", "whether to display solutions", FORMAT),
+						prop("Name", "the name for this solution", EditorType.FORMAT),
 						prop("Visible", "whether to plot this solution", VISIBILITY) };
 
 				return res;
@@ -109,8 +110,8 @@ public class SATC_Solution extends BaseLayer
 		// clear the solver, just to be sure
 		_mySolver.getContributions().clear();
 
+		// and listen for changes
 		listenToSolver(_mySolver);
-
 	}
 
 	public void addContribution(BaseContribution cont)
@@ -353,10 +354,10 @@ public class SATC_Solution extends BaseLayer
 		{
 			CompositeRoute thisR = _newRoutes2[i];
 			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
-			Point lastPt = null;
 
 			while (legs.hasNext())
 			{
+				Point lastPt = null;
 				CoreRoute thisR2 = legs.next();
 				ArrayList<State> states = thisR2.getStates();
 				Iterator<State> stateIter = states.iterator();

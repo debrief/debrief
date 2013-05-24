@@ -10,9 +10,13 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.Status;
 
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Plottables.IteratorWrapper;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
@@ -50,14 +54,13 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 						.next();
 				BMC_Wrapper.MeasurementEditable thisMe = new MeasurementEditable(thisM);
 				_myElements.add(thisMe);
-
 			}
 		}
 
 		return new IteratorWrapper(_myElements.iterator());
 	}
 
-	protected static class MeasurementEditable implements Editable
+	protected class MeasurementEditable implements Plottable
 	{
 		// ///////////////////////////////////////////////////////////
 		// info class
@@ -107,6 +110,9 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 		public void setActive(Boolean active)
 		{
 			_myMeas.setActive(active);
+
+			// fire hard constraints changed
+			getContribution().fireHardConstraintsChange();
 		}
 
 		@Override
@@ -133,6 +139,45 @@ public class BMC_Wrapper extends ContributionWrapper implements Layer
 			if (_myEditor == null)
 				_myEditor = new Meas_Info(this);
 			return _myEditor;
+		}
+
+		@Override
+		public int compareTo(Plottable arg0)
+		{
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public void paint(CanvasType dest)
+		{
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public WorldArea getBounds()
+		{
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean getVisible()
+		{
+			return getActive();
+		}
+
+		@Override
+		public void setVisible(boolean val)
+		{
+			setActive(val);
+		}
+
+		@Override
+		public double rangeFrom(WorldLocation other)
+		{
+			return INVALID_RANGE;
 		}
 	}
 

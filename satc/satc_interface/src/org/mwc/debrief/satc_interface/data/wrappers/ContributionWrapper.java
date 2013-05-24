@@ -2,6 +2,7 @@ package org.mwc.debrief.satc_interface.data.wrappers;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -83,7 +84,6 @@ public class ContributionWrapper implements Plottable
 	@Override
 	public double rangeFrom(WorldLocation other)
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return Plottables.INVALID_RANGE;
 	}
 }
