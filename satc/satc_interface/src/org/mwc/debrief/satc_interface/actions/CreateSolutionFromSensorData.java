@@ -1,7 +1,5 @@
 package org.mwc.debrief.satc_interface.actions;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -30,7 +28,6 @@ import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -208,6 +205,7 @@ public class CreateSolutionFromSensorData implements
 			final BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 			bmc.setName(contName);
 			bmc.setBearingError(Math.toRadians(3.0));
+			bmc.setAutoDetect(false);
 
 			// add the bearing data
 			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
@@ -230,22 +228,6 @@ public class CreateSolutionFromSensorData implements
 
 				final BMeasurement thisM = new BMeasurement(loc, brg, date, theRange);
 				bmc.addThis(thisM);
-
-				// listen out for changes to this sensor cut
-				scw.addPropertyChangeListener(PlainWrapper.VISIBILITY_CHANGED,
-						new PropertyChangeListener()
-						{
-							@Override
-							public void propertyChange(PropertyChangeEvent arg0)
-							{
-								// ok, update the measurement accordingly
-								thisM.setActive(scw.getVisible());
-
-								// and fire off some kind of update
-								bmc.fireHardConstraintsChange();
-							}
-						});
-
 			}
 			return bmc;
 		}
