@@ -38,6 +38,8 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	private static final String MY_TYPE = "satc_solution";
 
 	private static final String NAME = "NAME";
+	private static final String SHOW_BOUNDS = "ShowBounds";
+	private static final String SHOW_SOLUTIONS = "ShowSolutions";
 
 	protected String _myContents;
 
@@ -46,6 +48,10 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	private Layers _theLayers;
 
 	private CharArrayWriter _cdataCharacters;
+
+	protected boolean _showSolutions = false;
+
+	protected boolean _showBounds = false;
 
 	public SATCHandler()
 	{
@@ -62,6 +68,22 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 			public void setValue(String name, String val)
 			{
 				_name = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(SHOW_BOUNDS)
+		{
+			@Override
+			public void setValue(String name, boolean value)
+			{
+				_showBounds = value;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(SHOW_SOLUTIONS)
+		{
+			@Override
+			public void setValue(String name, boolean value)
+			{
+				_showSolutions = value;
 			}
 		});
 	}
@@ -92,13 +114,17 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 	{
 		SATC_Solution solution = new SATC_Solution(_name);
 
+		// and the preferences
+		solution.setShowLocationBounds(_showBounds);
+		solution.setShowSolutions(_showSolutions);
+
 		// ok, repopulate the solver from the contents
 		if (_cdataCharacters.size() > 0)
 		{
 			try
 			{
-				InputStream inputStream = new ByteArrayInputStream(_cdataCharacters.toString()
-						.getBytes("utf-8"));
+				InputStream inputStream = new ByteArrayInputStream(_cdataCharacters
+						.toString().getBytes("utf-8"));
 				XStreamReader reader = XStreamIO.newReader(inputStream, "Unknown");
 				if (reader.isLoaded())
 				{
@@ -152,6 +178,10 @@ public class SATCHandler extends MWCXMLReader implements LayerHandlerExtension
 
 			// store the name
 			newI.setAttribute(NAME, solution.getName());
+			newI.setAttribute(SHOW_BOUNDS,
+					writeThis(solution.getShowLocationBounds()));
+			newI.setAttribute(SHOW_SOLUTIONS,
+					writeThis(solution.getShowSolutions()));
 
 			// insert the CDATA child node
 			CDATASection cd = doc.createCDATASection(res);

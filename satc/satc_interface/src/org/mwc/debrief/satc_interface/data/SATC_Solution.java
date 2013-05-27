@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.jfree.util.ReadOnlyIterator;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
@@ -40,6 +40,44 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer
 {
+	// ///////////////////////////////////////////////////////////
+	// info class
+	// //////////////////////////////////////////////////////////
+	public class SATC_Info extends Editable.EditorType implements Serializable
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public SATC_Info(SATC_Solution data)
+		{
+			super(data, data.getName(), "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						prop("ShowLocationBounds", "whether to display location bounds",
+								FORMAT),
+						prop("ShowSolutions", "whether to display solutions", FORMAT),
+						prop("Name", "the name for this solution", EditorType.FORMAT),
+						prop("Visible", "whether to plot this solution", VISIBILITY) };
+
+				return res;
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -47,7 +85,9 @@ public class SATC_Solution extends BaseLayer
 
 	private ISolver _mySolver;
 
-	private boolean _showLocationBounds = true;
+	private boolean _showLocationBounds = false;
+
+	private boolean _showSolutions = true;
 
 	/**
 	 * the last set of bounded states that we know about
@@ -70,43 +110,85 @@ public class SATC_Solution extends BaseLayer
 		// clear the solver, just to be sure
 		_mySolver.getContributions().clear();
 
+		// and listen for changes
 		listenToSolver(_mySolver);
-
 	}
 
-	// ///////////////////////////////////////////////////////////
-	// info class
-	// //////////////////////////////////////////////////////////
-	public class SATC_Info extends Editable.EditorType implements Serializable
+	public void addContribution(BaseContribution cont)
 	{
+		_mySolver.getContributions().addContribution(cont);
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+		System.err.println("adding:" + cont.getName());
 
-		public SATC_Info(SATC_Solution data)
-		{
-			super(data, data.getName(), "");
-		}
+		ContributionWrapper thisW;
+		if (cont instanceof BearingMeasurementContribution)
+			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
+		else
+			thisW = new ContributionWrapper(cont);
+		super.add(thisW);
+	}
 
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				PropertyDescriptor[] res =
-				{
-						prop("ShowLocationBounds", "whether to display location bounds",
-								FORMAT),
-						prop("Visible", "whether to plot this solution", VISIBILITY) };
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
 
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
+	private ISolver createSolver()
+	{
+		return SATC_Activator.getDefault().getService(ISolver.class, true);
+	}
+
+	protected void fireRepaint()
+	{
+		super.firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
+	}
+
+	@Override
+	public EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new SATC_Info(this);
+
+		return _myEditor;
+	}
+
+	public boolean getShowLocationBounds()
+	{
+		return _showLocationBounds;
+	}
+
+	public ISolver getSolver()
+	{
+		return _mySolver;
+	}
+
+	@Override
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean hasOrderedChildren()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean isBuffered()
+	{
+		return false;
+	}
+
+	public boolean getShowSolutions()
+	{
+		return _showSolutions;
 	}
 
 	private void listenToSolver(ISolver solver)
@@ -116,10 +198,8 @@ public class SATC_Solution extends BaseLayer
 				{
 
 					@Override
-					public void startingGeneration()
+					public void finishedGeneration(Throwable error)
 					{
-						// ditch any existing routes
-						_newRoutes = null;
 					}
 
 					@Override
@@ -129,17 +209,28 @@ public class SATC_Solution extends BaseLayer
 
 						// hey, trigger repaint
 						fireRepaint();
+
+						System.err.println("REPAINT!!! " + _newRoutes.length + " routes "
+								+ _newRoutes[0].getLegs().size() + " legs");
 					}
 
 					@Override
-					public void finishedGeneration(Throwable error)
+					public void startingGeneration()
 					{
+						// ditch any existing routes
+						_newRoutes = null;
 					}
 				});
 
 		solver.getContributions().addContributionsChangedListener(
 				new IContributionsChangedListener()
 				{
+
+					@Override
+					public void added(BaseContribution contribution)
+					{
+						fireRepaint();
+					}
 
 					@Override
 					public void removed(BaseContribution contribution)
@@ -168,17 +259,11 @@ public class SATC_Solution extends BaseLayer
 						{
 							SATC_Activator
 									.log(
-											Status.ERROR,
+											IStatus.ERROR,
 											"We were asked to remove a contribution, but we didn't have it stored in the Layer",
 											null);
 						}
 
-					}
-
-					@Override
-					public void added(BaseContribution contribution)
-					{
-						fireRepaint();
 					}
 				});
 
@@ -186,9 +271,17 @@ public class SATC_Solution extends BaseLayer
 				new IConstrainSpaceListener()
 				{
 					@Override
-					public void stepped(IBoundsManager boundsManager, int thisStep,
-							int totalSteps)
+					public void error(IBoundsManager boundsManager,
+							IncompatibleStateException ex)
 					{
+						_lastStates = null;
+					}
+
+					@Override
+					public void restarted(IBoundsManager boundsManager)
+					{
+						_lastStates = null;
+						_newRoutes = null;
 					}
 
 					@Override
@@ -201,36 +294,11 @@ public class SATC_Solution extends BaseLayer
 					}
 
 					@Override
-					public void restarted(IBoundsManager boundsManager)
+					public void stepped(IBoundsManager boundsManager, int thisStep,
+							int totalSteps)
 					{
-						_lastStates = null;
-						_newRoutes = null;
-					}
-
-					@Override
-					public void error(IBoundsManager boundsManager,
-							IncompatibleStateException ex)
-					{
-						_lastStates = null;
 					}
 				});
-	}
-
-	/**
-	 * whether this type of BaseLayer is able to have shapes added to it
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean canTakeShapes()
-	{
-		return false;
-	}
-
-	@Override
-	public boolean hasOrderedChildren()
-	{
-		return true;
 	}
 
 	@Override
@@ -252,46 +320,12 @@ public class SATC_Solution extends BaseLayer
 		}
 	}
 
-	private void paintThese(CanvasType dest, CompositeRoute[] _newRoutes2)
-	{
-		dest.setColor(Color.yellow);
-		for (int i = 0; i < _newRoutes2.length; i++)
-		{
-			CompositeRoute thisR = _newRoutes2[i];
-			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
-			Point lastPt = null;
-
-			while (legs.hasNext())
-			{
-				CoreRoute thisR2 = (CoreRoute) legs.next();
-				ArrayList<State> states = thisR2.getStates();
-				Iterator<State> stateIter = states.iterator();
-				while (stateIter.hasNext())
-				{
-					State thisState = (State) stateIter.next();
-					com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
-					// convert to screen
-					WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
-					Point screenPt = dest.toScreen(wLoc);
-
-					if (lastPt != null)
-					{
-						// draw the line
-						dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
-					}
-
-					lastPt = screenPt;
-				}
-			}
-		}
-	}
-
 	private void paintThese(CanvasType dest, Collection<BoundedState> states)
 	{
 		for (Iterator<BoundedState> iterator = states.iterator(); iterator
 				.hasNext();)
 		{
-			BoundedState thisS = (BoundedState) iterator.next();
+			BoundedState thisS = iterator.next();
 			if (thisS.getLocation() != null)
 			{
 				LocationRange theLoc = thisS.getLocation();
@@ -313,9 +347,51 @@ public class SATC_Solution extends BaseLayer
 		}
 	}
 
-	public boolean getShowLocationBounds()
+	private void paintThese(CanvasType dest, CompositeRoute[] _newRoutes2)
 	{
-		return _showLocationBounds;
+		dest.setColor(Color.yellow);
+		for (int i = 0; i < _newRoutes2.length; i++)
+		{
+			CompositeRoute thisR = _newRoutes2[i];
+			Iterator<CoreRoute> legs = thisR.getLegs().iterator();
+
+			while (legs.hasNext())
+			{
+				Point lastPt = null;
+				CoreRoute thisR2 = legs.next();
+				ArrayList<State> states = thisR2.getStates();
+				Iterator<State> stateIter = states.iterator();
+				while (stateIter.hasNext())
+				{
+					State thisState = stateIter.next();
+					com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+					// convert to screen
+					WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
+					Point screenPt = dest.toScreen(wLoc);
+
+					if (lastPt != null)
+					{
+						// draw the line
+						dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
+					}
+
+					lastPt = screenPt;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void removeElement(Editable p)
+	{
+		// get the actual contribution
+		ContributionWrapper cw = (ContributionWrapper) p;
+		BaseContribution bc = cw.getContribution();
+		_mySolver.getContributions().removeContribution(bc);
+
+		// NOTE: don't worry about removing it in the parent, the above code should
+		// do it.
+
 	}
 
 	@FireReformatted
@@ -324,60 +400,9 @@ public class SATC_Solution extends BaseLayer
 		_showLocationBounds = showLocationBounds;
 	}
 
-	@Override
-	public boolean hasEditor()
+	public void setShowSolutions(boolean showSolutions)
 	{
-		return true;
-	}
-
-	@Override
-	public EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new SATC_Info(this);
-
-		return _myEditor;
-	}
-
-	protected void fireRepaint()
-	{
-		super.firePropertyChange(SupportsPropertyListeners.FORMAT, null, this);
-	}
-
-	private ISolver createSolver()
-	{
-		return SATC_Activator.getDefault().getService(ISolver.class, true);
-	}
-
-	public void addContribution(BaseContribution cont)
-	{
-		_mySolver.getContributions().addContribution(cont);
-
-		System.err.println("adding:" + cont.getName());
-
-		ContributionWrapper thisW;
-		if (cont instanceof BearingMeasurementContribution)
-			thisW = new BMC_Wrapper((BearingMeasurementContribution) cont);
-		else
-			thisW = new ContributionWrapper(cont);
-		super.add(thisW);
-	}
-
-	@Override
-	public void removeElement(Editable p)
-	{
-		// ok, ditch this element
-		super.removeElement(p);
-
-		// get the actual contribution
-		ContributionWrapper cw = (ContributionWrapper) p;
-		BaseContribution bc = cw.getContribution();
-		_mySolver.getContributions().removeContribution(bc);
-	}
-
-	public ISolver getSolver()
-	{
-		return _mySolver;
+		_showSolutions = showSolutions;
 	}
 
 }
