@@ -27,7 +27,7 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
-public class SolutionGenerator extends AbstractSolutionGenerator
+public class BFSolutionGenerator extends AbstractSolutionGenerator
 {
 	private static final String SOLUTION_GENERATOR_JOBS_GROUP = "solutionGeneratorGroup";
 
@@ -41,7 +41,7 @@ public class SolutionGenerator extends AbstractSolutionGenerator
 
 	private volatile Job<?, ?> mainGenerationJob = null;
 
-	public SolutionGenerator(IContributions contributions,
+	public BFSolutionGenerator(IContributions contributions,
 			IJobsManager jobsManager, SafeProblemSpace problemSpace)
 	{
 		super(contributions, jobsManager, problemSpace);
@@ -65,7 +65,7 @@ public class SolutionGenerator extends AbstractSolutionGenerator
 					protected void onComplete()
 					{
 						fireFinishedGeneration(getException());
-						synchronized (SolutionGenerator.this)
+						synchronized (BFSolutionGenerator.this)
 						{
 							mainGenerationJob = null;
 						}
@@ -181,7 +181,7 @@ public class SolutionGenerator extends AbstractSolutionGenerator
 					protected void onComplete()
 					{
 						fireFinishedGeneration(getException());
-						synchronized (SolutionGenerator.this)
+						synchronized (BFSolutionGenerator.this)
 						{
 							mainGenerationJob = null;
 						}

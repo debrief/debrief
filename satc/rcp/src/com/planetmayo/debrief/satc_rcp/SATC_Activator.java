@@ -13,12 +13,13 @@ import org.osgi.framework.ServiceReference;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
-import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.impl.BoundsManager;
 import com.planetmayo.debrief.satc.model.generator.impl.Contributions;
 import com.planetmayo.debrief.satc.model.generator.impl.Solver;
-import com.planetmayo.debrief.satc.model.generator.impl.bf.SolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.jobs.RCPJobsManager;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
@@ -79,9 +80,9 @@ public class SATC_Activator extends AbstractUIPlugin
 		IContributions contributions = new Contributions();	
 		IJobsManager jobsManager = new RCPJobsManager();
 		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
-		ISolutionGenerator generator = new SolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
-		//ISolutionGenerator generator = new com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
-		ISolver solver = new Solver(contributions, problemSpace, boundsManager, generator, jobsManager);
+		BFSolutionGenerator bfGenerator = new BFSolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
+		GASolutionGenerator gaGenerator = new GASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));		
+		ISolver solver = new Solver(contributions, problemSpace, boundsManager, new SwitchableSolutionGenerator(bfGenerator), jobsManager);
 		
 		context.registerService(IVehicleTypesManager.class,
 				new MockVehicleTypesManager(), new Hashtable<String, Object>());
@@ -89,6 +90,10 @@ public class SATC_Activator extends AbstractUIPlugin
 				new ContributionsManagerImpl(), new Hashtable<String, Object>());
 		context.registerService(ISolver.class, 
 				solver, new Hashtable<String, Object>());
+		context.registerService(BFSolutionGenerator.class, 
+				bfGenerator, new Hashtable<String, Object>());
+		context.registerService(GASolutionGenerator.class, 
+				gaGenerator, new Hashtable<String, Object>());			
 	}
 
 	@Override

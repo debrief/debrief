@@ -40,11 +40,24 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 
 	private volatile Job<Void, Void> mainJob;
 	
+	private final GAParameters parameters;
+	
 	public GASolutionGenerator(IContributions contributions, IJobsManager jobsManager, SafeProblemSpace problemSpace) 
 	{
 		super(contributions, jobsManager, problemSpace);
+		parameters = new GAParameters()
+			.setElitizm(30)
+			.setMutationProbability(0.15)
+			.setPopulationSize(500)
+			.setStagnationSteps(50)
+			.setTimeout(30000);
 	}
-			
+	
+	public GAParameters getParameters()
+	{
+		return parameters;
+	}
+
 	@Override
 	public void clear()
 	{
@@ -139,7 +152,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				return rng.nextInt(2) + 1;
 			}			
 		}));
-		operators.add(new PointsMutation(legs, new Probability(0.15)));
+		operators.add(new PointsMutation(legs, new Probability(parameters.getMutationProbability())));
 		
 		EvolutionEngine<List<Point>> engine = new GenerationalEvolutionEngine<List<Point>>(
 				new RoutesCandidateFactory(legs), 
@@ -156,7 +169,13 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				return progressMonitor.isCanceled();
 			}
 		}; 
-		List<Point> solution = engine.evolve(500, 30, new Stagnation(50, false), new ElapsedTime(30000), progressMonitorCondition);
+		List<Point> solution = engine.evolve(
+				parameters.getPopulationSize(), 
+				parameters.getElitizm(), 
+				new Stagnation(parameters.getStagnationSteps(), false), 
+				new ElapsedTime(parameters.getTimeout()), 
+				progressMonitorCondition
+		);
 		if (progressMonitor.isCanceled())
 		{
 			throw new InterruptedException();

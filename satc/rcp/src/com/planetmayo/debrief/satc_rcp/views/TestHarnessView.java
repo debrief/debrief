@@ -5,13 +5,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.formattedtext.IntegerFormatter;
+import org.eclipse.nebula.widgets.formattedtext.LongFormatter;
+import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -23,12 +34,17 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.GAParameters;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamReader;
 import com.planetmayo.debrief.satc_rcp.io.XStreamIO.XStreamWriter;
+import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -61,6 +77,8 @@ public class TestHarnessView extends ViewPart
 	 */
 
 	private ISolver solver;
+	private BFSolutionGenerator bfSolutionGenerator;
+	private GASolutionGenerator gaSolutionGenerator;
 
 	private Action _restartAction;
 	private Action _stepAction;
@@ -70,6 +88,8 @@ public class TestHarnessView extends ViewPart
 	private Action _populateLongAction;
 	private Action _populateGoodAction;
 	private Action _liveAction;
+	
+	private DataBindingContext _context;
 
 	private TestSupport _testSupport;
 
@@ -96,6 +116,7 @@ public class TestHarnessView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		_context = new DataBindingContext();
 
 		Composite form = new Composite(parent, SWT.NONE);
 		_testSupport = new TestSupport();
@@ -105,6 +126,9 @@ public class TestHarnessView extends ViewPart
 
 		// disable our controls, until we find a genny
 		solver = SATC_Activator.getDefault().getService(ISolver.class, true);
+		bfSolutionGenerator = SATC_Activator.getDefault().getService(BFSolutionGenerator.class, false);
+		gaSolutionGenerator = SATC_Activator.getDefault().getService(GASolutionGenerator.class, false);
+		
 		startListeningTo();
 
 		Composite checkBoxForm = new Composite(form, SWT.NONE);
@@ -223,16 +247,107 @@ public class TestHarnessView extends ViewPart
 						btn7.getSelection());
 			}
 		});
-
-//		Group saveLoadGroup = new Group(form, SWT.SHADOW_ETCHED_IN);
-//		saveLoadGroup.setLayout(new RowLayout());
-//		saveLoadGroup.setText("Save/Load Analysis");
+		createGAGroup(form);
+		
 		form.setLayout(verticalLayout);
-
-
 		// and get the form to handle it's layout
 		form.pack();
+	}
+	
+	
+	
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		_context.dispose();
+	}
 
+	private void createGAGroup(Composite parent)
+	{
+		if (gaSolutionGenerator == null || (! (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator)))
+		{
+			return;
+		}
+		boolean isGA = false;
+		final SwitchableSolutionGenerator switchable = (SwitchableSolutionGenerator) solver.getSolutionGenerator();
+		if (switchable.getCurrentGenerator() == gaSolutionGenerator)
+		{
+			isGA = true;
+		}
+		Group gaGroup = new Group(parent, SWT.SHADOW_ETCHED_IN);
+		gaGroup.setText("Genetic algorithm parameters");
+		gaGroup.setLayout(new GridLayout(2, false));		
+		
+		GridData gridData = new GridData();
+		gridData.horizontalSpan = 2;		
+		final Button useGAButton = new Button(gaGroup, SWT.CHECK);
+		useGAButton.setLayoutData(gridData);
+		useGAButton.setSelection(isGA);
+		useGAButton.setText("Use GA");
+		useGAButton.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (useGAButton.getSelection())
+				{
+					switchable.switchGenerator(gaSolutionGenerator);
+				}
+				else 
+				{
+					switchable.switchGenerator(bfSolutionGenerator);
+				}
+			}
+		});
+		
+		
+		UIUtils.createLabel(gaGroup, "Population size:", new GridData());
+		FormattedText populationSize = new FormattedText(gaGroup);
+		populationSize.setFormatter(new LongFormatter());
+		populationSize.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(gaGroup, "Elitizm:", new GridData());
+		FormattedText elitizm = new FormattedText(gaGroup);
+		elitizm.setFormatter(new LongFormatter());
+		elitizm.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(gaGroup, "Stagnation steps:   ", new GridData());
+		FormattedText stagnation = new FormattedText(gaGroup);
+		stagnation.setFormatter(new LongFormatter());
+		stagnation.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(gaGroup, "Timeout:", new GridData());
+		FormattedText timeout = new FormattedText(gaGroup);
+		timeout.setFormatter(new IntegerFormatter("###,##0"));
+		timeout.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(gaGroup, "Mutation Prob:", new GridData());
+		FormattedText mutation = new FormattedText(gaGroup);
+		mutation.setFormatter(new NumberFormatter("0.0#"));
+		mutation.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		_context.bindValue(
+				WidgetProperties.text().observe(populationSize.getControl()),
+				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.POPULATION_SIZE)
+		);
+		_context.bindValue(
+				WidgetProperties.text().observe(elitizm.getControl()),
+				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.ELITIZM)
+		);
+		_context.bindValue(
+				WidgetProperties.text().observe(stagnation.getControl()),
+				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.STAGNATION_STEPS)
+		);
+		_context.bindValue(
+				WidgetProperties.text().observe(timeout.getControl()),
+				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT)
+		);
+		_context.bindValue(
+				WidgetProperties.text().observe(mutation.getControl()),
+				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.MUTATION_PROBABILITY)
+		);
 	}
 
 	private void doSave()
