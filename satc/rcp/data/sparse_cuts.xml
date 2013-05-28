@@ -1,0 +1,217 @@
+<task version="1">
+  <vehicleType>
+    <name>UK Ferry</name>
+    <minSpeedMS>1.028888888</minSpeedMS>
+    <maxSpeedMS>15.43333332</maxSpeedMS>
+    <minTurnRate__RadperSec>0.0</minTurnRate__RadperSec>
+    <maxTurnRate__RadperSec>0.03490658503988659</maxTurnRate__RadperSec>
+    <minAccelRateMSS>0.2</minAccelRateMSS>
+    <maxAccelRateMSS>0.4</maxAccelRateMSS>
+    <minDecelRateMSS>0.2</minDecelRateMSS>
+    <maxDecelRateMSS>0.4</maxDecelRateMSS>
+  </vehicleType>
+  <precision>MEDIUM</precision>
+  <contributions>
+    <bearingMeasurementContribution>
+      <name>the cuts</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 12:13:14.0 UTC</startDate>
+      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
+      <bearingError>0.05235987755982988</bearingError>
+      <runMDA>false</runMDA>
+      <measurements>
+        <bmeasurement bearingAngle="0.041887902047863905" time="2010-01-12 12:13:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06666666666666667" lon="-30.002777777777776"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="0.027925268031909273" time="2010-01-12 12:14:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06436111111111112" lon="-30.005552777777776"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="0.0471238898038469" time="2010-01-12 12:16:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06436111111111112" lon="-30.01055277777778"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="0.06632251157578452" time="2010-01-12 12:17:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06436111111111112" lon="-30.015552777777778"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="0.059341194567807204" time="2010-01-12 12:19:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06180555555555556" lon="-30.01867777777778"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.04537856055185257" time="2010-01-12 12:21:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.052672222222222224" lon="-30.019477777777777"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.11868238913561441" time="2010-01-12 12:23:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.04769166666666667" lon="-30.019913888888887"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.2076941809873252" time="2010-01-12 12:24:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.04271111111111111" lon="-30.02035"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.31590459461097364" time="2010-01-12 12:26:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.03773055555555556" lon="-30.02078611111111"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.46949356878647464" time="2010-01-12 12:28:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.031919444444444445" lon="-30.021294444444443"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.5969026041820606" time="2010-01-12 12:29:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.02671111111111111" lon="-30.023747222222223"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.7138396640656808" time="2010-01-12 12:31:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.022380555555555556" lon="-30.02624722222222"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-0.8639379797371932" time="2010-01-12 12:32:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.01805" lon="-30.028747222222222"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.1414453308042916" time="2010-01-12 12:34:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.013" lon="-30.03166388888889"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.3334315485236679" time="2010-01-12 12:36:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.03558611111111"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.4765485471872026" time="2010-01-12 12:37:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.041419444444447"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.6824973989225336" time="2010-01-12 12:39:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.04725277777778"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.9687313962496038" time="2010-01-12 12:41:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.05308611111111"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.321287905152458" time="2010-01-12 12:43:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.058919444444445"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.6668630970473357" time="2010-01-12 12:44:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.064752777777777"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.9426251188624395" time="2010-01-12 12:46:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.010880555555555557" lon="-30.070586111111112"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-3.0630528372500483" time="2010-01-12 12:48:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.012611111111111111" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.8187067419708423" time="2010-01-12 12:50:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.018444444444444444" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.5569073541716927" time="2010-01-12 12:51:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.023444444444444445" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.275909344600606" time="2010-01-12 12:53:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.028444444444444446" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-2.0158552860534504" time="2010-01-12 12:54:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.03344444444444444" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.7715091907742444" time="2010-01-12 12:56:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.03927777777777778" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.6144295580947547" time="2010-01-12 12:57:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.04427777777777778" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.478293876439197" time="2010-01-12 12:59:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.05011111111111111" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.3788101090755203" time="2010-01-12 13:01:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.05594444444444445" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.3055062804917585" time="2010-01-12 13:03:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06177777777777778" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.2479104151759455" time="2010-01-12 13:04:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.06761111111111111" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.2025318546240933" time="2010-01-12 13:06:44.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.07344444444444444" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.171115928088195" time="2010-01-12 13:08:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.07844444444444444" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.1414453308042916" time="2010-01-12 13:09:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.08427777777777777" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.1187560505283651" time="2010-01-12 13:11:29.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.08927777777777778" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.0995574287564276" time="2010-01-12 13:12:59.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.09427777777777777" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+        <bmeasurement bearingAngle="-1.096066770252439" time="2010-01-12 13:13:14.0 UTC" theRange="0.09874730024140535">
+          <origin lat="-0.0951111111111111" lon="-30.075269444444444"/>
+          <__isActive>true</__isActive>
+        </bmeasurement>
+      </measurements>
+    </bearingMeasurementContribution>
+    <speedForecastContribution>
+      <name>normal speed</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 12:13:14.0 UTC</startDate>
+      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
+      <minSpeed>3.086666664</minSpeed>
+      <maxSpeed>7.71666666</maxSpeed>
+    </speedForecastContribution>
+    <straightLegForecastContribution>
+      <name>leg one</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 12:13:14.0 UTC</startDate>
+      <finishDate>2010-01-12 12:29:59.0 UTC</finishDate>
+    </straightLegForecastContribution>
+    <straightLegForecastContribution>
+      <name>leg two</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 12:37:59.0 UTC</startDate>
+      <finishDate>2010-01-12 13:13:14.0 UTC</finishDate>
+    </straightLegForecastContribution>
+    <courseAnalysisContribution>
+      <name>Course Analysis</name>
+      <active>true</active>
+      <weight>5</weight>
+    </courseAnalysisContribution>
+    <locationAnalysisContribution>
+      <name>Location Analysis</name>
+      <active>true</active>
+      <weight>5</weight>
+    </locationAnalysisContribution>
+    <speedAnalysisContribution>
+      <name>Speed Analysis</name>
+      <active>true</active>
+      <weight>5</weight>
+    </speedAnalysisContribution>
+  </contributions>
+</task>
