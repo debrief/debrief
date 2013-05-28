@@ -140,8 +140,10 @@ public class StraightLeg extends CoreLeg
 			route.setImpossible();
 			return;
 		}
-		// looks like there is a bug in this method, because almost all routes becomes unachievable 
-		//decideScaledPolygons(route);
+		
+		// examine the scaled polygons to see if this candidate route passes
+		// through all of them.
+		decideScaledPolygons(route);
 	}
 	
 	@Override
