@@ -159,7 +159,11 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 					public <E> Void doRun(IProgressMonitor monitor,
 							Job<int[][], E> previous) throws InterruptedException
 					{
-						cancelUnachievable(_routes, previous.getResult(), monitor);
+						// forget about cancelling unachievable in this way,
+						// it's ditching achievable routes unnecessarily.
+						// It's got dodgy foundations anyway, since so many 
+						// possible courses are achievable in a turn
+						// cancelUnachievable(_routes, previous.getResult(), monitor);
 						return null;
 					}
 				}, achievableResJob);
@@ -187,6 +191,8 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 						}
 					}
 				}, cancelUnachievableJob);
+		
+		
 		if (mainGenerationJob != null && mainGenerationJob.isComplete())
 		{
 			mainGenerationJob = null;
