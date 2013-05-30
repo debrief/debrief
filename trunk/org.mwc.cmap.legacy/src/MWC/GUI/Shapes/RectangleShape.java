@@ -219,7 +219,6 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 			double radians = _orientation.intValue()*Math.PI/180;
 			xP[ctr] = (int) (center.x + (pt.x-center.x)*Math.cos(radians) - (pt.y-center.y)*Math.sin(radians));
 			yP[ctr++] = (int) (center.y + (pt.x-center.x)*Math.sin(radians) + (pt.y-center.y)*Math.cos(radians));
-			//TODO: store transformed points to _myArea
 		}
 
 		// is it to be filled?

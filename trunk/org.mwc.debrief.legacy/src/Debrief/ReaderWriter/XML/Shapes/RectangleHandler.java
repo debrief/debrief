@@ -65,7 +65,6 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
   {
     MWC.GUI.Shapes.RectangleShape ls = new MWC.GUI.Shapes.RectangleShape(_start, _end);
     if (_orientation != null)
-    	//TODO: check if applicable
     	ls.setOrientation(_orientation);
     if(_filled != null)
       ls.setFilled(_filled.booleanValue());
