@@ -105,35 +105,42 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 		if (subjects.length == 1)
 		{
 			// sort out the current time
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			IEditorPart editor = page.getActiveEditor();
-			TimeProvider timer = (TimeProvider) editor.getAdapter(TimeProvider.class);
-			final HiResDate tNow = timer.getTime();
-
-			// ok, do I know how to create a TMA segment from this?
-			Editable onlyOne = subjects[0];
-			if (onlyOne instanceof SensorWrapper)
+			final IWorkbench wb = PlatformUI.getWorkbench();
+			final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			final IWorkbenchPage page = win.getActivePage();
+			final IEditorPart editor = page.getActiveEditor();
+			if (editor != null)
 			{
-				final SensorWrapper tw = (SensorWrapper) onlyOne;
-				// cool wrap it in an action.
-				_myAction = new Action("Generate contact for this sensor")
+				Object objTime = editor.getAdapter(TimeProvider.class);
+				if (objTime != null)
 				{
-					@Override
-					public void run()
+					TimeProvider timer = (TimeProvider)objTime;
+					final HiResDate tNow = timer.getTime();
+
+					// ok, do I know how to create a TMA segment from this?
+					Editable onlyOne = subjects[0];
+					if (onlyOne instanceof SensorWrapper)
 					{
-						// get the supporting data
-						NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
-						runOperation(theLayers, wizard);
+						final SensorWrapper tw = (SensorWrapper) onlyOne;
+						// cool wrap it in an action.
+						_myAction = new Action("Generate contact for this sensor")
+						{
+							@Override
+							public void run()
+							{
+								// get the supporting data
+								NewContactWizard wizard = new NewContactWizard(tNow, null, tw);
+								runOperation(theLayers, wizard);
+							}
+						};
 					}
-				};
+				}
+
+				// go for it, or not...
+				if (_myAction != null)
+					parent.add(_myAction);
 			}
 		}
-
-		// go for it, or not...
-		if (_myAction != null)
-			parent.add(_myAction);
 
 	}
 
@@ -161,8 +168,8 @@ public class GenerateNewSensorContact implements RightClickContextItemGenerator
 			SensorContactWrapper newCut = wizard.getContact();
 			// ok, go for it.
 			// sort it out as an operation
-			IUndoableOperation addTheCut = new AddSensorCut(theLayers,
-					senWrapper, newCut);
+			IUndoableOperation addTheCut = new AddSensorCut(theLayers, senWrapper,
+					newCut);
 
 			// ok, stick it on the buffer
 			runIt(addTheCut);
