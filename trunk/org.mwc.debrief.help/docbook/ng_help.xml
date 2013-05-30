@@ -9041,7 +9041,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 ;; symb, start lat &amp; long, end lat &amp; long, text label (optional) 
 
 ;VECTOR: @@ DD MM SS H DDD MM SS.S H RRR BBB XX.XXX
-;; symb, start lat & long, range (yds), brg (degs) , text label (optional)
+;; symb, start lat &amp; long, range (yds), brg (degs) , text label (optional)
 
 ;TEXT: @@ DD MM SS H DDD MM SS H XX..XX 
 ;; symb, lat &amp; long, text 
