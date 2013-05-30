@@ -2,13 +2,15 @@ package Debrief.ReaderWriter.XML.Shapes;
 
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader.HandleAttribute;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 
 abstract public class VectorHandler extends ShapeHandler implements PlottableExporter
 {
 
-  private final static String ARROW_AT_END="ArrowAtEnd";
+  private static final String DISTANCE = "Distance";
+	private static final String BEARING = "Bearing";
+	private static final String TL = "tl";
+	private final static String ARROW_AT_END="ArrowAtEnd";
 	
   MWC.GenericData.WorldLocation _start;
   double _bearing;
@@ -22,13 +24,13 @@ abstract public class VectorHandler extends ShapeHandler implements PlottableExp
     super("vector");
 
 
-    addHandler(new LocationHandler("tl"){
+    addHandler(new LocationHandler(TL){
       public void setLocation(MWC.GenericData.WorldLocation res)
       {
         _start = res;
       }
     });
-    addAttributeHandler(new HandleAttribute("Bearing")
+    addAttributeHandler(new HandleAttribute(BEARING)
 	{
 		public void setValue(String name, String val)
 		{
@@ -42,7 +44,7 @@ abstract public class VectorHandler extends ShapeHandler implements PlottableExp
         _arrowAtEnd = value;
       }
     });
-    addAttributeHandler(new HandleAttribute("Distance")
+    addAttributeHandler(new HandleAttribute(DISTANCE)
 	{
 		public void setValue(String name, String val)
 		{
@@ -96,10 +98,10 @@ abstract public class VectorHandler extends ShapeHandler implements PlottableExp
     {
       // export the attributes
       MWC.GUI.Shapes.VectorShape cs = (MWC.GUI.Shapes.VectorShape)ps;
-      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLine_Start(), "tl", ePlottable, doc);
-      ePlottable.setAttribute("Distance", writeThis(cs.getDistance().getValueIn(
+      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLine_Start(), TL, ePlottable, doc);
+      ePlottable.setAttribute(DISTANCE, writeThis(cs.getDistance().getValueIn(
 				WorldDistance.YARDS)));
-      ePlottable.setAttribute("Bearing", writeThis(cs.getBearing()));
+      ePlottable.setAttribute(BEARING, writeThis(cs.getBearing()));
       ePlottable.setAttribute(ARROW_AT_END, writeThis(cs.getArrowAtEnd()));
     }
     else
