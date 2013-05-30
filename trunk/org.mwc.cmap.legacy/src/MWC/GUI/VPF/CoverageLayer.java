@@ -200,6 +200,15 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     setName(desc);
   }
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
   /**
    * accessor to get the list of features we want to plot
    */

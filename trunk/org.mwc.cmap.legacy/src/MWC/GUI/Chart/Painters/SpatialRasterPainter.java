@@ -144,6 +144,16 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
     // get the painter to do its thing
     _painter.paint(dest, this);
   }
+  
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
 
   protected final void prepareAndPlotContours(final CanvasType dest)
   {

@@ -168,6 +168,16 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
     // and initialise our data accordingly
   }
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
+  
   /**
    * static method which returns an single painter which paints the libref feature set
    * @param path the location of the VMap data providing the reference coastline

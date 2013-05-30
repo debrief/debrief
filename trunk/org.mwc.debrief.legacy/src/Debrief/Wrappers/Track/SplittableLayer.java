@@ -61,6 +61,16 @@ public class SplittableLayer extends BaseLayer
 		super(b);
 	}
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
+	
 	@FireExtended
 	public void AutoSplitTracks()
 	{

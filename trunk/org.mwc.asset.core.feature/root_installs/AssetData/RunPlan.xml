@@ -4,7 +4,7 @@
 	
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="12" Units="hours" ></Duration>
+			<Duration Value="1" Units="hours" ></Duration>
 		</TimeObserver>
 		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>

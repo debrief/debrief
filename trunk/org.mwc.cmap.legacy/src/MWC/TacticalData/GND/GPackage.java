@@ -46,7 +46,15 @@ public class GPackage extends BaseLayer
 
 		doer.start();
 	}
-
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
 	private void loadMe(String dbUrl, ArrayList<String> ids)
 	{
 		// collate the ids

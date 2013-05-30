@@ -181,6 +181,16 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
     return res;
   }
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
+  
   /**
    * accessor to get the warehouse
    */

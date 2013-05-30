@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -47,7 +46,6 @@ import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 import org.osgi.framework.BundleContext;
-
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -760,7 +758,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	{
 		public void testNearGreenwich()
 		{
-			WorldLocation loc  = new WorldLocation(1,0,0,'N', 0,0,30, 'E', 0);
 			String clipboard = "Location\t 26\u00c2\u00b008'04.55\"N 021\u00c2\u00b056'56.52\"E";
 			WorldLocation fromClipboard = fromClipboard(clipboard);
 			assertEquals("Expected 26 degrees, 08 minutes, 0.455 seconds north", 26.134597222222222, fromClipboard.getLat());

@@ -66,6 +66,16 @@ public class ExternallyManagedDataLayer extends BaseLayer
 		_fileName = fileName;
 	}
 
+	/** whether this type of BaseLayer is able to have shapes added to it
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes()
+	{
+		return false;
+	}
+	
 	public final String getDataType()
 	{
 		return _dataType;
