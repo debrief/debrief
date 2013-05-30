@@ -211,13 +211,14 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
     int[] xP = new int[STEPS];
     int[] yP = new int[STEPS];
     int ctr = 0;
+    Point center = dest.toScreen(_myArea.getCentre());
 		while(iter.hasNext())
 		{
 			Point pt = dest.toScreen(iter.next());
 			// Rotate Rectangle around its center for degrees, specified in Orientation
 			double radians = _orientation.intValue()*Math.PI/180;
-			xP[ctr] = (int) (pt.x*Math.cos(radians) - pt.y*Math.sin(radians));
-			yP[ctr++] = (int) (pt.x*Math.sin(radians) + pt.y*Math.cos(radians));
+			xP[ctr] = (int) (center.x + (pt.x-center.x)*Math.cos(radians) - (pt.y-center.y)*Math.sin(radians));
+			yP[ctr++] = (int) (center.y + (pt.x-center.x)*Math.sin(radians) + (pt.y-center.y)*Math.cos(radians));
 			//TODO: store transformed points to _myArea
 		}
 
