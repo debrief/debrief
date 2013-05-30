@@ -23,9 +23,6 @@ final class ImportVector implements PlainLineImporter
 	    
 	    // declare local variables
 	    WorldLocation start;
-	    double latDeg, longDeg, latMin, longMin;
-	    char latHem, longHem;
-	    double latSec, longSec;
 	    String theSymbology;
 	    
 	    // skip the comment identifier
@@ -35,7 +32,6 @@ final class ImportVector implements PlainLineImporter
 	    theSymbology = st.nextToken();
 	    
 	    // now the start location
-	    String vDiff;
 		start = ImportLine.extractStart(st);
 
 	    String range = st.nextToken();
@@ -87,11 +83,11 @@ final class ImportVector implements PlainLineImporter
 		// result value
 		String line;
 		
-		line = _myType + " BD ";
+		line = _myType + " " + ImportReplay.replaySymbolFor(vector.getColor(), null) + "  ";
 							
 		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(vector.getLine_Start());
 
-		line = line + " " + vector.getDistance().getValueIn(WorldDistance.YARDS) + vector.getBearing();
+		line = line + " " + vector.getDistance().getValueIn(WorldDistance.YARDS) + " " + vector.getBearing();
 
 		return line;
 		

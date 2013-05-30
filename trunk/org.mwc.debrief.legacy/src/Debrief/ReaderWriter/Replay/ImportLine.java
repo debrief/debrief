@@ -217,7 +217,7 @@ public static WorldLocation extractStart(StringTokenizer st) {
 		// result value
 		String line;
 		
-		line = _myType + " BD ";
+		line = _myType + " " + ImportReplay.replaySymbolFor(Line.getColor(), null) + "  ";
 							
 		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLine_Start());
 
