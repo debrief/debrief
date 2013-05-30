@@ -88,9 +88,10 @@ abstract public class RectangleHandler extends ShapeHandler implements Plottable
     {
       // export the attributes
       MWC.GUI.Shapes.RectangleShape cs = (MWC.GUI.Shapes.RectangleShape)ps;
-      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCorner_TopLeft(), "tl", ePlottable, doc);
-      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCornerBottomRight(), "br", ePlottable, doc);
-      ePlottable.setAttribute("Filled", writeThis(cs.getFilled()));
+      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCorner_TopLeft(), TL, ePlottable, doc);
+      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getCornerBottomRight(), BR, ePlottable, doc);
+      ePlottable.setAttribute(FILLED, writeThis(cs.getFilled()));
+      ePlottable.setAttribute(ORIENTATION, writeThis(cs.getOrientation()));
 
     }
     else
