@@ -566,6 +566,7 @@
 			<xs:element name="Grid4W" type="Grid4W" />
 			<xs:element name="vpf_database" type="vpf_database" />
 			<xs:element name="line" type="line" />
+			<xs:element name="vector" type="vector" />
 			<xs:element name="polygon" type="polygon" />
 			<xs:element name="ellipse" type="ellipse" />
 			<xs:element name="rectangle" type="rectangle" />
