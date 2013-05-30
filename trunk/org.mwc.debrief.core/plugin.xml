@@ -284,6 +284,11 @@
 				icon="icons/line.gif" id="org.mwc.debrief.core.creators.shapes.InsertLine"
 				label="&amp;Line" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
+				
+				<action class="org.mwc.debrief.core.creators.shapes.InsertVector"
+				icon="icons/line.gif" id="org.mwc.debrief.core.creators.shapes.InsertVector"
+				label="&amp;Vector" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
 			
 				<action
