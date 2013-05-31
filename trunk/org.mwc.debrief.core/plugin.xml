@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.196"
+<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.197"
 	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
 
 	<runtime>
@@ -8,6 +8,11 @@
 			<export name="*" />
 		</library>
   <library name="libs/eclipselink.jar">
+     <export
+           name="*">
+     </export>
+  </library>
+  <library name="libs/jdom-1.0.jar">
      <export
            name="*">
      </export>
@@ -286,7 +291,7 @@
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 				
 				<action class="org.mwc.debrief.core.creators.shapes.InsertVector"
-				icon="icons/vector.gif" id="org.mwc.debrief.core.creators.shapes.InsertVector"
+				icon="icons/vector.png" id="org.mwc.debrief.core.creators.shapes.InsertVector"
 				label="&amp;Vector" menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
 				style="push" toolbarPath="org.mwc.debrief.core.EditorShapes/shapes" />
 
