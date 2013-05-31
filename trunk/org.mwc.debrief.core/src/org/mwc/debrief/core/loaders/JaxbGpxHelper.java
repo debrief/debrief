@@ -57,11 +57,13 @@ public class JaxbGpxHelper implements GpxHelper
 		{
 			GPX_1_1_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v11");
 			GPX_1_0_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v10");
-			DEBRIEF_EXTENSIONS_JAXB_CTX = JAXBContext.newInstance("org.mwc.debrief.core.gpx");
+			DEBRIEF_EXTENSIONS_JAXB_CTX = JAXBContext
+					.newInstance("org.mwc.debrief.core.gpx");
 		}
 		catch (JAXBException e)
 		{
-			throw new IllegalStateException("Exception while initialzing JAXB Context", e);
+			throw new IllegalStateException(
+					"Exception while initialzing JAXB Context", e);
 		}
 	}
 
@@ -84,30 +86,34 @@ public class JaxbGpxHelper implements GpxHelper
 			boolean isGpx10 = isGpx10(source);
 			boolean xmlValid = isValid(source, isGpx10);
 
-			if (xmlValid)
+			if(!xmlValid)
 			{
-				Document document = source.getDocument();
-				Unmarshaller unmarshaller;
-				List<TrackWrapper> tracks = Collections.emptyList();
+				CorePlugin.logError(Status.WARNING, "GPX Doc failed to validate. Trying to import anyway", null);
+			}
+			
+			Document document = source.getDocument();
+			Unmarshaller unmarshaller;
+			List<TrackWrapper> tracks = Collections.emptyList();
 
-				if (isGpx10)
-				{
+			if (isGpx10)
+			{
 
-					unmarshaller = GPX_1_0_JAXB_CTX.createUnmarshaller();
-					com.topografix.gpx.v10.Gpx gpx10Type = (com.topografix.gpx.v10.Gpx) JAXBIntrospector.getValue(unmarshaller
-							.unmarshal(new DOMOutputter().output(document)));
-					tracks = trackMapper.fromGpx10(gpx10Type);
-				}
-				else
-				{
-					unmarshaller = GPX_1_1_JAXB_CTX.createUnmarshaller();
-					GpxType gpxType = (GpxType) JAXBIntrospector.getValue(unmarshaller.unmarshal(new DOMOutputter().output(document)));
-					tracks = trackMapper.fromGpx(gpxType);
-				}
-				for (TrackWrapper track : tracks)
-				{
-					theLayers.addThisLayer(track);
-				}
+				unmarshaller = GPX_1_0_JAXB_CTX.createUnmarshaller();
+				com.topografix.gpx.v10.Gpx gpx10Type = (com.topografix.gpx.v10.Gpx) JAXBIntrospector
+						.getValue(unmarshaller.unmarshal(new DOMOutputter()
+								.output(document)));
+				tracks = trackMapper.fromGpx10(gpx10Type);
+			}
+			else
+			{
+				unmarshaller = GPX_1_1_JAXB_CTX.createUnmarshaller();
+				GpxType gpxType = (GpxType) JAXBIntrospector.getValue(unmarshaller
+						.unmarshal(new DOMOutputter().output(document)));
+				tracks = trackMapper.fromGpx(gpxType);
+			}
+			for (TrackWrapper track : tracks)
+			{
+				theLayers.addThisLayer(track);
 			}
 		}
 		catch (Exception e)
@@ -127,7 +133,8 @@ public class JaxbGpxHelper implements GpxHelper
 
 		if (direcotryPath == null)
 		{
-			errorDialog("Export to GPS", "You have to selected the directory to save the GPS file.");
+			errorDialog("Export to GPS",
+					"You have to selected the directory to save the GPS file.");
 			return;
 		}
 
@@ -138,7 +145,8 @@ public class JaxbGpxHelper implements GpxHelper
 
 			if (tracks.size() > 0)
 			{
-				CorePlugin.logError(Status.INFO, "Exporting " + tracks.size() + " tracks to gpx file " + saveTo.getAbsolutePath(), null);
+				CorePlugin.logError(Status.INFO, "Exporting " + tracks.size()
+						+ " tracks to gpx file " + saveTo.getAbsolutePath(), null);
 
 				Gpx gpxType = GPX_1_0_OBJ_FACTORY.createGpx();
 				gpxType.setVersion("1.0");
@@ -164,7 +172,10 @@ public class JaxbGpxHelper implements GpxHelper
 		}
 		catch (Exception e)
 		{
-			CorePlugin.logError(Status.ERROR, "Error while marshalling to file GPX format: " + fileName.getAbsolutePath(), e);
+			CorePlugin.logError(
+					Status.ERROR,
+					"Error while marshalling to file GPX format: "
+							+ fileName.getAbsolutePath(), e);
 			String dialogMsg = "";
 			if (e.getMessage() != null)
 			{
