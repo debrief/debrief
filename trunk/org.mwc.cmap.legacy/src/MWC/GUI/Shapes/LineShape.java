@@ -146,8 +146,8 @@ public class LineShape extends PlainShape implements Editable,
 	// keep track of versions
 	static final long serialVersionUID = 1;
 
-	private WorldLocation _start;
-	private WorldLocation _end;
+	protected WorldLocation _start;
+	protected WorldLocation _end;
 	private WorldLocation _centre;
 
 	private boolean _arrowAtEnd = false;
@@ -163,7 +163,12 @@ public class LineShape extends PlainShape implements Editable,
 
 	public LineShape(WorldLocation start, WorldLocation end)
 	{
-		super(0, 1, "Line");
+		this(start, end, "Line");
+	}
+	
+	public LineShape(WorldLocation start, WorldLocation end, String name)
+	{
+		super(0, 1, name);
 		// store the data
 		_start = start;
 		_end = end;
