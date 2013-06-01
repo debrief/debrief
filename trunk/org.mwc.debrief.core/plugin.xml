@@ -341,6 +341,9 @@
 			<property name="startupForegroundColor" value="000000"/>
 			<property name="startupMessageRect" value="0,0,0,0"/>
 			<property name="startupProgressRect" value="0,0,0,0"/>
+			<property name="applicationXMI" value="org.eclipse.platform/LegacyIDE.e4xmi"/>
+			<property name="cssTheme" value="org.eclipse.e4.ui.css.theme.e4_default"/>
+			<property name="applicationCSSResources" value="platform:/plugin/org.eclipse.platform/images/"/>
 		</product>
 	</extension>
 
