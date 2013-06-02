@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.197"
-	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
+<plugin>
 
-	<runtime>
-		<library name="debrief_core.jar">
-			<export name="*" />
-		</library>
-  <library name="libs/eclipselink.jar">
-     <export
-           name="*">
-     </export>
-  </library>
-  <library name="libs/jdom-1.0.jar">
-     <export
-           name="*">
-     </export>
-  </library>
-	</runtime>
-	<extension point="org.eclipse.ui.views">
+		<extension point="org.eclipse.ui.views">
 		<category id="org.mwc.debrief.core.DebriefCategory" name="Debrief" />
 	</extension>
 
@@ -78,22 +62,7 @@
 
 
 
-	<requires>
-		<import plugin="org.mwc.cmap.core" />
-  <import plugin="org.mwc.cmap.plotViewer"/>
-		<import plugin="org.mwc.cmap.legacy" />
-		<import plugin="org.mwc.debrief.legacy" />
-  <import plugin="org.mwc.cmap.xyplot"/>
-		<import plugin="org.eclipse.core.runtime" />
-		<import plugin="org.eclipse.core.resources" />
-		<import plugin="org.eclipse.ui" />
-		<import plugin="org.eclipse.ui.ide" />
-		<import plugin="org.eclipse.core.filesystem" />
-  <import plugin="org.eclipse.ui.cheatsheets" version="3.4.0"/>
-  <import plugin="org.mwc.cmap.gt2Plot" version="1.0.0"/>
-
-	</requires>
-	<extension-point id="DebriefPlotLoader" name="Plot Loader"
+		<extension-point id="DebriefPlotLoader" name="Plot Loader"
 		schema="schema/DebriefPlotLoader.exsd" />
  <extension-point id="XMLLayerHandler" name="XMLLayerHandler" schema="schema/XMLLayerHandler.exsd"/>
 	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
@@ -336,11 +305,15 @@
 			<property name="introTitle" value="Welcome to Debrief NG (with Charts)" />
 			<property name="introBrandingImage" value="product:icons/debrief_icon.gif" />
 			<property name="introBrandingImageText" value="Debrief, from the Maritime Warfare Centre" />
-			<property name="aboutImage" value="icons/DebriefNGlogo.gif"/>
+			<property name="aboutImage" value="icons/DebriefNGlogoSmall.gif"/>
+			<property name="aboutText" value="%aboutText"/> 
 			<property name="windowImages" value="icons/icon.gif"/>
 			<property name="startupForegroundColor" value="000000"/>
 			<property name="startupMessageRect" value="0,0,0,0"/>
 			<property name="startupProgressRect" value="0,0,0,0"/>
+			<property name="applicationXMI" value="org.eclipse.platform/LegacyIDE.e4xmi"/>
+			<property name="cssTheme" value="org.eclipse.e4.ui.css.theme.e4_default"/>
+			<property name="applicationCSSResources" value="platform:/plugin/org.eclipse.platform/images/"/>
 		</product>
 	</extension>
 
