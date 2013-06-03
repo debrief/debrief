@@ -86,7 +86,6 @@ final class ImportLine implements PlainLineImporter
     double latDeg, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
-    String theText="";
     String theSymbology;
     
     // skip the comment identifier
@@ -96,36 +95,8 @@ final class ImportLine implements PlainLineImporter
     theSymbology = st.nextToken();
     
     // now the start location
-    latDeg = Double.valueOf(st.nextToken());
-    latMin = Double.valueOf(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
-    
-    /** now, we may have trouble here, since there may not be
-     * a space between the hemisphere character and a 3-digit
-     * latitude value - so BE CAREFUL
-     */
-    String vDiff = st.nextToken();
-    if(vDiff.length() > 3)
-    {
-      // hmm, they are combined
-      latHem = vDiff.charAt(0);
-      String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Double.valueOf(secondPart);
-    }
-    else
-    {
-      // they are separate, so only the hem is in this one
-      latHem = vDiff.charAt(0);
-      longDeg = Double.valueOf(st.nextToken());
-    }
-    longMin = Double.valueOf(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
-    longHem = st.nextToken().charAt(0);
-
-		// we have our first location, create it
-		start = new WorldLocation(latDeg, latMin, latSec, latHem, 
-													 longDeg, longMin, longSec, longHem,
-										       0);
+    String vDiff;
+	start = extractStart(st);
 
     // now the end location
     latDeg = Integer.parseInt(st.nextToken());
@@ -160,6 +131,7 @@ final class ImportLine implements PlainLineImporter
 										       0);
 
 		
+	String theText="";
     // see if there are any more tokens waiting,
     if(st.hasMoreTokens())
     {
@@ -182,6 +154,49 @@ final class ImportLine implements PlainLineImporter
     
     return sw;
   }
+
+public static WorldLocation extractStart(StringTokenizer st) {
+	WorldLocation start;
+	double latDeg;
+	double longDeg;
+	double latMin;
+	double longMin;
+	char latHem;
+	char longHem;
+	double latSec;
+	double longSec;
+	latDeg = Double.valueOf(st.nextToken());
+    latMin = Double.valueOf(st.nextToken());
+    latSec = Double.valueOf(st.nextToken()).doubleValue();
+    
+    /** now, we may have trouble here, since there may not be
+     * a space between the hemisphere character and a 3-digit
+     * latitude value - so BE CAREFUL
+     */
+    String vDiff = st.nextToken();
+    if(vDiff.length() > 3)
+    {
+      // hmm, they are combined
+      latHem = vDiff.charAt(0);
+      String secondPart = vDiff.substring(1, vDiff.length());
+      longDeg  = Double.valueOf(secondPart);
+    }
+    else
+    {
+      // they are separate, so only the hem is in this one
+      latHem = vDiff.charAt(0);
+      longDeg = Double.valueOf(st.nextToken());
+    }
+    longMin = Double.valueOf(st.nextToken());
+    longSec = Double.valueOf(st.nextToken()).doubleValue();
+    longHem = st.nextToken().charAt(0);
+
+		// we have our first location, create it
+		start = new WorldLocation(latDeg, latMin, latSec, latHem, 
+													 longDeg, longMin, longSec, longHem,
+										       0);
+	return start;
+}
   
   /** determine the identifier returning this type of annotation
    */
@@ -202,7 +217,7 @@ final class ImportLine implements PlainLineImporter
 		// result value
 		String line;
 		
-		line = _myType + " BD ";
+		line = _myType + " " + ImportReplay.replaySymbolFor(Line.getColor(), null) + "  ";
 							
 		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLine_Start());
 
@@ -224,7 +239,7 @@ final class ImportLine implements PlainLineImporter
 		{
 			ShapeWrapper sw = (ShapeWrapper) val;
 			PlainShape ps = sw.getShape();
-			res = (ps instanceof LineShape);
+			res = (ps.getClass() == LineShape.class);
 		}
 		
 		return res;
