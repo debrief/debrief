@@ -35,23 +35,26 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
 		double error = 0;
 		for (int i = 0; i < length; i += 2)
 		{
-			CoreLeg leg = legsIterator.next();			
-			CoreRoute route = leg.createRoute("", candidate.get(i), candidate.get(i + 1));
-			leg.decideAchievableRoute(route);
-			if (route.isPossible()) 
+			CoreLeg leg = legsIterator.next();
+			// brute force algorithm doesn't use altering legs to detect achievable routes, 
+			// we won't use them too
+			if (leg.getType() == LegType.STRAIGHT)
 			{
-				if (leg.getType() == LegType.STRAIGHT)
+				CoreRoute route = leg.createRoute("", candidate.get(i),
+						candidate.get(i + 1));
+				leg.decideAchievableRoute(route);
+				if (route.isPossible())
 				{
 					candidateRoutes.add(route);
 				}
-			}
-			else 
-			{
-				error = Double.MAX_VALUE;
-				break;
+				else
+				{
+					error = Double.MAX_VALUE;
+					break;
+				}
 			}
 		}
-		if (error > 0)
+		if (error == Double.MAX_VALUE)
 		{
 			return error;
 		}

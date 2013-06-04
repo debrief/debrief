@@ -248,7 +248,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		constrainSpaceListener = UIListener.wrap(parent.getDisplay(),
 				IConstrainSpaceListener.class, this);
 		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),				
-				new Class<?>[] {IBruteForceSolutionsListener.class, IGASolutionsListener.class}, this);
+				new Class<?>[] {IBruteForceSolutionsListener.class, IGASolutionsListener.class}, this,
+				new UIListener.MinimumDelay("iterationComputed", 150));
 		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
 		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
 	}

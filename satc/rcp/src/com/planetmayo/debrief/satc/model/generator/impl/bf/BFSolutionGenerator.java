@@ -139,35 +139,6 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 					}
 				}, generateRoutesJob);
 
-		Job<int[][], Void> achievableResJob = jobsManager.scheduleAfter(
-				new SolutionGeneratorJob<int[][], Void>("achievableRes")
-				{
-
-					@Override
-					public <E> int[][] doRun(IProgressMonitor monitor,
-							Job<Void, E> previous) throws InterruptedException
-					{
-						return calculateAchievableRoutesFor(_routes, monitor);
-					}
-				}, decideAchievableJob);
-
-		Job<Void, int[][]> cancelUnachievableJob = jobsManager.scheduleAfter(
-				new SolutionGeneratorJob<Void, int[][]>("Cancel unachievable routes")
-				{
-
-					@Override
-					public <E> Void doRun(IProgressMonitor monitor,
-							Job<int[][], E> previous) throws InterruptedException
-					{
-						// forget about cancelling unachievable in this way,
-						// it's ditching achievable routes unnecessarily.
-						// It's got dodgy foundations anyway, since so many 
-						// possible courses are achievable in a turn
-						// cancelUnachievable(_routes, previous.getResult(), monitor);
-						return null;
-					}
-				}, achievableResJob);
-
 		mainGenerationJob = jobsManager.scheduleAfter(
 				new SolutionGeneratorJob<Void, Void>("Recalculate top legs")
 				{
@@ -190,7 +161,7 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 							mainGenerationJob = null;
 						}
 					}
-				}, cancelUnachievableJob);
+				}, decideAchievableJob);
 		
 		
 		if (mainGenerationJob != null && mainGenerationJob.isComplete())
@@ -306,75 +277,6 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 				thisLeg.decideAchievableRoutes();
 			}
 		});
-	}
-
-	void cancelUnachievable(List<LegWithRoutes> routes, int[][] possibleRoutes,
-			IProgressMonitor monitor) throws InterruptedException
-	{
-
-		// check we've got some legs
-		if (routes.size() > 0)
-		{
-			// get the routes for the first leg
-			LegWithRoutes firstLeg = routes.get(0);
-
-			// get the routes
-			CoreRoute[][] firstRoutes = firstLeg.getRoutes();
-
-			for (int x = 0; x < possibleRoutes.length; x++)
-			{
-				boolean possible = false;
-				for (int y = 0; y < possibleRoutes[0].length; y++)
-				{
-					if (monitor.isCanceled())
-						throw new InterruptedException();
-					if (possibleRoutes[x][y] > 0)
-					{
-						// this one is possible, drop out
-						possible = true;
-						break;
-					}
-				}
-				if (!possible)
-				{
-					// mark all of that route impossible
-					CoreRoute[] thisSet = firstRoutes[x];
-					for (int i = 0; i < thisSet.length; i++)
-					{
-						if (monitor.isCanceled())
-							throw new InterruptedException();
-						CoreRoute thisRoute = thisSet[i];
-						if (thisRoute != null)
-							thisRoute.setImpossible();
-					}
-				}
-			}
-		}
-	}
-
-	int[][] calculateAchievableRoutesFor(List<LegWithRoutes> routes,
-			IProgressMonitor monitor) throws InterruptedException
-	{
-		// ok, loop through the legs, doing the multiplication
-		int[][] res = null;
-		for (Iterator<LegWithRoutes> iterator = routes.iterator(); iterator
-				.hasNext();)
-		{
-			if (monitor.isCanceled())
-				throw new InterruptedException();
-			LegWithRoutes thisLeg = iterator.next();
-			int[][] mat = thisLeg.asMatrix();
-
-			// is this our first one?
-			if (res == null)
-				res = mat;
-			else
-			{
-				res = LegWithRoutes.multiply(res, mat);
-			}
-		}
-
-		return res;
 	}
 
 	/**

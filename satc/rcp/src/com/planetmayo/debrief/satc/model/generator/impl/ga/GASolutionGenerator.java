@@ -55,7 +55,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		parameters.setElitizm(70);
 		parameters.setMutationProbability(0.1);
 		parameters.setPopulationSize(500);
-		parameters.setStagnationSteps(50);
+		parameters.setStagnationSteps(100);
 		parameters.setTopRoutes(10);
 		parameters.setTimeoutBetweenIterations(0);
 		parameters.setTimeout(30000);
@@ -180,9 +180,22 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		List<Point> solution = engine.evolve(
 				parameters.getPopulationSize(), 
 				parameters.getElitizm(), 
-				new Stagnation(parameters.getStagnationSteps(), false), 
-				new ElapsedTime(parameters.getTimeout()), 
-				progressMonitorCondition
+				progressMonitorCondition,
+				new ElapsedTime(parameters.getTimeout()),
+				progressMonitorCondition,
+				new Stagnation(parameters.getStagnationSteps(), false)
+				{
+
+					@Override
+					public boolean shouldTerminate(PopulationData<?> populationData)
+					{
+						if (populationData.getBestCandidateFitness() == Double.MAX_VALUE) 
+						{
+							return false;
+						}
+						return super.shouldTerminate(populationData);
+					}
+				} 
 		);
 		if (progressMonitor.isCanceled())
 		{
