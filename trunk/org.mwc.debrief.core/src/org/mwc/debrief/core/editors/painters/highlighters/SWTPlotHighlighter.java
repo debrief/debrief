@@ -211,7 +211,8 @@ public interface SWTPlotHighlighter extends Editable {
 		 *            the new colour
 		 */
 		public final void setColor(final Color val) {
-			_myColor = val;
+			if (val != null)
+				_myColor = val;
 		}
 
 		/**
