@@ -90,10 +90,15 @@ public class UIListener implements InvocationHandler
 		return invokeMethod(method, args);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static <T> T wrap(Display display, Class<T> listenerClass, T listener)
 	{
+		return wrap(display, new Class<?>[] {listenerClass}, listener);
+	}
+	
+	@SuppressWarnings("unchecked")	
+	public static <T> T wrap(Display display, Class<?>[] listenerClasses, T listener) 
+	{
 		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), 
-				new Class<?>[] {listenerClass}, new UIListener(display, listener));
-	}	
+				listenerClasses, new UIListener(display, listener));		
+	}
 }

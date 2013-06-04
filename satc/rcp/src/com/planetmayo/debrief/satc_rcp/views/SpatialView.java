@@ -36,10 +36,12 @@ import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.ISolver;
 import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationException;
 import com.planetmayo.debrief.satc.model.generator.impl.bf.IBruteForceSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.impl.bf.LegWithRoutes;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
@@ -57,7 +59,8 @@ import com.vividsolutions.jts.geom.Point;
 
 public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		GeoSupport.GeoPlotter, IShowBoundProblemSpaceDiagnostics,
-		IShowGenerateSolutionsDiagnostics, IBruteForceSolutionsListener
+		IShowGenerateSolutionsDiagnostics, IBruteForceSolutionsListener,
+		IGASolutionsListener
 {
 	private static JFreeChart _chart;
 	private static ChartComposite _chartComposite;
@@ -128,6 +131,13 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private boolean _showRecommendedSolutions;
 
 	/**
+	 * level of diagnostics for user
+	 * 
+	 * @see IBoundsManager.IShowGenerateSolutionsDiagnostics
+	 */	
+	private boolean _showIntermediateGASolutions;
+
+	/**
 	 * the last set of states we plotted
 	 * 
 	 */
@@ -136,6 +146,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private List<LegWithRoutes> _lastSetOfScoredLegs;
 
 	private CompositeRoute[] _lastSetOfSolutions;
+	
+	private List<CompositeRoute> _currentTopRoutes;
 
 	private final HashMap<Integer, ArrayList<String>> _scoredRouteLabels = new HashMap<Integer, ArrayList<String>>();
 
@@ -143,7 +155,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			"hh:mm:ss");
 
 	private IConstrainSpaceListener constrainSpaceListener;
-	private IBruteForceSolutionsListener generateSolutionsListener;
+	private IGenerateSolutionsListener generateSolutionsListener;
 	/**
 	 * how many routes to display
 	 * 
@@ -235,8 +247,8 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		GeoSupport.setPlotter(this, this, this);
 		constrainSpaceListener = UIListener.wrap(parent.getDisplay(),
 				IConstrainSpaceListener.class, this);
-		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),
-				IBruteForceSolutionsListener.class, this);
+		generateSolutionsListener = UIListener.wrap(parent.getDisplay(),				
+				new Class<?>[] {IBruteForceSolutionsListener.class, IGASolutionsListener.class}, this);
 		solver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
 		solver.getSolutionGenerator().addReadyListener(generateSolutionsListener);
 	}
@@ -607,7 +619,14 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 		
 		redoChart();
 	}
-
+	
+	@Override
+	public void setShowIntermediateGASolutions(boolean onOff)
+	{
+		_showIntermediateGASolutions = onOff;
+		
+		redoChart();
+	}
 
 	@Override
 	public void setShowRecommendedSolutions(boolean onOff)
@@ -631,6 +650,40 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			showTopSolutions(_lastSetOfSolutions);
 		if(_targetSolution != null)
 			plotTargetSolution(_targetSolution);
+		if (_currentTopRoutes != null) 
+			plotCurrentTopRoutes(_currentTopRoutes);
+	}
+	
+	private void plotCurrentTopRoutes(List<CompositeRoute> _currentRoutes) 
+	{
+		float width = 4.0f;
+		float color = 0.0f;
+		for (CompositeRoute route : _currentRoutes)
+		{
+			Color currentColor = getHeatMapColorFor(color);
+			for (CoreRoute routePart : route.getLegs())
+			{
+				Point startP = routePart.getStartPoint();
+				Point endP = routePart.getEndPoing();
+
+				XYSeries series = new XYSeries("" + (_numCycles++), false);
+				series.add(new XYDataItem(startP.getY(), startP.getX()));
+				series.add(new XYDataItem(endP.getY(), endP.getX()));
+
+				// get the shape
+				_myData.addSeries(series);
+
+				// get the series num
+				int num = _myData.getSeriesCount() - 1;
+				_renderer.setSeriesPaint(num, currentColor);
+				_renderer.setSeriesStroke(num, new BasicStroke(width, BasicStroke.CAP_BUTT,
+						BasicStroke.JOIN_MITER, 1.0f, new float[] {4.f, width}, 0.0f), false);
+				_renderer.setSeriesLinesVisible(num, true);
+				_renderer.setSeriesShapesVisible(num, false);
+			}
+			color += 0.1f;
+			width -= 0.3f;
+		}
 	}
 
 	private void plotTargetSolution(List<State> solution)
@@ -717,6 +770,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	public void solutionsReady(CompositeRoute[] routes)
 	{
 		_lastSetOfSolutions = routes;
+		_currentTopRoutes = null;
 
 		redoChart();
 	}
@@ -1146,6 +1200,18 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			messageBox.setMessage(ex.getMessage());
 			messageBox.setText("Error during generation");
 			messageBox.open();
+		}
+	}
+	
+	@Override
+	public void iterationComputed(List<CompositeRoute> topRoutes)
+	{
+		_currentTopRoutes = null;
+		if (_showIntermediateGASolutions)
+		{
+			_currentTopRoutes = topRoutes;
+		
+			redoChart();
 		}
 	}
 

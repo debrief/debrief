@@ -156,6 +156,11 @@ public interface IBoundsManager
 		 * @param onOff
 		 */
 		void setShowRoutePoints(boolean onOff);
-
+		
+		/** whether to show the generated points
+		 * 
+		 * @param onOff
+		 */
+		void setShowIntermediateGASolutions(boolean onOff);
 	}
 }

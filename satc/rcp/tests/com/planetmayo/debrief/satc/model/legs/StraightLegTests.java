@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -151,5 +153,41 @@ public class StraightLegTests extends ModelTestBase
 		// right measurement to
 		// compare against.
 
+	}
+	
+	@Test
+	public void testAaaaa() throws Exception
+	{
+		WKTReader wkt = new WKTReader();
+		List<BoundedState> states = new ArrayList<BoundedState>();
+		states.add(new BoundedState(DateUtils.date(2012, 5, 5, 12, 0, 0)));
+		states.add(new BoundedState(DateUtils.date(2012, 5, 5, 12, 30, 0)));		
+		states.get(0).constrainTo(
+				new LocationRange(wkt.read("POLYGON ((0 0.3, 0.2 0.4, 0.4 0.4, 0.2 0.3, 0 0.3))"))
+		);
+		states.get(1).constrainTo(
+				new LocationRange(wkt.read("POLYGON ((0 0.3, 0.2 0.4, 0.4 0.4, 0.2 0.3, 0 0.3))"))
+		);
+		leg = new StraightLeg("1", states);
+		leg.generatePoints(Precision.HIGH, 100000);
+		List<Point> highPoints = leg.getStartPoints();
+		leg.generatePoints(Precision.MEDIUM);
+		List<Point> medPoints = leg.getStartPoints();
+		Set<Point> highSet = new HashSet<Point>(highPoints);
+		for (Point point : medPoints)
+		{
+			boolean res = false;
+			for (Point highPoint : highPoints)
+			{
+				if (highPoint.isWithinDistance(point, 0.0001))
+				{
+					res = true;
+				}
+			}
+			if (! res)
+			{
+				fail();
+			}
+		}
 	}
 }

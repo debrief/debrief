@@ -10,25 +10,29 @@ public class GAParameters extends ModelObject
 	public static final String ELITIZM = "elitizm";
 	public static final String STAGNATION_STEPS = "stagnationSteps";
 	public static final String TIMEOUT = "timeout";
+	public static final String TIMEOUT_BETWEEN_ITERATIONS = "timeoutBetweenIterations";
 	public static final String MUTATION_PROBABILITY = "mutationProbability";
+	public static final String TOP_ROUTES = "topRoutes";
 	
 	private int populationSize;
 	private int elitizm;
 	private int stagnationSteps;
 	private int timeout;
+	private int timeoutBetweenIterations;
+	private int topRoutes;
 	private double mutationProbability;
+	
 	
 	public int getPopulationSize()
 	{
 		return populationSize;
 	}
 	
-	public GAParameters setPopulationSize(int populationSize)
+	public void setPopulationSize(int populationSize)
 	{
 		int old = this.populationSize;
 		this.populationSize = populationSize;
 		firePropertyChange(POPULATION_SIZE, old, populationSize);
-		return this;		
 	}
 	
 	public int getElitizm()
@@ -36,12 +40,11 @@ public class GAParameters extends ModelObject
 		return elitizm;
 	}
 	
-	public GAParameters setElitizm(int elitizm)
+	public void setElitizm(int elitizm)
 	{
 		int old = this.elitizm;
 		this.elitizm = elitizm;
 		firePropertyChange(ELITIZM, old, elitizm);
-		return this;		
 	}
 	
 	public int getStagnationSteps()
@@ -49,12 +52,11 @@ public class GAParameters extends ModelObject
 		return stagnationSteps;
 	}
 	
-	public GAParameters setStagnationSteps(int stagnationSteps)
+	public void setStagnationSteps(int stagnationSteps)
 	{
 		int old = this.stagnationSteps;		
 		this.stagnationSteps = stagnationSteps;
 		firePropertyChange(STAGNATION_STEPS, old, stagnationSteps);
-		return this;		
 	}
 	
 	public int getTimeout()
@@ -62,12 +64,11 @@ public class GAParameters extends ModelObject
 		return timeout;
 	}
 	
-	public GAParameters setTimeout(int timeout)
+	public void setTimeout(int timeout)
 	{
 		int old = this.timeout;
 		this.timeout = timeout;
 		firePropertyChange(TIMEOUT, old, timeout);
-		return this;		
 	}
 	
 	public double getMutationProbability()
@@ -75,11 +76,34 @@ public class GAParameters extends ModelObject
 		return mutationProbability;
 	}
 	
-	public GAParameters setMutationProbability(double mutationProbability)
+	public void setMutationProbability(double mutationProbability)
 	{
 		double old = this.mutationProbability;
 		this.mutationProbability = mutationProbability;
 		firePropertyChange(MUTATION_PROBABILITY, old, mutationProbability);		
-		return this;
+	}
+
+	public int getTopRoutes()
+	{
+		return topRoutes;
+	}
+
+	public void setTopRoutes(int topRoutes)
+	{
+		int old = this.topRoutes;
+		this.topRoutes = topRoutes;
+		firePropertyChange(TOP_ROUTES, old, topRoutes);
+	}
+
+	public int getTimeoutBetweenIterations()
+	{
+		return timeoutBetweenIterations;
+	}
+
+	public void setTimeoutBetweenIterations(int timeoutBetweenIterations)
+	{
+		int old = this.timeoutBetweenIterations;
+		this.timeoutBetweenIterations = timeoutBetweenIterations;
+		firePropertyChange(TIMEOUT_BETWEEN_ITERATIONS, old, timeoutBetweenIterations);
 	}
 }

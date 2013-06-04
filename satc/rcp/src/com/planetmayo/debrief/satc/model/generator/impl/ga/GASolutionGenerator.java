@@ -8,10 +8,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
+import org.uncommons.watchmaker.framework.CandidateFactory;
+import org.uncommons.watchmaker.framework.EvaluatedCandidate;
 import org.uncommons.watchmaker.framework.EvolutionEngine;
+import org.uncommons.watchmaker.framework.EvolutionUtils;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
+import org.uncommons.watchmaker.framework.FitnessEvaluator;
 import org.uncommons.watchmaker.framework.GenerationalEvolutionEngine;
 import org.uncommons.watchmaker.framework.PopulationData;
+import org.uncommons.watchmaker.framework.SelectionStrategy;
 import org.uncommons.watchmaker.framework.TerminationCondition;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.operators.ListCrossover;
@@ -22,6 +27,7 @@ import org.uncommons.watchmaker.framework.termination.Stagnation;
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.impl.AbstractSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
@@ -45,12 +51,14 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	public GASolutionGenerator(IContributions contributions, IJobsManager jobsManager, SafeProblemSpace problemSpace) 
 	{
 		super(contributions, jobsManager, problemSpace);
-		parameters = new GAParameters()
-			.setElitizm(30)
-			.setMutationProbability(0.15)
-			.setPopulationSize(500)
-			.setStagnationSteps(50)
-			.setTimeout(30000);
+		parameters = new GAParameters();
+		parameters.setElitizm(70);
+		parameters.setMutationProbability(0.1);
+		parameters.setPopulationSize(500);
+		parameters.setStagnationSteps(50);
+		parameters.setTopRoutes(10);
+		parameters.setTimeoutBetweenIterations(0);
+		parameters.setTimeout(30000);
 	}
 	
 	public GAParameters getParameters()
@@ -154,7 +162,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}));
 		operators.add(new PointsMutation(legs, new Probability(parameters.getMutationProbability())));
 		
-		EvolutionEngine<List<Point>> engine = new GenerationalEvolutionEngine<List<Point>>(
+		EvolutionEngine<List<Point>> engine = new GAEngine(
 				new RoutesCandidateFactory(legs), 
 				new EvolutionPipeline<List<Point>>(operators),
 				new RoutesFitnessEvaluator(legs, contributions),
@@ -168,7 +176,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			{
 				return progressMonitor.isCanceled();
 			}
-		}; 
+		};
 		List<Point> solution = engine.evolve(
 				parameters.getPopulationSize(), 
 				parameters.getElitizm(), 
@@ -180,7 +188,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		{
 			throw new InterruptedException();
 		}
-		
+		fireSolutionsReady(new CompositeRoute[] {solutionToRoute(solution)});
+	}
+	
+	protected CompositeRoute solutionToRoute(List<Point> solution) 
+	{
 		List<CoreRoute> routes = new ArrayList<CoreRoute>();
 		int i = 0;
 		for (CoreLeg leg : legs)
@@ -191,7 +203,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			}
 			i += 2;
 		}
-		fireSolutionsReady(new CompositeRoute[] {new CompositeRoute(routes)});
+		return new CompositeRoute(routes);
+		
 	}
 	
 	@Override
@@ -213,4 +226,58 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			generateSolutions(true);
 		}
 	}	
+	
+	protected void fireIterationComputed(List<CompositeRoute> topRoutes) 
+	{		
+		for (IGenerateSolutionsListener listener : _readyListeners)
+		{
+			if (listener instanceof IGASolutionsListener) 
+			{
+				((IGASolutionsListener) listener).iterationComputed(new ArrayList<CompositeRoute>(topRoutes));
+			}
+		}		
+	}
+	
+	private class GAEngine extends GenerationalEvolutionEngine<List<Point>> 
+	{
+		public GAEngine(CandidateFactory<List<Point>> candidateFactory,
+				EvolutionaryOperator<List<Point>> evolutionScheme,
+				FitnessEvaluator<? super List<Point>> fitnessEvaluator,
+				SelectionStrategy<? super List<Point>> selectionStrategy, Random rng)
+		{
+			super(candidateFactory, evolutionScheme, fitnessEvaluator, selectionStrategy,
+					rng);
+		}
+
+		@Override
+		protected List<EvaluatedCandidate<List<Point>>> nextEvolutionStep(
+				List<EvaluatedCandidate<List<Point>>> evaluatedPopulation, int eliteCount,
+				Random rng)
+		{
+			List<EvaluatedCandidate<List<Point>>> result = super.nextEvolutionStep(evaluatedPopulation, eliteCount, rng);
+			EvolutionUtils.sortEvaluatedPopulation(evaluatedPopulation, false);
+			List<CompositeRoute> routes = new ArrayList<CompositeRoute>(parameters.getTopRoutes());
+			for (int i = 0; i < parameters.getTopRoutes(); i++) 
+			{
+				if (i >= result.size()) 
+				{
+					break;
+				}
+				routes.add(solutionToRoute(result.get(i).getCandidate()));
+			}
+			fireIterationComputed(routes);
+			if (parameters.getTimeoutBetweenIterations() > 0) 
+			{
+				try 
+				{
+					Thread.sleep(parameters.getTimeoutBetweenIterations());
+				}
+				catch (InterruptedException ex)
+				{
+					Thread.currentThread().interrupt();
+				}
+			}
+			return result;
+		}			
+	}
 }

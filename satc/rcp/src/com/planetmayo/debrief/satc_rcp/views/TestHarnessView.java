@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -23,6 +25,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
@@ -92,6 +95,9 @@ public class TestHarnessView extends ViewPart
 	private TestSupport _testSupport;
 
 	private Shell _shell;
+	
+	private List<Control> bfControls = new ArrayList<Control>();
+	private List<Control> gaControls = new ArrayList<Control>();
 
 	/**
 	 * The constructor.
@@ -176,6 +182,7 @@ public class TestHarnessView extends ViewPart
 						btn2b.getSelection());
 			}
 		});
+		
 		final Button btn3 = new Button(group2, SWT.CHECK);
 		btn3.setText("Show points");
 		btn3.addSelectionListener(new SelectionAdapter()
@@ -185,6 +192,8 @@ public class TestHarnessView extends ViewPart
 				GeoSupport.getSolutionDiagnostics().setShowPoints(btn3.getSelection());
 			}
 		});
+		bfControls.add(btn3);
+		
 		final Button btn4 = new Button(group2, SWT.CHECK);
 		btn4.setText("Show achievable points");
 		btn4.addSelectionListener(new SelectionAdapter()
@@ -195,6 +204,7 @@ public class TestHarnessView extends ViewPart
 						btn4.getSelection());
 			}
 		});
+		bfControls.add(btn4);
 
 		final Button btn5 = new Button(group2, SWT.CHECK);
 		btn5.setText("Show all routes");
@@ -205,6 +215,8 @@ public class TestHarnessView extends ViewPart
 				GeoSupport.getSolutionDiagnostics().setShowRoutes(btn5.getSelection());
 			}
 		});
+		bfControls.add(btn5);
+		
 		final Button btn6a = new Button(group2, SWT.CHECK);
 		btn6a.setText("Show routes with scores");
 		btn6a.addSelectionListener(new SelectionAdapter()
@@ -215,6 +227,8 @@ public class TestHarnessView extends ViewPart
 						btn6a.getSelection());
 			}
 		});
+		bfControls.add(btn6a);
+		
 		final Button btn6b = new Button(group2, SWT.CHECK);
 		btn6b.setText("Show generated points");
 		btn6b.addSelectionListener(new SelectionAdapter()
@@ -225,6 +239,8 @@ public class TestHarnessView extends ViewPart
 						btn6b.getSelection());
 			}
 		});
+		bfControls.add(btn6b);
+		
 		final Button btn6c = new Button(group2, SWT.CHECK);
 		btn6c.setText("Show labels for generated points");
 		btn6c.addSelectionListener(new SelectionAdapter()
@@ -235,14 +251,29 @@ public class TestHarnessView extends ViewPart
 						btn6c.getSelection());
 			}
 		});
+		bfControls.add(btn6c);
+		
 		final Button btn7 = new Button(group2, SWT.CHECK);
-		btn7.setText("Show recommended solution");
+		btn7.setText("Show intermediate GA");
 		btn7.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				GeoSupport.getSolutionDiagnostics().setShowRecommendedSolutions(
+				GeoSupport.getSolutionDiagnostics().setShowIntermediateGASolutions(
 						btn7.getSelection());
+			}
+		});
+		btn7.setVisible(false);
+		gaControls.add(btn7);
+		
+		final Button btn8 = new Button(group2, SWT.CHECK);
+		btn8.setText("Show recommended solution");
+		btn8.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent arg0)
+			{
+				GeoSupport.getSolutionDiagnostics().setShowRecommendedSolutions(
+						btn8.getSelection());
 			}
 		});
 		createGAGroup(form);
@@ -250,9 +281,7 @@ public class TestHarnessView extends ViewPart
 		form.setLayout(verticalLayout);
 		// and get the form to handle it's layout
 		form.pack();
-	}
-	
-	
+	}	
 	
 	@Override
 	public void dispose()
@@ -291,10 +320,26 @@ public class TestHarnessView extends ViewPart
 			{
 				if (useGAButton.getSelection())
 				{
+					for (Control control : bfControls) 
+					{
+						control.setVisible(false);
+					}
+					for (Control control : gaControls)
+					{
+						control.setVisible(true);
+					}					
 					switchable.switchGenerator(gaSolutionGenerator);
 				}
 				else 
 				{
+					for (Control control : gaControls)
+					{
+						control.setVisible(false);
+					}
+					for (Control control : bfControls) 
+					{
+						control.setVisible(true);
+					}
 					switchable.switchGenerator(bfSolutionGenerator);
 				}
 			}
@@ -311,7 +356,7 @@ public class TestHarnessView extends ViewPart
 		elitizm.setFormatter(new LongFormatter());
 		elitizm.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
-		UIUtils.createLabel(gaGroup, "Stagnation steps:   ", new GridData());
+		UIUtils.createLabel(gaGroup, "Stagnation steps:", new GridData());
 		FormattedText stagnation = new FormattedText(gaGroup);
 		stagnation.setFormatter(new LongFormatter());
 		stagnation.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
@@ -326,26 +371,35 @@ public class TestHarnessView extends ViewPart
 		mutation.setFormatter(new NumberFormatter("0.0#"));
 		mutation.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
+		UIUtils.createLabel(gaGroup, "Timeout between iteration:    ", new GridData());
+		FormattedText timeoutIteration = new FormattedText(gaGroup);
+		timeoutIteration.setFormatter(new LongFormatter());
+		timeoutIteration.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));		
+		
 		_context.bindValue(
-				WidgetProperties.text().observe(populationSize.getControl()),
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, populationSize.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.POPULATION_SIZE)
 		);
 		_context.bindValue(
-				WidgetProperties.text().observe(elitizm.getControl()),
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, elitizm.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.ELITIZM)
 		);
 		_context.bindValue(
-				WidgetProperties.text().observe(stagnation.getControl()),
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, stagnation.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.STAGNATION_STEPS)
 		);
 		_context.bindValue(
-				WidgetProperties.text().observe(timeout.getControl()),
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, timeout.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT)
 		);
 		_context.bindValue(
-				WidgetProperties.text().observe(mutation.getControl()),
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, mutation.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.MUTATION_PROBABILITY)
-		);
+		);		
+		_context.bindValue(
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, timeoutIteration.getControl()),
+				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT_BETWEEN_ITERATIONS)
+		);		
 	}
 
 	private void doSave()
