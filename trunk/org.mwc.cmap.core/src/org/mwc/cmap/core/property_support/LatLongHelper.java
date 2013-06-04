@@ -7,7 +7,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CellEditor;
@@ -37,7 +39,7 @@ public class LatLongHelper extends EditorHelper
 	/**
 	 * remember how to format items on line
 	 */
-	protected static DecimalFormat _floatFormat = new DecimalFormat("0.0000");
+	protected static DecimalFormat _floatFormat = new DecimalFormat("0.0000", new DecimalFormatSymbols(Locale.UK));
 	private HashMap<WorldLocation, LatLongPropertySource> _myLocations;
 
 	/**

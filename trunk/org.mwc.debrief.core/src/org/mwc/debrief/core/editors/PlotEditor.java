@@ -1175,7 +1175,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								file.move(bakPath, true, monitor);
 
 								// move the temp file to be our real working file
-								tmpFile.renameTo(thePath.toFile().getAbsoluteFile());
+								File destFile = thePath.toFile().getAbsoluteFile();
+								if (!tmpFile.renameTo(destFile)) {
+									FileUtils.moveFile(tmpFile, destFile);
+								}
 
 								// finally, delete the backup file
 								if (existingBackupFile.exists())

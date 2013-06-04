@@ -169,6 +169,8 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 	// member variables
 	// ////////////////////////////////////////////////
 	protected WorldArea _myArea;
+	
+	protected Integer _orientation = new Integer(0);
 
 	/**
 	 * our editor
@@ -203,19 +205,20 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		Color newcol = getColor();
 		dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(),
 				TRANSPARENCY_SHADE));
-
 		Collection<WorldLocation> pts = getDataPoints();
 		Iterator<WorldLocation> iter = pts.iterator();
     final int STEPS = pts.size();
     int[] xP = new int[STEPS];
     int[] yP = new int[STEPS];
     int ctr = 0;
+    Point center = dest.toScreen(_myArea.getCentre());
 		while(iter.hasNext())
 		{
 			Point pt = dest.toScreen(iter.next());
-			xP[ctr] = pt.x;
-			yP[ctr++] = pt.y;
-			
+			// Rotate Rectangle around its center for degrees, specified in Orientation
+			double radians = _orientation.intValue()*Math.PI/180;
+			xP[ctr] = (int) (center.x + (pt.x-center.x)*Math.cos(radians) - (pt.y-center.y)*Math.sin(radians));
+			yP[ctr++] = (int) (center.y + (pt.x-center.x)*Math.sin(radians) + (pt.y-center.y)*Math.cos(radians));
 		}
 
 		// is it to be filled?
@@ -344,6 +347,29 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
+	
+	/**
+	 * get the orientation
+	 * 
+	 * @return 
+	 */
+	public Integer getOrientation()
+	{
+		return _orientation;
+	}
+
+	/**
+	 * set the orientation
+	 * 
+	 * @param orientation
+	 *          Integer orientation in degrees
+	 */
+	public void setOrientation(Integer orientation)
+	{
+		_orientation = orientation;
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+	}
+
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
@@ -363,7 +389,8 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 				PropertyDescriptor[] res = {
 						prop("Corner_TopLeft", "the top left corner", SPATIAL),
 						prop("CornerBottomRight", "the bottom right corner", SPATIAL),
-						prop("Filled", "whether this shape is filled", FORMAT) };
+						prop("Filled", "whether this shape is filled", FORMAT),
+						prop("Orientation", "degrees", SPATIAL)};
 
 				return res;
 
@@ -417,6 +444,7 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		// and inform the parent, so we can shift the label location
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);		
 	}
+	
 
 	/** move one of the corners of the shape
 	 * 
