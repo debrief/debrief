@@ -9062,6 +9062,9 @@ DDD XX..XX
 ;RECT: @@ DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
 ;; symb, tl corner lat &amp; long, br corner lat &amp; long, label
 
+;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
+;; ;; symb, start date, end date, lat & long 1, lat & long 2, lat & long xxx (until end of line)
+
 ;SGSAGEOG: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H 
 DD MM SS.S H DDD MM SS.S H XX..XX 
 ;; symb, start date, end date, tl lat &amp; long, br lat &amp; long, 

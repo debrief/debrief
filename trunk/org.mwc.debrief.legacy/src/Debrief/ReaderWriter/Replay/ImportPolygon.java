@@ -79,6 +79,10 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import junit.framework.TestCase;
 
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
@@ -101,8 +105,89 @@ final class ImportPolygon implements PlainLineImporter
 
 	@Override
 	public final Object readThisLine(String theLine)
-	{
-		throw new RuntimeException("Debrief does not support the import of Polygons in the Replay file format");
+	{		
+		// get a stream from the string
+		StringTokenizer st = new StringTokenizer(theLine);
+
+		// declare local variables
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		String theText = null;
+		String theSymbology;
+
+		// skip the comment identifier
+		st.nextToken();
+
+		// start with the symbology
+		theSymbology = st.nextToken();
+		
+		// now the start date & time
+		//TODO: read start date
+		st.nextToken();
+		st.nextToken();
+		
+		// now the end date & time
+		//TODO: read end date
+		st.nextToken();
+		st.nextToken();
+		
+		Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+		Integer counter = new Integer(1);
+		// create the Polygon object
+		PolygonShape sp = new PolygonShape(nodes);
+		
+		
+		while (st.hasMoreTokens()) 
+		{
+			// meet the label
+			String sts = st.nextToken();
+			System.out.println(sts);
+			if (Character.isLetter(sts.charAt(0))) {
+				theText = sts;
+				break;
+			}
+			
+			// now the location
+			latDeg = Double.valueOf(sts);
+			latMin = Double.valueOf(st.nextToken());
+			latSec = Double.valueOf(st.nextToken()).doubleValue();
+		
+			/**
+			 * now, we may have trouble here, since there may not be a space between
+			 * the hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = Double.valueOf(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = Double.valueOf(st.nextToken());
+			}
+			longMin = Double.valueOf(st.nextToken());
+			longSec = Double.valueOf(st.nextToken()).doubleValue();
+			longHem = st.nextToken().charAt(0);
+			
+			// we have our first location, create it
+			WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+							longMin, longSec, longHem, 0);	
+			PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
+			sp.add(newNode);
+			
+			counter += 1;
+		}
+		
+		
+				
+		// and put Polygon into a shape		
+		ShapeWrapper sw = new ShapeWrapper(theText, sp,
+						ImportReplay.replayColorFor(theSymbology), null);
+
+		return sw;
 	}
 
 	@Override
@@ -164,5 +249,77 @@ final class ImportPolygon implements PlainLineImporter
 		return res;
 
 	}
+	
+	public static class TestImport extends TestCase {
+		public void testNoLabel() {
+			String line = ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			ImportPolygon ip = new ImportPolygon();
+			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			assertNull(res.getLabel());
+			assertNotNull("read it in", res);
+			PolygonShape polygon = (PolygonShape) res.getShape();
+			assertNotNull("found shape", polygon);
+			
+			Vector<PolygonNode> nodes = polygon.getPoints();
+			assertEquals(2, nodes.size());
+			
+			assertEquals("1", nodes.get(0).getName());
+			WorldLocation loc = nodes.get(0).getLocation();
+			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+			
+			assertEquals("2", nodes.get(1).getName());
+			loc = nodes.get(1).getLocation();
+			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+		}
+		
+		public void testLeadingSpace() {
+			String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			ImportPolygon ip = new ImportPolygon();
+			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			assertNull(res.getLabel());
+			assertNotNull("read it in", res);
+			PolygonShape polygon = (PolygonShape) res.getShape();
+			assertNotNull("found shape", polygon);
+
+			Vector<PolygonNode> nodes = polygon.getPoints();
+			assertEquals(2, nodes.size());
+			
+			assertEquals("1", nodes.get(0).getName());
+			WorldLocation loc = nodes.get(0).getLocation();
+			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+			
+			assertEquals("2", nodes.get(1).getName());
+			loc = nodes.get(1).getLocation();
+			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+		}
+		
+		public void testWithLabel() {
+			String line = ";POLY: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+			ImportPolygon ip = new ImportPolygon();
+			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			assertNotNull(res.getLabel());
+			assertNotNull("read it in", res);
+			PolygonShape polygon = (PolygonShape) res.getShape();
+			assertNotNull("found shape", polygon);
+
+			Vector<PolygonNode> nodes = polygon.getPoints();
+			assertEquals(2, nodes.size());
+			
+			assertEquals("1", nodes.get(0).getName());
+			WorldLocation loc = nodes.get(0).getLocation();
+			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+			
+			assertEquals("2", nodes.get(1).getName());
+			loc = nodes.get(1).getLocation();
+			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+		}
+	}
+
 
 }
