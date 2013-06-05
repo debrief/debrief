@@ -437,7 +437,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 				}
 			}
 			else if (txt.contains("\t")) { //tab delimiter indicates the presence of a property name
-				//Example : Location	 05°17'37.76"N 030°49'45.33"E
+				//Example : Location	 05ï¿½17'37.76"N 030ï¿½49'45.33"E
 				String subString = txt.substring(txt.indexOf("\t")).trim();
 				StringTokenizer latLong=new StringTokenizer(subString);
 				if(latLong.countTokens() == 2) {
@@ -678,6 +678,15 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 		return res;
 	}
 
+	
+	public static IViewPart findView(String viewId)
+	{
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = win.getActivePage();
+		return page.findView(viewId);
+	}
+	
 	/**
 	 * create an action that we can stick in our manager
 	 * 
