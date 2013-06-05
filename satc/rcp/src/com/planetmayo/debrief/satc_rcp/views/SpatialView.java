@@ -849,7 +849,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 						for (int i = 0; i < numStart; i++)
 						{
 							CoreRoute[] thisStart = routes[i];
-
+							
 							// ok, are we showing all?
 							CoreRoute firstRoute = findFirstValidRoute(thisStart);
 							if (firstRoute != null)
@@ -908,10 +908,15 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 								break;							
 							for (CoreRoute route : routes) 
 							{
+								
+								// only display the route if it's achievable
+								if(!route.isPossible())
+									continue;
+								
 								routeCounter++;
 								if (routeCounter > _numRoutes)
 									break;
-
+								
 								Coordinate[] coords = new Coordinate[]
 								{ route.getStartPoint().getCoordinate(),
 										route.getEndPoing().getCoordinate() };
