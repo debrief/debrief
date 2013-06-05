@@ -778,5 +778,42 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			assertEquals("Expected 21 degrees, 56 minutes, 56.52 seconds north", 21.949033333333333, fromClipboard.getLong());
 		}
 	}
+	
+	public static void infoDialog(final String title, final String msg)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openInformation(Display.getDefault().getActiveShell(), title, msg);
+			}
+		});
+	}
+
+	public static void errorDialog(final String title, final String msg)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openError(Display.getDefault().getActiveShell(), title, msg);
+			}
+		});
+	}
+
+	public static void warningDialog(final String title, final String msg)
+	{
+		Display.getDefault().syncExec(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MessageDialog.openWarning(Display.getDefault().getActiveShell(), title, msg);
+			}
+		});
+	}
+
 
 }

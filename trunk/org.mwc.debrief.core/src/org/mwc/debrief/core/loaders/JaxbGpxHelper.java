@@ -119,7 +119,7 @@ public class JaxbGpxHelper implements GpxHelper
 		catch (Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Problem reading GPX", e);
-			errorDialog("Load GPS File", "Problem reading GPX");
+			CorePlugin.errorDialog("Load GPS File", "Problem reading GPX");
 			return null;
 		}
 
@@ -133,7 +133,7 @@ public class JaxbGpxHelper implements GpxHelper
 
 		if (direcotryPath == null)
 		{
-			errorDialog("Export to GPS",
+			CorePlugin.errorDialog("Export to GPS",
 					"You have to selected the directory to save the GPS file.");
 			return;
 		}
@@ -161,13 +161,13 @@ public class JaxbGpxHelper implements GpxHelper
 				marshaller.marshal(gpxType, saveTo);
 				if (!isValid(saveTo))
 				{
-					errorDialog("Export to GPS", "Generated GPX failed validation");
+					CorePlugin.errorDialog("Export to GPS", "Generated GPX failed validation");
 				}
 			}
 			else
 			{
 				CorePlugin.logError(Status.INFO, "No tracks vailable to export", null);
-				infoDialog("Export to GPS", "No tracks vailable to export");
+				CorePlugin.infoDialog("Export to GPS", "No tracks vailable to export");
 			}
 		}
 		catch (Exception e)
@@ -181,7 +181,7 @@ public class JaxbGpxHelper implements GpxHelper
 			{
 				dialogMsg = "Reason: " + e.getMessage();
 			}
-			errorDialog("Export to GPS", "Problem during the export." + dialogMsg);
+			CorePlugin.errorDialog("Export to GPS", "Problem during the export." + dialogMsg);
 		}
 	}
 

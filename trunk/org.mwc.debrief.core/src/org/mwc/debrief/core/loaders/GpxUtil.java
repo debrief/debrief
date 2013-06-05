@@ -12,7 +12,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.jdom.Document;
@@ -115,7 +114,7 @@ public final class GpxUtil
 		catch (SAXException ex)
 		{
 			CorePlugin.logError(Status.ERROR, "GPX file trying to import is not valid because " + ex.getMessage(), ex);
-			errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
+			CorePlugin.errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
 		}
 		return false;
 	}
@@ -127,43 +126,7 @@ public final class GpxUtil
 
 		return collector.getSelectedFolder();
 	}
-
-	public static void infoDialog(final String title, final String msg)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				MessageDialog.openInformation(Display.getDefault().getActiveShell(), title, msg);
-			}
-		});
-	}
-
-	public static void errorDialog(final String title, final String msg)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				MessageDialog.openError(Display.getDefault().getActiveShell(), title, msg);
-			}
-		});
-	}
-
-	public static void warningDialog(final String title, final String msg)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				MessageDialog.openWarning(Display.getDefault().getActiveShell(), title, msg);
-			}
-		});
-	}
-
+		
 	public static boolean isValid(File f) throws SAXException, IOException
 	{
 		Validator validator;
@@ -182,7 +145,7 @@ public final class GpxUtil
 		catch (final SAXException ex)
 		{
 			CorePlugin.logError(Status.ERROR, "GPX failed validation. Reason: " + ex.getMessage(), ex);
-			errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
+			CorePlugin.errorDialog("Load GPS File", "GPX failed validation. Reason: " + ex.getMessage());
 		}
 		return false;
 	}
