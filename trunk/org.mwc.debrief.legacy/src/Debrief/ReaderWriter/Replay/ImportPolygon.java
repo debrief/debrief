@@ -142,8 +142,9 @@ final class ImportPolygon implements PlainLineImporter
 		{
 			// meet the label
 			String sts = st.nextToken();
-			System.out.println(sts);
-			if (Character.isLetter(sts.charAt(0))) {
+			
+			if (!Character.isDigit(sts.charAt(0))) {
+				System.out.println(sts);
 				theText = sts;
 				break;
 			}
@@ -275,7 +276,7 @@ final class ImportPolygon implements PlainLineImporter
 		}
 		
 		public void testLeadingSpace() {
-			String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			String line = "	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
 			ImportPolygon ip = new ImportPolygon();
 			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
 			assertNull(res.getLabel());
@@ -284,7 +285,7 @@ final class ImportPolygon implements PlainLineImporter
 			assertNotNull("found shape", polygon);
 
 			Vector<PolygonNode> nodes = polygon.getPoints();
-			assertEquals(2, nodes.size());
+			assertEquals(3, nodes.size());
 			
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
@@ -295,13 +296,18 @@ final class ImportPolygon implements PlainLineImporter
 			loc = nodes.get(1).getLocation();
 			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+			
+			assertEquals("3", nodes.get(2).getName());
+			loc = nodes.get(2).getLocation();
+			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
 		}
 		
 		public void testWithLabel() {
-			String line = ";POLY: @J  49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+			String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			ImportPolygon ip = new ImportPolygon();
 			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-			assertNotNull(res.getLabel());
+			assertEquals("label", res.getLabel());
 			assertNotNull("read it in", res);
 			PolygonShape polygon = (PolygonShape) res.getShape();
 			assertNotNull("found shape", polygon);
@@ -311,13 +317,13 @@ final class ImportPolygon implements PlainLineImporter
 			
 			assertEquals("1", nodes.get(0).getName());
 			WorldLocation loc = nodes.get(0).getLocation();
-			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+			assertEquals("1 correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("1 correct long", 4.16989, loc.getLong(), 0.0001);
 			
 			assertEquals("2", nodes.get(1).getName());
 			loc = nodes.get(1).getLocation();
-			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+			assertEquals("2 correct long", 49.6405, loc.getLat(), 0.0001);
+			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 	}
 
