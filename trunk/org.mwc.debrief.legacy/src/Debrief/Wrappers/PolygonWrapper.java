@@ -370,6 +370,13 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 		setName(label);
 		super.setLabelLocation(LocationPropertyEditor.CENTRE);
 	}
+	
+	public PolygonWrapper(final String label, final PolygonShape shape,
+			final java.awt.Color theColor, final HiResDate startDate, final HiResDate endDate)
+	{
+		this(label, shape, theColor, startDate);
+		setTimeEnd(endDate);
+	}
 
 	private PolygonShape getPoly()
 	{

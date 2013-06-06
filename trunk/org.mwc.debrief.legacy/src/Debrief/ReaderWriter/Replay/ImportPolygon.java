@@ -84,12 +84,15 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /**
@@ -113,6 +116,7 @@ final class ImportPolygon implements PlainLineImporter
 		double latDeg, longDeg, latMin, longMin;
 		char latHem, longHem;
 		double latSec, longSec;
+		HiResDate startDate, endDate = null;
 		String theText = null;
 		String theSymbology;
 
@@ -122,21 +126,21 @@ final class ImportPolygon implements PlainLineImporter
 		// start with the symbology
 		theSymbology = st.nextToken();
 		
-		// now the start date & time
-		//TODO: read start date
-		st.nextToken();
-		st.nextToken();
+		//read start date
+		String dateToken = st.nextToken();
+		String timeToken = st.nextToken();
+		startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		
-		// now the end date & time
-		//TODO: read end date
-		st.nextToken();
-		st.nextToken();
+		//TODO: date might be absent
+		//read end date
+		dateToken = st.nextToken();
+		timeToken = st.nextToken();
+		endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 		
 		Vector<PolygonNode> nodes = new Vector<PolygonNode>();
 		Integer counter = new Integer(1);
 		// create the Polygon object
-		PolygonShape sp = new PolygonShape(nodes);
-		
+		PolygonShape sp = new PolygonShape(nodes);		
 		
 		while (st.hasMoreTokens()) 
 		{
@@ -144,7 +148,6 @@ final class ImportPolygon implements PlainLineImporter
 			String sts = st.nextToken();
 			
 			if (!Character.isDigit(sts.charAt(0))) {
-				System.out.println(sts);
 				theText = sts;
 				break;
 			}
@@ -181,12 +184,11 @@ final class ImportPolygon implements PlainLineImporter
 			
 			counter += 1;
 		}
-		
-		
 				
 		// and put Polygon into a shape		
-		ShapeWrapper sw = new ShapeWrapper(theText, sp,
-						ImportReplay.replayColorFor(theSymbology), null);
+		PolygonWrapper sw = new PolygonWrapper(theText, sp,
+						ImportReplay.replayColorFor(theSymbology), 
+						startDate, endDate);
 
 		return sw;
 	}
