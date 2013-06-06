@@ -116,7 +116,7 @@ final class ImportPolygon implements PlainLineImporter
 		double latDeg, longDeg, latMin, longMin;
 		char latHem, longHem;
 		double latSec, longSec;
-		HiResDate startDate, endDate = null;
+		HiResDate startDate=null, endDate = null;
 		String theText = null;
 		String theSymbology;
 
@@ -129,13 +129,24 @@ final class ImportPolygon implements PlainLineImporter
 		//read start date
 		String dateToken = st.nextToken();
 		String timeToken = st.nextToken();
-		startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		try {
+			startDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		} catch (NumberFormatException e) {
+			// There is no start date specified
+			theLine = theLine.substring(theLine.indexOf(dateToken));
+			st = new StringTokenizer(theLine);
+		}
 		
-		//TODO: date might be absent
 		//read end date
 		dateToken = st.nextToken();
 		timeToken = st.nextToken();
-		endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		try {
+			endDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		} catch (NumberFormatException e) {
+			// There is no end date specified
+			theLine = theLine.substring(theLine.indexOf(dateToken));
+			st = new StringTokenizer(theLine);
+		}
 		
 		Vector<PolygonNode> nodes = new Vector<PolygonNode>();
 		Integer counter = new Integer(1);
@@ -326,6 +337,52 @@ final class ImportPolygon implements PlainLineImporter
 			loc = nodes.get(1).getLocation();
 			assertEquals("2 correct long", 49.6405, loc.getLat(), 0.0001);
 			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
+		}
+		
+		public void testWithoutEndDate() {
+			String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			ImportPolygon ip = new ImportPolygon();
+			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			assertNull(res.getLabel());
+			assertNotNull("read it in", res);
+			PolygonShape polygon = (PolygonShape) res.getShape();
+			assertNotNull("found shape", polygon);
+			
+			Vector<PolygonNode> nodes = polygon.getPoints();
+			assertEquals(2, nodes.size());
+			
+			assertEquals("1", nodes.get(0).getName());
+			WorldLocation loc = nodes.get(0).getLocation();
+			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+			
+			assertEquals("2", nodes.get(1).getName());
+			loc = nodes.get(1).getLocation();
+			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+		}
+		
+		public void testWithoutDates() {
+			String line = ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+			ImportPolygon ip = new ImportPolygon();
+			ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+			assertNull(res.getLabel());
+			assertNotNull("read it in", res);
+			PolygonShape polygon = (PolygonShape) res.getShape();
+			assertNotNull("found shape", polygon);
+			
+			Vector<PolygonNode> nodes = polygon.getPoints();
+			assertEquals(2, nodes.size());
+			
+			assertEquals("1", nodes.get(0).getName());
+			WorldLocation loc = nodes.get(0).getLocation();
+			assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+			
+			assertEquals("2", nodes.get(1).getName());
+			loc = nodes.get(1).getLocation();
+			assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 	}
 
