@@ -104,7 +104,7 @@ final class ImportPolygon implements PlainLineImporter
 	/**
 	 * the type for this string
 	 */
-	private final String _myType = ";;POLYGON:";
+	private final String _myType = ";POLY:";
 
 	@Override
 	public final Object readThisLine(String theLine)
