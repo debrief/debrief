@@ -1,0 +1,11 @@
+;RECT: @@  49 0 0 N 4 0 0 E 50 0 0 N 8 0 0 E rect1
+
+;LINE: @J  49 0 0 N 4 0 0 E 50 0 0 N 8 0 0 E line1
+
+;CIRCLE: @C 49 0 0 N 4 0 0 E 5000 cirle
+
+;TEXT: @C 49.5 0 0 N 6 0 0 E This is an example 
+
+;ELLIPSE: @E 130708 121212 50 0 0 N 4 0 0 E 45.0 5000 3000 ellipse
+
+;POLY: @@ 49.0 0 0 N 4.0 0 0 E 49.5 0 0 N 5 0 0 E 50 0 0 N 4 0 0 E poly
