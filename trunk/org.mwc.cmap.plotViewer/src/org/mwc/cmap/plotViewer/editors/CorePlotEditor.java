@@ -27,15 +27,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
-import org.eclipse.ui.views.properties.PropertySheet;
-import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.interfaces.IPlotGUI;
@@ -763,15 +760,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 				public void run()
 				{
 					firePropertyChange(PROP_DIRTY);
-					PropertySheet propertiesView = (PropertySheet) CorePlugin.findView(IPageLayout.ID_PROP_SHEET);
-					if (propertiesView != null) 
-					{
-						PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView.getCurrentPage();
-						if (propertySheetPage != null && !propertySheetPage.getControl().isDisposed()) 
-		                { 
-		                    propertySheetPage.refresh(); 
-		                } 
-					}
 				}
 			});
 		}

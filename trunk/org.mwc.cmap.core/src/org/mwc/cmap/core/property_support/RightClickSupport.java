@@ -27,6 +27,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.views.properties.PropertySheet;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
@@ -960,6 +963,16 @@ public class RightClickSupport
 				{
 					_setter.invoke(thisSubject, new Object[]
 					{ theValue });
+					
+					PropertySheet propertiesView = (PropertySheet) CorePlugin.findView(IPageLayout.ID_PROP_SHEET);
+					if (propertiesView != null) 
+					{
+						PropertySheetPage propertySheetPage = (PropertySheetPage) propertiesView.getCurrentPage();
+						if (propertySheetPage != null && !propertySheetPage.getControl().isDisposed()) 
+		                { 
+		                    propertySheetPage.refresh(); 
+		                } 
+					}
 				}
 				catch (InvocationTargetException e)
 				{
