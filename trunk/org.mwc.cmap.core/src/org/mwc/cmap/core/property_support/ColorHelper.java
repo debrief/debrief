@@ -5,6 +5,7 @@ package org.mwc.cmap.core.property_support;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.resource.ColorRegistry;
@@ -29,13 +30,14 @@ public class ColorHelper extends EditorHelper
 	public ColorHelper(Control parentControl)
 	{
 		super(java.awt.Color.class);
+		
 		// _parentControl = parentControl;
 	}
 
 	@Override
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new org.eclipse.jface.viewers.ColorCellEditor(parent);
+		return new ColorCellEditor(parent);
 	}
 
 	@Override
@@ -281,6 +283,33 @@ public class ColorHelper extends EditorHelper
 
 		return sel.getButton();
 
+	}
+	
+	class ColorCellEditor extends org.eclipse.jface.viewers.ColorCellEditor
+	{
+
+		public ColorCellEditor(Composite parent) {
+			super(parent);
+		}
+		
+		protected Object openDialogBox(Control cellEditorWindow) {
+	        ColorDialog dialog = new ColorDialog(cellEditorWindow.getShell());
+	        Object value = getValue();
+	        if (value != null) {
+				dialog.setRGB((RGB) value);
+			}
+	        
+	        Vector<RGB> initialColors = new Vector<RGB>();
+	        for(org.eclipse.swt.graphics.Color color : _myColorList.values()){
+				initialColors.add(color.getRGB());
+			}
+	        dialog.setRGBs((RGB[]) initialColors.toArray(new RGB[initialColors.size()]));
+	        	
+	        value = dialog.open();
+	        return dialog.getRGB();
+	        
+	    }
+		
 	}
 
 }
