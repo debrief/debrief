@@ -1,3 +1,7 @@
+/**
+ * Right-click on this class in Java perspective PackageExplorer and select Run As > Junit test.
+ * This will start all tests. 
+ */
 package org.mwc.debrief.test;
 
 import org.junit.extensions.cpsuite.ClasspathSuite;
