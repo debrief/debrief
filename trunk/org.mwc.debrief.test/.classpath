@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="/contribs/ClasspathSuite/cpsuite-1.2.6.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kryonet"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.comms"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.help"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.legacy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.NetAsset2"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.NetCore"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.ScenarioController2"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.ScenarioPlotter"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.SensorMonitor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.VesselMonitor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.grideditor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.gt2Plot"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.layer_manager"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.LiveDataMonitor"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NarrativeViewer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.overview"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.plotViewer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tests"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.TimeController"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tote"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.waterfall_core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.xyplot"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed_dummy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.GNDManager"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.help"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.multipath2"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.SensorFusion"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.track_shift"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.gnd.demonstrator"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.qinetiq.data_feed"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
