@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="/contribs/ClasspathSuite/cpsuite-1.2.6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kryonet"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.comms"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.help"/>
