@@ -33,9 +33,10 @@
 		<!-- build the history content 
 		<antcall target="cvs_log" />-->
 
-		<!-- generate the HTML  -->
+		<!-- generate the HTML. Note: we're set to fail on error, which covers the XML compile failing  -->
 		<echo message="Generating HTML" />
-		<java classpath="${contribDir}/saxon6_5_2/saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+		<java classpath="${contribDir}/saxon6_5_2/saxon.jar" fork="yes" dir="${helpDest}"
+			classname="com.icl.saxon.StyleSheet" maxmemory="128m" failonerror="yes">
 			<arg value="../../../org.mwc.debrief.help/docbook/ng_help.xml" />
 			<arg value="../../../org.mwc.debrief.help/docbook/eclipse_html_style.xsl" />
 		</java>
@@ -79,7 +80,7 @@
 	</target>
 
 
-	<target name="docbook_to_internet" >
+	<target name="docbook_to_internet">
 
 		<!-- help the ftp task get going-->
 		<property environment="env" />
