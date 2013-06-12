@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Plot Viewer
+Bundle-SymbolicName: org.mwc.cmap.plotViewer; singleton:=true
+Bundle-Version: 1.0.64
+Bundle-Activator: org.mwc.cmap.plotViewer.PlotViewerPlugin
+Bundle-Vendor: MWC
+Export-Package: org.mwc.cmap.plotViewer,
+ org.mwc.cmap.plotViewer.actions,
+ org.mwc.cmap.plotViewer.editors,
+ org.mwc.cmap.plotViewer.editors.chart
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.legacy,
+ org.mwc.cmap.core,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.views,
+ org.mwc.cmap.gt2Plot
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
