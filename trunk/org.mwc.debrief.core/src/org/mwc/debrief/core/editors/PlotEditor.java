@@ -624,13 +624,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						if (dtg != null)
 						{
 							res = extend(res, dtg);
-							
+
 							// also see if it this data type an end time
-							if(wrapped instanceof WatchableList)
+							if (wrapped instanceof WatchableList)
 							{
 								// ok, make sure we also handle the end time
 								WatchableList wl = (WatchableList) wrapped;
-								res = extend(res, wl.getEndDTG());
+								HiResDate endD = wl.getEndDTG();
+								if (endD != null)
+									res = extend(res, endD);
 							}
 						}
 					}
@@ -1181,7 +1183,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 								// move the temp file to be our real working file
 								File destFile = thePath.toFile().getAbsoluteFile();
-								if (!tmpFile.renameTo(destFile)) {
+								if (!tmpFile.renameTo(destFile))
+								{
 									FileUtils.moveFile(tmpFile, destFile);
 								}
 
