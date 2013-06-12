@@ -679,7 +679,6 @@
 					<xs:element name="br" type="locationType" />
 				</xs:sequence>
 				<xs:attribute name="Filled" type="xs:boolean" />
-				<xs:attribute name="Orientation" type="xs:int" use="optional" default="0"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

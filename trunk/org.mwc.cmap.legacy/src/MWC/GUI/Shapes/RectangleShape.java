@@ -157,7 +157,8 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class RectangleShape extends PlainShape implements Editable, HasDraggableComponents
+public class RectangleShape extends PlainShape implements Editable,
+		HasDraggableComponents
 {
 
 	/**
@@ -169,8 +170,6 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 	// member variables
 	// ////////////////////////////////////////////////
 	protected WorldArea _myArea;
-	
-	protected Integer _orientation = new Integer(0);
 
 	/**
 	 * our editor
@@ -203,35 +202,34 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 
 		// create a transparent colour
 		Color newcol = getColor();
-		dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(),
-				TRANSPARENCY_SHADE));
+		dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol
+				.getBlue(), TRANSPARENCY_SHADE));
 		Collection<WorldLocation> pts = getDataPoints();
 		Iterator<WorldLocation> iter = pts.iterator();
-    final int STEPS = pts.size();
-    int[] xP = new int[STEPS];
-    int[] yP = new int[STEPS];
-    int ctr = 0;
-    Point center = dest.toScreen(_myArea.getCentre());
-		while(iter.hasNext())
+		final int STEPS = pts.size();
+		int[] xP = new int[STEPS];
+		int[] yP = new int[STEPS];
+		int ctr = 0;
+		while (iter.hasNext())
 		{
 			Point pt = dest.toScreen(iter.next());
-			// Rotate Rectangle around its center for degrees, specified in Orientation
-			double radians = _orientation.intValue()*Math.PI/180;
-			xP[ctr] = (int) (center.x + (pt.x-center.x)*Math.cos(radians) - (pt.y-center.y)*Math.sin(radians));
-			yP[ctr++] = (int) (center.y + (pt.x-center.x)*Math.sin(radians) + (pt.y-center.y)*Math.cos(radians));
+			// Rotate Rectangle around its center for degrees, specified in
+			// Orientation
+			xP[ctr] = pt.x;
+			yP[ctr++] = pt.y;
 		}
 
 		// is it to be filled?
-    // and plot the polygon
-    if (getFilled())
-    {
-    	dest.fillPolygon(xP, yP, STEPS);
-    }
-    else
-    {
-    	dest.drawPolygon(xP, yP, STEPS);
-    }
-		
+		// and plot the polygon
+		if (getFilled())
+		{
+			dest.fillPolygon(xP, yP, STEPS);
+		}
+		else
+		{
+			dest.drawPolygon(xP, yP, STEPS);
+		}
+
 	}
 
 	/**
@@ -347,29 +345,6 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
-	
-	/**
-	 * get the orientation
-	 * 
-	 * @return 
-	 */
-	public Integer getOrientation()
-	{
-		return _orientation;
-	}
-
-	/**
-	 * set the orientation
-	 * 
-	 * @param orientation
-	 *          Integer orientation in degrees
-	 */
-	public void setOrientation(Integer orientation)
-	{
-		_orientation = orientation;
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-	}
-
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
@@ -386,11 +361,10 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		{
 			try
 			{
-				PropertyDescriptor[] res = {
-						prop("Corner_TopLeft", "the top left corner", SPATIAL),
+				PropertyDescriptor[] res =
+				{ prop("Corner_TopLeft", "the top left corner", SPATIAL),
 						prop("CornerBottomRight", "the bottom right corner", SPATIAL),
-						prop("Filled", "whether this shape is filled", FORMAT),
-						prop("Orientation", "degrees", SPATIAL)};
+						prop("Filled", "whether this shape is filled", FORMAT) };
 
 				return res;
 
@@ -423,7 +397,8 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		}
 	}
 
-	/** move the whole shape by the specified distance
+	/**
+	 * move the whole shape by the specified distance
 	 * 
 	 */
 	public void shift(WorldVector vector)
@@ -437,16 +412,16 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 
 		// ok, apply the offset to each corner
 		_myArea.setCentre(newCentre);
-		
+
 		// and make it square again
 		_myArea.normalise();
-		
-		// and inform the parent, so we can shift the label location
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);		
-	}
-	
 
-	/** move one of the corners of the shape
+		// and inform the parent, so we can shift the label location
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+	}
+
+	/**
+	 * move one of the corners of the shape
 	 * 
 	 */
 	public void shift(WorldLocation feature, WorldVector vector)
@@ -456,25 +431,30 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 
 		// better normalise the shape now...
 		_myArea.normalise();
-		
+
 		// and inform the parent, so we can shift the label location
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);		
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 			ComponentConstruct currentNearest, Layer parentLayer)
 	{
 
-		// right - the first two points are easy, we just pass the location directly to the caller
-		checkThisOne(_myArea.getTopLeft(), cursorLoc, currentNearest, this, parentLayer);
-		checkThisOne(_myArea.getBottomRight(), cursorLoc, currentNearest, this, parentLayer);
+		// right - the first two points are easy, we just pass the location directly
+		// to the caller
+		checkThisOne(_myArea.getTopLeft(), cursorLoc, currentNearest, this,
+				parentLayer);
+		checkThisOne(_myArea.getBottomRight(), cursorLoc, currentNearest, this,
+				parentLayer);
 
 		// now for our 'special' corners, that we can't just shift over...
-		// we've got to wrap the locations in an object that actually updates the TL & BR corners of the 
+		// we've got to wrap the locations in an object that actually updates the TL
+		// & BR corners of the
 		// rectangle
 		WorldLocation bl = new WorldLocation(_myArea.getBottomLeft())
 		{
 			private static final long serialVersionUID = 1L;
+
 			public void addToMe(WorldVector delta)
 			{
 				WorldLocation newBL = _myArea.getBottomLeft().add(delta);
@@ -486,6 +466,7 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		WorldLocation tr = new WorldLocation(_myArea.getTopRight())
 		{
 			private static final long serialVersionUID = 1L;
+
 			public void addToMe(WorldVector delta)
 			{
 				WorldLocation newBL = _myArea.getBottomLeft();
@@ -499,6 +480,5 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		checkThisOne(bl, cursorLoc, currentNearest, this, parentLayer);
 		checkThisOne(tr, cursorLoc, currentNearest, this, parentLayer);
 	}
-
 
 }
