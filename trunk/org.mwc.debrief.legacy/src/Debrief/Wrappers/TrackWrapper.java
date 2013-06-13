@@ -57,6 +57,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -745,7 +746,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			final MethodDescriptor[] mds =
 			{ method(c, "exportThis", null, "Export Shape"),
-					method(c, "resetLabels", null, "Reset DTG Labels") };
+					method(c, "resetLabels", null, "Reset DTG Labels"),
+					method(c, "calcCourseSpeed", null/* no params */, "Generate calculated Course and Speed")};
 
 			return mds;
 		}
@@ -4144,6 +4146,42 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		return visible;
+	}
+	
+	/**
+	 * Calculates Course & Speed for the track.
+	 */
+	public void calcCourseSpeed()
+	{
+		// step through our fixes
+		final Enumeration<Editable> iter = getPositions();
+		FixWrapper prevFw = null;
+		while (iter.hasMoreElements())
+		{
+			final FixWrapper currFw = (FixWrapper) iter.nextElement();
+			if (prevFw == null)
+				prevFw = currFw;
+			else {
+				// calculate the course
+				WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
+				prevFw.getFix().setCourse(wv.getBearing());
+				
+				// calculate the speed
+				// get distance in meters
+				WorldDistance wd = new WorldDistance(wv);
+				double distance = wd.getValueIn(WorldDistance.METRES);
+		    	// get time difference in seconds
+				long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime().getMicros())/1000000;
+				
+				//get speed in meters per second and convert it to knots
+				WorldSpeed speed = new WorldSpeed(distance/timeDifference, WorldSpeed.M_sec);
+				double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts, speed.getValue());
+				prevFw.setSpeed(knots);
+				
+				prevFw = currFw;
+			}
+		}
+		
 	}
 
 }
