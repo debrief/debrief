@@ -1,12 +1,52 @@
 <project default="runTests">
 	
 	<property file="${basedir}/build.properties"/>
+	  
+	<property name="build.dir" location="bin" />
 	
 	<path id="test.classpath">	    
 		<pathelement location="lib/hamcrest-core-1.3.jar" />
 		<pathelement location="lib/junit-4.11.jar" />
 		<pathelement location="../contribs/ClasspathSuite/cpsuite-1.2.6.jar" />
-		<pathelement location="${basedir}/bin" />
+		<pathelement location="${build.dir}" />
+	</path>
+	
+	<path id="classpathsuite.path">
+		<pathelement location="../org.mwc.asset.comms/bin"/>
+		<pathelement location="../org.mwc.asset.core/bin"/>
+		<pathelement location="../org.mwc.asset.help/bin"/>
+		<pathelement location="..org.mwc.asset.legacy/bin"/>
+		<pathelement location="../org.mwc.asset.NetAsset2/bin"/>
+		<pathelement location="../org.mwc.asset.NetCore/bin"/>
+		<pathelement location="../org.mwc.asset.ScenarioController2/bin"/>
+		<pathelement location="../org.mwc.asset.ScenarioPlotter/bin"/>
+		<pathelement location="../org.mwc.asset.SensorMonitor/bin"/>
+		<pathelement location="../org.mwc.asset.VesselMonitor/bin"/>
+		<pathelement location="../org.mwc.cmap.core/bin"/>
+		<pathelement location="../org.mwc.cmap.grideditor/bin"/>
+		<pathelement location="../org.mwc.cmap.gt2Plot/bin"/>
+		<pathelement location="../org.mwc.cmap.layer_manager/bin"/>
+		<pathelement location="../org.mwc.cmap.legacy/bin"/>
+		<pathelement location="../org.mwc.cmap.LiveDataMonitor/bin"/>
+		<pathelement location="../org.mwc.cmap.NarrativeViewer/bin"/>
+		<pathelement location="../org.mwc.cmap.overview/bin"/>
+		<pathelement location="../org.mwc.cmap.plotViewer/bin"/>
+		<pathelement location="../org.mwc.cmap.tests/bin"/>
+		<pathelement location="../org.mwc.cmap.TimeController/bin"/>
+		<pathelement location="../org.mwc.cmap.tote/bin"/>
+		<pathelement location="../org.mwc.cmap.waterfall_core/bin"/>
+		<pathelement location="../org.mwc.cmap.xyplot/bin"/>
+		<pathelement location="../org.mwc.debrief.core/bin"/>
+		<pathelement location="../org.mwc.debrief.data_feed/bin"/>
+		<pathelement location="../org.mwc.debrief.data_feed_dummy/bin"/>
+		<pathelement location="../org.mwc.debrief.GNDManager/bin"/>
+		<pathelement location="../org.mwc.debrief.help/bin"/>
+		<pathelement location="../org.mwc.debrief.multipath2/bin"/>
+		<pathelement location="../org.mwc.debrief.SensorFusion/bin"/>
+		<pathelement location="../org.mwc.debrief.track_shift/bin"/>
+		<pathelement location="../org.mwc.gnd.demonstrator/bin"/>
+		<pathelement location="../org.qinetiq.data_feed/bin"/>
+		<pathelement location="../org.mwc.debrief.legacy/bin"/>
 	</path>
 
     <target name="runTests">    	
@@ -15,9 +55,10 @@
     	<junit showoutput="true" printsummary="yes" fork="yes">    		
     	    <formatter type="xml"/>
     		<classpath refid="test.classpath"/>
+    		<classpath refid="classpathsuite.path"/>
     				
     	    <batchtest todir="${test.reports}">
-    	        <fileset dir="${basedir}">
+    	        <fileset dir="${build.dir}">
     	            <include name="**/AllTests.class"/>
     	        </fileset>
     	    </batchtest>
