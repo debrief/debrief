@@ -4,7 +4,7 @@
 <product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.260" useFeatures="true" includeLaunchers="false">
 
    <aboutInfo>
-      <image path="/org.mwc.debrief.core/icons/DebriefNGlogo.gif"/>
+      <image path="/org.mwc.debrief.core/icons/DebriefNGlogoSmall.gif"/>
    </aboutInfo>
 
    <configIni use="default">
@@ -34,6 +34,7 @@ openFile</programArgs>
             winSmallLow="/org.mwc.debrief.core/icons/debrief_icon.bmp"/>
       </win>
    </launcher>
+
 
    <vm>
       <linux include="true">java-6-sun-1.6.0.03</linux>
