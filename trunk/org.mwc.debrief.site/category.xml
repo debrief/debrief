@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.mwc.cmap.combined.feature_0.0.0.jar" id="org.mwc.cmap.combined.feature" version="0.0.0">
+      <category name="org.mwc.updatesite"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.combined.feature_0.0.0.jar" id="org.mwc.debrief.combined.feature" version="0.0.0">
+      <category name="org.mwc.updatesite"/>
+   </feature>
+   <category-def name="org.mwc.updatesite" label="Debrief NG"/>
+</site>
