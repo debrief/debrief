@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
-<plugin>
+<plugin id="org.mwc.cmap.gt2Plot" version="1.0.5" name="Gt2Plot">
 
    <extension
          point="org.eclipse.ui.views">
+   </extension>
+   <extension
+         point="org.mwc.cmap.core.EarthModelProvider">
+      <provider
+            class="org.mwc.cmap.gt2plot.calc.GeoCalculatorProvider">
+      </provider>
    </extension>
 
 </plugin>

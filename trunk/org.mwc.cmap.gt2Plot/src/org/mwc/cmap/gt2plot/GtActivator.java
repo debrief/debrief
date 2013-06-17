@@ -3,7 +3,6 @@ package org.mwc.cmap.gt2plot;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.gt2plot.calc.GeoCalculatorAdapter;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.Layer;
@@ -43,8 +42,6 @@ public class GtActivator extends AbstractUIPlugin
 
 		// Setting the system-wide default at startup time
 		System.setProperty("org.geotools.referencing.forceXY", "true");
-		// Setting GeodeticCalculator Adapter as the default Earth model
-		MWC.GenericData.WorldLocation.setModel(new GeoCalculatorAdapter());
 	}
 
 	/**

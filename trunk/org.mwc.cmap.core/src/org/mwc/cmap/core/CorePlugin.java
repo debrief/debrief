@@ -1,5 +1,7 @@
 package org.mwc.cmap.core;
 
+import interfaces.IEarthModelProvider;
+
 import java.awt.Color;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
@@ -19,6 +21,12 @@ import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryFactory;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -51,6 +59,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.Algorithms.EarthModel;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Tools.Palette.CreateTOPO;
@@ -92,6 +101,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 	public static final String POLYGON_EDITOR = "org.mwc.cmap.core.editor_views.PolygonEditorView";
 	public static final String LIVE_DATA_MONITOR = "org.mwc.cmap.LiveDataMonitor";
+	private static final String EARTH_MODEL_PROVIDER = "org.mwc.cmap.core.EarthModelProvider";
 
 	/**
 	 * support for lat/long editor in grid editor
@@ -204,6 +214,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
 		// there again, the track wrapper may have problems when it's
 		TrackSegment.initialise(_toolParent);
+		
+		evaluateEarthModelProviderExtension(Platform.getExtensionRegistry());
 	}
 
 	/**
@@ -813,6 +825,47 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 				MessageDialog.openWarning(Display.getDefault().getActiveShell(), title, msg);
 			}
 		});
+	}
+	
+	/**
+	 * Searches in the Eclipse Extension registry for EARTH_MODEL_PROVIDER extensions and creates one.
+	 * Throws an error if there is more than one extensions of this kind.
+	 * @param registry
+	 */
+	private void evaluateEarthModelProviderExtension(IExtensionRegistry registry) throws CoreException {
+		IConfigurationElement[] config =
+				registry.getConfigurationElementsFor(EARTH_MODEL_PROVIDER);
+		int extension_count = 0;
+		Object extension = null;
+		for (IConfigurationElement e : config) {
+				final Object o =
+						e.createExecutableExtension("class");
+				if (o instanceof IEarthModelProvider) {
+					extension_count ++;
+					extension = o;
+				}
+		}
+		
+		if (extension_count > 1)
+			throw new CoreException(null);
+		executeExtension(extension);
+	}
+	
+	private void executeExtension(final Object o) {
+		ISafeRunnable runnable = new ISafeRunnable() {
+			@Override
+			public void handleException(Throwable e) {
+				CorePlugin.logError(Status.ERROR, "Exception in providing Earth model", e);
+			}
+
+			@Override
+			public void run() throws Exception {
+			//Setting GeodeticCalculator Adapter as the default Earth model
+	    	EarthModel model = ((IEarthModelProvider) o).getEarthModel(); 
+	  		MWC.GenericData.WorldLocation.setModel(model);  
+	      }
+	    };
+	    SafeRunner.run(runnable);
 	}
 
 

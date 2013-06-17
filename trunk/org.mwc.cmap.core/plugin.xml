@@ -4,6 +4,7 @@
 
 
      <extension-point id="RightClickSupport" name="RightClickSupport" schema="schema/RightClickSupport.exsd"/>
+     <extension-point id="EarthModelProvider" name="EarthModelProvider" schema="schema/EarthModelProvider.exsd"/>
    
 
   <extension
