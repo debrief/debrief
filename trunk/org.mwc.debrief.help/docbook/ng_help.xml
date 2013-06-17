@@ -9063,7 +9063,7 @@ DDD XX..XX
 ;; symb, tl corner lat &amp; long, br corner lat &amp; long, label
 
 ;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
-;; ;; symb, start date, end date, lat & long 1, lat & long 2, lat & long xxx (until end of line)
+;; symb, start date, end date, lat &amp; long 1, lat &amp; long 2, lat &amp; long xxx (until end of line)
 
 ;SGSAGEOG: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H 
 DD MM SS.S H DDD MM SS.S H XX..XX 

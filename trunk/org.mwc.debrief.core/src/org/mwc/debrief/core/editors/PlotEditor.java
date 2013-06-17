@@ -22,7 +22,6 @@ import java.util.Vector;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -403,7 +402,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 
 		}
-		catch (ResourceException e)
+		catch (CoreException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Resource out of sync:" + input.getName() + " REFRESH the workspace",
@@ -415,10 +414,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							"This file has been edited or removed:"
 									+ input.getName()
 									+ "\nPlease right-click on your navigator project and press Refresh");
-		}
-		catch (CoreException e)
-		{
-			CorePlugin.logError(Status.ERROR, "Problem loading data file", e);
 		}
 	}
 
@@ -627,7 +622,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						Watchable wrapped = (Watchable) nextP;
 						HiResDate dtg = wrapped.getTime();
 						if (dtg != null)
+						{
 							res = extend(res, dtg);
+
+							// also see if it this data type an end time
+							if (wrapped instanceof WatchableList)
+							{
+								// ok, make sure we also handle the end time
+								WatchableList wl = (WatchableList) wrapped;
+								HiResDate endD = wl.getEndDTG();
+								if (endD != null)
+									res = extend(res, endD);
+							}
+						}
 					}
 				}
 			}
@@ -1176,7 +1183,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 								// move the temp file to be our real working file
 								File destFile = thePath.toFile().getAbsoluteFile();
-								if (!tmpFile.renameTo(destFile)) {
+								if (!tmpFile.renameTo(destFile))
+								{
 									FileUtils.moveFile(tmpFile, destFile);
 								}
 

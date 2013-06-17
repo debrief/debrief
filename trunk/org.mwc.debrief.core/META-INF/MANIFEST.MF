@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Core
 Bundle-SymbolicName: org.mwc.debrief.core; singleton:=true
-Bundle-Version: 1.0.197
+Bundle-Version: 1.0.198
 Bundle-ClassPath: debrief_core.jar,
  libs/eclipselink.jar,
  libs/jdom-1.0.jar
@@ -289,7 +289,6 @@ Export-Package: com.topografix.gpx.v10,
  org.mwc.debrief.core.wizards.core,
  org.mwc.debrief.core.wizards.s2r
 Require-Bundle: org.mwc.cmap.core,
- org.mwc.cmap.plotViewer,
  org.mwc.cmap.legacy,
  org.mwc.debrief.legacy,
  org.mwc.cmap.xyplot,
@@ -299,5 +298,6 @@ Require-Bundle: org.mwc.cmap.core,
  org.eclipse.ui.ide,
  org.eclipse.core.filesystem,
  org.eclipse.ui.cheatsheets;bundle-version="[3.4.0,4.0.0)",
- org.mwc.cmap.gt2Plot;bundle-version="[1.0.0,2.0.0)"
+ org.mwc.cmap.gt2Plot;bundle-version="[1.0.0,2.0.0)",
+ org.mwc.cmap.plotViewer
 Bundle-ActivationPolicy: lazy

@@ -306,7 +306,6 @@
 			<property name="introBrandingImage" value="product:icons/debrief_icon.gif" />
 			<property name="introBrandingImageText" value="Debrief, from the Maritime Warfare Centre" />
 			<property name="aboutImage" value="icons/DebriefNGlogoSmall.gif"/>
-			<property name="aboutText" value="%aboutText"/> 
 			<property name="windowImages" value="icons/icon.gif"/>
 			<property name="startupForegroundColor" value="000000"/>
 			<property name="startupMessageRect" value="0,0,0,0"/>
