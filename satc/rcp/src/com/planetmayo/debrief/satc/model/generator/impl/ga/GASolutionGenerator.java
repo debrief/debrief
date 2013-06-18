@@ -273,7 +273,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				Random rng)
 		{			
 			List<EvaluatedCandidate<List<Point>>> result = super.nextEvolutionStep(evaluatedPopulation, eliteCount, rng);
-			EvolutionUtils.sortEvaluatedPopulation(evaluatedPopulation, false);
+			EvolutionUtils.sortEvaluatedPopulation(result, false);
 			List<CompositeRoute> routes = new ArrayList<CompositeRoute>(parameters.getTopRoutes());
 			for (int i = 0; i < parameters.getTopRoutes(); i++) 
 			{
