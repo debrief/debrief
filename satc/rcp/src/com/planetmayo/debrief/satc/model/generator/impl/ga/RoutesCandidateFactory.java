@@ -9,14 +9,13 @@ import java.util.Random;
 
 import org.uncommons.watchmaker.framework.CandidateFactory;
 
-import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.vividsolutions.jts.geom.Point;
 
 public class RoutesCandidateFactory implements CandidateFactory<List<Point>>
 {
-	private List<CoreLeg> legs;
+	private List<LegOperations> legs;
 	
-	public RoutesCandidateFactory(List<CoreLeg> legs) 
+	public RoutesCandidateFactory(List<LegOperations> legs) 
 	{
 		this.legs = legs;
 	}
@@ -25,10 +24,10 @@ public class RoutesCandidateFactory implements CandidateFactory<List<Point>>
 	public List<List<Point>> generateInitialPopulation(int populationSize, Random rng)
 	{
 		ArrayList<Points> points = new ArrayList<Points>();
-		for (CoreLeg leg : legs)
+		for (LegOperations leg : legs)
 		{
-			points.add(new Points(leg.getStartPoints()));
-			points.add(new Points(leg.getEndPoints()));
+			points.add(new Points(leg.getLeg().getStartPoints()));
+			points.add(new Points(leg.getLeg().getEndPoints()));
 		}
 		List<List<Point>> population = new ArrayList<List<Point>>(populationSize);
 		for (int i = 0; i < populationSize; i++)
@@ -59,12 +58,10 @@ public class RoutesCandidateFactory implements CandidateFactory<List<Point>>
 	public List<Point> generateRandomCandidate(Random rng)
 	{
 		ArrayList<Point> candidate = new ArrayList<Point>();
-		for (CoreLeg leg : legs) 
+		for (LegOperations leg : legs) 
 		{
-			List<Point> startPoints = leg.getStartPoints();
-			List<Point> endPoints = leg.getEndPoints();
-			candidate.add(startPoints.get(rng.nextInt(startPoints.size())));
-			candidate.add(endPoints.get(rng.nextInt(endPoints.size())));
+			candidate.add(leg.getNextStartPoint());
+			candidate.add(leg.getNextEndPoint());
 		}
 		return candidate;
 	}

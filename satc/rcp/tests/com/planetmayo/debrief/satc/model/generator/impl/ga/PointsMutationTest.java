@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
@@ -25,6 +26,7 @@ public class PointsMutationTest extends ModelTestBase
 {
 	
 	List<CoreLeg> legs;
+	List<LegOperations> operations;
 	RoutesCandidateFactory candidateFactory;	
 	
 	@Before
@@ -57,11 +59,14 @@ public class PointsMutationTest extends ModelTestBase
 		);
 		legs.add(new AlteringLeg("2", states));
 		
+		operations = new ArrayList<LegOperations>();
+		Random random = new MersenneTwisterRNG();
 		for (CoreLeg leg : legs) 
 		{
 			leg.generatePoints(Precision.LOW, 100000);
+			operations.add(new LegOperations(leg, random));
 		}
-		candidateFactory = new RoutesCandidateFactory(legs);
+		candidateFactory = new RoutesCandidateFactory(operations);
 	}	
 	
 	
@@ -70,7 +75,7 @@ public class PointsMutationTest extends ModelTestBase
 	{
 		Random rng = new Random(System.currentTimeMillis());
 		List<List<Point>> candidates = candidateFactory.generateInitialPopulation(200, rng);
-		PointsMutation mutation = new PointsMutation(legs, new Probability(0.2));
+		PointsMutation mutation = new PointsMutation(operations, new Probability(0.2));
 		
 		List<List<Point>> applied = mutation.apply(candidates, rng);
 		assertEquals(candidates.size(), applied.size());

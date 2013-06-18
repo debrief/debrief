@@ -42,7 +42,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 {
 	private static final String GA_GENERATOR_GROUP = "gaGeneratorGroup"; 
 	
-	private volatile List<CoreLeg> legs;
+	private volatile List<LegOperations> legs;
 
 	private volatile Job<Void, Void> mainJob;
 	
@@ -53,7 +53,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		super(contributions, jobsManager, problemSpace);
 		parameters = new GAParameters();
 		parameters.setElitizm(70);
-		parameters.setMutationProbability(0.1);
+		parameters.setMutationProbability(0.25);
 		parameters.setPopulationSize(500);
 		parameters.setStagnationSteps(100);
 		parameters.setTopRoutes(10);
@@ -103,6 +103,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		Job<Void, Void> previous = null;
 		if (fullRerun || legs == null) 
 		{
+			final Random random = new MersenneTwisterRNG();
 			previous = jobsManager.schedule(new Job<Void, Void>("Generate Legs", GA_GENERATOR_GROUP)
 				{
 
@@ -110,11 +111,13 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				protected <E> Void run(IProgressMonitor monitor, Job<Void, E> previous)
 						throws InterruptedException
 					{
-					legs = getTheLegs(problemSpaceView.states(), monitor);
-					for (CoreLeg leg : legs)
+					List<CoreLeg> rawLegs = getTheLegs(problemSpaceView.states(), monitor);
+					legs = new ArrayList<LegOperations>();
+					for (CoreLeg leg : rawLegs)
 					{
 						leg.generatePoints(_myPrecision);
-					}
+						legs.add(new LegOperations(leg, random));
+					}					
 					return null;
 				}
 			});
@@ -208,11 +211,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	{
 		List<CoreRoute> routes = new ArrayList<CoreRoute>();
 		int i = 0;
-		for (CoreLeg leg : legs)
+		for (LegOperations leg : legs)
 		{
-			if (leg.getType() == LegType.STRAIGHT) 
+			if (leg.getLeg().getType() == LegType.STRAIGHT) 
 			{
-				routes.add(leg.createRoute("", solution.get(i), solution.get(i + 1)));
+				routes.add(leg.getLeg().createRoute("", solution.get(i), solution.get(i + 1)));
 			}
 			i += 2;
 		}
@@ -253,6 +256,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	
 	private class GAEngine extends GenerationalEvolutionEngine<List<Point>> 
 	{
+		int iterations = 0;
+		
 		public GAEngine(CandidateFactory<List<Point>> candidateFactory,
 				EvolutionaryOperator<List<Point>> evolutionScheme,
 				FitnessEvaluator<? super List<Point>> fitnessEvaluator,
@@ -266,7 +271,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		protected List<EvaluatedCandidate<List<Point>>> nextEvolutionStep(
 				List<EvaluatedCandidate<List<Point>>> evaluatedPopulation, int eliteCount,
 				Random rng)
-		{
+		{			
 			List<EvaluatedCandidate<List<Point>>> result = super.nextEvolutionStep(evaluatedPopulation, eliteCount, rng);
 			EvolutionUtils.sortEvaluatedPopulation(evaluatedPopulation, false);
 			List<CompositeRoute> routes = new ArrayList<CompositeRoute>(parameters.getTopRoutes());
@@ -289,6 +294,15 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				{
 					Thread.currentThread().interrupt();
 				}
+			}
+			iterations++;
+			if (iterations == 10) 
+			{				
+				for (LegOperations leg : legs)
+				{
+					leg.recalculateProbabilities(iterations);
+				}
+				iterations = 0;
 			}
 			return result;
 		}			

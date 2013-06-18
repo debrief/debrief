@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.uncommons.maths.random.MersenneTwisterRNG;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -26,6 +27,7 @@ public class RoutesCandidateFactoryTest extends ModelTestBase
 {
 	
 	List<CoreLeg> legs;
+	List<LegOperations> operations;	
 	RoutesCandidateFactory candidateFactory;
 
 	@Before
@@ -57,12 +59,15 @@ public class RoutesCandidateFactoryTest extends ModelTestBase
 				new LocationRange(wkt.read("POLYGON ((5 1, 5.5 2, 6 2, 6 1, 5 1))"))
 		);
 		legs.add(new AlteringLeg("2", states));
-		
+
+		operations = new ArrayList<LegOperations>();
+		Random random = new MersenneTwisterRNG();
 		for (CoreLeg leg : legs) 
 		{
 			leg.generatePoints(Precision.LOW, 100000);
+			operations.add(new LegOperations(leg, random));
 		}
-		candidateFactory = new RoutesCandidateFactory(legs);
+		candidateFactory = new RoutesCandidateFactory(operations);
 	}
 	
 	@Test

@@ -138,7 +138,6 @@ public class MaintainContributionsView extends ViewPart implements
 		BaseContributionView<?> panel = null;
 		if (!CONTRIBUTION_PANELS.containsKey(contribution.getClass()))
 		{
-			LogFactory.getLog().error("Failed to generate panel for " + contribution);
 			return;
 		}
 		try

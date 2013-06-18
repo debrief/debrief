@@ -9,16 +9,15 @@ import org.uncommons.maths.number.NumberGenerator;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 
-import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.vividsolutions.jts.geom.Point;
 
 public class PointsMutation implements EvolutionaryOperator<List<Point>>
 {	
 	
-	private final List<CoreLeg> legs;
+	private final List<LegOperations> legs;
   private final NumberGenerator<Probability> mutationProbability;
   
-	public PointsMutation(List<CoreLeg> legs,
+	public PointsMutation(List<LegOperations> legs,
 			Probability mutationProbability)
 	{
 		this.legs = legs;
@@ -48,9 +47,8 @@ public class PointsMutation implements EvolutionaryOperator<List<Point>>
         	{
         		result = new ArrayList<Point>(candidate);
         	}
-        	CoreLeg leg = legs.get(i / 2);
-        	List<Point> availablePoints = i % 2 == 0 ? leg.getStartPoints() : leg.getEndPoints();
-        	Point newPoint = availablePoints.get(rng.nextInt(availablePoints.size()));
+        	LegOperations leg = legs.get(i / 2);
+        	Point newPoint = i % 2 == 0 ? leg.getNextStartPoint() : leg.getNextEndPoint();
         	result.set(i, newPoint);
         }
     }
