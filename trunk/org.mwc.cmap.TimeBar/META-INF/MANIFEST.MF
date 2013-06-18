@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TimeBar
+Bundle-SymbolicName: org.mwc.cmap.TimeBar;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.mwc.cmap.timebar.Activator
+Bundle-Vendor: MWC
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.nebula.widgets.ganttchart;bundle-version="1.0.0",
+ org.eclipse.ui.views;bundle-version="3.6.100"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

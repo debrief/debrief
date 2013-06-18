@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.mwc.cmap.timebar.views.TimeBarView"
+            id="org.mwc.cmap.timebar.views.TimeBarView"
+            name="TimeBar"
+            restorable="true">
+      </view>
+   </extension>
+
+</plugin>
