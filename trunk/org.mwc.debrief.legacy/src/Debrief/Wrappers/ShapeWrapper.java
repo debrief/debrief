@@ -748,7 +748,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 
 	public final String getLabel()
 	{
-		return _theLabel.getString();
+		String label = _theLabel.getString();
+		if (label == null)
+			return "";
+		return label;
 	}
 
 	public final java.awt.Color getLabelColor()
@@ -1151,7 +1154,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public String toString()
 	{
-		return _theShape.getName() + ":" + _theLabel.getString();
+		String label = _theLabel.getString();
+		if (label == null)
+			return _theShape.getName();
+		return _theShape.getName() + ":" + label;
 	}
 
 	private void updateLabelLocation()

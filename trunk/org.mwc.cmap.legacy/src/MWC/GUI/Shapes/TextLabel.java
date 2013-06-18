@@ -300,6 +300,8 @@ public class TextLabel extends PlainShape implements Editable
 
 	public String getString()
 	{
+		if (_theString == null)
+			return "";
 		return _theString;
 	}
 
