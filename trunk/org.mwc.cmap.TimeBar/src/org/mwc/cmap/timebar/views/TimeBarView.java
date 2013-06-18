@@ -11,8 +11,6 @@ import org.eclipse.ui.part.ViewPart;
 
 public class TimeBarView extends ViewPart {
 	
-	public static final String ID = "org.mwc.cmap.timebar.views.TimeBarView";
-
 	@Override
 	public void createPartControl(Composite parent) 
 	{

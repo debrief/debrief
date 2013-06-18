@@ -4,9 +4,11 @@
    <extension
          point="org.eclipse.ui.views">
       <view
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.timebar.views.TimeBarView"
+            icon="icons/sample.gif"
             id="org.mwc.cmap.timebar.views.TimeBarView"
-            name="TimeBar"
+            name="Time Bar"
             restorable="true">
       </view>
    </extension>

@@ -27,6 +27,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
+		topLeft.addView(CorePlugin.TIME_BAR);
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
