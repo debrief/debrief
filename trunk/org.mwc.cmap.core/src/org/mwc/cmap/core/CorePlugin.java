@@ -671,17 +671,29 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 			}
 		}
 	}
+	
+	public static IWorkbenchWindow getActiveWindow()
+	{
+		return PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+	}
+	
+	public static IWorkbenchPage getActivePage()
+	{
+		IWorkbenchWindow activeWindow = getActiveWindow();
+		if (activeWindow == null)
+			return null;
+		return activeWindow.getActivePage();
+	}
 
 	public static IViewPart openView(String viewName)
 	{
 		IViewPart res = null;
 		try
 		{
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
+			IWorkbenchPage page = getActivePage();
 			// right, open the view.
-			res = page.showView(viewName);
+			if (page != null)
+				res = page.showView(viewName);
 		}
 		catch (PartInitException e)
 		{
@@ -693,10 +705,20 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	
 	public static IViewPart findView(String viewId)
 	{
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
-		return page.findView(viewId);
+		IWorkbenchPage page = getActivePage();
+		if (page !=null)
+			return page.findView(viewId);
+		return null;
+	}
+	
+	public static boolean isActivePart(final IWorkbenchPart part)
+	{ 
+		IWorkbenchPage activePage = getActivePage();
+		if (activePage == null)
+			return false;
+		// obtain active page from WorkbenchWindow
+	    final IWorkbenchPart activePart = activePage.getActivePart();
+	    return activePart == null ? false : activePart.equals(part);
 	}
 	
 	/**
