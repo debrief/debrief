@@ -14,10 +14,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
@@ -263,9 +261,7 @@ public class DragComponent extends DragFeature
 				{
 					// if the current editor is a track data provider,
 					// tell it that we've shifted
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-					IWorkbenchPage page = win.getActivePage();
+					IWorkbenchPage page = CorePlugin.getActivePage();
 					IEditorPart editor = page.getActiveEditor();
 					TrackDataProvider dataMgr = (TrackDataProvider) editor
 							.getAdapter(TrackDataProvider.class);
@@ -301,7 +297,10 @@ public class DragComponent extends DragFeature
 		public void doMouseMove(final org.eclipse.swt.graphics.Point pt,
 				final int JITTER, final Layers theData, SWTCanvas theCanvas)
 		{
-
+			// if the chart's editor is not active
+			if (!CorePlugin.isActivePart((IWorkbenchPart)_myEditor))
+				return;
+			
 			// check we're not currently dragging something
 			if (_lastPoint != null)
 				return;

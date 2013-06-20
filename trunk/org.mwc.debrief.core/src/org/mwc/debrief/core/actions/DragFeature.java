@@ -14,10 +14,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.IWorkbenchPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
@@ -197,7 +194,10 @@ public class DragFeature extends CoreDragAction
 		public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
 				Layers theLayers, SWTCanvas theCanvas)
 		{
-
+			// if the chart's editor is not active
+			if (!CorePlugin.isActivePart((IWorkbenchPart)_myEditor))
+				return;
+						
 			// do we have something selected?
 			if (_hoverTarget == null)
 				return;
@@ -416,10 +416,7 @@ public class DragFeature extends CoreDragAction
 			{
 				// if the current editor is a track data provider,
 				// tell it that we've shifted
-				IWorkbench wb = PlatformUI.getWorkbench();
-				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-				IWorkbenchPage page = win.getActivePage();
-				IEditorPart editor = page.getActiveEditor();
+				IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
 				TrackDataProvider dataMgr = (TrackDataProvider) editor
 						.getAdapter(TrackDataProvider.class);
 				// is it one of ours?
