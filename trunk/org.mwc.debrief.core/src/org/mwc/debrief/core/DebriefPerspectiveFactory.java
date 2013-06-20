@@ -61,6 +61,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
     layout.addShowViewShortcut(CorePlugin.NARRATIVES2);
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
+		layout.addShowViewShortcut(CorePlugin.TIME_BAR);
 		layout.addShowViewShortcut(CorePlugin.TOTE);
 		layout.addShowViewShortcut(CorePlugin.STACKED_DOTS);
 		layout.addShowViewShortcut(CorePlugin.FREQ_RESIDUALS);
