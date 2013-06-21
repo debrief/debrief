@@ -48,23 +48,28 @@ public class TimeBarControl implements ISelectionProvider {
      */
     public void drawDiagram(final Layers theLayers)
     {
+    	//TODO: the desired items would implement some ITimeBarDrawable interface 
+    	// in order to know how to draw themselves.
     	Enumeration<Editable> numer = theLayers.elements();
 		while (numer.hasMoreElements())
 		{
 			Layer thisL = (Layer) numer.nextElement();
 			//EditableWrapper wrapper = new EditableWrapper(thisL, null, theLayers);
-			Enumeration<Editable> numerInner = thisL.elements();
-			while (numerInner.hasMoreElements())
-			{
-				System.out.println(numerInner.getClass());
-			}
+			System.out.println(thisL.getClass());
+//			Enumeration<Editable> numerInner = thisL.elements();
+//			while (numerInner.hasMoreElements())
+//			{
+//				if (numerInner instanceof TrackWrapper) 
+//				System.out.println(numerInner.getClass());
+//			}
 		}
     }
 
 	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) 
 	{
-		_listeners.add(listener);	
+		if (! _listeners.contains(listener))
+			_listeners.add(listener);	
 	}
 
 	@Override
