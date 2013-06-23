@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import MWC.GUI.Editable;
+import MWC.GUI.ITimeBarDrawable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
@@ -48,20 +49,12 @@ public class TimeBarControl implements ISelectionProvider {
      */
     public void drawDiagram(final Layers theLayers)
     {
-    	//TODO: the desired items would implement some ITimeBarDrawable interface 
-    	// in order to know how to draw themselves.
     	Enumeration<Editable> numer = theLayers.elements();
 		while (numer.hasMoreElements())
 		{
 			Layer thisL = (Layer) numer.nextElement();
-			//EditableWrapper wrapper = new EditableWrapper(thisL, null, theLayers);
-			System.out.println(thisL.getClass());
-//			Enumeration<Editable> numerInner = thisL.elements();
-//			while (numerInner.hasMoreElements())
-//			{
-//				if (numerInner instanceof TrackWrapper) 
-//				System.out.println(numerInner.getClass());
-//			}
+			if (thisL instanceof ITimeBarDrawable)
+				((ITimeBarDrawable) thisL).draw(_chart);
 		}
     }
 
