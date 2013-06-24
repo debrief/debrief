@@ -1,18 +1,20 @@
 package org.mwc.cmap.timebar.controls;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
+
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import MWC.GUI.Editable;
 import MWC.GUI.ITimeBarDrawable;
@@ -35,7 +37,7 @@ public class TimeBarControl implements ISelectionProvider {
     
     public TimeBarControl(Composite parent)
     {
-    	_chart = new GanttChart(parent, SWT.MULTI);		
+    	_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());		
     }
     
     
@@ -50,14 +52,33 @@ public class TimeBarControl implements ISelectionProvider {
     public void drawDiagram(final Layers theLayers)
     {
     	Enumeration<Editable> numer = theLayers.elements();
-		while (numer.hasMoreElements())
+    	while (numer.hasMoreElements())
 		{
+    		//TODO: refactoring - recursive call
 			Layer thisL = (Layer) numer.nextElement();
 			if (thisL instanceof ITimeBarDrawable)
-				((ITimeBarDrawable) thisL).draw(_chart);
+			{
+				Enumeration<Editable> numerInner = thisL.elements();
+				while (numerInner.hasMoreElements())
+				{
+					Editable inner = numerInner.nextElement();
+					if (inner instanceof Layer){
+						Enumeration<Editable> numerInnerInner = ((Layer)inner).elements();
+						while (numerInnerInner.hasMoreElements()){
+							Editable next = numerInnerInner.nextElement();
+							if (next instanceof ITimeBarDrawable)
+							{	
+								((ITimeBarDrawable) next).draw(_chart);
+							}
+						}
+					}
+					
+				}
+				
+			}
 		}
     }
-
+    
 	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) 
 	{
@@ -82,15 +103,60 @@ public class TimeBarControl implements ISelectionProvider {
 	public void setSelection(ISelection selection) 
 	{
 		_theSelection = selection;
-		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
-        
-        for (final ISelectionChangedListener l: _listeners) {
-            SafeRunner.run(new SafeRunnable() {
-                public void run() {
-                    l.selectionChanged(e);
-                }
-            });
-		}
+//		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
+//        
+//        for (final ISelectionChangedListener l: _listeners) {
+//            SafeRunner.run(new SafeRunnable() {
+//                public void run() {
+//                    l.selectionChanged(e);
+//                }
+//            });
+//		}
 	}
 
 }
+
+
+class GanttChartSettings extends DefaultSettings
+{
+	
+	@Override
+	public boolean allowArrowKeysToScrollChart() 
+	{
+		return true;
+	}
+	
+	@Override
+	public boolean allowInfiniteHorizontalScrollBar() 
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean drawEventsDownToTheHourAndMinute() 
+	{	
+		return true;
+	}
+	
+	@Override
+	public boolean drawFullPercentageBar() 
+	{
+		return false;
+	}
+	
+	@Override
+	public Calendar getStartupCalendarDate() 
+	{
+		//TODO: this is hard coded
+		Calendar cal = Calendar.getInstance();
+		cal.set(2009, 4, 15);
+		return cal;
+	}
+	
+	@Override
+	public String getTextDisplayFormat() 
+	{
+		return "#name#";
+	}
+}	
+

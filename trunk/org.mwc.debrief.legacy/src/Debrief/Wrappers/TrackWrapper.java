@@ -4199,9 +4199,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		start.setTime(getStartDTG().getDate());
 		Calendar end = Calendar.getInstance(); 
 		end.setTime(getEndDTG().getDate());
-		new GanttEvent((GanttChart)chart, null /*data object*/, 
-				getName(), start, end, start, end, 0);
-		
+		new GanttEvent((GanttChart)chart, null /* data object */, 
+				getName(), start, end, 0 /* percentage complete */);		
 	}
 
 }
