@@ -1,4 +1,4 @@
-package org.mwc.cmap.timebar.controls;
+package org.mwc.debrief.timebar.controls;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,8 +16,8 @@ import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.mwc.cmap.timebar.model.TimeBar;
-import org.mwc.cmap.timebar.model.TimeSpot;
+import org.mwc.debrief.timebar.model.TimeBar;
+import org.mwc.debrief.timebar.model.TimeSpot;
 
 import Debrief.Wrappers.TrackWrapper;
 //import Debrief.Wrappers.Track.TrackSegment;
@@ -86,8 +86,6 @@ public class TimeBarControl implements ISelectionProvider {
 	    	{
 	    		_timeSpots.add(new TimeSpot((Watchable) next));
 	    	}
-    		//TODO: do not like that cmap.TimeBars plugin depends on debrief.legacy
-    		// rename cmap.TimeBars to debrief.TimeBars?
 	    	else if (next instanceof TrackWrapper)
 	    	{
 	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSolutions()));

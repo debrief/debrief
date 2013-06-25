@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TimeBar
-Bundle-SymbolicName: org.mwc.cmap.TimeBar;singleton:=true
+Bundle-SymbolicName: org.mwc.debrief.TimeBar;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.mwc.cmap.timebar.Activator
+Bundle-Activator: org.mwc.debrief.timebar.Activator
 Bundle-ClassPath: .
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
@@ -15,6 +15,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.legacy;bundle-version="1.0.246"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.mwc.cmap.timebar,
- org.mwc.cmap.timebar.controls,
- org.mwc.cmap.timebar.views
+Export-Package: org.mwc.debrief.timebar,
+ org.mwc.debrief.timebar.controls,
+ org.mwc.debrief.timebar.views

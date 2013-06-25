@@ -1,4 +1,4 @@
-package org.mwc.cmap.timebar.model;
+package org.mwc.debrief.timebar.model;
 
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 

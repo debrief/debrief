@@ -1,4 +1,4 @@
-package org.mwc.cmap.timebar.views;
+package org.mwc.debrief.timebar.views;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -13,7 +13,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.timebar.controls.TimeBarControl;
+import org.mwc.debrief.timebar.controls.TimeBarControl;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
