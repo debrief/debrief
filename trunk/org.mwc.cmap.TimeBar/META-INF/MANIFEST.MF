@@ -11,7 +11,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.nebula.widgets.ganttchart,
  org.eclipse.ui.views,
  org.mwc.cmap.core;bundle-version="1.0.151",
- org.mwc.cmap.legacy;bundle-version="1.0.165"
+ org.mwc.cmap.legacy;bundle-version="1.0.165",
+ org.mwc.debrief.legacy;bundle-version="1.0.246"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.cmap.timebar,

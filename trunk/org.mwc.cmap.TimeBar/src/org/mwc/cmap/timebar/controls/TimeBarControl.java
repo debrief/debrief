@@ -16,7 +16,11 @@ import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.timebar.model.TimeBar;
+import org.mwc.cmap.timebar.model.TimeSpot;
 
+import Debrief.Wrappers.TrackWrapper;
+//import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -37,9 +41,8 @@ public class TimeBarControl implements ISelectionProvider {
     
     GanttChart _chart;
     
-    List<WatchableList> _timeBars = new ArrayList<WatchableList>();
-    
-    List<Watchable> _timeSpots = new ArrayList<Watchable>();
+    List<TimeBar> _timeBars = new ArrayList<TimeBar>(); 
+    List<TimeSpot> _timeSpots = new ArrayList<TimeSpot>();
     
     public TimeBarControl(Composite parent)
     {
@@ -56,64 +59,44 @@ public class TimeBarControl implements ISelectionProvider {
      * @param theLayers - Debrief data.
      */
     public void drawDiagram(final Layers theLayers)
-    {
-    	Enumeration<Editable> numer = theLayers.elements();
-    	while (numer.hasMoreElements())
-		{
-    		Layer thisL = (Layer) numer.nextElement();
-    		if (thisL instanceof WatchableList)
-    		{
-    			_timeBars.add((WatchableList) thisL);
-    		} 
-    		else if (thisL instanceof Watchable)
-    		{
-    			_timeSpots.add((Watchable) thisL);    			
-    		}
-    		walkThrough(thisL);
-    	}
-    	
-    	drawTimeBars();
-    	drawTimeSpots();
+    {    	
+    	walkThrough(theLayers);    	
+    	for(TimeBar barEvent: _timeBars)
+    		barEvent.draw(_chart);
+    	for(TimeSpot spotEvent: _timeSpots)
+    		spotEvent.draw(_chart);
     }
     
-    private void walkThrough(Layer root)
+    private void walkThrough(Object root)
     {
-    	Enumeration<Editable> numer = root.elements();
-    	while(numer.hasMoreElements())    	{
+    	Enumeration<Editable> numer; 
+    	if (root instanceof Layer)
+    		numer = ((Layer) root).elements();
+    	else if (root instanceof Layers)
+    		numer = ((Layers) root).elements();
+    	else return;
+    	
+    	while(numer.hasMoreElements())  {
     		Editable next = numer.nextElement();
-    		if (next instanceof Layer)
-    		{    			
-	    		if (next instanceof WatchableList)
-	    		{
-	    			_timeBars.add((WatchableList) next);
-	    		}
-	    		else if (next instanceof Watchable)
-	    		{
-	    			_timeSpots.add((Watchable) next);
-	    		}
-	    		walkThrough((Layer) next);
-    		}
+    		if (next instanceof WatchableList)
+	    	{
+	    		_timeBars.add(new TimeBar((WatchableList) next));
+	    	}
+	    	else if (next instanceof Watchable)
+	    	{
+	    		_timeSpots.add(new TimeSpot((Watchable) next));
+	    	}
+    		//TODO: do not like that cmap.TimeBars plugin depends on debrief.legacy
+    		// rename cmap.TimeBars to debrief.TimeBars?
+	    	else if (next instanceof TrackWrapper)
+	    	{
+	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSolutions()));
+	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSensors()));
+	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSegments()));
+	    	}
+    		walkThrough(next);
     	}
-    }
-    
-    private void drawTimeBars()
-    {
-    	//TODO: implement
-    	for(WatchableList barEvent: _timeBars)
-    	{
-    		
-    	}
-    	
-    }
-    
-    private void drawTimeSpots()
-    {
-    	//TODO: implement
-    	for(Watchable spotEvent: _timeSpots)
-    	{
-    		
-    	}
-    }
+    }    
     
 	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) 
