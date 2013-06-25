@@ -213,7 +213,5 @@ Export-Package:
    MWC.GenericData,
    Debrief.Wrappers,
    MWC.GUI"
-Require-Bundle: org.eclipse.nebula.widgets.ganttchart;bundle-version="1.0.0",
- org.mwc.cmap.legacy;bundle-version="1.0.165",
- org.eclipse.swt;bundle-version="3.8.1"
+Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.165"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

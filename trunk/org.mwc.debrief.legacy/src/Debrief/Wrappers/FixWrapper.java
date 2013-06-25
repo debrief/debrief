@@ -244,13 +244,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.Vector;
-
-import org.eclipse.nebula.widgets.ganttchart.GanttChart;
-import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
-import org.eclipse.swt.widgets.Composite;
 
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
@@ -260,7 +255,6 @@ import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
-import MWC.GUI.ITimeBarDrawable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
@@ -279,7 +273,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  */
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		DynamicPlottable, CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
-		CreateEditorForParent, ITimeBarDrawable
+		CreateEditorForParent
 {
 
 	// //////////////////////////////////////
@@ -1424,18 +1418,5 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	{
 		return _userLabelSupplied;
 
-	}
-	
-	@Override
-	public void draw(Composite chart) 
-	{
-		if (! (chart instanceof GanttChart))
-			throw new RuntimeException("Chart must be GanttChart instance");
-		Calendar start = Calendar.getInstance(); 		
-		start.setTime(getDateTimeGroup().getDate());
-		Calendar end = start;
-		end.add(Calendar.SECOND, 60); 
-		new GanttEvent((GanttChart)chart, null /* data object */, 
-				_trackWrapper.getName() + " " + getName(), start, end, 0 /* percentage complete */);		
 	}
 }

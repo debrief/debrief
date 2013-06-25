@@ -13,13 +13,15 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
+import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import MWC.GUI.Editable;
-import MWC.GUI.ITimeBarDrawable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 public class TimeBarControl implements ISelectionProvider {
 	
@@ -34,6 +36,10 @@ public class TimeBarControl implements ISelectionProvider {
     ISelection _theSelection = null;
     
     GanttChart _chart;
+    
+    List<WatchableList> _timeBars = new ArrayList<WatchableList>();
+    
+    List<Watchable> _timeSpots = new ArrayList<Watchable>();
     
     public TimeBarControl(Composite parent)
     {
@@ -54,29 +60,59 @@ public class TimeBarControl implements ISelectionProvider {
     	Enumeration<Editable> numer = theLayers.elements();
     	while (numer.hasMoreElements())
 		{
-    		//TODO: refactoring - recursive call
-			Layer thisL = (Layer) numer.nextElement();
-			if (thisL instanceof ITimeBarDrawable)
-			{
-				Enumeration<Editable> numerInner = thisL.elements();
-				while (numerInner.hasMoreElements())
-				{
-					Editable inner = numerInner.nextElement();
-					if (inner instanceof Layer){
-						Enumeration<Editable> numerInnerInner = ((Layer)inner).elements();
-						while (numerInnerInner.hasMoreElements()){
-							Editable next = numerInnerInner.nextElement();
-							if (next instanceof ITimeBarDrawable)
-							{	
-								((ITimeBarDrawable) next).draw(_chart);
-							}
-						}
-					}
-					
-				}
-				
-			}
-		}
+    		Layer thisL = (Layer) numer.nextElement();
+    		if (thisL instanceof WatchableList)
+    		{
+    			_timeBars.add((WatchableList) thisL);
+    		} 
+    		else if (thisL instanceof Watchable)
+    		{
+    			_timeSpots.add((Watchable) thisL);    			
+    		}
+    		walkThrough(thisL);
+    	}
+    	
+    	drawTimeBars();
+    	drawTimeSpots();
+    }
+    
+    private void walkThrough(Layer root)
+    {
+    	Enumeration<Editable> numer = root.elements();
+    	while(numer.hasMoreElements())    	{
+    		Editable next = numer.nextElement();
+    		if (next instanceof Layer)
+    		{    			
+	    		if (next instanceof WatchableList)
+	    		{
+	    			_timeBars.add((WatchableList) next);
+	    		}
+	    		else if (next instanceof Watchable)
+	    		{
+	    			_timeSpots.add((Watchable) next);
+	    		}
+	    		walkThrough((Layer) next);
+    		}
+    	}
+    }
+    
+    private void drawTimeBars()
+    {
+    	//TODO: implement
+    	for(WatchableList barEvent: _timeBars)
+    	{
+    		
+    	}
+    	
+    }
+    
+    private void drawTimeSpots()
+    {
+    	//TODO: implement
+    	for(Watchable spotEvent: _timeSpots)
+    	{
+    		
+    	}
     }
     
 	@Override
@@ -145,11 +181,17 @@ class GanttChartSettings extends DefaultSettings
 	}
 	
 	@Override
+	public int getInitialZoomLevel() 
+	{
+		return ZOOM_HOURS_NORMAL;
+	}
+	
+	@Override
 	public Calendar getStartupCalendarDate() 
 	{
 		//TODO: this is hard coded
 		Calendar cal = Calendar.getInstance();
-		cal.set(2009, 4, 15);
+		cal.set(2009, 3, 30);
 		return cal;
 	}
 	

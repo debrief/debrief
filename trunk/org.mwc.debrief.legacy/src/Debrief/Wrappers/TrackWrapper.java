@@ -13,17 +13,12 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
-
-import org.eclipse.nebula.widgets.ganttchart.GanttChart;
-import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
-import org.eclipse.swt.widgets.Composite;
 
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
@@ -42,7 +37,6 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
-import MWC.GUI.ITimeBarDrawable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
@@ -75,7 +69,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
-		HasDraggableComponents, ProvidesContiguousElements, ITimeBarDrawable
+		HasDraggableComponents, ProvidesContiguousElements
 {
 
 	// //////////////////////////////////////
@@ -4190,17 +4184,5 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		
 	}
 
-	@Override
-	public void draw(Composite chart) 
-	{
-		if (! (chart instanceof GanttChart))
-			throw new RuntimeException("Chart must be GanttChart instance");
-		Calendar start = Calendar.getInstance(); 
-		start.setTime(getStartDTG().getDate());
-		Calendar end = Calendar.getInstance(); 
-		end.setTime(getEndDTG().getDate());
-		new GanttEvent((GanttChart)chart, null /* data object */, 
-				getName(), start, end, 0 /* percentage complete */);		
-	}
 
 }
