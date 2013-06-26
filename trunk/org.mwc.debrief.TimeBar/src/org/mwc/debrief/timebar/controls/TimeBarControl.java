@@ -1,7 +1,6 @@
 package org.mwc.debrief.timebar.controls;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -11,11 +10,13 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
-import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.debrief.timebar.model.IChartItemDrawable;
 import org.mwc.debrief.timebar.model.TimeBar;
 import org.mwc.debrief.timebar.model.TimeSpot;
 
@@ -41,8 +42,8 @@ public class TimeBarControl implements ISelectionProvider {
     
     GanttChart _chart;
     
-    List<TimeBar> _timeBars = new ArrayList<TimeBar>(); 
-    List<TimeSpot> _timeSpots = new ArrayList<TimeSpot>();
+    List<IChartItemDrawable> _timeBars = new ArrayList<IChartItemDrawable>(); 
+    List<IChartItemDrawable> _timeSpots = new ArrayList<IChartItemDrawable>();
     
     public TimeBarControl(Composite parent)
     {
@@ -61,10 +62,12 @@ public class TimeBarControl implements ISelectionProvider {
     public void drawDiagram(final Layers theLayers)
     {    	
     	walkThrough(theLayers);    	
-    	for(TimeBar barEvent: _timeBars)
+    	for(IChartItemDrawable barEvent: _timeBars)
     		barEvent.draw(_chart);
-    	for(TimeSpot spotEvent: _timeSpots)
+    	for(IChartItemDrawable spotEvent: _timeSpots)
     		spotEvent.draw(_chart);
+    	// move chart start date to the earliest event
+    	_chart.getGanttComposite().jumpToEarliestEvent();
     }
     
     private void walkThrough(Object root)
@@ -92,7 +95,8 @@ public class TimeBarControl implements ISelectionProvider {
 	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSensors()));
 	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSegments()));
 	    	}
-    		walkThrough(next);
+    		if (!(next instanceof WatchableList))
+    			walkThrough(next);
     	}
     }    
     
@@ -120,15 +124,40 @@ public class TimeBarControl implements ISelectionProvider {
 	public void setSelection(ISelection selection) 
 	{
 		_theSelection = selection;
-//		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
-//        
-//        for (final ISelectionChangedListener l: _listeners) {
-//            SafeRunner.run(new SafeRunnable() {
-//                public void run() {
-//                    l.selectionChanged(e);
-//                }
-//            });
-//		}
+		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
+        
+        for (final ISelectionChangedListener l: _listeners) {
+            SafeRunner.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(e);
+                }
+            });
+		}
+	}
+	
+	public void setSelectionToWidget(StructuredSelection selection)
+	{
+		Object o = selection.getFirstElement();
+		if (!(o instanceof EditableWrapper))
+			return;
+		EditableWrapper element = (EditableWrapper) o;
+		Editable selectedItem = element.getEditable();
+		if (!selectGanttEvent(selectedItem, _timeBars))
+			selectGanttEvent(selectedItem, _timeSpots);
+	}
+	
+	private boolean selectGanttEvent(Object item, List<IChartItemDrawable> events)
+	{
+		for (IChartItemDrawable event: events)
+		{
+			if (item.equals(event.getSource()))
+			{
+				_chart.getGanttComposite().setSelection(event.getPresentation());
+				System.out.println(item);
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
@@ -165,15 +194,6 @@ class GanttChartSettings extends DefaultSettings
 	public int getInitialZoomLevel() 
 	{
 		return ZOOM_HOURS_NORMAL;
-	}
-	
-	@Override
-	public Calendar getStartupCalendarDate() 
-	{
-		//TODO: this is hard coded
-		Calendar cal = Calendar.getInstance();
-		cal.set(2009, 3, 30);
-		return cal;
 	}
 	
 	@Override

@@ -288,7 +288,7 @@ public class TimeBarView extends ViewPart {
 						Object first = str.getFirstElement();
 						if (first instanceof EditableWrapper)
 						{
-							_control.setSelection(sel);
+							_control.setSelectionToWidget((StructuredSelection) sel);
 						}
 					}
 				}
