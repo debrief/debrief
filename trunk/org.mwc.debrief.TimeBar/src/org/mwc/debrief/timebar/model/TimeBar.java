@@ -25,8 +25,11 @@ public class TimeBar implements IChartItemDrawable
 	
 	public TimeBar(WatchableList bar)
 	{
-		_start.setTime(bar.getStartDTG().getDate());
-		_end.setTime(bar.getEndDTG().getDate());
+		//TODO: what if times are not specified?
+		if (bar.getStartDTG() != null)
+			_start.setTime(bar.getStartDTG().getDate());
+		if(bar.getEndDTG() != null)
+			_end.setTime(bar.getEndDTG().getDate());
 		_eventName = bar.getName();
 		_source = bar;
 	}
