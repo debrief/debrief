@@ -6,8 +6,8 @@ import java.util.Calendar;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 
+import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
-import MWC.GUI.BaseLayer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
@@ -36,12 +36,17 @@ public class TimeBar implements IChartItemDrawable
 		_color = bar.getColor();
 	}
 	
-	public TimeBar(BaseLayer solutions)
+	public TimeBar(TacticalDataWrapper sensorOrSolution)
 	{
-		_source = solutions;
-		_eventName = solutions.getName();
-		//TODO: how to get start and end time for solutions?
-	}
+		_source = sensorOrSolution;
+		_eventName = sensorOrSolution.getName();
+		HiResDate startDate = sensorOrSolution.getStartDTG(); 
+		if( startDate != null)
+			_start.setTime(startDate.getDate());
+		HiResDate endDate = sensorOrSolution.getEndDTG(); 
+		if( endDate != null)
+			_end.setTime(endDate.getDate());
+	}	
 	
 	public TimeBar(SegmentList segments)
 	{

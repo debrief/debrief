@@ -23,7 +23,9 @@ import org.mwc.debrief.timebar.model.IChartItemDrawable;
 import org.mwc.debrief.timebar.model.TimeBar;
 import org.mwc.debrief.timebar.model.TimeSpot;
 
+import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 //import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -76,6 +78,7 @@ public class TimeBarControl implements ISelectionProvider {
     		}
     		
     		@Override
+    		@SuppressWarnings("rawtypes")
     		public void eventSelected(GanttEvent event, List allSelectedEvents,
     				MouseEvent me) 
     		{
@@ -117,6 +120,7 @@ public class TimeBarControl implements ISelectionProvider {
     	for(IChartItemDrawable spotEvent: _timeSpots)
     		spotEvent.draw(_chart);
     	// move chart start date to the earliest event
+    	//TODO: move to the layer that has been changed; to the earliest event otherwise;
     	_chart.getGanttComposite().jumpToEarliestEvent();
     }
     
@@ -129,26 +133,40 @@ public class TimeBarControl implements ISelectionProvider {
     		numer = ((Layers) root).elements();
     	else return;
     	
-    	while(numer.hasMoreElements())  {
+    	while(numer.hasMoreElements())  
+    	{
     		Editable next = numer.nextElement();
     		if (next instanceof WatchableList)
 	    	{
-	    		_timeBars.add(new TimeBar((WatchableList) next));
+	    		_timeBars.add(new TimeBar((WatchableList) next));	    		
 	    	}
 	    	else if (next instanceof Watchable)
 	    	{
 	    		_timeSpots.add(new TimeSpot((Watchable) next));
 	    	}
-	    	else if (next instanceof TrackWrapper)
-	    	{
-	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSolutions()));
-	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSensors()));
+	    	if (next instanceof TrackWrapper)
+	    	{	    		
+	    		BaseLayer sensors = ((TrackWrapper) next).getSensors();
+	    		traverseTrackData(sensors);
+	    		BaseLayer solutions = ((TrackWrapper) next).getSolutions();
+	    		traverseTrackData(solutions);
 	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSegments()));
 	    	}
     		if (!(next instanceof WatchableList))
     			walkThrough(next);
     	}
-    }    
+    }  
+    
+    private void traverseTrackData(BaseLayer data)
+    {
+    	Enumeration<Editable> enumer = data.elements();
+		while(enumer.hasMoreElements())
+		{
+			Editable solution = enumer.nextElement();
+			if (solution instanceof TacticalDataWrapper)
+				_timeBars.add(new TimeBar((TacticalDataWrapper) solution));
+		}
+    }
     
 	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) 
