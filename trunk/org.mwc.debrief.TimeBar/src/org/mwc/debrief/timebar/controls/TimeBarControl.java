@@ -109,6 +109,8 @@ public class TimeBarControl implements ISelectionProvider {
     	if (_chart.isDisposed())
     		return;
     	
+    	_chart.getGanttComposite().clearChart();
+    	
     	walkThrough(theLayers);    	
     	for(IChartItemDrawable barEvent: _timeBars)
     		barEvent.draw(_chart);
@@ -200,7 +202,7 @@ public class TimeBarControl implements ISelectionProvider {
 		{
 			if (item.equals(event.getSource()))
 			{ 				
-				_chart.getGanttComposite().setSelection(event.getPresentation());
+				_chart.getGanttComposite().jumpToEvent(event.getPresentation(), true, SWT.LEFT);
 				return true;
 			}
 		}
