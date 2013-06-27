@@ -13,7 +13,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
+import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
+import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.timebar.model.IChartItemDrawable;
@@ -40,14 +43,53 @@ public class TimeBarControl implements ISelectionProvider {
 	 */
     ISelection _theSelection = null;
     
+    private Layers _myLayers;
+    
     GanttChart _chart;
     
     List<IChartItemDrawable> _timeBars = new ArrayList<IChartItemDrawable>(); 
     List<IChartItemDrawable> _timeSpots = new ArrayList<IChartItemDrawable>();
     
-    public TimeBarControl(Composite parent)
+    public TimeBarControl(Composite parent, final Layers theLayers)
     {
-    	_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());		
+    	_myLayers = theLayers;
+    	_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());
+    	
+    	_chart.addGanttEventListener(new GanttEventListenerAdapter()
+    	{
+    		private boolean fireSelectionChanged(GanttEvent event,
+    				List<IChartItemDrawable> eventEntries)
+    		{
+    			for (IChartItemDrawable eventEntry: eventEntries)
+    			{
+	    			if (eventEntry.getPresentation().equals(event))
+					{
+						if (eventEntry.getSource() instanceof Editable)
+						{
+							Editable ed = (Editable) eventEntry.getSource();    					
+							setSelection(new StructuredSelection(new EditableWrapper(ed, null, _myLayers)));
+						}
+						return true;
+					}
+    			}
+    			return false;
+    		}
+    		
+    		@Override
+    		public void eventSelected(GanttEvent event, List allSelectedEvents,
+    				MouseEvent me) 
+    		{
+    			super.eventSelected(event, allSelectedEvents, me);
+    			if (!fireSelectionChanged(event, _timeBars))
+    				fireSelectionChanged(event, _timeSpots);    				
+    		}
+    	});
+    }
+    
+    
+    public void setFocus()
+    {
+    	_chart.setFocus();
     }
     
     
@@ -60,7 +102,13 @@ public class TimeBarControl implements ISelectionProvider {
      * @param theLayers - Debrief data.
      */
     public void drawDiagram(final Layers theLayers)
-    {    	
+    {   
+    	//TODO: not clear the lists but see what changed?
+    	_timeBars.clear();
+    	_timeSpots.clear();
+    	if (_chart.isDisposed())
+    		return;
+    	
     	walkThrough(theLayers);    	
     	for(IChartItemDrawable barEvent: _timeBars)
     		barEvent.draw(_chart);
@@ -151,9 +199,8 @@ public class TimeBarControl implements ISelectionProvider {
 		for (IChartItemDrawable event: events)
 		{
 			if (item.equals(event.getSource()))
-			{
+			{ 				
 				_chart.getGanttComposite().setSelection(event.getPresentation());
-				System.out.println(item);
 				return true;
 			}
 		}

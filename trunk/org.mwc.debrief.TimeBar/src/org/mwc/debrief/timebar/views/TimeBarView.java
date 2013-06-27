@@ -19,7 +19,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
-// TODO: get rid of copy&paste from LayerManagerVieww - create base View class for the both views
+
 public class TimeBarView extends ViewPart {
 	
 	TimeBarControl _control;
@@ -28,88 +28,84 @@ public class TimeBarView extends ViewPart {
 	 */
 	private PartMonitor _myPartMonitor;
 	
-	Layers _myLayers;
+	/**
+	 * Debrief data
+	 */
+	private Layers _myLayers;
 
 	private Layers.DataListener _myLayersListener;
 
-	ISelectionChangedListener _selectionChangeListener;
+	private ISelectionChangedListener _selectionChangeListener;
 	
 	
 	@Override
-	public void createPartControl(Composite parent) 
-	{
-		_control = new TimeBarControl(parent);
-		
+	public void createPartControl(Composite parent) {
+		_control = new TimeBarControl(parent, _myLayers);
+
 		getSite().setSelectionProvider(_control);
-		
+
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
-		
+
 		listenToMyParts();
-		
 
 		_selectionChangeListener = new ISelectionChangedListener() {
-			
-			@Override			
-			public void selectionChanged(SelectionChangedEvent event)
-			{
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
 				ISelection sel = event.getSelection();
 				if (!(sel instanceof IStructuredSelection))
-		               return;
-		        IStructuredSelection ss = (IStructuredSelection) sel;
-		        Object o = ss.getFirstElement();
-		        if (o instanceof EditableWrapper) {
-		        	EditableWrapper pw = (EditableWrapper) o;
+					return;
+				IStructuredSelection ss = (IStructuredSelection) sel;
+				Object o = ss.getFirstElement();
+				if (o instanceof EditableWrapper) {
+					EditableWrapper pw = (EditableWrapper) o;
 					editableSelected(sel, pw);
-		        }
-			}		         
-	      };
-	      _control.addSelectionChangedListener(_selectionChangeListener);
-	}
-	
+				}
+			}
+		};
+		_control.addSelectionChangedListener(_selectionChangeListener);
+	}	
 	
 	void processNewLayers(Object part)
 	{
 		// just check we're not already looking at it
-		if (part != _myLayers)
-		{
-			_myLayers = (Layers) part;
-				if (_myLayersListener == null)
-				{
-					_myLayersListener = new Layers.DataListener2()
-					{
-
-						public void dataModified(Layers theData, Layer changedLayer)
-						{
-						}
-
-						public void dataExtended(Layers theData)
-						{
-							dataExtended(theData, null, null);
-						}
-
-						public void dataReformatted(Layers theData, Layer changedLayer)
-						{
-							//TODO: handleReformattedLayer(changedLayer);
-						}
-
-						public void dataExtended(Layers theData, Plottable newItem,
-								Layer parentLayer)
-						{
-							processNewData(theData, newItem, parentLayer);
-						}
-					};
-				}
-				// right, listen for data being added
-				_myLayers.addDataExtendedListener(_myLayersListener);
-
-				// and listen for items being reformatted
-				_myLayers.addDataReformattedListener(_myLayersListener);
-
-				// do an initial population.
-				processNewData(_myLayers, null, null);
-			}
+		if (part.equals(_myLayers))
+			return;
 		
+		_myLayers = (Layers) part;
+		if (_myLayersListener == null)
+		{
+			_myLayersListener = new Layers.DataListener2()
+			{
+
+				public void dataModified(Layers theData, Layer changedLayer){}
+
+				public void dataExtended(Layers theData)
+				{
+					dataExtended(theData, null, null);
+				}
+
+				public void dataReformatted(Layers theData, Layer changedLayer)
+				{
+					//TODO: handleReformattedLayer(changedLayer);
+				}
+
+				public void dataExtended(Layers theData, Plottable newItem,
+								Layer parentLayer)
+				{
+					processNewData(theData, newItem, parentLayer);
+				}
+			};
+		}
+		// right, listen for data being added
+		_myLayers.addDataExtendedListener(_myLayersListener);
+
+		// and listen for items being reformatted
+		_myLayers.addDataReformattedListener(_myLayersListener);
+
+		// do an initial population.
+		processNewData(_myLayers, null, null);		
 	}
 	
 	void processNewData(final Layers theData, final Editable newItem,
@@ -136,18 +132,12 @@ public class TimeBarView extends ViewPart {
 					}
 				}
 			});
-		
-
-	}
-
-
-
-	
+	}	
 	
 	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-		
+	public void setFocus() 
+	{
+		_control.setFocus();		
 	}
 	
 	public void dispose()
@@ -156,7 +146,6 @@ public class TimeBarView extends ViewPart {
 
 		// make sure we close the listeners
 		clearLayerListener();
-
 	}
 	
 	/**
@@ -242,36 +231,33 @@ public class TimeBarView extends ViewPart {
 				.getActivePage());
 	}
 	
-	public void editableSelected(ISelection sel, EditableWrapper pw)
+	public void editableSelected(ISelection sel, EditableWrapper pw) 
 	{
 
-			// ahh, just check if this is a whole new layers object
-			if (pw.getEditable() instanceof Layers)
-			{
-				processNewLayers(pw.getEditable());
-				return;
-			}
-			
-			// just check that this is something we can work with
-				if (sel instanceof StructuredSelection)
-				{
-					StructuredSelection str = (StructuredSelection) sel;
+		// ahh, just check if this is a whole new layers object
+		if (pw.getEditable() instanceof Layers) 
+		{
+			processNewLayers(pw.getEditable());
+			return;
+		}
 
-					// hey, is there a payload?
-					if (str.getFirstElement() != null)
-					{
-						// sure is. we only support single selections, so get the first
-						// element
-						Object first = str.getFirstElement();
-						if (first instanceof EditableWrapper)
-						{
-							_control.setSelectionToWidget((StructuredSelection) sel);
-						}
-					}
-				}
+		// just check that this is something we can work with
+		if (sel instanceof StructuredSelection) 
+		{
+			StructuredSelection str = (StructuredSelection) sel;
+
+			// hey, is there a payload?
+			if (str.getFirstElement() != null) 
+			{
+				// sure is. we only support single selections, so get the first
+				// element
+				Object first = str.getFirstElement();
+				if (first instanceof EditableWrapper) 
+					_control.setSelectionToWidget((StructuredSelection) sel);				
+			}
+		}
 
 	}
-
 
 	@SuppressWarnings("rawtypes")
 	public Object getAdapter(Class adapter)
