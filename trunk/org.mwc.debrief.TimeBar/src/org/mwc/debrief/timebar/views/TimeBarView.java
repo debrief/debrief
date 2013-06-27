@@ -1,5 +1,10 @@
 package org.mwc.debrief.timebar.views;
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -8,6 +13,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -36,6 +44,10 @@ public class TimeBarView extends ViewPart {
 	private Layers.DataListener _myLayersListener;
 
 	private ISelectionChangedListener _selectionChangeListener;
+	
+	private static Set<Layer> _pendingLayers = new TreeSet<Layer>();
+	
+	private static boolean _alreadyDeferring = false;
 	
 	
 	@Override
@@ -88,7 +100,7 @@ public class TimeBarView extends ViewPart {
 
 				public void dataReformatted(Layers theData, Layer changedLayer)
 				{
-					//TODO: handleReformattedLayer(changedLayer);
+					handleReformattedLayer(changedLayer);
 				}
 
 				public void dataExtended(Layers theData, Plottable newItem,
@@ -107,6 +119,72 @@ public class TimeBarView extends ViewPart {
 		// do an initial population.
 		processNewData(_myLayers, null, null);		
 	}
+	
+	
+	protected void handleReformattedLayer(Layer changedLayer)
+	{
+		// right - store this layer (if we have one)
+		if (changedLayer != null)
+			_pendingLayers.add(changedLayer);
+
+		if (_alreadyDeferring)
+		{
+			// hey - already processing - add this layer to the pending ones
+		}
+		else
+		{
+			_alreadyDeferring = true;
+
+			// right. we're not already doing some processing
+			Display dis = Display.getDefault();
+			dis.asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					processReformattedLayers();
+				}
+			});
+		}
+	}
+	
+	protected void processReformattedLayers()
+	{
+
+		try
+		{
+			// right, we'll be building up a list of objects to refresh (all of the
+			// objects in the indicated layer)
+			Vector<Object> newList = new Vector<Object>(0, 1);
+			Widget changed = null;
+
+			if (_pendingLayers.size() > 0)
+			{
+				for (Iterator<Layer> iter = _pendingLayers.iterator(); iter.hasNext();)
+				{
+					Layer changedLayer = (Layer) iter.next();
+
+					//TODO: implement changing the layer
+					_control.drawDiagram(_myLayers);
+				}
+			}
+			else
+			{
+				// hey, all of the layers need updating.
+				// better get on with it.
+				_control.drawDiagram(_myLayers);
+			}
+		}
+		catch (Exception e)
+		{
+
+		}
+		finally
+		{
+			_alreadyDeferring = false;
+			_pendingLayers.clear();
+		}
+	}
+
 	
 	void processNewData(final Layers theData, final Editable newItem,
 			final Layer parentLayer)
