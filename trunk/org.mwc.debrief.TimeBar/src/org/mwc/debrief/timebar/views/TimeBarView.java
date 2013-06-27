@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.timebar.controls.TimeBarControl;
@@ -35,7 +34,6 @@ public class TimeBarView extends ViewPart {
 
 	ISelectionChangedListener _selectionChangeListener;
 	
-	protected TrackManager _theTrackDataListener;
 	
 	@Override
 	public void createPartControl(Composite parent) 
@@ -236,27 +234,6 @@ public class TimeBarView extends ViewPart {
 							ISelectionProvider iS = (ISelectionProvider) part;
 							iS.removeSelectionChangedListener(_selectionChangeListener);
 						}
-					}
-				});
-
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						// cool, remember about it.
-						_theTrackDataListener = (TrackManager) part;
-					}
-				});
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						// ok, ditch it.
-						_theTrackDataListener = null;
 					}
 				});
 
