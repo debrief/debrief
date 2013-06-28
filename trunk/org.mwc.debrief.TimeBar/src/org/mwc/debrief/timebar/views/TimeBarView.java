@@ -18,7 +18,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.debrief.timebar.controls.TimeBarControl;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -28,7 +27,7 @@ import MWC.GUI.Plottable;
 
 public class TimeBarView extends ViewPart {
 	
-	TimeBarControl _control;
+	TimeBarViewer _control;
 	/**
 	 * helper application to help track creation/activation of new plots
 	 */
@@ -50,7 +49,7 @@ public class TimeBarView extends ViewPart {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		_control = new TimeBarControl(parent, _myLayers);
+		_control = new TimeBarViewer(parent, _myLayers);
 
 		getSite().setSelectionProvider(_control);
 
@@ -89,7 +88,10 @@ public class TimeBarView extends ViewPart {
 			_myLayersListener = new Layers.DataListener2()
 			{
 
-				public void dataModified(Layers theData, Layer changedLayer){}
+				public void dataModified(Layers theData, Layer changedLayer)
+				{
+					System.out.println(changedLayer);
+				}
 
 				public void dataExtended(Layers theData)
 				{

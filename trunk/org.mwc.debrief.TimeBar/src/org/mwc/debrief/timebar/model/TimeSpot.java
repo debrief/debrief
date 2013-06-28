@@ -3,13 +3,11 @@ package org.mwc.debrief.timebar.model;
 import java.awt.Color;
 import java.util.Calendar;
 
-import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
-import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 
 import MWC.GenericData.Watchable;
 
-public class TimeSpot implements IChartItemDrawable
+public class TimeSpot implements IEventEntry
 {
 	Object _source;
 	String _name;
@@ -26,22 +24,35 @@ public class TimeSpot implements IChartItemDrawable
 	}
 
 	@Override
-	public void draw(GanttChart chart) 
-	{
-		_presentation = new GanttCheckpoint(chart, _name, _time);	
-		if(_color != null)
-			_presentation.setStatusColor(ColorUtils.convertAWTtoSWTColor(_color));
-	}
-
-	@Override
 	public Object getSource() 
 	{
 		return _source;
 	}
+	
+	@Override
+	public Calendar getStart() 
+	{
+		return _time;
+	}
 
 	@Override
-	public GanttEvent getPresentation() 
+	public Calendar getEnd() 
 	{
-		return _presentation;
+		return _time;
 	}
+
+	@Override
+	public String getName() 
+	{
+		return _name;
+	}
+
+	@Override
+	public org.eclipse.swt.graphics.Color getColor() 
+	{
+		if(_color != null)
+			return ColorUtils.convertAWTtoSWTColor(_color);
+		return null;
+	}
+
 }

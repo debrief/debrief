@@ -3,15 +3,12 @@ package org.mwc.debrief.timebar.model;
 import java.awt.Color;
 import java.util.Calendar;
 
-import org.eclipse.nebula.widgets.ganttchart.GanttChart;
-import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
-
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
-public class TimeBar implements IChartItemDrawable 
+public class TimeBar implements IEventEntry 
 {
 	/** TimeBar start */
 	Calendar _start = Calendar.getInstance();
@@ -22,7 +19,6 @@ public class TimeBar implements IChartItemDrawable
 	Color _color = null;
 	
 	Object _source;
-	GanttEvent _presentation;
 	
 	public TimeBar(WatchableList bar)
 	{
@@ -61,22 +57,36 @@ public class TimeBar implements IChartItemDrawable
 		_color = segments.getWrapper().getColor();
 	}
 
-	@Override
-	public void draw(GanttChart chart) 
-	{
-		_presentation = new GanttEvent(chart, _eventName, 
-				_start, _end, 0 /* percentage complete */);
-		if(_color != null)
-			_presentation.setStatusColor(ColorUtils.convertAWTtoSWTColor(_color));
-	}
 
 	public Object getSource() 
 	{
 		return _source;
 	}
 	
-	public GanttEvent getPresentation()
+
+	@Override
+	public Calendar getStart() 
 	{
-		return _presentation;
+		return _start;
+	}
+
+	@Override
+	public Calendar getEnd() 
+	{
+		return _end;
+	}
+
+	@Override
+	public String getName() 
+	{
+		return _eventName;
+	}
+
+	@Override
+	public org.eclipse.swt.graphics.Color getColor() 
+	{
+		if(_color != null)
+			return ColorUtils.convertAWTtoSWTColor(_color);
+		return null;
 	}
 }
