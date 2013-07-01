@@ -64,7 +64,7 @@ public class RoutesCandidateFactoryTest extends ModelTestBase
 		Random random = new MersenneTwisterRNG();
 		for (CoreLeg leg : legs) 
 		{
-			leg.generatePoints(Precision.LOW, 100000);
+			leg.generatePoints(Precision.LOW.toMeters(), 100000);
 			operations.add(new LegOperations(leg, random));
 		}
 		candidateFactory = new RoutesCandidateFactory(operations);

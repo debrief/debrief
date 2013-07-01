@@ -3,8 +3,6 @@ package com.planetmayo.debrief.satc.model.legs;
 import java.util.Collections;
 import java.util.List;
 
-
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -46,6 +44,8 @@ public abstract class CoreLeg
 	protected List<Point> startPoints;
 	
 	protected List<Point> endPoints;
+	
+	protected double currentGridPrecision;
 
 	protected CoreLeg(String name, List<BoundedState> states)
 	{
@@ -107,9 +107,9 @@ public abstract class CoreLeg
 	 * @param precision
 	 *          how many grid cells to dissect the area into
 	 */
-	public void generatePoints(Precision precision) 
+	public void generatePoints(double gridPrecision) 
 	{
-		generatePoints(precision, MAX_PTS);
+		generatePoints(gridPrecision, MAX_PTS);
 	}
 
 	/**
@@ -120,8 +120,9 @@ public abstract class CoreLeg
 	 * @param maxPoints 
 	 *          if we have more than maxPoints points for each area throw the exception   
 	 */
-	public void generatePoints(Precision precision, int maxPoints)
+	public void generatePoints(double gridPrecision, int maxPoints)
 	{
+		currentGridPrecision = gridPrecision;
 		// produce the grid of cells
 		LocationRange firstLoc = getFirst().getLocation();
 		LocationRange lastLoc = getLast().getLocation();
@@ -130,25 +131,7 @@ public abstract class CoreLeg
 			throw new IllegalArgumentException(
 					"The end states must have location bounds");
 
-		final double delta;
-		switch (precision)
-			{
-			case LOW:
-				delta = GeoSupport.m2deg(600);
-				break;
-			case MEDIUM:
-				delta = GeoSupport.m2deg(300);
-				break;
-			case HIGH:
-				delta = GeoSupport.m2deg(100);
-				break;
-
-			default:
-				throw new RuntimeException(
-						"We've failed to implement case for a precision type");
-			}
-		;
-
+		final double delta = GeoSupport.m2deg(gridPrecision);
 		// right, what's the area of the start?
 		double startArea = firstLoc.getGeometry().getArea();
 		double endArea = lastLoc.getGeometry().getArea();
@@ -171,6 +154,11 @@ public abstract class CoreLeg
 				throw new RuntimeException("Unable to generate any start points for leg:" + this.getName());
 		if(endPoints.size() == 0)
 			throw new RuntimeException("Unable to generate any end points for leg:" + this.getName());
+	}
+	
+	public double getCurrentGridPrecision() 
+	{
+		return currentGridPrecision;
 	}
 
 	/**

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.vividsolutions.jts.geom.Point;
 
 public class LegOperations
@@ -126,5 +127,32 @@ public class LegOperations
 		endMax = recalculateProbabilitiesBody(incrementIterations, endAvgSelection, endAvgAchievable, 
 				endCounts, endAchievable, endProbabilities);		
 		iterations += incrementIterations;
+	}
+	
+	public boolean hasNoAchievablePoints() 
+	{
+		if (leg.getType() == LegType.ALTERING)
+		{
+			return false;
+		}
+		boolean noAchievablePoints = true;
+		for (int point : startAvgAchievable)
+		{
+			if (point > 0)
+			{
+				noAchievablePoints = false;
+			}
+		}
+		if (! noAchievablePoints) 
+		{
+			for (int point : endAvgAchievable)
+			{
+				if (point > 0)
+				{
+					return false;
+				}
+			}			
+		}
+		return true;
 	}
 }

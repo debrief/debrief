@@ -2,6 +2,7 @@ package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -115,7 +116,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					legs = new ArrayList<LegOperations>();
 					for (CoreLeg leg : rawLegs)
 					{
-						leg.generatePoints(_myPrecision);
+						leg.generatePoints(_myPrecision.toMeters());
 						legs.add(new LegOperations(leg, random));
 					}					
 					return null;
@@ -256,7 +257,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	
 	private class GAEngine extends GenerationalEvolutionEngine<List<Point>> 
 	{
-		int iterations = 0;
+		private long iterations = 0;
+		private CandidateFactory<List<Point>> candidateFactory;
 		
 		public GAEngine(CandidateFactory<List<Point>> candidateFactory,
 				EvolutionaryOperator<List<Point>> evolutionScheme,
@@ -265,6 +267,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		{
 			super(candidateFactory, evolutionScheme, fitnessEvaluator, selectionStrategy,
 					rng);
+			this.candidateFactory = candidateFactory;
 		}
 
 		@Override
@@ -296,15 +299,39 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				}
 			}
 			iterations++;
-			if (iterations == 10) 
+			return applyIterationChanges(result, rng);
+		}	
+		
+		private List<EvaluatedCandidate<List<Point>>> applyIterationChanges(List<EvaluatedCandidate<List<Point>>> population, Random rng) 
+		{
+			if (iterations % 10 == 0) 
 			{				
 				for (LegOperations leg : legs)
 				{
-					leg.recalculateProbabilities(iterations);
+					leg.recalculateProbabilities(10);
 				}
-				iterations = 0;
 			}
-			return result;
-		}			
+			if (iterations % 25 == 0) 
+			{
+				boolean regeneratePopulation = false;
+				for (ListIterator<LegOperations> it = legs.listIterator(); it.hasNext(); ) 
+				{
+					LegOperations leg = it.next();
+					if (leg.hasNoAchievablePoints()) 
+					{
+						regeneratePopulation = true;
+						CoreLeg rawLeg = leg.getLeg();
+						rawLeg.generatePoints(rawLeg.getCurrentGridPrecision() / 2);
+						it.set(new LegOperations(rawLeg, rng));
+					}
+				}
+				if (regeneratePopulation) 
+				{
+					List<List<Point>> newPopulation = candidateFactory.generateInitialPopulation(parameters.getPopulationSize(), rng);
+					population = evaluatePopulation(newPopulation);
+				}
+			}
+			return population;
+		}
 	}
 }
