@@ -12,6 +12,8 @@ import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPageLayout;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.timebar.model.IEventEntry;
 import org.mwc.debrief.timebar.views.TimeBarViewer;
 
@@ -46,8 +48,17 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 						return;
 					}
     			}				
+    		}  
+    		
+    		@Override
+    		public void eventDoubleClicked(GanttEvent event, MouseEvent me) 
+    		{
+    			super.eventDoubleClicked(event, me);
+    			CorePlugin.openView(CorePlugin.LAYER_MANAGER);
+				CorePlugin.openView(IPageLayout.ID_PROP_SHEET);	
     		}
     	});
+	
 	}
 	
 	@Override
@@ -89,6 +100,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 			if (entry.getValue().getSource().equals(editable))
 			{
 				_chart.getGanttComposite().jumpToEvent(entry.getKey(), true, SWT.LEFT);
+				_chart.getGanttComposite().setSelection(entry.getKey());
 				return;
 			}
 		}	
