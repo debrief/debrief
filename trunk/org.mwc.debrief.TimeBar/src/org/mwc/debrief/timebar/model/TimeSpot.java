@@ -6,6 +6,7 @@ import java.util.Calendar;
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
 
 import MWC.GenericData.Watchable;
+import MWC.TacticalData.NarrativeEntry;
 
 public class TimeSpot implements IEventEntry
 {
@@ -21,6 +22,13 @@ public class TimeSpot implements IEventEntry
 		_name = spot.getName();
 		_time.setTime(spot.getTime().getDate());
 		_color = spot.getColor();
+	}
+	
+	public TimeSpot(NarrativeEntry entry)
+	{
+		_source = entry;
+		_name = entry.getName();
+		_time.setTime(entry.getDTG().getDate());
 	}
 
 	@Override

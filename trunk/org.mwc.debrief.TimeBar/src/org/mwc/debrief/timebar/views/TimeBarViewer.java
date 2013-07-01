@@ -19,6 +19,7 @@ import org.mwc.debrief.timebar.model.TimeSpot;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
 import org.mwc.debrief.timebar.painter.NebulaGanttPainter;
 
+import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
@@ -27,6 +28,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.NarrativeEntry;
 //import Debrief.Wrappers.Track.TrackSegment;
 
 public class TimeBarViewer implements ISelectionProvider {
@@ -116,6 +118,10 @@ public class TimeBarViewer implements ISelectionProvider {
 	    		BaseLayer solutions = ((TrackWrapper) next).getSolutions();
 	    		traverseTrackData(solutions);
 	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSegments()));
+	    	}
+	    	if (next instanceof NarrativeEntry)
+	    	{
+	    		_timeSpots.add(new TimeSpot((NarrativeEntry) next));
 	    	}
     		if (!(next instanceof WatchableList))
     			walkThrough(next);
