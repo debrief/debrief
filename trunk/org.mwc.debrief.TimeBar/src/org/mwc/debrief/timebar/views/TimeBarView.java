@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -14,10 +16,12 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.debrief.timebar.Activator;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -47,6 +51,13 @@ public class TimeBarView extends ViewPart {
 	private static boolean _alreadyDeferring = false;
 	
 	
+	/**
+	 * Actions to zoom around the time bars
+	 */
+	private Action _zoomInAction;
+	private Action _zoomOutAction;
+	
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		_viewer = new TimeBarViewer(parent, _myLayers);
@@ -57,6 +68,8 @@ public class TimeBarView extends ViewPart {
 				.getPartService());
 
 		listenToMyParts();
+		makeActions();
+		contributeToActionBars();
 
 		_selectionChangeListener = new ISelectionChangedListener() {
 
@@ -75,6 +88,49 @@ public class TimeBarView extends ViewPart {
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
 	}	
+	
+	private void contributeToActionBars()
+	{
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+	
+	private void fillLocalToolBar(IToolBarManager manager)
+	{
+		manager.add(_zoomInAction);
+		manager.add(_zoomOutAction);
+	}
+	
+	private void makeActions()
+	{
+		_zoomInAction = new Action("Zoom in", Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				//TODO: implement
+				//_viewer.zoomIn()
+			}
+		};
+		_zoomInAction.setText("Zoom in");
+		_zoomInAction
+				.setToolTipText("Zoom in");
+		_zoomInAction.setImageDescriptor(Activator
+				.getImageDescriptor("icons/zoomin.gif"));
+		
+		_zoomOutAction = new Action("Zoom out", Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				//TODO: implement
+				//_viewer.zoomOut()
+			}
+		};
+		_zoomOutAction.setText("Zoom out");
+		_zoomOutAction
+				.setToolTipText("Zoom out");
+		_zoomOutAction.setImageDescriptor(Activator
+				.getImageDescriptor("icons/zoomout.gif"));
+	}
 	
 	void processNewLayers(Object part)
 	{
