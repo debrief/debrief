@@ -112,6 +112,17 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	{
 		_chart.setFocus();		
 	}
+	
+	public void zoomIn()
+	{
+		_chart.getGanttComposite().zoomIn();
+	}
+	
+	@Override
+	public void zoomOut()
+	{
+		_chart.getGanttComposite().zoomOut();
+	}
 
 }
 

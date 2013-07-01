@@ -107,8 +107,7 @@ public class TimeBarView extends ViewPart {
 		{
 			public void run()
 			{
-				//TODO: implement
-				//_viewer.zoomIn()
+				_viewer.zoomIn();
 			}
 		};
 		_zoomInAction.setText("Zoom in");
@@ -121,9 +120,8 @@ public class TimeBarView extends ViewPart {
 		{
 			public void run()
 			{
-				//TODO: implement
-				//_viewer.zoomOut()
-			}
+				_viewer.zoomOut();
+			}		
 		};
 		_zoomOutAction.setText("Zoom out");
 		_zoomOutAction

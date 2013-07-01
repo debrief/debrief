@@ -19,7 +19,6 @@ import org.mwc.debrief.timebar.model.TimeSpot;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
 import org.mwc.debrief.timebar.painter.NebulaGanttPainter;
 
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
@@ -62,6 +61,16 @@ public class TimeBarViewer implements ISelectionProvider {
     public void setFocus()
     {
     	_painter.setFocus();
+    }
+    
+    public void zoomIn()
+    {
+    	_painter.zoomIn();
+    }
+    
+    public void zoomOut()
+    {
+    	_painter.zoomOut();    	
     }
     
     

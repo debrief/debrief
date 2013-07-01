@@ -25,5 +25,7 @@ public interface ITimeBarsPainter
 	
 	public void setFocus();
 	
-
+	public void zoomIn();
+	
+	public void zoomOut();
 }
