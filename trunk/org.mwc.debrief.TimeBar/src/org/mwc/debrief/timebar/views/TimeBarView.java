@@ -27,7 +27,7 @@ import MWC.GUI.Plottable;
 
 public class TimeBarView extends ViewPart {
 	
-	TimeBarViewer _control;
+	TimeBarViewer _viewer;
 	/**
 	 * helper application to help track creation/activation of new plots
 	 */
@@ -49,9 +49,9 @@ public class TimeBarView extends ViewPart {
 	
 	@Override
 	public void createPartControl(Composite parent) {
-		_control = new TimeBarViewer(parent, _myLayers);
+		_viewer = new TimeBarViewer(parent, _myLayers);
 
-		getSite().setSelectionProvider(_control);
+		getSite().setSelectionProvider(_viewer);
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
@@ -73,7 +73,7 @@ public class TimeBarView extends ViewPart {
 				}
 			}
 		};
-		_control.addSelectionChangedListener(_selectionChangeListener);
+		_viewer.addSelectionChangedListener(_selectionChangeListener);
 	}	
 	
 	void processNewLayers(Object part)
@@ -164,14 +164,14 @@ public class TimeBarView extends ViewPart {
 					Layer changedLayer = (Layer) iter.next();
 
 					//TODO: implement changing the layer
-					_control.drawDiagram(_myLayers);
+					_viewer.drawDiagram(_myLayers);
 				}
 			}
 			else
 			{
 				// hey, all of the layers need updating.
 				// better get on with it.
-				_control.drawDiagram(_myLayers);
+				_viewer.drawDiagram(_myLayers);
 			}
 		}
 		catch (Exception e)
@@ -194,7 +194,7 @@ public class TimeBarView extends ViewPart {
 				public void run()
 				{
 					// ok, fire the change in the UI thread
-					_control.drawDiagram(theData);
+					_viewer.drawDiagram(theData);
 					// hmm, do we know about the new item? If so, better select it
 					if (newItem != null)
 					{
@@ -215,7 +215,7 @@ public class TimeBarView extends ViewPart {
 	@Override
 	public void setFocus() 
 	{
-		_control.setFocus();		
+		_viewer.setFocus();		
 	}
 	
 	public void dispose()
@@ -282,7 +282,7 @@ public class TimeBarView extends ViewPart {
 							IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
-						if (part != _control)
+						if (part != _viewer)
 						{
 							ISelectionProvider iS = (ISelectionProvider) part;
 							iS.addSelectionChangedListener(_selectionChangeListener);
@@ -296,7 +296,7 @@ public class TimeBarView extends ViewPart {
 							IWorkbenchPart parentPart)
 					{
 						// aah, just check it's not is
-						if (part != _control)
+						if (part != _viewer)
 						{
 							ISelectionProvider iS = (ISelectionProvider) part;
 							iS.removeSelectionChangedListener(_selectionChangeListener);
@@ -331,7 +331,7 @@ public class TimeBarView extends ViewPart {
 				// element
 				Object first = str.getFirstElement();
 				if (first instanceof EditableWrapper) 
-					_control.setSelectionToWidget((StructuredSelection) sel);				
+					_viewer.setSelectionToWidget((StructuredSelection) sel);				
 			}
 		}
 
@@ -344,7 +344,7 @@ public class TimeBarView extends ViewPart {
 
 		if (adapter == ISelectionProvider.class)
 		{
-			res = _control;
+			res = _viewer;
 		}
 		else
 		{
