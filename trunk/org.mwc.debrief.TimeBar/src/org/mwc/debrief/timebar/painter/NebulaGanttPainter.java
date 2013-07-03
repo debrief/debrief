@@ -8,10 +8,12 @@ import java.util.Map;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
+import org.eclipse.nebula.widgets.ganttchart.GanttComposite;
 import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPageLayout;
 import org.mwc.cmap.core.CorePlugin;
@@ -26,8 +28,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 {
 	GanttChart _chart;
 	TimeBarViewer _viewer;
-	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();
-	Date _debriefTime = null;
+	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();	
 	
 	public NebulaGanttPainter(Composite parent, final TimeBarViewer viewer)
 	{
@@ -127,13 +128,33 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	}
 
 	@Override
-	public void drawDebriefTime(Date date) 
+	public void drawDebriefTime(Date oldTime, Date currTime) 
 	{
-		//TODO: implement
-		_chart.getGanttComposite().drawMarker(date);		
-	}
+		GanttComposite parent = _chart.getGanttComposite();
+		
+		int curX = parent.getXForDate(currTime);
+	    if (curX == -1) 
+	    	return; 
+	    
+	    int oldX = parent.getXForDate(oldTime);
+	    if (oldX != curX)
+	    {
+	    	//TODO: redraw marker trace
+	    	//parent.redraw(oldX, 0, oldX, _chart.getBounds().height, false);	
+	    }
+	
+	    GC gc = new GC(parent);
+	    gc.setLineStyle(SWT.LINE_SOLID);
+	    gc.setLineWidth(2);
+	    gc.setForeground(ITimeBarsPainter.TIME_LINE_COLOR);
+	    gc.drawLine(curX, 0, curX, _chart.getBounds().height);
+	    gc.dispose();    
+	   
+	}	
 
 }
+
+
 
 class GanttChartSettings extends DefaultSettings
 {
