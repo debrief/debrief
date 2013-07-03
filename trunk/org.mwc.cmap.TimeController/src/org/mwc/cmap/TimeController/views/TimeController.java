@@ -2692,4 +2692,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		return res;
 	}
 
+	public TimeProvider getTimeProvider() 
+	{
+		return _myTemporalDataset;
+	}
+
 }

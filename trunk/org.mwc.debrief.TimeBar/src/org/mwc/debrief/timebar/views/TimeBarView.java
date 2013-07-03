@@ -1,5 +1,7 @@
 package org.mwc.debrief.timebar.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,8 +19,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.TimeController.views.TimeController;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.timebar.Activator;
@@ -27,6 +33,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
+import MWC.GenericData.HiResDate;
 
 
 public class TimeBarView extends ViewPart {
@@ -41,6 +48,11 @@ public class TimeBarView extends ViewPart {
 	 * Debrief data
 	 */
 	private Layers _myLayers;
+	
+	/**
+	 * listen out for new times
+	 */
+	final PropertyChangeListener _temporalListener = new NewTimeListener();
 
 	private Layers.DataListener _myLayersListener;
 
@@ -87,7 +99,19 @@ public class TimeBarView extends ViewPart {
 			}
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
+		TimeProvider timeProvider = getTimeProvider();
+		timeProvider.addListener(_temporalListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 	}	
+	
+	public TimeProvider getTimeProvider()
+	{
+		IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
+		if (part != null)
+		{
+			return ((TimeController) part).getTimeProvider();
+		}
+		return null;
+	}
 	
 	private void contributeToActionBars()
 	{
@@ -174,7 +198,7 @@ public class TimeBarView extends ViewPart {
 		processNewData(_myLayers, null, null);		
 	}
 	
-	
+		
 	protected void handleReformattedLayer(Layer changedLayer)
 	{
 		// right - store this layer (if we have one)
@@ -278,6 +302,8 @@ public class TimeBarView extends ViewPart {
 
 		// make sure we close the listeners
 		clearLayerListener();
+		getTimeProvider().removeListener(_temporalListener, 
+				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 	}
 	
 	/**
@@ -295,6 +321,7 @@ public class TimeBarView extends ViewPart {
 	
 	private void listenToMyParts()
 	{
+		// Listen to Layers
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -324,11 +351,12 @@ public class TimeBarView extends ViewPart {
 						{
 							// stop listening to this layer
 							clearLayerListener();
-						}
+						}						
 					}
 
 				});
-
+		
+		
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
@@ -406,6 +434,30 @@ public class TimeBarView extends ViewPart {
 		}
 
 		return res;
+	}
+	
+	protected final class NewTimeListener implements PropertyChangeListener
+	{
+		public void propertyChange(PropertyChangeEvent event)
+		{
+			// see if it's the time or the period which
+			// has changed
+			if (event.getPropertyName().equals(
+					TimeProvider.TIME_CHANGED_PROPERTY_NAME))
+			{
+				// ok, use the new time
+				final HiResDate newDTG = (HiResDate) event.getNewValue();
+				
+				Runnable nextEvent = new Runnable()
+				{
+					public void run()
+					{
+						_viewer._painter.drawDebriefTime(newDTG.getDate());
+					}
+				};
+				Display.getDefault().syncExec(nextEvent);				
+			}
+		}
 	}
 
 }

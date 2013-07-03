@@ -1,5 +1,6 @@
 package org.mwc.debrief.timebar.painter;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 {
 	GanttChart _chart;
 	TimeBarViewer _viewer;
-	Map<GanttEvent, IEventEntry> eventEntries = new HashMap<GanttEvent, IEventEntry>();
+	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();
+	Date _debriefTime = null;
 	
 	public NebulaGanttPainter(Composite parent, final TimeBarViewer viewer)
 	{
@@ -40,7 +42,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
     				MouseEvent me) 
     		{
     			super.eventSelected(event, allSelectedEvents, me);
-    			for (Map.Entry<GanttEvent, IEventEntry> entry: eventEntries.entrySet())
+    			for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
     			{
 	    			if (entry.getKey().equals(event))
 					{
@@ -68,16 +70,16 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
-		eventEntries.put(evt, modelEntry);		
+		_eventEntries.put(evt, modelEntry);		
 	}
 
 	@Override
 	public void drawSpot(IEventEntry modelEntry) 
-	{
+	{		
 		GanttEvent evt = new GanttCheckpoint(_chart, modelEntry.getName(), modelEntry.getStart());	
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
-		eventEntries.put(evt, modelEntry);
+		_eventEntries.put(evt, modelEntry);
 	}
 
 	@Override
@@ -95,7 +97,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	@Override
 	public void selectTimeBar(Editable editable) 
 	{
-		for (Map.Entry<GanttEvent, IEventEntry> entry: eventEntries.entrySet())
+		for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
 		{
 			if (entry.getValue().getSource().equals(editable))
 			{
@@ -122,6 +124,13 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	public void zoomOut()
 	{
 		_chart.getGanttComposite().zoomOut();
+	}
+
+	@Override
+	public void drawDebriefTime(Date date) 
+	{
+		//TODO: implement
+		_chart.getGanttComposite().drawMarker(date);		
 	}
 
 }
