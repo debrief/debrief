@@ -19,11 +19,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.views.TimeController;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -49,10 +47,11 @@ public class TimeBarView extends ViewPart {
 	 */
 	private Layers _myLayers;
 	
+	TimeProvider _timeProvider;
 	/**
 	 * listen out for new times
 	 */
-	final PropertyChangeListener _temporalListener = new NewTimeListener();
+	private PropertyChangeListener _temporalListener = new NewTimeListener();
 
 	private Layers.DataListener _myLayersListener;
 
@@ -99,18 +98,6 @@ public class TimeBarView extends ViewPart {
 			}
 		};
 		_viewer.addSelectionChangedListener(_selectionChangeListener);
-		TimeProvider timeProvider = getTimeProvider();
-		timeProvider.addListener(_temporalListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-	}	
-	
-	public TimeProvider getTimeProvider()
-	{
-		IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
-		if (part != null)
-		{
-			return ((TimeController) part).getTimeProvider();
-		}
-		return null;
 	}
 	
 	private void contributeToActionBars()
@@ -302,8 +289,14 @@ public class TimeBarView extends ViewPart {
 
 		// make sure we close the listeners
 		clearLayerListener();
-		getTimeProvider().removeListener(_temporalListener, 
-				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		if (_timeProvider != null)
+		{
+			_timeProvider.removeListener(_temporalListener, 
+					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+			_temporalListener = null;
+			_timeProvider = null;
+			
+		}
 	}
 	
 	/**
@@ -355,6 +348,53 @@ public class TimeBarView extends ViewPart {
 					}
 
 				});
+		
+		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						TimeProvider provider = ((TimeController) part).getTimeProvider();						
+						if (provider != null && provider.equals(_timeProvider))
+							return;						
+						_timeProvider = provider;
+						_timeProvider.addListener(_temporalListener, 
+								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+					}
+			});
+		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						TimeProvider provider = ((TimeController) part).getTimeProvider();						
+						if (provider != null && provider.equals(_timeProvider))
+							return;						
+						_timeProvider = provider;
+						_timeProvider.addListener(_temporalListener, 
+								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+					}
+			});
+		
+		_myPartMonitor.addPartListener(TimeController.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						TimeProvider provider = ((TimeController) part).getTimeProvider();						
+						if (provider != null && provider.equals(_timeProvider))
+						{
+							_timeProvider.removeListener(_temporalListener, 
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						}
+					}
+
+				});
+		
+		
 		
 		
 		_myPartMonitor.addPartListener(ISelectionProvider.class,
@@ -447,12 +487,12 @@ public class TimeBarView extends ViewPart {
 			{
 				// ok, use the new time
 				final HiResDate newDTG = (HiResDate) event.getNewValue();
-				
+				final HiResDate oldDTG = (HiResDate) event.getOldValue();
 				Runnable nextEvent = new Runnable()
 				{
 					public void run()
 					{
-						_viewer._painter.drawDebriefTime(newDTG.getDate());
+						_viewer._painter.drawDebriefTime(oldDTG.getDate(), newDTG.getDate());
 					}
 				};
 				Display.getDefault().syncExec(nextEvent);				
