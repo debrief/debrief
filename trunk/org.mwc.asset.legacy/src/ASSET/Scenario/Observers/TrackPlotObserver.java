@@ -371,7 +371,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 		for (Iterator<ParticipantType> thisTrack = _myTracks.keySet().iterator(); thisTrack
 				.hasNext();)
 		{
-			CoreParticipant cp = (CoreParticipant) thisTrack.next();
+			ParticipantType cp = (ParticipantType) thisTrack.next();
 			Track track = (Track) _myTracks.get(cp);
 			Color thisTrackColor;
 			if (cp.getCategory() == null)
@@ -739,7 +739,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 			stat.setCourse(21);
 			stat.setSpeed(new WorldSpeed(4, WorldSpeed.M_sec));
 
-			CoreParticipant ssn = new CoreParticipant(12);
+			ParticipantType ssn = new CoreParticipant(12);
 			ssn.setName("Bingo");
 			ssn.setCategory(new Category(Category.Force.BLUE,
 					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));

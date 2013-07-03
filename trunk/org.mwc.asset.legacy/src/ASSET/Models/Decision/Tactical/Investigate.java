@@ -1570,7 +1570,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			Status blueStat = new Status(BLUE_ID, 0);
 			blueStat.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
 			blueStat.setLocation(new WorldLocation(4, 4, 2));
-			final CoreParticipant blueP = new CoreParticipant(BLUE_ID);
+			final ParticipantType blueP = new CoreParticipant(BLUE_ID);
 			blueP.setStatus(blueStat);
 			Category blueCat = new Category(Category.Force.BLUE,
 					Category.Environment.AIRBORNE, Category.Type.MPA);
@@ -1776,7 +1776,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			Status blueStat1 = new Status(BLUE_ID1, 0);
 			blueStat1.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
 			blueStat1.setLocation(new WorldLocation(4, 4, 2));
-			final CoreParticipant blueP1 = new CoreParticipant(BLUE_ID1);
+			final ParticipantType blueP1 = new CoreParticipant(BLUE_ID1);
 			blueP1.setStatus(blueStat1);
 			Category blueCat1 = new Category(Category.Force.BLUE,
 					Category.Environment.AIRBORNE, Category.Type.MPA);
@@ -1785,7 +1785,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			Status blueStat2 = new Status(BLUE_ID2, 0);
 			blueStat2.setSpeed(new WorldSpeed(21, WorldSpeed.Kts));
 			blueStat2.setLocation(new WorldLocation(4, 4, 2));
-			final CoreParticipant blueP2 = new CoreParticipant(BLUE_ID2);
+			final ParticipantType blueP2 = new CoreParticipant(BLUE_ID2);
 			blueP2.setStatus(blueStat2);
 			Category blueCat2 = new Category(Category.Force.BLUE,
 					Category.Environment.AIRBORNE, Category.Type.MPA);

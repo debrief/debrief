@@ -1,5 +1,6 @@
 package ASSET.Models.Decision.Tactical;
 
+import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
@@ -444,7 +445,7 @@ public class SSKRecharge extends CoreDecision implements java.io.Serializable
       // check we recharge with friendly contacts
       final DetectionList dl = new DetectionList();
       final ASSET.Models.Sensor.Initial.OpticSensor optic = new ASSET.Models.Sensor.Initial.OpticSensor(12);
-      final CoreParticipant cp = new CoreParticipant(12);
+      final ParticipantType cp = new CoreParticipant(12);
       final DetectionEvent dEvent = new DetectionEvent(0,
                                                        cp.getId(), null,
                                                        optic,

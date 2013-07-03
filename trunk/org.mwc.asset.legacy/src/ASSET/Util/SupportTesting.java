@@ -8,6 +8,7 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Scenario.Observers.TrackPlotObserver;
+import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
@@ -156,7 +157,7 @@ public class SupportTesting extends junit.framework.TestCase
    * @param part participant we're looking at
    */
   protected void recordThis(Status stat,
-                            CoreParticipant part, long newTime)
+                            ParticipantType part, long newTime)
   {
     if (_tpo != null)
       _tpo.processTheseDetails(stat.getLocation(), stat, part);
@@ -219,7 +220,7 @@ public class SupportTesting extends junit.framework.TestCase
     {
       for (Iterator<CoreParticipant> iterator = _listeningList.keySet().iterator(); iterator.hasNext();)
       {
-        CoreParticipant coreParticipant = (CoreParticipant) iterator.next();
+        ParticipantType coreParticipant = (ParticipantType) iterator.next();
         ParticipantMovedListener pml = (ParticipantMovedListener) _listeningList.get(coreParticipant);
         coreParticipant.removeParticipantMovedListener(pml);
       }

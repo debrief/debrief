@@ -203,4 +203,17 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
    */
 	public  boolean getPaintDecisions();
 
+	/** whether this participant is alive yet
+	 * 
+	 * @return
+	 */
+	public abstract boolean isAlive();
+	
+	/** whether this participant is alive yet
+	 * 
+	 * @return
+	 */
+	public abstract void setAlive(boolean val);
+
+
 }

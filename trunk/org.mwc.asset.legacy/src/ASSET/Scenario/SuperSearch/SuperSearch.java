@@ -222,7 +222,7 @@ public class SuperSearch {
                                             final XMLVarianceList xl)
   {
 
-    ASSET.Participants.CoreParticipant result = null;
+    ParticipantType result = null;
 
 //    // create a new instance of the file
 //    final String file = xl.getNewRandomisedPermutation();

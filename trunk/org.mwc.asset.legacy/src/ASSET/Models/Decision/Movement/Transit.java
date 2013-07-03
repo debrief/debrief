@@ -78,6 +78,7 @@ package ASSET.Models.Decision.Movement;
  *
  */
 
+import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Vessels.SSN;
@@ -974,7 +975,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
       wp.addPoint(third);
       Transit tr = new Transit(wp, new WorldSpeed(12, WorldSpeed.M_sec), false);
 
-      CoreParticipant cp = new SSN(12);
+      ParticipantType cp = new SSN(12);
       final String myName = "SSK Trial";
       final double accelRate = 2;
       final double decelRate = 2;
@@ -1031,7 +1032,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
       Transit tr = new Transit(wp, new WorldSpeed(12, WorldSpeed.M_sec), true);
       tr.setName("Transit");
 
-      CoreParticipant cp = new SSN(12);
+      ParticipantType cp = new SSN(12);
       final String myName = "SSK Trial";
       final double accelRate = 2;
       final double decelRate = 2;
@@ -1129,7 +1130,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
       tr.setReverse(false);
       tr.setName("Transit");
 
-      CoreParticipant cp = new SSN(12);
+      ParticipantType cp = new SSN(12);
       final String myName = "SSK Trial";
       final double accelRate = 2;
       final double decelRate = 2;

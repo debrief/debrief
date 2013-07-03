@@ -1,9 +1,9 @@
 package ASSET.Models.Movement;
 
+import ASSET.ParticipantType;
 import ASSET.Models.Decision.Movement.TransitWaypoint;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Participants.Category;
-import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
@@ -972,9 +972,9 @@ public class OnTopWaypoint extends WaypointVisitor
 //  }
 
 
-  public static CoreParticipant createTestHelo()
+  public static ParticipantType createTestHelo()
   {
-    CoreParticipant res = new Helo(122);
+    ParticipantType res = new Helo(122);
     res.setName("test_helo");
     res.setCategory(new Category(Category.Force.BLUE, Category.Environment.AIRBORNE, Category.Type.HELO));
     return res;

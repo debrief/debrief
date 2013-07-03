@@ -141,10 +141,12 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	 * 
 	 * @param listener
 	 */
-	public void addParticipantDetectedListener(ParticipantDetectedListener listener)
+	public void addParticipantDetectedListener(
+			ParticipantDetectedListener listener)
 	{
 		if (_participantDetectedListeners == null)
-			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(1, 2);
+			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(
+					1, 2);
 
 		_participantDetectedListeners.add(listener);
 	}
@@ -154,7 +156,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	 * 
 	 * @param listener
 	 */
-	public void removeParticipantDetectedListener(ParticipantDetectedListener listener)
+	public void removeParticipantDetectedListener(
+			ParticipantDetectedListener listener)
 	{
 		_participantDetectedListeners.remove(listener);
 	}
@@ -193,9 +196,11 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	 * @param scenario
 	 * @param time
 	 */
-	final public void detects(final ASSET.Models.Environment.EnvironmentType environment,
-			final DetectionList existingDetections, final ASSET.ParticipantType ownship,
-			final ASSET.ScenarioType scenario, final long time)
+	final public void detects(
+			final ASSET.Models.Environment.EnvironmentType environment,
+			final DetectionList existingDetections,
+			final ASSET.ParticipantType ownship, final ASSET.ScenarioType scenario,
+			final long time)
 	{
 
 		// ok, see if the current time fits in between our _TBDO
@@ -217,37 +222,46 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 				_newDetections.removeAllElements();
 
 				// step through the participants in the scenario
-				final Collection<ParticipantType> parts = scenario.getListOfVisibleParticipants();
+				final Collection<ParticipantType> parts = scenario
+						.getListOfVisibleParticipants();
 
-				for (Iterator<ParticipantType> iterator = parts.iterator(); iterator.hasNext();)
+				for (Iterator<ParticipantType> iterator = parts.iterator(); iterator
+						.hasNext();)
 				{
 					ParticipantType target = (ParticipantType) iterator.next();
 
-					// is this us?
-					if (target != ownship)
+					// is this target alive in the scenario yet?
+					if (target.isAlive())
 					{
-						// can we detect it?
-						boolean canDetectHim = canDetectThisType(ownship, target, environment);
-
-						if (canDetectHim)
+						// yes
+						// is this us?
+						if (target != ownship)
 						{
+							// can we detect it?
+							boolean canDetectHim = canDetectThisType(ownship, target,
+									environment);
 
-							final DetectionEvent thisD = detectThis(environment, ownship, target, time,
-									scenario);
-
-							if (thisD != null)
+							if (canDetectHim)
 							{
-								// add to our current list of detections
-								existingDetections.add(thisD);
 
-								// and add to our historic list of detections
-								_pastDetections.add(thisD);
+								final DetectionEvent thisD = detectThis(environment, ownship,
+										target, time, scenario);
 
-								// and remember for our new list
-								_newDetections.add(thisD);
-							} // whether we made a detection
-						} // whether we should even try to detect a participant of this type
-					} // of this is not us
+								if (thisD != null)
+								{
+									// add to our current list of detections
+									existingDetections.add(thisD);
+
+									// and add to our historic list of detections
+									_pastDetections.add(thisD);
+
+									// and remember for our new list
+									_newDetections.add(thisD);
+								} // whether we made a detection
+							} // whether we should even try to detect a participant of this
+								// type
+						} // of this is not us
+					}// if it's alive
 				} // if index was valid
 
 				// ok, we've performed all of our detections
@@ -369,7 +383,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 			final ASSET.ParticipantType host, final ASSET.ParticipantType target,
 			final long time, ScenarioType scenario);
 
-	public void addSensorCalculationListener(java.beans.PropertyChangeListener listener)
+	public void addSensorCalculationListener(
+			java.beans.PropertyChangeListener listener)
 	{
 		if (_pSupport == null)
 			_pSupport = new java.beans.PropertyChangeSupport(this);
@@ -378,7 +393,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 		_pSupport.addPropertyChangeListener(DETECTION_CYCLE_COMPLETE, listener);
 	}
 
-	public void removeSensorCalculationListener(java.beans.PropertyChangeListener listener)
+	public void removeSensorCalculationListener(
+			java.beans.PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(SENSOR_COMPONENT_EVENT, listener);
 		_pSupport.removePropertyChangeListener(DETECTION_CYCLE_COMPLETE, listener);
@@ -447,8 +463,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 			// and update the editor
 			if (_myEditor != null)
 			{
-				_myEditor.fireChanged(this, "Working", new Boolean(!isWorking), new Boolean(
-						isWorking));
+				_myEditor.fireChanged(this, "Working", new Boolean(!isWorking),
+						new Boolean(isWorking));
 			}
 		}
 	}
@@ -533,7 +549,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	 */
 	protected double relativeBearing(final double course, final double bearing)
 	{
-	  return bearing - course;
+		return bearing - course;
 	}
 
 	// //////////////////////////////////////////////////
@@ -556,7 +572,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 		 */
 		public BaseSensorInfo(final SensorType data, boolean firesReports)
 		{
-			super(data, data.getName(), "Edit", "images/icons/Sensor.gif", firesReports);
+			super(data, data.getName(), "Edit", "images/icons/Sensor.gif",
+					firesReports);
 		}
 
 		/**
@@ -568,8 +585,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res = {
-						prop("Name", "the name of this optic sensor"),
+				final java.beans.PropertyDescriptor[] res =
+				{ prop("Name", "the name of this optic sensor"),
 						prop("Working", "whether this sensor is in use"), };
 				return res;
 			}
@@ -586,7 +603,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 			MethodDescriptor[] res = null;
 			if (_watchMethod != null)
 			{
-				final MethodDescriptor[] mds = { method(c, "watchMe", null, "Monitor this sensor"), };
+				final MethodDescriptor[] mds =
+				{ method(c, "watchMe", null, "Monitor this sensor"), };
 				res = mds;
 			}
 			return res;

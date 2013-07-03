@@ -87,6 +87,7 @@ package ASSET.Models.Decision.Tactical;
  *
  */
 
+import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.Movement.TransitWaypoint;
 import ASSET.Models.Detection.DetectionList;
@@ -734,7 +735,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
                                                               minHeight, myTurnRate,
                                                               defaultClimbSpeed, defaultDiveSpeed);
 
-      final CoreParticipant cp = new Helo(12);
+      final ParticipantType cp = new Helo(12);
       cp.setName("h_alpha");
       cp.setCategory(new Category(Category.Force.BLUE, Category.Environment.AIRBORNE, Category.Type.HELO));
       cp.setDecisionModel(ess);
@@ -801,7 +802,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
                                                             defaultDiveRate, maxDepth,
                                                             minDepth);
 
-      final CoreParticipant cp = new Helo(12);
+      final ParticipantType cp = new Helo(12);
       cp.setName("h_delta");
       cp.setCategory(new Category(Category.Force.RED, Category.Environment.AIRBORNE, Category.Type.HELO));
       cp.setDecisionModel(ess);

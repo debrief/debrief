@@ -141,6 +141,13 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 					handler.addModel(dec);
 				}
 			});
+			list.addHandler(new DeferredBirthHandler()
+			{
+				public void setModel(final ASSET.Models.DecisionType dec)
+				{
+					handler.addModel(dec);
+				}
+			});
 			list.addHandler(new TrailHandler()
 			{
 				public void setModel(final ASSET.Models.DecisionType dec)
@@ -354,6 +361,8 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 			TransitHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof Wait)
 			WaitHandler.exportThis(dec, thisPart, doc);
+		else if (dec instanceof DeferredBirth)
+			DeferredBirthHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof MarkDip)
 			MarkDipHandler.exportThis(dec, thisPart, doc);
 		else if (dec instanceof Investigate)
