@@ -60,6 +60,9 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		parameters.setTopRoutes(10);
 		parameters.setTimeoutBetweenIterations(0);
 		parameters.setTimeout(30000);
+		parameters.setRecalculatePointsProbs(10);
+		parameters.setCheckReachability(25);
+		parameters.setExtendBestPoints(33);
 	}
 	
 	public GAParameters getParameters()
@@ -302,16 +305,17 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			return applyIterationChanges(result, rng);
 		}	
 		
-		private List<EvaluatedCandidate<List<Point>>> applyIterationChanges(List<EvaluatedCandidate<List<Point>>> population, Random rng) 
+		private List<EvaluatedCandidate<List<Point>>> applyIterationChanges(final List<EvaluatedCandidate<List<Point>>> population, Random rng) 
 		{
-			if (iterations % 10 == 0) 
+			List<EvaluatedCandidate<List<Point>>> result = population;
+			if (iterations % parameters.getRecalculatePointsProbs() == 0) 
 			{				
 				for (LegOperations leg : legs)
 				{
 					leg.recalculateProbabilities(10);
 				}
 			}
-			if (iterations % 25 == 0) 
+			if (iterations % parameters.getCheckReachability() == 0) 
 			{
 				boolean regeneratePopulation = false;
 				for (ListIterator<LegOperations> it = legs.listIterator(); it.hasNext(); ) 
@@ -328,10 +332,34 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				if (regeneratePopulation) 
 				{
 					List<List<Point>> newPopulation = candidateFactory.generateInitialPopulation(parameters.getPopulationSize(), rng);
-					population = evaluatePopulation(newPopulation);
+					result = evaluatePopulation(newPopulation);
 				}
 			}
-			return population;
+			if (iterations % parameters.getExtendBestPoints() == 0 && population == result)
+			{				
+				for (LegOperations leg : legs)
+				{
+					if (leg.getLeg().getType() == LegType.STRAIGHT) 
+					{
+						leg.extendBestPoints(3, true);
+					}
+				}
+				int third = result.size() / 3;				
+				List<EvaluatedCandidate<List<Point>>> newPopulation = new ArrayList<EvaluatedCandidate<List<Point>>>();
+				newPopulation.addAll(result.subList(0, 2 * third));
+				List<List<Point>> randoms = new ArrayList<List<Point>>(third);
+				for (int i = 0; i < third; i++)
+				{
+					randoms.add(candidateFactory.generateRandomCandidate(rng));
+				}				
+				newPopulation.addAll(evaluatePopulation(randoms));
+				result = newPopulation;
+				for (LegOperations leg : legs) 
+				{
+					leg.useAllPoints();
+				}
+			}
+			return result;
 		}
 	}
 }

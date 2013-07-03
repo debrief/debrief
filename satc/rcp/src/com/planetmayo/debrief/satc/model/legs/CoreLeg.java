@@ -101,6 +101,22 @@ public abstract class CoreLeg
 		return Collections.unmodifiableList(endPoints);
 	}
 	
+	public void addStartPoints(List<Point> points)
+	{
+		if (startPoints != null)
+		{
+			startPoints.addAll(points);
+		}
+	}
+	
+	public void addEndPoints(List<Point> points)
+	{
+		if (endPoints != null)
+		{
+			endPoints.addAll(points);
+		}
+	}
+	
 	/**
 	 * produce the set of constituent routes for this leg
 	 * 
