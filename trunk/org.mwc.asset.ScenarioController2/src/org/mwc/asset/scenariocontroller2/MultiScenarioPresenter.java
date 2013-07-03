@@ -423,6 +423,11 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 				CorePlugin.logError(Status.ERROR, "failed whilst loading control file",
 						e);
 			}
+			catch (RuntimeException e)
+			{
+				CorePlugin.logError(Status.ERROR, "failed whilst loading control file",
+						e);
+			}
 
 			Vector<ScenarioObserver> theObservers = _scenarioController.observerList;
 
