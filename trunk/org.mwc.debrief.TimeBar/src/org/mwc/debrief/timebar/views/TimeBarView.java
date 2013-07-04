@@ -2,10 +2,6 @@ package org.mwc.debrief.timebar.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
@@ -17,7 +13,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -56,10 +51,6 @@ public class TimeBarView extends ViewPart {
 	private Layers.DataListener _myLayersListener;
 
 	private ISelectionChangedListener _selectionChangeListener;
-	
-	private static Set<Layer> _pendingLayers = new TreeSet<Layer>();
-	
-	private static boolean _alreadyDeferring = false;
 	
 	
 	/**
@@ -154,8 +145,7 @@ public class TimeBarView extends ViewPart {
 			{
 
 				public void dataModified(Layers theData, Layer changedLayer)
-				{
-					System.out.println(changedLayer);
+				{						
 				}
 
 				public void dataExtended(Layers theData)
@@ -165,7 +155,7 @@ public class TimeBarView extends ViewPart {
 
 				public void dataReformatted(Layers theData, Layer changedLayer)
 				{
-					handleReformattedLayer(changedLayer);
+					processReformattedLayer(theData, changedLayer);
 				}
 
 				public void dataExtended(Layers theData, Plottable newItem,
@@ -183,74 +173,13 @@ public class TimeBarView extends ViewPart {
 
 		// do an initial population.
 		processNewData(_myLayers, null, null);		
-	}
+	}	
 	
+	void processReformattedLayer(Layers theData, Layer changedLayer)
+	{
+		_viewer.drawDiagram(theData);
+	}
 		
-	protected void handleReformattedLayer(Layer changedLayer)
-	{
-		// right - store this layer (if we have one)
-		if (changedLayer != null)
-			_pendingLayers.add(changedLayer);
-
-		if (_alreadyDeferring)
-		{
-			// hey - already processing - add this layer to the pending ones
-		}
-		else
-		{
-			_alreadyDeferring = true;
-
-			// right. we're not already doing some processing
-			Display dis = Display.getDefault();
-			dis.asyncExec(new Runnable()
-			{
-				public void run()
-				{
-					processReformattedLayers();
-				}
-			});
-		}
-	}
-	
-	protected void processReformattedLayers()
-	{
-
-		try
-		{
-			// right, we'll be building up a list of objects to refresh (all of the
-			// objects in the indicated layer)
-			Vector<Object> newList = new Vector<Object>(0, 1);
-			Widget changed = null;
-
-			if (_pendingLayers.size() > 0)
-			{
-				for (Iterator<Layer> iter = _pendingLayers.iterator(); iter.hasNext();)
-				{
-					Layer changedLayer = (Layer) iter.next();
-
-					//TODO: implement changing the layer
-					_viewer.drawDiagram(_myLayers);
-				}
-			}
-			else
-			{
-				// hey, all of the layers need updating.
-				// better get on with it.
-				_viewer.drawDiagram(_myLayers);
-			}
-		}
-		catch (Exception e)
-		{
-
-		}
-		finally
-		{
-			_alreadyDeferring = false;
-			_pendingLayers.clear();
-		}
-	}
-
-	
 	void processNewData(final Layers theData, final Editable newItem,
 			final Layer parentLayer)
 	{
@@ -259,7 +188,7 @@ public class TimeBarView extends ViewPart {
 				public void run()
 				{
 					// ok, fire the change in the UI thread
-					_viewer.drawDiagram(theData);
+					_viewer.drawDiagram(theData, true /* jump to begin */);
 					// hmm, do we know about the new item? If so, better select it
 					if (newItem != null)
 					{

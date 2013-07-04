@@ -90,9 +90,8 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
      *  to display them as point markers. 
      * @param theLayers - Debrief data.
      */
-    public void drawDiagram(final Layers theLayers)
+    public void drawDiagram(final Layers theLayers, boolean jumpToBegin)
     {   
-    	//TODO: not clear the lists but see what changed?
     	_timeBars.clear();
     	_timeSpots.clear();
     	
@@ -104,8 +103,13 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	for(IEventEntry spotEvent: _timeSpots)
     		_painter.drawSpot(spotEvent);
     	// move chart start date to the earliest event
-    	//TODO: move to the layer that has been changed; to the earliest event otherwise;
-    	_painter.jumpToBegin();
+    	if (jumpToBegin)
+    		_painter.jumpToBegin();
+    }
+    
+    public void drawDiagram(final Layers theLayers)
+    {
+    	this.drawDiagram(theLayers, false);
     }
     
     private void walkThrough(Object root)
