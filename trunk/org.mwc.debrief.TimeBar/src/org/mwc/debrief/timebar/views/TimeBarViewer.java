@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
+import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.timebar.model.IEventEntry;
@@ -29,6 +31,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
@@ -211,8 +214,12 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 	@Override
 	public void chartDoubleClicked(Date clickedAt) 
 	{
-		// TODO Auto-generated method stub
-		System.out.println(clickedAt);
+		HiResDate newDTG = new HiResDate(clickedAt);
+		IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
+		if (part != null)
+		{
+			((TimeController) part).fireNewTime(newDTG);
+		}
 	}
 
 

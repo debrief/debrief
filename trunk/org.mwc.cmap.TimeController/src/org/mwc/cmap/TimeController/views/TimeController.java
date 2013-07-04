@@ -925,7 +925,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	protected LayerPainterManager _layerPainterManager;
 
-	void fireNewTime(HiResDate dtg)
+	public void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
 		{
