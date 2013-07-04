@@ -1003,6 +1003,13 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="isAlive" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Whether this participant should be 'alive' at the start of the scenario.  Used 
+					in conjunction with DeferredBirth
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="MonteCarloTarget" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>Flag to indicate that this participant should be

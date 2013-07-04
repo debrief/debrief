@@ -20,6 +20,7 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
   public static final String NAME = "Name";
   public static final String PAINT_DECISIONS = "PaintDecisions";
   public static final String MONTE_CARLO_TARGET = "MonteCarloTarget";
+  public static final String IS_ALIVE = "isAlive";
 
   String _myName;
   boolean _isMonteCarlo = false;
@@ -32,6 +33,7 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
   ASSET.Models.DecisionType _myDecisionModel;
   ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _myRads;
   ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _mySelfNoise;
+  boolean _isAlive = true;
 
   // MOVEMENT CHARACTERISTICS - retrieved by child classes
   protected ASSET.Models.Movement.MovementCharacteristics _myMoveChars;
@@ -63,6 +65,14 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
       public void setValue(String name, final boolean val)
       {
         _isMonteCarlo = val;
+      }
+    });
+
+    super.addAttributeHandler(new HandleBooleanAttribute(IS_ALIVE)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _isAlive = val;
       }
     });
 
@@ -184,6 +194,8 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
     thisPart.setRadiatedChars(_myRads);
     thisPart.setSelfNoise(_mySelfNoise);
     
+    thisPart.setAlive(_isAlive);
+    
     if(_paintDecisions != null)
     	thisPart.setPaintDecisions(_paintDecisions);
     
@@ -198,6 +210,7 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
 
     // clear local vars
     _myId = ASSET.ScenarioType.INVALID_ID;
+    _isAlive = true;
     _paintDecisions = null;
     _isMonteCarlo = false;
     _myName = null;
