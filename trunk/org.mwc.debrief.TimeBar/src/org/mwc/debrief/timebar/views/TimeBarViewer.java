@@ -1,6 +1,7 @@
 package org.mwc.debrief.timebar.views;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -12,11 +13,14 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IPageLayout;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.timebar.model.IEventEntry;
 import org.mwc.debrief.timebar.model.TimeBar;
 import org.mwc.debrief.timebar.model.TimeSpot;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
+import org.mwc.debrief.timebar.painter.ITimeBarsPainterListener;
 import org.mwc.debrief.timebar.painter.NebulaGanttPainter;
 
 import Debrief.Wrappers.TacticalDataWrapper;
@@ -28,9 +32,9 @@ import MWC.GUI.Layers;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
-//import Debrief.Wrappers.Track.TrackSegment;
 
-public class TimeBarViewer implements ISelectionProvider {
+
+public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListener {
 	
 	/**
 	 * the people listening to us
@@ -54,7 +58,8 @@ public class TimeBarViewer implements ISelectionProvider {
     public TimeBarViewer(Composite parent, final Layers theLayers)
     {
     	_myLayers = theLayers;
-    	_painter = new NebulaGanttPainter(parent, this);    	
+    	_painter = new NebulaGanttPainter(parent);    
+    	_painter.addListener(this);
     }
     
     
@@ -200,6 +205,29 @@ public class TimeBarViewer implements ISelectionProvider {
 		EditableWrapper element = (EditableWrapper) o;
 		Editable selectedItem = element.getEditable();
 		_painter.selectTimeBar(selectedItem);		
+	}
+
+
+	@Override
+	public void chartDoubleClicked(Date clickedAt) 
+	{
+		// TODO Auto-generated method stub
+		System.out.println(clickedAt);
+	}
+
+
+	@Override
+	public void eventDoubleClicked(Object eventEntry) 
+	{
+		CorePlugin.openView(CorePlugin.LAYER_MANAGER);
+		CorePlugin.openView(IPageLayout.ID_PROP_SHEET);		
+	}
+
+
+	@Override
+	public void eventSelected(Object eventEntry) 
+	{
+		setSelectionToObject(eventEntry);		
 	}
 	
 }

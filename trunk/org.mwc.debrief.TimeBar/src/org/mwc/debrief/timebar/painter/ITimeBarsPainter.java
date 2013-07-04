@@ -38,4 +38,8 @@ public interface ITimeBarsPainter
 	public void zoomIn();
 	
 	public void zoomOut();
+	
+	public void addListener(ITimeBarsPainterListener listener);
+	
+	public void removeListener(ITimeBarsPainterListener listener);
 }

@@ -1,10 +1,13 @@
 package org.mwc.debrief.timebar.painter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
@@ -13,12 +16,10 @@ import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IPageLayout;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.timebar.model.IEventEntry;
-import org.mwc.debrief.timebar.views.TimeBarViewer;
 
 import MWC.GUI.Editable;
 
@@ -27,13 +28,28 @@ import MWC.GUI.Editable;
 public class NebulaGanttPainter implements ITimeBarsPainter 
 {
 	GanttChart _chart;
-	TimeBarViewer _viewer;
 	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();	
+	List<ITimeBarsPainterListener> _listeners = new ArrayList<ITimeBarsPainterListener>();
 	
-	public NebulaGanttPainter(Composite parent, final TimeBarViewer viewer)
+	public NebulaGanttPainter(Composite parent)
 	{
-		_viewer = viewer;
 		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());
+		
+		_chart.getGanttComposite().addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseUp(MouseEvent e) {}
+			
+			@Override
+			public void mouseDown(MouseEvent e) {}
+			
+			@Override
+			public void mouseDoubleClick(MouseEvent e) 
+			{
+				Date clickedAt = _chart.getGanttComposite().getDateAt(e.x).getTime();
+				chartDoubleClicked(clickedAt);				
+			}
+		});
 		
 		_chart.addGanttEventListener(new GanttEventListenerAdapter()
     	{
@@ -43,22 +59,18 @@ public class NebulaGanttPainter implements ITimeBarsPainter
     				MouseEvent me) 
     		{
     			super.eventSelected(event, allSelectedEvents, me);
-    			for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
-    			{
-	    			if (entry.getKey().equals(event))
-					{
-						_viewer.setSelectionToObject(entry.getValue().getSource());
-						return;
-					}
-    			}				
+    			IEventEntry eventEntry = findEventEntry(event);
+    			if (eventEntry != null)
+    				eventIsSelected(eventEntry.getSource());
     		}  
     		
     		@Override
     		public void eventDoubleClicked(GanttEvent event, MouseEvent me) 
-    		{
+    		{    			
     			super.eventDoubleClicked(event, me);
-    			CorePlugin.openView(CorePlugin.LAYER_MANAGER);
-				CorePlugin.openView(IPageLayout.ID_PROP_SHEET);	
+    			IEventEntry eventEntry = findEventEntry(event);
+    			if (eventEntry != null)
+    				eventIsDoubleClicked(eventEntry.getSource());	
     		}
     	});
 	
@@ -150,7 +162,65 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	    gc.drawLine(curX, 0, curX, _chart.getBounds().height);
 	    gc.dispose();    
 	   
+	}
+
+	@Override
+	public void addListener(ITimeBarsPainterListener listener) 
+	{
+		if (!_listeners.contains(listener))		
+			_listeners.add(listener);		
+	}
+
+	@Override
+	public void removeListener(ITimeBarsPainterListener listener) 
+	{
+		_listeners.remove(listener);		
 	}	
+	
+	public void chartDoubleClicked(final Date clickedAt)
+	{
+		for (final ITimeBarsPainterListener l: _listeners) {
+            SafeRunner.run(new SafeRunnable() {
+                public void run() {
+                    l.chartDoubleClicked(clickedAt);
+                }
+            });
+		}
+	}
+	
+	public void eventIsDoubleClicked(final Object eventEntry)
+	{
+		for (final ITimeBarsPainterListener l: _listeners) {
+            SafeRunner.run(new SafeRunnable() {
+                public void run() {
+                    l.eventDoubleClicked(eventEntry);
+                }
+            });
+		}
+	}
+	
+	public void eventIsSelected(final Object eventEntry)
+	{
+		for (final ITimeBarsPainterListener l: _listeners) {
+            SafeRunner.run(new SafeRunnable() {
+                public void run() {
+                    l.eventSelected(eventEntry);
+                }
+            });
+		}
+	}
+	
+	private IEventEntry findEventEntry(GanttEvent event)
+	{
+		for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
+		{
+			if (entry.getKey().equals(event))
+			{
+				return entry.getValue();
+			}
+		}
+		return null;
+	}
 
 }
 
@@ -158,7 +228,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 
 class GanttChartSettings extends DefaultSettings
 {
-	
+	//TODO: tweak tooltips
 	@Override
 	public boolean allowArrowKeysToScrollChart() 
 	{
