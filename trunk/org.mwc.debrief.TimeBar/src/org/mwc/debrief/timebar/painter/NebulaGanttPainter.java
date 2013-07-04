@@ -1,6 +1,7 @@
 package org.mwc.debrief.timebar.painter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	GanttChart _chart;
 	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();	
 	List<ITimeBarsPainterListener> _listeners = new ArrayList<ITimeBarsPainterListener>();
+	GanttEvent _earliestEvent = null;
+	GanttEvent _latestEvent = null;
 	
 	public NebulaGanttPainter(Composite parent)
 	{
@@ -46,7 +49,19 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 			@Override
 			public void mouseDoubleClick(MouseEvent e) 
 			{
+				//TODO: do not do anything if an event was double-clicked
 				Date clickedAt = _chart.getGanttComposite().getDateAt(e.x).getTime();
+				if (_earliestEvent.getStartDate().getTime().compareTo(clickedAt) > 0)
+				{
+					// it is too early
+					return;
+				}
+				if (_latestEvent.getEndDate().getTime().compareTo(clickedAt) < 0)
+				{
+					//it is too late
+					return;
+				}
+					
 				chartDoubleClicked(clickedAt);				
 			}
 		});
@@ -66,7 +81,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
     		
     		@Override
     		public void eventDoubleClicked(GanttEvent event, MouseEvent me) 
-    		{    			
+    		{    		
     			super.eventDoubleClicked(event, me);
     			IEventEntry eventEntry = findEventEntry(event);
     			if (eventEntry != null)
@@ -83,7 +98,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
-		_eventEntries.put(evt, modelEntry);		
+		addEvent(evt, modelEntry);		
 	}
 
 	@Override
@@ -92,7 +107,34 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 		GanttEvent evt = new GanttCheckpoint(_chart, modelEntry.getName(), modelEntry.getStart());	
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
+		addEvent(evt, modelEntry);
+	}
+	
+	private void addEvent(GanttEvent evt, IEventEntry modelEntry)
+	{
 		_eventEntries.put(evt, modelEntry);
+		if (_earliestEvent == null)
+		{
+			_earliestEvent = evt;
+		}
+		else
+		{
+			if (evt.getStartDate().compareTo(_earliestEvent.getStartDate()) < 0)
+			{
+				_earliestEvent = evt;
+			}
+		}
+		if(_latestEvent == null)
+		{
+			_latestEvent = evt;
+		}
+		else
+		{
+			if (evt.getEndDate().compareTo(_latestEvent.getEndDate()) > 0)
+			{
+				_latestEvent = evt;
+			}
+		}
 	}
 
 	@Override
@@ -221,6 +263,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 		}
 		return null;
 	}
+	
+	
 
 }
 
@@ -228,7 +272,6 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 
 class GanttChartSettings extends DefaultSettings
 {
-	//TODO: tweak tooltips
 	@Override
 	public boolean allowArrowKeysToScrollChart() 
 	{
@@ -264,4 +307,11 @@ class GanttChartSettings extends DefaultSettings
 	{
 		return "#name#";
 	}
+	
+	@Override
+	public String getDefaultAdvancedTooltipText() 
+	{
+		return "";
+	}
+	
 }	
