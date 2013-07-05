@@ -5,6 +5,7 @@ import java.util.Calendar;
 
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
 
+import MWC.GUI.Plottable;
 import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
 
@@ -61,6 +62,16 @@ public class TimeSpot implements IEventEntry
 		if(_color != null)
 			return ColorUtils.convertAWTtoSWTColor(_color);
 		return null;
+	}
+	
+	@Override
+	public boolean isVisible() 
+	{
+		if (getSource() instanceof Plottable)
+		{
+			return ((Plottable) getSource()).getVisible();			
+		}
+		return true;
 	}
 
 }

@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Color;
 
 public interface IEventEntry 
 {
+	public boolean isVisible();
 	
 	public Object getSource();
 	

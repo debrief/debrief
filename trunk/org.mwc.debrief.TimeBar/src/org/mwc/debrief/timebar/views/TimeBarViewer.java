@@ -31,6 +31,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -123,17 +124,24 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	
     	while(numer.hasMoreElements())  
     	{
-    		Editable next = numer.nextElement();
+    		Editable next = numer.nextElement();  
+    		if (next instanceof PlainWrapper)
+    		{
+				((PlainWrapper) next).addPropertyChangeListener(
+						PlainWrapper.VISIBILITY_CHANGED, _painter);
+			}
+    		
     		if (next instanceof WatchableList)
 	    	{
 	    		_timeBars.add(new TimeBar((WatchableList) next));	    		
 	    	}
 	    	else if (next instanceof Watchable)
 	    	{
+	    		
 	    		_timeSpots.add(new TimeSpot((Watchable) next));
 	    	}
 	    	if (next instanceof TrackWrapper)
-	    	{	    		
+	    	{		    		
 	    		BaseLayer sensors = ((TrackWrapper) next).getSensors();
 	    		traverseTrackData(sensors);
 	    		BaseLayer solutions = ((TrackWrapper) next).getSolutions();

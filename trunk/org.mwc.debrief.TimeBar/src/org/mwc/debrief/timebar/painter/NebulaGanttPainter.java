@@ -1,5 +1,7 @@
 package org.mwc.debrief.timebar.painter;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,10 +25,11 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.timebar.model.IEventEntry;
 
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 
 
 
-public class NebulaGanttPainter implements ITimeBarsPainter 
+public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListener
 {
 	GanttChart _chart;
 	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();	
@@ -37,6 +40,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	public NebulaGanttPainter(Composite parent)
 	{
 		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());
+		
+		
 		
 		_chart.getGanttComposite().addMouseListener(new MouseListener() {
 			
@@ -94,6 +99,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	@Override
 	public void drawBar(IEventEntry modelEntry) 
 	{
+		if (!modelEntry.isVisible())
+			return;
+			
 		GanttEvent evt = new GanttEvent(_chart, modelEntry.getName(), 
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
 		if (modelEntry.getColor() !=null)
@@ -104,6 +112,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	@Override
 	public void drawSpot(IEventEntry modelEntry) 
 	{		
+		if (!modelEntry.isVisible())
+			return;
+		
 		GanttEvent evt = new GanttCheckpoint(_chart, modelEntry.getName(), modelEntry.getStart());	
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
@@ -280,6 +291,35 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 		return null;
 	}
 	
+	private GanttEvent findGanttEvent(Object source)
+	{
+		for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
+		{
+			if (entry.getValue().getSource().equals(source))
+			{
+				return entry.getKey();
+			}
+		}
+		return null;
+	}
+	
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) 
+	{		
+		GanttEvent event = findGanttEvent(evt.getSource());
+		if (event != null)
+		{
+			if (new Boolean(true).equals(evt.getNewValue()))
+			{
+				_chart.getGanttComposite().addEvent(event);
+			}
+			else
+			{
+				_chart.getGanttComposite().removeEvent(event);				
+			}
+		}		
+	}	
 	
 
 }
@@ -327,7 +367,7 @@ class GanttChartSettings extends DefaultSettings
 	@Override
 	public String getDefaultAdvancedTooltipText() 
 	{
-		return "";
+		return "hi";
 	}
 	
 }	

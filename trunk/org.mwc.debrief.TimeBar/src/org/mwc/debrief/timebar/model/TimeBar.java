@@ -5,6 +5,7 @@ import java.util.Calendar;
 
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
@@ -88,5 +89,15 @@ public class TimeBar implements IEventEntry
 		if(_color != null)
 			return ColorUtils.convertAWTtoSWTColor(_color);
 		return null;
+	}
+
+	@Override
+	public boolean isVisible() 
+	{
+		if (getSource() instanceof Plottable)
+		{
+			return ((Plottable) getSource()).getVisible();			
+		}
+		return true;
 	}
 }
