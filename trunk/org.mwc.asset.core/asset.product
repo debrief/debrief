@@ -16,7 +16,7 @@
    <launcherArgs>
       <programArgs>-data
 @user.home/.AssetNG</programArgs>
-      <vmArgs>-Xms128m -Xmx1025m   -XX:MaxPermSize=512m  -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled</vmArgs>
+      <vmArgs>-Xms128m -Xmx2000m   -XX:MaxPermSize=512m  -XX:+CMSClassUnloadingEnabled</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.asset.core/icons/components.gif"/>
@@ -98,8 +98,8 @@
 
    <features>
       <feature id="org.mwc.asset.core.feature" version="1.0.40"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.190"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.244"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.196"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.252"/>
    </features>
 
 

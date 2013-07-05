@@ -279,14 +279,6 @@
          install-size="0"
          version="0.0.0"/>
 
-   <!--
-   <plugin
-         id="org.junit4"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-   -->
-   
    <plugin
          id="org.junit"
          download-size="0"
@@ -470,6 +462,20 @@
 
    <plugin
          id="org.eclipse.wst.common.snippets"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.el"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.common.uriresolver"
          download-size="0"
          install-size="0"
          version="0.0.0"

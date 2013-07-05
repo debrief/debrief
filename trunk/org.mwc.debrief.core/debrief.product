@@ -16,7 +16,7 @@
 --launcher.defaultAction
 openFile</programArgs>
       <vmArgs>-Xms128m
--Xmx1024m</vmArgs>
+-Xmx2000m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
