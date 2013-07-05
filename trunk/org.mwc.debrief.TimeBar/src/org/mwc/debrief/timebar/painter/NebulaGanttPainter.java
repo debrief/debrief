@@ -1,7 +1,6 @@
 package org.mwc.debrief.timebar.painter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.timebar.model.IEventEntry;
 
 import MWC.GUI.Editable;
@@ -184,26 +184,41 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	@Override
 	public void drawDebriefTime(Date oldTime, Date currTime) 
 	{
-		GanttComposite parent = _chart.getGanttComposite();
+		final GanttComposite parent = _chart.getGanttComposite();
 		
-		int curX = parent.getXForDate(currTime);
+		final int curX = parent.getXForDate(currTime);
 	    if (curX == -1) 
-	    	return; 
-	    
-	    int oldX = parent.getXForDate(oldTime);
-	    if (oldX != curX)
-	    {
-	    	//TODO: redraw marker trace
-	    	//parent.redraw(oldX, 0, oldX, _chart.getBounds().height, false);	
-	    }
+	    	return;     
 	
+	    eraseDebriefTime(oldTime);
+	    
 	    GC gc = new GC(parent);
-	    gc.setLineStyle(SWT.LINE_SOLID);
-	    gc.setLineWidth(2);
-	    gc.setForeground(ITimeBarsPainter.TIME_LINE_COLOR);
-	    gc.drawLine(curX, 0, curX, _chart.getBounds().height);
-	    gc.dispose();    
+		gc.setLineStyle(ITimeBarsPainter.TIME_LINE_STYLE);
+		gc.setLineWidth(ITimeBarsPainter.TIME_LINE_WIDTH);
+		gc.setForeground(ITimeBarsPainter.TIME_LINE_COLOR);
+		    
+		gc.drawRectangle(curX, 0, 1, 
+		    		parent.getClientArea().height);
+		gc.dispose();    
 	   
+	}
+	
+	private void eraseDebriefTime(Date timeVal)
+	{
+		if (timeVal == null)
+			return;
+		
+		final GanttComposite parent = _chart.getGanttComposite();
+		final int oldX = parent.getXForDate(timeVal);	   
+	    
+	    Display.getDefault().syncExec(new Runnable()
+		{
+			public void run()
+			{				 	
+				 parent.redraw(oldX-1, 0, 1,
+			    			parent.getClientArea().height, false);				 		  
+			}
+		});
 	}
 
 	@Override
@@ -221,6 +236,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter
 	
 	public void chartDoubleClicked(final Date clickedAt)
 	{
+		_chart.getGanttComposite().redraw();
 		for (final ITimeBarsPainterListener l: _listeners) {
             SafeRunner.run(new SafeRunnable() {
                 public void run() {
