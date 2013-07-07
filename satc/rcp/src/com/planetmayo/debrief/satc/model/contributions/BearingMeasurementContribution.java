@@ -13,10 +13,12 @@ import org.geotools.referencing.GeodeticCalculator;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -156,99 +158,51 @@ public class BearingMeasurementContribution extends BaseContribution
 	private double toTrimmedDegs(double rads)
 	{
 		double res = Math.toDegrees(rads);
+		return trimDegs(res);
+	}
+	
+	private double trimDegs(double degs)
+	{
+		double res = degs;
 		while(res > 180)
 			res -= 360;
 		while(res < -180)
 			res += 360;
 		
-		return res;
+		return res;		
 	}
 	
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
+		if (! isActive() || route.getType() == LegType.ALTERING) 
+		{
+			return 0;
+		}
 		double res = 0;
-
-		// Note: we no longer calculate the cumulative score for BMC
-		// all we know is that the subject is inside the bearing polygon somewhere.
-		// So, all solutions put the vehicle inside the bearing polygons.
-		// There isn't merit in determining how close it is to the centre bearing of
-		// the area.
-
-		//
-		//
-		// ArrayList<State> states = route.getStates();
-		// Iterator<State> sIter = states.iterator();
-		// State thisS = null;
-		//
-		// // move to the first state
-		// if (sIter.hasNext())
-		// thisS = sIter.next();
-		//
-		// // if the list is empty, drop out
-		// if (thisS == null)
-		// return res;
-		//
-		// // keep track of how many errors we calculate
-		// int errCtr = 0;
-		//
-		// // ok. work through the bearings
-		// Iterator<BMeasurement> iter = measurements.iterator();
-		// while (iter.hasNext())
-		// {
-		// BearingMeasurementContribution.BMeasurement m =
-		// (BearingMeasurementContribution.BMeasurement) iter
-		// .next();
-		// Date time = m.time;
-		//
-		// // ok, find the state that matches this bearing measurement
-		// while (thisS.getTime().before(time) && sIter.hasNext())
-		// {
-		// thisS = sIter.next();
-		// }
-		//
-		// // check we haven't shot past the end of the states
-		// if (time.after(thisS.getTime()))
-		// break;
-		//
-		// // ok, we're at the state which is on or after this measurement.
-		// // but is it on?
-		// if (thisS.getTime().equals(time))
-		// {
-		//
-		// // now find the error from this location
-		// Point loc = thisS.getLocation();
-		//
-		// // what's the bearing from this origin?
-		// double bearing = m.origin.bearingTo(loc);
-		//
-		// // System.out.println("testing brg:" + time +
-		// // " against state:" + thisS.getTime()
-		// // + " brg:" + Math.toDegrees(bearing) + " should be:" +
-		// // Math.toDegrees(m._bearingAngle));
-		//
-		// // what's the difference between that and my measurement
-		// double thisError = Math.abs(bearing - m.bearingAngle);
-		//
-		// // what's my measurement error
-		// final double errorRange = Math.toRadians(1);
-		// thisError /= errorRange;
-		//
-		// // we now need to 'normalise' this error. The analyst has entered a
-		// // bearing error value. So, all points must be within that error range
-		//
-		// // and accumulate it
-		// // res += thisError;
-		//
-		// errCtr++;
-		// }
-		//
-		// // ok, we now need to calculate the mean error
-		// if (errCtr > 0)
-		// res /= (double) errCtr;
-		//
-		// }
-		return res;
+		int count = 0;
+		for (BMeasurement measurement : measurements)
+		{
+			Date dateMeasurement = measurement.getDate();
+			if (dateMeasurement.after(route.getStartTime()) && dateMeasurement.before(route.getEndTime()))
+			{
+				State state = route.getStateAt(dateMeasurement);
+				if (state != null && state.getLocation() != null)
+				{
+					GeodeticCalculator calculator = new GeodeticCalculator();
+					calculator.setStartingGeographicPoint(measurement.origin.getLon(), measurement.origin.getLat());
+					calculator.setDestinationGeographicPoint(state.getLocation().getX(), state.getLocation().getY());
+					double radians = Math.toRadians(trimDegs(calculator.getAzimuth()));
+					res += (measurement.bearingAngle - radians) * (measurement.bearingAngle - radians);
+					count++;
+				}
+			}
+		}
+		if (count > 0)
+		{
+			res = Math.sqrt(res / count) / bearingError;			
+		}
+		return res; 
 	}
 
 	public void addEstimate(double lat, double lon, Date date, double brg,

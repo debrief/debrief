@@ -118,6 +118,18 @@ public class CoreRoute
 		return _myStates;
 	}
 	
+	public State getStateAt(Date time)
+	{
+		for (State state : _myStates)
+		{
+			if (state.getTime().equals(time))
+			{
+				return state;
+			}
+		}
+		return null;
+	}
+	
 	public LegType getType()
 	{
 		return _legType;
@@ -133,6 +145,16 @@ public class CoreRoute
 		return _myScore;
 	}
 	
+	public Date getStartTime()
+	{
+		return _startTime;
+	}
+
+	public Date getEndTime()
+	{
+		return _endTime;
+	}
+
 	public void generateSegments(final List<BoundedState> states) 
 	{
 		
