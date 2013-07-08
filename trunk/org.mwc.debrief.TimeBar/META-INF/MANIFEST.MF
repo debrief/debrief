@@ -4,11 +4,11 @@ Bundle-Name: TimeBar
 Bundle-SymbolicName: org.mwc.debrief.TimeBar;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.debrief.timebar.Activator
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ libs/org.eclipse.nebula.widgets.ganttchart-2.0-NIGHTLY.jar
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.nebula.widgets.ganttchart,
  org.eclipse.ui.views,
  org.mwc.cmap.core;bundle-version="1.0.151",
  org.mwc.cmap.legacy;bundle-version="1.0.165",
