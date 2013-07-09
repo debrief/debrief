@@ -74,4 +74,10 @@ public class TimeSpot implements IEventEntry
 		return true;
 	}
 
+	@Override
+	public boolean isBoldText() 
+	{
+		return false;
+	}
+
 }

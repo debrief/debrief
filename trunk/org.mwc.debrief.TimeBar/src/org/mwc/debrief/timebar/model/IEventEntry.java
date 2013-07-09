@@ -21,4 +21,6 @@ public interface IEventEntry
 	
 	public Color getColor();
 	
+	public boolean isBoldText();
+	
 }

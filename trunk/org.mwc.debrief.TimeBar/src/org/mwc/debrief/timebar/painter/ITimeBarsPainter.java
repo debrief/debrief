@@ -20,7 +20,7 @@ public interface ITimeBarsPainter extends PropertyChangeListener
 	public void drawSpot(IEventEntry modelEntry);
 	
 	/**
-	 * Draws a vertical line corresponding to the current Debrief date
+	 * Draws a vertical line corresponding to the current Debrief date.
 	 * @param oldTime - the time to erase
 	 */
 	public void drawDebriefTime(Date oldTime, Date currTime);
@@ -28,12 +28,12 @@ public interface ITimeBarsPainter extends PropertyChangeListener
 	public void selectTimeBar(Editable editable);
 
 	/**
-	 * Move chart start date to the earliest event
+	 * Move chart start date to the earliest event.
 	 */
 	public void jumpToBegin();
 	
 	/**
-	 * Clears the diagram
+	 * Clears the diagram.
 	 */
 	public void clear();
 	
@@ -42,6 +42,18 @@ public interface ITimeBarsPainter extends PropertyChangeListener
 	public void zoomIn();
 	
 	public void zoomOut();
+	
+	/**
+	 *  Zooms out to show all of the available data, 
+	 *  in the highest possible zoom.
+	 */
+	public void fitToWindow();
+	
+	/**
+	 *  Zooms in to show all of the available data, 
+	 *  in the highest possible zoom.
+	 */
+	public void fitToSize();
 	
 	public void addListener(ITimeBarsPainterListener listener);
 	

@@ -19,13 +19,14 @@ import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.timebar.model.IEventEntry;
 
 import MWC.GUI.Editable;
-import MWC.GUI.Plottable;
 
 
 
@@ -39,9 +40,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	public NebulaGanttPainter(Composite parent)
 	{
-		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());
-		
-		
+		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());		
 		
 		_chart.getGanttComposite().addMouseListener(new MouseListener() {
 			
@@ -106,6 +105,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
+		if (modelEntry.isBoldText())
+			evt.setTextFont(new Font(null, "Arial", 12, SWT.BOLD ));
 		addEvent(evt, modelEntry);		
 	}
 
@@ -319,6 +320,33 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 				_chart.getGanttComposite().removeEvent(event);				
 			}
 		}		
+	}
+
+	@Override
+	public void fitToWindow() 
+	{
+		final GanttComposite composite = _chart.getGanttComposite();
+		Rectangle screenBounds = composite.getClientArea();
+		Rectangle leftBounds = _earliestEvent.getActualBounds();
+		Rectangle rightBounds = _latestEvent.getActualBounds();
+		
+		composite.jumpToEarliestEvent();
+		//TODO: implement size fitting
+//		if (rightBounds.x  > screenBounds.width)
+//		{
+//			
+//			{
+//				composite.zoomOut();
+//				rightBounds = _latestEvent.getActualBounds();
+//			}
+//		}
+		
+	}
+
+	@Override
+	public void fitToSize() {
+		// TODO Auto-generated method stub
+		
 	}	
 	
 

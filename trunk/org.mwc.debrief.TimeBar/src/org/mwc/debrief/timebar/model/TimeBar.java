@@ -18,6 +18,7 @@ public class TimeBar implements IEventEntry
 	/** TimeBar caption */
 	String _eventName;	
 	Color _color = null;
+	boolean _isBold = false;
 	
 	Object _source;
 	
@@ -31,6 +32,7 @@ public class TimeBar implements IEventEntry
 		_eventName = bar.getName();
 		_source = bar;
 		_color = bar.getColor();
+		_isBold = true;
 	}
 	
 	public TimeBar(TacticalDataWrapper sensorOrSolution)
@@ -99,5 +101,11 @@ public class TimeBar implements IEventEntry
 			return ((Plottable) getSource()).getVisible();			
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isBoldText() 
+	{
+		return _isBold;
 	}
 }

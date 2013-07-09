@@ -17,6 +17,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.views.TimeController;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -57,7 +58,9 @@ public class TimeBarView extends ViewPart {
 	 * Actions to zoom around the time bars
 	 */
 	private Action _zoomInAction;
-	private Action _zoomOutAction;
+	private Action _zoomOutAction;	
+	private Action _fitToWindowAction;
+	private Action _fitToSizeAction;
 	
 	
 	@Override
@@ -101,6 +104,8 @@ public class TimeBarView extends ViewPart {
 	{
 		manager.add(_zoomInAction);
 		manager.add(_zoomOutAction);
+		manager.add(_fitToWindowAction);
+		manager.add(_fitToSizeAction);
 	}
 	
 	private void makeActions()
@@ -130,6 +135,34 @@ public class TimeBarView extends ViewPart {
 				.setToolTipText("Zoom out");
 		_zoomOutAction.setImageDescriptor(Activator
 				.getImageDescriptor("icons/zoomout.gif"));
+		
+		_fitToWindowAction = new Action("Fit to Window", Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				_viewer.fitToWindow();
+			}
+		};
+		_fitToWindowAction.setText("Fit to Window");
+		_fitToWindowAction
+				.setToolTipText("Fit to Window");
+		_fitToWindowAction.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/fit_to_win.gif"));
+		
+		_fitToSizeAction = new Action("Fit to Size", Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				_viewer.fitToSize();
+			}
+		};
+		_fitToSizeAction.setText("Fit to Size");
+		_fitToSizeAction
+				.setToolTipText("Fit to Size");
+		_fitToSizeAction.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/fit_to_siz.gif"));
+		
+		
 	}
 	
 	void processNewLayers(Object part)
