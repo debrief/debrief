@@ -365,9 +365,9 @@ class GanttChartSettings extends DefaultSettings
 	}
 	
 	@Override
-	public String getDefaultAdvancedTooltipText() 
+	public boolean showToolTips() 
 	{
-		return "hi";
+		return false;
 	}
 	
 }	
