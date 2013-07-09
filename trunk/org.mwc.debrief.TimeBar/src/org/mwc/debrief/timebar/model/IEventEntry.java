@@ -4,6 +4,7 @@
 package org.mwc.debrief.timebar.model;
 
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.swt.graphics.Color;
 
@@ -22,5 +23,10 @@ public interface IEventEntry
 	public Color getColor();
 	
 	public boolean isBoldText();
+	
+	/**
+	 * Returns series of events, for example narrative entries for a narrative wrapper.
+	 */
+	public List<IEventEntry> getChildren();
 	
 }

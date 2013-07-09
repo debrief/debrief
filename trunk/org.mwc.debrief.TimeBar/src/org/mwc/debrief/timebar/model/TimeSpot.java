@@ -2,6 +2,7 @@ package org.mwc.debrief.timebar.model;
 
 import java.awt.Color;
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
 
@@ -78,6 +79,12 @@ public class TimeSpot implements IEventEntry
 	public boolean isBoldText() 
 	{
 		return false;
+	}
+
+	@Override
+	public List<IEventEntry> getChildren() 
+	{
+		return null;
 	}
 
 }

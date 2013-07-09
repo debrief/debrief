@@ -10,12 +10,15 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.nebula.widgets.ganttchart.AdvancedTooltip;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
 import org.eclipse.nebula.widgets.ganttchart.GanttComposite;
 import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
+import org.eclipse.nebula.widgets.ganttchart.GanttGroup;
+import org.eclipse.nebula.widgets.ganttchart.GanttImage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -24,6 +27,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.mwc.debrief.timebar.Activator;
 import org.mwc.debrief.timebar.model.IEventEntry;
 
 import MWC.GUI.Editable;
@@ -107,6 +111,22 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 			evt.setStatusColor(modelEntry.getColor());
 		if (modelEntry.isBoldText())
 			evt.setTextFont(new Font(null, "Arial", 12, SWT.BOLD ));
+		
+		if (modelEntry.getChildren().size() > 0)
+		{
+			evt.setScope(true);
+			GanttGroup group = new GanttGroup(_chart);
+			for (IEventEntry entry: modelEntry.getChildren())
+			{
+				GanttImage childEvt = new GanttImage(_chart, "", entry.getStart(), 
+						Activator.getImageDescriptor("icons/dot.gif").createImage());
+				childEvt.setAdvancedTooltip(new AdvancedTooltip("", entry.getName()));
+				evt.addScopeEvent(childEvt);
+				group.addEvent(childEvt);
+				addEvent(childEvt, entry);
+			}
+		}
+		
 		addEvent(evt, modelEntry);		
 	}
 

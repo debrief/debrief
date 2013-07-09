@@ -3,6 +3,7 @@ package org.mwc.debrief.timebar.views;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.SafeRunner;
@@ -25,6 +26,7 @@ import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainterListener;
 import org.mwc.debrief.timebar.painter.NebulaGanttPainter;
 
+import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
@@ -56,7 +58,7 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     
     List<IEventEntry> _timeBars = new ArrayList<IEventEntry>(); 
     List<IEventEntry> _timeSpots = new ArrayList<IEventEntry>();
-    
+   
     ITimeBarsPainter _painter;
     
     public TimeBarViewer(Composite parent, final Layers theLayers)
@@ -158,10 +160,10 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
 	    		traverseTrackData(solutions);
 	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSegments()));
 	    	}
-	    	if (next instanceof NarrativeEntry)
+	    	if(next instanceof NarrativeWrapper)
 	    	{
-	    		_timeSpots.add(new TimeSpot((NarrativeEntry) next));
-	    	}
+	    		_timeBars.add(new TimeBar((NarrativeWrapper) next));
+	    	}	    	
     		if (!(next instanceof WatchableList))
     			walkThrough(next);
     	}

@@ -1,13 +1,19 @@
 package org.mwc.debrief.timebar.model;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.List;
 
+import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.NarrativeEntry;
 
 public class TimeBar implements IEventEntry 
 {
@@ -21,6 +27,7 @@ public class TimeBar implements IEventEntry
 	boolean _isBold = false;
 	
 	Object _source;
+	List<IEventEntry> _children = new ArrayList<IEventEntry>();
 	
 	public TimeBar(WatchableList bar)
 	{
@@ -33,6 +40,24 @@ public class TimeBar implements IEventEntry
 		_source = bar;
 		_color = bar.getColor();
 		_isBold = true;
+	}
+	
+	public TimeBar(NarrativeWrapper narrative)
+	{
+		_eventName = "Narratives";
+		_start.setTime(narrative.getTimePeriod().getStartDTG().getDate());
+		_end.setTime(narrative.getTimePeriod().getEndDTG().getDate());
+		_source = narrative;
+		
+		Enumeration<Editable> numer = narrative.elements();
+		while (numer.hasMoreElements())
+		{
+			Editable next = numer.nextElement();
+			if (next instanceof NarrativeEntry)
+			{
+				_children.add(new TimeSpot((NarrativeEntry) next));
+			}
+		}
 	}
 	
 	public TimeBar(TacticalDataWrapper sensorOrSolution)
@@ -107,5 +132,11 @@ public class TimeBar implements IEventEntry
 	public boolean isBoldText() 
 	{
 		return _isBold;
+	}
+
+	@Override
+	public List<IEventEntry> getChildren() 
+	{
+		return _children;
 	}
 }
