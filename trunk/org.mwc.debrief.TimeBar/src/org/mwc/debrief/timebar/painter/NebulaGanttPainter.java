@@ -347,26 +347,44 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	{
 		final GanttComposite composite = _chart.getGanttComposite();
 		Rectangle screenBounds = composite.getClientArea();
-		Rectangle leftBounds = _earliestEvent.getActualBounds();
 		Rectangle rightBounds = _latestEvent.getActualBounds();
-		
 		composite.jumpToEarliestEvent();
-		//TODO: implement size fitting
-//		if (rightBounds.x  > screenBounds.width)
-//		{
-//			
-//			{
-//				composite.zoomOut();
-//				rightBounds = _latestEvent.getActualBounds();
-//			}
-//		}
-		
+		int idx = 0;
+		if (rightBounds.x + rightBounds.width < screenBounds.width)
+				{
+					while(rightBounds.x + rightBounds.width < screenBounds.width)
+					{						
+						composite.zoomIn();
+						idx ++;
+						if (idx > 10)
+							break;
+						rightBounds = _latestEvent.getActualBounds();
+					}
+				}
+				
 	}
 
 	@Override
-	public void fitToSize() {
-		// TODO Auto-generated method stub
+	public void fitToSize() 
+	{
+		final GanttComposite composite = _chart.getGanttComposite();
+		Rectangle screenBounds = composite.getClientArea();
+		Rectangle rightBounds = _latestEvent.getActualBounds();
 		
+		composite.jumpToEarliestEvent();
+		int idx = 0;
+		if (rightBounds.x  > screenBounds.width)
+		{
+			while(rightBounds.x  > screenBounds.width)
+			{
+				composite.zoomOut();
+				idx ++;
+				if (idx > 10)
+					break;
+				rightBounds = _latestEvent.getActualBounds();
+			}
+		}
+
 	}	
 	
 

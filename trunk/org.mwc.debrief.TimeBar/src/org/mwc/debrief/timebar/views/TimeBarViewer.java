@@ -3,7 +3,6 @@ package org.mwc.debrief.timebar.views;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.SafeRunner;
@@ -37,7 +36,6 @@ import MWC.GUI.PlainWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
-import MWC.TacticalData.NarrativeEntry;
 
 
 public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListener {

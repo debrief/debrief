@@ -160,7 +160,7 @@ public class TimeBarView extends ViewPart {
 		_fitToSizeAction
 				.setToolTipText("Fit to Size");
 		_fitToSizeAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_siz.gif"));
+				.getImageDescriptor("icons/fit_to_size.png"));
 		
 		
 	}
