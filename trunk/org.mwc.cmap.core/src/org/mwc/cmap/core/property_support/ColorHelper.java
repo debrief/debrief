@@ -5,7 +5,6 @@ package org.mwc.cmap.core.property_support;
 
 import java.awt.Color;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.eclipse.jface.preference.ColorSelector;
@@ -24,9 +23,11 @@ public class ColorHelper extends EditorHelper
 	// also keep a local hashmap of colours. we need to generate a string to get a
 	// color using
 	// the SWT color-registry. we'll keep our own local list instead...
-	private static HashMap<Color, org.eclipse.swt.graphics.Color> _myColorList = new LinkedHashMap<Color, org.eclipse.swt.graphics.Color>();
+	private static HashMap<Color, org.eclipse.swt.graphics.Color> _myColorList = new HashMap<Color, org.eclipse.swt.graphics.Color>();
 	
 	private final static java.awt.Color OFF_WHITE = new Color(255,255,254);
+	
+	private CustomColorsStore _customColorsStore = new CustomColorsStore();
 
 	public ColorHelper(Control parentControl)
 	{
@@ -303,18 +304,30 @@ public class ColorHelper extends EditorHelper
 				dialog.setRGB((RGB) value);
 			}
 	        
-	        Vector<RGB> initialColors = new Vector<RGB>();
+	        Vector<RGB> initialColors = _customColorsStore.load();
 	        // iterate through keys since they are ordered by insertion time
-	        for(Color color: _myColorList.keySet())
+	        if (initialColors == null || initialColors.size() == 0)
 	        {
-	        	initialColors.add(_myColorList.get(color).getRGB());
+	        	initialColors = new Vector<RGB>();
+		        for(org.eclipse.swt.graphics.Color color: _myColorList.values())
+		        {
+		        	initialColors.add(color.getRGB());
+		        }
 	        }
 	        dialog.setRGBs((RGB[]) initialColors.toArray(new RGB[initialColors.size()]));
-	        	
+	        _customColorsStore.save(initialColors);
 	        value = dialog.open();
+	        if (value != null)
+	        	_customColorsStore.addColor((RGB) value);
 	        return dialog.getRGB();
 	        
 	    }
+		
+		@Override
+		public void dispose() 
+		{
+			super.dispose();
+		}
 		
 	}
 
