@@ -70,6 +70,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
+		layout.addShowViewShortcut(DebriefPlugin.TIME_BAR);
 		
 		// it via action (so we can populate it)  
 
