@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.mwc.debrief.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.mwc.debrief.core">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.mwc.debrief.core" id="XMLLayerHanler" name="XMLLayerHandler"/>
