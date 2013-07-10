@@ -427,6 +427,7 @@ public class ImportReplay extends PlainImporterBase
 			_theImporters.addElement(new ImportNarrative2());
 			_theImporters.addElement(new ImportSensor());
 			_theImporters.addElement(new ImportSensor2());
+			_theImporters.addElement(new ImportSensor3());
 			_theImporters.addElement(new ImportTMA_Pos());
 			_theImporters.addElement(new ImportTMA_RngBrg());
 			_theImporters.addElement(new ImportPolygon());

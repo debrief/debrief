@@ -9099,6 +9099,13 @@ bearing (degs) [or the single word NULL], ambigous bearing (degs) [or the
 single word NULL], frequency(Hz) [or the single word NULL],  range(yds) 
 [or the single word NULL], sensor name, label (to end of line)
 
+;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B  CCC.C 
+FFF.F GGG.G RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
+bearing (degs) [or the single word NULL], bearing accuracy (degs), frequency(Hz) 
+[or the single word NULL], frequency accuracy (Hz),  range(yds) 
+[or the single word NULL], sensor name, label (to end of line)
+
 ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx 
 ;; date, time, ownship name, symbology, tma lat, tma long, track name, 
