@@ -11,6 +11,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.nebula.widgets.ganttchart.AdvancedTooltip;
+import org.eclipse.nebula.widgets.ganttchart.DefaultPaintManager;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttComposite;
@@ -44,7 +45,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	public NebulaGanttPainter(Composite parent)
 	{
-		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings());		
+		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings(),
+				null /* color manager */, null /* paint manager */, null /* language manager */);		
 		
 		_chart.getGanttComposite().addMouseListener(new MouseListener() {
 			
@@ -141,9 +143,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 			return;
 		GanttImage evt = new GanttImage(_chart, "", modelEntry.getStart(), 
 				Activator.getImageDescriptor("icons/dot.gif").createImage());
-		evt.setAdvancedTooltip(new AdvancedTooltip("", modelEntry.getName()));
-		
-		//GanttEvent evt = new GanttCheckpoint(_chart, modelEntry.getName(), modelEntry.getStart());	
+		evt.setAdvancedTooltip(new AdvancedTooltip("", modelEntry.getToolTipText()));
+			
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
 		addEvent(evt, modelEntry);
@@ -440,7 +441,12 @@ class GanttChartSettings extends DefaultSettings
 	@Override
 	public boolean showToolTips() 
 	{
-		return false;
+		return true;
 	}
 	
-}	
+}
+
+class PaintManager extends DefaultPaintManager
+{
+	
+}

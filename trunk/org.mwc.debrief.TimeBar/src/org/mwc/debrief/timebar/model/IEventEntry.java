@@ -22,6 +22,8 @@ public interface IEventEntry
 	
 	public Color getColor();
 	
+	public String getToolTipText();
+	
 	/**
 	 * Returns series of events, for example narrative entries for a narrative wrapper.
 	 */

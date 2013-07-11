@@ -163,4 +163,10 @@ public class TimeBar implements IEventEntry
 	{
 		return _children;
 	}
+
+	@Override
+	public String getToolTipText() 
+	{
+		return "";
+	}
 }

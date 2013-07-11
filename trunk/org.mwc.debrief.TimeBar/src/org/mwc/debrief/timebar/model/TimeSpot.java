@@ -89,5 +89,30 @@ public class TimeSpot implements IEventEntry
 	{
 		return null;
 	}
+	
+	@Override
+	public String getToolTipText() 
+	{
+		if (_source instanceof NarrativeEntry)
+		{
+			StringBuffer res = new StringBuffer();
+			NarrativeEntry entry = (NarrativeEntry) _source;
+			res.append(entry.getDTGString());
+			res.append("\n");
+			if (entry.getSource() != null)
+			{
+				res.append(entry.getSource());
+				res.append("\n");
+			}
+			if (entry.getType() != null)
+			{
+				res.append(entry.getType());
+				res.append("\n");
+			}
+			res.append(entry.getEntry());
+			return res.toString();
+		}
+		return "";
+	}
 
 }
