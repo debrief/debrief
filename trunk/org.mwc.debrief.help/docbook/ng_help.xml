@@ -6823,7 +6823,18 @@ Platform C,-551</screen></para>
  bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the 
  single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or
  the single word NULL], sensor name, label (to end of line)</markup>
-            </screen></para>
+            </screen>
+          
+          or <screen width="70">
+<markup>;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B  CCC.C 
+          FFF.F GGG.G RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
+bearing (degs) [or the single word NULL], bearing accuracy (degs) 
+[or the single word NULL], frequency(Hz) [or the single word NULL], 
+frequency accuracy (Hz) [or the single word NULL], range(yds) 
+[or the single word NULL], sensor name, label (to end of line)</markup>
+            </screen>
+           </para>
 
           <para>As you can see, unlike other Debrief line formats, this format
           allows for NULL fields. Where the sensor latitude and longitude
