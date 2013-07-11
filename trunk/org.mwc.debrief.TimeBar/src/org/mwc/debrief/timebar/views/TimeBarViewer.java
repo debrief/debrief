@@ -143,20 +143,27 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     		
     		if (next instanceof WatchableList)
 	    	{
-	    		_timeBars.add(new TimeBar((WatchableList) next));	    		
+    			WatchableList wlist = (WatchableList) next;
+    			if (wlist.getStartDTG() != null)
+    			{
+    				if (wlist.getEndDTG() != null)
+    				{
+    					if (wlist instanceof TrackWrapper)
+    					{
+    						_timeBars.add(new TimeBar((TrackWrapper) next));
+    					}
+    					else
+    						_timeBars.add(new TimeBar(wlist));
+    				}
+    				else
+    					_timeSpots.add(new TimeSpot(wlist));
+    			}
 	    	}
 	    	else if (next instanceof Watchable)
-	    	{
-	    		
-	    		_timeSpots.add(new TimeSpot((Watchable) next));
-	    	}
-	    	if (next instanceof TrackWrapper)
-	    	{		    		
-	    		BaseLayer sensors = ((TrackWrapper) next).getSensors();
-	    		traverseTrackData(sensors);
-	    		BaseLayer solutions = ((TrackWrapper) next).getSolutions();
-	    		traverseTrackData(solutions);
-	    		_timeBars.add(new TimeBar(((TrackWrapper) next).getSegments()));
+	    	{	    		
+	    		Watchable wb = (Watchable) next;
+	    		if (wb.getTime() != null)
+	    			_timeSpots.add(new TimeSpot(wb));
 	    	}
 	    	if(next instanceof NarrativeWrapper)
 	    	{

@@ -13,7 +13,6 @@ import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.nebula.widgets.ganttchart.AdvancedTooltip;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
-import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
 import org.eclipse.nebula.widgets.ganttchart.GanttComposite;
 import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
@@ -29,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.timebar.Activator;
 import org.mwc.debrief.timebar.model.IEventEntry;
+import org.mwc.debrief.timebar.model.TimeSpot;
 
 import MWC.GUI.Editable;
 
@@ -37,7 +37,7 @@ import MWC.GUI.Editable;
 public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListener
 {
 	GanttChart _chart;
-	Map<GanttEvent, IEventEntry> _eventEntries = new HashMap<GanttEvent, IEventEntry>();	
+	Map<IEventEntry, GanttEvent> _eventEntries = new HashMap<IEventEntry, GanttEvent>();	
 	List<ITimeBarsPainterListener> _listeners = new ArrayList<ITimeBarsPainterListener>();
 	GanttEvent _earliestEvent = null;
 	GanttEvent _latestEvent = null;
@@ -109,21 +109,25 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 				modelEntry.getStart(), modelEntry.getEnd(), 0);
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
-		if (modelEntry.isBoldText())
-			evt.setTextFont(new Font(null, "Arial", 12, SWT.BOLD ));
 		
 		if (modelEntry.getChildren().size() > 0)
 		{
 			evt.setScope(true);
+			evt.setTextFont(new Font(null, "Arial", 12, SWT.BOLD ));
+			evt.setStatusColor(modelEntry.getColor());
 			GanttGroup group = new GanttGroup(_chart);
 			for (IEventEntry entry: modelEntry.getChildren())
 			{
-				GanttImage childEvt = new GanttImage(_chart, "", entry.getStart(), 
-						Activator.getImageDescriptor("icons/dot.gif").createImage());
-				childEvt.setAdvancedTooltip(new AdvancedTooltip("", entry.getName()));
-				evt.addScopeEvent(childEvt);
-				group.addEvent(childEvt);
-				addEvent(childEvt, entry);
+				if (entry instanceof TimeSpot)
+				{
+					drawSpot(entry);					
+					group.addEvent(_eventEntries.get(entry));
+				}
+				else
+				{
+					drawBar(entry);
+				}
+				evt.addScopeEvent(_eventEntries.get(entry));
 			}
 		}
 		
@@ -135,8 +139,11 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	{		
 		if (!modelEntry.isVisible())
 			return;
+		GanttImage evt = new GanttImage(_chart, "", modelEntry.getStart(), 
+				Activator.getImageDescriptor("icons/dot.gif").createImage());
+		evt.setAdvancedTooltip(new AdvancedTooltip("", modelEntry.getName()));
 		
-		GanttEvent evt = new GanttCheckpoint(_chart, modelEntry.getName(), modelEntry.getStart());	
+		//GanttEvent evt = new GanttCheckpoint(_chart, modelEntry.getName(), modelEntry.getStart());	
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
 		addEvent(evt, modelEntry);
@@ -144,7 +151,7 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	private void addEvent(GanttEvent evt, IEventEntry modelEntry)
 	{
-		_eventEntries.put(evt, modelEntry);
+		_eventEntries.put(modelEntry, evt);
 		if (_earliestEvent == null)
 		{
 			_earliestEvent = evt;
@@ -184,12 +191,12 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	@Override
 	public void selectTimeBar(Editable editable) 
 	{
-		for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
+		for (Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
 		{
-			if (entry.getValue().getSource().equals(editable))
+			if (entry.getKey().getSource().equals(editable))
 			{
-				_chart.getGanttComposite().jumpToEvent(entry.getKey(), true, SWT.LEFT);
-				_chart.getGanttComposite().setSelection(entry.getKey());
+				_chart.getGanttComposite().jumpToEvent(entry.getValue(), true, SWT.LEFT);
+				_chart.getGanttComposite().setSelection(entry.getValue());
 				return;
 			}
 		}	
@@ -302,11 +309,11 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	private IEventEntry findEventEntry(GanttEvent event)
 	{
-		for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
+		for (Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
 		{
-			if (entry.getKey().equals(event))
+			if (entry.getValue().equals(event))
 			{
-				return entry.getValue();
+				return entry.getKey();
 			}
 		}
 		return null;
@@ -314,11 +321,11 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	
 	private GanttEvent findGanttEvent(Object source)
 	{
-		for (Map.Entry<GanttEvent, IEventEntry> entry: _eventEntries.entrySet())
+		for (Map.Entry<IEventEntry, GanttEvent> entry: _eventEntries.entrySet())
 		{
-			if (entry.getValue().getSource().equals(source))
+			if (entry.getKey().getSource().equals(source))
 			{
-				return entry.getKey();
+				return entry.getValue();
 			}
 		}
 		return null;

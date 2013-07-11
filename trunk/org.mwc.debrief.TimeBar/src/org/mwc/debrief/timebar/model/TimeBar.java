@@ -8,7 +8,9 @@ import java.util.List;
 
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
@@ -24,22 +26,18 @@ public class TimeBar implements IEventEntry
 	/** TimeBar caption */
 	String _eventName;	
 	Color _color = null;
-	boolean _isBold = false;
 	
 	Object _source;
 	List<IEventEntry> _children = new ArrayList<IEventEntry>();
 	
 	public TimeBar(WatchableList bar)
 	{
-		//TODO: what if times are not specified?
-		if (bar.getStartDTG() != null)
-			_start.setTime(bar.getStartDTG().getDate());
-		if(bar.getEndDTG() != null)
-			_end.setTime(bar.getEndDTG().getDate());
+		_start.setTime(bar.getStartDTG().getDate());
+		_end.setTime(bar.getEndDTG().getDate());
 		_eventName = bar.getName();
 		_source = bar;
 		_color = bar.getColor();
-		_isBold = true;
+		System.out.println(bar);
 	}
 	
 	public TimeBar(NarrativeWrapper narrative)
@@ -72,18 +70,50 @@ public class TimeBar implements IEventEntry
 			_end.setTime(endDate.getDate());
 	}	
 	
-	public TimeBar(SegmentList segments)
+	public TimeBar(TrackWrapper track)
 	{
-		_source = segments;
-		_eventName = segments.getName();
+		_source = track;
+		SegmentList segments = track.getSegments();		
+		_eventName = track.getName();
 		HiResDate startDate = segments.getWrapper().getStartDTG(); 
 		if( startDate != null)
 			_start.setTime(startDate.getDate());
 		HiResDate endDate = segments.getWrapper().getEndDTG(); 
 		if( endDate != null)
 			_end.setTime(endDate.getDate());
-		_color = segments.getWrapper().getColor();
+		_color = track.getColor();
+		
+		BaseLayer sensors = track.getSensors();
+		Enumeration<Editable> enumer = sensors.elements();
+		while(enumer.hasMoreElements())
+		{
+			Editable sensor = enumer.nextElement();
+			if (sensor instanceof TacticalDataWrapper)
+				_children.add(new TimeBar((TacticalDataWrapper) sensor));
+		}
+		
+		BaseLayer solutions = track.getSolutions();
+		enumer = solutions.elements();
+		while(enumer.hasMoreElements())
+		{
+			Editable solution = enumer.nextElement();
+			if (solution instanceof TacticalDataWrapper)
+				_children.add(new TimeBar((TacticalDataWrapper) solution));
+		}
 	}
+	
+//	public TimeBar(SegmentList segments)
+//	{
+//		_source = segments;
+//		_eventName = segments.getName();
+//		HiResDate startDate = segments.getWrapper().getStartDTG(); 
+//		if( startDate != null)
+//			_start.setTime(startDate.getDate());
+//		HiResDate endDate = segments.getWrapper().getEndDTG(); 
+//		if( endDate != null)
+//			_end.setTime(endDate.getDate());
+//		_color = segments.getWrapper().getColor();
+//	}
 
 
 	public Object getSource() 
@@ -126,12 +156,6 @@ public class TimeBar implements IEventEntry
 			return ((Plottable) getSource()).getVisible();			
 		}
 		return true;
-	}
-
-	@Override
-	public boolean isBoldText() 
-	{
-		return _isBold;
 	}
 
 	@Override

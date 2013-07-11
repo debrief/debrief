@@ -22,8 +22,6 @@ public interface IEventEntry
 	
 	public Color getColor();
 	
-	public boolean isBoldText();
-	
 	/**
 	 * Returns series of events, for example narrative entries for a narrative wrapper.
 	 */

@@ -8,6 +8,7 @@ import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
 
 import MWC.GUI.Plottable;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 
 public class TimeSpot implements IEventEntry
@@ -17,6 +18,14 @@ public class TimeSpot implements IEventEntry
 	Calendar _time = Calendar.getInstance();
 	GanttCheckpoint _presentation;
 	Color _color = null;
+	
+	public TimeSpot(WatchableList spot)
+	{
+		_source = spot;
+		_name = spot.getName();
+		_time.setTime(spot.getStartDTG().getDate());
+		_color = spot.getColor();
+	}
 	
 	public TimeSpot(Watchable spot)
 	{
@@ -73,12 +82,6 @@ public class TimeSpot implements IEventEntry
 			return ((Plottable) getSource()).getVisible();			
 		}
 		return true;
-	}
-
-	@Override
-	public boolean isBoldText() 
-	{
-		return false;
 	}
 
 	@Override
