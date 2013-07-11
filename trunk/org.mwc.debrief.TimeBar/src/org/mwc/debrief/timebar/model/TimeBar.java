@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.TimeZone;
 
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
@@ -20,9 +21,9 @@ import MWC.TacticalData.NarrativeEntry;
 public class TimeBar implements IEventEntry 
 {
 	/** TimeBar start */
-	Calendar _start = Calendar.getInstance();
+	Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	/** TimeBar end */
-	Calendar _end = Calendar.getInstance();
+	Calendar _end = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 	/** TimeBar caption */
 	String _eventName;	
 	Color _color = null;
@@ -37,7 +38,6 @@ public class TimeBar implements IEventEntry
 		_eventName = bar.getName();
 		_source = bar;
 		_color = bar.getColor();
-		System.out.println(bar);
 	}
 	
 	public TimeBar(NarrativeWrapper narrative)
@@ -72,16 +72,9 @@ public class TimeBar implements IEventEntry
 	
 	public TimeBar(TrackWrapper track)
 	{
-		_source = track;
+		this((WatchableList) track);
 		SegmentList segments = track.getSegments();		
-		_eventName = track.getName();
-		HiResDate startDate = segments.getWrapper().getStartDTG(); 
-		if( startDate != null)
-			_start.setTime(startDate.getDate());
-		HiResDate endDate = segments.getWrapper().getEndDTG(); 
-		if( endDate != null)
-			_end.setTime(endDate.getDate());
-		_color = track.getColor();
+		_children.add(new TimeBar(segments));
 		
 		BaseLayer sensors = track.getSensors();
 		Enumeration<Editable> enumer = sensors.elements();
@@ -102,18 +95,18 @@ public class TimeBar implements IEventEntry
 		}
 	}
 	
-//	public TimeBar(SegmentList segments)
-//	{
-//		_source = segments;
-//		_eventName = segments.getName();
-//		HiResDate startDate = segments.getWrapper().getStartDTG(); 
-//		if( startDate != null)
-//			_start.setTime(startDate.getDate());
-//		HiResDate endDate = segments.getWrapper().getEndDTG(); 
-//		if( endDate != null)
-//			_end.setTime(endDate.getDate());
-//		_color = segments.getWrapper().getColor();
-//	}
+	public TimeBar(SegmentList segments)
+	{
+		_source = segments;
+		_eventName = segments.getName();
+		HiResDate startDate = segments.getWrapper().getStartDTG(); 
+		if( startDate != null)
+			_start.setTime(startDate.getDate());
+		HiResDate endDate = segments.getWrapper().getEndDTG(); 
+		if( endDate != null)
+			_end.setTime(endDate.getDate());
+		_color = segments.getWrapper().getColor();
+	}
 
 
 	public Object getSource() 
