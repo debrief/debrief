@@ -6,7 +6,7 @@
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.timebar.views.TimeBarView"
-            icon="icons/sample.gif"
+            icon="icons/GanttBars.gif"
             id="org.mwc.cmap.timebar.views.TimeBarView"
             name="Time Bar"
             restorable="true">
