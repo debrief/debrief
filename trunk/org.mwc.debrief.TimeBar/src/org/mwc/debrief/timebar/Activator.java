@@ -1,5 +1,7 @@
 package org.mwc.debrief.timebar;
 
+import java.util.TimeZone;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -28,6 +30,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 	}
 
 	/*

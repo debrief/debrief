@@ -3,6 +3,7 @@ package org.mwc.debrief.timebar.model;
 import java.awt.Color;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.eclipse.nebula.widgets.ganttchart.GanttCheckpoint;
@@ -16,7 +17,7 @@ public class TimeSpot implements IEventEntry
 {
 	Object _source;
 	String _name;
-	Calendar _time = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	Calendar _time = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.UK);
 	GanttCheckpoint _presentation;
 	Color _color = null;
 	

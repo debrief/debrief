@@ -26,9 +26,7 @@ import org.mwc.debrief.timebar.painter.ITimeBarsPainterListener;
 import org.mwc.debrief.timebar.painter.NebulaGanttPainter;
 
 import Debrief.Wrappers.NarrativeWrapper;
-import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -173,17 +171,6 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     			walkThrough(next);
     	}
     }  
-    
-    private void traverseTrackData(BaseLayer data)
-    {
-    	Enumeration<Editable> enumer = data.elements();
-		while(enumer.hasMoreElements())
-		{
-			Editable solution = enumer.nextElement();
-			if (solution instanceof TacticalDataWrapper)
-				_timeBars.add(new TimeBar((TacticalDataWrapper) solution));
-		}
-    }
     
 	@Override
 	public void addSelectionChangedListener(ISelectionChangedListener listener) 

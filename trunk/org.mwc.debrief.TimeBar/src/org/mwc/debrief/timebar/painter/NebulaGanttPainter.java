@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.nebula.widgets.ganttchart.AdvancedTooltip;
-import org.eclipse.nebula.widgets.ganttchart.DefaultPaintManager;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
 import org.eclipse.nebula.widgets.ganttchart.GanttComposite;
@@ -427,6 +427,12 @@ class GanttChartSettings extends DefaultSettings
 	}
 	
 	@Override
+	public Locale getDefaultLocale()
+	{
+		return Locale.UK;
+	}
+	
+	@Override
 	public int getInitialZoomLevel() 
 	{
 		return ZOOM_HOURS_NORMAL;
@@ -443,10 +449,5 @@ class GanttChartSettings extends DefaultSettings
 	{
 		return true;
 	}
-	
-}
-
-class PaintManager extends DefaultPaintManager
-{
 	
 }

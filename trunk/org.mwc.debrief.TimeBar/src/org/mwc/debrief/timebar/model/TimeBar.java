@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import Debrief.Wrappers.NarrativeWrapper;
@@ -21,9 +22,9 @@ import MWC.TacticalData.NarrativeEntry;
 public class TimeBar implements IEventEntry 
 {
 	/** TimeBar start */
-	Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	Calendar _start = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"), Locale.UK);
 	/** TimeBar end */
-	Calendar _end = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	Calendar _end = Calendar.getInstance(TimeZone.getTimeZone("GMT+0"), Locale.UK);
 	/** TimeBar caption */
 	String _eventName;	
 	Color _color = null;
@@ -33,7 +34,8 @@ public class TimeBar implements IEventEntry
 	
 	public TimeBar(WatchableList bar)
 	{
-		_start.setTime(bar.getStartDTG().getDate());
+		//_start.setTime(bar.getStartDTG().getDate());
+		_start.setTimeInMillis(bar.getStartDTG().getMicros());
 		_end.setTime(bar.getEndDTG().getDate());
 		_eventName = bar.getName();
 		_source = bar;
