@@ -85,11 +85,6 @@ public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListen
     	_painter.fitToWindow();
     }
     
-    public void fitToSize()
-    {
-    	_painter.fitToSize();
-    }
-    
     
     /**
      * Runs through the layers, extracts the required elements:

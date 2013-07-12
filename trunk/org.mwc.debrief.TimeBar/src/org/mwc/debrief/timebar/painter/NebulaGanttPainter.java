@@ -349,53 +349,46 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 			}
 		}		
 	}
-
+	
+	
 	@Override
 	public void fitToWindow() 
 	{
 		final GanttComposite composite = _chart.getGanttComposite();
-		Rectangle screenBounds = composite.getClientArea();
-		Rectangle rightBounds = _latestEvent.getActualBounds();
-		composite.jumpToEarliestEvent();
-		int idx = 0;
-		if (rightBounds.x + rightBounds.width < screenBounds.width)
-				{
-					while(rightBounds.x + rightBounds.width < screenBounds.width)
-					{						
-						composite.zoomIn();
-						idx ++;
-						if (idx > 10)
-							break;
-						rightBounds = _latestEvent.getActualBounds();
-					}
-				}
-				
-	}
-
-	@Override
-	public void fitToSize() 
-	{
-		final GanttComposite composite = _chart.getGanttComposite();
-		Rectangle screenBounds = composite.getClientArea();
-		Rectangle rightBounds = _latestEvent.getActualBounds();
 		
-		composite.jumpToEarliestEvent();
+       	Rectangle visibleBounds = composite.getBounds();
+		int fullBounds_width = composite.getFullImage().getBounds().width;
+		
 		int idx = 0;
-		if (rightBounds.x  > screenBounds.width)
+		if (fullBounds_width > visibleBounds.width)
 		{
-			while(rightBounds.x  > screenBounds.width)
+			while (fullBounds_width  > visibleBounds.width)
 			{
 				composite.zoomOut();
 				idx ++;
 				if (idx > 10)
 					break;
-				rightBounds = _latestEvent.getActualBounds();
+				fullBounds_width = composite.getFullImage().getBounds().width;
 			}
 		}
-
-	}	
+		else
+		{
+			while(fullBounds_width < visibleBounds.width)
+			{						
+				composite.zoomIn();
+				idx ++;
+				if (idx > 10)
+					break;
+				fullBounds_width = composite.getFullImage().getBounds().width;
+			}
+			if (fullBounds_width > visibleBounds.width)
+				composite.zoomOut();
+		}
+		composite.jumpToEarliestEvent();
+				
+	}
 	
-
+	
 }
 
 

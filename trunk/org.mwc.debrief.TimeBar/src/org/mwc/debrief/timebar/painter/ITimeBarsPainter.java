@@ -44,16 +44,10 @@ public interface ITimeBarsPainter extends PropertyChangeListener
 	public void zoomOut();
 	
 	/**
-	 *  Zooms in to show all of the available data, 
+	 *  Zooms in/out to show all of the available data, 
 	 *  in the highest possible zoom.
 	 */
 	public void fitToWindow();
-	
-	/**
-	 *  Zooms out to show all of the available data, 
-	 *  in the highest possible zoom.
-	 */
-	public void fitToSize();
 	
 	public void addListener(ITimeBarsPainterListener listener);
 	

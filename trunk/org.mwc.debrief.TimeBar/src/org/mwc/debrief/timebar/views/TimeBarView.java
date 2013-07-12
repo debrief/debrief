@@ -60,7 +60,6 @@ public class TimeBarView extends ViewPart {
 	private Action _zoomInAction;
 	private Action _zoomOutAction;	
 	private Action _fitToWindowAction;
-	private Action _fitToSizeAction;
 	
 	
 	@Override
@@ -105,7 +104,6 @@ public class TimeBarView extends ViewPart {
 		manager.add(_zoomInAction);
 		manager.add(_zoomOutAction);
 		manager.add(_fitToWindowAction);
-		manager.add(_fitToSizeAction);
 	}
 	
 	private void makeActions()
@@ -148,20 +146,6 @@ public class TimeBarView extends ViewPart {
 				.setToolTipText("Fit to Window");
 		_fitToWindowAction.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/fit_to_win.gif"));
-		
-		_fitToSizeAction = new Action("Fit to Size", Action.AS_PUSH_BUTTON)
-		{
-			public void run()
-			{
-				_viewer.fitToSize();
-			}
-		};
-		_fitToSizeAction.setText("Fit to Size");
-		_fitToSizeAction
-				.setToolTipText("Fit to Size");
-		_fitToSizeAction.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/fit_to_size.png"));
-		
 		
 	}
 	
