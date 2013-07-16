@@ -542,7 +542,6 @@ public class Transit extends CoreDecision implements java.io.Serializable
 	public void setCurrentDestination(int destination)
 	{
 		_currentDestination = destination;
-		System.out.println("Destination:" + destination);
 	}
 
   /**
