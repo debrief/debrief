@@ -534,6 +534,17 @@ public class Transit extends CoreDecision implements java.io.Serializable
   }
 
 
+
+  /** specify which location the vehicle is currently heading to
+   * 
+   * @param destination
+   */
+	public void setCurrentDestination(int destination)
+	{
+		_currentDestination = destination;
+		System.out.println("Destination:" + destination);
+	}
+
   /**
    * the set of destinations we follow
    */
@@ -1207,6 +1218,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
 
 
   }
+
 
 
 }

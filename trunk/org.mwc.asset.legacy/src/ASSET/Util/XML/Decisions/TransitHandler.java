@@ -52,11 +52,13 @@ abstract public class TransitHandler extends CoreDecisionHandler
 	private final static String LOOPING = "Looping";
 	private final static String SPEED = "Speed";
 	private final static String REVERSE = "Reverse";
+	private final static String DESTINATION = "Destination";
 
 	protected MWC.GenericData.WorldPath _myPath;
 	protected boolean _looping;
 	protected WorldSpeed _speed;
 	protected Boolean _reverse = null;
+	protected Integer _destination = null;
 
 	public TransitHandler()
 	{
@@ -81,6 +83,14 @@ abstract public class TransitHandler extends CoreDecisionHandler
 			public void setValue(String name, final String val)
 			{
 				_looping = Boolean.valueOf(val).booleanValue();
+			}
+		});
+		addAttributeHandler(new HandleIntegerAttribute(DESTINATION)
+		{
+			@Override
+			public void setValue(String name, int value)
+			{
+				_destination = value;
 			}
 		});
 
@@ -111,7 +121,15 @@ abstract public class TransitHandler extends CoreDecisionHandler
 			tr.setReverse(_reverse);
 			System.err.println("setting reverse to:" + _reverse);
 		}
+		if (_destination != null)
+		{
+			if (_destination < _myPath.size())
+				tr.setCurrentDestination(_destination);
+			else
+				System.err.println("Wrong destination index: too high!");
+		}
 
+		_destination = null;
 		_myPath = null;
 		_speed = null;
 		_reverse = null;

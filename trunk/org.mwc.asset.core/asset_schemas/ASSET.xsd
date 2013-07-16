@@ -1790,6 +1790,9 @@
 		<xs:sequence>
 			<xs:element name="Type" type="TypeType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="DetectionRange" minOccurs="1" type="WorldDistanceType"/>
+			<xs:element name="DetectionPeriod" minOccurs="0" type="DurationType">
+				<xs:annotation><xs:documentation>Indication of how long this target type must be held for, before reaching the specified detection level</xs:documentation></xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="MovementType"/>
@@ -2851,6 +2854,11 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="Destination" type="xs:integer" use="optional">
+					<xs:annotation>
+						<xs:documentation>Which destination we are heading for</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="Looping" type="xs:boolean" use="required">
 					<xs:annotation>
 						<xs:documentation>Whether we transit through this route of points

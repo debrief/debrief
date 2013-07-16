@@ -18,7 +18,9 @@ import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Sensor.Cookie.TypedCookieSensor;
 import ASSET.Models.Sensor.Cookie.TypedCookieSensor.TypedRangeDoublet;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
+import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
 abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
@@ -131,8 +133,10 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
   {
 		private static final String DETECTION_RANGE = "DetectionRange";
 		private static final String MY_TYPE = "TypedRangeDoublet";
+		private static final String PERIOD = "DetectionPeriod";
 		private Vector<String> _targetTypes;
 		protected WorldDistance _detRange;
+		private Duration _period;
 
 
 		public TypedRangeDoubletHandler()
@@ -155,17 +159,29 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 				{
 					_detRange = res;
 				}});
+	    this.addHandler(new DurationHandler(PERIOD){
+
+				@Override
+				public void setDuration(Duration res)
+				{
+					_period = res;
+				}});
 		}
 		
 	  public void elementClosed()
 	  {
 	  	
 	  	TypedRangeDoublet res = new TypedRangeDoublet(_targetTypes, _detRange);
+	  	
+	  	if(_period != null)
+	  		res.setPeriod(_period);
+	  	
 	    // pass to parent
 	    setRangeDoublet(res);
 
 	    // restart
 	    _targetTypes = null;
+	    _period = null;
 	    _detRange = null;
 	  }
 

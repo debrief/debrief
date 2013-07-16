@@ -23,6 +23,7 @@ import ASSET.Participants.Category.Force;
 import ASSET.Participants.Category.Type;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
+import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -56,6 +57,8 @@ public class TypedCookieSensor extends CoreSensor
 	 */
 	private boolean _produceRange = true;
 
+	private HashMap<Integer, Long> _timesGained = null;
+
 	/**
 	 * 
 	 */
@@ -69,7 +72,6 @@ public class TypedCookieSensor extends CoreSensor
 		_rangeDoublets = rangeDoublets;
 		_typedDetections = new HashMap<TypedRangeDoublet, DetectionList>();
 		_detectionState = detectionState;
-
 	}
 
 	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets)
@@ -164,36 +166,84 @@ public class TypedCookieSensor extends CoreSensor
 					range = host.rangeFrom(target.getStatus().getLocation());
 				}
 
-				if (doublet.canDetect(range))
+				detected = doublet.canDetect(range);
+
+				if (!detected)
+				{
+					// aah. if we've lost a contact, we clear the in-contact time
+					if (_timesGained != null)
+					{
+						// hey, we're tracking time gained. forget about this contact, if we were tracking it.
+					//	_timesGained.remove(target.getId());
+					}
+				}
+
+				if (detected)
 				{
 
-					detected = true;
+					// just check if the doublet has a time duration
+					Duration detectionPeriod = doublet.getPeriod();
+					if (detectionPeriod != null)
+					{
 
-					// calculate the separation - so we can plot a bearing
-					sep = target.getStatus().getLocation()
-							.subtract(host.getStatus().getLocation());
+						if (_timesGained == null)
+							_timesGained = new HashMap<Integer, Long>();
 
-					double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
-							.getBearing());
+						// ok, we have to track how long we have held this contact for
+						Long timeGained = _timesGained.get(target.getId());
 
-					final WorldDistance rangeToUse;
-					if (_produceRange)
-						rangeToUse = range;
-					else
-						rangeToUse = null;
+						if (timeGained == null)
+						{
+							// initial contact, store it
+							_timesGained.put(target.getId(), time);
 
-					// cool, in contact. write it up.
-					res = new DetectionEvent(time, host.getId(), host.getStatus()
-							.getLocation(), this, rangeToUse, rangeToUse, new Float(brgDegs),
-							new Float(super.relativeBearing(host.getStatus().getCourse(),
-									brgDegs)), new Float(1), target.getCategory(), new Float(
-									target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
-							new Float(target.getStatus().getCourse()), target);
+							// we certainly haven't reached the correct time period
+							detected = false;
+						}
+						else
+						{
+							// ok, has the time elapsed?
+							long elapsed = time - timeGained;
+							long required = detectionPeriod.getMillis();
 
-					res.setDetectionState(_detectionState);
+							if (elapsed < required)
+							{
+								// just need to give it a little longer
+								detected = false;
+							}
+						}
+					}
 
-					// store this detection
-					storeThisDetection(doublet, res);
+					// second pass on detected (including duration)
+					if (detected)
+					{
+						// calculate the separation - so we can plot a bearing
+						sep = target.getStatus().getLocation()
+								.subtract(host.getStatus().getLocation());
+
+						double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
+								.getBearing());
+
+						final WorldDistance rangeToUse;
+						if (_produceRange)
+							rangeToUse = range;
+						else
+							rangeToUse = null;
+
+						// cool, in contact. write it up.
+						res = new DetectionEvent(time, host.getId(), host.getStatus()
+								.getLocation(), this, rangeToUse, rangeToUse,
+								new Float(brgDegs), new Float(super.relativeBearing(host
+										.getStatus().getCourse(), brgDegs)), new Float(1),
+								target.getCategory(), new Float(target.getStatus().getSpeed()
+										.getValueIn(WorldSpeed.Kts)), new Float(target.getStatus()
+										.getCourse()), target);
+
+						res.setDetectionState(_detectionState);
+
+						// store this detection
+						storeThisDetection(doublet, res);
+					}
 				}
 			}
 
@@ -324,7 +374,8 @@ public class TypedCookieSensor extends CoreSensor
 			try
 			{
 				// get the parent attributes
-				final PropertyDescriptor[] parentAttributes = super.getPropertyDescriptors();
+				final PropertyDescriptor[] parentAttributes = super
+						.getPropertyDescriptors();
 
 				// get my attributes
 				final PropertyDescriptor[] myAttributes =
@@ -332,7 +383,7 @@ public class TypedCookieSensor extends CoreSensor
 
 				// ok, now try to combine the two
 				PropertyDescriptor[] res = new PropertyDescriptor[parentAttributes.length
-				                                      						+ myAttributes.length];
+						+ myAttributes.length];
 				// copy the arrays into it
 				System.arraycopy(parentAttributes, 0, res, 0, parentAttributes.length);
 				System.arraycopy(myAttributes, 0, res, parentAttributes.length,
@@ -368,6 +419,12 @@ public class TypedCookieSensor extends CoreSensor
 		 */
 		private WorldDistance _range;
 
+		/**
+		 * how long to hold the target before it reaches the detection level
+		 * 
+		 */
+		private Duration _period;
+
 		public WorldDistance getRange()
 		{
 			return _range;
@@ -378,10 +435,20 @@ public class TypedCookieSensor extends CoreSensor
 			_range = range;
 		}
 
+		public void setPeriod(Duration period)
+		{
+			_period = period;
+		}
+
 		public TypedRangeDoublet(Vector<String> types, WorldDistance range)
 		{
 			_types = types;
 			_range = range;
+		}
+
+		public Duration getPeriod()
+		{
+			return _period;
 		}
 
 		public Vector<String> getMyTypes()
