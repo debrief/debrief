@@ -419,6 +419,13 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		_isAlive = val;
 	}
 	
+	
+	@Override
+	public boolean getAlive()
+	{
+		return _isAlive;
+	}
+
 	/**
 	 * set the id of this participant
 	 */

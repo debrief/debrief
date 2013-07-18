@@ -215,5 +215,10 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
 	 */
 	public abstract void setAlive(boolean val);
 
+	/** whether this participant is alive yet
+	 * 
+	 * @return
+	 */
+	public abstract boolean getAlive();
 
 }
