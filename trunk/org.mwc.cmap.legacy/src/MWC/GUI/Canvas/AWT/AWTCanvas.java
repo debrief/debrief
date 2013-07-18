@@ -689,4 +689,10 @@ final public class AWTCanvas extends java.awt.Canvas
   {
     // tooltip support not provided for AWT canvas type
   }
+
+@Override
+public void drawText(String str, int x, int y, float rotate) {
+	// TODO Auto-generated method stub
+	
+}
 }

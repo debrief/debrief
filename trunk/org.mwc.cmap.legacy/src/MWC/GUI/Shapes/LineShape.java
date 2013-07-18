@@ -231,9 +231,23 @@ public class LineShape extends PlainShape implements Editable,
 			{ p1.y, p2.y, p3.y }, 3);
 
 		}
-
+		
+		// Draw range at the center of the line
+		Point center = new Point(dest.toScreen(_centre));
+		float rotate = getTextRotationAngle(start, end);
+	    dest.drawText(String.format("%.3f", rangeFrom(_centre)), 
+	    		center.x, center.y, rotate);
 	}
-
+	
+	private float getTextRotationAngle(final Point start, final Point end)
+	{
+		Point u = end;
+		Point v = new Point(end.x, start.y);
+		double a = u.x*v.x + u.y*v.y;
+		double b = Math.sqrt(u.x*u.x + u.y*u.y)*Math.sqrt(v.x*v.x + v.y*v.y);
+		return (float) Math.toDegrees(Math.acos(a/b));
+	}
+	
 	public boolean getArrowAtEnd()
 	{
 		return _arrowAtEnd;

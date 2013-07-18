@@ -301,4 +301,10 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		canvas.drawPolyline(xP, yP, len);
 
 	}
+
+	@Override
+	public void drawText(String str, int x, int y, float rotate) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -1200,4 +1200,10 @@ public class SwingCanvas extends javax.swing.JComponent
       Editable.editableTesterSupport.testParams(ed, this);
     }
   }
+
+@Override
+public void drawText(String str, int x, int y, float rotate) {
+	// TODO Auto-generated method stub
+	
+}
 }
