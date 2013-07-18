@@ -434,7 +434,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			WorldLocation myLoc)
 	{
 		DetectionEvent res = null;
-		WorldDistance tmpRange = null;
+		Double tmpScore = null;
 
 		THROUGH_DETECTIONS: for (int i = 0; i < len; i++)
 		{
@@ -465,25 +465,25 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 						if (monitor.getThisParticipant(de.getTarget()) != null)
 						{
 							// right, work out the range to the target
-							WorldDistance targetRange = rangeToTarget(de, monitor, myLoc);
+							Double thisScore = effectivenessOfThisTarget(de, monitor, myLoc);
 
 							// did we find a range?
-							if (targetRange != null)
+							if (thisScore != null)
 							{
 								// is this our first match
 								if (res != null)
 								{
-									if (targetRange.lessThan(tmpRange))
+									if((tmpScore == null) || (tmpScore > thisScore))
 									{
 										// new target closer. switch to it
 										res = de;
-										tmpRange = targetRange;
+										tmpScore = thisScore;
 									}
 								}
 								else
 								{
 									res = de;
-									tmpRange = targetRange;
+									tmpScore = thisScore;
 								}
 							}
 						}
@@ -519,10 +519,10 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 *          my location
 	 * @return
 	 */
-	private WorldDistance rangeToTarget(final DetectionEvent de,
+	private Double effectivenessOfThisTarget(final DetectionEvent de,
 			ScenarioActivityMonitor monitor, WorldLocation myLoc)
 	{
-		WorldDistance res = null;
+		Double res = null;
 		if (_watchType != null)
 		{
 			// right, we're not assessing the range from ourselves, but from the
@@ -555,14 +555,45 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 				double toWatch = tgtLoc.rangeFrom(watchLoc);
 				double toMe = tgtLoc.rangeFrom(myLoc);
+				double outsideTargetPath = 1;
+				double headingAwayFromTarget = 1;
 
+				// sort out how to produce cost function that includes the respective paths
+				double watchPath = watched.getStatus().getCourse();
+				double tgtToWatch = Math.toDegrees(tgtLoc.bearingFrom(watchLoc));
+				
+				// put them into some comfortable domain
+				while(watchPath > 180)
+					watchPath -= 360;
+				while(tgtToWatch > 180)
+					tgtToWatch -= 360;
+				
+				if(Math.abs(tgtToWatch - watchPath) < 45)
+				{
+					outsideTargetPath = 0.6;
+				};
+
+				watchPath = tgt.getStatus().getCourse();
+				tgtToWatch = Math.toDegrees(watchLoc.bearingFrom(tgtLoc));
+				
+				// put them into some comfortable domain
+				while(watchPath > 180)
+					watchPath -= 360;
+				while(tgtToWatch > 180)
+					tgtToWatch -= 360;
+				
+				if(Math.abs(tgtToWatch - watchPath) < 45)
+				{
+					headingAwayFromTarget = 0.8;
+				};
+				
 				// and calculate the range using a cost function
-				res = new WorldDistance(toMe * 0.0 + toWatch, WorldDistance.DEGS);
+				res = (toMe * 0+ toWatch )* outsideTargetPath * headingAwayFromTarget;
 			}
 		}
 		else
 		{
-			res = de.getRange();
+			res = de.getRange().getValueIn(WorldDistance.DEGS);
 		}
 
 		return res;
