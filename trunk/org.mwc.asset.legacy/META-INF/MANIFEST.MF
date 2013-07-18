@@ -92,12 +92,6 @@ Export-Package: ASSET;
    MWC.GUI.DragDrop,
    MWC.GUI,
    ASSET.Scenario",
- ASSET.GUI.SuperSearch.Observers;
-  uses:="ASSET.Scenario.Observers,
-   ASSET.Models.Detection,
-   ASSET.Util,
-   ASSET.Models.Decision,
-   MWC.GUI",
  ASSET.GUI.SuperSearch.Plotters;
   uses:="ASSET,
    ASSET.Participants,
