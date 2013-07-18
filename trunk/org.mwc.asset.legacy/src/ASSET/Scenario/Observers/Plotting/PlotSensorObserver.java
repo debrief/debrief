@@ -199,6 +199,10 @@ public class PlotSensorObserver extends DetectionObserver implements
 				.hasNext();)
 		{
 			ParticipantType thisP = iterator.next();
+			
+			// check he's alive
+			if(!thisP.isAlive())
+				continue;
 
 			// right, have a look at it's sensors
 			SensorList sensors = thisP.getSensorFit();
