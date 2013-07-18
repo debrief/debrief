@@ -1,5 +1,7 @@
 package org.mwc.asset.scenarioplotter.editors;
 
+import java.awt.Color;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -249,6 +251,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		// tell the plotter not to defer paint events
 		getChart().setDeferPaints(true);
+		
+		// try to set the background color
+		getChart().getCanvas().setBackgroundColor(Color.black); 
 
 		// and over-ride the undo button
 		IAction undoAction = new UndoActionHandler(getEditorSite(),
