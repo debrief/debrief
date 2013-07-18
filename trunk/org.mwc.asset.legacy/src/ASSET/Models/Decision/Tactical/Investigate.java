@@ -99,7 +99,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 	 */
 	private Integer _currentTarget;
 
-	/** how we decide if investigation is complete
+	/**
+	 * how we decide if investigation is complete
 	 * 
 	 */
 	private InvestigatePattern _myPattern;
@@ -147,12 +148,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 		init();
 	}
-	
+
 	protected InvestigatePattern getPattern()
 	{
-		if(_myPattern == null)
+		if (_myPattern == null)
 			_myPattern = new InvestigatePatternFactory.MatchDetectionLevel();
-		
+
 		return _myPattern;
 	}
 
@@ -212,8 +213,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 						// of the detections of our current target. what's our best quality
 						// detection?
 						validDetection = dl.getBestDetection();
-						
-						if(getPattern().invComplete(validDetection, _detectionLevel))
+
+						if (getPattern().invComplete(validDetection, _detectionLevel))
 
 						{
 							// done. ready to move onto another
@@ -310,7 +311,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 						}
 					}
 				}
-				
+
 				// just check we're capable of catching him
 				if (res != null)
 				{
@@ -327,7 +328,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 					// see if there's any other demStatus setting to do
 					res = getPattern().amendDemStatus(res, status, tgtStat);
-					
+
 					// output results to any listeners
 					handleNewDemCourseChange((float) res.getCourse(), time, monitor,
 							validDetection.getTarget());
@@ -337,7 +338,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 					// take copy, just for convenience
 					_currentTarget = validDetection.getTarget();
-					
+
 				}
 			}
 		}
@@ -473,7 +474,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 								// is this our first match
 								if (res != null)
 								{
-									if((tmpScore == null) || (tmpScore > thisScore))
+									if ((tmpScore == null) || (tmpScore > thisScore))
 									{
 										// new target closer. switch to it
 										res = de;
@@ -558,37 +559,41 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 				double outsideTargetPath = 1;
 				double headingAwayFromTarget = 1;
 
-				// sort out how to produce cost function that includes the respective paths
+				// sort out how to produce cost function that includes the respective
+				// paths
 				double watchPath = watched.getStatus().getCourse();
 				double tgtToWatch = Math.toDegrees(tgtLoc.bearingFrom(watchLoc));
-				
+
 				// put them into some comfortable domain
-				while(watchPath > 180)
+				while (watchPath > 180)
 					watchPath -= 360;
-				while(tgtToWatch > 180)
+				while (tgtToWatch > 180)
 					tgtToWatch -= 360;
-				
-				if(Math.abs(tgtToWatch - watchPath) < 45)
+
+				if (Math.abs(tgtToWatch - watchPath) < 45)
 				{
 					outsideTargetPath = 0.6;
-				};
+				}
+				;
 
 				watchPath = tgt.getStatus().getCourse();
 				tgtToWatch = Math.toDegrees(watchLoc.bearingFrom(tgtLoc));
-				
+
 				// put them into some comfortable domain
-				while(watchPath > 180)
+				while (watchPath > 180)
 					watchPath -= 360;
-				while(tgtToWatch > 180)
+				while (tgtToWatch > 180)
 					tgtToWatch -= 360;
-				
-				if(Math.abs(tgtToWatch - watchPath) < 45)
+
+				if (Math.abs(tgtToWatch - watchPath) < 45)
 				{
 					headingAwayFromTarget = 0.8;
-				};
-				
+				}
+				;
+
 				// and calculate the range using a cost function
-				res = (toMe * 0+ toWatch )* outsideTargetPath * headingAwayFromTarget;
+				res = (toMe * 0.1 + toWatch) * outsideTargetPath
+						* headingAwayFromTarget;
 			}
 		}
 		else
@@ -1005,7 +1010,7 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			return targetsDone.size();
 		}
 	}
-	
+
 	static public class InvestigatePatternFactory
 	{
 		static public interface InvestigatePattern
@@ -1017,9 +1022,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					Status status, Status tgtStat);
 
 			void newTarget(int target);
-			
+
 		}
-		
+
 		static public class MatchDetectionLevel implements InvestigatePattern
 		{
 
@@ -1039,28 +1044,29 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			public SimpleDemandedStatus amendDemStatus(SimpleDemandedStatus res,
 					Status status, Status tgtStat)
 			{
-//				// are we close?
-//				WorldVector dist = tgtStat.getLocation().subtract(status.getLocation());
-//				WorldDistance dd = new WorldDistance(dist.getRange(), WorldDistance.DEGS);
-//				if(dd.lessThan(new WorldDistance(2.5, WorldDistance.NM)))
-//				{
-//					// ok, match him for speed
-//					res.setSpeed(tgtStat.getSpeed());
-//				}
-//				
+				// // are we close?
+				// WorldVector dist =
+				// tgtStat.getLocation().subtract(status.getLocation());
+				// WorldDistance dd = new WorldDistance(dist.getRange(),
+				// WorldDistance.DEGS);
+				// if(dd.lessThan(new WorldDistance(2.5, WorldDistance.NM)))
+				// {
+				// // ok, match him for speed
+				// res.setSpeed(tgtStat.getSpeed());
+				// }
+				//
 				return res;
 			}
-			
+
 		}
-		
+
 		static InvestigatePattern getPatternFor(String name)
 		{
 			InvestigatePattern res = new MatchDetectionLevel();
 			return res;
 		}
-		
-	}
 
+	}
 
 	static public class InvestigateInfo extends MWC.GUI.Editable.EditorType
 	{
@@ -1252,8 +1258,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status", res);
 			assertNull("ditched current target", theStore.getCurrentTarget(12));
-			assertEquals("got something in found targets", 1, theStore
-					.countDoneTargets());
+			assertEquals("got something in found targets", 1,
+					theStore.countDoneTargets());
 
 			// check that we can tick off target when found
 			de.setDetectionState(DetectionEvent.CLASSIFIED);
@@ -1261,8 +1267,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status when only existing target found", res);
 			assertNull("ditched current target", theStore.getCurrentTarget(12));
-			assertEquals("still got something in found targets", 1, theStore
-					.countDoneTargets());
+			assertEquals("still got something in found targets", 1,
+					theStore.countDoneTargets());
 
 		}
 
@@ -1415,9 +1421,9 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			bottomRight.setDepth(1000);
 			final WorldArea theArea = new WorldArea(topLeft, bottomRight);
 
-			PatternSearch_Core ladder = new PatternSearch_Ladder(
-					90.0, new Integer(4), new WorldLocation(0, 0, 0), new WorldDistance(
-							10, WorldDistance.NM), new WorldDistance(30, WorldDistance.NM),
+			PatternSearch_Core ladder = new PatternSearch_Ladder(90.0,
+					new Integer(4), new WorldLocation(0, 0, 0), new WorldDistance(10,
+							WorldDistance.NM), new WorldDistance(30, WorldDistance.NM),
 					new WorldDistance(500, WorldDistance.FT), null,
 					"Force Protection Ladder");
 
@@ -1768,8 +1774,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status", res);
 			assertNull("ditched current target", theStore.getCurrentTarget(12));
-			assertEquals("got something in found targets", 1, theStore
-					.countDoneTargets());
+			assertEquals("got something in found targets", 1,
+					theStore.countDoneTargets());
 
 			// check that we can tick off target when found
 			de.setDetectionState(DetectionEvent.CLASSIFIED);
@@ -1777,8 +1783,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status when only existing target found", res);
 			assertNull("ditched current target", theStore.getCurrentTarget(12));
-			assertEquals("got something in found targets", 1, theStore
-					.countDoneTargets());
+			assertEquals("got something in found targets", 1,
+					theStore.countDoneTargets());
 
 		}
 
@@ -1929,20 +1935,20 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertNotNull("inv target not still empty", theStore1
-					.getCurrentTarget(BLUE_ID1));
-			assertEquals("inv target not still empty", theStore1.getCurrentTarget(
-					BLUE_ID1).intValue(), TGT2_ID);
+			assertNotNull("inv target not still empty",
+					theStore1.getCurrentTarget(BLUE_ID1));
+			assertEquals("inv target not still empty",
+					theStore1.getCurrentTarget(BLUE_ID1).intValue(), TGT2_ID);
 
 			// check that the other searcher spots the other target
 			tgtCategory.setForce(Category.Force.RED);
 			res = investigate2.decide(blueStat2, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertNotNull("inv target not still empty", theStore2
-					.getCurrentTarget(BLUE_ID2));
-			assertEquals("inv target not still empty", theStore2.getCurrentTarget(
-					BLUE_ID2).intValue(), TGT1_ID);
+			assertNotNull("inv target not still empty",
+					theStore2.getCurrentTarget(BLUE_ID2));
+			assertEquals("inv target not still empty",
+					theStore2.getCurrentTarget(BLUE_ID2).intValue(), TGT1_ID);
 
 			// now make it so there's no valid watch
 			blueCat1.setType(Category.Type.MINISUB);
@@ -1950,8 +1956,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNull("dem stat when valid target", res);
-			assertNull("inv target not still empty", theStore1
-					.getCurrentTarget(BLUE_ID1));
+			assertNull("inv target not still empty",
+					theStore1.getCurrentTarget(BLUE_ID1));
 
 			// and put back our watched item
 			blueCat1.setType(Category.Type.MPA);
@@ -1959,8 +1965,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertNotNull("inv target not still empty", theStore1
-					.getCurrentTarget(BLUE_ID1));
+			assertNotNull("inv target not still empty",
+					theStore1.getCurrentTarget(BLUE_ID1));
 
 			// ok. let's lose the target and see what happens
 			theDetections.clear();
@@ -1968,8 +1974,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("null dem stat when target lost", res);
 			assertNotNull("remembered target", theStore1.getCurrentTarget(BLUE_ID1));
-			assertEquals("got correct tgt id", TGT2_ID, theStore1.getCurrentTarget(
-					BLUE_ID1).intValue());
+			assertEquals("got correct tgt id", TGT2_ID,
+					theStore1.getCurrentTarget(BLUE_ID1).intValue());
 
 			// and offer another target
 			theDetections.add(de);
@@ -1986,16 +1992,16 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 			simple = (SimpleDemandedStatus) res;
 			assertNotNull("new dem stat when valid target", res);
 			assertTrue("on a good bearing", simple.getCourse() > 0);
-			assertEquals("got new tgt id", TGT2_ID, theStore1.getCurrentTarget(
-					BLUE_ID1).intValue());
+			assertEquals("got new tgt id", TGT2_ID,
+					theStore1.getCurrentTarget(BLUE_ID1).intValue());
 
 			// check that we can tick off target when found
 			de2.setDetectionState(DetectionEvent.CLASSIFIED);
 			res = investigate1.decide(blueStat1, theChars, theDemStat, theDetections,
 					theMonitor, 1000);
 			assertNotNull("dem stat when valid target", res);
-			assertEquals("got new tgt id", TGT2_ID, theStore1.getCurrentTarget(
-					BLUE_ID1).intValue());
+			assertEquals("got new tgt id", TGT2_ID,
+					theStore1.getCurrentTarget(BLUE_ID1).intValue());
 
 			// check that we can tick off target when found
 			de2.setDetectionState(DetectionEvent.IDENTIFIED);
@@ -2003,8 +2009,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status", res);
 			assertNull("ditched current target", theStore1.getCurrentTarget(BLUE_ID1));
-			assertEquals("got something in found targets", 1, theStore1
-					.countDoneTargets());
+			assertEquals("got something in found targets", 1,
+					theStore1.countDoneTargets());
 
 			// check that we can tick off target when found
 			de.setDetectionState(DetectionEvent.IDENTIFIED);
@@ -2012,8 +2018,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status", res);
 			assertNull("ditched current target", theStore2.getCurrentTarget(BLUE_ID2));
-			assertEquals("got something in found targets", 2, theStore2
-					.countDoneTargets());
+			assertEquals("got something in found targets", 2,
+					theStore2.countDoneTargets());
 
 			// check that we can tick off other target when found
 			de2.setDetectionState(DetectionEvent.CLASSIFIED);
@@ -2021,8 +2027,8 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 					theMonitor, 1000);
 			assertNull("no dem status when only existing target found", res);
 			assertNull("ditched current target", theStore1.getCurrentTarget(BLUE_ID1));
-			assertEquals("got something in found targets", 2, theStore1
-					.countDoneTargets());
+			assertEquals("got something in found targets", 2,
+					theStore1.countDoneTargets());
 
 		}
 
