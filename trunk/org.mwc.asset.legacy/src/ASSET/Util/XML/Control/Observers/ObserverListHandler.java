@@ -59,8 +59,6 @@ package ASSET.Util.XML.Control.Observers;
  *
  */
 
-import ASSET.GUI.SuperSearch.Observers.ProportionDetectedObserver;
-import ASSET.GUI.SuperSearch.Observers.RemoveDetectedObserver;
 import ASSET.Scenario.Observers.*;
 import ASSET.Scenario.Observers.Plotting.PlotDetectionStatusObserver;
 import ASSET.Scenario.Observers.Plotting.PlotInvestigationSubjectObserver;

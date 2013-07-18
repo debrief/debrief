@@ -6,9 +6,9 @@
  */
 package ASSET.Util.XML.Control.Observers;
 
-import ASSET.GUI.SuperSearch.Observers.ProportionDetectedObserver;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.DetectionObserver;
+import ASSET.Scenario.Observers.ProportionDetectedObserver;
 
 abstract class ProportionDetectedObserverHandler extends DetectionObserverHandler
 {

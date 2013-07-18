@@ -6,9 +6,9 @@
  */
 package ASSET.Util.XML.Control.Observers;
 
-import ASSET.GUI.SuperSearch.Observers.RemoveDetectedObserver;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.DetectionObserver;
+import ASSET.Scenario.Observers.RemoveDetectedObserver;
 
 abstract class RemoveDetectedObserverHandler extends DetectionObserverHandler
 {
