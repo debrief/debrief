@@ -489,6 +489,14 @@ public class LineShape extends PlainShape implements Editable,
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
+		
+		public void testTextRotationAngle()
+		{
+			WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
+			LineShape ed = new LineShape(scrap, scrap);
+			float r = ed.getTextRotationAngle(new Point(3, 0), new Point(5, 5));
+			assertEquals(45.0f, r);
+		}
 	}
 
 }
