@@ -119,7 +119,6 @@ abstract public class TransitHandler extends CoreDecisionHandler
 		if (_reverse != null)
 		{
 			tr.setReverse(_reverse);
-			System.err.println("setting reverse to:" + _reverse);
 		}
 		if (_destination != null)
 		{
