@@ -245,13 +245,6 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.nebula.widgets.ganttchart"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.mwc.debrief.TimeBar"
          download-size="0"
          install-size="0"
