@@ -123,15 +123,6 @@ public class Trace extends java.lang.Object
 	}
 
 	/**
-	 * share access to the tool parent - used for retrieving properties
-	 * 
-	 */
-	public static ToolParent getParent()
-	{
-		return _myParent;
-	}
-
-	/**
 	 * write this exception to the trace file
 	 * 
 	 * @param e
