@@ -25,13 +25,15 @@ public class ColorHelper extends EditorHelper
 	// color using
 	// the SWT color-registry. we'll keep our own local list instead...
 	private static HashMap<Color, org.eclipse.swt.graphics.Color> _myColorList = new LinkedHashMap<Color, org.eclipse.swt.graphics.Color>();
-	
-	private final static java.awt.Color OFF_WHITE = new Color(255,255,254);
+
+	private final static java.awt.Color OFF_WHITE = new Color(255, 255, 254);
+
+	private CustomColorsStore _customColorsStore = new CustomColorsStore();
 
 	public ColorHelper(Control parentControl)
 	{
 		super(java.awt.Color.class);
-		
+
 		// _parentControl = parentControl;
 	}
 
@@ -72,12 +74,12 @@ public class ColorHelper extends EditorHelper
 	{
 
 		// hmm, we're having trouble with white. is this white?
-		if(javaCol.equals(java.awt.Color.WHITE))
+		if (javaCol.equals(java.awt.Color.WHITE))
 		{
-			//  right - switch White to off-white. For some reason SWT won't plot white
+			// right - switch White to off-white. For some reason SWT won't plot white
 			javaCol = OFF_WHITE;
 		}
-		
+
 		// see if we have it in our own private list
 		org.eclipse.swt.graphics.Color thisCol = (org.eclipse.swt.graphics.Color) _myColorList
 				.get(javaCol);
@@ -97,8 +99,7 @@ public class ColorHelper extends EditorHelper
 			// ok. do we have the color?
 			if (thisCol == null)
 			{
-				
-				
+
 				// bugger, we'll have to create it
 				final int red = javaCol.getRed();
 				final int green = javaCol.getGreen();
@@ -155,7 +156,8 @@ public class ColorHelper extends EditorHelper
 		int yoffset = (height - size) / 2;
 
 		RGB black = new RGB(0, 0, 0);
-		PaletteData dataPalette = new PaletteData(new RGB[] { black, black, color });
+		PaletteData dataPalette = new PaletteData(new RGB[]
+		{ black, black, color });
 		data = new ImageData(width, height, 4, dataPalette);
 		data.transparentPixel = 0;
 
@@ -222,7 +224,8 @@ public class ColorHelper extends EditorHelper
 			String imageKey = "vpf.gif";
 			imageKey = ISharedImages.IMG_OBJ_FOLDER;
 
-			Image theImage = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
+			Image theImage = PlatformUI.getWorkbench().getSharedImages()
+					.getImage(imageKey);
 
 			if (theImage == null)
 			{
@@ -253,7 +256,8 @@ public class ColorHelper extends EditorHelper
 		 */
 		public Object[] getElements(Object inputElement)
 		{
-			RGB[] cols = new RGB[] { new RGB(255, 0, 0), new RGB(0, 255, 0), new RGB(0, 0, 255) };
+			RGB[] cols = new RGB[]
+			{ new RGB(255, 0, 0), new RGB(0, 255, 0), new RGB(0, 0, 255) };
 			return cols;
 		}
 
@@ -265,7 +269,8 @@ public class ColorHelper extends EditorHelper
 	 * @return
 	 */
 	@Override
-	public Control getEditorControlFor(Composite parent, final IDebriefProperty property)
+	public Control getEditorControlFor(Composite parent,
+			final IDebriefProperty property)
 	{
 
 		final ColorSelector sel = new ColorSelector(parent);
@@ -285,37 +290,51 @@ public class ColorHelper extends EditorHelper
 		return sel.getButton();
 
 	}
-	
+
 	class ColorCellEditor extends org.eclipse.jface.viewers.ColorCellEditor
 	{
 
-		public ColorCellEditor(Composite parent) 
+		public ColorCellEditor(Composite parent)
 		{
 			super(parent);
 		}
-		
-		protected Object openDialogBox(Control cellEditorWindow) 
+
+		protected Object openDialogBox(Control cellEditorWindow)
 		{
-	        ColorDialog dialog = new ColorDialog(cellEditorWindow.getShell());
-	        Object value = getValue();
-	        if (value != null) 
-	        {
+			ColorDialog dialog = new ColorDialog(cellEditorWindow.getShell());
+			Object value = getValue();
+			if (value != null)
+			{
 				dialog.setRGB((RGB) value);
 			}
-	        
-	        Vector<RGB> initialColors = new Vector<RGB>();
-	        // iterate through keys since they are ordered by insertion time
-	        for(Color color: _myColorList.keySet())
-	        {
-	        	initialColors.add(_myColorList.get(color).getRGB());
-	        }
-	        dialog.setRGBs((RGB[]) initialColors.toArray(new RGB[initialColors.size()]));
-	        	
-	        value = dialog.open();
-	        return dialog.getRGB();
-	        
-	    }
-		
+
+			Vector<RGB> initialColors = _customColorsStore.load();
+			// iterate through keys since they are ordered by insertion time
+			if (initialColors == null || initialColors.size() == 0)
+			{
+				initialColors = new Vector<RGB>();
+				for (org.eclipse.swt.graphics.Color color : _myColorList.values())
+				{
+					initialColors.add(color.getRGB());
+				}
+
+			}
+			dialog
+					.setRGBs((RGB[]) initialColors.toArray(new RGB[initialColors.size()]));
+			_customColorsStore.save(initialColors);
+			value = dialog.open();
+			if (value != null)
+				_customColorsStore.addColor((RGB) value);
+			return dialog.getRGB();
+
+		}
+
+		@Override
+		public void dispose()
+		{
+			super.dispose();
+		}
+
 	}
 
 }

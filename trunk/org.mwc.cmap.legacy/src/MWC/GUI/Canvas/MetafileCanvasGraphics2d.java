@@ -2184,4 +2184,11 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		}
 
 	}
+
+	@Override
+	public void drawText(String str, int x, int y, float rotate) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

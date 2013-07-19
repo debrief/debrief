@@ -115,6 +115,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
@@ -969,23 +970,41 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		// and the color
 		_currentColor = null;
 	}
-
-	public void drawText(final String theStr, final int x, final int y)
+	
+	public void drawText(final String theStr, final int x, final int y, final float rotate)
 	{
 		if (_theDest == null)
 			return;
 
 		if (!_theDest.isDisposed())
-
 		{
+			
 			FontData[] fd = _theDest.getFont().getFontData();
-			FontData font = fd[0];
-			int fontHt = font.getHeight();
+			FontData fontData = fd[0];
 			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
-
-			int y2 = y - fontHt;
-			_theDest.drawText(theStr, x, y2, true);
+			int y2 = y;
+			if (rotate == 0)
+				y2 = y -  fontData.getHeight();
+			
+			 Transform oldTransform = new Transform(_theDest.getDevice());  
+			 _theDest.getTransform(oldTransform);
+			
+			Transform tr = new Transform(_theDest.getDevice());			
+			tr.translate(x, y2);
+			tr.rotate(rotate);
+			tr.translate(-x, -y2);
+			
+			_theDest.setTransform(tr);
+			_theDest.drawText(theStr, x, y, true);
+			
+			_theDest.setTransform(oldTransform);
+			tr.dispose();			
 		}
+	}
+
+	public void drawText(final String theStr, final int x, final int y)
+	{
+		drawText(theStr, x, y, 0);
 	}
 
 	public void drawText(final java.awt.Font theFont, final String theStr,

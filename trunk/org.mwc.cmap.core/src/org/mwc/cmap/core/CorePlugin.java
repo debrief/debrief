@@ -90,6 +90,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 	public static final String TOTE = "org.mwc.cmap.tote.views.ToteView";
 
 	public static final String TIME_CONTROLLER = "org.mwc.cmap.TimeController.views.TimeController";
+	public static final String TIME_BAR = "org.mwc.cmap.timebar.views.TimeBarView";
 
 	public static final String XY_PLOT = "org.mwc.cmap.xyplot.views.XYPlotView";
 
