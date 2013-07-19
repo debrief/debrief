@@ -128,6 +128,9 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
+//import org.mwc.cmap.core.CorePlugin;
+
+import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -202,7 +205,7 @@ public class LineShape extends PlainShape implements Editable,
 
 		// and now draw it
 		dest.drawLine(start.x, start.y, end.x, end.y);
-
+		
 		if (getArrowAtEnd())
 		{
 
@@ -232,20 +235,20 @@ public class LineShape extends PlainShape implements Editable,
 
 		}
 		
-		// Draw range at the center of the line
-		Point center = new Point(dest.toScreen(_centre));
-		float rotate = getTextRotationAngle(start, end);
-	    dest.drawText(String.format("%.3f", rangeFrom(_centre)), 
-	    		center.x, center.y, rotate);
-	}
-	
-	private float getTextRotationAngle(final Point start, final Point end)
-	{
-		Point u = end;
-		Point v = new Point(end.x, start.y);
-		double a = u.x*v.x + u.y*v.y;
-		double b = Math.sqrt(u.x*u.x + u.y*u.y)*Math.sqrt(v.x*v.x + v.y*v.y);
-		return (float) Math.toDegrees(Math.acos(a/b));
+		// Draw range/bearing at the center of the line		
+		WorldVector wv = _end.subtract(_start);		
+//		String myUnits = CorePlugin.getToolParent().getProperty(
+//                MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+		//TODO: get the default range units
+		double range = Conversions.convertRange(wv.getRange(), "yd");
+		double bearing = wv.getBearing();
+		String msg = getName() + "Rg: " + String.format("%.3f", range) + " Brg: "
+				+ String.format("%.3f", bearing);		
+		
+		//Point center = new Point(dest.toScreen(_centre));	
+		float rotate = (float) Math.toDegrees(bearing) - 90;//getTextRotationAngle(start, end);
+		dest.drawText(msg, 
+	    		start.x, start.y, rotate);
 	}
 	
 	public boolean getArrowAtEnd()
@@ -490,13 +493,6 @@ public class LineShape extends PlainShape implements Editable,
 			ed = null;
 		}
 		
-		public void testTextRotationAngle()
-		{
-			WorldLocation scrap = new WorldLocation(2d, 2d, 2d);
-			LineShape ed = new LineShape(scrap, scrap);
-			float r = ed.getTextRotationAngle(new Point(3, 0), new Point(5, 5));
-			assertEquals(45.0f, r);
-		}
 	}
 
 }

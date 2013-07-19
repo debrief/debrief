@@ -971,7 +971,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		_currentColor = null;
 	}
 	
-	public void drawText(final String theStr, final int x, final int y, float rotate)
+	public void drawText(final String theStr, final int x, final int y, final float rotate)
 	{
 		if (_theDest == null)
 			return;
@@ -982,18 +982,20 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			FontData[] fd = _theDest.getFont().getFontData();
 			FontData fontData = fd[0];
 			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
-			int y2 = y -  fontData.getHeight();
+			int y2 = y;
+			if (rotate == 0)
+				y2 = y -  fontData.getHeight();
 			
 			 Transform oldTransform = new Transform(_theDest.getDevice());  
 			 _theDest.getTransform(oldTransform);
 			
 			Transform tr = new Transform(_theDest.getDevice());			
-			tr.rotate(rotate*-1);
+			tr.translate(x, y2);
+			tr.rotate(rotate);
+			tr.translate(-x, -y2);
+			
 			_theDest.setTransform(tr);
-		    rotate = (float)Math.toRadians(rotate);
-			double x2 = x*Math.cos(rotate) - y2*Math.sin(rotate);
-			double y3 = x*Math.sin(rotate) + y2*Math.cos(rotate);
-			_theDest.drawText(theStr, (int)x2, (int)y3, true);
+			_theDest.drawText(theStr, x, y, true);
 			
 			_theDest.setTransform(oldTransform);
 			tr.dispose();			
