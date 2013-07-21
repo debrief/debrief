@@ -1,5 +1,6 @@
 package ASSET.Models.Movement;
 
+import ASSET.ParticipantType;
 import ASSET.Models.MWCModel;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Models.Vessels.SSK;
@@ -978,7 +979,7 @@ public class TurnAlgorithm implements MWCModel {
 			// clockwise at steady speed, fit in one cycle
 			res = new Status(stat);
 
-			final CoreParticipant cp = new SSK(12);
+			final ParticipantType cp = new SSK(12);
 			cp.setCategory(new Category(Category.Force.BLUE,
 					Category.Environment.AIRBORNE, Category.Type.HELO));
 			cp.setName("test SSK");
@@ -1444,7 +1445,7 @@ public class TurnAlgorithm implements MWCModel {
 							defaultClimbRate, defaultDiveRate, maxHeight,
 							minHeight);
 
-			final CoreParticipant cp = new CoreParticipant(23);
+			final ParticipantType cp = new CoreParticipant(23);
 			cp.setCategory(new Category(Category.Force.BLUE,
 					Category.Environment.AIRBORNE, Category.Type.HELO));
 			cp.setName("SSK");

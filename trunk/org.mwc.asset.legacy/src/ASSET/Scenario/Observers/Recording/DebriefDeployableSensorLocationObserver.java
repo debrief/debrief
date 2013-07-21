@@ -5,8 +5,8 @@ import ASSET.Models.Sensor.SensorList;
 import ASSET.Models.SensorType;
 import ASSET.Models.Vessels.SSN;
 import ASSET.NetworkParticipant;
+import ASSET.ParticipantType;
 import ASSET.Participants.Category;
-import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.Status;
 import ASSET.ScenarioType;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
@@ -133,7 +133,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
 
           // and the core participant
 
-          CoreParticipant cp = new SSN(cs.getId());
+          ParticipantType cp = new SSN(cs.getId());
           cp.setName(cs.getName());
           cp.setCategory(new Category(Category.Force.BLUE, Category.Environment.CROSS, Category.Type.SONAR_BUOY));
 
@@ -164,7 +164,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
     for (int i = 0; i < parts.length; i++)
     {
       Integer part = parts[i];
-      CoreParticipant thisP = (CoreParticipant) scenario.getThisParticipant(part.intValue());
+      ParticipantType thisP = (ParticipantType) scenario.getThisParticipant(part.intValue());
 
       // now the sensors
       SensorList sl = thisP.getSensorFit();

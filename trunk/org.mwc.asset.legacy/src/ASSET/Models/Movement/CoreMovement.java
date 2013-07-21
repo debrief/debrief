@@ -9,10 +9,10 @@ package ASSET.Models.Movement;
  * @version 1.0
  */
 
+import ASSET.ParticipantType;
 import ASSET.Models.MovementType;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Participants.Category;
-import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
@@ -255,7 +255,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false,  "test observer", true);
       tpo.setup(dummyScenario);
-      CoreParticipant cp = new Helo(100);
+      ParticipantType cp = new Helo(100);
       cp.setName("helo alpha");
       cp.setCategory(new Category(Category.Force.RED, Category.Environment.AIRBORNE, Category.Type.HELO));
 
@@ -325,7 +325,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false, "test observer", true);
       tpo.setup(dummyScenario);
-      CoreParticipant cp = new Helo(100);
+      ParticipantType cp = new Helo(100);
       cp.setName("helo alpha");
       cp.setCategory(new Category(Category.Force.RED, Category.Environment.AIRBORNE, Category.Type.HELO));
 

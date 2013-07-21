@@ -71,6 +71,11 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	private String _myName;
 
+	/** whether we are 'alive' in the scenario
+	 * 
+	 */
+	private boolean _isAlive = true;
+	
 	/**
 	 * my movement model
 	 */
@@ -164,6 +169,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		_myId = id;
 		setStatus(status);
 		setDemandedStatus(demStatus);
+		
 
 		_movement = new ASSET.Models.Movement.CoreMovement();
 		_myName = name;
@@ -400,7 +406,19 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		return _myId;
 	}
+	
+	@Override
+	public boolean isAlive()
+	{
+		return _isAlive;
+	}
 
+	@Override
+	public void setAlive(boolean val)
+	{
+		_isAlive = val;
+	}
+	
 	/**
 	 * set the id of this participant
 	 */

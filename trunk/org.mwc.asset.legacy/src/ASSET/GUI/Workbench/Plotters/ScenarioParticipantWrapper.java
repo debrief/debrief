@@ -419,7 +419,7 @@ public class ScenarioParticipantWrapper implements
 	 */
 	public boolean getVisible()
 	{
-		return _visible;
+		return (_myPart.isAlive() && _visible);
 	}
 
 	/**

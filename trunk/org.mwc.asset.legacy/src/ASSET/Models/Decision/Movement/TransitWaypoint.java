@@ -9,6 +9,7 @@ package ASSET.Models.Decision.Movement;
  * @version 1.0
  */
 
+import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Movement.HighLevelDemandedStatus;
 import ASSET.Models.Movement.MovementCharacteristics;
@@ -16,7 +17,6 @@ import ASSET.Models.Movement.OnTopWaypoint;
 import ASSET.Models.Movement.WaypointVisitor;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Participants.Category;
-import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
@@ -776,7 +776,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "transit2b.png",
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false, "test observer", true);
-      CoreParticipant cp = OnTopWaypoint.createTestHelo();
+      ParticipantType cp = OnTopWaypoint.createTestHelo();
       cp.setDecisionModel(t2);
       cp.setMovementChars(chars);
       cp.setStatus(current);
@@ -858,7 +858,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "testAcceleratingForwardLoopRoute.png",
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false, "test observer", true);
-      CoreParticipant cp = OnTopWaypoint.createTestHelo();
+      ParticipantType cp = OnTopWaypoint.createTestHelo();
       cp.setDecisionModel(t2);
       cp.setMovementChars(chars);
       cp.setStatus(current);

@@ -9,6 +9,7 @@ package ASSET.GUI.Editors;
  * @version 1.0
  */
 
+import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
@@ -254,7 +255,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
       final DetectionViewer dv = new DetectionViewer();
 
       set = false;
-      final CoreParticipant cp = new CoreParticipant(12)
+      final ParticipantType cp = new CoreParticipant(12)
       {
         /**
 				 * 
@@ -286,7 +287,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
       assertEquals("we can set zero length data", dv.detList.getModel().getSize(), 0);
 
       final BroadbandSensor bb = new BroadbandSensor(122);
-      final CoreParticipant target = new ASSET.Models.Vessels.Surface(12);
+      final ParticipantType target = new ASSET.Models.Vessels.Surface(12);
       target.setName("surfare target");
       dl.add(new DetectionEvent(0, cp.getId(), null, bb, null, null, null, null, null, null, null, null, target));
       dv.newDetections(dl);

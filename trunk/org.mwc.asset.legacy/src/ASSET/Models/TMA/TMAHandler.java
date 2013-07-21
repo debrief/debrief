@@ -1,6 +1,6 @@
 package ASSET.Models.TMA;
 
-import ASSET.Participants.CoreParticipant;
+import ASSET.ParticipantType;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
@@ -108,7 +108,7 @@ public class TMAHandler
     /** the participant we are wrapping
      *
      */
-    CoreParticipant _myPart = null;
+    ParticipantType _myPart = null;
 
     /** the origin for this scenario
      *
@@ -118,7 +118,7 @@ public class TMAHandler
     /** constructor
      *
      */
-    public ParticipantWrapper(final CoreParticipant part, final WorldLocation origin)
+    public ParticipantWrapper(final ParticipantType part, final WorldLocation origin)
     {
       _myPart = part;
       _origin = origin;

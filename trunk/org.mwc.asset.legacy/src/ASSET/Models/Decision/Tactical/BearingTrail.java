@@ -9,6 +9,7 @@ package ASSET.Models.Decision.Tactical;
  * @version 1.0
  */
 
+import ASSET.ParticipantType;
 import ASSET.Models.Decision.Movement.Trail;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Movement.SimpleDemandedStatus;
@@ -344,7 +345,7 @@ public class BearingTrail extends Trail
 			ssn.setCategory(new ASSET.Participants.Category(Category.Force.RED,
 					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
 
-			final ASSET.Participants.CoreParticipant target = new ASSET.Models.Vessels.Surface(
+			final ParticipantType target = new ASSET.Models.Vessels.Surface(
 					1);
 			target.setName("some target");
 

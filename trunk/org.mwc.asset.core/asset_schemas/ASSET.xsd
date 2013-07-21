@@ -1003,6 +1003,13 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="isAlive" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation>Whether this participant should be 'alive' at the start of the scenario.  Used 
+					in conjunction with DeferredBirth
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="MonteCarloTarget" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>Flag to indicate that this participant should be
@@ -2206,6 +2213,12 @@
 									course/speed</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+						<xs:element name="DeferredBirth" type="DeferredBirthType">
+							<xs:annotation>
+								<xs:documentation>Insert a pause, maintaining current
+									course/speed</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:choice>
 				</xs:sequence>
 			</xs:extension>
@@ -3231,6 +3244,22 @@
 	<xs:complexType name="WaitType">
 		<xs:annotation>
 			<xs:documentation>Insert a pause, maintaining current course/speed
+			</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited
+				Editable:
+				inherited</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DecisionModelType">
+				<xs:sequence>
+					<xs:element name="Duration" type="DurationType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="DeferredBirthType">
+		<xs:annotation>
+			<xs:documentation>Defer starting the participant
 			</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible: inherited
 				Editable:

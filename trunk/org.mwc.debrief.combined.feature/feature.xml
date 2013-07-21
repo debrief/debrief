@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
-      version="1.0.251"
+      version="1.0.252"
       provider-name="MWC"
       plugin="org.mwc.debrief.core">
 
@@ -239,13 +239,6 @@ Library.
 
    <plugin
          id="org.mwc.debrief.GNDManager"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.nebula.widgets.ganttchart"
          download-size="0"
          install-size="0"
          version="0.0.0"

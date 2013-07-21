@@ -191,7 +191,7 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 				.hasNext();)
 		{
 			// get the next participant
-			CoreParticipant cp = (CoreParticipant) thisTrack.next();
+			ParticipantType cp = (ParticipantType) thisTrack.next();
 
 			// retrieve its track
 			Track track = (Track) _myTracks.get(cp);
@@ -474,7 +474,7 @@ public class WriteToCloudObserver extends RecordToFileObserverType implements
 			stat.setCourse(21);
 			stat.setSpeed(new WorldSpeed(4, WorldSpeed.M_sec));
 
-			CoreParticipant ssn = new CoreParticipant(12);
+			ParticipantType ssn = new CoreParticipant(12);
 			ssn.setName("Bingo");
 			ssn.setCategory(new Category(Category.Force.BLUE,
 					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));

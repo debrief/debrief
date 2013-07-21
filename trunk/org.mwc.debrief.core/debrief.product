@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.262" useFeatures="true" includeLaunchers="false">
+<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.264" useFeatures="true" includeLaunchers="false">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/DebriefNGlogoSmall.gif"/>
@@ -16,7 +16,7 @@
 --launcher.defaultAction
 openFile</programArgs>
       <vmArgs>-Xms128m
--Xmx1024m</vmArgs>
+-Xmx2000m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
@@ -215,8 +215,8 @@ Library.
    </plugins>
 
    <features>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.195"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.251"/>
+      <feature id="org.mwc.cmap.combined.feature"/>
+      <feature id="org.mwc.debrief.combined.feature"/>
    </features>
 
 

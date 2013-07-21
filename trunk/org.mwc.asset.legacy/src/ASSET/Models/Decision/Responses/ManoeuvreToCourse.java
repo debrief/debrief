@@ -8,10 +8,10 @@
  */
 package ASSET.Models.Decision.Responses;
 
+import ASSET.ParticipantType;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Sensor.CoreSensor;
-import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
@@ -351,7 +351,7 @@ public class ManoeuvreToCourse extends Response.CoreResponse
                                                    new Float(20), true,
                                                    new WorldDistance(40, WorldDistance.METRES));
 
-      final CoreParticipant cp = new ASSET.Models.Vessels.Surface(12);
+      final ParticipantType cp = new ASSET.Models.Vessels.Surface(12);
       final CoreSensor cs = new ASSET.Models.Sensor.Initial.BroadbandSensor(22);
       ASSET.Models.Detection.DetectionEvent de =
         new ASSET.Models.Detection.DetectionEvent(1200, cp.getId(), null, cs,
