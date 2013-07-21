@@ -138,6 +138,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.Utilities.Errors.Trace;
 
 public class LineShape extends PlainShape implements Editable,
 		HasDraggableComponents
@@ -237,16 +238,15 @@ public class LineShape extends PlainShape implements Editable,
 		
 		// Draw range/bearing at the center of the line		
 		WorldVector wv = _end.subtract(_start);		
-//		String myUnits = CorePlugin.getToolParent().getProperty(
-//                MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
-		//TODO: get the default range units
-		double range = Conversions.convertRange(wv.getRange(), "yd");
+		String myUnits = Trace.getParent().getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+		if (myUnits == null)
+			myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
+		double range = Conversions.convertRange(wv.getRange(), myUnits);
 		double bearing = wv.getBearing();
-		String msg = getName() + "Rg: " + String.format("%.3f", range) + " Brg: "
-				+ String.format("%.3f", bearing);		
+		String msg = "          Rg: " + String.format("%.3f", range) +
+				" Brg: " + String.format("%.3f", bearing);		
 		
-		//Point center = new Point(dest.toScreen(_centre));	
-		float rotate = (float) Math.toDegrees(bearing) - 90;//getTextRotationAngle(start, end);
+		float rotate = (float) Math.toDegrees(bearing) - 90;
 		dest.drawText(msg, 
 	    		start.x, start.y, rotate);
 	}
