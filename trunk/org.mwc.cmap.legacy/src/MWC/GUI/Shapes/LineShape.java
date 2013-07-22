@@ -238,17 +238,25 @@ public class LineShape extends PlainShape implements Editable,
 		
 		// Draw range/bearing at the center of the line		
 		WorldVector wv = _end.subtract(_start);		
-		String myUnits = Trace.getParent().getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+		String myUnits = Trace.getParent().getProperty(
+				MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
 		if (myUnits == null)
 			myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
 		double range = Conversions.convertRange(wv.getRange(), myUnits);
 		double bearing = wv.getBearing();
 		String msg = "          Rg: " + String.format("%.3f", range) +
 				" Brg: " + String.format("%.3f", bearing);		
-		
-		float rotate = (float) Math.toDegrees(bearing) - 90;
-		dest.drawText(msg, 
-	    		start.x, start.y, rotate);
+		float rotate = (float) Math.toDegrees(bearing);
+		if (start.x < end.x)
+		{			
+			rotate -= 90;
+			dest.drawText(msg, start.x, start.y, rotate);
+		}
+		else
+		{
+			rotate += 90;
+			dest.drawText(msg, end.x, end.y, rotate);
+		}
 	}
 	
 	public boolean getArrowAtEnd()
