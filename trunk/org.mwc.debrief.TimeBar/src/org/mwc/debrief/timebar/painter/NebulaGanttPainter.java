@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.nebula.widgets.ganttchart.AbstractPaintManager;
 import org.eclipse.nebula.widgets.ganttchart.AdvancedTooltip;
 import org.eclipse.nebula.widgets.ganttchart.DefaultSettings;
 import org.eclipse.nebula.widgets.ganttchart.GanttChart;
@@ -19,11 +20,15 @@ import org.eclipse.nebula.widgets.ganttchart.GanttEvent;
 import org.eclipse.nebula.widgets.ganttchart.GanttEventListenerAdapter;
 import org.eclipse.nebula.widgets.ganttchart.GanttGroup;
 import org.eclipse.nebula.widgets.ganttchart.GanttImage;
+import org.eclipse.nebula.widgets.ganttchart.IColorManager;
+import org.eclipse.nebula.widgets.ganttchart.ISettings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -46,7 +51,8 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	public NebulaGanttPainter(Composite parent)
 	{
 		_chart = new GanttChart(parent, SWT.MULTI, new GanttChartSettings(),
-				null /* color manager */, null /* paint manager */, null /* language manager */);		
+				null /* color manager */, 
+				new GanttPaintManager(), null /* language manager */);		
 		
 		_chart.getGanttComposite().addMouseListener(new MouseListener() {
 			
@@ -132,7 +138,6 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 				evt.addScopeEvent(_eventEntries.get(entry));
 			}
 		}
-		
 		addEvent(evt, modelEntry);		
 	}
 
@@ -141,10 +146,9 @@ public class NebulaGanttPainter implements ITimeBarsPainter, PropertyChangeListe
 	{		
 		if (!modelEntry.isVisible())
 			return;
-		GanttImage evt = new GanttImage(_chart, "", modelEntry.getStart(), 
-				Activator.getImageDescriptor("icons/dot.gif").createImage());
+		GanttImage evt = new GanttImage(_chart, "", modelEntry.getStart(),
+				Activator.getImageDescriptor("icons/sample.gif").createImage());
 		evt.setAdvancedTooltip(new AdvancedTooltip("", modelEntry.getToolTipText()));
-			
 		if (modelEntry.getColor() !=null)
 			evt.setStatusColor(modelEntry.getColor());
 		addEvent(evt, modelEntry);
@@ -420,6 +424,12 @@ class GanttChartSettings extends DefaultSettings
 	}
 	
 	@Override
+	public String getDefaultAdvancedTooltipText() 
+	{
+		return "";
+	}
+	
+	@Override
 	public Locale getDefaultLocale()
 	{
 		return Locale.UK;
@@ -443,4 +453,53 @@ class GanttChartSettings extends DefaultSettings
 		return true;
 	}
 	
+}
+
+
+class GanttPaintManager extends AbstractPaintManager
+{
+	@Override
+	public void drawImage(GanttComposite ganttComposite, ISettings settings,
+			IColorManager colorManager, GanttEvent event, GC gc, Image image,
+			boolean threeDee, int dayWidth, int xLoc, int yStart,
+			Rectangle fullBounds) {
+		int y = yStart;
+        int x = xLoc;
+
+        // draw a cross in a box if image is null
+        if (image == null) {
+            gc.setForeground(colorManager.getBlack());
+            gc.drawRectangle(x, y, dayWidth, settings.getEventHeight());
+            gc.drawLine(x, y, x + dayWidth, y + settings.getEventHeight());
+            gc.drawLine(x + dayWidth, y, x, y + settings.getEventHeight());
+            return;
+        }
+
+        // can it fit?
+        final Rectangle bounds = image.getBounds();
+        if (settings.scaleImageToDayWidth() && bounds.width > dayWidth) {
+            // shrink image
+            ImageData id = image.getImageData();
+            final int diff = id.width - dayWidth;
+            id.width -= diff;
+            id.height -= diff;
+            final Image temp = new Image(Display.getDefault(), id);
+
+            final int negY = (bounds.height - settings.getEventHeight());
+            if (negY > 0) {
+                y += negY / 2;
+            }
+
+            gc.drawImage(temp, x, y);
+            temp.dispose();
+            return;
+        } else {
+            // center it x-wise
+        	x -= bounds.width/2;
+            //x -= Math.abs(bounds.width - dayWidth) / 2;
+        }
+
+        gc.drawImage(image, x, y);
+
+	}
 }

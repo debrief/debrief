@@ -59,7 +59,9 @@ public class TimeSpot implements IEventEntry
 	@Override
 	public Calendar getEnd() 
 	{
-		return _time;
+		Calendar end = _time;
+		end.add(Calendar.HOUR, 1);
+		return end;
 	}
 
 	@Override
