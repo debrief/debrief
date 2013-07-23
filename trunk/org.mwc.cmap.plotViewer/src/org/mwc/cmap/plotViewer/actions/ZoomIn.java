@@ -25,7 +25,9 @@ import MWC.GenericData.WorldLocation;
  */
 public class ZoomIn extends CoreDragAction
 {
-
+	// TODO: since this mode does both zoom in and zoom out 
+	// depending on the drag rectangle location,
+	// maybe we should rename it?
 	public static class ZoomInMode extends SWTChart.PlotMouseDragger
 	{
 		Point _startPoint;
@@ -70,8 +72,26 @@ public class ZoomIn extends CoreDragAction
 						WorldArea area = new WorldArea(locA, locB);
 
 						WorldArea oldArea = _myCanvas.getProjection().getDataArea();
-						Action theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
-								_myChart, oldArea, area);
+						Action theAction = null;
+						// if the drag was from TL to BR
+						if (deltaX <= 0 && deltaY <=0 )
+						{
+							// then zoom in
+							theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(
+									_myChart, oldArea, area);
+						}
+						// if the drag was from BR to TL
+						else 
+						{
+							// then zoom out
+							if (deltaX == 0)
+								deltaX = 1;
+							if (deltaY == 0)
+								deltaY = 1;
+							double scale = deltaX*deltaY;
+							theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(
+									_myChart, oldArea, scale);
+						}
 
 						// and wrap it
 						DebriefActionWrapper daw = new DebriefActionWrapper(theAction,
