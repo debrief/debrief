@@ -72,7 +72,7 @@ public abstract class BaseContribution extends ModelObject implements
 					if (route.getStates() != null)
 						if (route.getStates().size() > 0)
 						{
-							res = cumulativeScoreFor(route) / weight;
+							res = cumulativeScoreFor(route) / (10 - Math.min(weight, 9));
 						}
 			}
 		// ok, done.
