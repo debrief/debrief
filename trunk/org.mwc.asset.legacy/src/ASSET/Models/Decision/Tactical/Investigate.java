@@ -587,12 +587,12 @@ public class Investigate extends CoreDecision implements java.io.Serializable
 
 				if (Math.abs(tgtToWatch - watchPath) < 45)
 				{
-					headingAwayFromTarget = 0.8;
+					headingAwayFromTarget = 0.6;
 				}
 				;
 
 				// and calculate the range using a cost function
-				res = (toMe * 0.1 + toWatch) * outsideTargetPath
+				res = (toMe * 0.05 + toWatch) * outsideTargetPath
 						* headingAwayFromTarget;
 			}
 		}
