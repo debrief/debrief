@@ -11,7 +11,6 @@ import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.CandidateFactory;
 import org.uncommons.watchmaker.framework.EvaluatedCandidate;
-import org.uncommons.watchmaker.framework.EvolutionEngine;
 import org.uncommons.watchmaker.framework.EvolutionUtils;
 import org.uncommons.watchmaker.framework.EvolutionaryOperator;
 import org.uncommons.watchmaker.framework.FitnessEvaluator;
@@ -23,7 +22,6 @@ import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.operators.ListCrossover;
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
 import org.uncommons.watchmaker.framework.termination.ElapsedTime;
-import org.uncommons.watchmaker.framework.termination.Stagnation;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -169,7 +167,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}));
 		operators.add(new PointsMutation(legs, new Probability(parameters.getMutationProbability())));
 		
-		EvolutionEngine<List<Point>> engine = new GAEngine(
+		final GAEngine engine = new GAEngine(
 				new RoutesCandidateFactory(legs), 
 				new EvolutionPipeline<List<Point>>(operators),
 				new RoutesFitnessEvaluator(legs, contributions),
@@ -190,13 +188,13 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				progressMonitorCondition,
 				new ElapsedTime(parameters.getTimeout()),
 				progressMonitorCondition,
-				new Stagnation(parameters.getStagnationSteps(), false)
+				new Stagnation(parameters.getStagnationSteps())
 				{
 
 					@Override
 					public boolean shouldTerminate(PopulationData<?> populationData)
-					{
-						if (populationData.getBestCandidateFitness() == Double.MAX_VALUE) 
+					{						
+						if (engine.getTopRoutesScore() == Double.MAX_VALUE) 
 						{
 							return false;
 						}
@@ -262,6 +260,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	{
 		private long iterations = 0;
 		private CandidateFactory<List<Point>> candidateFactory;
+		private double topRoutesScore;
+		
 		
 		public GAEngine(CandidateFactory<List<Point>> candidateFactory,
 				EvolutionaryOperator<List<Point>> evolutionScheme,
@@ -271,6 +271,11 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 			super(candidateFactory, evolutionScheme, fitnessEvaluator, selectionStrategy,
 					rng);
 			this.candidateFactory = candidateFactory;
+		}
+		
+		public double getTopRoutesScore()
+		{
+			return topRoutesScore;
 		}
 
 		@Override
@@ -301,13 +306,29 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					Thread.currentThread().interrupt();
 				}
 			}
+			int topCounts = Math.min(15, result.size());
+			topRoutesScore = 0;
+			for (int i = 0; i < topCounts; i++) 
+			{
+				if (result.get(i).getFitness() == Double.MAX_VALUE) 
+				{
+					topRoutesScore = Double.MAX_VALUE;
+					break;
+				}
+				topRoutesScore += result.get(i).getFitness();
+			}
+			if (topRoutesScore != Double.MAX_VALUE) 
+			{
+				topRoutesScore = topRoutesScore / topCounts;
+			}			
 			iterations++;
 			return applyIterationChanges(result, rng);
 		}	
 		
 		private List<EvaluatedCandidate<List<Point>>> applyIterationChanges(final List<EvaluatedCandidate<List<Point>>> population, Random rng) 
-		{
+		{			
 			List<EvaluatedCandidate<List<Point>>> result = population;
+			double currentBestScore = result.get(0).getFitness();
 			if (iterations % parameters.getRecalculatePointsProbs() == 0) 
 			{				
 				for (LegOperations leg : legs)
@@ -335,7 +356,37 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 					result = evaluatePopulation(newPopulation);
 				}
 			}
-			if (iterations % parameters.getExtendBestPoints() == 0 && population == result)
+			if (currentBestScore != Double.MAX_VALUE &&  iterations % parameters.getExtendBestPoints() == 0) 
+			{
+					int i = 0;					
+					for (LegOperations leg : legs) 
+					{
+						if (leg.getLeg().getType() == LegType.STRAIGHT) 
+						{
+							for (int j = 0; j < 1; j++)
+							{
+								leg.extendStartPoint(result.get(j).getCandidate().get(i));
+								leg.extendEndPoint(result.get(j).getCandidate().get(i + 1));
+							}
+						}
+						i += 2;
+					}
+					int third = result.size() / 3;				
+					List<EvaluatedCandidate<List<Point>>> newPopulation = new ArrayList<EvaluatedCandidate<List<Point>>>();
+					newPopulation.addAll(result.subList(0, 2 * third));
+					List<List<Point>> randoms = new ArrayList<List<Point>>(third);
+					for (i = 0; i < third; i++)
+					{
+						randoms.add(candidateFactory.generateRandomCandidate(rng));
+					}				
+					newPopulation.addAll(evaluatePopulation(randoms));
+					result = newPopulation;
+					for (LegOperations leg : legs) 
+					{
+						leg.useAllPoints();
+					}
+			}
+			/*if (iterations % parameters.getExtendBestPoints() == 0 && population == result)
 			{				
 				for (LegOperations leg : legs)
 				{
@@ -358,7 +409,8 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				{
 					leg.useAllPoints();
 				}
-			}
+			}*/
+			
 			return result;
 		}
 	}

@@ -1,16 +1,14 @@
 package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.vividsolutions.jts.geom.Point;
 
 public class LegOperations
@@ -123,7 +121,7 @@ public class LegOperations
 		for (int i = 0; i < averageAchievables.length; i++)
 		{
 			probabilities[i] = 1 + averageAchievables[i];
-			probabilities[i] += Math.max(0, iterationsIncrement * 10 - averages[i]);
+			probabilities[i] += Math.max(0, iterationsIncrement * 10 - averages[i]) * 3;
 			max += probabilities[i];
 		}
 		return max;
@@ -165,74 +163,43 @@ public class LegOperations
 		return true;
 	}
 	
-	public void extendBestPoints(int bestCount, boolean useNewPointsForNextRandoms) 
+	public void extendStartPoint(Point point) 
 	{
-		int start = doExtendBestPoints(bestCount, true);
-		int end = doExtendBestPoints(bestCount, false);
-		if (useNewPointsForNextRandoms)
+		startOffset = startMax;
+		if (! doExtendPoint(point, true)) 
 		{
-			startOffset = start;
-			endOffset = end;
+			startOffset = 0;
 		}
 	}
 	
-	public void useAllPoints() 
+	public void extendEndPoint(Point point) 
 	{
-		startOffset = 0;
-		endOffset = 0;
-	}
+		endOffset = endMax;
+		if (! doExtendPoint(point, false)) 
+		{
+			endOffset = 0;
+		}
+	}		
 	
-	private int doExtendBestPoints(int bestCount, boolean processStartPoints)
+	private boolean doExtendPoint(Point point, boolean processStartPoints) 
 	{
-		int[] probabilities = processStartPoints ? startProbabilities : endProbabilities;		
-		PriorityQueue<BestOne> bestOnes = new PriorityQueue<BestOne>(bestCount);		
-		for (int i = 0; i < probabilities.length; i++)
-		{			
-			if (probabilities[i] <= 2)
-			{
-				continue;
-			}
-			if (bestOnes.size() < bestCount)
-			{
-				bestOnes.add(new BestOne(i, probabilities[i]));
-			}
-			else
-			{
-				BestOne last = bestOnes.peek();
-				if (last.probability < probabilities[i])
-				{
-					bestOnes.poll();
-					bestOnes.add(new BestOne(i, probabilities[i]));
-				}
-			}
-		}
-		if (bestOnes.isEmpty())
+		List<Point> points = processStartPoints ? leg.getStartPoints() : leg.getEndPoints();		
+		int index = points.indexOf(point);
+		point = points.get(index);
+		if (! extensions.containsKey(point))
 		{
-			return 0;
+			BoundedState state = processStartPoints ? leg.getFirst() : leg.getLast();
+			extensions.put(point, new PointExtension(point, state, leg.getCurrentGridPrecision()));
 		}
-		int oldPointProbabilities = processStartPoints ? startMax : endMax;
-		List<Point> newPoints = new ArrayList<Point>();
-		List<Integer> newPointsCount = new ArrayList<Integer>(bestCount);
-		List<Point> currentPoints = processStartPoints ? leg.getStartPoints() : leg.getEndPoints();
-		for (BestOne bestOne : bestOnes)
+		PointExtension extension = extensions.get(point);
+		List<Point> newPoints = extension.extend();
+		if (processStartPoints)
 		{
-			Point point = currentPoints.get(bestOne.index);
-			if (! extensions.containsKey(point)) 
-			{
-				extensions.put(point, new PointExtension(point, leg.getCurrentGridPrecision()));
-			}
-			PointExtension extension = extensions.get(point);
-			List<Point> newPointsForThis = extension.extend();
-			newPoints.addAll(newPointsForThis);
-			newPointsCount.add(newPointsForThis.size());			
-		}
-		if (processStartPoints) 
-		{			
-			startAchievable = extendArray(startAchievable, .125, bestOnes, newPoints, newPointsCount);
-			startCounts = extendArray(startCounts, .125, bestOnes, newPoints, newPointsCount);
-			startProbabilities = extendArray(startProbabilities, .125, bestOnes, newPoints, newPointsCount);
-			startAvgAchievable = extendArray(startAvgAchievable, .125, bestOnes, newPoints, newPointsCount);
-			startAvgSelection = extendArray(startAvgSelection, .125, bestOnes, newPoints, newPointsCount);
+			startAchievable = extendArray(startAchievable, .125, index, newPoints);
+			startCounts = extendArray(startCounts, .125, index, newPoints);
+			startProbabilities = extendArray(startProbabilities, .125, index, newPoints);
+			startAvgAchievable = extendArray(startAvgAchievable, .125, index, newPoints);
+			startAvgSelection = extendArray(startAvgSelection, .125, index, newPoints);
 			startMax = 0;
 			for (int prob : startProbabilities) 
 			{
@@ -240,63 +207,38 @@ public class LegOperations
 			}
 			leg.addStartPoints(newPoints);
 		}
-		else 
+		else
 		{
-			endAchievable = extendArray(endAchievable, .125, bestOnes, newPoints, newPointsCount);
-			endCounts = extendArray(endCounts, .125, bestOnes, newPoints, newPointsCount);
-			endProbabilities = extendArray(endProbabilities, .125, bestOnes, newPoints, newPointsCount);
-			endAvgAchievable = extendArray(endAvgAchievable, .125, bestOnes, newPoints, newPointsCount);
-			endAvgSelection = extendArray(endAvgSelection, .125, bestOnes, newPoints, newPointsCount);
+			endAchievable = extendArray(endAchievable, .125, index, newPoints);
+			endCounts = extendArray(endCounts, .125, index, newPoints);
+			endProbabilities = extendArray(endProbabilities, .125, index, newPoints);
+			endAvgAchievable = extendArray(endAvgAchievable, .125, index, newPoints);
+			endAvgSelection = extendArray(endAvgSelection, .125, index, newPoints);
 			endMax = 0;
 			for (int prob : endProbabilities) 
 			{
 				endMax += prob;
 			}
-			leg.addEndPoints(newPoints);			
-		}	
-		return oldPointProbabilities;
+			leg.addEndPoints(newPoints);
+		}
+		return newPoints.size() == 0 ? false : true;
 	}
 	
-	private int[] extendArray(int[] array, double factor, Collection<BestOne> bestOnes, List<Point> newPoints, List<Integer> newPointsCount) 
+	private int[] extendArray(int[] array, double factor, int index, List<Point> newPoints) 
 	{
 		int[] result = Arrays.copyOf(array, array.length + newPoints.size());
-		int index = 0;
 		int arrayIndex = array.length;
-		for (BestOne bestOne : bestOnes)
+		for (int i = 0; i < newPoints.size(); i++)
 		{
-			for (int i = 0; i < newPointsCount.get(index); i++)
-			{
-				result[arrayIndex] = (int) Math.floor(result[bestOne.index] * factor);
-				arrayIndex++;
-			}
-			index++;
+			result[arrayIndex] = (int) Math.floor(result[index] * factor);
+			arrayIndex++;
 		}
 		return result;
-	}	
+	}		
 	
-	
-	private static class BestOne implements Comparable<BestOne> 
+	public void useAllPoints() 
 	{
-		public final int index;
-		public final int probability;
-		
-		public BestOne(int index, int probability)
-		{
-			super();
-			this.index = index;
-			this.probability = probability;
-		}
-
-		@Override
-		public int compareTo(BestOne o)
-		{
-			return probability - o.probability;
-		}
-
-		@Override
-		public String toString()
-		{
-			return "BestOne [index=" + index + ", probability=" + probability + "]";
-		}
+		startOffset = 0;
+		endOffset = 0;
 	}
 }
