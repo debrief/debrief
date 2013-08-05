@@ -20,11 +20,13 @@ import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationException;
 import com.planetmayo.debrief.satc.model.generator.impl.AbstractSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 public class BFSolutionGenerator extends AbstractSolutionGenerator
@@ -185,14 +187,40 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 		Map<StraightLeg, CoreRoute> topScores = calculateRouteScores(
 				contributions.getContributions(), _routes, monitor);
 
-		CompositeRoute result = new CompositeRoute(topScores.values());
-
+		CompositeRoute result = new CompositeRoute(generateAlteringRoutes(topScores.values()));
+		
 		// share the news
 		fireLegsScored(_routes);
 
 		// and we're done, share the good news!
 		fireSolutionsReady(new CompositeRoute[]
 		{ result });
+	}
+	
+	private List<CoreRoute> generateAlteringRoutes(Collection<CoreRoute> straightRoutes)
+	{
+		List<CoreRoute> result = new ArrayList<CoreRoute>();
+		if (straightRoutes.isEmpty())
+		{
+			return result;
+		}
+		Iterator<CoreRoute> iterator = straightRoutes.iterator();
+		StraightRoute before = null;
+		StraightRoute after = (StraightRoute) iterator.next();
+		while (iterator.hasNext())
+		{
+			before = after;
+			after = (StraightRoute) iterator.next();
+			AlteringRoute altering = new AlteringRoute("", 
+					before.getEndPoint(), before.getEndTime(), 
+					after.getStartPoint(), after.getStartTime()
+			);
+			altering.constructRoute(before, after);
+			result.add(before);
+			result.add(altering);
+		}
+		result.add(after);
+		return result;
 	}
 
 	@Override
