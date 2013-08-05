@@ -94,7 +94,7 @@ public class CoreRoute
 		return _startP;
 	}
 
-	public Point getEndPoing()
+	public Point getEndPoint()
 	{
 		return _endP;
 	}

@@ -581,7 +581,7 @@ public class TestSupport
 				"100112 130429"));
 		course.setMinCourse(Math.toRadians(190));
 		course.setMaxCourse(Math.toRadians(315));
-		course.setEstimate(Math.toRadians(280));
+		course.setEstimate(Math.toRadians(225));
 		course.setName("Initial course forecast");
 		contributions.addContribution(course);
 

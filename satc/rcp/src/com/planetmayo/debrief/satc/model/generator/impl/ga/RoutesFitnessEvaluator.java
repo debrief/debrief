@@ -52,7 +52,7 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<Point>>
 					error = Double.MAX_VALUE;;
 				}
 				leg.collectStart(route.getStartPoint(), possible);
-				leg.collectEnd(route.getEndPoing(), possible);
+				leg.collectEnd(route.getEndPoint(), possible);
 			}
 		}
 		if (error == Double.MAX_VALUE)

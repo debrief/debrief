@@ -30,10 +30,12 @@ import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.impl.AbstractSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.vividsolutions.jts.geom.Point;
 
@@ -206,10 +208,10 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		{
 			throw new InterruptedException();
 		}
-		fireSolutionsReady(new CompositeRoute[] {solutionToRoute(solution)});
+		fireSolutionsReady(new CompositeRoute[] {solutionToRoute(solution, true)});
 	}
 	
-	protected CompositeRoute solutionToRoute(List<Point> solution) 
+	protected CompositeRoute solutionToRoute(List<Point> solution, boolean createAltering) 
 	{
 		List<CoreRoute> routes = new ArrayList<CoreRoute>();
 		int i = 0;
@@ -220,6 +222,27 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				routes.add(leg.getLeg().createRoute("", solution.get(i), solution.get(i + 1)));
 			}
 			i += 2;
+		}
+		if (createAltering)
+		{
+			List<CoreRoute> result = new ArrayList<CoreRoute>();
+			StraightRoute before, after = null;
+			for (i = 0; i < routes.size() - 1; i++)
+			{
+				before = (StraightRoute) routes.get(i);
+				after = (StraightRoute) routes.get(i + 1);
+				AlteringRoute altering = new AlteringRoute("", 
+						before.getEndPoint(), before.getEndTime(), 
+						after.getStartPoint(), after.getStartTime());
+				altering.constructRoute(before, after);
+				result.add(before);
+				result.add(altering);
+			}
+			if (after != null)
+			{
+				result.add(after);
+			}
+			routes = result;
 		}
 		return new CompositeRoute(routes);
 		
@@ -292,7 +315,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				{
 					break;
 				}
-				routes.add(solutionToRoute(result.get(i).getCandidate()));
+				routes.add(solutionToRoute(result.get(i).getCandidate(), false));
 			}
 			fireIterationComputed(routes);
 			if (parameters.getTimeoutBetweenIterations() > 0) 

@@ -42,6 +42,8 @@ import com.planetmayo.debrief.satc.model.generator.exceptions.GenerationExceptio
 import com.planetmayo.debrief.satc.model.generator.impl.bf.IBruteForceSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.impl.bf.LegWithRoutes;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
+import com.planetmayo.debrief.satc.model.legs.AlteringRouteType;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
@@ -665,7 +667,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			for (CoreRoute routePart : route.getLegs())
 			{
 				Point startP = routePart.getStartPoint();
-				Point endP = routePart.getEndPoing();
+				Point endP = routePart.getEndPoint();
 
 				XYSeries series = new XYSeries("" + (_numCycles++), false);
 				series.add(new XYDataItem(startP.getY(), startP.getX()));
@@ -919,7 +921,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 								
 								Coordinate[] coords = new Coordinate[]
 								{ route.getStartPoint().getCoordinate(),
-										route.getEndPoing().getCoordinate() };
+										route.getEndPoint().getCoordinate() };
 								LineString newR = GeoSupport.getFactory().createLineString(
 										coords);
 
@@ -1129,29 +1131,72 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 	private void plotTopRoutes(Collection<CoreRoute> scoredRoutes)
 	{
+		XYSeries series = new XYSeries("" + (_numCycles++), false);
 		for (Iterator<CoreRoute> iterator = scoredRoutes.iterator(); iterator
 				.hasNext();)
 		{
 			CoreRoute route = iterator.next();
 
-			Point startP = route.getStartPoint();
-			Point endP = route.getEndPoing();
-
-			XYSeries series = new XYSeries("" + (_numCycles++), false);
-			series.add(new XYDataItem(startP.getY(), startP.getX()));
-			series.add(new XYDataItem(endP.getY(), endP.getX()));
-
-			// get the shape
-			_myData.addSeries(series);
-
-			// get the series num
-			int num = _myData.getSeriesCount() - 1;
-			_renderer.setSeriesPaint(num, Color.black);
-			_renderer.setSeriesStroke(num, new BasicStroke(5), false);
-			_renderer.setSeriesLinesVisible(num, true);
-			_renderer.setSeriesShapesVisible(num, false);
+			if (route.getType() == LegType.STRAIGHT)
+			{
+				Point startP = route.getStartPoint();
+				Point endP = route.getEndPoint();			
+				series.add(new XYDataItem(startP.getY(), startP.getX()));
+				series.add(new XYDataItem(endP.getY(), endP.getX()));
+			}
+			else
+			{
+				AlteringRoute altering = (AlteringRoute) route;
+				Point[] controlPoints = altering.getBezierControlPoints();
+				if (altering.getAlteringRouteType() == AlteringRouteType.QUAD_BEZIER)
+				{
+					for (double t = 0; t <= 1; t += 0.05) 
+					{
+						double inverseT = (1 - t);
+						double t2 = t * t;
+						double inverseT2 = inverseT * inverseT;							
+						
+						double x = inverseT2 * altering.getStartPoint().getX() + 
+								2 * t * inverseT * controlPoints[0].getX() + 
+								t2 * altering.getEndPoint().getX();
+						double y = inverseT2 * altering.getStartPoint().getY() + 
+								2 * t * inverseT * controlPoints[0].getY() + 
+								t2 * altering.getEndPoint().getY();
+						series.add(new XYDataItem(y, x));
+					}
+				}
+				if (altering.getAlteringRouteType() == AlteringRouteType.CUBIC_BEZIER)
+				{					
+					for (double t = 0; t <= 1; t += 0.05) 
+					{							
+						double t2 = t * t;
+						double t3 = t2 * t;
+						double inverseT = (1 - t);
+						double inverseT2 = inverseT * inverseT;
+						double inverseT3 = inverseT2 * inverseT;
+						
+						double x = inverseT3 * altering.getStartPoint().getX() + 
+								3 * t * inverseT2 * controlPoints[0].getX() +
+								3 * t2 * inverseT * controlPoints[1].getX() + 
+								t3 * altering.getEndPoint().getX();
+						double y = inverseT3 * altering.getStartPoint().getY() + 
+								3 * t * inverseT2 * controlPoints[0].getY() +
+								3 * t2 * inverseT * controlPoints[1].getY() + 
+								t3 * altering.getEndPoint().getY();
+						series.add(new XYDataItem(y, x));
+					}
+				}					
+			}
 		}
+		// get the shape
+		_myData.addSeries(series);
 
+		// get the series num
+		int num = _myData.getSeriesCount() - 1;
+		_renderer.setSeriesPaint(num, Color.black);
+		_renderer.setSeriesStroke(num, new BasicStroke(5), false);
+		_renderer.setSeriesLinesVisible(num, true);
+		_renderer.setSeriesShapesVisible(num, false);
 	}
 
 	/*
