@@ -14,11 +14,11 @@ public class AlteringRoute extends CoreRoute
 
 	private volatile double _directDistance;	
 	
-	/**
-	 * because currently altering route is just cubic polygon which connects two straight legs smoothly
-	 * parameters of 
-	 */
 	private volatile AlteringRouteType _routeType = AlteringRouteType.UNDEFINED;
+	/**
+	 * array of control points for bezier curve: one point in 
+	 * case of quad curve and two points in case of cubic curve   
+	 */	
 	private volatile Point _controlPoints[] = null;
 
 	public AlteringRoute(String name, Point startP, Date startTime, Point endP,
@@ -51,11 +51,13 @@ public class AlteringRoute extends CoreRoute
 	}
 	
 	/**
-	 * constructs altering route in y(x) = a * x^3 + b * x^2 + c * x + d shape
-	 * with smooth between before (f1(x) = k1 * x + b1) and after (f2(x) = k2 * x + b2) straight lines. 
-	 * Smooth means two constraints:
-	 *   f1'(startPoint) = y'(startPoint) 
-	 *   f2'(endPoint) = y'(endPoint) 
+   * constructs altering route as bezier curve:
+   *   in case when intersection point is placed between before and after straight segments 
+   *   use quadratic bezier curve with control point = intersection point of these straight lines
+   *   
+   *   in case when intersection point is placed somewhere else: extend before and after
+   *   straight segments and place control points for cubic bezier curve on before and
+   *   after extensions correspondingly     
 	 * 
 	 * @param before
 	 * @param after
@@ -107,6 +109,12 @@ public class AlteringRoute extends CoreRoute
 		return new double[] {k, b};
 	}
 	
+	/**
+	 * 
+	 * @param line1 - first straight line coeffs: y(x) = line1[0] * x + line1[1]
+	 * @param line2 - second straight line coeffs: y(x) = line2[0] * x + line2[1]
+	 * @return intersection point between two line1 and line2
+	 */	
 	private Point findIntersection(double[] line1, double[] line2)
 	{
 		if (Math.abs(line1[0] - line2[0]) < 0.0001) 
@@ -123,15 +131,20 @@ public class AlteringRoute extends CoreRoute
 		double a = (point.getX() - point2.getX());
 		double b = (point.getY() - point2.getY());
 		return Math.sqrt(a * a + b * b);				
-	}
+	}	
 	
-	private Point findExtendPoint(double[] lineCoeffs, Point from, double distance, Point checkPoint)
+	/**
+	 * finds point which is placed on line y(x) = lineCoeffs[0] * x + lineCoeffs[1] after 
+	 * from point (fromPoint parameter) on specified distance (distance parameter) 
+	 * in checkPoint->fromPoint direction     
+	 */
+	private Point findExtendPoint(double[] lineCoeffs, Point fromPoint, double distance, Point checkPoint)
 	{
-		double aux1 = from.getY() - lineCoeffs[1];
+		double aux1 = fromPoint.getY() - lineCoeffs[1];
 		
 		double a = lineCoeffs[0] * lineCoeffs[0] + 1;
-		double b = -2 * (aux1 * lineCoeffs[0] + from.getX());
-		double c = aux1 * aux1 + from.getX() * from.getX() - distance * distance;
+		double b = -2 * (aux1 * lineCoeffs[0] + fromPoint.getX());
+		double c = aux1 * aux1 + fromPoint.getX() * fromPoint.getX() - distance * distance;
 		
 		double sqrtD = Math.sqrt(b * b - 4 * a * c);
 		double x1 = (-b + sqrtD) / (2 * a);
