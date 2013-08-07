@@ -7,10 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.vividsolutions.jts.geom.Geometry;
@@ -121,6 +124,35 @@ public class RangeForecastContribution extends BaseContribution
 			// apply the range
 			thisS.constrainTo(myRa);
 		}
+	}
+	
+	@Override
+	protected double cumulativeScoreFor(CoreRoute route)
+	{
+		double min = this.minRangeM == null ? 0 : this.minRangeM;
+		double max = this.maxRangeM == null ? 0 : this.maxRangeM;
+		if (!isActive() || route.getType() == LegType.ALTERING || 
+				estimate == null || estimate < min || estimate > max) 
+		{
+			return 0;
+		}
+		double sum = 0;
+		int count = 0;
+		for (ROrigin origin : measurements) 
+		{
+			Date currentDate = origin.time;
+			if (currentDate.compareTo(route.getStartTime()) >= 0 && currentDate.compareTo(route.getEndTime()) <= 0)				
+			{
+				State state = route.getStateAt(currentDate);
+				Point location = state.getLocation();
+				double distance = GeoSupport.calcDistance(location, origin.origin.asPoint());
+				double temp = distance - estimate;
+				sum += temp * temp;
+				count++;
+			}			
+		}
+		double norm = Math.max(Math.abs(max - estimate), Math.abs(min - estimate));
+		return Math.sqrt(sum / count) / norm;
 	}
 
 	/**

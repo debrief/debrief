@@ -175,7 +175,8 @@ public class BearingMeasurementContribution extends BaseContribution
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
-		if (! isActive() || route.getType() == LegType.ALTERING) 
+		double bearingError = this.bearingError == null ? 0 : this.bearingError;
+		if (! isActive() || route.getType() == LegType.ALTERING || bearingError == 0) 
 		{
 			return 0;
 		}
@@ -184,7 +185,7 @@ public class BearingMeasurementContribution extends BaseContribution
 		for (BMeasurement measurement : measurements)
 		{
 			Date dateMeasurement = measurement.getDate();
-			if (dateMeasurement.after(route.getStartTime()) && dateMeasurement.before(route.getEndTime()))
+			if (dateMeasurement.compareTo(route.getStartTime()) >= 0 && dateMeasurement.compareTo(route.getEndTime()) <= 0)
 			{
 				State state = route.getStateAt(dateMeasurement);
 				if (state != null && state.getLocation() != null)

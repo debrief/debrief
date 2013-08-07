@@ -209,8 +209,13 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 		StraightRoute after = (StraightRoute) iterator.next();
 		while (iterator.hasNext())
 		{
+			StraightRoute nxt = (StraightRoute) iterator.next();
+			if (nxt == null)
+			{
+				continue;
+			}
 			before = after;
-			after = (StraightRoute) iterator.next();
+			after = nxt;
 			AlteringRoute altering = new AlteringRoute("", 
 					before.getEndPoint(), before.getEndTime(), 
 					after.getStartPoint(), after.getStartTime()
