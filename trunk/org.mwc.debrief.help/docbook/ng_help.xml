@@ -3811,23 +3811,13 @@ and so on....</programlisting></para>
         <sect2 xml:id="earth_model">
           <title>Earth Model</title>
 
-          <para>The Range Bearing calculation is performed using the
-          <indexterm>
+          <para>The Range Bearing calculation is performed using the <indexterm>
               <primary>Algorithms</primary>
-
               <secondary>Earth Model</secondary>
             </indexterm><indexterm>
               <primary>Earth Model</primary>
-            </indexterm>algorithms in the current Earth Model, as described
-          later in <xref linkend="rng_brg_calcs" />.</para>
-
-          <para>The Earth Model used by the application is modular and
-          interchangeable. In the initial release of the application the
-          calculations use the Rhumb-Line Formulae for Short-distance sailing,
-          as described in <quote>Admiralty Manual of Navigation, Volume 2,
-          1973</quote>. Short-distance sailing is defined as <quote>the
-          following of a rhumb-line track for a distance not greater than 600'
-          </quote>.</para>
+            </indexterm>algorithms in the current Earth Model, as described later in <xref
+              linkend="rng_brg_calcs"/>.</para>
         </sect2>
       </sect1>
 
@@ -6823,7 +6813,18 @@ Platform C,-551</screen></para>
  bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the 
  single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or
  the single word NULL], sensor name, label (to end of line)</markup>
-            </screen></para>
+            </screen>
+          
+          or <screen width="70">
+<markup>;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B  CCC.C 
+          FFF.F GGG.G RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
+bearing (degs) [or the single word NULL], bearing accuracy (degs) 
+[or the single word NULL], frequency(Hz) [or the single word NULL], 
+frequency accuracy (Hz) [or the single word NULL], range(yds) 
+[or the single word NULL], sensor name, label (to end of line)</markup>
+            </screen>
+           </para>
 
           <para>As you can see, unlike other Debrief line formats, this format
           allows for NULL fields. Where the sensor latitude and longitude
@@ -9099,6 +9100,14 @@ bearing (degs) [or the single word NULL], ambigous bearing (degs) [or the
 single word NULL], frequency(Hz) [or the single word NULL],  range(yds) 
 [or the single word NULL], sensor name, label (to end of line)
 
+;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B  CCC.C 
+FFF.F GGG.G RRRR yy..yy xx..xx
+;; date, ownship name, symbology, sensor lat/long (or the single word NULL), 
+bearing (degs) [or the single word NULL], bearing accuracy (degs) 
+[or the single word NULL], frequency(Hz) [or the single word NULL], 
+frequency accuracy (Hz) [or the single word NULL], range(yds) 
+[or the single word NULL], sensor name, label (to end of line)
+
 ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx 
 ;; date, time, ownship name, symbology, tma lat, tma long, track name, 
@@ -9788,17 +9797,38 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
 
       <sect1 xml:id="rng_brg_calcs">
         <title>Range/Bearing calculations within Debrief</title>
+       
 
         <para><indexterm>
             <primary>Range/bearing calculations</primary>
-          </indexterm>Ranges and bearings within Debrief are calculated
-        according to the Rhumb-Line formulae, taken from the Admiralty Manual
-        of Navigation, Volume 2, BR 45(2), Revised 1973, pages 5-11.</para>
+          </indexterm>Since Spring 2013, ranges and bearings within Debrief are calculated using the
+            <link
+            xlink:href="http://svn.osgeo.org/geotools/trunk/modules/library/referencing/src/main/java/org/geotools/referencing/GeodeticCalculator.java"
+            >GeoTools GeodeticCalculator</link>  derivative of the T.Vincenty approximation:
+          <programlisting>
+        /*
+         * Solution of the geodetic inverse problem after T.Vincenty.
+         * Modified Rainsford's method with Helmert's elliptical terms.
+         * Effective in any azimuth and at any distance short of antipodal.
+         *
+         * Latitudes and longitudes in radians positive North and East.
+         * Forward azimuths at both points returned in radians from North.
+         *
+         * Programmed for CDC-6600 by LCDR L.Pfeifer NGS ROCKVILLE MD 18FEB75
+         * Modified for IBM SYSTEM 360 by John G.Gergen NGS ROCKVILLE MD 7507
+         * Ported from Fortran to Java by Daniele Franzoni.
+         *
+         * Source: ftp://ftp.ngs.noaa.gov/pub/pcsoft/for_inv.3d/source/inverse.for
+         *         subroutine GPNHRI
+         *         version    200208.09
+         *         written by robert (sid) safford
+         */ 
+</programlisting></para>
 
-        <para>The Rhumb-line calculation is used both for the display of
-        measured range-bearing and for the projection of data onto the
-        monitor. Briefly, the to convert from real-world to screen coordinates
-        the following procedure is followed:</para>
+        <para><emphasis>LEGACY ALGORITHM</emphasis> In the past, Debrief used the Rhumb-line
+          calculation for the display of measured range-bearing and for the projection of data onto
+          the monitor. Briefly,  to convert from real-world to screen coordinates the following
+          procedure was followed:</para>
 
         <para><orderedlist>
             <listitem>
@@ -9842,7 +9872,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         here is an abbreviated snippet from it:</para>
 
         <sect2 xml:id="rhumb-lines">
-          <title>The Rhumb-Line formulae</title>
+          <title>LEGACY - The Rhumb-Line formulae</title>
 
           <para>A line on the earth's surface which cuts all meridians at the
           same angle is called a rhumb line.</para>
@@ -9874,7 +9904,7 @@ All records consist of a sequence of TAB delimited fields generating a tabular o
         </sect2>
 
         <sect2 xml:id="short_dist_sailing">
-          <title>Short-distance sailing</title>
+          <title>LEGACY - Short-distance sailing</title>
 
           <para>By the term <emphasis>short-distance sailing</emphasis> is
           meant the following of a rhumb-line track for a distance not greater

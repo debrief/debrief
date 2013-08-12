@@ -27,6 +27,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
+		topLeft.addView(CorePlugin.TIME_BAR);
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
@@ -60,6 +61,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
     layout.addShowViewShortcut(CorePlugin.NARRATIVES2);
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
+		layout.addShowViewShortcut(CorePlugin.TIME_BAR);
 		layout.addShowViewShortcut(CorePlugin.TOTE);
 		layout.addShowViewShortcut(CorePlugin.STACKED_DOTS);
 		layout.addShowViewShortcut(CorePlugin.FREQ_RESIDUALS);
@@ -68,6 +70,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
+		layout.addShowViewShortcut(DebriefPlugin.TIME_BAR);
 		
 		// it via action (so we can populate it)  
 

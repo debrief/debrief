@@ -213,5 +213,5 @@ Export-Package:
    MWC.GenericData,
    Debrief.Wrappers,
    MWC.GUI"
-Require-Bundle: org.mwc.cmap.legacy
+Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.165"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

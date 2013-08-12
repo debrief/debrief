@@ -128,6 +128,9 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
+//import org.mwc.cmap.core.CorePlugin;
+
+import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -135,6 +138,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.Utilities.Errors.Trace;
 
 public class LineShape extends PlainShape implements Editable,
 		HasDraggableComponents
@@ -202,7 +206,7 @@ public class LineShape extends PlainShape implements Editable,
 
 		// and now draw it
 		dest.drawLine(start.x, start.y, end.x, end.y);
-
+		
 		if (getArrowAtEnd())
 		{
 
@@ -231,9 +235,30 @@ public class LineShape extends PlainShape implements Editable,
 			{ p1.y, p2.y, p3.y }, 3);
 
 		}
-
+		
+		// Draw range/bearing at the center of the line		
+		WorldVector wv = _end.subtract(_start);		
+		String myUnits = Trace.getParent().getProperty(
+				MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+		if (myUnits == null)
+			myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
+		double range = Conversions.convertRange(wv.getRange(), myUnits);
+		double bearing = wv.getBearing();
+		String msg = "          Rg: " + String.format("%.3f", range) +
+				" Brg: " + String.format("%.3f", bearing);		
+		float rotate = (float) Math.toDegrees(bearing);
+		if (start.x < end.x)
+		{			
+			rotate -= 90;
+			dest.drawText(msg, start.x, start.y, rotate);
+		}
+		else
+		{
+			rotate += 90;
+			dest.drawText(msg, end.x, end.y, rotate);
+		}
 	}
-
+	
 	public boolean getArrowAtEnd()
 	{
 		return _arrowAtEnd;
@@ -475,6 +500,7 @@ public class LineShape extends PlainShape implements Editable,
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
+		
 	}
 
 }

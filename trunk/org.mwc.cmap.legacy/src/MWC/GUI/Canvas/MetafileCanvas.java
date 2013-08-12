@@ -580,6 +580,13 @@ public class MetafileCanvas implements CanvasType
 		return _lastPlotSize;
 	}
 
+
+	@Override
+	public void drawText(String str, int x, int y, float rotate) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	// /////////////////////////////////
 	// nested classes
 	// ////////////////////////////////

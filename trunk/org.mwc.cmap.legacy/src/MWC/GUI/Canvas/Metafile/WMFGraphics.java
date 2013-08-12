@@ -980,4 +980,10 @@ public class WMFGraphics
   public void setTooltipHandler(MWC.GUI.CanvasType.TooltipHandler handler) {
   }
 
+@Override
+public void drawText(String str, int x, int y, float rotate) {
+	// TODO Auto-generated method stub
+	
+}
+
 }
