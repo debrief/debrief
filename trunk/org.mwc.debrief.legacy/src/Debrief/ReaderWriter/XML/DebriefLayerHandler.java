@@ -29,6 +29,13 @@ import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 public class DebriefLayerHandler extends
 		MWC.Utilities.ReaderWriter.XML.LayerHandler
 {
+	
+	/** we're having trouble ensuring that the Debrief exporters get declared.
+	 * Introduce some extra checking to double-check it's all ok.
+	 */
+	private static boolean _exportersInitialised = false;
+	
+	
 	public DebriefLayerHandler(MWC.GUI.Layers theLayers)
 	{
 		// inform our parent what type of class we are
@@ -156,8 +163,12 @@ public class DebriefLayerHandler extends
 
 	protected static void checkExporters()
 	{
-		if (_myExporters == null)
+		// have the Debrief-specific exporters been declared?
+		if (!_exportersInitialised)
 		{
+			_exportersInitialised = true;
+			
+			// hey, the parent ones haven't either. Go for it.
 			LayerHandler.checkExporters();
 
 			_myExporters.put(MWC.GUI.Shapes.ArcShape.class, new ArcHandler()
