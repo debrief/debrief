@@ -767,24 +767,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					// since it's proving inconvenient to have to reset the sliders
 					// after some data is dropped in.
 
-					// _slideManager.resetRange(newPeriod.getStartDTG(),
-					// newPeriod.getEndDTG());
-					// Display.getDefault().asyncExec(new Runnable()
-					// {
-					// public void run()
-					// {
-					// // ok, double-check we're enabled
-					// _wholePanel.setEnabled(true);
-					//
-					// // and our range selector - first the outer
-					// // ranges
-					// _dtgRangeSlider.updateOuterRanges(newPeriod);
-					//
-					// // ok, now the user ranges...
-					// _dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
-					// newPeriod.getEndDTG());
-					// }
-					// });
+		//			_slideManager.resetRange(newPeriod.getStartDTG(),
+			//				newPeriod.getEndDTG());
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							// ok, double-check we're enabled
+							_wholePanel.setEnabled(true);
+
+							// and our range selector - first the outer
+							// ranges
+							_dtgRangeSlider.updateOuterRanges(newPeriod);
+
+							// ok, now the user ranges...
+				//			_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
+				//					newPeriod.getEndDTG());
+						}
+					});
 				}
 			}
 
