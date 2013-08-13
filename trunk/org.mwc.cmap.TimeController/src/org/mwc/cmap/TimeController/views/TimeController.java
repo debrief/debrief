@@ -750,7 +750,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 							// hey, we haven't got a time period- disable
 							_wholePanel.setEnabled(false);
-							
+
 							// hey - remember the updated time range (largely so
 							// that we can
 							// restore from file later on)
@@ -762,25 +762,29 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 				else
 				{
-					_slideManager.resetRange(newPeriod.getStartDTG(),
-							newPeriod.getEndDTG());
 
-					Display.getDefault().asyncExec(new Runnable()
-					{
-						public void run()
-						{
-							// ok, double-check we're enabled
-							_wholePanel.setEnabled(true);
+					// ok - we no longer reset the range limits on a data change,
+					// since it's proving inconvenient to have to reset the sliders
+					// after some data is dropped in.
 
-							// and our range selector - first the outer
-							// ranges
-							_dtgRangeSlider.updateOuterRanges(newPeriod);
-
-							// ok, now the user ranges...
-							_dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
-									newPeriod.getEndDTG());
-						}
-					});
+					// _slideManager.resetRange(newPeriod.getStartDTG(),
+					// newPeriod.getEndDTG());
+					// Display.getDefault().asyncExec(new Runnable()
+					// {
+					// public void run()
+					// {
+					// // ok, double-check we're enabled
+					// _wholePanel.setEnabled(true);
+					//
+					// // and our range selector - first the outer
+					// // ranges
+					// _dtgRangeSlider.updateOuterRanges(newPeriod);
+					//
+					// // ok, now the user ranges...
+					// _dtgRangeSlider.updateSelectedRanges(newPeriod.getStartDTG(),
+					// newPeriod.getEndDTG());
+					// }
+					// });
 				}
 			}
 
@@ -1262,7 +1266,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								{
 									// ok - make sure we're seeing the full time
 									// period
-									expandTimeSliderRangeToFull();
+									// NO: don't bother, since adding an annotation causes the
+									// filter to reset
+									// expandTimeSliderRangeToFull();
 
 									// and the controls are enabled (if we know
 									// time data)
@@ -2692,7 +2698,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		return res;
 	}
 
-	public TimeProvider getTimeProvider() 
+	public TimeProvider getTimeProvider()
 	{
 		return _myTemporalDataset;
 	}
