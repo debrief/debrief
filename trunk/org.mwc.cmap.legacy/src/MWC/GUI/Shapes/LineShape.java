@@ -156,6 +156,8 @@ public class LineShape extends PlainShape implements Editable,
 
 	private boolean _arrowAtEnd = false;
 
+	private boolean _showAutoCalc = false;
+
 	/**
 	 * our editor
 	 */
@@ -169,7 +171,7 @@ public class LineShape extends PlainShape implements Editable,
 	{
 		this(start, end, "Line");
 	}
-	
+
 	public LineShape(WorldLocation start, WorldLocation end, String name)
 	{
 		super(0, 1, name);
@@ -206,12 +208,12 @@ public class LineShape extends PlainShape implements Editable,
 
 		// and now draw it
 		dest.drawLine(start.x, start.y, end.x, end.y);
-		
+
 		if (getArrowAtEnd())
 		{
 
 			// sort out the direction
-			double direction = _end.bearingFrom(_start)  + Math.PI / 2;
+			double direction = _end.bearingFrom(_start) + Math.PI / 2;
 
 			// and the size
 			double theScale = 1;
@@ -235,30 +237,33 @@ public class LineShape extends PlainShape implements Editable,
 			{ p1.y, p2.y, p3.y }, 3);
 
 		}
-		
-		// Draw range/bearing at the center of the line		
-		WorldVector wv = _end.subtract(_start);		
-		String myUnits = Trace.getParent().getProperty(
-				MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
-		if (myUnits == null)
-			myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
-		double range = Conversions.convertRange(wv.getRange(), myUnits);
-		double bearing = wv.getBearing();
-		String msg = "          Rg: " + String.format("%.3f", range) +
-				" Brg: " + String.format("%.3f", bearing);		
-		float rotate = (float) Math.toDegrees(bearing);
-		if (start.x < end.x)
-		{			
-			rotate -= 90;
-			dest.drawText(msg, start.x, start.y, rotate);
-		}
-		else
+
+		// Draw range/bearing at the center of the line
+		if (isShowAutoCalc())
 		{
-			rotate += 90;
-			dest.drawText(msg, end.x, end.y, rotate);
+			WorldVector wv = _end.subtract(_start);
+			String myUnits = Trace.getParent().getProperty(
+					MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+			if (myUnits == null)
+				myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
+			double range = Conversions.convertRange(wv.getRange(), myUnits);
+			double bearing = wv.getBearing();
+			String msg = "          Rg: " + String.format("%.3f", range) + " Brg: "
+					+ String.format("%.3f", bearing);
+			float rotate = (float) Math.toDegrees(bearing);
+			if (start.x < end.x)
+			{
+				rotate -= 90;
+				dest.drawText(msg, start.x, start.y, rotate);
+			}
+			else
+			{
+				rotate += 90;
+				dest.drawText(msg, end.x, end.y, rotate);
+			}
 		}
 	}
-	
+
 	public boolean getArrowAtEnd()
 	{
 		return _arrowAtEnd;
@@ -267,6 +272,16 @@ public class LineShape extends PlainShape implements Editable,
 	public void setArrowAtEnd(boolean lineAtEnd)
 	{
 		_arrowAtEnd = lineAtEnd;
+	}
+
+	public boolean isShowAutoCalc()
+	{
+		return _showAutoCalc;
+	}
+
+	public void setShowAutoCalc(boolean showAutoCalc)
+	{
+		_showAutoCalc = showAutoCalc;
 	}
 
 	public MWC.GenericData.WorldArea getBounds()
@@ -500,7 +515,7 @@ public class LineShape extends PlainShape implements Editable,
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
-		
+
 	}
 
 }
