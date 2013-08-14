@@ -383,6 +383,7 @@ public class BearingMeasurementContribution extends BaseContribution
 	 */
 	public static class BMeasurement
 	{
+		private static final double MAX_RANGE_DEGS = 0.3;
 		private final GeoPoint origin;
 		private final double bearingAngle;
 		private final Date time;
@@ -398,7 +399,12 @@ public class BearingMeasurementContribution extends BaseContribution
 			this.origin = loc;
 			this.bearingAngle = bearing;
 			this.time = time;
-			this.theRange = theRange;
+			
+			// tidying up.  Give the maximum possible range for this bearing if the data is missing
+			if(theRange == null)
+				this.theRange = MAX_RANGE_DEGS;
+			else
+				this.theRange = theRange;
 		}
 		
 		public Date getDate()

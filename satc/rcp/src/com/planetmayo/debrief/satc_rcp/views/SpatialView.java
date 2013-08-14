@@ -910,6 +910,9 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 								break;							
 							for (CoreRoute route : routes) 
 							{
+								// only bother if it's an actual route
+								if(route == null)
+									continue;
 								
 								// only display the route if it's achievable
 								if(!route.isPossible())
