@@ -36,7 +36,10 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.LocationAnalysisContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.RangeForecastContribution.ROrigin;
 import com.planetmayo.debrief.satc.model.contributions.SpeedAnalysisContribution;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
 import com.planetmayo.debrief.satc.model.contributions.SpeedForecastContribution;
@@ -134,7 +137,13 @@ public class CreateSolutionFromSensorData implements
 		parent.add(new DoIt(verb1 + "Speed Forecast for period covering " + title,
 				new SpeedForecastContributionFromCuts(solution, actionTitle, layers,
 						validItems)));
-		parent.add(new DoIt(verb1 + "Specify straight leg for period covering "
+		parent.add(new DoIt(verb1 + "Range Forecast for period covering " + title,
+				new RangeForecastContributionFromCuts(solution, actionTitle, layers,
+						validItems)));
+		parent.add(new DoIt(verb1 + "Course Forecast for period covering " + title,
+				new CourseForecastContributionFromCuts(solution, actionTitle, layers,
+						validItems)));
+		parent.add(new DoIt(verb1 + "Straight Leg for period covering "
 				+ title, new StraightLegForecastContributionFromCuts(solution,
 				actionTitle, layers, validItems)));
 	}
@@ -256,6 +265,65 @@ public class CreateSolutionFromSensorData implements
 
 	}
 
+	private class CourseForecastContributionFromCuts extends
+			ForecastContributionFromCuts
+	{
+		public CourseForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			return new CourseForecastContribution();
+		}
+
+	}
+
+	private class RangeForecastContributionFromCuts extends
+			ForecastContributionFromCuts
+	{
+		public RangeForecastContributionFromCuts(SATC_Solution existingSolution,
+				String title, Layers theLayers,
+				ArrayList<SensorContactWrapper> validCuts)
+		{
+			super(existingSolution, title, theLayers, validCuts);
+		}
+
+		@Override
+		protected BaseContribution getContribution()
+		{
+			RangeForecastContribution rfc = new RangeForecastContribution();
+
+			// now set the range origins
+
+			// add the bearing data
+			Iterator<SensorContactWrapper> iter = _validCuts.iterator();
+			while (iter.hasNext())
+			{
+				final SensorContactWrapper scw = (SensorContactWrapper) iter.next();
+				WorldLocation theOrigin = scw.getOrigin();
+				GeoPoint loc;
+
+				if (theOrigin == null)
+					theOrigin = scw.getCalculatedOrigin(scw.getSensor().getHost());
+
+				loc = conversions.toPoint(theOrigin);
+
+				RangeForecastContribution.ROrigin newR = new ROrigin(loc, scw.getDTG()
+						.getDate());
+				rfc.addThis(newR);
+
+			}
+
+			return rfc;
+		}
+
+	}
+
 	private class StraightLegForecastContributionFromCuts extends
 			ForecastContributionFromCuts
 	{
@@ -373,8 +441,7 @@ public class CreateSolutionFromSensorData implements
 
 		private void initialiseSolver()
 		{
-			IContributions theConts = _targetSolution.getSolver()
-					.getContributions();
+			IContributions theConts = _targetSolution.getSolver().getContributions();
 			theConts.addContribution(new LocationAnalysisContribution());
 			theConts.addContribution(new SpeedAnalysisContribution());
 			theConts.addContribution(new CourseAnalysisContribution());
