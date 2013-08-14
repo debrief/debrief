@@ -210,8 +210,11 @@ public class SATC_Solution extends BaseLayer
 						// hey, trigger repaint
 						fireRepaint();
 
-						System.err.println("REPAINT!!! " + _newRoutes.length + " routes "
-								+ _newRoutes[0].getLegs().size() + " legs");
+						if (_newRoutes == null)
+							System.err.println("REPAINT!! - have zero routes");
+						else
+							System.err.println("REPAINT!!! " + _newRoutes.length + " routes "
+									+ _newRoutes[0].getLegs().size() + " legs");
 					}
 
 					@Override
@@ -360,22 +363,25 @@ public class SATC_Solution extends BaseLayer
 				Point lastPt = null;
 				CoreRoute thisR2 = legs.next();
 				ArrayList<State> states = thisR2.getStates();
-				Iterator<State> stateIter = states.iterator();
-				while (stateIter.hasNext())
+				if (states != null)
 				{
-					State thisState = stateIter.next();
-					com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
-					// convert to screen
-					WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
-					Point screenPt = dest.toScreen(wLoc);
-
-					if (lastPt != null)
+					Iterator<State> stateIter = states.iterator();
+					while (stateIter.hasNext())
 					{
-						// draw the line
-						dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
-					}
+						State thisState = stateIter.next();
+						com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+						// convert to screen
+						WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
+						Point screenPt = dest.toScreen(wLoc);
 
-					lastPt = screenPt;
+						if (lastPt != null)
+						{
+							// draw the line
+							dest.drawLine(lastPt.x, lastPt.y, screenPt.x, screenPt.y);
+						}
+
+						lastPt = screenPt;
+					}
 				}
 			}
 		}
