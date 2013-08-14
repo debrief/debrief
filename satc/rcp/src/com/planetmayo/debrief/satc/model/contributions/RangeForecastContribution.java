@@ -50,15 +50,20 @@ public class RangeForecastContribution extends BaseContribution
 	 * the set of measurements we store
 	 * 
 	 */
-	private ArrayList<ROrigin> measurements = new ArrayList<ROrigin>();
+	private ArrayList<ROrigin> sensorOrigins = new ArrayList<ROrigin>();
 
 	@Override
 	public void actUpon(final ProblemSpace space)
 			throws IncompatibleStateException
 	{
 
-		// loop through our measurements
-		Iterator<ROrigin> iter = measurements.iterator();
+		// just double-check that we have some sensor origins
+		if (sensorOrigins.size() == 0)
+			throw new IncompatibleStateException(
+					"Range Forecast doesn't know vehicle origins", null, null);
+
+		// loop through our sensor origins
+		Iterator<ROrigin> iter = sensorOrigins.iterator();
 		while (iter.hasNext())
 		{
 			RangeForecastContribution.ROrigin origin = iter.next();
@@ -127,35 +132,37 @@ public class RangeForecastContribution extends BaseContribution
 			thisS.constrainTo(myRa);
 		}
 	}
-	
+
 	@Override
 	protected double cumulativeScoreFor(CoreRoute route)
 	{
 		double min = this.minRangeM == null ? 0 : this.minRangeM;
 		double max = this.maxRangeM == null ? 0 : this.maxRangeM;
-		if (!isActive() || route.getType() == LegType.ALTERING || 
-				estimate == null || estimate < min || estimate > max) 
+		if (!isActive() || route.getType() == LegType.ALTERING || estimate == null
+				|| estimate < min || estimate > max)
 		{
 			return 0;
 		}
 		double sum = 0;
 		int count = 0;
-		for (ROrigin origin : measurements) 
+		for (ROrigin origin : sensorOrigins)
 		{
 			Date currentDate = origin.time;
-			if (currentDate.compareTo(route.getStartTime()) >= 0 && currentDate.compareTo(route.getEndTime()) <= 0)				
+			if (currentDate.compareTo(route.getStartTime()) >= 0
+					&& currentDate.compareTo(route.getEndTime()) <= 0)
 			{
 				State state = route.getStateAt(currentDate);
 				Point location = state.getLocation();
 				GeodeticCalculator calculator = new GeodeticCalculator();
 				calculator.setStartingGeographicPoint(location.getX(), location.getY());
-				calculator.setDestinationGeographicPoint(origin.origin.getLon(), origin.origin.getLat());				
+				calculator.setDestinationGeographicPoint(origin.origin.getLon(),
+						origin.origin.getLat());
 				double distance = calculator.getOrthodromicDistance();
-				
+
 				double temp = distance - estimate;
 				sum += temp * temp;
 				count++;
-			}			
+			}
 		}
 		double norm = Math.max(Math.abs(max - estimate), Math.abs(min - estimate));
 		return Math.sqrt(sum / count) / norm;
@@ -183,7 +190,7 @@ public class RangeForecastContribution extends BaseContribution
 				this.setFinishDate(measure.time);
 		}
 
-		measurements.add(measure);
+		sensorOrigins.add(measure);
 	}
 
 	@Override
@@ -246,7 +253,7 @@ public class RangeForecastContribution extends BaseContribution
 		}
 
 		// ok, now we create the inner circle
-		Geometry geom =  GeoSupport.doBuffer(pt, theRange);
+		Geometry geom = GeoSupport.doBuffer(pt, theRange);
 		LinearRing res = (LinearRing) geom.getBoundary();
 		return res;
 	}
@@ -294,8 +301,8 @@ public class RangeForecastContribution extends BaseContribution
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"), 
-					date + " " + time);
+			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
 			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
