@@ -148,7 +148,7 @@ public class GeoSupport
 		return m_sec / 0.514444444;
 	}
 	
-	public static double calcDistance(Point point1, Point point2) 
+	public static double calcFlatDistance(Point point1, Point point2) 
 	{
 		double a = (point1.getX() - point2.getX());
 		double b = (point1.getY() - point2.getY());

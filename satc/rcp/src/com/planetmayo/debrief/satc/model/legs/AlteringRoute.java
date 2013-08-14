@@ -50,6 +50,8 @@ public class AlteringRoute extends CoreRoute
 		return _routeType;
 	}
 	
+	
+	
 	/**
    * constructs altering route as bezier curve:
    *   in case when intersection point is placed between before and after straight segments 
@@ -70,13 +72,13 @@ public class AlteringRoute extends CoreRoute
 		
 		Point intersection = findIntersection(beforeCoeffs, afterCoeffs);
 		
-		double beforeStartDistance = GeoSupport.calcDistance(before.getStartPoint(), intersection);
-		double beforeEndDistance = GeoSupport.calcDistance(before.getEndPoint(), intersection);
-		double beforeDistance = GeoSupport.calcDistance(before.getStartPoint(), before.getEndPoint());
+		double beforeStartDistance = GeoSupport.calcFlatDistance(before.getStartPoint(), intersection);
+		double beforeEndDistance = GeoSupport.calcFlatDistance(before.getEndPoint(), intersection);
+		double beforeDistance = GeoSupport.calcFlatDistance(before.getStartPoint(), before.getEndPoint());
 		
-		double afterStartDistance = GeoSupport.calcDistance(after.getStartPoint(), intersection);
-		double afterEndDistance = GeoSupport.calcDistance(after.getEndPoint(), intersection);
-		double afterDistance = GeoSupport.calcDistance(after.getStartPoint(), after.getEndPoint());		
+		double afterStartDistance = GeoSupport.calcFlatDistance(after.getStartPoint(), intersection);
+		double afterEndDistance = GeoSupport.calcFlatDistance(after.getEndPoint(), intersection);
+		double afterDistance = GeoSupport.calcFlatDistance(after.getStartPoint(), after.getEndPoint());		
 		
 		if (beforeEndDistance < beforeStartDistance && afterStartDistance < afterEndDistance &&
 				beforeStartDistance > beforeDistance && afterEndDistance > afterDistance)
@@ -86,7 +88,7 @@ public class AlteringRoute extends CoreRoute
 		}
 		else
 		{
-			double distance = GeoSupport.calcDistance(_startP, _endP);
+			double distance = GeoSupport.calcFlatDistance(_startP, _endP);
 			
 			_controlPoints = new Point[2];
 			_controlPoints[0] = findExtendPoint(beforeCoeffs, before.getEndPoint(), distance / 2, before.getStartPoint());
@@ -144,7 +146,7 @@ public class AlteringRoute extends CoreRoute
 		double x2 = (-b - sqrtD) / (2 * a);
 		Point p1 = GeoSupport.getFactory().createPoint(new Coordinate(x1, lineCoeffs[0] * x1 + lineCoeffs[1]));
 		Point p2 = GeoSupport.getFactory().createPoint(new Coordinate(x2, lineCoeffs[0] * x2 + lineCoeffs[1]));
-		return GeoSupport.calcDistance(checkPoint, p1) > GeoSupport.calcDistance(checkPoint, p2) ? p1 : p2;
+		return GeoSupport.calcFlatDistance(checkPoint, p1) > GeoSupport.calcFlatDistance(checkPoint, p2) ? p1 : p2;
 	}
 	
 	/**

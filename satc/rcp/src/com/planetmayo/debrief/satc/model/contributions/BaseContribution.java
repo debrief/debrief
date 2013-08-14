@@ -14,6 +14,10 @@ import com.planetmayo.debrief.satc.model.states.State;
 public abstract class BaseContribution extends ModelObject implements
 		Comparable<BaseContribution>
 {
+	protected static final int MEASUREMENT_DEFAULT_SCORE = 100;
+	protected static final int FORECAST_DEFAULT_SCORE = 200;
+	protected static final int ANALYST_DEFAULT_SCORE = 300;
+		
 	private static final long serialVersionUID = 1L;
 
 	public static final String WEIGHT = "weight";
@@ -185,6 +189,11 @@ public abstract class BaseContribution extends ModelObject implements
 		}
 		return true;
 	}
+	
+	protected int compareEqualClass(BaseContribution o) 
+	{
+		return this.getName().compareTo(o.getName());
+	}
 
 	@Override
 	public int compareTo(BaseContribution o)
@@ -200,7 +209,7 @@ public abstract class BaseContribution extends ModelObject implements
 			if (myClass.equals(hisClass))
 			{
 				// ha-they must be equal, compare the names
-				return this.getName().compareTo(o.getName());
+				return compareEqualClass(o);
 			}
 			else
 			{
@@ -222,16 +231,16 @@ public abstract class BaseContribution extends ModelObject implements
 		return name;
 	}
 
-	private int getScore()
+	protected int getScore()
 	{
 		switch (getDataType())
 		{
 		case MEASUREMENT:
-			return 0;
+			return MEASUREMENT_DEFAULT_SCORE;
 		case FORECAST:
-			return 1;
+			return FORECAST_DEFAULT_SCORE;
 		default:
-			return 2;
+			return ANALYST_DEFAULT_SCORE;
 		}
 	}
 
