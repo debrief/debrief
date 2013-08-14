@@ -42,7 +42,17 @@ public class AlteringRoute extends CoreRoute
 	@Override	
 	public void generateSegments(final List<BoundedState> states)
 	{
-		 // TODO sort out how to produce a curve through from start to end. actually, we can produce loads!
+		 // TODO sort out how to produce a curve through from start to end. 
+		 // actually, we can produce loads!
+		
+		// YURI - this is where we produce data points along the curve.
+		// if states contains data, then a data point should be produced at the
+		// time of each state.  I presume it will be interpolated along the line proportionate
+		// to the time 
+		
+		// But, if states is empty, then we discussed using the mean of the last few points
+		// on the previous straight leg to produce a mean time step size. The curve will then be 
+		// segmented into points with that mean time interval.
 	}
 
 	public AlteringRouteType getAlteringRouteType()
