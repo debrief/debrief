@@ -182,7 +182,7 @@ public class BoundsManager implements IBoundsManager
 		catch (IncompatibleStateException e)
 		{
 			LogFactory.getLog().error(
-					"Failed applying bounds:" + theContrib.getName());
+					"Failed applying bounds:" + theContrib.getName() + " Error:" + e.getMessage());
 			fireError(e);
 		}
 		catch (Exception re)
