@@ -397,7 +397,9 @@ public class LineShape extends PlainShape implements Editable,
 						prop("Line_Start", "the start of the line", SPATIAL),
 						prop("LineEnd", "the end of the line", SPATIAL),
 						prop("ArrowAtEnd",
-								"whether to show an arrow at one end of the line", FORMAT), };
+								"whether to show an arrow at one end of the line", FORMAT),
+						prop("ShowAutoCalc",
+								"whether to show range/bearing in the middle of the line", FORMAT), };
 
 				return res;
 

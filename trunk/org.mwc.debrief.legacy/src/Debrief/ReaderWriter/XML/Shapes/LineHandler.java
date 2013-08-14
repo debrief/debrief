@@ -16,12 +16,14 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract public class LineHandler extends ShapeHandler implements PlottableExporter
 {
 
-	private final static String ARROW_AT_END="ArrowAtEnd";
+	private final static String ARROW_AT_END = "ArrowAtEnd";
+	private final static String SHOW_AUTO_CALC = "ShowAutoCalc";
 	
-  MWC.GenericData.WorldLocation _start;
-  MWC.GenericData.WorldLocation _end;
+    MWC.GenericData.WorldLocation _start;
+    MWC.GenericData.WorldLocation _end;
 
 	protected boolean _arrowAtEnd = false;
+	protected boolean _showAutoCalc = false;
 
   public LineHandler()
   {
@@ -48,6 +50,13 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
         _arrowAtEnd = value;
       }
     });
+    addAttributeHandler(new HandleBooleanAttribute(SHOW_AUTO_CALC)
+    {
+      public void setValue(String name, boolean value)
+      {
+        _showAutoCalc = value;
+      }
+    });
 
   }
 
@@ -55,6 +64,7 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
   {
     MWC.GUI.Shapes.LineShape ls = new MWC.GUI.Shapes.LineShape(_start, _end);
     ls.setArrowAtEnd(_arrowAtEnd);
+    ls.setShowAutoCalc(_showAutoCalc);
     return ls;
   }
 
@@ -65,6 +75,7 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
     // reset the local parameters
     _start = _end = null;
     _arrowAtEnd = false;
+    _showAutoCalc = false;
   }
 
   public final void exportThisPlottable(MWC.GUI.Plottable plottable,org.w3c.dom.Element parent, org.w3c.dom.Document doc)
@@ -86,6 +97,7 @@ abstract public class LineHandler extends ShapeHandler implements PlottableExpor
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLine_Start(), "tl", ePlottable, doc);
       MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(cs.getLineEnd(), "br", ePlottable, doc);
       ePlottable.setAttribute(ARROW_AT_END, writeThis(cs.getArrowAtEnd()));
+      ePlottable.setAttribute(SHOW_AUTO_CALC, writeThis(cs.isShowAutoCalc()));
     }
     else
     {
