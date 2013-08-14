@@ -1,9 +1,11 @@
 package com.planetmayo.debrief.satc.model.legs;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
@@ -40,26 +42,58 @@ public class AlteringRoute extends CoreRoute
 	 * 
 	 */
 	@Override	
-	public void generateSegments(final List<BoundedState> states)
+	public void generateSegments(final Collection<BoundedState> states)
 	{
-		 // TODO sort out how to produce a curve through from start to end. 
-		 // actually, we can produce loads!
-		
-		// YURI - this is where we produce data points along the curve.
-		// if states contains data, then a data point should be produced at the
-		// time of each state.  I presume it will be interpolated along the line proportionate
-		// to the time 
-		
-		// But, if states is empty, then we discussed using the mean of the last few points
-		// on the previous straight leg to produce a mean time step size. The curve will then be 
-		// segmented into points with that mean time interval.
+		if (_controlPoints == null) 
+		{
+			return;
+		}
+		final long elapsed = _endTime.getTime() - _startTime.getTime();
+		for (BoundedState state : states)
+		{
+			Date currentDate = state.getTime();
+			if (! currentDate.before(_startTime) && ! currentDate.after(_endTime)) 
+			{
+				long delta = currentDate.getTime() - _startTime.getTime();
+				double proportion = (double) delta / (double) elapsed;
+				
+				// create the state object without course and speed for now
+				State newS = new State(currentDate, calcCurve(proportion), 0, 0);
+
+				if (_myStates == null)
+					_myStates = new ArrayList<State>();
+
+				// and remember it
+				_myStates.add(newS);				
+			}
+		}
+	}
+	
+	private Point calcCurve(double t) 
+	{
+		double invT = 1 - t;
+		double invT2 = invT * invT;
+		double invT3 = invT2 * invT;
+		double t2 = t * t;
+		double t3 = t2 * t;
+		if (_controlPoints.length == 1) 
+		{
+			double x = invT2 * _startP.getX() + 2 * t * invT * _controlPoints[0].getX() + t2 * _endP.getX();
+			double y = invT2 * _startP.getY() + 2 * t * invT * _controlPoints[0].getY() + t2 * _endP.getY();
+			return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
+		}
+		else
+		{
+			double x = invT3 * _startP.getX() + 3 * t * invT2 * _controlPoints[0].getX() + 3 * t2 * invT * _controlPoints[1].getX() + t3 * _endP.getX();
+			double y = invT3 * _startP.getY() + 3 * t * invT2 * _controlPoints[0].getY() + 3 * t2 * invT * _controlPoints[1].getY() + t3 * _endP.getY();			
+			return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
+		}
 	}
 
 	public AlteringRouteType getAlteringRouteType()
 	{
 		return _routeType;
 	}
-	
 	
 	
 	/**

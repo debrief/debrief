@@ -1150,7 +1150,11 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			else
 			{
 				AlteringRoute altering = (AlteringRoute) route;
-				Point[] controlPoints = altering.getBezierControlPoints();
+				for (State state : altering.getStates()) 
+				{
+					series.add(new XYDataItem(state.getLocation().getY(), state.getLocation().getX()));
+				}
+				/*Point[] controlPoints = altering.getBezierControlPoints();
 				if (altering.getAlteringRouteType() == AlteringRouteType.QUAD_BEZIER)
 				{
 					for (double t = 0; t <= 1; t += 0.05) 
@@ -1188,7 +1192,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 								t3 * altering.getEndPoint().getY();
 						series.add(new XYDataItem(y, x));
 					}
-				}					
+				}	*/				
 			}
 		}
 		// get the shape

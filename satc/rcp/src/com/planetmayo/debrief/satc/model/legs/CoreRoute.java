@@ -1,8 +1,8 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -155,7 +155,7 @@ public class CoreRoute
 		return _endTime;
 	}
 
-	public void generateSegments(final List<BoundedState> states) 
+	public void generateSegments(final Collection<BoundedState> states) 
 	{
 		
 	}

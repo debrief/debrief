@@ -219,8 +219,9 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 			AlteringRoute altering = new AlteringRoute("", 
 					before.getEndPoint(), before.getEndTime(), 
 					after.getStartPoint(), after.getStartTime()
-			);
+			);			
 			altering.constructRoute(before, after);
+			altering.generateSegments(problemSpaceView.getBoundedStatesBetween(before.getEndTime(), after.getStartTime()));
 			result.add(before);
 			result.add(altering);
 		}

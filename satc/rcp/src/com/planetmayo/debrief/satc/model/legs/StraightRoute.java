@@ -1,9 +1,9 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -86,7 +86,7 @@ public class StraightRoute extends CoreRoute
 	 * 
 	 */
 	@Override
-	public void generateSegments(final List<BoundedState> states)
+	public void generateSegments(final Collection<BoundedState> states)
 	{
 		// what is our time period
 		final long elapsed = _endTime.getTime() - _startTime.getTime();
