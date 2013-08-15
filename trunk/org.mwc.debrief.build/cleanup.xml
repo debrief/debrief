@@ -1,0 +1,15 @@
+<project default="checkStyle">
+	<taskdef resource="checkstyletask.properties"
+         classpath="lib/checkstyle-5.6-all.jar"/>
+         
+	<target name="checkStyle">
+		<checkstyle config="../Checkstyle/check.xml">
+			<fileset dir="../" 
+				includes="**/*.java"
+				excludes="contribs/**, **/docs/**"/>
+			
+			<formatter type="plain"/>
+			<formatter type="plain" toFile="./logs/checkstyle_errors.log"/>
+		</checkstyle>
+	</target>
+</project>
