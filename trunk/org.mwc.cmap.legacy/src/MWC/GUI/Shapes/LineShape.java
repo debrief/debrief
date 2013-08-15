@@ -199,6 +199,9 @@ public class LineShape extends PlainShape implements Editable,
 
 		if (this.getColor() != null)
 			dest.setColor(this.getColor());
+		
+		if(getFont() != null)
+			dest.setFont(getFont());
 
 		// get the origin
 		Point start = new Point(dest.toScreen(_start));
