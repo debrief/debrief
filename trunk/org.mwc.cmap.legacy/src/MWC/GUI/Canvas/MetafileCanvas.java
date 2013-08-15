@@ -110,6 +110,7 @@ package MWC.GUI.Canvas;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.io.File;
@@ -464,6 +465,12 @@ public class MetafileCanvas implements CanvasType
 		return ht;
 	}
 
+	@Override
+	public void setFont(Font theFont)
+	{
+		g.setFont(theFont);
+	}
+	
 	public int getStringWidth(java.awt.Font theFont, String theString)
 	{
 		if (DEBUG_OUTPUT)
@@ -586,6 +593,8 @@ public class MetafileCanvas implements CanvasType
 		// TODO Auto-generated method stub
 		
 	}
+
+
 
 	// /////////////////////////////////
 	// nested classes

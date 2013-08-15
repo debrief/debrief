@@ -7,6 +7,7 @@
 package MWC.GUI.Canvas;
 
 import java.awt.BasicStroke;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 
@@ -306,5 +307,11 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	public void drawText(String str, int x, int y, float rotate) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setFont(Font theFont)
+	{
+		_dest.setFont(theFont);
 	}
 }

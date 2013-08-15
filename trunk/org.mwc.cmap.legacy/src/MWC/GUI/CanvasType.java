@@ -209,6 +209,11 @@ public interface CanvasType {
    * @param theCol parameter for setColor
    */
   public void setColor(java.awt.Color theCol);
+  
+  /** set the font for following text
+   * 
+   */
+  public void setFont(java.awt.Font theFont);
 
   /** set the style for the line, using our constants
    *
