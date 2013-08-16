@@ -2,14 +2,41 @@
 	<taskdef resource="checkstyletask.properties"
          classpath="lib/checkstyle-5.6-all.jar"/>
          
+	
+	<fileset id="sourceCode"
+		dir="../"
+		includes="**/*.java"
+		excludes="contribs/**, **/docs/**"/>
+
+	<!-- TODO: write a macros for checkstyle repetitive task -->
 	<target name="checkStyle">
-		<checkstyle config="../Checkstyle/check.xml">
-			<fileset dir="../" 
-				includes="**/*.java"
-				excludes="contribs/**, **/docs/**"/>
+		<checkstyle config="checkstyle/configs/duplicate_code.xml"
+			failOnViolation="false"
+			failureProperty="checkstyle.failure">
+			<fileset refid="sourceCode"/>
 			
 			<formatter type="plain"/>
-			<formatter type="plain" toFile="./logs/checkstyle_errors.log"/>
+			<formatter type="plain" toFile="checkstyle/logs/duplicate_code.log"/>
 		</checkstyle>
+		
+		<checkstyle config="checkstyle/configs/possible_bugs.xml" 
+			failonviolation="false"
+			failureProperty="checkstyle.failure">
+			<fileset refid="sourceCode"/>
+			
+			<formatter type="plain"/>
+			<formatter type="plain" toFile="checkstyle/logs/possible_bugs.log"/>
+		</checkstyle>
+		
+		<checkstyle config="checkstyle/configs/coding_problems.xml" 
+					failonviolation="false"
+					failureProperty="checkstyle.failure">
+					<fileset refid="sourceCode"/>
+					
+					<formatter type="plain"/>
+					<formatter type="plain" toFile="checkstyle/logs/coding_problems.log"/>
+				</checkstyle>
+		
+		<fail message="CheckStyle found violations!" if="checkstyle.failure"/>
 	</target>
 </project>
