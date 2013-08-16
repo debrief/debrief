@@ -6,7 +6,7 @@
 	<fileset id="sourceCode"
 		dir="../"
 		includes="**/*.java"
-		excludes="contribs/**, **/docs/**"/>
+		excludes="contribs/**, **/docs/**, **/libs/**"/>
 
 	<!-- TODO: write a macros for checkstyle repetitive task -->
 	<target name="checkStyle">
