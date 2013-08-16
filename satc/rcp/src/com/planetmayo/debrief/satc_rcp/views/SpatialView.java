@@ -43,7 +43,6 @@ import com.planetmayo.debrief.satc.model.generator.impl.bf.IBruteForceSolutionsL
 import com.planetmayo.debrief.satc.model.generator.impl.bf.LegWithRoutes;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
 import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
-import com.planetmayo.debrief.satc.model.legs.AlteringRouteType;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;

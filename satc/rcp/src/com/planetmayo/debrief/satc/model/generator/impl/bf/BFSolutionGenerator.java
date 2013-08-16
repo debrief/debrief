@@ -207,6 +207,10 @@ public class BFSolutionGenerator extends AbstractSolutionGenerator
 		Iterator<CoreRoute> iterator = straightRoutes.iterator();
 		StraightRoute before = null;
 		StraightRoute after = (StraightRoute) iterator.next();
+		while (after == null && iterator.hasNext()) 
+		{
+			after = (StraightRoute) iterator.next();
+		}
 		while (iterator.hasNext())
 		{
 			StraightRoute nxt = (StraightRoute) iterator.next();
