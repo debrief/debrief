@@ -52,6 +52,7 @@ import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -1150,49 +1151,14 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 			else
 			{
 				AlteringRoute altering = (AlteringRoute) route;
-				for (State state : altering.getStates()) 
+				Point start = route.getStartPoint();
+				Point end = route.getEndPoint();
+				Point[] controls = altering.getBezierControlPoints();
+				for (double t = 0; t <= 1; t += 0.05) 
 				{
-					series.add(new XYDataItem(state.getLocation().getY(), state.getLocation().getX()));
+					Point p = MathUtils.calculateBezier(t, start, end, controls);
+					series.add(new XYDataItem(p.getY(), p.getX()));
 				}
-				/*Point[] controlPoints = altering.getBezierControlPoints();
-				if (altering.getAlteringRouteType() == AlteringRouteType.QUAD_BEZIER)
-				{
-					for (double t = 0; t <= 1; t += 0.05) 
-					{
-						double inverseT = (1 - t);
-						double t2 = t * t;
-						double inverseT2 = inverseT * inverseT;							
-						
-						double x = inverseT2 * altering.getStartPoint().getX() + 
-								2 * t * inverseT * controlPoints[0].getX() + 
-								t2 * altering.getEndPoint().getX();
-						double y = inverseT2 * altering.getStartPoint().getY() + 
-								2 * t * inverseT * controlPoints[0].getY() + 
-								t2 * altering.getEndPoint().getY();
-						series.add(new XYDataItem(y, x));
-					}
-				}
-				if (altering.getAlteringRouteType() == AlteringRouteType.CUBIC_BEZIER)
-				{					
-					for (double t = 0; t <= 1; t += 0.05) 
-					{							
-						double t2 = t * t;
-						double t3 = t2 * t;
-						double inverseT = (1 - t);
-						double inverseT2 = inverseT * inverseT;
-						double inverseT3 = inverseT2 * inverseT;
-						
-						double x = inverseT3 * altering.getStartPoint().getX() + 
-								3 * t * inverseT2 * controlPoints[0].getX() +
-								3 * t2 * inverseT * controlPoints[1].getX() + 
-								t3 * altering.getEndPoint().getX();
-						double y = inverseT3 * altering.getStartPoint().getY() + 
-								3 * t * inverseT2 * controlPoints[0].getY() +
-								3 * t2 * inverseT * controlPoints[1].getY() + 
-								t3 * altering.getEndPoint().getY();
-						series.add(new XYDataItem(y, x));
-					}
-				}	*/				
 			}
 		}
 		// get the shape

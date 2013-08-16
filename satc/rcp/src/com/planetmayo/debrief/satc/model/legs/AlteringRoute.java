@@ -7,6 +7,7 @@ import java.util.Date;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.math.Vector2D;
@@ -58,7 +59,8 @@ public class AlteringRoute extends CoreRoute
 				double proportion = (double) delta / (double) elapsed;
 				
 				// create the state object without course and speed for now
-				State newS = new State(currentDate, calcCurve(proportion), 0, 0);
+				Point currentPoint = MathUtils.calculateBezier(proportion, _startP, _endP, _controlPoints);
+				State newS = new State(currentDate, currentPoint, 0, 0);
 
 				if (_myStates == null)
 					_myStates = new ArrayList<State>();
@@ -66,27 +68,6 @@ public class AlteringRoute extends CoreRoute
 				// and remember it
 				_myStates.add(newS);				
 			}
-		}
-	}
-	
-	private Point calcCurve(double t) 
-	{
-		double invT = 1 - t;
-		double invT2 = invT * invT;
-		double invT3 = invT2 * invT;
-		double t2 = t * t;
-		double t3 = t2 * t;
-		if (_controlPoints.length == 1) 
-		{
-			double x = invT2 * _startP.getX() + 2 * t * invT * _controlPoints[0].getX() + t2 * _endP.getX();
-			double y = invT2 * _startP.getY() + 2 * t * invT * _controlPoints[0].getY() + t2 * _endP.getY();
-			return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
-		}
-		else
-		{
-			double x = invT3 * _startP.getX() + 3 * t * invT2 * _controlPoints[0].getX() + 3 * t2 * invT * _controlPoints[1].getX() + t3 * _endP.getX();
-			double y = invT3 * _startP.getY() + 3 * t * invT2 * _controlPoints[0].getY() + 3 * t2 * invT * _controlPoints[1].getY() + t3 * _endP.getY();			
-			return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
 		}
 	}
 
@@ -111,18 +92,18 @@ public class AlteringRoute extends CoreRoute
 	public void constructRoute(StraightRoute before, StraightRoute after) 
 	{
 		_routeType = AlteringRouteType.UNDEFINED;
-		double[] beforeCoeffs = findStraightLineCoef(before);
-		double[] afterCoeffs = findStraightLineCoef(after);
+		double[] beforeCoeffs = MathUtils.findStraightLineCoef(before.getStartPoint(), before.getEndPoint());
+		double[] afterCoeffs = MathUtils.findStraightLineCoef(after.getStartPoint(), after.getEndPoint());
 		
-		Point intersection = findIntersection(beforeCoeffs, afterCoeffs);
+		Point intersection = MathUtils.findIntersection(beforeCoeffs, afterCoeffs);
 		
-		double beforeStartDistance = GeoSupport.calcFlatDistance(before.getStartPoint(), intersection);
-		double beforeEndDistance = GeoSupport.calcFlatDistance(before.getEndPoint(), intersection);
-		double beforeDistance = GeoSupport.calcFlatDistance(before.getStartPoint(), before.getEndPoint());
+		double beforeStartDistance = MathUtils.calcFlatDistance(before.getStartPoint(), intersection);
+		double beforeEndDistance = MathUtils.calcFlatDistance(before.getEndPoint(), intersection);
+		double beforeDistance = MathUtils.calcFlatDistance(before.getStartPoint(), before.getEndPoint());
 		
-		double afterStartDistance = GeoSupport.calcFlatDistance(after.getStartPoint(), intersection);
-		double afterEndDistance = GeoSupport.calcFlatDistance(after.getEndPoint(), intersection);
-		double afterDistance = GeoSupport.calcFlatDistance(after.getStartPoint(), after.getEndPoint());		
+		double afterStartDistance = MathUtils.calcFlatDistance(after.getStartPoint(), intersection);
+		double afterEndDistance = MathUtils.calcFlatDistance(after.getEndPoint(), intersection);
+		double afterDistance = MathUtils.calcFlatDistance(after.getStartPoint(), after.getEndPoint());		
 		
 		if (beforeEndDistance < beforeStartDistance && afterStartDistance < afterEndDistance &&
 				beforeStartDistance > beforeDistance && afterEndDistance > afterDistance)
@@ -132,44 +113,13 @@ public class AlteringRoute extends CoreRoute
 		}
 		else
 		{
-			double distance = GeoSupport.calcFlatDistance(_startP, _endP);
+			double distance = MathUtils.calcFlatDistance(_startP, _endP);
 			
 			_controlPoints = new Point[2];
 			_controlPoints[0] = findExtendPoint(beforeCoeffs, before.getEndPoint(), distance / 2, before.getStartPoint());
 			_controlPoints[1] = findExtendPoint(afterCoeffs, after.getStartPoint(), distance / 2, after.getEndPoint());
 			_routeType = AlteringRouteType.CUBIC_BEZIER;
 		}
-	}
-	
-	/** 
-	 * defines straight route in y(x) = k * x + b shape and returns [k, b]. 
-	 * @param route
-	 * @return [k, b]
-	 */
-	private double[] findStraightLineCoef(StraightRoute route)
-	{
-		Point startPoint = route.getStartPoint();
-		Point endPoint = route.getEndPoint();
-		double k = (startPoint.getY() - endPoint.getY()) / (startPoint.getX() - endPoint.getX());
-		double b = startPoint.getY() - k * startPoint.getX();
-		return new double[] {k, b};
-	}
-	
-	/**
-	 * 
-	 * @param line1 - first straight line coeffs: y(x) = line1[0] * x + line1[1]
-	 * @param line2 - second straight line coeffs: y(x) = line2[0] * x + line2[1]
-	 * @return intersection point between two line1 and line2
-	 */	
-	private Point findIntersection(double[] line1, double[] line2)
-	{
-		if (Math.abs(line1[0] - line2[0]) < 0.0001) 
-		{
-			return null;
-		}
-		double x = (line1[1] - line2[1]) / (line2[0] - line1[0]);
-		double y = line1[0] * x + line1[1];
-		return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
 	}
 	
 	/**
@@ -190,7 +140,7 @@ public class AlteringRoute extends CoreRoute
 		double x2 = (-b - sqrtD) / (2 * a);
 		Point p1 = GeoSupport.getFactory().createPoint(new Coordinate(x1, lineCoeffs[0] * x1 + lineCoeffs[1]));
 		Point p2 = GeoSupport.getFactory().createPoint(new Coordinate(x2, lineCoeffs[0] * x2 + lineCoeffs[1]));
-		return GeoSupport.calcFlatDistance(checkPoint, p1) > GeoSupport.calcFlatDistance(checkPoint, p2) ? p1 : p2;
+		return MathUtils.calcFlatDistance(checkPoint, p1) > MathUtils.calcFlatDistance(checkPoint, p2) ? p1 : p2;
 	}
 	
 	/**

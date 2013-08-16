@@ -147,13 +147,6 @@ public class GeoSupport
 	{
 		return m_sec / 0.514444444;
 	}
-	
-	public static double calcFlatDistance(Point point1, Point point2) 
-	{
-		double a = (point1.getX() - point2.getX());
-		double b = (point1.getY() - point2.getY());
-		return Math.sqrt(a * a + b * b);		
-	}
 
 	public static void setPlotter(GeoPlotter plotter, IShowBoundProblemSpaceDiagnostics problemD, IShowGenerateSolutionsDiagnostics solutionD)
 	{
