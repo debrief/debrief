@@ -20,6 +20,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -193,7 +194,8 @@ public class BearingMeasurementContribution extends BaseContribution
 					GeodeticCalculator calculator = new GeodeticCalculator();
 					calculator.setStartingGeographicPoint(measurement.origin.getLon(), measurement.origin.getLat());
 					calculator.setDestinationGeographicPoint(state.getLocation().getX(), state.getLocation().getY());
-					double radians = Math.toRadians(trimDegs(calculator.getAzimuth()));
+					
+					double radians = MathUtils.normalizeAngle(Math.toRadians(trimDegs(calculator.getAzimuth())));					
 					res += (measurement.bearingAngle - radians) * (measurement.bearingAngle - radians);
 					count++;
 				}
@@ -322,8 +324,9 @@ public class BearingMeasurementContribution extends BaseContribution
 				lon = -lon;
 
 			GeoPoint theLoc = new GeoPoint(lat, lon);
-			BMeasurement measure = new BMeasurement(theLoc, Math.toRadians(Double
-					.valueOf(bearing)), theDate, GeoSupport.m2deg(Double.valueOf(range)));
+			double normalizedAngle = MathUtils.normalizeAngle(Math.toRadians(Double.parseDouble(bearing)));
+			BMeasurement measure = new BMeasurement(theLoc, normalizedAngle, 
+					theDate, GeoSupport.m2deg(Double.parseDouble(range)));
 
 			addThis(measure);
 
