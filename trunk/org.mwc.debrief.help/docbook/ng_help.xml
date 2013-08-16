@@ -2387,6 +2387,22 @@ and so on....</programlisting></para>
             clipboard. Next, paste that location into the
             <guilabel>LineEnd</guilabel> value.</para>
           </tip>
+          <note>
+            <para>In Summer 2013 the <guilabel>Line Shape</guilabel> annotation received some love
+              and gained new capabilities.  One is the ability to have an arrow displayed at one
+              end.  This is useful in indicating the direction of travel, or in highlighting a
+              particular location.  The second capability is <indexterm>
+                <primary>Show Auto Calc range</primary>
+              </indexterm><guilabel>Show Auto Calc</guilabel> - this displays the calculated range
+              and bearing 1/2 way along the line.  Unfortunately this label is only visible on
+              screen - the structure Windows Metafile format doesn't allow us to copy the rotated
+              text across the clipboard to copy it into MS Word.  So, you'll only get this rotated
+              text in MS Word is you capture a screenshot, using software such as SnagIt or
+              Hypercam.  If you do want to include such a label in your analysis report, and you
+              wish to copy/paste the image via the clipboard, then you can always manually put the
+              range/bearing into the line label, and specify that the label be shown 1/2 way along
+              the line.</para>
+          </note>
         </sect2>
 
         <sect2 xml:id="buoyfields_intro">
