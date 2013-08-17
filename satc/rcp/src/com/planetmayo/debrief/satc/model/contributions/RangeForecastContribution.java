@@ -164,6 +164,10 @@ public class RangeForecastContribution extends BaseContribution
 				count++;
 			}
 		}
+		if (count == 0) 
+		{
+			return 0;
+		}
 		double norm = Math.max(Math.abs(max - estimate), Math.abs(min - estimate));
 		return Math.sqrt(sum / count) / norm;
 	}
