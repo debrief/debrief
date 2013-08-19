@@ -990,9 +990,12 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 			 _theDest.getTransform(oldTransform);
 			
 			Transform tr = new Transform(_theDest.getDevice());			
-			tr.translate(x, y2);
+			tr.translate(x, y2);			
 			tr.rotate(rotate);
-			tr.translate(-x, -y2);
+			Font awFont = new Font(fontData.getName(), 
+					fontData.getStyle(), fontData.getHeight());
+			int strWidth = getStringWidth(awFont, theStr);
+			tr.translate(-x - strWidth/2, -y2);
 			
 			_theDest.setTransform(tr);
 			_theDest.drawText(theStr, x, y, true);

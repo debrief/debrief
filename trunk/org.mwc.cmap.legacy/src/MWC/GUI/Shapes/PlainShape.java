@@ -112,6 +112,7 @@
 package MWC.GUI.Shapes;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -179,6 +180,11 @@ abstract public class PlainShape implements Serializable, DraggableItem
 	 * 
 	 */
 	private boolean _isFilled = false;
+
+	/** the font used for this shape
+	 * 
+	 */
+	private Font _myFont;
 	/**
 	 * how transparent do we make the filled shapes?
 	 * 
@@ -468,5 +474,15 @@ abstract public class PlainShape implements Serializable, DraggableItem
 
 		// try range
 		currentNearest.checkMe(shape, blRange, null, parentLayer, thisLocation);
+	}
+
+	public void setFont(Font theFont)
+	{
+		_myFont = theFont;
+	}
+	
+	protected Font getFont()
+	{
+		return _myFont;
 	}
 }

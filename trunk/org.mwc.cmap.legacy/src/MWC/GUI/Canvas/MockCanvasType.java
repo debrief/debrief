@@ -260,4 +260,11 @@ public class MockCanvasType implements CanvasType
 		
 	}
 
+	@Override
+	public void setFont(Font theFont)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

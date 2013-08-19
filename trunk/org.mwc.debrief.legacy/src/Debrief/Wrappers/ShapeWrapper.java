@@ -540,7 +540,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		// store the name of the shape
 		_theShape.setName(getName());
 
-		_theLabel.setFont(new Font("Sans Serif", Font.PLAIN, 9));
+		// set the default font
+		setFont(new Font("Sans Serif", Font.PLAIN, 9));
+		
+		// and the color.
 		_theLabel.setColor(theColor);
 
 		// override the shape, just to be sure...
@@ -1062,6 +1065,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	public final void setFont(final Font theFont)
 	{
 		_theLabel.setFont(theFont);
+
+		// we must also provide the font to the shape, in case it's able to display
+		// text (such as the rng/brg on a line shape)
+		_theShape.setFont(theFont);
 	}
 
 	@FireReformatted

@@ -16,190 +16,229 @@ import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GenericData.WorldLocation;
 
 /**
- *
- * @author  Ian.Mayo
+ * 
+ * @author Ian.Mayo
  * @version
  */
-public class WindowsClipboard implements CanvasType{
+public class WindowsClipboard implements CanvasType
+{
 
+	public native boolean drawImage(Image img, int x, int y, int width,
+			int height, ImageObserver observer);
 
-  public native boolean drawImage(Image img,
-                                  int x,
-                                  int y,
-                                  int width,
-                                  int height,
-                                  ImageObserver observer);
-  public native void drawLine(int startX,int startY,int endX,int endY);
-  public native void drawPolyline(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints);
+	public native void drawLine(int startX, int startY, int endX, int endY);
 
-	final public void drawPolyline(int[] points) {
+	public native void drawPolyline(int[] xPoints, int[] yPoints, int nPoints);
+
+	final public void drawPolyline(int[] points)
+	{
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	}
-  public native void drawPolygon(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints);
-  public native void fillPolygon(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints);
 
-  public native void drawRect(int startX,int startY,int width,int height);
-  public native void fillRect(int startX,int startY,int width,int height);
-  public native void drawText(int x, int y, String str, int length);
-  public native void setFont(int height, String name, int length);
-  protected native void setDataArea(int wid, int ht);
+	public native void drawPolygon(int[] xPoints, int[] yPoints, int nPoints);
 
-  public native void drawArc(int x,int y,int width,int height,int startAngle,int arcAngle) ;
-  public native void fillArc(int x,int y,int width,int height,int startAngle,int arcAngle);
+	public native void fillPolygon(int[] xPoints, int[] yPoints, int nPoints);
 
-  public native void endDraw(Object theVal);
-  public native void startDraw(Object theVal, int wid, int ht);
-  private native void setColor(int r, int g, int b);
+	public native void drawRect(int startX, int startY, int width, int height);
 
-  public native void setLineStyle(int style);
+	public native void fillRect(int startX, int startY, int width, int height);
 
-  public native void setLineWidth(float width);
-  public native float getLineWidth();
+	public native void drawText(int x, int y, String str, int length);
 
-  private PlainProjection _myProjection;
-  private java.awt.Font _lastFont;
+	public native void setFont(int height, String name, int length);
 
-  static{
-  //  System.loadLibrary("MS_Utils");
-  }
+	protected native void setDataArea(int wid, int ht);
 
-    /** Creates new WindowsClipboard */
-    public WindowsClipboard() {
-    }
+	public native void drawArc(int x, int y, int width, int height,
+			int startAngle, int arcAngle);
 
-    public static void main(String[] args)
-    {
-      WindowsClipboard wc = new WindowsClipboard();
-      wc.startDraw(null);
-      wc.drawLine(100, 200, 12, 9);
-      wc.setColor(Color.orange);
-      wc.drawLine(100, 200, 400, 300);
-      java.util.Date gt = new java.util.Date();
-      wc.drawText(new java.awt.Font("Times New Roman",java.awt.Font.BOLD, 9), gt.toString(), 30, 40);
-      wc.fillRect(50, 50, 10, 20);
-      wc.endDraw(null);
-    }
+	public native void fillArc(int x, int y, int width, int height,
+			int startAngle, int arcAngle);
 
-    /** update the information currently plotted on chart
-      */
-    public void updateMe() {
-    }
+	public native void endDraw(Object theVal);
 
-    public void drawOval(int x,int y,int width,int height) {
-    }
+	public native void startDraw(Object theVal, int wid, int ht);
 
-    public void fillOval(int x,int y,int width,int height) {
-    }
+	private native void setColor(int r, int g, int b);
 
-    public void drawText(String str,int x,int y) {
-      drawText(x, y, str, (str.length())+1);
-    }
+	public native void setLineStyle(int style);
 
-    public void setColor(java.awt.Color theCol) {
-      setColor(theCol.getRed(), theCol.getGreen(), theCol.getBlue());
-    }
+	public native void setLineWidth(float width);
 
+	public native float getLineWidth();
 
-    public void drawText(java.awt.Font theFont,String theStr,int x,int y) {
+	private PlainProjection _myProjection;
+	private java.awt.Font _lastFont;
 
-      // resend the font data, if we have to
-      if(theFont != _lastFont)
-      {
-        _lastFont = theFont;
-        // get the details of the font
-        int ht = theFont.getSize();
+	static
+	{
+		// System.loadLibrary("MS_Utils");
+	}
 
-        //
-        String name = theFont.getFamily();
-        setFont(ht, name, name.length());
+	/** Creates new WindowsClipboard */
+	public WindowsClipboard()
+	{
+	}
 
-      }
-      // and write the text
-      drawText(x, y, theStr, (theStr.length()));
-    }
+	public static void main(String[] args)
+	{
+		WindowsClipboard wc = new WindowsClipboard();
+		wc.startDraw(null);
+		wc.drawLine(100, 200, 12, 9);
+		wc.setColor(Color.orange);
+		wc.drawLine(100, 200, 400, 300);
+		java.util.Date gt = new java.util.Date();
+		wc.drawText(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 9),
+				gt.toString(), 30, 40);
+		wc.fillRect(50, 50, 10, 20);
+		wc.endDraw(null);
+	}
 
-    public int getStringHeight(java.awt.Font theFont) {
-      return 5;
-    }
+	/**
+	 * update the information currently plotted on chart
+	 */
+	public void updateMe()
+	{
+	}
 
-    public int getStringWidth(java.awt.Font theFont,String theString) {
-      return 5;
-    }
+	public void drawOval(int x, int y, int width, int height)
+	{
+	}
 
-    /** expose the graphics object, used only for
- * plotting non-persistent graphics
- * (temporary lines, etc).
- */
-    public java.awt.Graphics getGraphicsTemp() {
-      return null;
-    }
+	public void fillOval(int x, int y, int width, int height)
+	{
+	}
 
-    public PlainProjection getProjection() {
-      return _myProjection;
-    }
+	public void drawText(String str, int x, int y)
+	{
+		drawText(x, y, str, (str.length()) + 1);
+	}
 
-    public void setProjection(PlainProjection val) {
-      _myProjection = val;
-      java.awt.Dimension dim = val.getScreenArea();
-      setDataArea(dim.width, dim.height);
-    }
+	public void setColor(java.awt.Color theCol)
+	{
+		setColor(theCol.getRed(), theCol.getGreen(), theCol.getBlue());
+	}
 
-    public java.awt.Point toScreen(WorldLocation val) {
-      return _myProjection.toScreen(val);
-    }
+	public void drawText(java.awt.Font theFont, String theStr, int x, int y)
+	{
 
-    public WorldLocation toWorld(java.awt.Point val) {
-      return _myProjection.toWorld(val);
-    }
+		// resend the font data, if we have to
+		if (theFont != _lastFont)
+		{
+			setFont(theFont);
 
-    /** retrieve the full data area, and do a fit to window
- */
-    public void rescale() {
-    }
+		}
+		// and write the text
+		drawText(x, y, theStr, (theStr.length()));
+	}
 
-    /** set/get the background colour
- */
-    public java.awt.Color getBackgroundColor() {
-      return null;
-    }
+	public void setFont(java.awt.Font theFont)
+	{
+		_lastFont = theFont;
+		// get the details of the font
+		int ht = theFont.getSize();
 
-    public void setBackgroundColor(java.awt.Color theColor) {
-    }
+		//
+		String name = theFont.getFamily();
+		setFont(ht, name, name.length());
+	}
 
-    public java.awt.Dimension getSize() {
-      return null;
-    }
+	public int getStringHeight(java.awt.Font theFont)
+	{
+		return 5;
+	}
 
-    public void addPainter(CanvasType.PaintListener listener) {
-    }
+	public int getStringWidth(java.awt.Font theFont, String theString)
+	{
+		return 5;
+	}
 
-    public void removePainter(CanvasType.PaintListener listener) {
-    }
+	/**
+	 * expose the graphics object, used only for plotting non-persistent graphics
+	 * (temporary lines, etc).
+	 */
+	public java.awt.Graphics getGraphicsTemp()
+	{
+		return null;
+	}
 
-    @SuppressWarnings({  "rawtypes", "unchecked" })
-		public java.util.Enumeration getPainters() {
-      return null;
-    }
+	public PlainProjection getProjection()
+	{
+		return _myProjection;
+	}
 
-    public void setTooltipHandler(CanvasType.TooltipHandler handler) {
-    }
+	public void setProjection(PlainProjection val)
+	{
+		_myProjection = val;
+		java.awt.Dimension dim = val.getScreenArea();
+		setDataArea(dim.width, dim.height);
+	}
 
-    public void startDraw(Object val)
-    {
-      //
-      startDraw(val, 0, 0);
-    }
+	public java.awt.Point toScreen(WorldLocation val)
+	{
+		return _myProjection.toScreen(val);
+	}
+
+	public WorldLocation toWorld(java.awt.Point val)
+	{
+		return _myProjection.toWorld(val);
+	}
+
+	/**
+	 * retrieve the full data area, and do a fit to window
+	 */
+	public void rescale()
+	{
+	}
+
+	/**
+	 * set/get the background colour
+	 */
+	public java.awt.Color getBackgroundColor()
+	{
+		return null;
+	}
+
+	public void setBackgroundColor(java.awt.Color theColor)
+	{
+	}
+
+	public java.awt.Dimension getSize()
+	{
+		return null;
+	}
+
+	public void addPainter(CanvasType.PaintListener listener)
+	{
+	}
+
+	public void removePainter(CanvasType.PaintListener listener)
+	{
+	}
+
+	@SuppressWarnings(
+	{ "rawtypes", "unchecked" })
+	public java.util.Enumeration getPainters()
+	{
+		return null;
+	}
+
+	public void setTooltipHandler(CanvasType.TooltipHandler handler)
+	{
+	}
+
+	public void startDraw(Object val)
+	{
+		//
+		startDraw(val, 0, 0);
+	}
+
 	@Override
-	public void drawText(String str, int x, int y, float rotate) {
+	public void drawText(String str, int x, int y, float rotate)
+	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

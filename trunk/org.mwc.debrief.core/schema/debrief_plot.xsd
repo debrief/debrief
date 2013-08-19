@@ -605,6 +605,12 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="ShowAutoCalc" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to show range/bearing in the middle of the line
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
