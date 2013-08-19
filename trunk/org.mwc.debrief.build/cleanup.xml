@@ -1,12 +1,16 @@
 <project default="checkStyle">
 	<taskdef resource="checkstyletask.properties"
          classpath="lib/checkstyle-5.6-all.jar"/>
-         
-
-	<fileset id="sourceCode" dir="../" includes = "**/*.java">
-		<contains text="package org.mwc"/>
+         	
+	<fileset id="sourceCode" dir="../">		
+		<patternset >
+			<include name="**/src/ASSET/**/*.java"/>
+			<include name="**/src/org/mwc/**/*.java"/>
+			<include name="**/src/MWC/**/*.java"/>
+			<include name="**/src/Debrief/**/*.java"/>						
+		</patternset>
 	</fileset>
-		
+	
 	<!-- TODO: write a macros for checkstyle repetitive task -->
 	<target name="checkStyle">
 		<checkstyle config="checkstyle/configs/duplicate_code.xml"

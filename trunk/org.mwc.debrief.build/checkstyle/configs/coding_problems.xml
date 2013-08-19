@@ -7,7 +7,7 @@
     
      <module name="TreeWalker">
 		<!-- Checks that there are no "magic numbers", where a magic number is a numeric literal that is not defined as a constant. -->
-		<module name="MagicNumber"/>
+		<!--  <module name="MagicNumber"/> -->
 		<!-- Catching java.lang.Exception, java.lang.Error or java.lang.RuntimeException is almost never acceptable. -->
 		<module name="IllegalCatch"/>
 		<!-- This check can be used to ensure that types are not declared to be thrown.
