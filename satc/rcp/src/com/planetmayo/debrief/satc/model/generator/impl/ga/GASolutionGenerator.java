@@ -30,12 +30,10 @@ import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.impl.AbstractSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.jobs.Job;
-import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
-import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.vividsolutions.jts.geom.Point;
 
@@ -93,7 +91,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 				legs.clear();
 				legs = null;
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -225,25 +223,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		}
 		if (createAltering)
 		{
-			List<CoreRoute> result = new ArrayList<CoreRoute>();
-			StraightRoute before, after = null;
-			for (i = 0; i < routes.size() - 1; i++)
-			{
-				before = (StraightRoute) routes.get(i);
-				after = (StraightRoute) routes.get(i + 1);
-				AlteringRoute altering = new AlteringRoute("", 
-						before.getEndPoint(), before.getEndTime(), 
-						after.getStartPoint(), after.getStartTime());
-				altering.constructRoute(before, after);
-				altering.generateSegments(problemSpaceView.getBoundedStatesBetween(before.getEndTime(), after.getStartTime()));
-				result.add(before);
-				result.add(altering);
-			}
-			if (after != null)
-			{
-				result.add(after);
-			}
-			routes = result;
+			routes = generateAlteringRoutes(routes);
 		}
 		return new CompositeRoute(routes);
 		

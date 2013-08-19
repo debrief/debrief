@@ -94,6 +94,11 @@ public class GeoSupport
 		return _factory;
 	}
 	
+	public static Point createPoint(double lon, double lat) 
+	{
+		return getFactory().createPoint(new Coordinate(lon, lat));
+	}
+	
 	public static Geometry doBuffer(Geometry geom, double distance)
 	{
 		return geom.buffer(distance, 3);

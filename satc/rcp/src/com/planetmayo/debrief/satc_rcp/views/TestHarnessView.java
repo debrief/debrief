@@ -23,6 +23,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -39,6 +41,7 @@ import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenera
 import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.GAParameters;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -80,6 +83,7 @@ public class TestHarnessView extends ViewPart
 	private ISolver solver;
 	private BFSolutionGenerator bfSolutionGenerator;
 	private GASolutionGenerator gaSolutionGenerator;
+	private SASolutionGenerator saSolutionGenerator;
 
 	private Action _restartAction;
 	private Action _stepAction;
@@ -132,6 +136,7 @@ public class TestHarnessView extends ViewPart
 		solver = SATC_Activator.getDefault().getService(ISolver.class, true);
 		bfSolutionGenerator = SATC_Activator.getDefault().getService(BFSolutionGenerator.class, false);
 		gaSolutionGenerator = SATC_Activator.getDefault().getService(GASolutionGenerator.class, false);
+		saSolutionGenerator = SATC_Activator.getDefault().getService(SASolutionGenerator.class, false);
 		
 		startListeningTo();
 
@@ -292,59 +297,21 @@ public class TestHarnessView extends ViewPart
 
 	private void createGAGroup(Composite parent)
 	{
-		if (gaSolutionGenerator == null || (! (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator)))
-		{
-			return;
-		}
-		boolean isGA = false;
-		final SwitchableSolutionGenerator switchable = (SwitchableSolutionGenerator) solver.getSolutionGenerator();
-		if (switchable.getCurrentGenerator() == gaSolutionGenerator)
-		{
-			isGA = true;
-		}
 		Group gaGroup = new Group(parent, SWT.SHADOW_ETCHED_IN);
 		gaGroup.setText("Genetic algorithm parameters");
 		gaGroup.setLayout(new GridLayout(2, false));		
-		
+
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;		
-		final Button useGAButton = new Button(gaGroup, SWT.CHECK);
-		useGAButton.setLayoutData(gridData);
-		useGAButton.setSelection(isGA);
-		useGAButton.setText("Use GA");
-		useGAButton.addSelectionListener(new SelectionAdapter()
-		{
-
-			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				if (useGAButton.getSelection())
-				{
-					for (Control control : bfControls) 
-					{
-						control.setVisible(false);
-					}
-					for (Control control : gaControls)
-					{
-						control.setVisible(true);
-					}					
-					switchable.switchGenerator(gaSolutionGenerator);
-				}
-				else 
-				{
-					for (Control control : gaControls)
-					{
-						control.setVisible(false);
-					}
-					for (Control control : bfControls) 
-					{
-						control.setVisible(true);
-					}
-					switchable.switchGenerator(bfSolutionGenerator);
-				}
-			}
-		});
+		Composite composite = UIUtils.createEmptyComposite(gaGroup, new RowLayout(SWT.HORIZONTAL), gridData);
 		
+		final Button useGAButton = new Button(composite, SWT.CHECK);
+		useGAButton.setText("Use GA");
+		useGAButton.setLayoutData(new RowData(150, SWT.DEFAULT));
+		
+		final Button useSAButton = new Button(composite, SWT.CHECK);
+		useSAButton.setSelection(false);
+		useSAButton.setText("Use Simulated Annealing (experimental)");	
 		
 		UIUtils.createLabel(gaGroup, "Population size:", new GridData());
 		FormattedText populationSize = new FormattedText(gaGroup);
@@ -400,6 +367,80 @@ public class TestHarnessView extends ViewPart
 				WidgetProperties.text(SWT.Modify).observeDelayed(100, timeoutIteration.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT_BETWEEN_ITERATIONS)
 		);		
+		
+		addChangeGeneratorListeners(useGAButton, useSAButton);		
+	}
+	
+	private void addChangeGeneratorListeners(final Button useGAButton, final Button useSAButton) 
+	{
+		if (gaSolutionGenerator == null || (! (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator)))
+		{
+			return;
+		}
+		final SwitchableSolutionGenerator switchable = (SwitchableSolutionGenerator) solver.getSolutionGenerator();		
+		useGAButton.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (useGAButton.getSelection())
+				{
+					for (Control control : bfControls) 
+					{
+						control.setVisible(false);
+					}
+					for (Control control : gaControls)
+					{
+						control.setVisible(true);
+					}		
+					useSAButton.setSelection(false);
+					useSAButton.setEnabled(false);
+					switchable.switchGenerator(gaSolutionGenerator);
+				}
+				else 
+				{
+					for (Control control : gaControls)
+					{
+						control.setVisible(false);
+					}
+					for (Control control : bfControls) 
+					{
+						control.setVisible(true);
+					}
+					switchable.switchGenerator(bfSolutionGenerator);
+					useSAButton.setEnabled(true);
+				}
+			}
+		});		
+		useSAButton.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (useSAButton.getSelection())
+				{
+					for (Control control : bfControls) 
+					{
+						control.setVisible(false);
+					}
+					useGAButton.setSelection(false);
+					useGAButton.setEnabled(false);
+					switchable.switchGenerator(saSolutionGenerator);
+				}
+				else 
+				{
+					for (Control control : bfControls) 
+					{
+						control.setVisible(true);
+					}
+					switchable.switchGenerator(bfSolutionGenerator);
+					useGAButton.setEnabled(true);
+				}
+			}
+		});			
+		
 	}
 
 	private void doSave()

@@ -32,6 +32,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
+import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowBoundProblemSpaceDiagnostics;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager.IShowGenerateSolutionsDiagnostics;
@@ -772,6 +773,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	@Override
 	public void solutionsReady(CompositeRoute[] routes)
 	{
+		LogFactory.getLog().info("Last error score: " + routes[0].getScore());
 		_lastSetOfSolutions = routes;
 		_currentTopRoutes = null;
 

@@ -20,6 +20,7 @@ import com.planetmayo.debrief.satc.model.generator.impl.Solver;
 import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.jobs.RCPJobsManager;
 import com.planetmayo.debrief.satc.model.manager.IContributionsManager;
 import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
@@ -80,6 +81,7 @@ public class SATC_Activator extends AbstractUIPlugin
 		IContributions contributions = new Contributions();	
 		IJobsManager jobsManager = new RCPJobsManager();
 		IBoundsManager boundsManager = new BoundsManager(contributions, problemSpace);
+		SASolutionGenerator saGenerator = new SASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
 		BFSolutionGenerator bfGenerator = new BFSolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));
 		GASolutionGenerator gaGenerator = new GASolutionGenerator(contributions, jobsManager, new SafeProblemSpace(problemSpace));		
 		ISolver solver = new Solver(contributions, problemSpace, boundsManager, new SwitchableSolutionGenerator(bfGenerator), jobsManager);
@@ -93,7 +95,9 @@ public class SATC_Activator extends AbstractUIPlugin
 		context.registerService(BFSolutionGenerator.class, 
 				bfGenerator, new Hashtable<String, Object>());
 		context.registerService(GASolutionGenerator.class, 
-				gaGenerator, new Hashtable<String, Object>());			
+				gaGenerator, new Hashtable<String, Object>());
+		context.registerService(SASolutionGenerator.class, 
+				saGenerator, new Hashtable<String, Object>());
 	}
 
 	@Override

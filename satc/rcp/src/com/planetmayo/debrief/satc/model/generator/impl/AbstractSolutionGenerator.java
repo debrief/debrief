@@ -17,10 +17,13 @@ import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
 import com.planetmayo.debrief.satc.model.generator.ISolutionGenerator;
 import com.planetmayo.debrief.satc.model.legs.AlteringLeg;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
 import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
 import com.planetmayo.debrief.satc.model.legs.CoreLeg;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
@@ -254,8 +257,43 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 				break;
 			}
 		}
-
 		return res;
+	}	
+	
+	protected List<CoreRoute> generateAlteringRoutes(Collection<CoreRoute> straightRoutes)
+	{
+		List<CoreRoute> result = new ArrayList<CoreRoute>();
+		if (straightRoutes.isEmpty())
+		{
+			return result;
+		}
+		Iterator<CoreRoute> iterator = straightRoutes.iterator();
+		StraightRoute before = null;
+		StraightRoute after = (StraightRoute) iterator.next();
+		while (after == null && iterator.hasNext()) 
+		{
+			after = (StraightRoute) iterator.next();
+		}
+		while (iterator.hasNext())
+		{
+			StraightRoute nxt = (StraightRoute) iterator.next();
+			if (nxt == null)
+			{
+				continue;
+			}
+			before = after;
+			after = nxt;
+			AlteringRoute altering = new AlteringRoute("", 
+					before.getEndPoint(), before.getEndTime(), 
+					after.getStartPoint(), after.getStartTime()
+			);			
+			altering.constructRoute(before, after);
+			altering.generateSegments(problemSpaceView.getBoundedStatesBetween(before.getEndTime(), after.getStartTime()));
+			result.add(before);
+			result.add(altering);
+		}
+		result.add(after);
+		return result;
 	}	
 	
 	@Override

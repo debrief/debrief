@@ -23,17 +23,23 @@ public class MathUtils
 		double invT3 = invT2 * invT;
 		double t2 = t * t;
 		double t3 = t2 * t;
-		if (control.length == 1) 
+		if (control == null || control.length == 0) 
+		{
+			double x = invT * start.getX() + t * end.getX();
+			double y = invT * start.getY() + t * end.getY();
+			return GeoSupport.createPoint(x, y);
+		}
+		else if (control.length == 1) 
 		{
 			double x = invT2 * start.getX() + 2 * t * invT * control[0].getX() + t2 * end.getX();
 			double y = invT2 * start.getY() + 2 * t * invT * control[0].getY() + t2 * end.getY();
-			return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
+			return GeoSupport.createPoint(x, y);
 		}
 		else
 		{
 			double x = invT3 * start.getX() + 3 * t * invT2 * control[0].getX() + 3 * t2 * invT * control[1].getX() + t3 * end.getX();
 			double y = invT3 * start.getY() + 3 * t * invT2 * control[0].getY() + 3 * t2 * invT * control[1].getY() + t3 * end.getY();			
-			return GeoSupport.getFactory().createPoint(new Coordinate(x, y));
+			return GeoSupport.createPoint(x, y);
 		}
 	}
 	

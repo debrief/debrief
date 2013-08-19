@@ -29,6 +29,16 @@ public class CompositeRoute
 		}
 	}
 	
+	public double getScore() 
+	{
+		double sum = 0;
+		for (CoreRoute route : _legs)
+		{
+			sum += route.getScore();
+		}
+		return sum;
+	}
+	
 	/** add this leg to our data
 	 * 
 	 * @param topR
