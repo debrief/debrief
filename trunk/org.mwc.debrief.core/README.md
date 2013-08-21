@@ -1,5 +1,9 @@
 ## New in Debrief
 
+* Aug 2013 - Support for [auto-calculated range/brg labels](http://www.debrief.info/tutorial/drawing_features.html#the_labels)
+* Jul 2013 - Dragging mouse from BR to TL performs zoom-out, instead of zoom-in
+* Jun 2013 - Debrief can now calculate course/speed for a track if the data isn't produced by the recording device.
+* Jun 2013 - Added support for reading [Polygon shape](http://www.debrief.info/tutorial/reference.html#replay_annotation_format) from REP file
 * Sept 2012 - Support irregular arcs in [Range Ring Highlighter](http://www.debrief.info/tutorial/controlling_time.html#highlight_modes)
 * Sept 2012 - Allow REP position line to include [text label at end](http://www.debrief.info/tutorial/reference.html#replay_track_format)
 * Aug 2012 - Introduce new, easier method of [Polygon editing](http://www.debrief.info/tutorial/drawing_features.html#the_polygon) 
