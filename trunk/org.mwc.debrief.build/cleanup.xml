@@ -7,7 +7,7 @@
 
 	<fileset id="sourceCode" dir="../">
 		<patternset>
-			<include name="**/src/ASSET/**/*.java" />
+<!-- 			<include name="**/src/ASSET/**/*.java" />   -->
 			<include name="**/src/org/mwc/**/*.java" />
 			<include name="**/src/MWC/**/*.java" />
 			<include name="**/src/Debrief/**/*.java" />
