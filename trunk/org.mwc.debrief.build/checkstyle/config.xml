@@ -13,11 +13,14 @@
 			default="warning" />
 	</module>
 
-	<!-- Use this block to specify which levels should not be covered 
+	<!-- Use this block to specify which levels should not be covered  
 	<module name="SeverityMatchFilter"> <property name="severity" value="info" /> 
 	   <property name="acceptOnMatch" value="false" />
 	</module> 
-    -->
+    <module name="SeverityMatchFilter"> <property name="severity" value="warning" /> 
+       <property name="acceptOnMatch" value="false" />
+    </module>   -->
+    
 
 
 	<module name="TreeWalker">
@@ -43,7 +46,7 @@
 			catch, switch, case statements, and operators && and || (plus one) in the 
 			body of a constructor, method, static initializer, or instance initializer. -->
 		<module name="CyclomaticComplexity">
-			<property name="max" value="20" />
+			<property name="max" value="30" />
 		</module>
 		<!-- Check that the default is after all the cases in a switch statement. -->
 		<module name="DefaultComesLast" />
@@ -82,7 +85,10 @@
 		</module>
 		<!-- Checks that a local variable or a parameter does not shadow a field 
 			that is defined in the same class. -->
-		<module name="HiddenField" />
+		<module name="HiddenField" >
+            <property name="severity" value="${checkstyle.HiddenField.severity}"
+                default="warning" />
+		</module>
 		<!-- Make sure that utility classes (classes that contain only static methods 
 			or fields in their API) do not have a public constructor. -->
 		<module name="HideUtilityClassConstructor" />
@@ -195,6 +201,8 @@
 			<!-- Need to set to true, else we get lots of errors: "Unable to get class 
 				information for ThriftException -->
 			<property name="suppressLoadErrors" value="true" />
+            <property name="severity" value="${checkstyle.RedundantThrows.severity}"
+                default="warning" />
 		</module>
 
 		<module name="ReturnCount">
