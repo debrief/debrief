@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+
+	<module name="TreeWalker">
+
+		<module name="EqualsAvoidNull" />
+		<module name="MissingSwitchDefault" />
+		<!-- Check for ensuring that for loop control variables are not modified 
+			inside the for block. -->
+		<module name="ModifiedControlVariable" />
+		<!-- Checks for redundant exceptions declared in throws clause such as 
+			duplicates, unchecked exceptions or subclasses of another declared exception. -->
+		<module name="RedundantThrows">
+			<property name="allowUnchecked" value="false" />
+			<!-- Need to set to true, else we get lots of errors: "Unable to get class 
+				information for ThriftException -->
+			<property name="suppressLoadErrors" value="true" />
+		</module>
+		<!-- Checks that string literals are not used with == or !=. -->
+		<module name="StringLiteralEquality" />
+		<!-- Finds locations where a case contains Java code - but lacks a break, 
+			return, throw or continue statement. -->
+		<module name="FallThrough" />
+
+	</module>    <!-- End of TreeWalker module -->
+</module>

@@ -1,26 +1,44 @@
 <project default="checkStyle">
-	<taskdef resource="checkstyletask.properties"
-         classpath="lib/checkstyle-5.6-all.jar"/>
-         	
-	<fileset id="sourceCode" dir="../">		
-		<patternset >
-			<include name="**/src/ASSET/**/*.java"/>
-			<include name="**/src/org/mwc/**/*.java"/>
-			<include name="**/src/MWC/**/*.java"/>
-			<include name="**/src/Debrief/**/*.java"/>						
+	<taskdef resource="checkstyletask.properties" classpath="lib/checkstyle-5.6-all.jar" />
+
+	<!-- provide location of xalan libs -->
+	<property name="rootDir" value="../" />
+	<property name="xalan.dir" value="${rootDir}/contribs/xalan-j_2_7_1" />
+
+	<fileset id="sourceCode" dir="../">
+		<patternset>
+			<include name="**/src/ASSET/**/*.java" />
+			<include name="**/src/org/mwc/**/*.java" />
+			<include name="**/src/MWC/**/*.java" />
+			<include name="**/src/Debrief/**/*.java" />
 		</patternset>
 	</fileset>
-	
+
+
 	<target name="checkStyle">
-		<checkstyle config="checkstyle/config.xml" 
-					failonviolation="false"
-					failureProperty="checkstyle.failure">
-					<fileset refid="sourceCode"/>
-					
-					<formatter type="plain"/>
-					<formatter type="plain" toFile="checkstyle/problems.log"/>
-				</checkstyle>
+
+		<!-- clear the output directory -->
+		<delete dir="checkstyle/logs" />
+
+		<!-- create the output directory -->
+		<mkdir dir="checkstyle/logs" />
+
+		<checkstyle config="checkstyle/config.xml" failOnViolation="false" failureProperty="checkstyle.failure">
+			<fileset refid="sourceCode" />
+			<formatter toFile="checkstyle/logs/problems.xml" type="xml" />
+		</checkstyle>
 		
-		<fail message="CheckStyle found violations!" if="checkstyle.failure"/>
+		<xslt basedir="checkstyle/logs" destdir="checkstyle/logs" style="checkstyle/contrib/checkstyle-noframes-severity-sorted.xsl">
+			<classpath>
+				<fileset dir="${xalan.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</xslt>
+
+        <!-- clear the xml output files -->
+        <delete dir="checkstyle/logs" includes="*.xml" />
+
+		<fail message="CheckStyle found violations!" if="checkstyle.failure" />
 	</target>
 </project>
