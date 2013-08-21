@@ -324,19 +324,6 @@ Export-Package: ASSET;
    javax.xml.parsers,
    org.w3c.dom,
    org.xml.sax",
- ASSET.Util.RMI;uses:="ASSET.Participants",
- ASSET.Util.RMI.Client;
-  uses:="MWC.GenericData,
-   javax.swing,
-   MWC.GUI.Chart.Swing,
-   MWC.GUI,
-   ASSET.Util.RMI",
- ASSET.Util.RMI.Models;uses:="ASSET,ASSET.Participants,ASSET.Util.RMI",
- ASSET.Util.RMI.Server;
-  uses:="ASSET,
-   ASSET.Scenario,
-   ASSET.Util.RMI,
-   ASSET.Server",
  ASSET.Util.XML;
   uses:="ASSET,
    ASSET.Models.Sensor,
