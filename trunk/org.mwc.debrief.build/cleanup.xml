@@ -23,12 +23,15 @@
 		<!-- create the output directory -->
 		<mkdir dir="checkstyle/logs" />
 
+		<!-- run checkstyle. Note: we don't failOnViolation so that we can run xslt afterwards and 
+		  get a useable output -->
 		<checkstyle config="checkstyle/config.xml" failOnViolation="false" failureProperty="checkstyle.failure">
 			<fileset refid="sourceCode" />
 			<formatter toFile="checkstyle/logs/problems.xml" type="xml" />
 		</checkstyle>
-		
-		<xslt basedir="checkstyle/logs" destdir="checkstyle/logs" style="checkstyle/contrib/checkstyle-noframes-severity-sorted.xsl">
+
+		<!-- transform the xml output into more legible html -->
+		<xslt basedir="checkstyle/logs" destdir="checkstyle/logs" style="checkstyle/contrib/checkstyle-debrief.xsl">
 			<classpath>
 				<fileset dir="${xalan.dir}">
 					<include name="*.jar" />
@@ -36,9 +39,10 @@
 			</classpath>
 		</xslt>
 
-        <!-- clear the xml output files -->
-        <delete dir="checkstyle/logs" includes="*.xml" />
+		<!-- clear the xml output files -->
+		<delete dir="checkstyle/logs" includes="*.xml" />
 
+		<!-- fail the build if there are errors -->
 		<fail message="CheckStyle found violations!" if="checkstyle.failure" />
 	</target>
 </project>
