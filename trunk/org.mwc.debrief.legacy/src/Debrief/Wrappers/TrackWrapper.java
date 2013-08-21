@@ -31,7 +31,6 @@ import Debrief.Wrappers.Track.TrackWrapper_Support;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.WormInHoleOffset;
-import MWC.Algorithms.Conversions;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
@@ -42,8 +41,6 @@ import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
-import MWC.GUI.Plottable;
-import MWC.GUI.Canvas.MockCanvasType;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
@@ -81,643 +78,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	static public final class testMe extends junit.framework.TestCase
 	{
-		protected static class TestMockCanvas extends MockCanvasType
-		{
-			@Override
-			public void drawPolyline(int[] points)
-			{
-				callCount++;
-				pointCount += points.length;
-			}
-		}
-
-		/**
-		 * utility to track number of calls
-		 * 
-		 */
-		static int callCount = 0;
-
-		/**
-		 * utility to track number of points passed to paint polyline method
-		 * 
-		 */
-		static int pointCount = 0;
-
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		@SuppressWarnings("synthetic-access")
-		private int countVisibleFixes(TrackWrapper tw)
-		{
-			int ctr = 0;
-			final Enumeration<Editable> iter = tw.getPositions();
-			while (iter.hasMoreElements())
-			{
-				final Plottable thisE = (Plottable) iter.nextElement();
-				if (thisE.getVisible())
-				{
-					ctr++;
-				}
-			}
-			return ctr;
-		}
-
-		@SuppressWarnings("synthetic-access")
-		private int countVisibleSensorWrappers(TrackWrapper tw)
-		{
-			final Enumeration<Editable> iter2 = tw._mySensors.elements();
-			int sCtr = 0;
-			while (iter2.hasMoreElements())
-			{
-				final SensorWrapper sw = (SensorWrapper) iter2.nextElement();
-				final Enumeration<Editable> enumS = sw.elements();
-				while (enumS.hasMoreElements())
-				{
-					final Plottable pl = (Plottable) enumS.nextElement();
-					if (pl.getVisible())
-					{
-						sCtr++;
-					}
-				}
-			}
-			return sCtr;
-		}
-
-		@SuppressWarnings("synthetic-access")
-		private int countVisibleSolutionWrappers(TrackWrapper tw)
-		{
-			final Enumeration<Editable> iter2 = tw._mySolutions.elements();
-			int sCtr = 0;
-			while (iter2.hasMoreElements())
-			{
-				final TMAWrapper sw = (TMAWrapper) iter2.nextElement();
-				final Enumeration<Editable> enumS = sw.elements();
-				while (enumS.hasMoreElements())
-				{
-					final Plottable pl = (Plottable) enumS.nextElement();
-					if (pl.getVisible())
-					{
-						sCtr++;
-					}
-				}
-			}
-			return sCtr;
-		}
-
-		private TrackWrapper getDummyTrack()
-		{
-			final TrackWrapper tw = new TrackWrapper();
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
-					loc_1.add(new WorldVector(33, new WorldDistance(100,
-							WorldDistance.METRES), null)), 10, 110));
-			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
-					loc_1.add(new WorldVector(33, new WorldDistance(200,
-							WorldDistance.METRES), null)), 20, 120));
-			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
-					loc_1.add(new WorldVector(33, new WorldDistance(300,
-							WorldDistance.METRES), null)), 30, 130));
-			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
-					loc_1.add(new WorldVector(33, new WorldDistance(400,
-							WorldDistance.METRES), null)), 40, 140));
-			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
-					loc_1.add(new WorldVector(33, new WorldDistance(500,
-							WorldDistance.METRES), null)), 50, 150));
-			fw5.setLabel("fw5");
-			tw.addFix(fw1);
-			tw.addFix(fw2);
-			tw.addFix(fw3);
-			tw.addFix(fw4);
-			tw.addFix(fw5);
-			// also give it some sensor data
-			final SensorWrapper swa = new SensorWrapper("title one");
-			final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-					new HiResDate(150, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
-					new HiResDate(180, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
-					new HiResDate(250, 0), null, null, null, null, null, 0, null);
-			swa.add(scwa1);
-			swa.add(scwa2);
-			swa.add(scwa3);
-			tw.add(swa);
-			final SensorWrapper sw = new SensorWrapper("title two");
-			final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
-					new HiResDate(260, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
-					new HiResDate(280, 0), null, null, null, null, null, 0, null);
-			final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
-					new HiResDate(350, 0), null, null, null, null, null, 0, null);
-			sw.add(scw1);
-			sw.add(scw2);
-			sw.add(scw3);
-			tw.add(sw);
-
-			final TMAWrapper mwa = new TMAWrapper("bb");
-			final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
-					new HiResDate(130), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
-					new HiResDate(190), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
-					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
-			mwa.add(tcwa1);
-			mwa.add(tcwa2);
-			mwa.add(tcwa3);
-			tw.add(mwa);
-			final TMAWrapper mw = new TMAWrapper("cc");
-			final TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
-					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
-					new HiResDate(330), null, 0, 0, 0, null, null, null, null);
-			final TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
-					new HiResDate(390), null, 0, 0, 0, null, null, null, null);
-			mw.add(tcw1);
-			mw.add(tcw2);
-			mw.add(tcw3);
-			tw.add(mw);
-
-			return tw;
-		}
-
-		@SuppressWarnings("synthetic-access")
-		public final void testFilterToTimePeriod()
-		{
-			TrackWrapper tw = getDummyTrack();
-			HiResDate startH = new HiResDate(150, 0);
-			HiResDate endH = new HiResDate(450, 0);
-			tw.filterListTo(startH, endH);
-			int ctr = countVisibleFixes(tw);
-			int sCtr = countVisibleSensorWrappers(tw);
-			int tCtr = countVisibleSolutionWrappers(tw);
-			assertEquals("contains correct number of entries", 3, ctr);
-			assertEquals("contains correct number of sensor entries", 6, sCtr);
-			assertEquals("contains correct number of sensor entries", 5, tCtr);
-
-			tw = getDummyTrack();
-			startH = new HiResDate(350, 0);
-			endH = new HiResDate(550, 0);
-			tw.filterListTo(startH, endH);
-			ctr = countVisibleFixes(tw);
-			sCtr = countVisibleSensorWrappers(tw);
-			tCtr = countVisibleSolutionWrappers(tw);
-			assertEquals("contains correct number of entries", 2, ctr);
-			assertEquals("contains correct number of sensor entries", 1, sCtr);
-			assertEquals("contains correct number of sensor entries", 1, tCtr);
-
-			tw = getDummyTrack();
-			startH = new HiResDate(0, 0);
-			endH = new HiResDate(450, 0);
-			tw.filterListTo(startH, endH);
-			ctr = countVisibleFixes(tw);
-			sCtr = countVisibleSensorWrappers(tw);
-			tCtr = countVisibleSolutionWrappers(tw);
-			assertEquals("contains correct number of entries", 4, ctr);
-			assertEquals("contains correct number of sensor entries", 6, sCtr);
-			assertEquals("contains correct number of sensor entries", 6, tCtr);
-		}
-
-		public void testGetItemsBetween_Second()
-		{
-			final TrackWrapper tw = new TrackWrapper();
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 1), loc_1,
-					0, 0));
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 2), loc_1,
-					0, 0));
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 3), loc_1,
-					0, 0));
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 4), loc_1,
-					0, 0));
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(0, 5), loc_1,
-					0, 0));
-			final FixWrapper fw6 = new FixWrapper(new Fix(new HiResDate(0, 6), loc_1,
-					0, 0));
-			final FixWrapper fw7 = new FixWrapper(new Fix(new HiResDate(0, 7), loc_1,
-					0, 0));
-			tw.addFix(fw1);
-			tw.addFix(fw2);
-			tw.addFix(fw3);
-			tw.addFix(fw4);
-			tw.addFix(fw5);
-			tw.addFix(fw6);
-			tw.addFix(fw7);
-			fw1.setLabelShowing(true);
-			fw2.setLabelShowing(true);
-			fw3.setLabelShowing(true);
-			fw4.setLabelShowing(true);
-			fw5.setLabelShowing(true);
-			fw6.setLabelShowing(true);
-			fw7.setLabelShowing(true);
-
-			Collection<Editable> col = tw.getItemsBetween(new HiResDate(0, 3),
-					new HiResDate(0, 5));
-			assertEquals("found correct number of items", 3, col.size());
-
-			// make the fourth item not visible
-			fw4.setVisible(false);
-
-			col = tw.getUnfilteredItems(new HiResDate(0, 3), new HiResDate(0, 5));
-			assertEquals("found correct number of items", 2, col.size());
-
-			final Watchable[] pts2 = tw.getNearestTo(new HiResDate(0, 3));
-			assertEquals("found something", 1, pts2.length);
-			assertEquals("found the third item", fw3, pts2[0]);
-
-			final Watchable[] pts = tw.getNearestTo(new HiResDate(0, 1));
-			assertEquals("found something", 1, pts.length);
-			assertEquals("found the first item", fw1, pts[0]);
-
-		}
-
-		public final void testGettingTimes()
-		{
-			// Enumeration<SensorContactWrapper>
-			final TrackWrapper tw = new TrackWrapper();
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final WorldLocation loc_2 = new WorldLocation(1, 1, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100),
-					loc_1, 0, 0));
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300),
-					loc_2, 0, 0));
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500),
-					loc_2, 0, 0));
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700),
-					loc_2, 0, 0));
-
-			// check returning empty data
-			Collection<Editable> coll = tw.getItemsBetween(new HiResDate(0, 0),
-					new HiResDate(0, 40));
-			assertEquals("Return empty when empty", coll, null);
-
-			tw.addFix(fw1);
-
-			// check returning single field
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
-			assertEquals("Return empty when out of range", coll, null);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 520), new HiResDate(0, 540));
-			assertEquals("Return empty when out of range", coll, null);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 140));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 100), new HiResDate(0, 100));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			tw.addFix(fw2);
-
-			// check returning with fields
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
-			assertEquals("Return empty when out of range", coll, null);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 520), new HiResDate(0, 540));
-			assertEquals("Return empty when out of range", coll, null);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 140));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 440));
-			assertEquals("Return valid point", coll.size(), 2);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 150), new HiResDate(0, 440));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 440));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			tw.addFix(fw3);
-
-			// check returning with fields
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
-			assertEquals("Return empty when out of range", coll, null);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 520), new HiResDate(0, 540));
-			assertEquals("Return empty when out of range", coll, null);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 140));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 440));
-			assertEquals("Return valid point", coll.size(), 2);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 150), new HiResDate(0, 440));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 440));
-			assertEquals("Return valid point", coll.size(), 1);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 100), new HiResDate(0, 300));
-			assertEquals("Return valid point", coll.size(), 2);
-
-			coll = tw.getItemsBetween(new HiResDate(0, 300), new HiResDate(0, 500));
-			assertEquals("Return valid point", coll.size(), 2);
-
-			tw.addFix(fw4);
-
-		}
-
-		public final void testInterpolation()
-		{
-			final TrackWrapper tw = new TrackWrapper();
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
-					loc_1.add(new WorldVector(33, new WorldDistance(100,
-							WorldDistance.METRES), null)), 10, 110));
-			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
-					loc_1.add(new WorldVector(33, new WorldDistance(200,
-							WorldDistance.METRES), null)), 20, 120));
-			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
-					loc_1.add(new WorldVector(33, new WorldDistance(300,
-							WorldDistance.METRES), null)), 30, 130));
-			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
-					loc_1.add(new WorldVector(33, new WorldDistance(400,
-							WorldDistance.METRES), null)), 40, 140));
-			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
-					loc_1.add(new WorldVector(33, new WorldDistance(500,
-							WorldDistance.METRES), null)), 50, 150));
-			fw5.setLabel("fw5");
-			tw.addFix(fw1);
-			tw.addFix(fw2);
-			// tw.addFix(fw3);
-			tw.addFix(fw4);
-			tw.addFix(fw5);
-
-			// check that we're not interpolating
-			assertFalse("interpolating switched off by default",
-					tw.getInterpolatePoints());
-
-			// ok, get on with it.
-			Watchable[] list = tw.getNearestTo(new HiResDate(200, 20000));
-			assertNotNull("found list", list);
-			assertEquals("contains something", list.length, 1);
-			assertEquals("right answer", list[0], fw2);
-
-			// and the end
-			list = tw.getNearestTo(new HiResDate(500, 50000));
-			assertNotNull("found list", list);
-			assertEquals("contains something", list.length, 1);
-			assertEquals("right answer", list[0], fw5);
-
-			// and now an in-between point
-			// ok, get on with it.
-			list = tw.getNearestTo(new HiResDate(230, 23000));
-			assertNotNull("found list", list);
-			assertEquals("contains something", list.length, 1);
-			assertEquals("right answer", list[0], fw4);
-
-			// ok, with interpolation on
-			tw.setInterpolatePoints(true);
-
-			assertTrue("interpolating now switched on", tw.getInterpolatePoints());
-
-			// ok, get on with it.
-			list = tw.getNearestTo(new HiResDate(200, 20000));
-			assertNotNull("found list", list);
-			assertEquals("contains something", list.length, 1);
-			assertEquals("right answer", list[0], fw2);
-
-			// and the end
-			list = tw.getNearestTo(new HiResDate(500, 50000));
-			assertNotNull("found list", list);
-			assertEquals("contains something", list.length, 1);
-			assertEquals("right answer", list[0], fw5);
-
-			// hey
-
-			// and now an in-between point
-			// ok, get on with it.
-			list = tw.getNearestTo(new HiResDate(300, 30000));
-			assertNotNull("found list", list);
-			assertEquals("contains something", list.length, 1);
-
-			// have a look at them
-			final FixWrapper res = (FixWrapper) list[0];
-			final WorldVector rangeError = res.getFixLocation().subtract(
-					fw3.getFixLocation());
-			assertEquals("right answer", 0,
-					Conversions.Degs2m(rangeError.getRange()), 0.0001);
-			// assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0);
-			// assertEquals("right course", res.getCourse(), fw3.getCourse(),
-			// 0);
-
-		}
-
-		public final void testMyParams()
-		{
-			TrackWrapper ed = new TrackWrapper();
-			ed.setName("blank");
-
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public void testPaintingColChange()
-		{
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setColor(Color.RED);
-			tw.setName("test track");
-
-			/**
-			 * intention of this test: line is broken into three segments (red,
-			 * yellow, green). - first of 2 points, next of 2 points, last of 3 points
-			 * (14 values)
-			 */
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
-					loc_1.add(new WorldVector(33, new WorldDistance(100,
-							WorldDistance.METRES), null)), 10, 110));
-			fw1.setLabel("fw1");
-			fw1.setColor(Color.red);
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
-					loc_1.add(new WorldVector(33, new WorldDistance(200,
-							WorldDistance.METRES), null)), 20, 120));
-			fw2.setLabel("fw2");
-			fw2.setColor(Color.yellow);
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
-					loc_1.add(new WorldVector(33, new WorldDistance(300,
-							WorldDistance.METRES), null)), 30, 130));
-			fw3.setLabel("fw3");
-			fw3.setColor(Color.green);
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
-					loc_1.add(new WorldVector(33, new WorldDistance(400,
-							WorldDistance.METRES), null)), 40, 140));
-			fw4.setLabel("fw4");
-			fw4.setColor(Color.green);
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
-					loc_1.add(new WorldVector(33, new WorldDistance(500,
-							WorldDistance.METRES), null)), 50, 150));
-			fw5.setLabel("fw5");
-			fw5.setColor(Color.green);
-			tw.addFix(fw1);
-			tw.addFix(fw2);
-			tw.addFix(fw3);
-			tw.addFix(fw4);
-			tw.addFix(fw5);
-
-			callCount = 0;
-			pointCount = 0;
-
-			assertNull("our array of points starts empty", tw._myPts);
-			assertEquals("our point array counter is zero", tw._ptCtr, 0);
-
-			final CanvasType dummyDest = new TestMockCanvas();
-
-			tw.paint(dummyDest);
-
-			assertEquals("our array has correct number of points", 10,
-					tw._myPts.length);
-			assertEquals("the pointer counter has been reset", 0, tw._ptCtr);
-
-			// check it got called the correct number of times
-			assertEquals("We didnt paint enough polygons", 3, callCount);
-			assertEquals("We didnt paint enough polygons points", 14, pointCount);
-		}
-
-		public void testPaintingLineJoinedChange()
-		{
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setColor(Color.RED);
-			tw.setName("test track");
-
-			/**
-			 * intention of this test: line is broken into two segments - one of two
-			 * points, the next of three, thus two polygons should be drawn - 10
-			 * points total (4 then 6).
-			 */
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
-					loc_1.add(new WorldVector(33, new WorldDistance(100,
-							WorldDistance.METRES), null)), 10, 110));
-			fw1.setLabel("fw1");
-			fw1.setColor(Color.red);
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
-					loc_1.add(new WorldVector(33, new WorldDistance(200,
-							WorldDistance.METRES), null)), 20, 120));
-			fw2.setLabel("fw2");
-			fw2.setColor(Color.red);
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
-					loc_1.add(new WorldVector(33, new WorldDistance(300,
-							WorldDistance.METRES), null)), 30, 130));
-			fw3.setLabel("fw3");
-			fw3.setColor(Color.red);
-			fw3.setLineShowing(false);
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
-					loc_1.add(new WorldVector(33, new WorldDistance(400,
-							WorldDistance.METRES), null)), 40, 140));
-			fw4.setLabel("fw4");
-			fw4.setColor(Color.red);
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
-					loc_1.add(new WorldVector(33, new WorldDistance(500,
-							WorldDistance.METRES), null)), 50, 150));
-			fw5.setLabel("fw5");
-			fw5.setColor(Color.red);
-			tw.addFix(fw1);
-			tw.addFix(fw2);
-			tw.addFix(fw3);
-			tw.addFix(fw4);
-			tw.addFix(fw5);
-
-			callCount = 0;
-			pointCount = 0;
-
-			assertNull("our array of points starts empty", tw._myPts);
-			assertEquals("our point array counter is zero", tw._ptCtr, 0);
-
-			final CanvasType dummyDest = new TestMockCanvas();
-
-			tw.paint(dummyDest);
-
-			assertEquals("our array has correct number of points", 10,
-					tw._myPts.length);
-			assertEquals("the pointer counter has been reset", 0, tw._ptCtr);
-
-			// check it got called the correct number of times
-			assertEquals("We didnt paint enough polygons", 2, callCount);
-			assertEquals("We didnt paint enough polygons points", 10, pointCount);
-
-		}
-
-		public void testPaintingVisChange()
-		{
-			final TrackWrapper tw = new TrackWrapper();
-			tw.setColor(Color.RED);
-			tw.setName("test track");
-
-			/**
-			 * intention of this test: line is broken into two segments of two points,
-			 * thus two polygons should be drawn, each with 4 points - 8 points total.
-			 */
-
-			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
-					loc_1.add(new WorldVector(33, new WorldDistance(100,
-							WorldDistance.METRES), null)), 10, 110));
-			fw1.setLabel("fw1");
-			fw1.setColor(Color.red);
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
-					loc_1.add(new WorldVector(33, new WorldDistance(200,
-							WorldDistance.METRES), null)), 20, 120));
-			fw2.setLabel("fw2");
-			fw2.setColor(Color.red);
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
-					loc_1.add(new WorldVector(33, new WorldDistance(300,
-							WorldDistance.METRES), null)), 30, 130));
-			fw3.setLabel("fw3");
-			fw3.setColor(Color.red);
-			fw3.setVisible(false);
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
-					loc_1.add(new WorldVector(33, new WorldDistance(400,
-							WorldDistance.METRES), null)), 40, 140));
-			fw4.setLabel("fw4");
-			fw4.setColor(Color.red);
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
-					loc_1.add(new WorldVector(33, new WorldDistance(500,
-							WorldDistance.METRES), null)), 50, 150));
-			fw5.setLabel("fw5");
-			fw5.setColor(Color.red);
-			tw.addFix(fw1);
-			tw.addFix(fw2);
-			tw.addFix(fw3);
-			tw.addFix(fw4);
-			tw.addFix(fw5);
-
-			callCount = 0;
-			pointCount = 0;
-
-			assertNull("our array of points starts empty", tw._myPts);
-			assertEquals("our point array counter is zero", tw._ptCtr, 0);
-
-			final CanvasType dummyDest = new TestMockCanvas();
-
-			tw.paint(dummyDest);
-
-			assertEquals("our array has correct number of points", 10,
-					tw._myPts.length);
-			assertEquals("the pointer counter has been reset", 0, tw._ptCtr);
-
-			// check it got called the correct number of times
-			assertEquals("We didnt paint enough polygons", 2, callCount);
-			assertEquals("We didnt paint enough polygons points", 8, pointCount);
-
-		}
 	}
 
 	/**
@@ -745,9 +105,11 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Class<TrackWrapper> c = TrackWrapper.class;
 
 			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape"),
+			{
+					method(c, "exportThis", null, "Export Shape"),
 					method(c, "resetLabels", null, "Reset DTG Labels"),
-					method(c, "calcCourseSpeed", null/* no params */, "Generate calculated Course and Speed")};
+					method(c, "calcCourseSpeed", null/* no params */,
+							"Generate calculated Course and Speed") };
 
 			return mds;
 		}
@@ -3088,20 +2450,20 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							{
 								// check we have a colour
 								Color labelColor = getColor();
-								
+
 								// did we ourselves have a colour?
-								if(labelColor == null)
+								if (labelColor == null)
 								{
 									// nope - do we have any legs?
 									Enumeration<Editable> numer = this.getPositions();
-									if(numer.hasMoreElements())
+									if (numer.hasMoreElements())
 									{
 										// ok, use the colour of the first point
 										FixWrapper pos = (FixWrapper) numer.nextElement();
 										labelColor = pos.getColor();
 									}
 								}
-								
+
 								_theLabel.setColor(labelColor);
 							}
 
@@ -3173,6 +2535,28 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			WorldLocation lastLocation, final FixWrapper fw)
 	{
 		fw.paintMe(dest, lastLocation, fw.getColor());
+	}
+
+	/**
+	 * this accessor is present for debug/testing purposes only. Do not use
+	 * outside testing!
+	 * 
+	 * @return the list of screen locations about to be plotted
+	 */
+	public int[] debug_GetPoints()
+	{
+		return _myPts;
+	}
+
+	/**
+	 * this accessor is present for debug/testing purposes only. Do not use
+	 * outside testing!
+	 * 
+	 * @return the length of the list of screen points waiting to be plotted
+	 */
+	public int debug_GetPointCtr()
+	{
+		return _ptCtr;
 	}
 
 	/**
@@ -4147,7 +3531,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		return visible;
 	}
-	
+
 	/**
 	 * Calculates Course & Speed for the track.
 	 */
@@ -4161,28 +3545,31 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final FixWrapper currFw = (FixWrapper) iter.nextElement();
 			if (prevFw == null)
 				prevFw = currFw;
-			else {
+			else
+			{
 				// calculate the course
 				WorldVector wv = currFw.getLocation().subtract(prevFw.getLocation());
 				prevFw.getFix().setCourse(wv.getBearing());
-				
+
 				// calculate the speed
 				// get distance in meters
 				WorldDistance wd = new WorldDistance(wv);
 				double distance = wd.getValueIn(WorldDistance.METRES);
-		    	// get time difference in seconds
-				long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime().getMicros())/1000000;
-				
-				//get speed in meters per second and convert it to knots
-				WorldSpeed speed = new WorldSpeed(distance/timeDifference, WorldSpeed.M_sec);
-				double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts, speed.getValue());
+				// get time difference in seconds
+				long timeDifference = (currFw.getTime().getMicros() - prevFw.getTime()
+						.getMicros()) / 1000000;
+
+				// get speed in meters per second and convert it to knots
+				WorldSpeed speed = new WorldSpeed(distance / timeDifference,
+						WorldSpeed.M_sec);
+				double knots = WorldSpeed.convert(WorldSpeed.M_sec, WorldSpeed.Kts,
+						speed.getValue());
 				prevFw.setSpeed(knots);
-				
+
 				prevFw = currFw;
 			}
 		}
-		
-	}
 
+	}
 
 }
