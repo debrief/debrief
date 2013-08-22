@@ -21,8 +21,268 @@
 		<property name="severity" value="warning" />
 		<property name="acceptOnMatch" value="false" />
 	</module>
+	<!-- END SeverityMatchFilter block -->
+	
+	
+	<!-- Sometimes there are legitimate reasons for violating a check. -->
+	<!-- Use this block to specify checking suppressed by Java comments. -->
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ANON_INNER_LENGTH"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ANON_INNER_LENGTH"/>
+    	<property name="checkFormat" value="AnonInnerLength"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ANON_INNER_LENGTH"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ANON_INNER_LENGTH"/>
+    	<property name="checkFormat" value="AnonInnerLength"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON AVOID_NESTED_BLOCKS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF AVOID_NESTED_BLOCKS"/>
+    	<property name="checkFormat" value="AvoidNestedBlocks"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON BOOLEAN_COMPLEXITY"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF BOOLEAN_COMPLEXITY"/>
+    	<property name="checkFormat" value="BooleanExpressionComplexity"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON COVARIANT_EQUALS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF COVARIANT_EQUALS"/>
+    	<property name="checkFormat" value="CovariantEquals"/>
+	</module><module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON CYCLOMATIC_COMPLEXITY"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF CYCLOMATIC_COMPLEXITY"/>
+    	<property name="checkFormat" value="CyclomaticComplexity"/>
+	</module>
+	</module><module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON CYCLOMATIC_COMPLEXITY"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF CYCLOMATIC_COMPLEXITY"/>
+    	<property name="checkFormat" value="CyclomaticComplexity"/>
+	</module>
+	</module><module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON DEFAULT_COMES_LAST"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF DEFAULT_COMES_LAST"/>
+    	<property name="checkFormat" value="DefaultComesLast"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON EMPTY_BLOCK"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF EMPTY_BLOCK"/>
+    	<property name="checkFormat" value="EmptyBlock"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON EMPTY_STATEMENT"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF EMPTY_STATEMENT"/>
+    	<property name="checkFormat" value="EmptyStatement"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON EQUALS_AVOID_NULL"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF EQUALS_AVOID_NULL"/>
+    	<property name="checkFormat" value="EqualsAvoidNull"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON EQUALS_HASH_CODE"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF EQUALS_HASH_CODE"/>
+    	<property name="checkFormat" value="EqualsHashCode"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON FALL_THROUGH"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF FALL_THROUGH"/>
+    	<property name="checkFormat" value="FallThrough"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON FINAL_CLASS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF FINAL_CLASS"/>
+    	<property name="checkFormat" value="FinalClass"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON FINAL_LOCAL_VAR"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF FINAL_LOCAL_VAR"/>
+    	<property name="checkFormat" value="FinalLocalVariable"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON FINAL_PARAMETERS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF FINAL_PARAMETERS"/>
+    	<property name="checkFormat" value="FinalParameters"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON HIDDEN_FIELD"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF HIDDEN_FIELD"/>
+    	<property name="checkFormat" value="HiddenField"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON HIDE_UTILITY_CONSTRUCTOR"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF HIDE_UTILITY_CONSTRUCTOR"/>
+    	<property name="checkFormat" value="HideUtilityClassConstructor"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ILLEGAL_CATCH"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ILLEGAL_CATCH"/>
+    	<property name="checkFormat" value="IllegalCatch"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ILLEGAL_THROWS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ILLEGAL_THROWS"/>
+    	<property name="checkFormat" value="IllegalThrows"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON INNER_ASSIGNMENT"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF INNER_ASSIGNMENT"/>
+    	<property name="checkFormat" value="InnerAssignment"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON JUNIT_TEST_CASE"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF JUNIT_TEST_CASE"/>
+    	<property name="checkFormat" value="JUnitTestCase"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON LINE_LENGTH"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF LINE_LENGTH"/>
+    	<property name="checkFormat" value="LineLength"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MAGIC_NUMBER"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MAGIC_NUMBER"/>
+    	<property name="checkFormat" value="MagicNumber"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MISSING_DEPRECATED"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MISSING_DEPRECATED"/>
+    	<property name="checkFormat" value="MissingDeprecated"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MISSING_SWITCH_DEFAULT"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MISSING_SWITCH_DEFAULT"/>
+    	<property name="checkFormat" value="MissingSwitchDefault"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MODIFIED_CONTROL_VAR"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MODIFIED_CONTROL_VAR"/>
+    	<property name="checkFormat" value="ModifiedControlVariable"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MULTIPLE_STRINGS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MULTIPLE_STRINGS"/>
+    	<property name="checkFormat" value="MultipleStringLiterals"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MULTIPLE_VARS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MULTIPLE_VARS"/>
+    	<property name="checkFormat" value="MultipleVariableDeclarations"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON MUTABLE_EXCEPTION"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF MUTABLE_EXCEPTION"/>
+    	<property name="checkFormat" value="MutableException"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON NESTED_FOR"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF NESTED_FOR"/>
+    	<property name="checkFormat" value="NestedForDepth"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON NESTED_IF"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF NESTED_IF"/>
+    	<property name="checkFormat" value="NestedIfDepth"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON NESTED_TRY"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF NESTED_TRY"/>
+    	<property name="checkFormat" value="NestedTryDepth"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON NO_CLONE"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF NO_CLONE"/>
+    	<property name="checkFormat" value="NoClone"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ONE_STATEMENT_PERLINE"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ONE_STATEMENT_PERLINE"/>
+    	<property name="checkFormat" value="OneStatementPerLine"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ONE_TYPE_FILENAME"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ONE_TYPE_FILENAME"/>
+    	<property name="checkFormat" value="OuterTypeFilename"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON OUTER_TYPE_NUMBER"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF OUTER_TYPE_NUMBER"/>
+    	<property name="checkFormat" value="OuterTypeNumber"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON PACKAGE_DECLARATION"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF PACKAGE_DECLARATION"/>
+    	<property name="checkFormat" value="PackageDeclaration"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON REDUNDANT_IMPORT"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF REDUNDANT_IMPORT"/>
+    	<property name="checkFormat" value="RedundantImport"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON REDUNDANT_MODIFIER"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF REDUNDANT_MODIFIER"/>
+    	<property name="checkFormat" value="RedundantModifier"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON REDUNDANT_THROWS"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF REDUNDANT_THROWS"/>
+    	<property name="checkFormat" value="RedundantThrows"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON RETURN_COUNT"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF RETURN_COUNT"/>
+    	<property name="checkFormat" value="ReturnCount"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON SIMPLIFY_BOOLEAN"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF SIMPLIFY_BOOLEAN"/>
+    	<property name="checkFormat" value="SimplifyBooleanExpression"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON SIMPLIFY_BOOLEAN_RETURN"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF SIMPLIFY_BOOLEAN_RETURN"/>
+    	<property name="checkFormat" value="SimplifyBooleanReturn"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON STRING_LITERAL_EQUALITY"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF STRING_LITERAL_EQUALITY"/>
+    	<property name="checkFormat" value="StringLiteralEquality"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON SUPER_CLONE"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF SUPER_CLONE"/>
+    	<property name="checkFormat" value="SuperClone"/>
+	</module>	
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON SUPER_FINALIZE"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF SUPER_FINALIZE"/>
+    	<property name="checkFormat" value="SuperFinalize"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON UNCOMMENTED_MAIN"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF UNCOMMENTED_MAIN"/>
+    	<property name="checkFormat" value="UncommentedMain"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON UNNECESSARY_PARENTHESES"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF UNNECESSARY_PARENTHESES"/>
+    	<property name="checkFormat" value="UnnecessaryParentheses"/>
+	</module>
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON UPPER_ELL"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF UPPER_ELL"/>
+    	<property name="checkFormat" value="UpperEll"/>
+	</module>
+	<!-- END SuppressionCommentFilter block -->
+	
 
 	<module name="TreeWalker">
+		<!--  To configure the check that makes comments available 
+		    to the SuppressionCommentFilter filter -->
+		<module name="FileContentsHolder"/>
+		
 		<!-- Checks for long anonymous inner classes. -->
 		<module name="AnonInnerLength">
 			<property name="max" value="60" />
