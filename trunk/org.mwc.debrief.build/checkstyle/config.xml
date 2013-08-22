@@ -13,19 +13,25 @@
 	</module>
 
 	<!-- Use this block to specify which levels should not be covered -->
-	<module name="SeverityMatchFilter">
-		<property name="severity" value="info" />
-		<property name="acceptOnMatch" value="false" />
-	</module>
-	<module name="SeverityMatchFilter">
-		<property name="severity" value="warning" />
-		<property name="acceptOnMatch" value="false" />
-	</module>
+    <module name="SeverityMatchFilter">
+             <property name="severity" value="info" />
+             <property name="acceptOnMatch" value="false" />
+    </module>
+    <module name="SeverityMatchFilter">
+           <property name="severity" value="warning" />
+           <property name="acceptOnMatch" value="false" />
+    </module>
+	
+	
 	<!-- END SeverityMatchFilter block -->
 	
 	
 	<!-- Sometimes there are legitimate reasons for violating a check. -->
 	<!-- Use this block to specify checking suppressed by Java comments. -->
+	<module name="SuppressionCommentFilter">
+    	<property name="offCommentFormat" value="CS-IGNORE:ON ALL"/>
+    	<property name="onCommentFormat" value="CS-IGNORE:OFF ALL"/>
+	</module>
 	<module name="SuppressionCommentFilter">
     	<property name="offCommentFormat" value="CS-IGNORE:ON ANON_INNER_LENGTH"/>
     	<property name="onCommentFormat" value="CS-IGNORE:OFF ANON_INNER_LENGTH"/>
@@ -50,17 +56,18 @@
     	<property name="offCommentFormat" value="CS-IGNORE:ON COVARIANT_EQUALS"/>
     	<property name="onCommentFormat" value="CS-IGNORE:OFF COVARIANT_EQUALS"/>
     	<property name="checkFormat" value="CovariantEquals"/>
-	</module><module name="SuppressionCommentFilter">
+	</module>
+	<module name="SuppressionCommentFilter">
     	<property name="offCommentFormat" value="CS-IGNORE:ON CYCLOMATIC_COMPLEXITY"/>
     	<property name="onCommentFormat" value="CS-IGNORE:OFF CYCLOMATIC_COMPLEXITY"/>
     	<property name="checkFormat" value="CyclomaticComplexity"/>
 	</module>
-	</module><module name="SuppressionCommentFilter">
+	<module name="SuppressionCommentFilter">
     	<property name="offCommentFormat" value="CS-IGNORE:ON CYCLOMATIC_COMPLEXITY"/>
     	<property name="onCommentFormat" value="CS-IGNORE:OFF CYCLOMATIC_COMPLEXITY"/>
     	<property name="checkFormat" value="CyclomaticComplexity"/>
 	</module>
-	</module><module name="SuppressionCommentFilter">
+	<module name="SuppressionCommentFilter">
     	<property name="offCommentFormat" value="CS-IGNORE:ON DEFAULT_COMES_LAST"/>
     	<property name="onCommentFormat" value="CS-IGNORE:OFF DEFAULT_COMES_LAST"/>
     	<property name="checkFormat" value="DefaultComesLast"/>
