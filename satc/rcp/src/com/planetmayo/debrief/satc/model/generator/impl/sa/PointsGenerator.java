@@ -13,12 +13,14 @@ public class PointsGenerator
 	private final Random rnd;
 	private final Geometry geometry;
 	private final Geometry envelope;
+	private final SAParameters parameters;
 
-	public PointsGenerator(Geometry geometry, Random random)
+	public PointsGenerator(Geometry geometry, Random random, SAParameters parameters)
 	{
 		this.rnd = random;
 		this.geometry = geometry;
 		this.envelope = geometry.getEnvelope();
+		this.parameters = parameters;
 	}
 
 	public Point startPoint()
@@ -29,6 +31,11 @@ public class PointsGenerator
 	public Point toPoint(Coordinate coord)
 	{
 		return GeoSupport.getFactory().createPoint(coord);
+	}
+	
+	private double distance(double T) 
+	{
+		return parameters.getSaFuntions().neighborDistance(parameters, rnd, T);
 	}
 
 	public Point newPoint(Point p, double T)
@@ -42,9 +49,9 @@ public class PointsGenerator
 		}
 		while (border1 == border2);
 
-		Point p1 = MathUtils.calculateBezier(Math.pow(rnd.nextDouble(), 5 - T), p,
+		Point p1 = MathUtils.calculateBezier(distance(T), p,
 				toPoint(border1), null);
-		Point p2 = MathUtils.calculateBezier(Math.pow(rnd.nextDouble(), 5 - T), p,
+		Point p2 = MathUtils.calculateBezier(distance(T), p,
 				toPoint(border2), null);
 		return MathUtils.calculateBezier(rnd.nextDouble(), p1, p2, null);
 	}

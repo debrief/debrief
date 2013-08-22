@@ -19,20 +19,20 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 	private final StraightLeg leg;
 	private final SafeProblemSpace problemSpace;
 	private final Random rnd;
-	private final int iterations;
+	private final SAParameters parameters;
 	
 	private volatile PointsGenerator start;
 	private volatile PointsGenerator end;
 	private volatile List<BoundedState> states;
 	
-	public SimulatedAnnealing(StraightLeg leg, int iterations, 
+	public SimulatedAnnealing(SAParameters parameters, StraightLeg leg, 
 			IContributions contributions, SafeProblemSpace problemSpace, Random rnd)
 	{
 		this.contributions = contributions;
 		this.leg = leg;
 		this.problemSpace = problemSpace;
 		this.rnd = rnd;
-		this.iterations = iterations;
+		this.parameters = parameters;
 		
 		initialize();
 	}
@@ -41,8 +41,8 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 	{
 		Collection<BoundedState> states = problemSpace.getBoundedStatesBetween(leg.getFirst().getTime(), leg.getLast().getTime());
 		
-		start = new PointsGenerator(leg.getFirst().getLocation().getGeometry(), rnd);
-		end = new PointsGenerator(leg.getLast().getLocation().getGeometry(), rnd);
+		start = new PointsGenerator(leg.getFirst().getLocation().getGeometry(), rnd, parameters);
+		end = new PointsGenerator(leg.getLast().getLocation().getGeometry(), rnd, parameters);
 		this.states = new ArrayList<BoundedState>(states);
 	}
 	
@@ -61,17 +61,20 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 		double min = Double.MAX_VALUE;
 		CoreRoute result = null;
 	
-		for (int k = 0; k < iterations; k++)
+		CoreRoute current = null;
+		double eCurrent = 0;
+		for (int k = 0; k < parameters.getIterationsInThread(); k++)
 		{
-			CoreRoute current = leg.createRoute("", start.startPoint(),
-					end.startPoint());
-			current.generateSegments(states);
+			if (k == 0 || ! parameters.isJoinedIterations()) 
+			{
+				current = leg.createRoute("", start.startPoint(),	end.startPoint());
+				current.generateSegments(states);			
+				eCurrent = error(current);
+			}
 			
-			double eCurrent = error(current);
-			
-			double t = 2.0;
+			double t = parameters.getStartTemprature();
 			int i = 0;
-			while (t > 0.1)
+			while (t > parameters.getEndTemprature())
 			{
 				CoreRoute newRoute;
 				while (true) {
@@ -88,8 +91,9 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 				double eNew = error(newRoute);
 				if (eNew > eCurrent)
 				{
-					double h = 1 - 1 / (1 + Math.exp(1 / Math.pow(t, 3)));
-					if (rnd.nextDouble() > h)
+					double h = parameters.getSaFuntions()
+							.probabilityToAcceptWorse(parameters, t, eCurrent, eNew);
+					if (rnd.nextDouble() < h)
 					{
 						current = newRoute;
 						eCurrent = eNew;
@@ -106,7 +110,7 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 					}
 				}
 				i++;
-				t = 2.0 * Math.exp(-1.1 * Math.pow(i, 0.18));
+				t = parameters.getSaFuntions().changeTemprature(parameters, t, i);
 			}
 		}
 		result.setScore(min);
@@ -121,6 +125,6 @@ public class SimulatedAnnealing implements Callable<CoreRoute>
 
 	@Override
 	public SimulatedAnnealing clone() {
-		return new SimulatedAnnealing(leg, iterations, contributions, problemSpace, rnd);
+		return new SimulatedAnnealing(parameters, leg, contributions, problemSpace, rnd);
 	}
 }

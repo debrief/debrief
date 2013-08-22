@@ -27,14 +27,46 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 {
 	private static final String SA_GENERATOR_GROUP = "saGeneratorGroup";
 	
+	private final SAParameters parameters;
+	
 	private volatile Job<Void, Void> mainJob;	
 	
 	private volatile List<CoreLeg> legs;
-
+	
 	public SASolutionGenerator(IContributions contributions,
 			IJobsManager jobsManager, SafeProblemSpace problemSpace)
 	{
 		super(contributions, jobsManager, problemSpace);
+		parameters = new SAParameters();
+		parameters.setStartTemprature(2.0);
+		parameters.setEndTemprature(0.1);
+		parameters.setParallelThreads(4);
+		parameters.setIterationsInThread(2);
+		parameters.setJoinedIterations(false);
+		parameters.setStartOnCenter(true);
+		parameters.setSaFuntions(new SAFunctions()
+		{
+			
+			@Override
+			public double neighborDistance(SAParameters parameters, Random rnd, double T)
+			{
+				return Math.pow(rnd.nextDouble(), 5 - T);
+			}
+			
+			@Override
+			public double changeTemprature(SAParameters parameters, double T, int step)
+			{
+				return parameters.getStartTemprature() * Math.exp(-1.1 * Math.pow(step, 0.18));
+			}
+
+			@Override
+			public double probabilityToAcceptWorse(SAParameters parameters, double T,	double eCur, double eNew)
+			{
+				return 1 / (1 + Math.exp(1 / Math.pow(T, 3)));
+			}
+			
+			
+		});
 	}
 
 	@Override
@@ -103,7 +135,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 	protected void runSA(IProgressMonitor monitor) 
 	{
 		Random rnd = new MersenneTwisterRNG();		
-		ExecutorService executor = Executors.newFixedThreadPool(4);
+		ExecutorService executor = Executors.newFixedThreadPool(parameters.getParallelThreads());
 		try 
 		{
 			List<CoreRoute> routes = new ArrayList<CoreRoute>();
@@ -125,9 +157,9 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 	
 	protected CoreRoute findRouteForLeg(StraightLeg leg, Random rnd, ExecutorService executor) 
 	{
-		SimulatedAnnealing simulator = new SimulatedAnnealing(leg, 2, contributions, problemSpaceView, rnd);
-		List<Future<CoreRoute>> results = new ArrayList<Future<CoreRoute>>(4);
-		for (int i = 0; i < 4; i++) 
+		SimulatedAnnealing simulator = new SimulatedAnnealing(parameters, leg, contributions, problemSpaceView, rnd);
+		List<Future<CoreRoute>> results = new ArrayList<Future<CoreRoute>>(parameters.getParallelThreads());
+		for (int i = 0; i < parameters.getParallelThreads(); i++) 
 		{
 			results.add(executor.submit(simulator.clone()));
 		}
