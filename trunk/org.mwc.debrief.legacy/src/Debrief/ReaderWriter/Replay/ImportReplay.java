@@ -437,6 +437,259 @@ public class ImportReplay extends PlainImporterBase
 			_theImporters.addElement(new ImportFix());
 		}
 	}
+	
+	private HiResDate processReplayFix(final ReplayFix rf)
+	{
+		final HiResDate res = rf.theFix.getTime();
+
+		// find the track name
+		final String theTrack = rf.theTrackName;
+		final Color thisColor = replayColorFor(rf.theSymbology);
+
+		// create the wrapper for this annotation
+		FixWrapper thisWrapper = new FixWrapper(rf.theFix);
+						
+		// overwrite the label, if there's one there
+		if(rf.label != null)
+		{
+			thisWrapper.setLabel(rf.label);
+			thisWrapper.setUserLabelSupplied(true);
+		}
+
+		// keep track of the wrapper for this track
+		// is there a layer for this track?
+		TrackWrapper trkWrapper = (TrackWrapper) getLayerFor(theTrack);
+
+		// have we found the layer?
+		if (trkWrapper == null) 
+		{
+			// ok, see if we're importing it as DR or ATG (or ask the audience)
+			String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+
+			// catch a missing import mode
+			if (importMode == null) 
+			{
+				// belt & braces it is then...
+				importMode = ImportReplay.ASK_THE_AUDIENCE;
+			}
+
+			if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE)) 
+			{
+				if (_myParent instanceof ProvidesModeSelector) 
+				{
+					ProvidesModeSelector selector = (ProvidesModeSelector) _myParent;
+					importMode = selector.getSelectedImportMode(theTrack);
+				}
+			}
+
+			TrackSegment initialLayer = null;
+
+			if (importMode == null) 
+			{
+				// and drop out of the whole affair
+				throw new RuntimeException("User cancelled import");
+			} 
+			else if (importMode.equals(ImportReplay.IMPORT_AS_OTG)) 
+			{
+				initialLayer = new TrackSegment();
+				initialLayer.setPlotRelative(false);
+			} 
+			else if (importMode.equals(ImportReplay.IMPORT_AS_DR)) 
+			{
+				initialLayer = new TrackSegment();
+				initialLayer.setPlotRelative(true);
+			}
+
+			// now create the wrapper
+			trkWrapper = new TrackWrapper();
+
+			// give it the data container
+			trkWrapper.add(initialLayer);
+
+			// get the colour for this track
+			trkWrapper.setColor(thisColor);
+			trkWrapper.setSymbolColor(thisColor);
+
+			// set the sym type for the track
+			String theSymType = replayTrackSymbolFor(rf.theSymbology);
+			trkWrapper.setSymbolType(theSymType);
+
+			// store the track-specific data
+			trkWrapper.setName(theTrack);
+
+			// add our new layer to the Layers object
+			addLayer(trkWrapper);
+		}
+
+		// add the fix to the track
+		trkWrapper.addFix((FixWrapper) thisWrapper);
+
+		// let's also tell the fix about it's track
+		((FixWrapper) thisWrapper).setTrackWrapper(trkWrapper);
+
+		// also, see if this fix is specifying a different colour to use
+		if (thisColor != trkWrapper.getColor()) 
+		{
+			// give this fix it's unique colour
+			thisWrapper.setColor(thisColor);
+		}
+		return res;
+
+	}
+	
+	private HiResDate processSensorContactWrapper(final SensorContactWrapper sw)
+	{	
+		final HiResDate res = sw.getTime();
+
+		SensorWrapper thisSensor = null;
+
+		// do we have a sensor capable of handling this contact?
+		String sensorName = sw.getSensorName();
+		String trackName = sw.getTrackName();
+		Object val = getLayerFor(trackName);
+
+		// if we failed to get the trackname, try shortening it -
+		// it may have been mangled by BabelFish
+		if (val == null)
+			val = getLayerFor(trackName = trackName.substring(6));
+
+		// did we get anything?
+		// is this indeed a sensor?
+		if (val == null || !(val instanceof TrackWrapper))
+			return res;
+
+		// so, we've found a track - see if it holds this sensor
+		TrackWrapper theTrack = (TrackWrapper) val;
+		Enumeration<Editable> iter = theTrack.getSensors().elements();
+
+		// step through this track' sensors
+		if (iter != null) 
+		{
+			while (iter.hasMoreElements()) 
+			{
+				SensorWrapper sensorw = (SensorWrapper) iter.nextElement();
+
+				// is this our sensor?
+				if (sensorw.getName().equals(sensorName)) 
+				{
+					// cool, drop out
+					thisSensor = sensorw;
+					break;
+				}
+			} // looping through the sensors
+		} // whether there are any sensors
+
+		// did we find it?
+		if (thisSensor == null) 
+		{
+			// then create it
+			thisSensor = new SensorWrapper(sensorName);
+
+			// remember it
+			_sensorNames.add(thisSensor);
+
+			// set it's colour to the colour of the first data point
+			thisSensor.setColor(sw.getColor());
+
+			// also set it's name
+			thisSensor.setTrackName(sw.getTrackName());
+
+			theTrack.add(thisSensor);
+		}
+
+		// so, we now have the wrapper. have a look to see if the colour
+		// of this data item is the same
+		// as the sensor - in which case we will erase the colour for
+		// this data item so that it always takes the colour of it's parent
+		if (sw.getColor().equals(thisSensor.getColor())) 
+		{
+			// clear the colour - so it takes it form it's parent
+			sw.setColor(null);
+		}
+
+		// now add the new contact to this sensor
+		thisSensor.add(sw);
+
+		return res;
+	}
+	
+	private HiResDate processContactWrapper(final TMAContactWrapper sw)
+	{
+		final HiResDate res = sw.getTime();
+
+		TMAWrapper thisWrapper = null;
+
+		// do we have a sensor capable of handling this contact?
+		String solutionName = sw.getSolutionName();
+
+		String trackName = sw.getTrackName();
+		Object val = getLayerFor(trackName);
+
+		// if we failed to get the trackname, try shortening it -
+		// it may have been mangled by BabelFish
+		if (val == null)
+			val = getLayerFor(trackName = trackName.substring(6));
+
+		// did we get anything?
+		// is this indeed a sensor?
+		if (val == null || !(val instanceof TrackWrapper))
+			return res;
+
+		// so, we've found a track - see if it holds this solution
+		TrackWrapper theTrack = (TrackWrapper) val;
+		Enumeration<Editable> iter = theTrack.getSolutions().elements();
+
+		// step through this track's solutions
+		if (iter != null) 
+		{
+			while (iter.hasMoreElements()) 
+			{
+				TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
+
+				// is this our sensor?
+				if (sensorw.getName().equals(solutionName)) 
+				{
+					// cool, drop out
+					thisWrapper = sensorw;
+					break;
+				}
+			} // looping through the sensors
+		} // whether there are any sensors
+
+		// did we find it?
+		if (thisWrapper == null) 
+		{
+			// then create it
+			thisWrapper = new TMAWrapper(solutionName);
+
+			// set it's colour to the colour of the first data point
+			thisWrapper.setColor(sw.getColor());
+
+			// also set it's name
+			thisWrapper.setTrackName(sw.getTrackName());
+
+			theTrack.add(thisWrapper);
+		}
+
+		// so, we now have the wrapper. have a look to see if the colour
+		// of this data item is the same
+		// as the sensor - in which case we will erase the colour for
+		// this data item so that it
+		// always takes the colour of it's parent
+		if (sw.getColor().equals(thisWrapper.getColor())) 
+		{
+			// clear the colour - so it takes it form it's parent
+			sw.setColor(null);
+		}
+
+		// lastly inform the sensor contact of it's parent
+		sw.setTMATrack(thisWrapper);
+
+		// now add the new contact to this sensor
+		thisWrapper.add(sw);
+
+		return res;
+	}
 
 	/**
 	 * parse this line
@@ -448,370 +701,97 @@ public class ImportReplay extends PlainImporterBase
 	{
 		HiResDate res = null;
 		
-		// is this line valid?
-		if (theLine.length() > 0)
+		// is this line invalid
+		if (theLine.length() <= 0)
+			return null;
+		
+		// ok, trim any leading/trailing whitespace
+		theLine = theLine.trim();
+			
+		// what type of item is this?
+		final PlainLineImporter thisOne = getImporterFor(theLine);
+
+		// check that we have found an importer
+		if (thisOne == null)
 		{
-			
-			// ok, trim any leading/trailing whitespace
-			theLine = theLine.trim();
-			
-			// what type of item is this?
-			PlainLineImporter thisOne = getImporterFor(theLine);
-
-			// check that we have found an importer
-			if (thisOne == null)
+			// just check it wasn't a comment
+			if (theLine.startsWith(";;"))
 			{
-				// just check it wasn't a comment
-				if (theLine.startsWith(";;"))
-				{
 					// don't bother, it's just a comment
-				}
-				else
-				{
-					MWC.Utilities.Errors.Trace
-							.trace("Annotation type not recognised for:" + theLine);
-				}
-				return null;
 			}
-
-			// now read it in.
-			Object thisObject = null;
-			
-			thisObject = thisOne.readThisLine(theLine);
-
-			// see if we are going to do any special processing
-
-			// is this a fix?
-			if (thisObject instanceof ReplayFix)
+			else
 			{
-
-				// so, we are handling a fix
-				ReplayFix rf = (ReplayFix) thisObject;
-
-				// remember the dtg
-				res = rf.theFix.getTime();
-
-				// find the track name
-				String theTrack = rf.theTrackName;
-				Color thisColor = replayColorFor(rf.theSymbology);
-
-				// create the wrapper for this annotation
-				FixWrapper thisWrapper = new FixWrapper(rf.theFix);
-				
-				// overwrite the label, if there's one there
-				if(rf.label != null)
-				{
-					thisWrapper.setLabel(rf.label);
-					thisWrapper.setUserLabelSupplied(true);
-				}
-
-				// keep track of the wrapper for this track
-				TrackWrapper trkWrapper = null;
-
-				// is there a layer for this track?
-				trkWrapper = (TrackWrapper) getLayerFor(theTrack);
-
-				// have we found the layer?
-				if (trkWrapper == null)
-				{
-					// ok, see if we're importing it as DR or ATG (or ask the audience)
-					String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
-
-					// catch a missing import mode
-					if (importMode == null)
-					{
-						// belt & braces it is then...
-						importMode = ImportReplay.ASK_THE_AUDIENCE;
-					}
-
-					if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE))
-					{
-						if (_myParent instanceof ProvidesModeSelector)
-						{
-							ProvidesModeSelector selector = (ProvidesModeSelector) _myParent;
-							importMode = selector.getSelectedImportMode(theTrack);
-						}
-					}
-
-					TrackSegment initialLayer = null;
-
-					if (importMode == null)
-					{
-						// and drop out of the whole affair
-						throw new RuntimeException("User cancelled import");
-					}
-					else if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
-
-					{
-						initialLayer = new TrackSegment();
-						initialLayer.setPlotRelative(false);
-					}
-					else if (importMode.equals(ImportReplay.IMPORT_AS_DR))
-					{
-						initialLayer = new TrackSegment();
-						initialLayer.setPlotRelative(true);
-					}
-
-					// now create the wrapper
-					trkWrapper = new TrackWrapper();
-
-					// give it the data container
-					trkWrapper.add(initialLayer);
-
-					// get the colour for this track
-					trkWrapper.setColor(thisColor);
-					trkWrapper.setSymbolColor(thisColor);
-
-					// set the sym type for the track
-					String theSymType = replayTrackSymbolFor(rf.theSymbology);
-					trkWrapper.setSymbolType(theSymType);
-
-					// store the track-specific data
-					trkWrapper.setName(theTrack);
-
-					// add our new layer to the Layers object
-					addLayer(trkWrapper);
-
-				}
-
-				// add the fix to the track
-				trkWrapper.addFix((FixWrapper) thisWrapper);
-
-				// let's also tell the fix about it's track
-				((FixWrapper) thisWrapper).setTrackWrapper(trkWrapper);
-
-				// also, see if this fix is specifying a different colour to use
-				if (thisColor != trkWrapper.getColor())
-				{
-					// give this fix it's unique colour
-					thisWrapper.setColor(thisColor);
-				}
-
+				MWC.Utilities.Errors.Trace
+						.trace("Annotation type not recognised for:" + theLine);
 			}
-			else if (thisObject instanceof SensorContactWrapper)
-			{
-				// represent as contactwrapper
-				SensorContactWrapper sw = (SensorContactWrapper) thisObject;
-
-				// remember the dtg
-				res = sw.getTime();
-
-				SensorWrapper thisSensor = null;
-
-				// do we have a sensor capable of handling this contact?
-				String sensorName = sw.getSensorName();
-				String trackName = sw.getTrackName();
-				Object val = getLayerFor(trackName);
-
-				// if we failed to get the trackname, try shortening it -
-				// it may have been mangled by BabelFish
-				if (val == null)
-					val = getLayerFor(trackName = trackName.substring(6));
-
-				// did we get anything?
-				if (val != null)
-				{
-					// is this indeed a sensor?
-					if (val instanceof TrackWrapper)
-					{
-						// so, we've found a track - see if it holds this sensor
-						TrackWrapper theTrack = (TrackWrapper) val;
-						Enumeration<Editable> iter = theTrack.getSensors().elements();
-
-						// step through this track' sensors
-						if (iter != null)
-						{
-							while (iter.hasMoreElements())
-							{
-								//
-								SensorWrapper sensorw = (SensorWrapper) iter.nextElement();
-
-								// is this our sensor?
-								if (sensorw.getName().equals(sensorName))
-								{
-									// cool, drop out
-									thisSensor = sensorw;
-									break;
-								}
-							} // looping through the sensors
-						} // whether there are any sensors
-
-						// did we find it?
-						if (thisSensor == null)
-						{
-							// then create it
-							thisSensor = new SensorWrapper(sensorName);
-							
-							// remember it
-							_sensorNames.add(thisSensor);
-
-							// set it's colour to the colour of the first data point
-							thisSensor.setColor(sw.getColor());
-
-							// also set it's name
-							thisSensor.setTrackName(sw.getTrackName());
-
-							theTrack.add(thisSensor);
-
-						}
-
-						// so, we now have the wrapper. have a look to see if the colour of
-						// this
-						// data item is the same
-						// as the sensor - in which case we will erase the colour for this
-						// data
-						// item so that it
-						// always takes the colour of it's parent
-						if (sw.getColor().equals(thisSensor.getColor()))
-						{
-							// clear the colour - so it takes it form it's parent
-							sw.setColor(null);
-						}
-
-						// now add the new contact to this sensor
-						thisSensor.add(sw);
-
-					} // if the item found is a track
-				}
-
-			}
-			else if (thisObject instanceof TMAContactWrapper)
-			{
-				// represent as contactwrapper
-				TMAContactWrapper sw = (TMAContactWrapper) thisObject;
-
-				// remember the dtg
-				res = sw.getTime();
-
-				TMAWrapper thisWrapper = null;
-
-				// do we have a sensor capable of handling this contact?
-				String solutionName = sw.getSolutionName();
-
-				String trackName = sw.getTrackName();
-				Object val = getLayerFor(trackName);
-
-				// if we failed to get the trackname, try shortening it -
-				// it may have been mangled by BabelFish
-				if (val == null)
-					val = getLayerFor(trackName = trackName.substring(6));
-
-				// did we get anything?
-				if (val != null)
-				{
-					// is this indeed a sensor?
-					if (val instanceof TrackWrapper)
-					{
-						// so, we've found a track - see if it holds this solution
-						TrackWrapper theTrack = (TrackWrapper) val;
-						Enumeration<Editable> iter = theTrack.getSolutions().elements();
-
-						// step through this track's solutions
-						if (iter != null)
-						{
-							while (iter.hasMoreElements())
-							{
-								//
-								TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
-
-								// is this our sensor?
-								if (sensorw.getName().equals(solutionName))
-								{
-									// cool, drop out
-									thisWrapper = sensorw;
-									break;
-								}
-							} // looping through the sensors
-						} // whether there are any sensors
-
-						// did we find it?
-						if (thisWrapper == null)
-						{
-							// then create it
-							thisWrapper = new TMAWrapper(solutionName);
-
-							// set it's colour to the colour of the first data point
-							thisWrapper.setColor(sw.getColor());
-
-							// also set it's name
-							thisWrapper.setTrackName(sw.getTrackName());
-
-							theTrack.add(thisWrapper);
-
-						}
-
-						// so, we now have the wrapper. have a look to see if the colour of
-						// this
-						// data item is the same
-						// as the sensor - in which case we will erase the colour for this
-						// data
-						// item so that it
-						// always takes the colour of it's parent
-						if (sw.getColor().equals(thisWrapper.getColor()))
-						{
-							// clear the colour - so it takes it form it's parent
-							sw.setColor(null);
-						}
-
-						// lastly inform the sensor contact of it's parent
-						sw.setTMATrack(thisWrapper);
-
-						// now add the new contact to this sensor
-						thisWrapper.add(sw);
-
-					} // if the item found is a track
-				}
-
-			}
-			else if (thisObject instanceof NarrativeEntry)
-			{
-				NarrativeEntry entry = (NarrativeEntry) thisObject;
-
-				// remember the dtg
-				res = entry.getDTG();
-
-				// have we got a narrative wrapper?
-				Layer dest = getLayerFor(NARRATIVE_LAYER);
-				if (dest == null)
-				{
-					dest = new NarrativeWrapper(NARRATIVE_LAYER);
-					addLayer(dest);
-				}
-
-				addToLayer(entry, dest);
-			}
-
-			// ////////
-			// PlainWrapper is our "fallback" operator, so it's important to leave it
-			// to last
-			// ////////
-			else if (thisObject instanceof PlainWrapper)
-			{
-
-				// create the wrapper for this annotation
-				PlainWrapper thisWrapper = (PlainWrapper) thisObject;
-
-				// remember the dtg
-				if (thisWrapper instanceof Watchable)
-				{
-					Watchable wat = (Watchable) thisWrapper;
-					res = wat.getTime();
-				}
-
-				// not fix, must be annotation, just add it to the correct
-				// layer
-				Layer dest = getLayerFor(ANNOTATION_LAYER);
-				if (dest == null)
-				{
-					dest = createLayer(ANNOTATION_LAYER);
-					addLayer(dest);
-				}
-
-				addToLayer(thisWrapper, dest);
-
-			}
-
+			return null;
 		}
+
+		// now read it in.
+		Object thisObject = thisOne.readThisLine(theLine);
+
+		// see if we are going to do any special processing
+
+		// is this a fix?
+		if (thisObject instanceof ReplayFix)
+		{
+			res = processReplayFix((ReplayFix) thisObject);
+		}
+		else if (thisObject instanceof SensorContactWrapper)
+		{
+			res = processSensorContactWrapper((SensorContactWrapper) thisObject);
+		}
+		else if (thisObject instanceof TMAContactWrapper)
+		{
+			res = processContactWrapper((TMAContactWrapper) thisObject);
+		}
+		else if (thisObject instanceof NarrativeEntry)
+		{
+			NarrativeEntry entry = (NarrativeEntry) thisObject;
+
+			// remember the dtg
+			res = entry.getDTG();
+
+			// have we got a narrative wrapper?
+			Layer dest = getLayerFor(NARRATIVE_LAYER);
+			if (dest == null)
+			{
+				dest = new NarrativeWrapper(NARRATIVE_LAYER);
+				addLayer(dest);
+			}
+
+			addToLayer(entry, dest);
+		}
+
+		// ////////
+		// PlainWrapper is our "fallback" operator, so it's important to leave it
+		// to last
+		// ////////
+		else if (thisObject instanceof PlainWrapper)
+		{
+
+			// create the wrapper for this annotation
+			PlainWrapper thisWrapper = (PlainWrapper) thisObject;
+
+			// remember the dtg
+			if (thisWrapper instanceof Watchable)
+			{
+				Watchable wat = (Watchable) thisWrapper;
+				res = wat.getTime();
+			}
+
+			// not fix, must be annotation, just add it to the correct
+			// layer
+			Layer dest = getLayerFor(ANNOTATION_LAYER);
+			if (dest == null)
+			{
+				dest = createLayer(ANNOTATION_LAYER);
+				addLayer(dest);
+			}
+
+			addToLayer(thisWrapper, dest);
+
+		}		
 
 		return res;
 	}

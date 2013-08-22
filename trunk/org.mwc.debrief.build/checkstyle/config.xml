@@ -63,11 +63,6 @@
     	<property name="checkFormat" value="CyclomaticComplexity"/>
 	</module>
 	<module name="SuppressionCommentFilter">
-    	<property name="offCommentFormat" value="CS-IGNORE:ON CYCLOMATIC_COMPLEXITY"/>
-    	<property name="onCommentFormat" value="CS-IGNORE:OFF CYCLOMATIC_COMPLEXITY"/>
-    	<property name="checkFormat" value="CyclomaticComplexity"/>
-	</module>
-	<module name="SuppressionCommentFilter">
     	<property name="offCommentFormat" value="CS-IGNORE:ON DEFAULT_COMES_LAST"/>
     	<property name="onCommentFormat" value="CS-IGNORE:OFF DEFAULT_COMES_LAST"/>
     	<property name="checkFormat" value="DefaultComesLast"/>
