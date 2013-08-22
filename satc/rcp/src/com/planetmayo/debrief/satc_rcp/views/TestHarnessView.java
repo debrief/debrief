@@ -18,6 +18,7 @@ import org.eclipse.nebula.widgets.formattedtext.IntegerFormatter;
 import org.eclipse.nebula.widgets.formattedtext.LongFormatter;
 import org.eclipse.nebula.widgets.formattedtext.NumberFormatter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -41,6 +42,7 @@ import com.planetmayo.debrief.satc.model.generator.impl.SwitchableSolutionGenera
 import com.planetmayo.debrief.satc.model.generator.impl.bf.BFSolutionGenerator;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.GAParameters;
 import com.planetmayo.debrief.satc.model.generator.impl.ga.GASolutionGenerator;
+import com.planetmayo.debrief.satc.model.generator.impl.sa.SAParameters;
 import com.planetmayo.debrief.satc.model.generator.impl.sa.SASolutionGenerator;
 import com.planetmayo.debrief.satc.support.TestSupport;
 import com.planetmayo.debrief.satc.util.GeoSupport;
@@ -299,7 +301,7 @@ public class TestHarnessView extends ViewPart
 	{
 		Group gaGroup = new Group(parent, SWT.SHADOW_ETCHED_IN);
 		gaGroup.setText("Genetic algorithm parameters");
-		gaGroup.setLayout(new GridLayout(2, false));		
+		gaGroup.setLayout(UIUtils.createGridLayoutWithoutMargins(1, false));		
 
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;		
@@ -311,35 +313,52 @@ public class TestHarnessView extends ViewPart
 		
 		final Button useSAButton = new Button(composite, SWT.CHECK);
 		useSAButton.setSelection(false);
-		useSAButton.setText("Use Simulated Annealing (experimental)");	
+		useSAButton.setText("Use Simulated Annealing (experimental)");
 		
-		UIUtils.createLabel(gaGroup, "Population size:", new GridData());
-		FormattedText populationSize = new FormattedText(gaGroup);
+		final Composite stackComposite = new Composite(gaGroup, SWT.NONE);
+		stackComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		stackComposite.setLayout(new StackLayout());
+
+		final Composite gaParameters = new Composite(stackComposite, SWT.NONE);
+		gaParameters.setLayout(new GridLayout(2, false));
+		createGAParameters(gaParameters);
+		
+		final Composite saParameters = new Composite(stackComposite, SWT.NONE);
+		saParameters.setLayout(new GridLayout(2, false));
+		createSAParameters(saParameters);		
+
+		addChangeGeneratorListeners(useGAButton, useSAButton, stackComposite, gaParameters, saParameters);		
+	}
+	
+	private void createGAParameters(Composite gaParameters) 
+	{		
+		UIUtils.createLabel(gaParameters, "Population size:", new GridData());
+		FormattedText populationSize = new FormattedText(gaParameters);
 		populationSize.setFormatter(new LongFormatter());
 		populationSize.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
-		UIUtils.createLabel(gaGroup, "Elitizm:", new GridData());
-		FormattedText elitizm = new FormattedText(gaGroup);
+		UIUtils.createLabel(gaParameters, "Elitizm:", new GridData());
+		FormattedText elitizm = new FormattedText(gaParameters);
 		elitizm.setFormatter(new LongFormatter());
 		elitizm.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
-		UIUtils.createLabel(gaGroup, "Stagnation steps:", new GridData());
-		FormattedText stagnation = new FormattedText(gaGroup);
+		UIUtils.createLabel(gaParameters, "Stagnation steps:", new GridData());
+		FormattedText stagnation = new FormattedText(gaParameters);
 		stagnation.setFormatter(new LongFormatter());
 		stagnation.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
-		UIUtils.createLabel(gaGroup, "Timeout:", new GridData());
-		FormattedText timeout = new FormattedText(gaGroup);
+		UIUtils.createLabel(gaParameters, "Timeout:", new GridData());
+		FormattedText timeout = new FormattedText(gaParameters);
 		timeout.setFormatter(new IntegerFormatter("###,##0"));
 		timeout.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
-		UIUtils.createLabel(gaGroup, "Mutation Prob:", new GridData());
-		FormattedText mutation = new FormattedText(gaGroup);
+		UIUtils.createLabel(gaParameters, "Mutation Prob:", new GridData());
+		FormattedText mutation = new FormattedText(gaParameters);
 		mutation.setFormatter(new NumberFormatter("0.0#"));
 		mutation.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
 		
-		UIUtils.createLabel(gaGroup, "Timeout between iteration:    ", new GridData());
-		FormattedText timeoutIteration = new FormattedText(gaGroup);
+		UIUtils.createLabel(gaParameters, "Timeout between iteration:    ", new GridData());
+		FormattedText timeoutIteration = new FormattedText(gaParameters);
 		timeoutIteration.setFormatter(new LongFormatter());
 		timeoutIteration.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));		
 		
@@ -366,17 +385,75 @@ public class TestHarnessView extends ViewPart
 		_context.bindValue(
 				WidgetProperties.text(SWT.Modify).observeDelayed(100, timeoutIteration.getControl()),
 				BeansObservables.observeValue(gaSolutionGenerator.getParameters(), GAParameters.TIMEOUT_BETWEEN_ITERATIONS)
-		);		
-		
-		addChangeGeneratorListeners(useGAButton, useSAButton);		
+		);
 	}
 	
-	private void addChangeGeneratorListeners(final Button useGAButton, final Button useSAButton) 
+	private void createSAParameters(Composite parent) 
+	{
+		UIUtils.createLabel(parent, "Start temperature:", new GridData());
+		FormattedText startTemperature = new FormattedText(parent);
+		startTemperature.setFormatter(new NumberFormatter("0.0#"));
+		startTemperature.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(parent, "End temperature:", new GridData());
+		FormattedText endTemperature = new FormattedText(parent);
+		endTemperature.setFormatter(new NumberFormatter("0.0#"));
+		endTemperature.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(parent, "Parallel threads:", new GridData());
+		FormattedText parallelThreads = new FormattedText(parent);
+		parallelThreads.setFormatter(new LongFormatter());
+		parallelThreads.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		UIUtils.createLabel(parent, "Iterations in thread:", new GridData());
+		FormattedText iterations = new FormattedText(parent);
+		iterations.setFormatter(new LongFormatter());
+		iterations.getControl().setLayoutData(new GridData(100, SWT.DEFAULT));
+		
+		GridData checkboxData = new GridData();
+		checkboxData.horizontalSpan = 2;
+		Button startOnCenter = new Button(parent, SWT.CHECK);
+		startOnCenter.setText("Start on center");
+		startOnCenter.setLayoutData(checkboxData);
+		
+		Button joinedIterations = new Button(parent, SWT.CHECK);
+		joinedIterations.setText("Joined iterations");
+		joinedIterations.setLayoutData(checkboxData);		
+		
+		_context.bindValue(
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, startTemperature.getControl()),
+				BeansObservables.observeValue(saSolutionGenerator.getParameters(), SAParameters.START_TEMPRATURE)
+		);
+		_context.bindValue(
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, endTemperature.getControl()),
+				BeansObservables.observeValue(saSolutionGenerator.getParameters(), SAParameters.END_TEMPRATURE)
+		);
+		_context.bindValue(
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, parallelThreads.getControl()),
+				BeansObservables.observeValue(saSolutionGenerator.getParameters(), SAParameters.PARALLEL_THREADS)
+		);
+		_context.bindValue(
+				WidgetProperties.text(SWT.Modify).observeDelayed(100, iterations.getControl()),
+				BeansObservables.observeValue(saSolutionGenerator.getParameters(), SAParameters.ITERATIONS_IN_THREAD)
+		);
+		_context.bindValue(
+				WidgetProperties.selection().observe(startOnCenter),
+				BeansObservables.observeValue(saSolutionGenerator.getParameters(), SAParameters.START_ON_CENTER)
+		);
+		_context.bindValue(
+				WidgetProperties.selection().observe(joinedIterations),
+				BeansObservables.observeValue(saSolutionGenerator.getParameters(), SAParameters.JOINED_ITERATIONS)
+		);		
+	}	
+	
+	private void addChangeGeneratorListeners(final Button useGAButton, final Button useSAButton, 
+			final Composite stack, final Composite ga, final Composite sa) 
 	{
 		if (gaSolutionGenerator == null || (! (solver.getSolutionGenerator() instanceof SwitchableSolutionGenerator)))
 		{
 			return;
 		}
+		final StackLayout layout = (StackLayout) stack.getLayout();
 		final SwitchableSolutionGenerator switchable = (SwitchableSolutionGenerator) solver.getSolutionGenerator();		
 		useGAButton.addSelectionListener(new SelectionAdapter()
 		{
@@ -396,6 +473,7 @@ public class TestHarnessView extends ViewPart
 					}		
 					useSAButton.setSelection(false);
 					useSAButton.setEnabled(false);
+					layout.topControl = ga;
 					switchable.switchGenerator(gaSolutionGenerator);
 				}
 				else 
@@ -409,8 +487,10 @@ public class TestHarnessView extends ViewPart
 						control.setVisible(true);
 					}
 					switchable.switchGenerator(bfSolutionGenerator);
+					layout.topControl = null;
 					useSAButton.setEnabled(true);
 				}
+				stack.layout();
 			}
 		});		
 		useSAButton.addSelectionListener(new SelectionAdapter()
@@ -427,6 +507,7 @@ public class TestHarnessView extends ViewPart
 					}
 					useGAButton.setSelection(false);
 					useGAButton.setEnabled(false);
+					layout.topControl = sa;
 					switchable.switchGenerator(saSolutionGenerator);
 				}
 				else 
@@ -436,8 +517,10 @@ public class TestHarnessView extends ViewPart
 						control.setVisible(true);
 					}
 					switchable.switchGenerator(bfSolutionGenerator);
+					layout.topControl = null;
 					useGAButton.setEnabled(true);
 				}
+				stack.layout();
 			}
 		});			
 		

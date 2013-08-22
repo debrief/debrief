@@ -46,7 +46,6 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		parameters.setStartOnCenter(true);
 		parameters.setSaFuntions(new SAFunctions()
 		{
-			
 			@Override
 			public double neighborDistance(SAParameters parameters, Random rnd, double T)
 			{
@@ -64,8 +63,6 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 			{
 				return 1 / (1 + Math.exp(1 / Math.pow(T, 3)));
 			}
-			
-			
 		});
 	}
 
@@ -132,6 +129,11 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		}, generateLegs);		
 	}
 	
+	public SAParameters getParameters()
+	{
+		return parameters;
+	}
+
 	protected void runSA(IProgressMonitor monitor) 
 	{
 		Random rnd = new MersenneTwisterRNG();		
