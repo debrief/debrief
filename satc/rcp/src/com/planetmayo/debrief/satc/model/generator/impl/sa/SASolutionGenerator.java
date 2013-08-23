@@ -42,7 +42,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		parameters.setEndTemprature(0.1);
 		parameters.setParallelThreads(4);
 		parameters.setIterationsInThread(2);
-		parameters.setJoinedIterations(false);
+		parameters.setJoinedIterations(true);
 		parameters.setStartOnCenter(true);
 		parameters.setSaFuntions(new SAFunctions()
 		{
