@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -18,21 +19,23 @@ import org.eclipse.swt.widgets.*;
 public class FontHelper extends EditorHelper
 {
 
-	/** a store of java fonts cross-referenced against swt ones
+	/**
+	 * a store of java fonts cross-referenced against swt ones
 	 * 
 	 */
 	private static HashMap<java.awt.Font, Font> _myFontList;
 
-	/** a font registry - to reduce usage/creation of SWT fonts
+	/**
+	 * a font registry - to reduce usage/creation of SWT fonts
 	 * 
 	 */
 	private static FontRegistry _fontRegistry;
-	
-	/** a store of java fonts, cross-referenced against the font description
+
+	/**
+	 * a store of java fonts, cross-referenced against the font description
 	 * 
 	 */
 	protected static HashMap<FontData, java.awt.Font> _awtFonts;
-
 
 	public static class FontDataDialogCellEditor extends DialogCellEditor
 	{
@@ -79,47 +82,48 @@ public class FontHelper extends EditorHelper
 	{
 		// ok, convert the AWT color to SWT
 		java.awt.Font col = (java.awt.Font) value;
-		return convertFont(col);
+		return convertFontFromAWT(col);
 	}
 
 	public Object translateFromSWT(Object value)
 	{
 		// ok, convert the AWT color to SWT
 		Font font = (Font) value;
-		return convertFont(font);
+		return convertFontFromSWT(font);
 	}
-	
-	public static java.awt.Font convertFont(org.eclipse.swt.graphics.Font swtFont)
+
+	public static java.awt.Font convertFontFromSWT(org.eclipse.swt.graphics.Font swtFont)
 	{
 		// ok, convert the AWT color to SWT
 		java.awt.Font res = null;
 		FontData fd = swtFont.getFontData()[0];
 
-		if(_awtFonts == null)
+		if (_awtFonts == null)
 			_awtFonts = new HashMap<FontData, java.awt.Font>();
-		
+
 		// do we already hold this font?
 		res = _awtFonts.get(fd);
-		if(res == null)
+		if (res == null)
 		{
 			// nope, better create it
-			res =  new java.awt.Font(fd.getName(), fd.getStyle(), fd.getHeight());
-			
+			res = new java.awt.Font(fd.getName(), fd.getStyle(), fd.getHeight());
+
 			// and remember it
 			_awtFonts.put(fd, res);
 		}
-		
+
 		return res;
 	}
 
-	/** create an swt font that looks like this java awt one
+	/**
+	 * create an swt font that looks like this java awt one
 	 * 
 	 * @param javaFont
 	 * @return
 	 */
-	public static org.eclipse.swt.graphics.Font convertFont(java.awt.Font javaFont)
+	public static org.eclipse.swt.graphics.Font convertFontFromAWT(java.awt.Font javaFont)
 	{
-	
+
 		// check we have our registry
 		if (_fontRegistry == null)
 			_fontRegistry = new FontRegistry(Display.getCurrent(), true);
@@ -132,12 +136,11 @@ public class FontHelper extends EditorHelper
 
 		// did we find it?
 		if (thisFont == null)
-		{ 
-			// nope, better go and get it then...
-			final String fontName = "" + javaFont.hashCode();
-
-			// ok - now see if we've got the font
-			thisFont = _fontRegistry.get(fontName);
+		{
+			// nope, better go and get it then
+			
+			// get the font as a string - we use that as an index
+			final String fontName = javaFont.toString();
 
 			// do we have a font for this style?
 			if (!_fontRegistry.hasValueFor(fontName))
@@ -154,14 +157,20 @@ public class FontHelper extends EditorHelper
 				if (name.equals("Sans Serif"))
 					name = "Arial";
 
+				// create an SWT font data entity to describe this font
 				FontData newF = new FontData(name, size, style);
-				_fontRegistry.put(fontName, new FontData[] { newF });
+				
+				// and store the font in the registry
+				_fontRegistry.put(fontName, new FontData[]
+				{ newF });
 			}
 
-			// ok, try to receive it. if we don't we'll just get a default one any
+			// ok, we can now try to retrieve this font (if the font data wasn't there before,
+			// it will be now. If we really don't have it,  we'll just get a default one any
 			// way. cool.
 			thisFont = _fontRegistry.get(fontName);
-			
+
+			// and store the Java font against the SWT one
 			_myFontList.put(javaFont, thisFont);
 		}
 
@@ -183,15 +192,28 @@ public class FontHelper extends EditorHelper
 			{
 				Font font = (Font) element;
 				FontData[] datas = font.getFontData();
+
 				FontData data = datas[0];
-				String res = "(" + data.getName() + ", " + data.getHeight() + ")";
+
+				// sort out the font family
+				String res = data.getName();
+
+				// is it bold?
+				if (SWT.BOLD == (data.getStyle() & SWT.BOLD))
+					res += ", Bold";
+
+				// is it italic?
+				if (SWT.ITALIC == (data.getStyle() & SWT.ITALIC))
+					res += ", Italic";
+
+				// and finish the line off with the height
+				res += ", " + data.getHeight();
 				return res;
 			}
 
 			public Image getImage(Object element)
 			{
-				Image res = null;
-				return res;
+				return null;
 			}
 
 		};
