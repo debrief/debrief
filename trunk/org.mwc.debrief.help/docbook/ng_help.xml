@@ -2387,7 +2387,7 @@ and so on....</programlisting></para>
             clipboard. Next, paste that location into the
             <guilabel>LineEnd</guilabel> value.</para>
           </tip>
-          <note>
+          <note xml:id="ShowRangeCalc" >
             <para>In Summer 2013 the <guilabel>Line Shape</guilabel> annotation received some love
               and gained new capabilities.  One is the ability to have an arrow displayed at one
               end.  This is useful in indicating the direction of travel, or in highlighting a
