@@ -711,13 +711,12 @@ public abstract class BaseTabbedPanel extends Panel
      * @see java.awt.Component#repaint
      * @see java.awt.Component#update
 	 */
-		
+	// THIRD PARTY CODE - IGNORE CYCLOMATIC COMPLEXITY
+	// CS-IGNORE:ON CYCLOMATIC_COMPLEXITY
+	
 	public synchronized void paint(Graphics g)
 	{
 		
-// THIRD PARTY CODE - IGNORE CYCLOMATIC COMPLEXITY
-// CS-IGNORE:ON CYCLOMATIC_COMPLEXITY
-				
 		Rectangle r = this.getBounds();
 		//Make sure cached colors are correct.
 		Color curForeground = getForeground();
