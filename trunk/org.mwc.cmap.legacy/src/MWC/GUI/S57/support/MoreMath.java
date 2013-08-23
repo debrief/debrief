@@ -42,6 +42,10 @@ package MWC.GUI.S57.support;
  *  
  * </pre>
  */
+//CS-IGNORE:ON FINAL_CLASS
+//CS-IGNORE:ON FINAL_PARAMETERS
+//CS-IGNORE:ON MAGIC_NUMBER
+//CS-IGNORE:ON UNNECESSARY_PARENTHESES
 public class MoreMath {
 
     /**
@@ -545,3 +549,7 @@ public class MoreMath {
      * com.bbn.openmap.util.Debug.output("maxuint="+signedToLong(0xffffffff)); }
      */
 }
+//CS-IGNORE:OFF FINAL_CLASS
+//CS-IGNORE:OFF FINAL_PARAMETERS
+//CS-IGNORE:OFF MAGIC_NUMBER
+//CS-IGNORE:OFF UNNECESSARY_PARENTHESES
