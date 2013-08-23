@@ -440,7 +440,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 		{
 			if (theFont != null)
 			{
-				org.eclipse.swt.graphics.Font myFont = FontHelper.convertFont(theFont);
+				org.eclipse.swt.graphics.Font myFont = FontHelper.convertFontFromAWT(theFont);
 				if (!_theDest.isDisposed())
 					_theDest.setFont(myFont);
 			}
@@ -497,7 +497,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
 	public final void setFont(final java.awt.Font theFont)
 	{
-		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
+		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFontFromAWT(theFont);
 		if (!_theDest.isDisposed())
 			_theDest.setFont(swtFont);
 	}
