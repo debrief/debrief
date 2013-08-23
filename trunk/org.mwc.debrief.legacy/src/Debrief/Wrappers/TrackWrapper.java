@@ -2066,15 +2066,33 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return getRawPositions().size();
 	}
-	
+
+	private void checkPointsArray()
+	{
+
+		// is our points store long enough?
+		if ((_myPts == null) || (_myPts.length < numFixes() * 2))
+		{
+			_myPts = new int[numFixes() * 2];
+		}
+
+		// reset the points counter
+		_ptCtr = 0;
+
+	}
+
 	private boolean paintFixes(final CanvasType dest)
 	{
+		// we need an array to store the polyline of points in. Check it's big
+		// enough
+		checkPointsArray();
+
 		// keep track of if we have plotted any points (since
-		//we won't be plotting the name if none of the points are visible).
+		// we won't be plotting the name if none of the points are visible).
 		// this typically occurs when filtering is applied and a short
 		// track is completely outside the time period
 		boolean plotted_anything = false;
-		
+
 		// java.awt.Point lastP = null;
 		Color lastCol = null;
 		final int defaultlineStyle = getLineStyle();
@@ -2082,7 +2100,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		boolean locatedTrack = false;
 		WorldLocation lastLocation = null;
 		FixWrapper lastFix = null;
-				
+
 		Enumeration<Editable> segments = _thePositions.elements();
 		while (segments.hasMoreElements())
 		{
@@ -2139,7 +2157,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// nope. Don't join it to the last position.
 					// ok, if we've built up a polygon, we need to write it
 					// now
-					paintTrack(dest, lastCol, thisLineStyle);
+					paintSetOfPositions(dest, lastCol, thisLineStyle);
 				}
 
 				// Note: we're carrying on working with this position even
@@ -2194,7 +2212,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// position is visible
 				if (!fw.getVisible())
 					continue;
-				
 
 				final java.awt.Point thisP = dest.toScreen(lastLocation);
 
@@ -2242,7 +2259,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 							// yup, better get rid of the previous
 							// polygon
-							paintTrack(dest, lastCol, thisLineStyle);
+							paintSetOfPositions(dest, lastCol, thisLineStyle);
 						}
 
 						// add our position to the list - we'll output
@@ -2255,7 +2272,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						// nope, output however much line we've got so
 						// far - since this
 						// line won't be joined to future points
-						paintTrack(dest, thisCol, thisLineStyle);
+						paintSetOfPositions(dest, thisCol, thisLineStyle);
 
 						// start off the next line
 						_myPts[_ptCtr++] = thisP.x;
@@ -2264,9 +2281,8 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					}
 
 					/*
-					 * set the colour of the track from now on to this colour, so that
-					 * the "link" to the next fix is set to this colour if left
-					 * unchanged
+					 * set the colour of the track from now on to this colour, so that the
+					 * "link" to the next fix is set to this colour if left unchanged
 					 */
 					dest.setColor(fw.getColor());
 
@@ -2282,31 +2298,31 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// in the CompositeTrackWrapper class
 					paintThisFix(dest, lastLocation, fw);
 				}
-				
+
 			}// while fixWrappers has more elements
 
 			// ok, just see if we have any pending polylines to paint
-			paintTrack(dest, lastCol, thisLineStyle);
+			paintSetOfPositions(dest, lastCol, thisLineStyle);
 
 		}
-		
+
 		// are we trying to put the label at the end of the track?
 		// have we found at least one location to plot?
 		if (!_LabelAtStart && lastLocation != null)
 		{
-			_theLabel.setLocation(new WorldLocation(lastLocation));			
+			_theLabel.setLocation(new WorldLocation(lastLocation));
 		}
-		
+
 		return plotted_anything;
 
 	}
-	
-	private void nameSingleTrack(final CanvasType dest)
+
+	private void paintSingleTrackLabel(final CanvasType dest)
 	{
 		// check that we have found a location for the label
 		if (_theLabel.getLocation() == null)
 			return;
-		
+
 		// is the first track a DR track?
 		final TrackSegment t1 = (TrackSegment) _thePositions.first();
 		if (t1.getPlotRelative())
@@ -2315,7 +2331,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else if (_theLabel.getFont().isItalic())
 		{
-			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));		
+			_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
 		}
 
 		// check that we have set the name for the label
@@ -2347,10 +2363,10 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// and paint it
-		_theLabel.paint(dest);	
+		_theLabel.paint(dest);
 	}
-	
-	private void nameMultipleSegments(final CanvasType dest)
+
+	private void paintMultipleSegmentLabel(final CanvasType dest)
 	{
 		Enumeration<Editable> posis = _thePositions.elements();
 		while (posis.hasMoreElements())
@@ -2369,9 +2385,9 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 			else if (_theLabel.getFont().isItalic())
 			{
-					_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+				_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
 			}
-			
+
 			WorldLocation theLoc = thisE.getTrackStart();
 			String oldTxt = _theLabel.getString();
 			_theLabel.setString(thisE.getName());
@@ -2390,7 +2406,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_theLabel.setString(oldTxt);
 
 		}
-		
+
 	}
 
 	/**
@@ -2407,7 +2423,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			return;
 		}
-		
+
 		// set the thickness for this track
 		dest.setLineWidth(_lineWidth);
 
@@ -2460,29 +2476,18 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// and now the track itself
 		// /////////////////////////////////////////////
 
-		// is our points store long enough?
-		if ((_myPts == null) || (_myPts.length < numFixes() * 2))
-		{
-			_myPts = new int[numFixes() * 2];
-		}
-
-		// reset the points counter
-		_ptCtr = 0;
-		
-
 		// just check if we are drawing anything at all
 		if ((!getLinkPositions() || getLineStyle() == LineStylePropertyEditor.UNCONNECTED)
-					&& (!_showPositions))
+				&& (!_showPositions))
 		{
 			return;
-		}		
+		}
 
 		// ///////////////////////////////////////////
 		// let the fixes draw themselves in
 		// ///////////////////////////////////////////
 		boolean plotted_anything = paintFixes(dest);
 
-		
 		// and draw the track label
 		// still, we only plot the track label if we have plotted any
 		// points
@@ -2492,16 +2497,16 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// name them individually
 			if (this._thePositions.size() <= 1)
 			{
-				nameSingleTrack(dest);
+				paintSingleTrackLabel(dest);
 			}
 			else
 			{
 				// we've got multiple segments, name them
-				nameMultipleSegments(dest);
-			} 
-			
+				paintMultipleSegmentLabel(dest);
+			}
+
 		} // if the label is visible
-		
+
 	}
 
 	/**
@@ -2547,7 +2552,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param thisCol
 	 * @param lineStyle
 	 */
-	private void paintTrack(final CanvasType dest, final Color thisCol,
+	private void paintSetOfPositions(final CanvasType dest, final Color thisCol,
 			int lineStyle)
 	{
 		if (_ptCtr > 0)
